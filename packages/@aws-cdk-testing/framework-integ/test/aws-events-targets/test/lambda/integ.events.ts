@@ -3,13 +3,14 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as cdk from 'aws-cdk-lib';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'lambda-events');
 
 const fn = new lambda.Function(stack, 'MyFunc', {
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
 });

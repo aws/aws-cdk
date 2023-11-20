@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-elasticsearch-unsignedbasicauth.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/40d21ef3eacea8e3cf27bcf9ed4c39089c0a6767137cadec49c70e505907e730.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2b1fc4228ac2eeff05d688e6190e4bae311399d38905be33542da861bdbcce2b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,6 +44,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain66AC69E0"
+          }
+        ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/Domain/ESAccessPolicy": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
           }
         ],
         "/cdk-integ-elasticsearch-unsignedbasicauth/Domain/ESAccessPolicy/Resource/Default": [
@@ -97,6 +104,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "ElasticSearchUnsignedBasicAuthIntegDefaultTestDeployAssertB125FC47.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

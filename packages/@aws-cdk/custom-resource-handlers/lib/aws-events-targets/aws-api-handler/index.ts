@@ -1,11 +1,13 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { getV3Client, getV3Command, loadV3ClientPackage } from '@aws-cdk/sdk-v2-to-v3-adapter';
+import { ApiCall } from '@aws-cdk/sdk-v2-to-v3-adapter';
 
 interface AwsApiInput {
   readonly service: string;
   readonly action: string;
-  readonly parameters?: any;
+  readonly parameters?: {
+    [param: string]: any,
+  };
   readonly apiVersion?: string;
   readonly catchErrorPattern?: string;
 }
@@ -13,15 +15,15 @@ interface AwsApiInput {
 export async function handler(event: AwsApiInput) {
   console.log('Event: %j', { ...event, ResponseURL: '...' });
 
-  const awsSdk = loadV3ClientPackage(event.service);
-  console.log(`AWS SDK V3: ${awsSdk.packageName}@${awsSdk.packageVersion}`);
-
-  const client = getV3Client(awsSdk, { apiVersion: event.apiVersion });
-  const Command = getV3Command(awsSdk, event.action);
-  const commandInput = event.parameters ?? {};
+  const apiCall = new ApiCall(event.service, event.action);
+  console.log(`AWS SDK V3: ${apiCall.v3PackageName}`);
 
   try {
-    const response = await client.send(new Command(commandInput));
+    const response = await apiCall.invoke({
+      parameters: event.parameters ?? {},
+      apiVersion: event.apiVersion,
+    });
+
     delete response.$metadata;
     console.log('Response: %j', response);
   } catch (error: any) {

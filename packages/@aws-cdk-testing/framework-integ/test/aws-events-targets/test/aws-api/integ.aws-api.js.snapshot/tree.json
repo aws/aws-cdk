@@ -195,7 +195,7 @@
                                 {
                                   "Action": [
                                     "ecs:UpdateService",
-                                    "rds:CreateDBSnapshot",
+                                    "kms:Encrypt",
                                     "rds:StopDBInstance",
                                     "ssm:PutParameter"
                                   ],
@@ -266,7 +266,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "333b608679b1fd0bcebf74bb5053b8664245c5f7903d27c7f6604bdc3d5b88aa.zip"
+                      "s3Key": "582949af1835c40c50e00a38187ee273df77f397293349e1e55dca63f063f8e8.zip"
                     },
                     "handler": "index.handler",
                     "memorySize": 256,
@@ -288,92 +288,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
-            }
-          },
-          "PatternRule": {
-            "id": "PatternRule",
-            "path": "aws-cdk-aws-api-target-integ/PatternRule",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-aws-api-target-integ/PatternRule/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
-                  "aws:cdk:cloudformation:props": {
-                    "eventPattern": {
-                      "detail-type": [
-                        "RDS DB Instance Event"
-                      ],
-                      "detail": {
-                        "Message": [
-                          "DB instance restarted"
-                        ]
-                      }
-                    },
-                    "state": "ENABLED",
-                    "targets": [
-                      {
-                        "id": "Target0",
-                        "arn": {
-                          "Fn::GetAtt": [
-                            "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
-                            "Arn"
-                          ]
-                        },
-                        "inputTransformer": {
-                          "inputTemplate": "{\"service\":\"RDS\",\"action\":\"createDBSnapshot\",\"parameters\":{\"DBInstanceIdentifier\":<detail-SourceArn>}}",
-                          "inputPathsMap": {
-                            "detail-SourceArn": "$.detail.SourceArn"
-                          }
-                        }
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
-                  "version": "0.0.0"
-                }
-              },
-              "PatternRuleTarget0Handler": {
-                "id": "PatternRuleTarget0Handler",
-                "path": "aws-cdk-aws-api-target-integ/PatternRule/PatternRuleTarget0Handler",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
-                }
-              },
-              "AllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464": {
-                "id": "AllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464",
-                "path": "aws-cdk-aws-api-target-integ/PatternRule/AllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "events.amazonaws.com",
-                    "sourceArn": {
-                      "Fn::GetAtt": [
-                        "PatternRule4AF6D328",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_events.Rule",
               "version": "0.0.0"
             }
           },
@@ -495,6 +409,149 @@
               "version": "0.0.0"
             }
           },
+          "EncryptionKey": {
+            "id": "EncryptionKey",
+            "path": "aws-cdk-aws-api-target-integ/EncryptionKey",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-api-target-integ/EncryptionKey/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kms.Key",
+              "version": "0.0.0"
+            }
+          },
+          "EncryptDataRule": {
+            "id": "EncryptDataRule",
+            "path": "aws-cdk-aws-api-target-integ/EncryptDataRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-api-target-integ/EncryptDataRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "eventPattern": {
+                      "source": [
+                        "cdk.integ"
+                      ],
+                      "detail-type": [
+                        "EncryptData"
+                      ],
+                      "detail": {
+                        "KeyId": [
+                          {
+                            "Ref": "EncryptionKey1B843E66"
+                          }
+                        ]
+                      }
+                    },
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+                            "Arn"
+                          ]
+                        },
+                        "inputTransformer": {
+                          "inputTemplate": "{\"service\":\"KMS\",\"action\":\"encrypt\",\"parameters\":{\"KeyId\":<detail-KeyId>,\"Plaintext\":<detail-Plaintext>}}",
+                          "inputPathsMap": {
+                            "detail-KeyId": "$.detail.KeyId",
+                            "detail-Plaintext": "$.detail.Plaintext"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "0.0.0"
+                }
+              },
+              "EncryptDataRuleTarget0Handler": {
+                "id": "EncryptDataRuleTarget0Handler",
+                "path": "aws-cdk-aws-api-target-integ/EncryptDataRule/EncryptDataRuleTarget0Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "AllowEventRuleawscdkawsapitargetintegEncryptDataRuleEncryptDataRuleTarget0HandlerC3017ED8": {
+                "id": "AllowEventRuleawscdkawsapitargetintegEncryptDataRuleEncryptDataRuleTarget0HandlerC3017ED8",
+                "path": "aws-cdk-aws-api-target-integ/EncryptDataRule/AllowEventRuleawscdkawsapitargetintegEncryptDataRuleEncryptDataRuleTarget0HandlerC3017ED8",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "events.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "EncryptDataRule79774425",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0"
+            }
+          },
           "Exports": {
             "id": "Exports",
             "path": "aws-cdk-aws-api-target-integ/Exports",
@@ -502,6 +559,14 @@
               "Output{\"Ref\":\"TestParameter95DD6E25\"}": {
                 "id": "Output{\"Ref\":\"TestParameter95DD6E25\"}",
                 "path": "aws-cdk-aws-api-target-integ/Exports/Output{\"Ref\":\"TestParameter95DD6E25\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"EncryptionKey1B843E66\"}": {
+                "id": "Output{\"Ref\":\"EncryptionKey1B843E66\"}",
+                "path": "aws-cdk-aws-api-target-integ/Exports/Output{\"Ref\":\"EncryptionKey1B843E66\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -555,17 +620,17 @@
                 "id": "DeployAssert",
                 "path": "aws-api-integ/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallEventBridgeputEvents930f27f5cac3888f90228bdb49e27c64": {
-                    "id": "AwsApiCallEventBridgeputEvents930f27f5cac3888f90228bdb49e27c64",
-                    "path": "aws-api-integ/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents930f27f5cac3888f90228bdb49e27c64",
+                  "AwsApiCallEventBridgeputEvents13ba168ed67d6e97ff2c94cc14e4d276": {
+                    "id": "AwsApiCallEventBridgeputEvents13ba168ed67d6e97ff2c94cc14e4d276",
+                    "path": "aws-api-integ/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents13ba168ed67d6e97ff2c94cc14e4d276",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "aws-api-integ/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents930f27f5cac3888f90228bdb49e27c64/SdkProvider",
+                        "path": "aws-api-integ/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents13ba168ed67d6e97ff2c94cc14e4d276/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "aws-api-integ/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents930f27f5cac3888f90228bdb49e27c64/SdkProvider/AssertionsProvider",
+                            "path": "aws-api-integ/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents13ba168ed67d6e97ff2c94cc14e4d276/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.2.70"
@@ -579,11 +644,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "aws-api-integ/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents930f27f5cac3888f90228bdb49e27c64/Default",
+                        "path": "aws-api-integ/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents13ba168ed67d6e97ff2c94cc14e4d276/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "aws-api-integ/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents930f27f5cac3888f90228bdb49e27c64/Default/Default",
+                            "path": "aws-api-integ/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents13ba168ed67d6e97ff2c94cc14e4d276/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"

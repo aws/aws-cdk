@@ -7,8 +7,10 @@ let mockAddLabel = jest.fn();
 let mockListReviews = jest.fn().mockImplementation((_props: { _owner: string, _repo: string, _pull_number: number }) => {
   return { data: [{ id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' }] };
 });
+
 beforeAll(() => {
   jest.spyOn(console, 'log').mockImplementation();
+  jest.spyOn(linter.PullRequestLinter.prototype as any, 'getTrustedCommunityMembers').mockImplementation(() => ['trusted1', 'trusted2', 'trusted3'])
   process.env.REPO_ROOT = path.join(__dirname, '..', '..', '..', '..');
 });
 
@@ -91,6 +93,24 @@ describe('breaking changes format', () => {
     const prLinter = configureMock(issue, undefined);
     expect(await prLinter.validatePullRequestTarget(SHA)).resolves; // not throw
   });
+});
+
+test('disallow PRs from main branch of fork', async () => {
+  const issue: Subset<linter.GitHubPr> = {
+    number: 1,
+    title: 'chore: some title',
+    body: 'making a pr from main of my fork',
+    labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-readme' }],
+    user: {
+      login: 'author',
+    },
+    head: {
+      label: 'author:main',
+      ref: 'main'
+    }
+  };
+  const prLinter = configureMock(issue, undefined);
+  await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork./);
 });
 
 describe('commit message format', () => {
@@ -496,8 +516,8 @@ describe('integration tests required on features', () => {
     test('with label no error', async () => {
       labels.push({ name: 'pr-linter/cli-integ-tested' });
       const prLinter = configureMock(issue, files);
-      await prLinter.validatePullRequestTarget(SHA);
       // THEN: no exception
+      expect(async () => await prLinter.validatePullRequestTarget(SHA)).resolves;
     });
 
     test('with aws-cdk-automation author', async () => {
@@ -635,8 +655,8 @@ describe('integration tests required on features', () => {
       mockListReviews.mockImplementation(() => {
         return {
           data: [
-            { id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED' },
-            { id: 1111122223, user: { login: 'someuser' }, author_association: 'MEMBER', state: 'CHANGES_REQUESTED' },
+            { id: 1111122222, user: { login: 'aws-cdk-automation' }, state: 'CHANGES_REQUESTED', submitted_at: '2019-11-17T17:43:43Z'},
+            { id: 1111122223, user: { login: 'someuser' }, author_association: 'MEMBER', state: 'CHANGES_REQUESTED', submitted_at: '2019-11-18T17:43:43Z' },
           ],
         };
       });
@@ -705,7 +725,7 @@ describe('integration tests required on features', () => {
       mockListReviews.mockImplementation(() => {
         return {
           data: [
-            { id: 1111122223, user: { login: 'pahud' }, state: 'APPROVED' },
+            { id: 1111122223, user: { login: 'trusted1' }, state: 'APPROVED' },
           ],
         };
       });
@@ -743,8 +763,9 @@ describe('integration tests required on features', () => {
       mockListReviews.mockImplementation(() => {
         return {
           data: [
-            { id: 1111122223, user: { login: 'pahud' }, state: 'COMMENTED' },
-            { id: 1111122223, user: { login: 'pahud' }, state: 'APPROVED' },
+            { id: 1111122223, user: { login: 'trusted1' }, state: 'APPROVED', submitted_at: '2019-11-18T17:43:43Z' },
+            { id: 1111122224, user: { login: 'trusted2' }, state: 'CHANGES_REQUESTED', submitted_at: '2019-11-17T18:43:43Z' },
+            { id: 1111122225, user: { login: 'trusted3' }, state: 'COMMENTED', submitted_at: '2019-11-17T19:43:43Z' },
           ],
         };
       });
@@ -777,12 +798,12 @@ describe('integration tests required on features', () => {
       });
     });
 
-    test('trusted community member can "request changes" on p2 PR by commenting', async () => {
+    test('trusted community member can "request changes" on p2 PR by requesting changes', async () => {
       // GIVEN
       mockListReviews.mockImplementation(() => {
         return {
           data: [
-            { id: 1111122223, user: { login: 'pahud' }, state: 'COMMENTED' },
+            { id: 1111122223, user: { login: 'trusted1' }, state: 'CHANGES_REQUESTED', submitted_at: '2019-11-17T17:43:43Z' },
           ],
         };
       });
@@ -808,6 +829,123 @@ describe('integration tests required on features', () => {
         repo: 'aws-cdk',
       });
       expect(mockAddLabel.mock.calls).toEqual([]);
+    });
+
+    test('trusted community member can comment after requesting changes without dismissing', async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [
+            { id: 1111122223, user: { login: 'trusted1' }, state: 'CHANGES_REQUESTED', submitted_at: '2019-11-17T17:43:43Z' },
+            { id: 1111122224, user: { login: 'trusted1' }, state: 'COMMENTED', submitted_at: '2019-11-18T17:43:43Z' },
+          ],
+        };
+      });
+      (pr as any).labels = [];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockRemoveLabel.mock.calls).toEqual([]);
+      expect(mockAddLabel.mock.calls).toEqual([]);
+    });
+
+    test('trusted community member comments dont mark as "changes requested"', async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [
+            { id: 1111122223, user: { login: 'trusted1' }, state: 'COMMENTED', submitted_at: '2019-11-17T17:43:43Z' },
+          ],
+        };
+      });
+      (pr as any).labels = [
+        {
+          name: 'pr/needs-community-review',
+        },
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockRemoveLabel.mock.calls).toEqual([]);
+      expect(mockAddLabel.mock.calls).toEqual([]);
+    });
+
+    test('trusted community members can change own review from approval to requesting changes',  async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [
+            { id: 1111122223, user: { login: 'trusted1' }, state: 'APPROVED', submitted_at: '2019-11-17T17:43:43Z' },
+            { id: 1111122224, user: { login: 'trusted1' }, state: 'CHANGES_REQUESTED', submitted_at: '2019-11-18T17:43:43Z' },
+          ]
+        }
+      });
+      (pr as any).labels = [
+        {
+          name: 'pr/needs-maintainer-review',
+        }
+      ];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockRemoveLabel.mock.calls[0][0]).toEqual({
+        issue_number: 1234,
+        name: 'pr/needs-maintainer-review',
+        owner: 'aws',
+        repo: 'aws-cdk',
+      });
+      expect(mockAddLabel.mock.calls).toEqual([]);
+    });
+
+    test('trusted community members can change own review from requesting changes to approval', async () => {
+      // GIVEN
+      mockListReviews.mockImplementation(() => {
+        return {
+          data: [
+            { id: 1111122223, user: { login: 'trusted1' }, state: 'CHANGES_REQUESTED', submitted_at: '2019-11-17T17:43:43Z' },
+            { id: 1111122224, user: { login: 'trusted1' }, state: 'APPROVED', submitted_at: '2019-11-18T17:43:43Z' },
+          ]
+        }
+      });
+      (pr as any).labels = [];
+
+      // WHEN
+      const prLinter = configureMock(pr);
+      await prLinter.validateStatusEvent(pr as any, {
+        sha: SHA,
+        context: linter.CODE_BUILD_CONTEXT,
+        state: 'success',
+      } as any);
+
+      // THEN
+      expect(mockRemoveLabel.mock.calls).toEqual([]);
+      expect(mockAddLabel.mock.calls[0][0]).toEqual({
+        issue_number: 1234,
+        labels: ['pr/needs-maintainer-review'],
+        owner: 'aws',
+        repo: 'aws-cdk',
+      });
     });
 
     test('untrusted community member approval has no affect', async () => {
@@ -872,6 +1010,40 @@ describe('integration tests required on features', () => {
       expect(mockAddLabel.mock.calls).toEqual([]);
     });
   });
+
+  describe('metadata file changed', () => {
+    const files: linter.GitHubFile[] = [{
+      filename: 'packages/aws-cdk-lib/region-info/build-tools/metadata.ts',
+    }];
+
+    test('with aws-cdk-automation author', async () => {
+      const pr = {
+        title: 'chore: Update regions',
+        number: 1234,
+        labels: [],
+        user: {
+          login: 'aws-cdk-automation'
+        },
+      };
+
+      const prLinter = configureMock(pr, files);
+      await expect(prLinter.validatePullRequestTarget(SHA)).resolves;
+    });
+
+    test('with another author', async () => {
+      const pr = {
+        title: 'chore: Update regions',
+        number: 1234,
+        labels: [],
+        user: {
+          login: 'johndoe',
+        },
+      };
+
+      const prLinter = configureMock(pr, files);
+      await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow();
+    });
+  });
 });
 
 function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[]): linter.PullRequestLinter {
@@ -893,6 +1065,8 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
     listReviews: mockListReviews,
 
     dismissReview() {},
+
+    update() {},
   };
 
   const issuesClient = {

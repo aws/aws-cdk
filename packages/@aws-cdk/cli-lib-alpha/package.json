@@ -50,9 +50,9 @@
     "build+test": "yarn build && yarn test",
     "build+test+extract": "yarn build+test && yarn rosetta:extract",
     "build+test+package": "yarn build+test && yarn package",
-    "bundle": "esbuild --bundle lib/index.ts --target=node14 --platform=node --external:fsevents --minify-whitespace --outfile=lib/main.js",
+    "bundle": "esbuild --bundle lib/index.ts --target=node18 --platform=node --external:fsevents --minify-whitespace --outfile=lib/main.js",
     "compat": "cdk-compat",
-    "gen": "./generate.sh",
+    "gen": "../../../packages/aws-cdk/generate.sh",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "pkglint": "pkglint -f",
@@ -60,16 +60,11 @@
     "test": "cdk-test",
     "watch": "cdk-watch"
   },
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
-  },
   "cdk-build": {
     "post": [
       "yarn attribute",
-      "cp ../../aws-cdk/lib/vendor/noctilucent/index_bg.wasm ./lib/",
       "mkdir -p ./lib/api/bootstrap/ && cp ../../aws-cdk/lib/api/bootstrap/bootstrap-template.yaml ./lib/api/bootstrap/",
+      "cp ../../../node_modules/cdk-from-cfn/index_bg.wasm ./lib/",
       "yarn bundle",
       "node ./lib/main.js >/dev/null 2>/dev/null </dev/null"
     ],
@@ -90,10 +85,10 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "aws-cdk-lib": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^29.5.4",
+    "@types/jest": "^29.5.8",
     "aws-cdk": "0.0.0",
     "constructs": "^10.0.0",
-    "jest": "^29.6.4",
+    "jest": "^29.7.0",
     "ts-node": "^10.9.1"
   },
   "repository": {

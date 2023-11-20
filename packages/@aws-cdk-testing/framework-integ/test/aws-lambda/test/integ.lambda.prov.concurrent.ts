@@ -2,6 +2,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from 'aws-cdk-lib/cx-api';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App();
 
@@ -16,7 +17,7 @@ const pce = 5;
 const fn = new lambda.Function(stack, 'MyLambdaAliasPCE', {
   code: new lambda.InlineCode(lambdaCode.replace('#type#', 'Alias')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 
 fn.addToRolePolicy(new iam.PolicyStatement({
@@ -40,7 +41,7 @@ alias.addPermission('AliasPermission', {
 const fnVersionPCE = new lambda.Function(stack, 'MyLambdaVersionPCE', {
   code: new lambda.InlineCode(lambdaCode.replace('#type#', 'Version')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   currentVersionOptions: {
     provisionedConcurrentExecutions: pce,
   },

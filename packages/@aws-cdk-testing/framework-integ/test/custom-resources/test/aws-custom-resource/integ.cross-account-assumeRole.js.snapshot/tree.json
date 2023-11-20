@@ -248,7 +248,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-234567890123-us-east-1",
-                      "s3Key": "5f29389ceebe277aadade8a9e7583fdd274a2a2f2d6adf410243bea23c244b9d.zip"
+                      "s3Key": "e5178afc49b7c6a85127a67856ce958e4f0879ce6aad5e974cac2a088bf939db.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -468,7 +468,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-234567890123-af-south-1",
-                      "s3Key": "5f29389ceebe277aadade8a9e7583fdd274a2a2f2d6adf410243bea23c244b9d.zip"
+                      "s3Key": "e5178afc49b7c6a85127a67856ce958e4f0879ce6aad5e974cac2a088bf939db.zip"
                     },
                     "handler": "index.handler",
                     "role": {

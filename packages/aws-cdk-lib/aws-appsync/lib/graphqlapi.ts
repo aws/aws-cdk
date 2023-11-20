@@ -2,12 +2,14 @@ import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation, CfnSourceApiAssociation } from './appsync.generated';
 import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
 import { ISchema, SchemaFile } from './schema';
+import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
 import { ICertificate } from '../../aws-certificatemanager';
 import { IUserPool } from '../../aws-cognito';
-import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable, PolicyStatement } from '../../aws-iam';
+import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { ArnFormat, CfnResource, Duration, Expiration, IResolvable, Stack } from '../../core';
+import { ArnFormat, CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Stack } from '../../core';
+import * as cxapi from '../../cx-api';
 
 /**
  * enum with all possible values for AppSync authorization type
@@ -289,22 +291,7 @@ export interface DomainOptions {
 }
 
 /**
- * Merge type used to associate the source API
- */
-export enum MergeType {
-  /**
-   * Manual merge. The merge must be triggered manually when the source API has changed.
-   */
-  MANUAL_MERGE = 'MANUAL_MERGE',
-
-  /**
-   * Auto merge. The merge is triggered automatically when the source API has changed.
-   */
-  AUTO_MERGE = 'AUTO_MERGE',
-}
-
-/**
- * Source API configuration for creating a AppSync Merged API
+ * Additional API configuration for creating a AppSync Merged API
  */
 export interface SourceApiOptions {
   /**
@@ -327,13 +314,19 @@ export interface SourceApi {
   /**
    * Source API that is associated with the merged API
    */
-  readonly sourceApi: GraphqlApi;
+  readonly sourceApi: IGraphqlApi;
+
   /**
    * Merging option used to associate the source API to the Merged API
    *
    * @default - Auto merge. The merge is triggered automatically when the source API has changed
    */
   readonly mergeType?: MergeType;
+
+  /**
+   * Description of the Source API asssociation.
+   */
+  readonly description?: string;
 }
 
 /**
@@ -343,7 +336,7 @@ export abstract class Definition {
   /**
    * Schema from schema object.
    * @param schema SchemaFile.fromAsset(filePath: string) allows schema definition through schema.graphql file
-   * @returns API Source with schema from file
+   * @returns Definition with schema from file
    */
   public static fromSchema(schema: ISchema): Definition {
     return {
@@ -354,7 +347,7 @@ export abstract class Definition {
   /**
    * Schema from file, allows schema definition through schema.graphql file
    * @param filePath the file path of the schema file
-   * @returns API Source with schema from file
+   * @returns Definition with schema from file
    */
   public static fromFile(filePath: string): Definition {
     return this.fromSchema(SchemaFile.fromAsset(filePath));
@@ -363,7 +356,7 @@ export abstract class Definition {
   /**
    * Schema from existing AppSync APIs - used for creating a AppSync Merged API
    * @param sourceApiOptions Configuration for AppSync Merged API
-   * @returns API Source with for AppSync Merged API
+   * @returns Definition with for AppSync Merged API
    */
   public static fromSourceApis(sourceApiOptions: SourceApiOptions): Definition {
     return {
@@ -416,7 +409,7 @@ export interface GraphqlApiProps {
    * SchemaFile.fromAsset(filePath: string) allows schema definition through schema.graphql file
    *
    * @default - schema will be generated code-first (i.e. addType, addObjectType, etc.)
-   * @deprecated use apiSoure.schema instead
+   * @deprecated use Definition.schema instead
    */
   readonly schema?: ISchema;
   /**
@@ -603,7 +596,7 @@ export class GraphqlApi extends GraphqlApiBase {
   private api: CfnGraphQLApi;
   private apiKeyResource?: CfnApiKey;
   private domainNameResource?: CfnDomainName;
-  private mergedApiExecutionRole?: Role;
+  private mergedApiExecutionRole?: IRole;
 
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
     super(scope, id);
@@ -702,14 +695,35 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   private setupSourceApiAssociations() {
-    this.definition.sourceApiOptions?.sourceApis.forEach(sourceApiOption => {
-      new CfnSourceApiAssociation(this, `${sourceApiOption.sourceApi.node.id}Association`, {
-        sourceApiIdentifier: sourceApiOption.sourceApi.apiId,
-        mergedApiIdentifier: this.api.attrApiId,
+    this.definition.sourceApiOptions?.sourceApis.forEach(sourceApiConfig => {
+      const mergeType = sourceApiConfig.mergeType ?? MergeType.AUTO_MERGE;
+      let sourceApiIdentifier = sourceApiConfig.sourceApi.apiId;
+      let mergedApiIdentifier = this.apiId;
+
+      // This is protected by a feature flag because if there is an existing source api association that used the api id,
+      // updating it to use ARN as identifier leads to a resource replacement. ARN is recommended going forward because it allows support
+      // for both same account and cross account use cases.
+      if (FeatureFlags.of(this).isEnabled(cxapi.APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION)) {
+        sourceApiIdentifier = sourceApiConfig.sourceApi.arn;
+        mergedApiIdentifier = this.arn;
+      }
+
+      const association = new CfnSourceApiAssociation(this, `${sourceApiConfig.sourceApi.node.id}Association`, {
+        sourceApiIdentifier: sourceApiIdentifier,
+        mergedApiIdentifier: mergedApiIdentifier,
         sourceApiAssociationConfig: {
-          mergeType: sourceApiOption.mergeType ?? MergeType.AUTO_MERGE,
+          mergeType: mergeType,
         },
+        description: sourceApiConfig.description,
       });
+
+      // Add permissions to merged api execution role
+      const executionRole = this.mergedApiExecutionRole as IRole;
+      addSourceGraphQLPermission(association, executionRole);
+
+      if (mergeType === MergeType.AUTO_MERGE) {
+        addSourceApiAutoMergePermission(association, executionRole);
+      }
     });
   }
 
@@ -717,17 +731,9 @@ export class GraphqlApi extends GraphqlApiBase {
     if (sourceApiOptions.mergedApiExecutionRole) {
       this.mergedApiExecutionRole = sourceApiOptions.mergedApiExecutionRole;
     } else {
-      const sourceApiArns = sourceApiOptions.sourceApis?.map(sourceApiOption => {
-        return sourceApiOption.sourceApi.arn;
-      });
-
       this.mergedApiExecutionRole = new Role(this, 'MergedApiExecutionRole', {
         assumedBy: new ServicePrincipal('appsync.amazonaws.com'),
       });
-      this.mergedApiExecutionRole.addToPolicy(new PolicyStatement({
-        resources: sourceApiArns,
-        actions: ['appsync:SourceGraphQL'],
-      }));
     }
   }
 

@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { CaCertificate } from './ca-certificate';
 import { DatabaseCluster } from './cluster';
 import { IDatabaseCluster } from './cluster-ref';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
@@ -9,7 +10,8 @@ import { ISubnetGroup } from './subnet-group';
 import * as ec2 from '../../aws-ec2';
 import { IRole } from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { IResource, Resource, Duration, RemovalPolicy, ArnFormat } from '../../core';
+import { IResource, Resource, Duration, RemovalPolicy, ArnFormat, FeatureFlags } from '../../core';
+import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from '../../cx-api';
 
 /**
  * Options for binding the instance to the cluster
@@ -292,6 +294,20 @@ export interface ClusterInstanceOptions {
    * @default false
    */
   readonly isFromLegacyInstanceProps?: boolean;
+
+  /**
+   * The identifier of the CA certificate for this DB cluster's instances.
+   *
+   * Specifying or updating this property triggers a reboot.
+   *
+   * For RDS DB engines:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html
+   * For Aurora DB engines:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html
+   *
+   * @default - RDS will choose a certificate authority
+   */
+  readonly caCertificate?: CaCertificate;
 }
 
 /**
@@ -456,10 +472,15 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
 
     const instanceParameterGroup = props.parameterGroup ?? (
       props.parameters
-        ? new ParameterGroup(props.cluster, 'InstanceParameterGroup', {
-          engine: engine,
-          parameters: props.parameters,
-        })
+        ? FeatureFlags.of(this).isEnabled(AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS)
+          ? new ParameterGroup(this, 'InstanceParameterGroup', {
+            engine: engine,
+            parameters: props.parameters,
+          })
+          : new ParameterGroup(props.cluster, 'InstanceParameterGroup', {
+            engine: engine,
+            parameters: props.parameters,
+          })
         : undefined
     );
     const instanceParameterGroupConfig = instanceParameterGroup?.bindToInstance({});
@@ -489,6 +510,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         monitoringRoleArn: props.monitoringRole && props.monitoringRole.roleArn,
         autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
         allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
+        caCertificateIdentifier: props.caCertificate && props.caCertificate.toString(),
       });
     // For instances that are part of a cluster:
     //

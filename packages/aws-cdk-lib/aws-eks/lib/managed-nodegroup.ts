@@ -282,6 +282,28 @@ export interface NodegroupOptions {
    * @default - ON_DEMAND
    */
   readonly capacityType?: CapacityType;
+
+  /**
+   * The maximum number of nodes unavailable at once during a version update.
+   * Nodes will be updated in parallel. The maximum number is 100.
+   *
+   * This value or `maxUnavailablePercentage` is required to have a value for custom update configurations to be applied.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailable
+   * @default 1
+   */
+  readonly maxUnavailable?: number;
+
+  /**
+   * The maximum percentage of nodes unavailable during a version update.
+   * This percentage of nodes will be updated in parallel, up to 100 nodes at once.
+   *
+   * This value or `maxUnavailable` is required to have a value for custom update configurations to be applied.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailablepercentage
+   * @default undefined - node groups will update instances one at a time
+   */
+  readonly maxUnavailablePercentage?: number;
 }
 
 /**
@@ -425,6 +447,8 @@ export class Nodegroup extends Resource implements INodegroup {
       this.role = props.nodeRole;
     }
 
+    this.validateUpdateConfig(props.maxUnavailable, props.maxUnavailablePercentage);
+
     const resource = new CfnNodegroup(this, 'Resource', {
       clusterName: this.cluster.clusterName,
       nodegroupName: props.nodegroupName,
@@ -463,6 +487,10 @@ export class Nodegroup extends Resource implements INodegroup {
         minSize: this.minSize,
       },
       tags: props.tags,
+      updateConfig: props.maxUnavailable || props.maxUnavailablePercentage ? {
+        maxUnavailable: props.maxUnavailable,
+        maxUnavailablePercentage: props.maxUnavailablePercentage,
+      } : undefined,
     });
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
@@ -491,6 +519,24 @@ export class Nodegroup extends Resource implements INodegroup {
     });
     this.nodegroupName = this.getResourceNameAttribute(resource.ref);
   }
+
+  private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {
+    if (!maxUnavailable && !maxUnavailablePercentage) return;
+    if (maxUnavailable && maxUnavailablePercentage) {
+      throw new Error('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together');
+    }
+    if (maxUnavailablePercentage && (maxUnavailablePercentage < 1 || maxUnavailablePercentage > 100)) {
+      throw new Error(`maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`);
+    }
+    if (maxUnavailable) {
+      if (maxUnavailable > this.maxSize) {
+        throw new Error(`maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`);
+      }
+      if (maxUnavailable < 1 || maxUnavailable > 100) {
+        throw new Error(`maxUnavailable must be between 1 and 100, got ${maxUnavailable}`);
+      }
+    }
+  }
 }
 
 /**
@@ -514,7 +560,7 @@ function isGpuInstanceType(instanceType: InstanceType): boolean {
   //compare instanceType to known GPU InstanceTypes
   const knownGpuInstanceTypes = [InstanceClass.P2, InstanceClass.P3, InstanceClass.P3DN, InstanceClass.P4DE, InstanceClass.P4D,
     InstanceClass.G3S, InstanceClass.G3, InstanceClass.G4DN, InstanceClass.G4AD, InstanceClass.G5, InstanceClass.G5G,
-    InstanceClass.INF1];
+    InstanceClass.INF1, InstanceClass.INF2];
   return knownGpuInstanceTypes.some((c) => instanceType.sameInstanceClassAs(InstanceType.of(c, InstanceSize.LARGE)));
 }
 

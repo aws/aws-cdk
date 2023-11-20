@@ -23,6 +23,9 @@ export enum ActionPoint {
   ON_DEPLOYMENT_ROLLED_BACK = 'ON_DEPLOYMENT_ROLLED_BACK',
 }
 
+/**
+ * Defines the source type for event destinations.
+ */
 export enum SourceType {
   LAMBDA = 'lambda',
   SQS = 'sqs',
@@ -132,6 +135,9 @@ export class EventBridgeDestination implements IEventDestination {
   }
 }
 
+/**
+ * Properties for the Action construct
+ */
 export interface ActionProps {
   /**
    * The action points that will trigger the extension action.
@@ -290,25 +296,36 @@ export interface ExtensionAttributes {
 
   /**
    * The Amazon Resource Name (ARN) of the extension.
+   *
+   * @default - The extension ARN is generated.
    */
   readonly extensionArn?: string;
 
   /**
    * The actions of the extension.
+   *
+   * @default - None.
    */
   readonly actions?: Action[];
 
   /**
    * The name of the extension.
+   *
+   * @default - None.
    */
   readonly name?: string;
 
   /**
    * The description of the extension.
+   *
+   * @default - None.
    */
   readonly description?: string;
 }
 
+/**
+ * Options for the Extension construct.
+ */
 export interface ExtensionOptions {
   /**
    * The name of the extension.
@@ -341,6 +358,9 @@ export interface ExtensionOptions {
   readonly parameters?: Parameter[];
 }
 
+/**
+ * Properties for the Extension construct.
+ */
 export interface ExtensionProps extends ExtensionOptions {
   /**
    * The actions for the extension.
@@ -392,23 +412,23 @@ export class Extension extends Resource implements IExtension {
    *
    * @param scope The parent construct
    * @param id The name of the extension construct
-   * @param attr The attributes of the extension
+   * @param attrs The attributes of the extension
    */
-  public static fromExtensionAttributes(scope: Construct, id: string, attr: ExtensionAttributes): IExtension {
+  public static fromExtensionAttributes(scope: Construct, id: string, attrs: ExtensionAttributes): IExtension {
     const stack = Stack.of(scope);
-    const extensionArn = attr.extensionArn || stack.formatArn({
+    const extensionArn = attrs.extensionArn || stack.formatArn({
       service: 'appconfig',
       resource: 'extension',
-      resourceName: `${attr.extensionId}/${attr.extensionVersionNumber}`,
+      resourceName: `${attrs.extensionId}/${attrs.extensionVersionNumber}`,
     });
 
     class Import extends Resource implements IExtension {
-      public readonly extensionId = attr.extensionId;
-      public readonly extensionVersionNumber = attr.extensionVersionNumber;
+      public readonly extensionId = attrs.extensionId;
+      public readonly extensionVersionNumber = attrs.extensionVersionNumber;
       public readonly extensionArn = extensionArn;
-      public readonly name = attr.name;
-      public readonly actions = attr.actions;
-      public readonly description = attr.description;
+      public readonly name = attrs.name;
+      public readonly actions = attrs.actions;
+      public readonly description = attrs.description;
     }
 
     return new Import(scope, id, {
@@ -443,16 +463,22 @@ export class Extension extends Resource implements IExtension {
 
   /**
    * The Amazon Resource Name (ARN) of the extension.
+   *
+   * @attribute
    */
   public readonly extensionArn: string;
 
   /**
    * The ID of the extension.
+   *
+   * @attribute
    */
   public readonly extensionId: string;
 
   /**
    * The version number of the extension.
+   *
+   * @attribute
    */
   public readonly extensionVersionNumber: number;
 
@@ -558,16 +584,19 @@ export interface IExtension extends IResource {
 
   /**
    * The Amazon Resource Name (ARN) of the extension.
+   * @attribute
    */
   readonly extensionArn: string;
 
   /**
    * The ID of the extension.
+   * @attribute
    */
   readonly extensionId: string;
 
   /**
    * The version number of the extension.
+   * @attribute
    */
   readonly extensionVersionNumber: number;
 }

@@ -3,6 +3,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { KinesisEventSource, SqsDlq } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 /*
  * Stack verification steps:
@@ -22,7 +23,7 @@ class KinesisWithDLQTest extends Stack {
     super(scope, id);
 
     const fn = new lambda.Function(this, 'F', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
     });

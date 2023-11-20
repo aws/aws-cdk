@@ -4,18 +4,36 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.92"
-        }
-      },
       "cdk-amplify-app-asset-deployment": {
         "id": "cdk-amplify-app-asset-deployment",
         "path": "cdk-amplify-app-asset-deployment",
         "children": {
+          "SampleAsset": {
+            "id": "SampleAsset",
+            "path": "cdk-amplify-app-asset-deployment/SampleAsset",
+            "children": {
+              "Stage": {
+                "id": "Stage",
+                "path": "cdk-amplify-app-asset-deployment/SampleAsset/Stage",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "AssetBucket": {
+                "id": "AssetBucket",
+                "path": "cdk-amplify-app-asset-deployment/SampleAsset/AssetBucket",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+              "version": "0.0.0"
+            }
+          },
           "App": {
             "id": "App",
             "path": "cdk-amplify-app-asset-deployment/App",
@@ -24,6 +42,14 @@
                 "id": "Role",
                 "path": "cdk-amplify-app-asset-deployment/App/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "cdk-amplify-app-asset-deployment/App/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "cdk-amplify-app-asset-deployment/App/Role/Resource",
@@ -45,13 +71,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -61,7 +87,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Amplify::App",
                   "aws:cdk:cloudformation:props": {
-                    "name": "App",
                     "basicAuthConfig": {
                       "enableBasicAuth": false
                     },
@@ -70,29 +95,1368 @@
                         "AppRole1AF9B530",
                         "Arn"
                       ]
+                    },
+                    "name": "App",
+                    "platform": "WEB"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_amplify.CfnApp",
+                  "version": "0.0.0"
+                }
+              },
+              "main": {
+                "id": "main",
+                "path": "cdk-amplify-app-asset-deployment/App/main",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-amplify-app-asset-deployment/App/main/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Amplify::Branch",
+                      "aws:cdk:cloudformation:props": {
+                        "appId": {
+                          "Fn::GetAtt": [
+                            "AppF1B96344",
+                            "AppId"
+                          ]
+                        },
+                        "branchName": "main",
+                        "enableAutoBuild": true,
+                        "enablePullRequestPreview": true
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_amplify.CfnBranch",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DeploymentResource": {
+                    "id": "DeploymentResource",
+                    "path": "cdk-amplify-app-asset-deployment/App/main/DeploymentResource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "cdk-amplify-app-asset-deployment/App/main/DeploymentResource/Default",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CustomResource",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-amplify.CfnApp",
+                  "fqn": "@aws-cdk/aws-amplify-alpha.Branch",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-amplify.App",
+              "fqn": "@aws-cdk/aws-amplify-alpha.App",
+              "version": "0.0.0"
+            }
+          },
+          "com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider": {
+            "id": "com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider",
+            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider",
+            "children": {
+              "amplify-asset-deployment-on-event": {
+                "id": "amplify-asset-deployment-on-event",
+                "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "lambda.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "managedPolicyArns": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "amplify:ListJobs",
+                                        "amplify:StartDeployment",
+                                        "s3:GetObject",
+                                        "s3:GetSignedUrl"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "amplifyassetdeploymentoneventServiceRoleDefaultPolicy2DF60B3E",
+                                "roles": [
+                                  {
+                                    "Ref": "amplifyassetdeploymentoneventServiceRoleB6658CD9"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Code": {
+                    "id": "Code",
+                    "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event/Code",
+                    "children": {
+                      "Stage": {
+                        "id": "Stage",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event/Code/Stage",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssetBucket": {
+                        "id": "AssetBucket",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event/Code/AssetBucket",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-on-event/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                      "aws:cdk:cloudformation:props": {
+                        "code": {
+                          "s3Bucket": {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "s3Key": "f1cd1efb56dda0c089bb165da8d17672c95bee7815d051d25ee7d1934cc99640.zip"
+                        },
+                        "environment": {
+                          "variables": {
+                            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+                          }
+                        },
+                        "handler": "index.onEvent",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "amplifyassetdeploymentoneventServiceRoleB6658CD9",
+                            "Arn"
+                          ]
+                        },
+                        "runtime": "nodejs18.x"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "amplify-asset-deployment-is-complete": {
+                "id": "amplify-asset-deployment-is-complete",
+                "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "lambda.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "managedPolicyArns": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "amplify:GetJob*",
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "amplifyassetdeploymentiscompleteServiceRoleDefaultPolicyC0D08321",
+                                "roles": [
+                                  {
+                                    "Ref": "amplifyassetdeploymentiscompleteServiceRole007B2AB6"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Code": {
+                    "id": "Code",
+                    "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete/Code",
+                    "children": {
+                      "Stage": {
+                        "id": "Stage",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete/Code/Stage",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssetBucket": {
+                        "id": "AssetBucket",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete/Code/AssetBucket",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-is-complete/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                      "aws:cdk:cloudformation:props": {
+                        "code": {
+                          "s3Bucket": {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "s3Key": "f1cd1efb56dda0c089bb165da8d17672c95bee7815d051d25ee7d1934cc99640.zip"
+                        },
+                        "environment": {
+                          "variables": {
+                            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+                          }
+                        },
+                        "handler": "index.isComplete",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "amplifyassetdeploymentiscompleteServiceRole007B2AB6",
+                            "Arn"
+                          ]
+                        },
+                        "runtime": "nodejs18.x"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "amplify-asset-deployment-handler-provider": {
+                "id": "amplify-asset-deployment-handler-provider",
+                "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider",
+                "children": {
+                  "framework-onEvent": {
+                    "id": "framework-onEvent",
+                    "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent",
+                    "children": {
+                      "ServiceRole": {
+                        "id": "ServiceRole",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent/ServiceRole",
+                        "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent/ServiceRole/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "Service": "lambda.amazonaws.com"
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "managedPolicyArns": [
+                                  {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "DefaultPolicy": {
+                            "id": "DefaultPolicy",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent/ServiceRole/DefaultPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "lambda:InvokeFunction",
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "amplifyassetdeploymentiscomplete236D9453",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
+                                                "amplifyassetdeploymentonevent974704DA",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "amplifyassetdeploymentiscomplete236D9453",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "amplifyassetdeploymentonevent974704DA",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        },
+                                        {
+                                          "Action": "states:StartExecution",
+                                          "Effect": "Allow",
+                                          "Resource": {
+                                            "Ref": "amplifyassetdeploymenthandlerproviderwaiterstatemachineB3C2FCBE"
+                                          }
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "amplifyassetdeploymenthandlerproviderframeworkonEventServiceRoleDefaultPolicy1E166D14",
+                                    "roles": [
+                                      {
+                                        "Ref": "amplifyassetdeploymenthandlerproviderframeworkonEventServiceRole8F19D99F"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Code": {
+                        "id": "Code",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent/Code",
+                        "children": {
+                          "Stage": {
+                            "id": "Stage",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent/Code/Stage",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.AssetStaging",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "AssetBucket": {
+                            "id": "AssetBucket",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent/Code/AssetBucket",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onEvent/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                          "aws:cdk:cloudformation:props": {
+                            "code": {
+                              "s3Bucket": {
+                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                              },
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+                            },
+                            "description": "AWS CDK resource provider framework - onEvent (cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider)",
+                            "environment": {
+                              "variables": {
+                                "USER_ON_EVENT_FUNCTION_ARN": {
+                                  "Fn::GetAtt": [
+                                    "amplifyassetdeploymentonevent974704DA",
+                                    "Arn"
+                                  ]
+                                },
+                                "USER_IS_COMPLETE_FUNCTION_ARN": {
+                                  "Fn::GetAtt": [
+                                    "amplifyassetdeploymentiscomplete236D9453",
+                                    "Arn"
+                                  ]
+                                },
+                                "WAITER_STATE_MACHINE_ARN": {
+                                  "Ref": "amplifyassetdeploymenthandlerproviderwaiterstatemachineB3C2FCBE"
+                                }
+                              }
+                            },
+                            "handler": "framework.onEvent",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "amplifyassetdeploymenthandlerproviderframeworkonEventServiceRole8F19D99F",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
+                            "timeout": 900
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.Function",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "framework-isComplete": {
+                    "id": "framework-isComplete",
+                    "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete",
+                    "children": {
+                      "ServiceRole": {
+                        "id": "ServiceRole",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete/ServiceRole",
+                        "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete/ServiceRole/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "Service": "lambda.amazonaws.com"
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "managedPolicyArns": [
+                                  {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "DefaultPolicy": {
+                            "id": "DefaultPolicy",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete/ServiceRole/DefaultPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "lambda:InvokeFunction",
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "amplifyassetdeploymentiscomplete236D9453",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
+                                                "amplifyassetdeploymentonevent974704DA",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "amplifyassetdeploymentiscomplete236D9453",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "amplifyassetdeploymentonevent974704DA",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "amplifyassetdeploymenthandlerproviderframeworkisCompleteServiceRoleDefaultPolicy59E7E0EB",
+                                    "roles": [
+                                      {
+                                        "Ref": "amplifyassetdeploymenthandlerproviderframeworkisCompleteServiceRoleDDB7490E"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Code": {
+                        "id": "Code",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete/Code",
+                        "children": {
+                          "Stage": {
+                            "id": "Stage",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete/Code/Stage",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.AssetStaging",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "AssetBucket": {
+                            "id": "AssetBucket",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete/Code/AssetBucket",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-isComplete/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                          "aws:cdk:cloudformation:props": {
+                            "code": {
+                              "s3Bucket": {
+                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                              },
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+                            },
+                            "description": "AWS CDK resource provider framework - isComplete (cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider)",
+                            "environment": {
+                              "variables": {
+                                "USER_ON_EVENT_FUNCTION_ARN": {
+                                  "Fn::GetAtt": [
+                                    "amplifyassetdeploymentonevent974704DA",
+                                    "Arn"
+                                  ]
+                                },
+                                "USER_IS_COMPLETE_FUNCTION_ARN": {
+                                  "Fn::GetAtt": [
+                                    "amplifyassetdeploymentiscomplete236D9453",
+                                    "Arn"
+                                  ]
+                                }
+                              }
+                            },
+                            "handler": "framework.isComplete",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "amplifyassetdeploymenthandlerproviderframeworkisCompleteServiceRoleDDB7490E",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
+                            "timeout": 900
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.Function",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "framework-onTimeout": {
+                    "id": "framework-onTimeout",
+                    "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout",
+                    "children": {
+                      "ServiceRole": {
+                        "id": "ServiceRole",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout/ServiceRole",
+                        "children": {
+                          "ImportServiceRole": {
+                            "id": "ImportServiceRole",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout/ServiceRole/ImportServiceRole",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout/ServiceRole/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "Service": "lambda.amazonaws.com"
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "managedPolicyArns": [
+                                  {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                      ]
+                                    ]
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "DefaultPolicy": {
+                            "id": "DefaultPolicy",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout/ServiceRole/DefaultPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "lambda:InvokeFunction",
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "amplifyassetdeploymentiscomplete236D9453",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
+                                                "amplifyassetdeploymentonevent974704DA",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "amplifyassetdeploymentiscomplete236D9453",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "amplifyassetdeploymentonevent974704DA",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "amplifyassetdeploymenthandlerproviderframeworkonTimeoutServiceRoleDefaultPolicy9257A1F3",
+                                    "roles": [
+                                      {
+                                        "Ref": "amplifyassetdeploymenthandlerproviderframeworkonTimeoutServiceRoleE3CF0B81"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Code": {
+                        "id": "Code",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout/Code",
+                        "children": {
+                          "Stage": {
+                            "id": "Stage",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout/Code/Stage",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.AssetStaging",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "AssetBucket": {
+                            "id": "AssetBucket",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout/Code/AssetBucket",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/framework-onTimeout/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                          "aws:cdk:cloudformation:props": {
+                            "code": {
+                              "s3Bucket": {
+                                "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                              },
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+                            },
+                            "description": "AWS CDK resource provider framework - onTimeout (cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider)",
+                            "environment": {
+                              "variables": {
+                                "USER_ON_EVENT_FUNCTION_ARN": {
+                                  "Fn::GetAtt": [
+                                    "amplifyassetdeploymentonevent974704DA",
+                                    "Arn"
+                                  ]
+                                },
+                                "USER_IS_COMPLETE_FUNCTION_ARN": {
+                                  "Fn::GetAtt": [
+                                    "amplifyassetdeploymentiscomplete236D9453",
+                                    "Arn"
+                                  ]
+                                }
+                              }
+                            },
+                            "handler": "framework.onTimeout",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "amplifyassetdeploymenthandlerproviderframeworkonTimeoutServiceRoleE3CF0B81",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
+                            "timeout": 900
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.Function",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "waiter-state-machine": {
+                    "id": "waiter-state-machine",
+                    "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/waiter-state-machine",
+                    "children": {
+                      "Role": {
+                        "id": "Role",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/waiter-state-machine/Role",
+                        "children": {
+                          "ImportRole": {
+                            "id": "ImportRole",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/waiter-state-machine/Role/ImportRole",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/waiter-state-machine/Role/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                              "aws:cdk:cloudformation:props": {
+                                "assumeRolePolicyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "sts:AssumeRole",
+                                      "Effect": "Allow",
+                                      "Principal": {
+                                        "Service": "states.amazonaws.com"
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "DefaultPolicy": {
+                            "id": "DefaultPolicy",
+                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/waiter-state-machine/Role/DefaultPolicy",
+                            "children": {
+                              "Resource": {
+                                "id": "Resource",
+                                "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/waiter-state-machine/Role/DefaultPolicy/Resource",
+                                "attributes": {
+                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                                  "aws:cdk:cloudformation:props": {
+                                    "policyDocument": {
+                                      "Statement": [
+                                        {
+                                          "Action": "lambda:InvokeFunction",
+                                          "Effect": "Allow",
+                                          "Resource": [
+                                            {
+                                              "Fn::GetAtt": [
+                                                "amplifyassetdeploymenthandlerproviderframeworkisComplete2A696873",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::GetAtt": [
+                                                "amplifyassetdeploymenthandlerproviderframeworkonTimeoutF14D3B70",
+                                                "Arn"
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "amplifyassetdeploymenthandlerproviderframeworkisComplete2A696873",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            },
+                                            {
+                                              "Fn::Join": [
+                                                "",
+                                                [
+                                                  {
+                                                    "Fn::GetAtt": [
+                                                      "amplifyassetdeploymenthandlerproviderframeworkonTimeoutF14D3B70",
+                                                      "Arn"
+                                                    ]
+                                                  },
+                                                  ":*"
+                                                ]
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ],
+                                      "Version": "2012-10-17"
+                                    },
+                                    "policyName": "amplifyassetdeploymenthandlerproviderwaiterstatemachineRoleDefaultPolicyAE36E156",
+                                    "roles": [
+                                      {
+                                        "Ref": "amplifyassetdeploymenthandlerproviderwaiterstatemachineRole014FC0BB"
+                                      }
+                                    ]
+                                  }
+                                },
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/waiter-state-machine/Resource",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.custom_resources.Provider",
+                  "version": "0.0.0"
+                }
+              },
+              "cdkamplifyappassetdeploymentcomamazonawscdkcustomresourcesamplifyassetdeploymentprovideramplifyassetdeploymenthandlerproviderframeworkonEventC3C43E44Arn": {
+                "id": "cdkamplifyappassetdeploymentcomamazonawscdkcustomresourcesamplifyassetdeploymentprovideramplifyassetdeploymenthandlerproviderframeworkonEventC3C43E44Arn",
+                "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/cdkamplifyappassetdeploymentcomamazonawscdkcustomresourcesamplifyassetdeploymentprovideramplifyassetdeploymenthandlerproviderframeworkonEventC3C43E44Arn",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.NestedStack",
+              "version": "0.0.0"
+            }
+          },
+          "com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider.NestedStack": {
+            "id": "com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider.NestedStack",
+            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider.NestedStack",
+            "children": {
+              "com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider.NestedStackResource": {
+                "id": "com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider.NestedStackResource",
+                "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider.NestedStack/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider.NestedStackResource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
+                  "aws:cdk:cloudformation:props": {
+                    "templateUrl": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "https://s3.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".",
+                          {
+                            "Ref": "AWS::URLSuffix"
+                          },
+                          "/",
+                          {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "/b730c3429273b2f5cbaf4ba519342e429352ade6fc03b36df856ebce662c47a9.json"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnStack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-amplify-app-asset-deployment/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-amplify-app-asset-deployment/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
+        }
+      },
+      "cdk-amplify-app-integ-test": {
+        "id": "cdk-amplify-app-integ-test",
+        "path": "cdk-amplify-app-integ-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-amplify-app-integ-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-amplify-app-integ-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-amplify-app-integ-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-amplify-app-integ-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-amplify-app-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

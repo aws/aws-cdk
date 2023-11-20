@@ -1,8 +1,9 @@
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function } from 'aws-cdk-lib/aws-lambda';
 import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import { Deployment, LambdaRestApi, Stage } from 'aws-cdk-lib/aws-apigateway';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class LateBoundDeploymentStageStack extends Stack {
   constructor(scope: Construct) {
@@ -10,7 +11,7 @@ class LateBoundDeploymentStageStack extends Stack {
 
     const fn = new Function(this, 'myfn', {
       code: Code.fromInline('foo'),
-      runtime: Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
     });
 

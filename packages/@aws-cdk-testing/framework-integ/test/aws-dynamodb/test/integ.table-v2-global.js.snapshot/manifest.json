@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/us-east-1",
       "properties": {
         "templateFile": "aws-cdk-global-table.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/68a3bb36a940031cf3b515e0cad696adef98469abd9e58c2eb45fb68296fcd2e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/655325b6fb8ec8800b23d95ba84700a27856d6a10c2a0557c2b17da00bf4f7b1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -49,14 +50,14 @@
           {
             "type": "aws:cdk:hasPhysicalName",
             "data": {
-              "Ref": "Resource"
+              "Ref": "GlobalTable89F068B2"
             }
           }
         ],
-        "/aws-cdk-global-table/Resource": [
+        "/aws-cdk-global-table/GlobalTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Resource"
+            "data": "GlobalTable89F068B2"
           }
         ],
         "/aws-cdk-global-table/BootstrapVersion": [
@@ -87,6 +88,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "awscdkglobaltableintegDefaultTestDeployAssertA2A9E81F.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

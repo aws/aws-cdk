@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7c532849019cd4c87a6c63f8cdc361543620536e25f21328c2034ff6d5a2826d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94eb787de5b73b68d1daa3b92361b24a2e5dae708997ec2f1bea10f616a099c2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -54,7 +54,7 @@
         "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaAliasPCECurrentVersion072335D34a3f83f8218b6b94346920ff28a940e4"
+            "data": "MyLambdaAliasPCECurrentVersion072335D3abd7022526e1eae404a6f2a50ba64569"
           }
         ],
         "/aws-cdk-lambda-pce-1/Alias/Resource": [
@@ -90,7 +90,7 @@
         "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaVersionPCECurrentVersion27FC39322c322873dbc351359405806a77875357"
+            "data": "MyLambdaVersionPCECurrentVersion27FC3932e3372865403c1e027068d9691afe3f3f"
           }
         ],
         "/aws-cdk-lambda-pce-1/Alias2/Resource": [
@@ -117,19 +117,19 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "MyLambdaAliasPCECurrentVersion072335D3224448d87cb592b450e76b3259c1d874": [
+        "MyLambdaAliasPCECurrentVersion072335D34a3f83f8218b6b94346920ff28a940e4": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaAliasPCECurrentVersion072335D3224448d87cb592b450e76b3259c1d874",
+            "data": "MyLambdaAliasPCECurrentVersion072335D34a3f83f8218b6b94346920ff28a940e4",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "MyLambdaVersionPCECurrentVersion27FC3932d779c9115684f8f405cbd7282b1508f5": [
+        "MyLambdaVersionPCECurrentVersion27FC39322c322873dbc351359405806a77875357": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaVersionPCECurrentVersion27FC3932d779c9115684f8f405cbd7282b1508f5",
+            "data": "MyLambdaVersionPCECurrentVersion27FC39322c322873dbc351359405806a77875357",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

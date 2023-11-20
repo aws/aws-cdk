@@ -52,7 +52,7 @@ jobs:
     - name: Create report for PRs
       uses: peter-evans/create-issue-from-file@v4
       with:
-        title: Monthly issue metrics report
+        title: Monthly PR metrics report
         token: ${{ secrets.GITHUB_TOKEN }}
         content-filepath: ./issue_metrics.md
         assignees: evgenyka

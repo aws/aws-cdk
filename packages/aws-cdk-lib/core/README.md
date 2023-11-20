@@ -1174,6 +1174,13 @@ const stack = new Stack(app, 'StackName', {
 });
 ```
 
+You can also set termination protection with the setter after you've instantiated the stack.
+
+```ts
+const stack = new Stack(app, 'StackName', {});
+stack.terminationProtection = true;
+```
+
 By default, termination protection is disabled.
 
 ### Description

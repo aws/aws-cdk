@@ -15,12 +15,11 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     steps:
-
       - name: Check Out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "*"
         env:
@@ -31,12 +30,18 @@ jobs:
       - name: Install ncu tool
         run: npm -g install lerna npm-check-updates
       - name: Run "ncu" for service spec packages
-        run: lerna exec --parallel ncu -- --upgrade --filter='@aws-cdk/aws-service-spec,@aws-cdk/service-spec-types' --target=latest
+        run: lerna exec --parallel ncu -- --upgrade --filter='@aws-cdk/aws-service-spec,@aws-cdk/service-spec-importers,@aws-cdk/service-spec-types' --target=latest
 
       # This will ensure the current lockfile is up-to-date with the dependency specifications
       - name: Install latest version & update lockfile
-        run: |-
-          yarn upgrade @aws-cdk/aws-service-spec @aws-cdk/service-spec-types
+        run: yarn upgrade @aws-cdk/aws-service-spec @aws-cdk/service-spec-importers @aws-cdk/service-spec-types
+
+      # Build @aws-cdk/spec2cdk and run L1 gen script to generate base files for new modules
+      - name: Build @aws-cdk/spec2cdk
+        run: lerna run build --stream --no-progress --skip-nx-cache --scope @aws-cdk/spec2cdk
+      - name: Generate L1s
+        working-directory: packages/aws-cdk-lib
+        run: yarn gen
 
       # Next, create and upload the changes as a patch file. This will later be downloaded to create a pull request
       # Creating a pull request requires write permissions and it's best to keep write privileges isolated.
@@ -59,7 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download patch
         uses: actions/download-artifact@v3
@@ -80,9 +85,9 @@ jobs:
             feat: update AWS Service Spec
             AWS Service Spec packages to latest versions.
           # Pull Request details
-          title: 'feat: update AWS Service Spec'
+          title: "feat: update AWS Service Spec"
           body: |-
-             AWS Service Spec packages to latest versions.
+            AWS Service Spec packages to latest versions.
           labels: contribution/core,dependencies,auto-approve,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test
           team-reviewers: aws-cdk-team
           # Github prevents further Github actions to be run if the default Github token is used.

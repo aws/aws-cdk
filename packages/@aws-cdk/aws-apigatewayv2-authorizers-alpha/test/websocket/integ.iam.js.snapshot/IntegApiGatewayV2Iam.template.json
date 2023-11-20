@@ -55,7 +55,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "authfunctionServiceRoleFCB72198"
@@ -100,7 +100,7 @@
        {
         "Ref": "WebSocketApi34BCF99B"
        },
-       "/*/*$connect"
+       "/*$connect"
       ]
      ]
     }

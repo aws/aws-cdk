@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { S3 } from 'aws-sdk';
+import { S3 } from '@aws-sdk/client-s3';
 
 const s3 = new S3();
 
@@ -27,5 +27,5 @@ async function putObjects(bucketName: string, n = 5) {
       Bucket: bucketName,
       Key: `Key${key}`,
       Body: `Body${key}`,
-    }).promise()));
+    })));
 }

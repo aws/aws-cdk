@@ -53,7 +53,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MyTriggerFunctionServiceRole1BB78C29"
@@ -69,7 +69,7 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MyTriggerFunctionCurrentVersion61957CE160cd5b4c06c4d00191dc10a647ea0777"
+     "Ref": "MyTriggerFunctionCurrentVersion61957CE12b717c78220b5359f1feeee4ac371176"
     },
     "InvocationType": "RequestResponse",
     "Timeout": "120000",
@@ -81,7 +81,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MyTriggerFunctionCurrentVersion61957CE160cd5b4c06c4d00191dc10a647ea0777": {
+  "MyTriggerFunctionCurrentVersion61957CE12b717c78220b5359f1feeee4ac371176": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -238,7 +238,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "237e4a416773a5765262a8b9c70210bd35dfd48ae5a364b19e35f260026b5139.zip"
+     "S3Key": "0289625ce635f0512d37a96c063b537131526fb13471d401c897885e11cf1ac7.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -307,14 +307,14 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x",
+    "Runtime": "nodejs18.x",
     "Timeout": 900
    },
    "DependsOn": [
     "MyLambdaFunctionServiceRole313A4D46"
    ]
   },
-  "MyLambdaFunctionCurrentVersion4FAB80EC75f2df347bcc21ea05f818cb68778d9f": {
+  "MyLambdaFunctionCurrentVersion4FAB80EC179f87deb5063d4ec46ecac6b7f0c99e": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -332,7 +332,7 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC75f2df347bcc21ea05f818cb68778d9f"
+     "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC179f87deb5063d4ec46ecac6b7f0c99e"
     },
     "InvocationType": "Event",
     "Timeout": "60000",
@@ -413,7 +413,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "004b12857696fed3c10ad54c8e3cabd07cdf653ec469cbadab6c64ae6c9ce690.zip"
+     "S3Key": "e065f6e8b88b1e7afda877f6ad3d9db8223795efe79196dee3a2a097c45169c8.zip"
     },
     "Environment": {
      "Variables": {
@@ -429,7 +429,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x",
+    "Runtime": "nodejs18.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -437,7 +437,7 @@
     "MyAssertionLambdaFunctionServiceRole36146F3B"
    ]
   },
-  "MyAssertionLambdaFunctionCurrentVersionF4FA4C80f14c7075b9f4d7c63066e881d45e211c": {
+  "MyAssertionLambdaFunctionCurrentVersionF4FA4C80523df5fd8667e8600ae9661e9fe779a6": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -455,7 +455,7 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MyAssertionLambdaFunctionCurrentVersionF4FA4C80f14c7075b9f4d7c63066e881d45e211c"
+     "Ref": "MyAssertionLambdaFunctionCurrentVersionF4FA4C80523df5fd8667e8600ae9661e9fe779a6"
     },
     "InvocationType": "RequestResponse",
     "Timeout": "60000",
@@ -511,7 +511,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MySecondFunctionServiceRole5B930841"
@@ -527,7 +527,7 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MySecondFunctionCurrentVersion7D497B5D173a4bb1f758991022ea97d651403362"
+     "Ref": "MySecondFunctionCurrentVersion7D497B5D054029861f424b2f88575859bb7ebb23"
     },
     "InvocationType": "RequestResponse",
     "Timeout": "120000",
@@ -536,7 +536,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MySecondFunctionCurrentVersion7D497B5D173a4bb1f758991022ea97d651403362": {
+  "MySecondFunctionCurrentVersion7D497B5D054029861f424b2f88575859bb7ebb23": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -554,7 +554,7 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC75f2df347bcc21ea05f818cb68778d9f"
+     "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC179f87deb5063d4ec46ecac6b7f0c99e"
     },
     "InvocationType": "RequestResponse",
     "Timeout": "120000",

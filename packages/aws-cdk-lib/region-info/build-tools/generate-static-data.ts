@@ -2,7 +2,6 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import {
   APPMESH_ECR_ACCOUNTS,
-  AWS_CDK_METADATA,
   CLOUDWATCH_LAMBDA_INSIGHTS_ARNS,
   DLC_REPOSITORY_ACCOUNTS,
   ELBV2_ACCOUNTS,
@@ -12,7 +11,9 @@ import {
   EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS,
   ADOT_LAMBDA_LAYER_ARNS,
   PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS,
+  APPCONFIG_LAMBDA_LAYER_ARNS,
 } from './fact-tables';
+import { AWS_CDK_METADATA } from './metadata';
 import {
   AWS_REGIONS,
   AWS_SERVICES,
@@ -29,6 +30,7 @@ export async function main(): Promise<void> {
   checkRegions(FIREHOSE_CIDR_BLOCKS);
   checkRegions(ROUTE_53_BUCKET_WEBSITE_ZONE_IDS);
   checkRegionsSubMap(CLOUDWATCH_LAMBDA_INSIGHTS_ARNS);
+  checkRegionsSubMap(APPCONFIG_LAMBDA_LAYER_ARNS);
 
   const lines = [
     "import { Fact, FactName } from './fact';",
@@ -98,6 +100,12 @@ export async function main(): Promise<void> {
       for (const arch in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version]) {
         registerFact(region, ['cloudwatchLambdaInsightsVersion', version, arch], CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version][arch][region]);
 
+      }
+    }
+
+    for (const version in APPCONFIG_LAMBDA_LAYER_ARNS) {
+      for (const arch in APPCONFIG_LAMBDA_LAYER_ARNS[version]) {
+        registerFact(region, ['appConfigLambdaLayerVersion', version, arch], APPCONFIG_LAMBDA_LAYER_ARNS[version][arch][region]);
       }
     }
 

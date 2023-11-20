@@ -5,12 +5,31 @@ import { AWS_REGIONS } from './aws-entities';
  */
 export class Fact {
   /**
-   * @returns the list of names of AWS regions for which there is at least one registered fact. This
-   *          may not be an exhaustive list of all available AWS regions.
+   * @returns the list of names of AWS Regions for which there is at least one registered fact. This
+   *          includes Regions defined in AWS_REGIONS plus custom defined regions.
    */
   public static get regions(): string[] {
-    // Return by copy to ensure no modifications can be made to the undelying constant.
-    return Array.from(AWS_REGIONS);
+    // Return the union of regions in AWS_REGIONS and custom defined regions.
+    return [...new Set([...AWS_REGIONS, ...Object.keys(this.database)])];
+  }
+
+  /**
+   * Returns the list of names of registered facts.
+   *
+   * All facts will be present in at least one region.
+   */
+  public static get names(): string[] {
+    return [...new Set(Object.values(this.database).flatMap(regionFacts => Object.keys(regionFacts)))];
+  }
+
+  /**
+   * Return all pairs of (region, factName) that are defined
+   */
+  public static definedFacts(): Array<string[]> {
+    return Object.entries(this.database)
+      .flatMap(([regionName, regionFacts]) =>
+        Object.keys(regionFacts).map((factName) =>
+          [regionName, factName] satisfies [string, string]));
   }
 
   /**
@@ -37,7 +56,7 @@ export class Fact {
     const foundFact = this.find(region, name);
 
     if (!foundFact) {
-      throw new Error(`No fact ${name} could be found for region: ${region} and name: ${name}`);
+      throw new Error(`No fact ${name} could be found for region: ${region} and name: ${name}.`);
     }
 
     return foundFact;
@@ -179,6 +198,16 @@ export class FactName {
     // default to x86_64 for backwards compatibility
     const suffix = version.split('.').join('_') + `_${arch ?? 'x86_64'}`;
     return `cloudwatch-lambda-insights-version:${suffix}`;
+  }
+
+  /**
+   * The ARN of AppConfig Lambda Layer for a given version (e.g. 2.0.181)
+   * @param version The layer version.
+   * @param arch The architecture (optional), defaults to x86_64.
+   */
+  public static appConfigLambdaLayerVersion(version: string, arch?: string) {
+    const suffix = version.split('.').join('_') + `_${arch ?? 'x86_64'}`;
+    return `appconfig-lambda-layer:${suffix}`;
   }
 
   /**

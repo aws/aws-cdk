@@ -15,6 +15,7 @@ import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
+import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, validateSourceOptions } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
 import { data, debug, error, highlight, print, success, warning, withCorkedLogging } from './logging';
@@ -478,7 +479,6 @@ export class CdkToolkit {
   }
 
   public async import(options: ImportOptions) {
-    print(chalk.grey("The 'cdk import' feature is currently in preview."));
     const stacks = await this.selectStacksForDeploy(options.selector, true, true);
 
     if (stacks.stackCount > 1) {
@@ -493,9 +493,7 @@ export class CdkToolkit {
 
     highlight(stack.displayName);
 
-    const resourceImporter = new ResourceImporter(stack, this.props.deployments, {
-      toolkitStackName: options.toolkitStackName,
-    });
+    const resourceImporter = new ResourceImporter(stack, this.props.deployments);
     const { additions, hasNonAdditions } = await resourceImporter.discoverImportableResources(options.force);
     if (additions.length === 0) {
       warning('%s: no new resources compared to the currently deployed stack, skipping import.', chalk.bold(stack.displayName));
@@ -698,6 +696,28 @@ export class CdkToolkit {
         throw e;
       }
     }));
+  }
+
+  /**
+   * Migrates a CloudFormation stack/template to a CDK app
+   * @param options Options for CDK app creation
+   */
+  public async migrate(options: MigrateOptions): Promise<void> {
+    warning('This is an experimental feature and development on it is still in progress. We make no guarantees about the outcome or stability of the functionality.');
+    const language = options.language?.toLowerCase() ?? 'typescript';
+
+    try {
+      validateSourceOptions(options.fromPath, options.fromStack);
+      const template = readFromPath(options.fromPath) ||
+        await readFromStack(options.stackName, this.props.sdkProvider, setEnvironment(options.account, options.region));
+      const stack = generateStack(template!, options.stackName, language);
+      success(' ⏳  Generating CDK app for %s...', chalk.blue(options.stackName));
+      await generateCdkApp(options.stackName, stack!, language, options.outputPath, options.compress);
+    } catch (e) {
+      error(' ❌  Migrate failed for `%s`: %s', chalk.blue(options.stackName), (e as Error).message);
+      throw e;
+    }
+
   }
 
   private async selectStacksForList(patterns: string[]) {
@@ -1172,6 +1192,63 @@ export interface DestroyOptions {
    * @default false
    */
   readonly ci?: boolean;
+}
+
+export interface MigrateOptions {
+  /**
+   * The name assigned to the generated stack. This is also used to get
+   * the stack from the user's account if `--from-stack` is used.
+   */
+  readonly stackName: string;
+
+  /**
+   * The target language for the generated the CDK app.
+   *
+   * @default typescript
+   */
+  readonly language?: string;
+
+  /**
+   * The local path of the template used to generate the CDK app.
+   *
+   * @default - Local path is not used for the template source.
+   */
+  readonly fromPath?: string;
+
+  /**
+   * Whether to get the template from an existing CloudFormation stack.
+   *
+   * @default false
+   */
+  readonly fromStack?: boolean;
+
+  /**
+   * The output path at which to create the CDK app.
+   *
+   * @default - The current directory
+   */
+  readonly outputPath?: string;
+
+  /**
+   * The account from which to retrieve the template of the CloudFormation stack.
+   *
+   * @default - Uses the account for the credentials in use by the user.
+   */
+  readonly account?: string;
+
+  /**
+   * The region from which to retrieve the template of the CloudFormation stack.
+   *
+   * @default - Uses the default region for the credentials in use by the user.
+   */
+  readonly region?: string;
+
+  /**
+   * Whether to zip the generated cdk app folder.
+   *
+   * @default false
+   */
+  readonly compress?: boolean;
 }
 
 /**

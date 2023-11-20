@@ -1,5 +1,6 @@
 # This example comes from the AWS Synthetics service console "API canary" blueprint
 
+import os
 import json
 import http.client
 import urllib.parse
@@ -23,7 +24,7 @@ def verify_request(method, url, post_data=None, headers={}):
     else:
         conn = http.client.HTTPConnection(parsed_url.hostname, parsed_url.port)
 
-    conn.request(method, url, str(post_data), headers)
+    conn.request(method, url, post_data, headers)
     response = conn.getresponse()
     logger.info("Status Code: %s " % response.status)
     logger.info("Response Headers: %s" % json.dumps(response.headers.as_string()))
@@ -46,7 +47,7 @@ def verify_request(method, url, post_data=None, headers={}):
 
 def main():
 
-    url = 'https://example.com/'
+    url = os.environ['URL']
     method = 'GET'
     postData = ""
     headers = {}

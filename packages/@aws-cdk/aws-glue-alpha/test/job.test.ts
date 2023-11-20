@@ -632,14 +632,14 @@ describe('Job', () => {
       });
       describe('with bucket and path provided', () => {
         const sparkUIBucketName = 'sparkbucketname';
-        const prefix = '/foob/bart';
-        const badPrefix = 'foob/bart/';
+        const prefix = 'foob/bart/';
+        const badPrefix = '/foob/bart';
         let sparkUIBucket: s3.IBucket;
 
         const expectedErrors = [
           `Invalid prefix format (value: ${badPrefix})`,
-          'Prefix must begin with \'/\'',
-          'Prefix must not end with \'/\'',
+          'Prefix must not begin with \'/\'',
+          'Prefix must end with \'/\'',
         ].join(EOL);
         it('fails if path is mis-formatted', () => {
           expect(() => new glue.Job(stack, 'BadPrefixJob', {
@@ -699,7 +699,7 @@ describe('Job', () => {
                         [
                           'arn:',
                           { Ref: 'AWS::Partition' },
-                          `:s3:::sparkbucketname${prefix}/*`,
+                          `:s3:::sparkbucketname/${prefix}*`,
                         ],
                       ],
                     },
@@ -718,7 +718,7 @@ describe('Job', () => {
           Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
             DefaultArguments: {
               '--enable-spark-ui': 'true',
-              '--spark-event-logs-path': `s3://${sparkUIBucketName}${prefix}`,
+              '--spark-event-logs-path': `s3://${sparkUIBucketName}/${prefix}`,
             },
           });
         });

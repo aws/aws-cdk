@@ -1,5 +1,6 @@
 /* eslint-disable import/order */
 import { Command, Context, Settings } from '../lib/settings';
+import { Tag } from '../lib/cdk-toolkit';
 
 test('can delete values from Context object', () => {
   // GIVEN
@@ -79,6 +80,26 @@ test('can parse string context from command line arguments with equals sign in v
   // THEN
   expect(settings1.get(['context']).foo).toEqual( '=bar=');
   expect(settings2.get(['context']).foo).toEqual( 'bar=');
+});
+
+test('can parse tag values from command line arguments', () => {
+  // GIVEN
+  const settings1 = Settings.fromCommandLineArguments({ tags: ['foo=bar'], _: [Command.DEPLOY] });
+  const settings2 = Settings.fromCommandLineArguments({ tags: ['foo='], _: [Command.DEPLOY] });
+
+  // THEN
+  expect(settings1.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('bar');
+  expect(settings2.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('');
+});
+
+test('can parse tag values from command line arguments with equals sign in value', () => {
+  // GIVEN
+  const settings1 = Settings.fromCommandLineArguments({ tags: ['foo==bar='], _: [Command.DEPLOY] });
+  const settings2 = Settings.fromCommandLineArguments({ tags: ['foo=bar='], _: [Command.DEPLOY] });
+
+  // THEN
+  expect(settings1.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('=bar=');
+  expect(settings2.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('bar=');
 });
 
 test('bundling stacks defaults to an empty list', () => {

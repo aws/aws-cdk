@@ -1,71 +1,143 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable @typescript-eslint/no-var-requires */
 import * as fs from 'fs';
 import * as path from 'path';
-import { initializeProject, availableInitTemplates } from '../../lib/init';
-import { warning } from '../logging';
-import * as nocti from '../vendor/noctilucent';
+import { Environment, UNKNOWN_ACCOUNT, UNKNOWN_REGION } from '@aws-cdk/cx-api';
+import * as cdk_from_cfn from 'cdk-from-cfn';
+import { cliInit } from '../../lib/init';
+import { Mode, SdkProvider } from '../api';
+import { zipDirectory } from '../util/archive';
+
+const camelCase = require('camelcase');
+const decamelize = require('decamelize');
 
 /** The list of languages supported by the built-in noctilucent binary. */
-export const MIGRATE_SUPPORTED_LANGUAGES: readonly string[] = nocti.supported_languages();
+export const MIGRATE_SUPPORTED_LANGUAGES: readonly string[] = cdk_from_cfn.supported_languages();
 
-export async function cliMigrate(
-  inputpath: string = process.cwd() + '/../template.txt',
-  language = MIGRATE_SUPPORTED_LANGUAGES[0],
-  generateOnly = false,
-  outputpath = process.cwd(),
-) {
-  warning('This is an experimental feature. We make no guarantees about the outcome or stability of the functionality.');
-  const type = 'default'; // "default" is the default type (and maps to 'app')
-  const template = (await availableInitTemplates()).find(t => t.hasName(type!));
-  if (!template) {
-    throw new Error(`couldn't find template for ${type} app type, this should never happen`);
+/**
+ * Generates a CDK app from a yaml or json template.
+ *
+ * @param stackName The name to assign to the stack in the generated app
+ * @param stack The yaml or json template for the stack
+ * @param language The language to generate the CDK app in
+ * @param outputPath The path at which to generate the CDK app
+ */
+export async function generateCdkApp(stackName: string, stack: string, language: string, outputPath?: string, compress?: boolean) {
+  const resolvedOutputPath = path.join(outputPath ?? process.cwd(), stackName);
+  const formattedStackName = decamelize(stackName);
+
+  try {
+    fs.rmSync(resolvedOutputPath, { recursive: true, force: true });
+    fs.mkdirSync(resolvedOutputPath, { recursive: true });
+    const generateOnly = compress;
+    await cliInit({
+      type: 'app',
+      language,
+      canUseNetwork: true,
+      generateOnly,
+      workDir: resolvedOutputPath,
+      stackName,
+    });
+
+    let stackFileName: string;
+    switch (language) {
+      case 'typescript':
+        stackFileName = `${resolvedOutputPath}/lib/${formattedStackName}-stack.ts`;
+        break;
+      case 'java':
+        stackFileName = `${resolvedOutputPath}/src/main/java/com/myorg/${camelCase(formattedStackName, { pascalCase: true })}Stack.java`;
+        break;
+      case 'python':
+        stackFileName = `${resolvedOutputPath}/${formattedStackName.replace(/-/g, '_')}/${formattedStackName.replace(/-/g, '_')}_stack.py`;
+        break;
+      case 'csharp':
+        stackFileName = `${resolvedOutputPath}/src/${camelCase(formattedStackName, { pascalCase: true })}/${camelCase(formattedStackName, { pascalCase: true })}Stack.cs`;
+        break;
+      case 'go':
+        stackFileName = `${resolvedOutputPath}/${formattedStackName}.go`;
+        break;
+      default:
+        throw new Error(`${language} is not supported by CDK Migrate. Please choose from: ${MIGRATE_SUPPORTED_LANGUAGES.join(', ')}`);
+    }
+    fs.writeFileSync(stackFileName, stack);
+    if (compress) {
+      await zipDirectory(resolvedOutputPath, `${resolvedOutputPath}.zip`);
+      fs.rmSync(resolvedOutputPath, { recursive: true, force: true });
+    }
+  } catch (error) {
+    fs.rmSync(resolvedOutputPath, { recursive: true, force: true });
+    throw error;
   }
-
-  if (!MIGRATE_SUPPORTED_LANGUAGES.includes(language)) {
-    throw new Error(`Unsupported language for cdk migrate: ${language}. Supported languages are: ${MIGRATE_SUPPORTED_LANGUAGES.join(', ')}`);
-  }
-
-  await initializeProject(template, language, true, generateOnly, outputpath);
-  const template_file = fs.readFileSync(inputpath, 'utf8');
-  const generated_app = nocti.transmute(template_file, language);
-
-  // clear out the init'd bin/lib files to replace with our own
-  delete_files(outputpath + '/lib/');
-
-  // we hardcode everything to be called noctstack still so this works for now.
-  // Will change this to be much smarter once we can change stack name in noct
-  const bin_app = `#!/usr/bin/env node
-  import 'source-map-support/register';
-  import * as cdk from 'aws-cdk-lib';
-  import { NoctStack } from '../lib/generated_stack';
-
-  const app = new cdk.App();
-  new NoctStack(app, 'NoctStack', {
-    /* If you don't specify 'env', this stack will be environment-agnostic.
-     * Account/Region-dependent features and context lookups will not work,
-     * but a single synthesized template can be deployed anywhere. */
-
-    /* Uncomment the next line to specialize this stack for the AWS Account
-     * and Region that are implied by the current CLI configuration. */
-    // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
-
-    /* Uncomment the next line if you know exactly what Account and Region you
-     * want to deploy the stack to. */
-    // env: { account: '123456789012', region: 'us-east-1' },
-
-    /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
-  });`;
-  const myname = path.basename(outputpath);
-  fs.writeFileSync(outputpath + '/lib/' + 'generated_stack.ts', generated_app);
-  fs.writeFileSync(outputpath + '/bin/' + `${myname}.ts`, bin_app);
 }
 
-function delete_files(filepath: string) {
-  fs.readdir(filepath, (err, files) => {
-    if (err) throw err;
-    for (const file of files) {
-      fs.unlink(filepath + file, (cause) => {
-        if (cause) throw cause;
-      });
-    }
-  });
+/**
+ * Generates a CDK stack file.
+ * @param template The template to translate into a CDK stack
+ * @param stackName The name to assign to the stack
+ * @param language The language to generate the stack in
+ * @returns A string representation of a CDK stack file
+ */
+export function generateStack(template: string, stackName: string, language: string) {
+  try {
+    const formattedStackName = `${camelCase(decamelize(stackName), { pascalCase: true })}Stack`;
+    return cdk_from_cfn.transmute(template, language, formattedStackName);
+  } catch (e) {
+    throw new Error(`stack generation failed due to error '${(e as Error).message}'`);
+  }
+}
+
+/**
+ * Reads and returns a stack template from a local path.
+ *
+ * @param inputPath The location of the template
+ * @returns A string representation of the template if present, otherwise undefined
+ */
+export function readFromPath(inputPath?: string): string | undefined {
+  try {
+    return inputPath ? fs.readFileSync(inputPath, 'utf8') : undefined;
+  } catch (e) {
+    throw new Error(`'${inputPath}' is not a valid path.`);
+  }
+
+}
+
+/**
+ * Reads and returns a stack template from a deployed CloudFormation stack.
+ *
+ * @param stackName The name of the stack
+ * @param sdkProvider The sdk provider for making CloudFormation calls
+ * @param environment The account and region where the stack is deployed
+ * @returns A string representation of the template if present, otherwise undefined
+ */
+export async function readFromStack(stackName: string, sdkProvider: SdkProvider, environment: Environment): Promise<string | undefined> {
+  const cloudFormation = (await sdkProvider.forEnvironment(environment, Mode.ForReading)).sdk.cloudFormation();
+
+  return (await cloudFormation.getTemplate({
+    StackName: stackName,
+  }).promise()).TemplateBody;
+}
+
+/**
+ * Sets the account and region for making CloudFormation calls.
+ * @param account The account to use
+ * @param region The region to use
+ * @returns The environment object
+ */
+export function setEnvironment(account?: string, region?: string): Environment {
+  return { account: account ?? UNKNOWN_ACCOUNT, region: region ?? UNKNOWN_REGION, name: 'cdk-migrate-env' };
+}
+
+/**
+ * Validates that exactly one source option has been provided.
+ * @param fromPath The content of the flag `--from-path`
+ * @param fromStack the content of the flag `--from-stack`
+ */
+export function validateSourceOptions(fromPath?: string, fromStack?: boolean) {
+  if (fromPath && fromStack) {
+    throw new Error('Only one of `--from-path` or `--from-stack` may be provided.');
+  }
+
+  if (!fromPath && !fromStack) {
+    throw new Error('Either `--from-path` or `--from-stack` must be used to provide the source of the CloudFormation template.');
+  }
 }

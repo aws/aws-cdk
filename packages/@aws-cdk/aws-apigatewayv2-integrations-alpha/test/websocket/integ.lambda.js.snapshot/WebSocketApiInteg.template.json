@@ -44,7 +44,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "ConnectHandlerServiceRole7E4A9B1F"
@@ -94,7 +94,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "DisconnectHandlerServiceRoleE54F14F9"
@@ -144,7 +144,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "DefaultHandlerServiceRoleDF00569C"
@@ -194,7 +194,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MessageHandlerServiceRoleDF05266A"
@@ -239,7 +239,7 @@
        {
         "Ref": "mywsapi32E6CE11"
        },
-       "/*/*$connect"
+       "/*$connect"
       ]
      ]
     }
@@ -329,7 +329,7 @@
        {
         "Ref": "mywsapi32E6CE11"
        },
-       "/*/*$disconnect"
+       "/*$disconnect"
       ]
      ]
     }
@@ -419,7 +419,7 @@
        {
         "Ref": "mywsapi32E6CE11"
        },
-       "/*/*$default"
+       "/*$default"
       ]
      ]
     }
@@ -509,7 +509,7 @@
        {
         "Ref": "mywsapi32E6CE11"
        },
-       "/*/*sendmessage"
+       "/*sendmessage"
       ]
      ]
     }

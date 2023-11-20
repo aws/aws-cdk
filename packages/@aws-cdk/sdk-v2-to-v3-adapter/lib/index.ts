@@ -1,3 +1,4 @@
-export { getV3ClientPackageName } from './get-v3-client-package-name';
+export { coerceApiParameters } from './coerce-api-parameters';
 export { findV3ClientConstructor } from './find-client-constructor';
-export * from './sdk-v3-helpers';
+export { normalizeServiceName, normalizeActionName } from './sdk-info';
+export * from './api-call';

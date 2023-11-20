@@ -180,6 +180,7 @@ Which subnets are selected is evaluated as follows:
   * `onePerAz`: chooses at most one subnet per availability zone
   * `containsIpAddresses`: chooses a subnet which contains *any* of the listed ip addresses
   * `byCidrMask`: chooses subnets that have the provided CIDR netmask
+  * `byCidrRanges`: chooses subnets which are inside any of the specified CIDR ranges
 
 ### Using NAT instances
 
@@ -850,10 +851,20 @@ examples of images you might want to use:
 Create your VPC with VPN connections by specifying the `vpnConnections` props (keys are construct `id`s):
 
 ```ts
+import { SecretValue } from 'aws-cdk-lib/core';
+
 const vpc = new ec2.Vpc(this, 'MyVpc', {
   vpnConnections: {
     dynamic: { // Dynamic routing (BGP)
-      ip: '1.2.3.4'
+      ip: '1.2.3.4',
+      tunnelOptions: [
+        {
+          preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
+        },
+        {
+          preSharedKeySecret: SecretValue.unsafePlainText('secretkey5678'),
+        },
+      ],
     },
     static: { // Static routing
       ip: '4.5.6.7',
@@ -1741,6 +1752,19 @@ new ec2.FlowLog(this, 'FlowLog', {
 new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
   resourceType: ec2.FlowLogResourceType.fromVpc(vpc),
   destination: ec2.FlowLogDestination.toS3(bucket, 'prefix/')
+});
+```
+
+*Kinesis Data Firehose*
+
+```ts
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+
+declare const vpc: ec2.Vpc;
+declare const deliveryStream: firehose.CfnDeliveryStream;
+
+vpc.addFlowLog('FlowLogsKinesisDataFirehose', {
+  destination: ec2.FlowLogDestination.toKinesisDataFirehoseDestination(deliveryStream.attrArn),
 });
 ```
 

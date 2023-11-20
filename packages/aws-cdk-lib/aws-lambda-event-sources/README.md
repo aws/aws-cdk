@@ -1,6 +1,5 @@
 # AWS Lambda Event Sources
 
-
 An event source mapping is an AWS Lambda resource that reads from an event source and invokes a Lambda function.
 You can use event source mappings to process items from a stream or queue in services that don't invoke Lambda
 functions directly. Lambda provides event source mappings for the following services. Read more about lambda
@@ -271,8 +270,9 @@ myFunction.addEventSource(new SelfManagedKafkaEventSource({
 
 If your self managed Kafka cluster is only reachable via VPC also configure `vpc` `vpcSubnets` and `securityGroup`.
 
-You can specify [event filtering](https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html#filtering-msk-smak) 
+You can specify [event filtering](https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html#filtering-msk-smak)
 for managed and self managed Kafka clusters using the `filters` property:
+
 ```ts
 import { ManagedKafkaEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 
@@ -292,6 +292,31 @@ myFunction.addEventSource(new ManagedKafkaEventSource({
       stringEquals: lambda.FilterRule.isEqual('test'),
     }),
   ],
+}));
+```
+
+You can also specify an S3 bucket as an "on failure" destination:
+
+```ts
+import { ManagedKafkaEventSource, S3OnFailureDestination } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { IBucket } from 'aws-cdk-lib/aws-s3';
+
+// Your MSK cluster arn
+const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4';
+
+// The Kafka topic you want to subscribe to
+const topic = 'some-cool-topic';
+
+declare const bucket: IBucket;
+declare const myFunction: lambda.Function;
+
+const s3OnFailureDestination = new S3OnFailureDestination(bucket);
+
+myFunction.addEventSource(new ManagedKafkaEventSource({
+  clusterArn,
+  topic,
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+  onFailure: s3OnFailureDestination,
 }));
 ```
 

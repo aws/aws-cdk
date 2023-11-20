@@ -3,11 +3,13 @@ import * as cdk from 'aws-cdk-lib';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
+import { Key } from 'aws-cdk-lib/aws-kms';
 
 const app = new cdk.App();
 
 class AwsApi extends cdk.Stack {
   public parameterUnderTest: StringParameter;
+  public encryptionKey: Key;
 
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -34,24 +36,6 @@ class AwsApi extends cdk.Stack {
       action: 'stopDBInstance',
       parameters: {
         DBInstanceIdentifier: 'dev-instance',
-      },
-    }));
-
-    // Create snapshots when a DB instance restarts
-    const patternRule = new events.Rule(this, 'PatternRule', {
-      eventPattern: {
-        detailType: ['RDS DB Instance Event'],
-        detail: {
-          Message: ['DB instance restarted'],
-        },
-      },
-    });
-
-    patternRule.addTarget(new targets.AwsApi({
-      service: 'RDS',
-      action: 'createDBSnapshot',
-      parameters: {
-        DBInstanceIdentifier: events.EventField.fromPath('$.detail.SourceArn'),
       },
     }));
 
@@ -82,6 +66,31 @@ class AwsApi extends cdk.Stack {
         Overwrite: true,
       },
     }));
+
+    // A custom rule & target to encrypt data with a KMS key
+    // This operation has no effect on state, so cannot be asserted.
+    this.encryptionKey = new Key(this, 'EncryptionKey');
+
+    const encryptData = new events.Rule(this, 'EncryptDataRule', {
+      eventPattern: {
+        source: ['cdk.integ'],
+        detailType: ['EncryptData'],
+        detail: {
+          KeyId: [this.encryptionKey.keyId],
+        },
+      },
+    });
+    this.encryptionKey.node.addDependency(this.encryptionKey);
+
+    encryptData.addTarget(new targets.AwsApi({
+      service: 'KMS',
+      action: 'encrypt',
+      parameters: {
+        KeyId: events.EventField.fromPath('$.detail.KeyId'),
+        Plaintext: events.EventField.fromPath('$.detail.Plaintext'),
+      },
+    }));
+
   }
 }
 
@@ -99,6 +108,14 @@ const putEvent = test.assertions
       Detail: JSON.stringify({
         Name: stack.parameterUnderTest.parameterName,
         Value: 'new-value',
+      }),
+    },
+    {
+      Source: 'cdk.integ',
+      DetailType: 'EncryptData',
+      Detail: JSON.stringify({
+        KeyId: stack.encryptionKey.keyId,
+        Plaintext: 'some-secret-data',
       }),
     }],
   });

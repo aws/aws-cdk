@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "lambda-layer-awscli-integ-stack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1d37846bcd0676f48d9e09ea2832e404a7362a9fb2eb348c5805a49e92b3ac9e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b51376e821c015409132cf7409622ce30c8fc31b3bd6ea32237ee0b8366e1a0b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -36,7 +37,10 @@
         "/lambda-layer-awscli-integ-stack/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsCliLayerF44AAF94"
+            "data": "AwsCliLayerF44AAF94",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/lambda-layer-awscli-integ-stack/Lambda$python3.7/ServiceRole/Resource": [
@@ -139,6 +143,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "lambdalayerawscliintegtestDefaultTestDeployAssert8E1153D3.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

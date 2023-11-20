@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster-test.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/us-east-1",
       "properties": {
         "templateFile": "aws-cdk-eks-cluster-test.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/6be1ccd4181b8be66d2ddaca1de5fc94578bd0ef370c51f60f4f0e701f3e598e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/36279b628b72020624e83f28ba846d3e055efe80c13e6747787de74a2e5265c3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -384,7 +385,7 @@
         "/aws-cdk-eks-cluster-test/Cluster/Nodes/InstanceSecurityGroup": [
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/Nodes/InstanceSecurityGroup/Resource": [
@@ -456,7 +457,7 @@
         "/aws-cdk-eks-cluster-test/Cluster/NodesArm/InstanceSecurityGroup": [
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/NodesArm/InstanceSecurityGroup/Resource": [
@@ -528,7 +529,7 @@
         "/aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes/InstanceSecurityGroup": [
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes/InstanceSecurityGroup/Resource": [
@@ -600,7 +601,7 @@
         "/aws-cdk-eks-cluster-test/Cluster/spot/InstanceSecurityGroup": [
           {
             "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/spot/InstanceSecurityGroup/Resource": [
@@ -1129,6 +1130,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "awscdkeksclusterDefaultTestDeployAssertFBF4B356.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

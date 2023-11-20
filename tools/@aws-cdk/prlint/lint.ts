@@ -11,6 +11,8 @@ export type GitHubPr =
 
 export const CODE_BUILD_CONTEXT = 'AWS CodeBuild us-east-1 (AutoBuildv2Project1C6BFA3F-wQm2hXv2jqQv)';
 
+const PR_FROM_MAIN_ERROR = 'Pull requests from `main` branch of a fork cannot be accepted. Please reopen this contribution from another branch on your fork. For more information, see https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md#step-4-pull-request.';
+
 /**
  * Types of exemption labels in aws-cdk project.
  */
@@ -268,6 +270,27 @@ export class PullRequestLinter {
       body,
     });
 
+    // Closing the PR if it is opened from main branch of author's fork
+    if (failureMessages.includes(PR_FROM_MAIN_ERROR)) {
+
+      const errorMessageBody = 'Your pull request must be based off of a branch in a personal account '
+      + '(not an organization owned account, and not the main branch). You must also have the setting '
+      + 'enabled that <a href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/allowing-changes-to-a-pull-request-branch-created-from-a-fork">allows the CDK team to push changes to your branch</a> '
+      + '(this setting is enabled by default for personal accounts, and cannot be enabled for organization owned accounts). '
+      + 'The reason for this is that our automation needs to synchronize your branch with our main after it has been approved, '
+      + 'and we cannot do that if we cannot push to your branch.'
+
+      await this.client.issues.createComment({
+        ...this.issueParams,
+        body: errorMessageBody,
+      });
+
+      await this.client.pulls.update({
+        ...this.prParams,
+        state: 'closed',
+      });
+    }
+
     throw new LinterError(body);
   }
 
@@ -359,20 +382,41 @@ export class PullRequestLinter {
         && review.state === 'APPROVED',
     );
 
-    const communityApproved = reviews.data.some(
-      review => this.getTrustedCommunityMembers().includes(review.user?.login ?? '')
-        && review.state === 'APPROVED',
-    );
+    // NOTE: community reviewers may approve, comment, or request changes; however, it
+    // is possible for the same member to perform any combination of those actions on
+    // a single PR. We solve this by:
+    //   1. Filtering reviews to those by trusted community members
+    //   2. Filtering out reviews that only leave comments (without approving or requesting changes).
+    //      This allows a reviewer to participate in a conversation about their review without
+    //      effectively dismissing their review. While GitHub does not allow community reviewers
+    //      to dismiss their reviews (which requires privileges on the repo), they can leave a
+    //      new review with the opposite approve/request state to update their review.
+    //   3. Mapping reviewers to only their newest review
+    //   4. Checking if any reviewers' most recent review is an approval
+    //      -> If so, the PR is considered community approved; the approval can always
+    //         be dismissed by a maintainer to respect another reviewer's requested changes.
+    //   5. Checking if any reviewers' most recent review requested changes
+    //      -> If so, the PR is considered to still need changes to meet community review.
+    const reviewsByTrustedCommunityMembers = reviews.data
+      .filter(review => this.getTrustedCommunityMembers().includes(review.user?.login ?? ''))
+      .filter(review => review.state !== 'PENDING' && review.state !== 'COMMENTED')
+      .reduce((grouping, review) => {
+        // submitted_at is not present for PENDING comments but is present for other states.
+        // Because of that, it is optional on the type but sure to be present here. Likewise,
+        // review.user is sure to be defined because we're operating on reviews by trusted
+        // community members
+        let newest = grouping[review.user!.login] ?? review;
+        if (review.submitted_at! > newest.submitted_at!) {
+          newest = review;
+        }
 
-    // NOTE: community members can only approve or comment, but it is possible
-    // for the same member to have both an approved review and a commented review.
-    // we solve this issue by turning communityRequestedChanges to false if
-    // communityApproved is true. We can always dismiss an approved review if we want
-    // to respect someone else's requested changes.
-    const communityRequestedChanges = communityApproved ? false : reviews.data.some(
-      review => this.getTrustedCommunityMembers().includes(review.user?.login ?? '')
-        && review.state === 'COMMENTED',
-    );
+        return {
+          ...grouping,
+          [review.user!.login]: newest,
+        };
+      }, {} as Record<string, typeof reviews.data[0]>);
+    const communityApproved = Object.values(reviewsByTrustedCommunityMembers).some(({state}) => state === 'APPROVED');
+    const communityRequestedChanges = !communityApproved && Object.values(reviewsByTrustedCommunityMembers).some(({state}) => state === 'CHANGES_REQUESTED')
 
     const prLinterFailed = reviews.data.find((review) => review.user?.login === 'aws-cdk-automation' && review.state !== 'DISMISSED') as Review;
     const userRequestsExemption = pr.labels.some(label => (label.name === Exemption.REQUEST_EXEMPTION || label.name === Exemption.REQUEST_CLARIFICATION));
@@ -508,6 +552,9 @@ export class PullRequestLinter {
     validationCollector.validateRuleSet({
       testRuleSet: [{ test: validateTitleScope }],
     });
+    validationCollector.validateRuleSet({
+      testRuleSet: [{ test: validateBranch }],
+    })
 
     validationCollector.validateRuleSet({
       exemption: shouldExemptBreakingChange,
@@ -519,6 +566,11 @@ export class PullRequestLinter {
       exemption: shouldExemptCliIntegTested,
       testRuleSet: [{ test: noCliChanges }],
     });
+
+    validationCollector.validateRuleSet({
+      exemption: (pr) => pr.user?.login === 'aws-cdk-automation',
+      testRuleSet: [{ test: noMetadataChanges }],
+    })
 
     await this.deletePRLinterComment();
     try {
@@ -540,10 +592,6 @@ export class PullRequestLinter {
   private formatErrors(errors: string[]) {
     return `\n\n\t❌ ${errors.join('\n\t❌ ')}\n\n`;
   };
-}
-
-function isPkgCfnspec(pr: GitHubPr): boolean {
-  return pr.title.indexOf('(cfnspec)') > -1;
 }
 
 function isFeature(pr: GitHubPr): boolean {
@@ -572,7 +620,7 @@ function readmeChanged(files: GitHubFile[]): boolean {
 
 function featureContainsReadme(pr: GitHubPr, files: GitHubFile[]): TestResult {
   const result = new TestResult();
-  result.assessFailure(isFeature(pr) && !readmeChanged(files) && !isPkgCfnspec(pr), 'Features must contain a change to a README file.');
+  result.assessFailure(isFeature(pr) && !readmeChanged(files), 'Features must contain a change to a README file.');
   return result;
 }
 
@@ -687,6 +735,22 @@ function validateTitleScope(pr: GitHubPr): TestResult {
   return result;
 }
 
+/**
+ * Check that the PR is not opened from main branch of author's fork
+ *
+ * @param pr github pr
+ * @returns test result
+ */
+function validateBranch(pr: GitHubPr): TestResult {
+  const result = new TestResult();
+
+  if (pr.head && pr.head.ref) {
+    result.assessFailure(pr.head.ref === 'main', PR_FROM_MAIN_ERROR);
+  }
+
+  return result;
+}
+
 function assertStability(pr: GitHubPr, _files: GitHubFile[]): TestResult {
   const title = pr.title;
   const body = pr.body;
@@ -705,6 +769,13 @@ function noCliChanges(pr: GitHubPr, files: GitHubFile[]): TestResult {
     cliCodeChanged,
     `CLI code has changed. A maintainer must run the code through the testing pipeline (git fetch origin ${branch} && git push -f origin FETCH_HEAD:test-main-pipeline), then add the '${Exemption.CLI_INTEG_TESTED}' label when the pipeline succeeds.`,
   );
+}
+
+function noMetadataChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
+  const result = new TestResult();
+  const condition = files.some(file => file.filename === 'packages/aws-cdk-lib/region-info/build-tools/metadata.ts');
+  result.assessFailure(condition, 'Manual changes to the metadata.ts file are not allowed.');
+  return result;
 }
 
 require('make-runnable/custom')({

@@ -4,6 +4,7 @@ import * as path from 'path';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 /*
  * Creates an Appsync GraphQL API and schema in a code-first approach.
@@ -29,7 +30,7 @@ const api = new appsync.GraphqlApi(stack, 'LambdaAPI', {
 const func = new lambda.Function(stack, 'func', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'verify/lambda-tutorial')),
   handler: 'lambda-tutorial.handler',
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 
 const lambdaDS = api.addLambdaDataSource('LambdaDS', func);

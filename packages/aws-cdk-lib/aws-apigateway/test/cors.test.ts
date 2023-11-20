@@ -290,7 +290,15 @@ describe('cors', () => {
               'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
             },
             ResponseTemplates: {
-              'application/json': '#set($origin = $input.params().header.get("Origin"))\n#if($origin == "") #set($origin = $input.params().header.get("origin")) #end\n#if($origin == "https://amazon.com" || $origin == "https://aws.amazon.com")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end',
+              'application/json': [
+                '#set($origin = $input.params().header.get("Origin"))',
+                '#if($origin == "")',
+                '  #set($origin = $input.params().header.get("origin"))',
+                '#end',
+                '#if($origin == "https://amazon.com" || $origin == "https://aws.amazon.com")',
+                '  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)',
+                '#end',
+              ].join('\n'),
             },
             StatusCode: '204',
           },
@@ -688,7 +696,15 @@ describe('cors', () => {
               'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'",
             },
             ResponseTemplates: {
-              'application/json': '#set($origin = $input.params().header.get("Origin"))\n#if($origin == "") #set($origin = $input.params().header.get("origin")) #end\n#if($origin == "https://twitch.tv")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end',
+              'application/json': [
+                '#set($origin = $input.params().header.get("Origin"))',
+                '#if($origin == "")',
+                '  #set($origin = $input.params().header.get("origin"))',
+                '#end',
+                '#if($origin == "https://twitch.tv")',
+                '  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)',
+                '#end',
+              ].join('\n'),
             },
             StatusCode: '204',
           },

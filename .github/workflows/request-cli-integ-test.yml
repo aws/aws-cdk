@@ -11,7 +11,7 @@ jobs:
       any-changed-files: ${{ steps.changed-cli-files.outputs.cli_any_changed }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -19,7 +19,7 @@ jobs:
           persist-credentials: false
       - name: Find changed cli files
         id: changed-cli-files
-        uses: tj-actions/changed-files@2f7246cb26e8bb6709b6cbfc1fec7febfe82e96a
+        uses: tj-actions/changed-files@25ef3926d147cd02fc7e931c1ef50772bbb0d25d
         with:
           base_sha: ${{ github.event.pull_request.base.sha }}
           files_yaml: |
@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           # Needs to run with PROJEN_GITHUB_TOKEN because we need permissions to force push the branch
           token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
@@ -46,7 +46,7 @@ jobs:
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
           git push --force --atomic https://github.com/${{ github.repository }}.git FETCH_HEAD:test-main-pipeline
       - name: Explain next steps
-        uses: thollander/actions-comment-pull-request@d61db783da9abefc3437960d0cce08552c7c004f
+        uses: thollander/actions-comment-pull-request@1d3973dc4b8e1399c0620d3f2b1aa5e795465308
         with:
           message: |
             :arrow_right: **PR build request submitted to `test-main-pipeline`** :arrow_left:

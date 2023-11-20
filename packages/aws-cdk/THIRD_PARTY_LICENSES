@@ -1,6 +1,6 @@
 The aws-cdk package includes the following third-party software/licensing:
 
-** @jsii/check-node@1.88.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.88.0 | Apache-2.0
+** @jsii/check-node@1.92.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.92.0 | Apache-2.0
 jsii
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -229,7 +229,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ----------------
 
-** async@3.2.4 - https://www.npmjs.com/package/async/v/3.2.4 | MIT
+** async@3.2.5 - https://www.npmjs.com/package/async/v/3.2.5 | MIT
 Copyright (c) 2010-2018 Caolan McMahon
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -264,7 +264,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 ----------------
 
-** aws-sdk@2.1451.0 - https://www.npmjs.com/package/aws-sdk/v/2.1451.0 | Apache-2.0
+** aws-sdk@2.1498.0 - https://www.npmjs.com/package/aws-sdk/v/2.1498.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -458,6 +458,10 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
+----------------
+
+** cdk-from-cfn@0.69.0 - https://www.npmjs.com/package/cdk-from-cfn/v/0.69.0 | MIT OR Apache-2.0
 
 ----------------
 
@@ -863,7 +867,29 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** data-uri-to-buffer@5.0.1 - https://www.npmjs.com/package/data-uri-to-buffer/v/5.0.1 | MIT
+** data-uri-to-buffer@6.0.1 - https://www.npmjs.com/package/data-uri-to-buffer/v/6.0.1 | MIT
+(The MIT License)
+
+Copyright (c) 2014 Nathan Rajlich <nathan@tootallnate.net>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
@@ -1279,7 +1305,29 @@ the licensed code:
 
 ----------------
 
-** get-uri@6.0.1 - https://www.npmjs.com/package/get-uri/v/6.0.1 | MIT
+** get-uri@6.0.2 - https://www.npmjs.com/package/get-uri/v/6.0.2 | MIT
+(The MIT License)
+
+Copyright (c) 2014 Nathan Rajlich <nathan@tootallnate.net>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
@@ -2713,10 +2761,10 @@ THE SOFTWARE.
 
 ----------------
 
-** sax@1.2.4 - https://www.npmjs.com/package/sax/v/1.2.4 | ISC
+** sax@1.3.0 - https://www.npmjs.com/package/sax/v/1.3.0 | ISC
 The ISC License
 
-Copyright (c) Isaac Z. Schlueter and Contributors
+Copyright (c) 2010-2022 Isaac Z. Schlueter and Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -2735,7 +2783,7 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 `String.fromCodePoint` by Mathias Bynens used according to terms of MIT
 License, as follows:
 
-    Copyright Mathias Bynens <https://mathiasbynens.be/>
+Copyright (c) 2010-2022 Mathias Bynens <https://mathiasbynens.be/>
 
     Permission is hereby granted, free of charge, to any person obtaining
     a copy of this software and associated documentation files (the
@@ -3154,7 +3202,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** universalify@2.0.0 - https://www.npmjs.com/package/universalify/v/2.0.0 | MIT
+** universalify@2.0.1 - https://www.npmjs.com/package/universalify/v/2.0.1 | MIT
 (The MIT License)
 
 Copyright (c) 2017, Ryan Zimmerman <opensrc@ryanzim.com>

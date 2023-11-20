@@ -146,6 +146,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
       + (this.windowsVersion ? 'ami-windows-latest/' : 'ecs/optimized-ami/')
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'amazon-linux-2023/' : '')
       + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
       + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
       + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
@@ -206,6 +207,19 @@ export interface EcsOptimizedImageOptions {
  * Construct a Linux or Windows machine image from the latest ECS Optimized AMI published in SSM
  */
 export class EcsOptimizedImage implements ec2.IMachineImage {
+  /**
+   * Construct an Amazon Linux 2023 image from the latest ECS Optimized AMI published in SSM
+   *
+   * @param hardwareType ECS-optimized AMI variant to use
+   */
+  public static amazonLinux2023(hardwareType = AmiHardwareType.STANDARD, options: EcsOptimizedImageOptions = {}): EcsOptimizedImage {
+    return new EcsOptimizedImage({
+      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
+      hardwareType,
+      cachedInContext: options.cachedInContext,
+    });
+  }
+
   /**
    * Construct an Amazon Linux 2 image from the latest ECS Optimized AMI published in SSM
    *
@@ -268,6 +282,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       + (this.windowsVersion ? 'ami-windows-latest/' : 'ecs/optimized-ami/')
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX ? 'amazon-linux/' : '')
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'amazon-linux-2023/' : '')
       + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
       + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
       + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')

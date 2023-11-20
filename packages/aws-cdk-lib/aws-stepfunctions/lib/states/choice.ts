@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
-import { State } from './state';
+import { ChoiceTransitionOptions, State } from './state';
 import { Chain } from '../chain';
 import { Condition } from '../condition';
 import { IChainable, INextable } from '../types';
@@ -9,6 +9,13 @@ import { IChainable, INextable } from '../types';
  * Properties for defining a Choice state
  */
 export interface ChoiceProps {
+  /**
+   * Optional name for this state
+   *
+   * @default - The construct ID will be used as state name
+   */
+  readonly stateName?: string;
+
   /**
    * An optional description for this state
    *
@@ -53,8 +60,8 @@ export class Choice extends State {
   /**
    * If the given condition matches, continue execution with the given state
    */
-  public when(condition: Condition, next: IChainable): Choice {
-    super.addChoice(condition, next.startState);
+  public when(condition: Condition, next: IChainable, options?: ChoiceTransitionOptions): Choice {
+    super.addChoice(condition, next.startState, options);
     return this;
   }
 

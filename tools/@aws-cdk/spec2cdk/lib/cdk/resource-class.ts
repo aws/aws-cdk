@@ -61,6 +61,7 @@ export class ResourceClass extends ClassType {
       docs: {
         ...splitDocumentation(resource.documentation),
         stability: Stability.External,
+        docTags: { cloudformationResource: resource.cloudFormationType },
         see: cloudFormationDocLink({
           resourceType: resource.cloudFormationType,
         }),

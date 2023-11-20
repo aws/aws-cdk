@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/d766385f993561fda75b4e08af6c040fb4170d56919fd14c44f019f93bfe3264.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/3479f31cafdeabdfef19e8c510db3393a4f726d8f9bd285808047e53c7a051e6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -48,7 +48,7 @@
         "/integ-distribution-lambda/Lambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaCurrentVersionDF706F6A4a4114aafbc0b051484aa55344a7be37"
+            "data": "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05"
           }
         ],
         "/integ-distribution-lambda/Dist/Resource": [
@@ -69,10 +69,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "LambdaCurrentVersionDF706F6A1ee13d0fa54e9f5621e8c7b616fc53fc": [
+        "LambdaCurrentVersionDF706F6A4a4114aafbc0b051484aa55344a7be37": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaCurrentVersionDF706F6A1ee13d0fa54e9f5621e8c7b616fc53fc",
+            "data": "LambdaCurrentVersionDF706F6A4a4114aafbc0b051484aa55344a7be37",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

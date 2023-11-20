@@ -52,7 +52,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "tshandlerServiceRole8876B8E7"
@@ -110,7 +110,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "jshandlerServiceRole781AF366"
@@ -599,7 +599,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x",
+    "Runtime": "nodejs18.x",
     "VpcConfig": {
      "SecurityGroupIds": [
       {
@@ -679,7 +679,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "tshandlercustomhandlernodotsServiceRole1775E15E"
@@ -751,7 +751,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "tshandlercustomhandlerdotsServiceRole0575D3CB"

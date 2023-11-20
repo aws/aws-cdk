@@ -3402,7 +3402,7 @@
     },
     "ScalingConfig": {
      "DesiredSize": 1,
-     "MaxSize": 1,
+     "MaxSize": 4,
      "MinSize": 1
     },
     "Subnets": [
@@ -3412,7 +3412,10 @@
      {
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
      }
-    ]
+    ],
+    "UpdateConfig": {
+     "MaxUnavailable": 3
+    }
    }
   },
   "ClusterNodegroupextrangspotNodeGroupRoleB53B4857": {
@@ -3589,7 +3592,10 @@
      {
       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
      }
-    ]
+    ],
+    "UpdateConfig": {
+     "MaxUnavailablePercentage": 33
+    }
    }
   },
   "ClusterNodegroupextrangarm3NodeGroupRole3A6AB3EC": {
@@ -4041,7 +4047,7 @@
       "OpenIdConnectIssuerUrl"
      ]
     },
-    "CodeHash": "03d2c2b0648898186dc5342981e426a3ac3bd09a96ce66df58a875bde29e4a56"
+    "CodeHash": "9c9c077e1db371e9d23da63db88926d5de460a4c66d88015384bf7156e8ef1b9"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -4178,7 +4184,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/10f52f7e1cae4868df3700d82e3d31b19d73ad74fa99aefab4a7e994f5752106.json"
+       "/589d6efd6364827e3aa6473cecef5ff51c2428794c20f9b36bf4cb3db32020d2.json"
       ]
      ]
     }
@@ -4224,7 +4230,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/08e97a0b00ee9b6a6906cbd76cf72e1f1b83b24330d074a3bed941d837d321c2.json"
+       "/d5c3999a77f79f8d8503a926c732fbd124d326cee9cb2914f9dc82ac7d1293a1.json"
       ]
      ]
     }
@@ -4342,7 +4348,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "03d2c2b0648898186dc5342981e426a3ac3bd09a96ce66df58a875bde29e4a56.zip"
+     "S3Key": "9c9c077e1db371e9d23da63db88926d5de460a4c66d88015384bf7156e8ef1b9.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -4388,7 +4394,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "a913a2614f4e118cb83fa3c0dd17575c9adbbdbad4da17aecd505282a25513f8.zip"
+     "S3Key": "1e14e895fcbdf65feb0a29e4aa74c6c92a6fb0e41f228bef7ab23627ed409cde.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,

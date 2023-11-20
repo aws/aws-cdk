@@ -1,0 +1,5 @@
+{
+  "exclude": [
+    "props-physical-name:@aws-cdk/aws-codestar-alpha.GitHubRepositoryProps"
+  ]
+}

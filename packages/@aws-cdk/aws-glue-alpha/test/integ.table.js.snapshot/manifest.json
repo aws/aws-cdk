@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-glue.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dc6c1c5f05a8e365822e6d61c41b6fc6afd58d20a2784614b906ae1587c68754.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a0cca4ed21fb1c6d9b050e5fd7c8d857b13af8ef7b8cead40cd08d2e25fc892.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -93,10 +93,22 @@
             "data": "MyPartitionFilteredTable324BA27A"
           }
         ],
+        "/aws-cdk-glue/MyTableWithConnection/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTableWithConnectionTable4BCA8495"
+          }
+        ],
         "/aws-cdk-glue/MyTableWithStorageDescriptorParameters/Table": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyTableWithStorageDescriptorParametersTable1A347345"
+          }
+        ],
+        "/aws-cdk-glue/MyDeprecatedTable/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeprecatedTableAA0364FD"
           }
         ],
         "/aws-cdk-glue/MyUser/Resource": [
@@ -135,10 +147,19 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "MyPartitionFilteredTableBucket6ACAA137": [
+        "MyConnection5621880D": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyPartitionFilteredTableBucket6ACAA137",
+            "data": "MyConnection5621880D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyTableWithCustomLocationTable43A19D42": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTableWithCustomLocationTable43A19D42",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

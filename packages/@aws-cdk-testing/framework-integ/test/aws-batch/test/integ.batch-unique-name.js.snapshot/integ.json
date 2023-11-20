@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "BatchUniqueNameTest/DefaultTest": {
+      "stacks": [
+        "stack"
+      ],
+      "assertionStack": "BatchUniqueNameTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BatchUniqueNameTestDefaultTestDeployAssertA3886AB9"
+    }
+  }
+}

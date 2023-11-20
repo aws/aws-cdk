@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "test-apigateway-restapi.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fcad319ca99a224f1bb623ae64e6053222954f203a51f69533af4e49ac59bd36.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7730a7574bd54d8b8cc5ce3a8fc74a2b2cec7fa63897f605899d3a225bd67bda.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -54,7 +55,7 @@
         "/test-apigateway-restapi/my-api/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapiDeployment92F2CB4993c0f175ba8d5964f5e1cc7bc64fe6e6"
+            "data": "myapiDeployment92F2CB49069d16df09c59427069eb74581a0403d"
           }
         ],
         "/test-apigateway-restapi/my-api/DeploymentStage.beta/Resource": [
@@ -111,16 +112,16 @@
             "data": "myapiv1toysPUT59AFBBC2"
           }
         ],
-        "/test-apigateway-restapi/my-api/Default/v1/appliances:all/Resource": [
+        "/test-apigateway-restapi/my-api/Default/v1/$appliances:all/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapiv1appliancesallCF8C6A16"
+            "data": "myapiv1appliancesallD279897B"
           }
         ],
-        "/test-apigateway-restapi/my-api/Default/v1/appliances:all/GET/Resource": [
+        "/test-apigateway-restapi/my-api/Default/v1/$appliances:all/GET/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapiv1appliancesallGETC4DF552D"
+            "data": "myapiv1appliancesallGETB8EB1B77"
           }
         ],
         "/test-apigateway-restapi/my-api/Default/v1/books/Resource": [
@@ -224,6 +225,33 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "myapiDeployment92F2CB4993c0f175ba8d5964f5e1cc7bc64fe6e6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiDeployment92F2CB4993c0f175ba8d5964f5e1cc7bc64fe6e6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myapiv1appliancesallCF8C6A16": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1appliancesallCF8C6A16",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "myapiv1appliancesallGETC4DF552D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myapiv1appliancesallGETC4DF552D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "test-apigateway-restapi"
@@ -241,6 +269,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "apigatewayrestapiDefaultTestDeployAssert6A9696A7.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

@@ -1525,6 +1525,111 @@ describe('function', () => {
     });
   });
 
+  describe('grantInvokeCompositePrincipal', () => {
+    test('adds iam:InvokeFunction for a CompositePrincipal (two accounts)', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const compositePrincipal = new iam.CompositePrincipal(
+        new iam.AccountPrincipal('1234'),
+        new iam.AccountPrincipal('5678'),
+      );
+
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // WHEN
+      fn.grantInvokeCompositePrincipal(compositePrincipal);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: '1234',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: '5678',
+      });
+    });
+
+    test('adds iam:InvokeFunction for a CompositePrincipal (multiple types)', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const compositePrincipal = new iam.CompositePrincipal(
+        new iam.AccountPrincipal('1234'),
+        new iam.ServicePrincipal('apigateway.amazonaws.com'),
+        new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole'),
+        new iam.OrganizationPrincipal('my-org-id'),
+      );
+
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // WHEN
+      fn.grantInvokeCompositePrincipal(compositePrincipal);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: '1234',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: 'apigateway.amazonaws.com',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: 'arn:aws:iam::123456789012:role/someRole',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: '*',
+        PrincipalOrgID: 'my-org-id',
+      });
+    });
+  });
+
   test('Can use metricErrors on a lambda Function', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -3037,9 +3142,9 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'bar',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_18_X,
         snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
-      })).toThrowError('SnapStart currently not supported by runtime nodejs14.x');
+      })).toThrowError('SnapStart currently not supported by runtime nodejs18.x');
     });
 
     test('arm64 validation for snapStart', () => {
@@ -3171,14 +3276,14 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_LATEST,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_28_1),
+        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_31_0),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-1:1'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-31-0:1'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-handler',
@@ -3200,14 +3305,14 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_9,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_19_0_1),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_20_0_1),
         execWrapper: lambda.AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-19-0:2'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-20-0:3'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-instrument',
@@ -3224,7 +3329,7 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_10,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_19_0_1),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_20_0_1),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     })).toThrow(/Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER/);
@@ -3243,7 +3348,7 @@ describe('function', () => {
         new lambda.DockerImageFunction(stack, 'MyLambda', {
           code: lambda.DockerImageCode.fromImageAsset(dockerLambdaHandlerPath),
           adotInstrumentation: {
-            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_28_1),
+            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_31_0),
             execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
           },
         }),
@@ -3517,6 +3622,50 @@ describe('VPC configuration', () => {
       securityGroups: [securityGroup],
       allowAllOutbound: false,
     })).toThrow(/Configure 'allowAllOutbound' directly on the supplied SecurityGroups./);
+  });
+
+  test('with VPC and empty securityGroups creates a default security group', () => {
+    const stack = new cdk.Stack();
+
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    new lambda.Function(stack, 'MyLambda', {
+      vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroups: [],
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroup', 1);
+  });
+
+  test('with no VPC and empty securityGroups', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroups: [],
+    })).not.toThrow();
+  });
+
+  test('with empty securityGroups and allowAllOutbound', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroups: [],
+      allowAllOutbound: false,
+    })).not.toThrow();
   });
 });
 

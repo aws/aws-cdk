@@ -321,7 +321,6 @@ for the
 The following example will create the file `folder/file1.txt` inside `myBucket`
 with the contents `hello!`.
 
-
 ```plaintext
 // This example exists only for TypeScript
 
@@ -369,7 +368,6 @@ This sample demonstrates the following concepts:
 * Asynchronous implementation
 * Non-intrinsic physical IDs
 * Implemented in Python
-
 
 ### Customizing Provider Function name
 
@@ -585,7 +583,7 @@ the data returned by the custom resource to specific paths in the API response:
 new cr.AwsCustomResource(this, 'ListObjects', {
   onCreate: {
     service: 's3',
-    action: 'listObjectsV2',
+    action: 'ListObjectsV2',
     parameters: {
       Bucket: 'my-bucket',
     },
@@ -609,7 +607,7 @@ path in `PhysicalResourceId.fromResponse()`.
 const getParameter = new cr.AwsCustomResource(this, 'GetParameter', {
   onUpdate: { // will also be called for a CREATE event
     service: 'SSM',
-    action: 'getParameter',
+    action: 'GetParameter',
     parameters: {
       Name: 'my-parameter',
       WithDecryption: true,
@@ -632,12 +630,12 @@ const getParameter = new cr.AwsCustomResource(this, 'AssociateVPCWithHostedZone'
   onCreate: {
     assumedRoleArn: 'arn:aws:iam::OTHERACCOUNT:role/CrossAccount/ManageHostedZoneConnections',
     service: 'Route53',
-    action: 'associateVPCWithHostedZone',
+    action: 'AssociateVPCWithHostedZone',
     parameters: {
       HostedZoneId: 'hz-123',
       VPC: {
-		    VPCId: 'vpc-123',
-		    VPCRegion: 'region-for-vpc',
+        VPCId: 'vpc-123',
+        VPCRegion: 'region-for-vpc',
       },
     },
     physicalResourceId: cr.PhysicalResourceId.of('${vpcStack.SharedVpc.VpcId}-${vpcStack.Region}-${PrivateHostedZone.HostedZoneId}'),
@@ -651,14 +649,27 @@ const getParameter = new cr.AwsCustomResource(this, 'AssociateVPCWithHostedZone'
 
 #### Using AWS SDK for JavaScript v3
 
-`AwsCustomResource` uses Node 18 and aws sdk v3 by default. You can specify the service as either the name of the sdk module, or just the service name, IE `@aws-sdk/client-ssm` or `SSM`, and the action as either the client method name or the sdk v3 command, `getParameter` or `GetParameterCommand`. It is recommended to use the v3 format for new AwsCustomResources going forward.
+`AwsCustomResource` uses Node 18 and AWS SDK v3 by default. You can specify the service as either the name of the SDK module, or just the service name. Using API Gateway as an example, the following formats are all accepted for `service`:
+
+* The SDKv3 service name: `api-gateway` (recommended)
+* The full SDKv3 package name: `@aws-sdk/client-api-gateway`
+* The SDKv2 constructor name: `APIGateway`
+* The SDKv2 constructor name in all lower case: `apigateway`
+
+The following formats are accepted for `action`:
+
+* The API call name: `GetRestApi` (recommended)
+* The API call name with a lowercase starting letter method name: `getRestApi`
+* The SDKv3 command class name: `GetRestApiCommand`
+
+For readability, we recommend using the short forms going forward:
 
 ```ts
 new cr.AwsCustomResource(this, 'GetParameter', {
   resourceType: 'Custom::SSMParameter',
   onUpdate: {
-    service: '@aws-sdk/client-ssm', // 'SSM' in v2
-    action: 'GetParameterCommand', // 'getParameter' in v2
+    service: 'ssm', // 'SSM' in v2
+    action: 'GetParameter', // 'getParameter' in v2
     parameters: {
       Name: 'foo',
       WithDecryption: true,
@@ -681,8 +692,8 @@ new cr.AwsCustomResource(this, 'CrossAccount', {
   onCreate: {
     assumedRoleArn: crossAccountRoleArn,
     region: callRegion, // optional
-    service: '@aws-sdk/client-sts',
-    action: 'GetCallerIdentityCommand',
+    service: 'sts',
+    action: 'GetCallerIdentity',
     physicalResourceId: cr.PhysicalResourceId.of('id'),
   },
   policy: cr.AwsCustomResourcePolicy.fromStatements([iam.PolicyStatement.fromJson({

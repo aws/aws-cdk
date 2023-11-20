@@ -1,12 +1,31 @@
-import * as camelcase from 'camelcase';
 import * as reflect from 'jsii-reflect';
 import { CoreTypes } from './core-types';
 import { ResourceReflection } from './resource';
+import { pascalize } from '../case';
 import { Linter } from '../linter';
+
+const cfnResourceTagName = 'cloudformationResource';
 
 // this linter verifies that we have L2 coverage. it finds all "Cfn" classes and verifies
 // that we have a corresponding L1 class for it that's identified as a resource.
 export const cfnResourceLinter = new Linter(a => CfnResourceReflection.findAll(a));
+
+// Cache L1 constructs per type system.
+const l1ConstructCache = new Map<reflect.TypeSystem, Map<string, reflect.ClassType>>();
+
+function cacheL1ConstructsForTypeSystem(sys: reflect.TypeSystem) {
+  if (!l1ConstructCache.has(sys)) {
+    l1ConstructCache.set(sys, new Map<string, reflect.ClassType>());
+
+    for (const cls of sys.classes) {
+      const cfnResourceTag = cls.docs.customTag(cfnResourceTagName);
+
+      if (cfnResourceTag) {
+        l1ConstructCache.get(sys)?.set(cfnResourceTag?.toLocaleLowerCase()!, cls);
+      }
+    }
+  }
+}
 
 cfnResourceLinter.add({
   code: 'resource-class',
@@ -24,10 +43,13 @@ export class CfnResourceReflection {
    * @param fullName first two components are case-insensitive (e.g. `aws::s3::Bucket` is equivalent to `Aws::S3::Bucket`)
    */
   public static findByName(sys: reflect.TypeSystem, fullName: string) {
-    for (const cls of sys.classes) {
-      if (cls.docs.customTag('cloudformationResource')?.toLocaleLowerCase() === fullName.toLocaleLowerCase()) {
-        return new CfnResourceReflection(cls);
-      }
+    if (!l1ConstructCache.has(sys)) {
+      cacheL1ConstructsForTypeSystem(sys);
+    }
+
+    const cls = l1ConstructCache.get(sys)?.get(fullName.toLowerCase());
+    if (cls) {
+      return new CfnResourceReflection(cls);
     }
 
     return undefined;
@@ -37,7 +59,7 @@ export class CfnResourceReflection {
    * Returns all CFN resource classes within an assembly.
    */
   public static findAll(assembly: reflect.Assembly) {
-    return assembly.classes
+    return assembly.allClasses
       .filter(c => CoreTypes.isCfnResource(c))
       .map(c => new CfnResourceReflection(c));
   }
@@ -54,10 +76,7 @@ export class CfnResourceReflection {
 
     this.basename = cls.name.slice('Cfn'.length);
 
-    // HACK: extract full CFN name from initializer docs
-    const initializerDoc = (cls.initializer && cls.initializer.docs.docs.summary) || '';
-    const out = /a new `([^`]+)`/.exec(initializerDoc);
-    const fullname = out && out[1];
+    const fullname = cls.docs.customTag('cloudformationResource');
     if (!fullname) {
       throw new Error(`Unable to extract CloudFormation resource name from initializer documentation of ${cls}`);
     }
@@ -76,11 +95,11 @@ export class CfnResourceReflection {
 
   private attributePropertyNameFromCfnName(name: string): string {
 
-    // special case (someone was smart), special case copied from cfn2ts
+    // special case (someone was smart), special case copied from spec2cdk
     if (this.basename === 'SecurityGroup' && name === 'GroupId') {
       return 'Id';
     }
 
-    return camelcase(name, { pascalCase: true });
+    return pascalize(name);
   }
 }

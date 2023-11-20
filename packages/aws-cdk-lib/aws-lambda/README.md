@@ -151,6 +151,28 @@ if (fn.timeout) {
 }
 ```
 
+## Advanced Logging
+
+You can have more control over your function logs, by specifying the log format
+(Json or plain text), the system log level, the application log level, as well
+as choosing the log group:
+
+```ts
+import { ILogGroup } from 'aws-cdk-lib/aws-logs';
+
+declare const logGroup: ILogGroup;  
+
+new lambda.Function(this, 'Lambda', {
+  code: new lambda.InlineCode('foo'),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_18_X,
+  logFormat: lambda.LogFormat.JSON,
+  systemLogLevel: lambda.SystemLogLevel.INFO,
+  applicationLogLevel: lambda.ApplicationLogLevel.INFO,
+  logGroup: logGroup,
+});
+```
+
 ## Resource-based Policies
 
 AWS Lambda supports resource-based policies for controlling access to Lambda
@@ -247,6 +269,20 @@ const servicePrincipalWithConditions = servicePrincipal.withConditions({
 });
 
 fn.grantInvoke(servicePrincipalWithConditions);
+```
+
+### Grant function access to a CompositePrincipal
+
+To grant invoke permissions to a `CompositePrincipal` use the `grantInvokeCompositePrincipal` method:
+
+```ts
+declare const fn: lambda.Function;
+const compositePrincipal = new iam.CompositePrincipal(
+  new iam.OrganizationPrincipal('o-zzzzzzzzzz'),
+  new iam.ServicePrincipal('apigateway.amazonaws.com'),
+);
+
+fn.grantInvokeCompositePrincipal(compositePrincipal);
 ```
 
 ## Versions

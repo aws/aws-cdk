@@ -69,21 +69,21 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-cdk/sdk-v2-to-v3-adapter": "0.0.0",    
-    "@aws-sdk/client-ec2": "^3.406.0",
-    "@aws-sdk/client-s3": "^3.405.0",
-    "@aws-sdk/client-sfn": "^3.405.0",
-    "@aws-sdk/types": "^3.398.0",
+    "@aws-cdk/sdk-v2-to-v3-adapter": "0.0.0",
+    "@aws-sdk/client-ec2": "3.421.0",
+    "@aws-sdk/client-s3": "3.421.0",
+    "@aws-sdk/client-sfn": "3.421.0",
+    "@aws-sdk/types": "^3.433.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^29.5.4",
+    "@types/jest": "^29.5.8",
     "aws-sdk-client-mock": "^3.0.0",
     "aws-sdk-client-mock-jest": "^3.0.0",
-    "jest": "^29.6.4",
-    "nock": "^13.3.3",
+    "jest": "^29.7.0",
+    "nock": "^13.3.8",
     "sinon": "^9.2.4",
     "aws-cdk-lib": "0.0.0",
     "node-fetch": "^2.7.0",
-    "@types/node-fetch": "^2.6.4",
+    "@types/node-fetch": "^2.6.9",
     "constructs": "^10.0.0"
   },
   "dependencies": {},
@@ -113,11 +113,6 @@
     },
     "post": [
       "node lib/assertions/providers/lambda-handler.bundle/index.js"
-    ]
-  },
-  "awslint": {
-    "exclude": [
-      "*:*"
     ]
   },
   "nozem": {

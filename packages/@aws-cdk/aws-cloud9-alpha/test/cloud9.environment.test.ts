@@ -124,11 +124,40 @@ test('environment owner can be an IAM user', () => {
     imageId: cloud9.ImageId.AMAZON_LINUX_2,
     owner: Owner.user(user),
   });
+
   // THEN
+  const userLogicalId = stack.getLogicalId(user.node.defaultChild as iam.CfnUser);
   Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
     OwnerArn: {
-      'Fn::GetAtt': ['User00B015A1', 'Arn'],
+      'Fn::GetAtt': [userLogicalId, 'Arn'],
     },
+  });
+});
+
+test('environment owner can be an IAM Assumed Role', () => {
+  // WHEN
+  new cloud9.Ec2Environment(stack, 'C9Env', {
+    vpc,
+    imageId: cloud9.ImageId.AMAZON_LINUX_2,
+    owner: Owner.assumedRole('123456789098', 'Admin'),
+  });
+  // THEN
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
+    OwnerArn: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':sts::123456789098:assumed-role/Admin']] },
+  });
+});
+
+test('environment owner can be an IAM Federated User', () => {
+  // WHEN
+  new cloud9.Ec2Environment(stack, 'C9Env', {
+    vpc,
+    imageId: cloud9.ImageId.AMAZON_LINUX_2,
+    owner: Owner.federatedUser('123456789098', 'Admin'),
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cloud9::EnvironmentEC2', {
+    OwnerArn: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':sts::123456789098:federated-user/Admin']] },
   });
 });
 

@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-cluster-snapshot.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aa99ee21daf05551d3f1467e5e921fb447d0a827c8bd0b93894bd14c371359a8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ab099bc52bae04db6fa587dd79eead2c12f4be2267e0ed0ebf847947bfb72114.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -333,18 +334,6 @@
             "data": "FromSnapshotSecurityGroupfromcdkintegclustersnapshotFromSnapshotRotationSingleUserSecurityGroup8B231219IndirectPort7C6DDFDF"
           }
         ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/Secret/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotSecret9100F61C"
-          }
-        ],
-        "/cdk-integ-cluster-snapshot/FromSnapshot/Secret/Attachment/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FromSnapshotSecretAttachmentB62DA1C6"
-          }
-        ],
         "/cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -433,6 +422,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "ClusterSnapshotIntegDefaultTestDeployAssert647D4685.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

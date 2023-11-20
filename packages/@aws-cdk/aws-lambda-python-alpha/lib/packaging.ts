@@ -27,9 +27,16 @@ export interface PoetryPackagingProps {
    * export with a hash.
    *
    * @see https://github.com/aws/aws-cdk/issues/19232
-   * @default Hashes are NOT included in the exported `requirements.txt` file
+   * @default Hashes are NOT included in the exported `requirements.txt` file.
    */
   readonly poetryIncludeHashes?: boolean;
+
+  /**
+   * Whether to export Poetry dependencies with source repository urls.
+   *
+   * @default URLs are included in the exported `requirements.txt` file.
+   */
+  readonly poetryWithoutUrls?: boolean;
 }
 
 export class Packaging {
@@ -65,6 +72,7 @@ export class Packaging {
       exportCommand: [
 	    'poetry', 'export',
         ...props?.poetryIncludeHashes ? [] : ['--without-hashes'],
+        ...props?.poetryWithoutUrls ? ['--without-urls'] : [],
         '--with-credentials',
         '--format', DependenciesFile.PIP,
         '--output', DependenciesFile.PIP,
@@ -79,11 +87,11 @@ export class Packaging {
     return new Packaging({ dependenciesFile: DependenciesFile.NONE });
   }
 
-  public static fromEntry(entry: string, poetryIncludeHashes?: boolean): Packaging {
+  public static fromEntry(entry: string, poetryIncludeHashes?: boolean, poetryWithoutUrls?: boolean): Packaging {
     if (fs.existsSync(path.join(entry, DependenciesFile.PIPENV))) {
       return this.withPipenv();
     } if (fs.existsSync(path.join(entry, DependenciesFile.POETRY))) {
-      return this.withPoetry({ poetryIncludeHashes });
+      return this.withPoetry({ poetryIncludeHashes, poetryWithoutUrls });
     } else if (fs.existsSync(path.join(entry, DependenciesFile.PIP))) {
       return this.withPip();
     } else {

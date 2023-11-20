@@ -826,7 +826,7 @@
       "OpenIdConnectIssuerUrl"
      ]
     },
-    "CodeHash": "03d2c2b0648898186dc5342981e426a3ac3bd09a96ce66df58a875bde29e4a56"
+    "CodeHash": "9c9c077e1db371e9d23da63db88926d5de460a4c66d88015384bf7156e8ef1b9"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1055,7 +1055,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/a883d0a681e7781ca846bbf9c2406aad5faf161cd6054f975c55535498874c9f.json"
+       "/dddc6aaca7cd529595d0885278f0f9657cd2964ad829b089b0a3d76f38582d47.json"
       ]
      ]
     }
@@ -1105,7 +1105,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/25fd3b4cf6204dc6e6e36db486314408eedf1b7d35b2c07902e894af57f6c2f5.json"
+       "/13a5da1860cf7a7149a55526e7545751ad677e7d38fe488d522954cfdf19196d.json"
       ]
      ]
     }
@@ -1289,7 +1289,18 @@
         }
        },
        "Effect": "Allow",
-       "Resource": "arn:aws:ec2:*:*:security-group/*"
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:*:*:security-group/*"
+         ]
+        ]
+       }
       },
       {
        "Action": [
@@ -1303,7 +1314,18 @@
         }
        },
        "Effect": "Allow",
-       "Resource": "arn:aws:ec2:*:*:security-group/*"
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ec2:*:*:security-group/*"
+         ]
+        ]
+       }
       },
       {
        "Action": [
@@ -1353,9 +1375,42 @@
        },
        "Effect": "Allow",
        "Resource": [
-        "arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*",
-        "arn:aws:elasticloadbalancing:*:*:loadbalancer/net/*/*",
-        "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*"
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":elasticloadbalancing:*:*:loadbalancer/app/*/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":elasticloadbalancing:*:*:loadbalancer/net/*/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":elasticloadbalancing:*:*:targetgroup/*/*"
+          ]
+         ]
+        }
        ]
       },
       {
@@ -1365,10 +1420,54 @@
        ],
        "Effect": "Allow",
        "Resource": [
-        "arn:aws:elasticloadbalancing:*:*:listener-rule/app/*/*/*",
-        "arn:aws:elasticloadbalancing:*:*:listener-rule/net/*/*/*",
-        "arn:aws:elasticloadbalancing:*:*:listener/app/*/*/*",
-        "arn:aws:elasticloadbalancing:*:*:listener/net/*/*/*"
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":elasticloadbalancing:*:*:listener-rule/app/*/*/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":elasticloadbalancing:*:*:listener-rule/net/*/*/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":elasticloadbalancing:*:*:listener/app/*/*/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":elasticloadbalancing:*:*:listener/net/*/*/*"
+          ]
+         ]
+        }
        ]
       },
       {
@@ -1386,9 +1485,42 @@
        },
        "Effect": "Allow",
        "Resource": [
-        "arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*",
-        "arn:aws:elasticloadbalancing:*:*:loadbalancer/net/*/*",
-        "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*"
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":elasticloadbalancing:*:*:loadbalancer/app/*/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":elasticloadbalancing:*:*:loadbalancer/net/*/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":elasticloadbalancing:*:*:targetgroup/*/*"
+          ]
+         ]
+        }
        ]
       },
       {
@@ -1397,7 +1529,18 @@
         "elasticloadbalancing:RegisterTargets"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*"
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":elasticloadbalancing:*:*:targetgroup/*/*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -1477,7 +1620,7 @@
     },
     "Release": "aws-load-balancer-controller",
     "Chart": "aws-load-balancer-controller",
-    "Version": "1.5.2",
+    "Version": "1.6.2",
     "Wait": true,
     "Timeout": "900s",
     "Values": {
@@ -1496,7 +1639,7 @@
        {
         "Ref": "Vpc8378EB38"
        },
-       "\",\"image\":{\"repository\":\"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller\",\"tag\":\"v2.5.1\"}}"
+       "\",\"image\":{\"repository\":\"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller\",\"tag\":\"v2.6.2\"}}"
       ]
      ]
     },
@@ -1568,7 +1711,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "03d2c2b0648898186dc5342981e426a3ac3bd09a96ce66df58a875bde29e4a56.zip"
+     "S3Key": "9c9c077e1db371e9d23da63db88926d5de460a4c66d88015384bf7156e8ef1b9.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -1614,7 +1757,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a913a2614f4e118cb83fa3c0dd17575c9adbbdbad4da17aecd505282a25513f8.zip"
+     "S3Key": "3e61d858eaa7724170872a455b8f788d5fcf18adba89aadbe603a52dab59d917.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -1836,7 +1979,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
+     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Provider)",
     "Environment": {

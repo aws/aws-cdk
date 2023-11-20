@@ -18,6 +18,7 @@
         "incremental": true
     },
     "include": [
+        "config.ts",
         "**/*.ts",
         "**/*.d.ts"
     ],

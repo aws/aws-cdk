@@ -55,7 +55,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "corsapitestDeployment2BF1633Adc24ac182461aecc920a8724663ce2a1": {
+  "corsapitestDeployment2BF1633A72d0197fd6797ee251232efbdce56b8a": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -75,7 +75,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "corsapitestDeployment2BF1633Adc24ac182461aecc920a8724663ce2a1"
+     "Ref": "corsapitestDeployment2BF1633A72d0197fd6797ee251232efbdce56b8a"
     },
     "RestApiId": {
      "Ref": "corsapitest8682546E"
@@ -471,7 +471,7 @@
         "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
        },
        "ResponseTemplates": {
-        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params().header.get(\"origin\")) #end\n#if($origin == \"https://www.test-cors.org\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\")\n  #set($origin = $input.params().header.get(\"origin\"))\n#end\n#if($origin == \"https://www.test-cors.org\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
        },
        "StatusCode": "204"
       }
@@ -547,7 +547,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "handlerServiceRole187D5A5A"

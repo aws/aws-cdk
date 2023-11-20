@@ -106,7 +106,7 @@
       {
        "Action": [
         "ecs:UpdateService",
-        "rds:CreateDBSnapshot",
+        "kms:Encrypt",
         "rds:StopDBInstance",
         "ssm:PutParameter"
        ],
@@ -131,7 +131,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "333b608679b1fd0bcebf74bb5053b8664245c5f7903d27c7f6604bdc3d5b88aa.zip"
+     "S3Key": "582949af1835c40c50e00a38187ee273df77f397293349e1e55dca63f063f8e8.zip"
     },
     "Handler": "index.handler",
     "MemorySize": 256,
@@ -148,58 +148,6 @@
     "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRoleDefaultPolicy4D43A7C1",
     "AWSb4cf1abd4e4f4bc699441af7ccd9ec37ServiceRole9FFE9C50"
    ]
-  },
-  "PatternRule4AF6D328": {
-   "Type": "AWS::Events::Rule",
-   "Properties": {
-    "EventPattern": {
-     "detail-type": [
-      "RDS DB Instance Event"
-     ],
-     "detail": {
-      "Message": [
-       "DB instance restarted"
-      ]
-     }
-    },
-    "State": "ENABLED",
-    "Targets": [
-     {
-      "Arn": {
-       "Fn::GetAtt": [
-        "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
-        "Arn"
-       ]
-      },
-      "Id": "Target0",
-      "InputTransformer": {
-       "InputPathsMap": {
-        "detail-SourceArn": "$.detail.SourceArn"
-       },
-       "InputTemplate": "{\"service\":\"RDS\",\"action\":\"createDBSnapshot\",\"parameters\":{\"DBInstanceIdentifier\":<detail-SourceArn>}}"
-      }
-     }
-    ]
-   }
-  },
-  "PatternRuleAllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464BB49C5D3": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
-      "Arn"
-     ]
-    },
-    "Principal": "events.amazonaws.com",
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "PatternRule4AF6D328",
-      "Arn"
-     ]
-    }
-   }
   },
   "TestParameter95DD6E25": {
    "Type": "AWS::SSM::Parameter",
@@ -272,6 +220,99 @@
    "DependsOn": [
     "TestParameter95DD6E25"
    ]
+  },
+  "EncryptionKey1B843E66": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "EncryptDataRule79774425": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "EventPattern": {
+     "source": [
+      "cdk.integ"
+     ],
+     "detail-type": [
+      "EncryptData"
+     ],
+     "detail": {
+      "KeyId": [
+       {
+        "Ref": "EncryptionKey1B843E66"
+       }
+      ]
+     }
+    },
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+        "Arn"
+       ]
+      },
+      "Id": "Target0",
+      "InputTransformer": {
+       "InputPathsMap": {
+        "detail-KeyId": "$.detail.KeyId",
+        "detail-Plaintext": "$.detail.Plaintext"
+       },
+       "InputTemplate": "{\"service\":\"KMS\",\"action\":\"encrypt\",\"parameters\":{\"KeyId\":<detail-KeyId>,\"Plaintext\":<detail-Plaintext>}}"
+      }
+     }
+    ]
+   }
+  },
+  "EncryptDataRuleAllowEventRuleawscdkawsapitargetintegEncryptDataRuleEncryptDataRuleTarget0HandlerC3017ED86520046E": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "EncryptDataRule79774425",
+      "Arn"
+     ]
+    }
+   }
   }
  },
  "Outputs": {
@@ -281,6 +322,14 @@
    },
    "Export": {
     "Name": "aws-cdk-aws-api-target-integ:ExportsOutputRefTestParameter95DD6E25D868FBA1"
+   }
+  },
+  "ExportsOutputRefEncryptionKey1B843E66D737BCFC": {
+   "Value": {
+    "Ref": "EncryptionKey1B843E66"
+   },
+   "Export": {
+    "Name": "aws-cdk-aws-api-target-integ:ExportsOutputRefEncryptionKey1B843E66D737BCFC"
    }
   }
  },

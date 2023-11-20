@@ -8,7 +8,7 @@ import { ContainerImage, ContainerImageConfig } from '../container-image';
  * Regex pattern to check if it is an ECR image URL.
  *
  */
-const ECR_IMAGE_REGEX = /(^[a-zA-Z0-9][a-zA-Z0-9-_]*).dkr.ecr.([a-zA-Z0-9][a-zA-Z0-9-_]*).amazonaws.com(.cn)?\/.*/;
+const ECR_IMAGE_REGEX = /(^[a-zA-Z0-9][a-zA-Z0-9-_]*)\.dkr\.ecr\.([a-zA-Z0-9][a-zA-Z0-9-_]*)\.amazonaws.com(\.cn)?\/.*/;
 
 /**
  * The properties for an image hosted in a public or private repository.

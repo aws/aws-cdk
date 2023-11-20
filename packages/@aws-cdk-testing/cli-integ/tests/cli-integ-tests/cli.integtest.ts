@@ -1,7 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR } from '../../lib';
+import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -570,6 +570,23 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
     }
   }
 }));
+
+// TODO add go back in when template synths properly
+['typescript', 'python', 'csharp', 'java'].forEach(language => {
+  integTest(`cdk migrate ${language}`, withCDKMigrateFixture(language, async (fixture) => {
+    if (language === 'python') {
+      await fixture.shell(['pip', 'install', '-r', 'requirements.txt']);
+    }
+
+    const stackArn = await fixture.cdkDeploy(fixture.stackNamePrefix, { neverRequireApproval: true, verbose: true, captureStderr: false }, true);
+    const response = await fixture.aws.cloudFormation('describeStacks', {
+      StackName: stackArn,
+    });
+
+    expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+    await fixture.cdkDestroy(fixture.stackNamePrefix);
+  }));
+});
 
 integTest('cdk diff', withDefaultFixture(async (fixture) => {
   const diff1 = await fixture.cdk(['diff', fixture.fullStackName('test-1')]);
@@ -1207,6 +1224,48 @@ integTest('hotswap deployment supports Lambda function\'s description and enviro
   // "CREATE_COMPLETE"
   expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
   expect(deployOutput).toContain(`Lambda Function '${functionName}' hotswapped!`);
+}));
+
+integTest('hotswap deployment supports Fn::ImportValue intrinsic', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  try {
+    await fixture.cdkDeploy('export-value-stack');
+    const stackArn = await fixture.cdkDeploy('lambda-hotswap', {
+      captureStderr: false,
+      modEnv: {
+        DYNAMIC_LAMBDA_PROPERTY_VALUE: 'original value',
+        USE_IMPORT_VALUE_LAMBDA_PROPERTY: 'true',
+      },
+    });
+
+    // WHEN
+    const deployOutput = await fixture.cdkDeploy('lambda-hotswap', {
+      options: ['--hotswap'],
+      captureStderr: true,
+      onlyStderr: true,
+      modEnv: {
+        DYNAMIC_LAMBDA_PROPERTY_VALUE: 'new value',
+        USE_IMPORT_VALUE_LAMBDA_PROPERTY: 'true',
+      },
+    });
+
+    const response = await fixture.aws.cloudFormation('describeStacks', {
+      StackName: stackArn,
+    });
+    const functionName = response.Stacks?.[0].Outputs?.[0].OutputValue;
+
+    // THEN
+
+    // The deployment should not trigger a full deployment, thus the stack's status must remains
+    // "CREATE_COMPLETE"
+    expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+    expect(deployOutput).toContain(`Lambda Function '${functionName}' hotswapped!`);
+
+  } finally {
+    // Ensure cleanup in reverse order due to use of import/export
+    await fixture.cdkDestroy('lambda-hotswap');
+    await fixture.cdkDestroy('export-value-stack');
+  }
 }));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {

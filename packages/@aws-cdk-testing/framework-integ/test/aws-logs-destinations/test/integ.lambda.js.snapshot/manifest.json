@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "lambda-logssubscription-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0fa964638455785571f47840cf02373f81c828633b0b7471e04141eaec2212a7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1ae239af51ecba6dc371cda75de8821f8f97dc567733a1dc1c30564802639aa0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -87,6 +88,12 @@
             "data": "CustomRuleB1CBBADE"
           }
         ],
+        "/lambda-logssubscription-integ/EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
+          }
+        ],
         "/lambda-logssubscription-integ/EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -145,10 +152,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "LambdaIntegDefaultTestDeployAssert7BC530B7.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b70f110ec6e24d3c8cf7e2cb1b89d2fc3fc469ff97cc1980c946b795e939baad.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0141393104a56e0ff9c51907ef986456d1e8a12edd10d0a0567fc43b57fdcaa2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

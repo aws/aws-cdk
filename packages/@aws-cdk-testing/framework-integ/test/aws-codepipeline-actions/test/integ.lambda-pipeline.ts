@@ -4,6 +4,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App();
 
@@ -34,7 +35,7 @@ const lambdaFun = new lambda.Function(stack, 'LambdaFun', {
     };
   `),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 const lambdaStage = pipeline.addStage({ stageName: 'Lambda' });
 lambdaStage.addAction(new cpactions.LambdaInvokeAction({

@@ -184,7 +184,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -345,7 +345,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -520,7 +520,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -721,7 +721,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {
@@ -759,7 +759,7 @@
                 "path": "Destinations/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -779,7 +779,7 @@
                             "path": "Destinations/DefaultTest/DeployAssert/LambdaInvoked12df417a1b74909abb3ea643735a310/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.69"
+                              "version": "10.2.70"
                             }
                           }
                         },
@@ -851,7 +851,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "version": "10.2.70"
                     }
                   },
                   "AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0": {
@@ -867,7 +867,7 @@
                             "path": "Destinations/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.69"
+                              "version": "10.2.70"
                             }
                           }
                         },
@@ -947,7 +947,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },

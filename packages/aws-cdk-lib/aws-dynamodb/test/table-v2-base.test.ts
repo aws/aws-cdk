@@ -65,7 +65,7 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'Resource',
+                'GlobalTable89F068B2',
                 'Arn',
               ],
             },
@@ -115,7 +115,7 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'Resource',
+                'GlobalTable89F068B2',
                 'Arn',
               ],
             },
@@ -184,7 +184,7 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'Resource',
+                'GlobalTable89F068B2',
                 'Arn',
               ],
             },
@@ -232,7 +232,7 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'Resource',
+                'GlobalTable89F068B2',
                 'Arn',
               ],
             },
@@ -301,7 +301,7 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'Resource',
+                'GlobalTable89F068B2',
                 'Arn',
               ],
             },
@@ -356,7 +356,7 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'Resource',
+                'GlobalTable89F068B2',
                 'Arn',
               ],
             },
@@ -432,7 +432,7 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'Resource',
+                'GlobalTable89F068B2',
                 'Arn',
               ],
             },
@@ -474,7 +474,7 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'Resource',
+                'GlobalTable89F068B2',
                 'Arn',
               ],
             },
@@ -537,7 +537,7 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'Resource',
+                'GlobalTable89F068B2',
                 'Arn',
               ],
             },
@@ -595,7 +595,7 @@ describe('grants', () => {
             Resource: [
               {
                 'Fn::GetAtt': [
-                  'Resource',
+                  'GlobalTable89F068B2',
                   'Arn',
                 ],
               },
@@ -605,7 +605,7 @@ describe('grants', () => {
                   [
                     {
                       'Fn::GetAtt': [
-                        'Resource',
+                        'GlobalTable89F068B2',
                         'Arn',
                       ],
                     },
@@ -653,7 +653,7 @@ describe('grants', () => {
             ],
             Resource: {
               'Fn::GetAtt': [
-                'Resource',
+                'GlobalTable89F068B2',
                 'StreamArn',
               ],
             },
@@ -694,7 +694,7 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'Resource',
+                'GlobalTable89F068B2',
                 'StreamArn',
               ],
             },
@@ -708,7 +708,7 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'Resource',
+                'GlobalTable89F068B2',
                 'StreamArn',
               ],
             },
@@ -749,7 +749,7 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'Resource',
+                'GlobalTable89F068B2',
                 'StreamArn',
               ],
             },
@@ -776,7 +776,7 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'Resource',
+                'GlobalTable89F068B2',
                 'StreamArn',
               ],
             },
@@ -812,7 +812,7 @@ describe('grants', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'Resource',
+                'GlobalTable89F068B2',
                 'StreamArn',
               ],
             },
@@ -871,7 +871,7 @@ describe('grants', () => {
                   },
                   ':table/',
                   {
-                    Ref: 'Resource',
+                    Ref: 'GlobalTable89F068B2',
                   },
                   '/stream/*',
                 ],
@@ -907,7 +907,7 @@ describe('grants', () => {
                   },
                   ':table/',
                   {
-                    Ref: 'Resource',
+                    Ref: 'GlobalTable89F068B2',
                   },
                   '/stream/*',
                 ],
@@ -986,7 +986,7 @@ describe('grants', () => {
                   },
                   ':table/',
                   {
-                    Ref: 'Resource',
+                    Ref: 'GlobalTable89F068B2',
                   },
                 ],
               ],
@@ -1355,7 +1355,7 @@ describe('metrics', () => {
       },
       dimensions: {
         TableName: {
-          Ref: 'Resource',
+          Ref: 'TableCD117FA1',
         },
       },
       namespace: 'AWS/DynamoDB',
@@ -1381,7 +1381,7 @@ describe('metrics', () => {
       },
       dimensions: {
         TableName: {
-          Ref: 'Resource',
+          Ref: 'TableCD117FA1',
         },
       },
       namespace: 'AWS/DynamoDB',
@@ -1440,7 +1440,7 @@ describe('metrics', () => {
           dimensions: {
             Operation: 'GetItem',
             TableName: {
-              Ref: 'Resource',
+              Ref: 'TableCD117FA1',
             },
           },
           metricName: 'SystemErrors',
@@ -1457,7 +1457,7 @@ describe('metrics', () => {
           dimensions: {
             Operation: 'PutItem',
             TableName: {
-              Ref: 'Resource',
+              Ref: 'TableCD117FA1',
             },
           },
           metricName: 'SystemErrors',
@@ -1507,7 +1507,7 @@ describe('metrics', () => {
         amount: 5,
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
       },
-      dimensions: { TableName: { Ref: 'Resource' } },
+      dimensions: { TableName: { Ref: 'TableCD117FA1' } },
       namespace: 'AWS/DynamoDB',
       metricName: 'ConditionalCheckFailedRequests',
       statistic: 'Sum',
@@ -1545,7 +1545,7 @@ describe('metrics', () => {
         amount: 5,
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
       },
-      dimensions: { TableName: { Ref: 'Resource' }, Operation: 'GetItem' },
+      dimensions: { TableName: { Ref: 'TableCD117FA1' }, Operation: 'GetItem' },
       namespace: 'AWS/DynamoDB',
       metricName: 'SuccessfulRequestLatency',
       statistic: 'Average',
@@ -1568,7 +1568,7 @@ describe('metrics', () => {
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
       },
       metricName: 'ThrottledRequests',
-      dimensions: { TableName: { Ref: 'Resource' }, Operation: 'PutItem' },
+      dimensions: { TableName: { Ref: 'TableCD117FA1' }, Operation: 'PutItem' },
       namespace: 'AWS/DynamoDB',
       account: { Ref: 'AWS::AccountId' },
       region: { Ref: 'AWS::Region' },
@@ -1598,7 +1598,7 @@ describe('metrics', () => {
           dimensions: {
             Operation: 'GetItem',
             TableName: {
-              Ref: 'Resource',
+              Ref: 'TableCD117FA1',
             },
           },
           metricName: 'ThrottledRequests',
@@ -1615,7 +1615,7 @@ describe('metrics', () => {
           dimensions: {
             Operation: 'PutItem',
             TableName: {
-              Ref: 'Resource',
+              Ref: 'TableCD117FA1',
             },
           },
           metricName: 'ThrottledRequests',
@@ -1766,7 +1766,7 @@ describe('metrics', () => {
         amount: 5,
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
       },
-      dimensions: { TableName: { Ref: 'Resource' } },
+      dimensions: { TableName: { Ref: 'TableCD117FA1' } },
       namespace: 'AWS/DynamoDB',
       metricName: 'ThrottledRequests',
       statistic: 'Sum',
@@ -1802,7 +1802,7 @@ describe('metrics', () => {
         amount: 5,
         unit: { label: 'minutes', isoLabel: 'M', inMillis: 60000 },
       },
-      dimensions: { TableName: { Ref: 'Resource' }, Operation: 'GetItem' },
+      dimensions: { TableName: { Ref: 'TableCD117FA1' }, Operation: 'GetItem' },
       namespace: 'AWS/DynamoDB',
       metricName: 'SystemErrors',
       statistic: 'Sum',

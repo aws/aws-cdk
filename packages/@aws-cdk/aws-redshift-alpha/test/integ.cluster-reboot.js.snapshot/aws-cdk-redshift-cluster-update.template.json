@@ -360,7 +360,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
+     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-update/Cluster/ResourceProvider)",
     "Environment": {
@@ -500,7 +500,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "150d6d543b3449c5f0fdc67c7b539346a3d0b79a88d6c709e5366b4bc9e3071a.zip"
+     "S3Key": "ee4fd508abceff33b2eb40d478daa3c4050865ba44eadbb24ac42fb53689da48.zip"
     },
     "Handler": "index.handler",
     "Role": {

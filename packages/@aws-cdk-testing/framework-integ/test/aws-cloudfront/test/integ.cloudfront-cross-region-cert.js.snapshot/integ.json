@@ -1,6 +1,6 @@
 {
   "enableLookups": true,
-  "version": "32.0.0",
+  "version": "34.0.0",
   "testCases": {
     "integ-cloudfront-cross-region-acm/DefaultTest": {
       "stacks": [

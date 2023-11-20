@@ -758,12 +758,12 @@
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
                     "copyTagsToSnapshot": true,
-                    "dbClusterParameterGroupName": "default.aurora-mysql5.7",
+                    "dbClusterParameterGroupName": "default.aurora-mysql8.0",
                     "dbSubnetGroupName": {
                       "Ref": "ClusterSubnetsDCFA5CB7"
                     },
                     "engine": "aurora-mysql",
-                    "engineVersion": "5.7.mysql_aurora.2.10.2",
+                    "engineVersion": "8.0.mysql_aurora.3.04.0",
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -820,7 +820,7 @@
                     "dbClusterIdentifier": {
                       "Ref": "ClusterEB0386A7"
                     },
-                    "dbInstanceClass": "db.t3.small",
+                    "dbInstanceClass": "db.t3.medium",
                     "dbSubnetGroupName": {
                       "Ref": "ClusterSubnetsDCFA5CB7"
                     },
@@ -849,7 +849,7 @@
                     "dbClusterIdentifier": {
                       "Ref": "ClusterEB0386A7"
                     },
-                    "dbInstanceClass": "db.t3.small",
+                    "dbInstanceClass": "db.t3.medium",
                     "dbSubnetGroupName": {
                       "Ref": "ClusterSubnetsDCFA5CB7"
                     },
@@ -1054,7 +1054,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "4d4dc74a9beb8e44733e1a95b570d30a58a658c6b1896bf7da5db1940d5fed82.zip"
+                          "s3Key": "37796da9adf5863c68c608fe0068001d55f6c1d1e364a13eeee6b17112bea3b5.zip"
                         },
                         "handler": "index.onEventHandler",
                         "role": {
@@ -1063,7 +1063,7 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs16.x"
+                        "runtime": "nodejs18.x"
                       }
                     },
                     "constructInfo": {
@@ -1231,7 +1231,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "4d4dc74a9beb8e44733e1a95b570d30a58a658c6b1896bf7da5db1940d5fed82.zip"
+                          "s3Key": "37796da9adf5863c68c608fe0068001d55f6c1d1e364a13eeee6b17112bea3b5.zip"
                         },
                         "handler": "index.isCompleteHandler",
                         "role": {
@@ -1240,7 +1240,7 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs16.x"
+                        "runtime": "nodejs18.x"
                       }
                     },
                     "constructInfo": {
@@ -1442,7 +1442,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
                             "environment": {
@@ -1663,7 +1663,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
                             "environment": {
@@ -1881,7 +1881,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
                             "environment": {
@@ -2210,76 +2210,6 @@
                   "version": "0.0.0"
                 }
               },
-              "Secret": {
-                "id": "Secret",
-                "path": "cdk-integ-cluster-snapshot/FromSnapshot/Secret",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "cdk-integ-cluster-snapshot/FromSnapshot/Secret/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
-                      "aws:cdk:cloudformation:props": {
-                        "description": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "Generated by the CDK for stack: ",
-                              {
-                                "Ref": "AWS::StackName"
-                              }
-                            ]
-                          ]
-                        },
-                        "generateSecretString": {
-                          "passwordLength": 30,
-                          "secretStringTemplate": "{\"username\":\"admin\"}",
-                          "generateStringKey": "password",
-                          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Attachment": {
-                    "id": "Attachment",
-                    "path": "cdk-integ-cluster-snapshot/FromSnapshot/Secret/Attachment",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "cdk-integ-cluster-snapshot/FromSnapshot/Secret/Attachment/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
-                          "aws:cdk:cloudformation:props": {
-                            "secretId": {
-                              "Ref": "FromSnapshotSecret9100F61C"
-                            },
-                            "targetId": {
-                              "Ref": "FromSnapshotEE0682C5"
-                            },
-                            "targetType": "AWS::RDS::DBCluster"
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecretTargetAttachment",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_rds.DatabaseSecret",
-                  "version": "0.0.0"
-                }
-              },
               "SnapshotSecret": {
                 "id": "SnapshotSecret",
                 "path": "cdk-integ-cluster-snapshot/FromSnapshot/SnapshotSecret",
@@ -2446,12 +2376,12 @@
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
                     "copyTagsToSnapshot": true,
-                    "dbClusterParameterGroupName": "default.aurora-mysql5.7",
+                    "dbClusterParameterGroupName": "default.aurora-mysql8.0",
                     "dbSubnetGroupName": {
                       "Ref": "FromSnapshotSubnets9ED4B8EE"
                     },
                     "engine": "aurora-mysql",
-                    "engineVersion": "5.7.mysql_aurora.2.10.2",
+                    "engineVersion": "8.0.mysql_aurora.3.04.0",
                     "masterUserPassword": {
                       "Fn::Join": [
                         "",
@@ -2502,7 +2432,7 @@
                     "dbClusterIdentifier": {
                       "Ref": "FromSnapshotEE0682C5"
                     },
-                    "dbInstanceClass": "db.t3.small",
+                    "dbInstanceClass": "db.t3.medium",
                     "dbSubnetGroupName": {
                       "Ref": "FromSnapshotSubnets9ED4B8EE"
                     },
@@ -2531,7 +2461,7 @@
                     "dbClusterIdentifier": {
                       "Ref": "FromSnapshotEE0682C5"
                     },
-                    "dbInstanceClass": "db.t3.small",
+                    "dbInstanceClass": "db.t3.medium",
                     "dbSubnetGroupName": {
                       "Ref": "FromSnapshotSubnets9ED4B8EE"
                     },

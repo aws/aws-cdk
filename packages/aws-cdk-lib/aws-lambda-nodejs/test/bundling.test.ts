@@ -11,7 +11,9 @@ import { PackageInstallation } from '../lib/package-installation';
 import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
 
-const STANDARD_RUNTIME = Runtime.NODEJS_16_X;
+const STANDARD_RUNTIME = Runtime.NODEJS_18_X;
+const STANDARD_TARGET = 'node18';
+const STANDARD_EXTERNAL = '@aws-sdk/*';
 
 let detectPackageInstallationMock: jest.SpyInstance<PackageInstallation | undefined>;
 const app = new App();
@@ -68,7 +70,7 @@ test('esbuild bundling in Docker', () => {
       },
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node16 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk --loader:.png=dataurl',
+        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:${STANDARD_EXTERNAL} --loader:.png=dataurl`,
       ],
       workingDirectory: '/',
     }),
@@ -98,7 +100,7 @@ test('esbuild bundling with handler named index.ts', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/lib/index.ts" --target=node16 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
+        `esbuild --bundle "/asset-input/lib/index.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:${STANDARD_EXTERNAL}`,
       ],
     }),
   });
@@ -120,7 +122,7 @@ test('esbuild bundling with tsx handler', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/lib/handler.tsx" --target=node16 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk',
+        `esbuild --bundle "/asset-input/lib/handler.tsx" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:${STANDARD_EXTERNAL}`,
       ],
     }),
   });
@@ -173,7 +175,7 @@ test('esbuild bundling with externals and dependencies', () => {
       command: [
         'bash', '-c',
         [
-          'esbuild --bundle "/asset-input/test/bundling.test.ts" --target=node16 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
+          `esbuild --bundle "/asset-input/test/bundling.test.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay`,
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
           'cp "/asset-input/package-lock.json" "/asset-output/package-lock.json"',
           'cd "/asset-output"',
@@ -234,7 +236,7 @@ test('esbuild bundling with esbuild options', () => {
         [
           'esbuild --bundle "/asset-input/lib/handler.ts"',
           '--target=es2020 --platform=node --format=esm --outfile="/asset-output/index.mjs"',
-          '--minify --sourcemap --sources-content=false --external:aws-sdk --loader:.png=dataurl',
+          `--minify --sourcemap --sources-content=false --external:${STANDARD_EXTERNAL} --loader:.png=dataurl`,
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
@@ -279,8 +281,8 @@ test('esbuild bundling source map default', () => {
       command: [
         'bash', '-c',
         [
-          'esbuild --bundle "/asset-input/lib/handler.ts" --target=node16 --platform=node --outfile="/asset-output/index.js"',
-          '--sourcemap --external:aws-sdk',
+          `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+          `--sourcemap --external:${STANDARD_EXTERNAL}`,
         ].join(' '),
       ],
     }),
@@ -302,7 +304,7 @@ test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node18 --platform=node --outfile="/asset-output/index.js" --external:@aws-sdk/*',
+        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:@aws-sdk/*`,
       ],
     }),
   });
@@ -326,8 +328,8 @@ test('esbuild bundling source map inline', () => {
       command: [
         'bash', '-c',
         [
-          'esbuild --bundle "/asset-input/lib/handler.ts" --target=node16 --platform=node --outfile="/asset-output/index.js"',
-          '--sourcemap=inline --external:aws-sdk',
+          `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+          `--sourcemap=inline --external:${STANDARD_EXTERNAL}`,
         ].join(' '),
       ],
     }),
@@ -339,7 +341,7 @@ test('esbuild bundling is correctly done with custom runtime matching predefined
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: new Runtime('nodejs16.x', RuntimeFamily.NODEJS, { supportsInlineCode: true }),
+    runtime: new Runtime(STANDARD_RUNTIME.name, RuntimeFamily.NODEJS, { supportsInlineCode: true }),
     architecture: Architecture.X86_64,
     sourceMapMode: SourceMapMode.INLINE,
   });
@@ -350,8 +352,8 @@ test('esbuild bundling is correctly done with custom runtime matching predefined
       command: [
         'bash', '-c',
         [
-          'esbuild --bundle "/asset-input/lib/handler.ts" --target=node16 --platform=node --outfile="/asset-output/index.js"',
-          '--sourcemap=inline --external:aws-sdk',
+          `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+          `--sourcemap=inline --external:${STANDARD_EXTERNAL}`,
         ].join(' '),
       ],
     }),
@@ -375,8 +377,8 @@ test('esbuild bundling source map enabled when only source map mode exists', () 
       command: [
         'bash', '-c',
         [
-          'esbuild --bundle "/asset-input/lib/handler.ts" --target=node16 --platform=node --outfile="/asset-output/index.js"',
-          '--sourcemap=inline --external:aws-sdk',
+          `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+          `--sourcemap=inline --external:${STANDARD_EXTERNAL}`,
         ].join(' '),
       ],
     }),
@@ -594,7 +596,7 @@ test('esbuild bundling with projectRoot', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/lib/index.ts" --target=node16 --platform=node --outfile="/asset-output/index.js" --external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
+        `esbuild --bundle "/asset-input/lib/index.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:${STANDARD_EXTERNAL} --tsconfig=/asset-input/lib/custom-tsconfig.ts`,
       ],
     }),
   });
@@ -621,7 +623,7 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
       command: [
         'bash', '-c',
         [
-          'esbuild --bundle "/asset-input/packages/aws-cdk-lib/aws-lambda-nodejs/test/bundling.test.ts" --target=node16 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
+          `esbuild --bundle "/asset-input/packages/aws-cdk-lib/aws-lambda-nodejs/test/bundling.test.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay`,
           `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
           'cp "/asset-input/common/package-lock.json" "/asset-output/package-lock.json"',
           'cd "/asset-output"',
@@ -655,7 +657,7 @@ test('esbuild bundling with pre compilations', () => {
         'bash', '-c',
         [
           `tsc \"/asset-input/test/bundling.test.ts\" ${compilerOptions} &&`,
-          'esbuild --bundle \"/asset-input/test/bundling.test.js\" --target=node16 --platform=node --outfile=\"/asset-output/index.js\" --external:aws-sdk',
+          `esbuild --bundle \"/asset-input/test/bundling.test.js\" --target=${STANDARD_TARGET} --platform=node --outfile=\"/asset-output/index.js\" --external:${STANDARD_EXTERNAL}`,
         ].join(' '),
       ],
     }),
@@ -863,7 +865,7 @@ test('bundling using NODEJS_LATEST doesn\'t externalize anything by default', ()
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'esbuild --bundle "/asset-input/lib/handler.ts" --target=node18 --platform=node --outfile="/asset-output/index.js"',
+        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
       ],
     }),
   });
@@ -874,7 +876,7 @@ test('bundling with <= Node16 warns when sdk v3 is external', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: STANDARD_RUNTIME,
+    runtime: Runtime.NODEJS_16_X,
     architecture: Architecture.X86_64,
     externalModules: ['@aws-sdk/client-s3'],
   });

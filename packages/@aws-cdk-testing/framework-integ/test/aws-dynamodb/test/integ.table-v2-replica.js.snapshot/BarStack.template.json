@@ -55,7 +55,7 @@
           },
           ":table/",
           {
-           "Ref": "Resource"
+           "Ref": "GlobalTable89F068B2"
           }
          ]
         ]
@@ -96,7 +96,7 @@
     "FunctionServiceRole675BB04A"
    ]
   },
-  "Resource": {
+  "GlobalTable89F068B2": {
    "Type": "AWS::DynamoDB::GlobalTable",
    "Properties": {
     "AttributeDefinitions": [

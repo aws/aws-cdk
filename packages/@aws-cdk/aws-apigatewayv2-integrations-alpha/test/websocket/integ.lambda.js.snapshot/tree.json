@@ -85,7 +85,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -176,7 +176,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -267,7 +267,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -358,7 +358,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -430,7 +430,7 @@
                               {
                                 "Ref": "mywsapi32E6CE11"
                               },
-                              "/*/*$connect"
+                              "/*$connect"
                             ]
                           ]
                         }
@@ -564,7 +564,7 @@
                               {
                                 "Ref": "mywsapi32E6CE11"
                               },
-                              "/*/*$disconnect"
+                              "/*$disconnect"
                             ]
                           ]
                         }
@@ -698,7 +698,7 @@
                               {
                                 "Ref": "mywsapi32E6CE11"
                               },
-                              "/*/*$default"
+                              "/*$default"
                             ]
                           ]
                         }
@@ -832,7 +832,7 @@
                               {
                                 "Ref": "mywsapi32E6CE11"
                               },
-                              "/*/*sendmessage"
+                              "/*sendmessage"
                             ]
                           ]
                         }
@@ -997,7 +997,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },

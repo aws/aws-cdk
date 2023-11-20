@@ -89,7 +89,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0aad228bf32d2d8751bf3c64468fd63177e1d0088a9b7114239e668c667d9674.zip"
+     "S3Key": "8fa9d83f2bd4f331f203edd87812df96f2179d4be5b245a891f504596b0517b1.zip"
     },
     "Handler": "index.onEvent",
     "Role": {
@@ -98,7 +98,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRoleDefaultPolicy10D24725",
@@ -185,7 +185,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
+     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3file-provider/s3file-provider)",
     "Environment": {
@@ -513,7 +513,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
+     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
     "Environment": {
@@ -650,7 +650,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
+     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
     "Environment": {
@@ -784,7 +784,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
+     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider)",
     "Environment": {

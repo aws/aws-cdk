@@ -19,13 +19,15 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
   /**
    * The runtime language to use to evaluate the expression.
    *
-   * @default lambda.Runtime.NODEJS_16_X
+   * @default lambda.Runtime.NODEJS_18_X
    */
   readonly runtime?: lambda.Runtime;
 }
 
 /**
  * The event received by the Lambda function
+ *
+ * Shared definition with packages/@aws-cdk/custom-resource-handlers/lib/custom-resources/aws-stepfunctions-tasks/index.ts
  *
  * @internal
  */
@@ -119,7 +121,7 @@ function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
     uuid,
     handler: 'index.handler',
     lambdaPurpose,
-    code: lambda.Code.fromAsset(path.join(__dirname, 'eval-nodejs-handler'), {
+    code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-stepfunctions-tasks', 'eval-nodejs-handler'), {
       exclude: ['*.ts'],
     }),
   });
