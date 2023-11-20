@@ -57,11 +57,11 @@ listener.addEndpointGroup('Group2', {
 
 ```ts
 const accelerator = new globalaccelerator.Accelerator(this, 'Accelerator', {
-  IpAddresses: [
+  ipAddresses: [
     '1.1.1.1',
     '2.2.2.2',
   ],
-  IpAddressType: globalaccelerator.IpAddressType.IPV4,
+  ipAddressType: globalaccelerator.IpAddressType.IPV4,
 });
 ```
 
