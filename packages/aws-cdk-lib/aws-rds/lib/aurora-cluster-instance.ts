@@ -456,8 +456,6 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
       internetConnected = ownedCluster.vpc.selectSubnets(ownedCluster.vpcSubnets).internetConnectivityEstablished;
       const isInPublicSubnet = ownedCluster.vpcSubnets && ownedCluster.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
       publiclyAccessible = isInPublicSubnet && (props.publiclyAccessible ?? true);
-    } else {
-      publiclyAccessible = props.publiclyAccessible;
     }
 
     // Get the actual subnet objects so we can depend on internet connectivity.
