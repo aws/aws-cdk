@@ -258,37 +258,49 @@ export class Runtime {
    * The .NET Core 1.0 runtime (dotnetcore1.0)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
-  public static readonly DOTNET_CORE_1 = new Runtime('dotnetcore1.0', RuntimeFamily.DOTNET_CORE);
+  public static readonly DOTNET_CORE_1 = new Runtime('dotnetcore1.0', RuntimeFamily.DOTNET_CORE, {
+    isDeprecated: true,
+  });
 
   /**
    * The .NET Core 2.0 runtime (dotnetcore2.0)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
-  public static readonly DOTNET_CORE_2 = new Runtime('dotnetcore2.0', RuntimeFamily.DOTNET_CORE);
+  public static readonly DOTNET_CORE_2 = new Runtime('dotnetcore2.0', RuntimeFamily.DOTNET_CORE, {
+    isDeprecated: true,
+  });
 
   /**
    * The .NET Core 2.1 runtime (dotnetcore2.1)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
-  public static readonly DOTNET_CORE_2_1 = new Runtime('dotnetcore2.1', RuntimeFamily.DOTNET_CORE);
+  public static readonly DOTNET_CORE_2_1 = new Runtime('dotnetcore2.1', RuntimeFamily.DOTNET_CORE, {
+    isDeprecated: true,
+  });
 
   /**
    * The .NET Core 3.1 runtime (dotnetcore3.1)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
-  public static readonly DOTNET_CORE_3_1 = new Runtime('dotnetcore3.1', RuntimeFamily.DOTNET_CORE);
+  public static readonly DOTNET_CORE_3_1 = new Runtime('dotnetcore3.1', RuntimeFamily.DOTNET_CORE, {
+    isDeprecated: true,
+  });
 
   /**
    * The Go 1.x runtime (go1.x)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the PROVIDED_AL2023 runtime.
    */
-  public static readonly GO_1_X = new Runtime('go1.x', RuntimeFamily.GO);
+  public static readonly GO_1_X = new Runtime('go1.x', RuntimeFamily.GO, {
+    isDeprecated: true,
+  });
 
   /**
    * The Ruby 2.5 runtime (ruby2.5)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Ruby runtime.
    */
-  public static readonly RUBY_2_5 = new Runtime('ruby2.5', RuntimeFamily.RUBY);
+  public static readonly RUBY_2_5 = new Runtime('ruby2.5', RuntimeFamily.RUBY, {
+    isDeprecated: true,
+  });
 
   /**
    * The Ruby 2.7 runtime (ruby2.7)
@@ -304,7 +316,9 @@ export class Runtime {
    * The custom provided runtime (provided)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest provided.al2023 runtime.
    */
-  public static readonly PROVIDED = new Runtime('provided', RuntimeFamily.OTHER);
+  public static readonly PROVIDED = new Runtime('provided', RuntimeFamily.OTHER, {
+    isDeprecated: true,
+  });
 
   /**
    * The custom provided runtime with Amazon Linux 2 (provided.al2)

@@ -65,6 +65,22 @@ describe('deprecated runtimes', () => {
     expect(lambda.Runtime.PYTHON_3_6.isDeprecated).toEqual(true);
   });
 
+  test('nodejs is deprecated', () => {
+    expect(lambda.Runtime.NODEJS.isDeprecated).toEqual(true);
+  });
+
+  test('nodejs 4.3 is deprecated', () => {
+    expect(lambda.Runtime.NODEJS_4_3.isDeprecated).toEqual(true);
+  });
+
+  test('nodejs 6.10 is deprecated', () => {
+    expect(lambda.Runtime.NODEJS_6_10.isDeprecated).toEqual(true);
+  });
+
+  test('nodejs 8.10 is deprecated', () => {
+    expect(lambda.Runtime.NODEJS_8_10.isDeprecated).toEqual(true);
+  });
+
   test('nodejs 10.x is deprecated', () => {
     expect(lambda.Runtime.NODEJS_10_X.isDeprecated).toEqual(true);
   });
@@ -75,5 +91,33 @@ describe('deprecated runtimes', () => {
 
   test('nodejs 14.x is deprecated', () => {
     expect(lambda.Runtime.NODEJS_14_X.isDeprecated).toEqual(true);
+  });
+
+  test('.net core 1.0 is deprecated', () => {
+    expect(lambda.Runtime.DOTNET_CORE_1.isDeprecated).toEqual(true);
+  });
+
+  test('.net core 2.0 is deprecated', () => {
+    expect(lambda.Runtime.DOTNET_CORE_2.isDeprecated).toEqual(true);
+  });
+
+  test('.net core 2.1 is deprecated', () => {
+    expect(lambda.Runtime.DOTNET_CORE_2_1.isDeprecated).toEqual(true);
+  });
+
+  test('.net core 3.1 is deprecated', () => {
+    expect(lambda.Runtime.DOTNET_CORE_3_1.isDeprecated).toEqual(true);
+  });
+
+  test('go 1.x is deprecated', () => {
+    expect(lambda.Runtime.GO_1_X.isDeprecated).toEqual(true);
+  });
+
+  test('ruby 2.5 is deprecated', () => {
+    expect(lambda.Runtime.RUBY_2_5.isDeprecated).toEqual(true);
+  });
+
+  test('custom provided runtime is deprecated', () => {
+    expect(lambda.Runtime.PROVIDED.isDeprecated).toEqual(true);
   });
 });
