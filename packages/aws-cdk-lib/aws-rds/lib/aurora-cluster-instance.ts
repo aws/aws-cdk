@@ -450,7 +450,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
 
     const isOwnedResource = Resource.isOwnedResource(props.cluster);
     let internetConnected;
-    let publiclyAccessible;
+    let publiclyAccessible = props.publiclyAccessible;
     if (isOwnedResource) {
       const ownedCluster = props.cluster as DatabaseCluster;
       internetConnected = ownedCluster.vpc.selectSubnets(ownedCluster.vpcSubnets).internetConnectivityEstablished;
