@@ -108,7 +108,7 @@ def handler(event, context):
             physical_id = "aws.cdk.s3deployment.%s" % str(uuid4())
         else:
             if not physical_id:
-                cfn_error("invalid request: request type is '%s' but 'PhysicalResourceId' is not defined" % request_type)
+                cfn_error("invalid request: request type is '%s' but 'PhysicalResourceId' is not defined" % {request_type})
                 return
 
         # delete or create/update (only if "retain_on_delete" is false)
