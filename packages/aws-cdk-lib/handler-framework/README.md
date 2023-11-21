@@ -43,6 +43,10 @@ const fn = new CdkFunction(stack, 'CdkFunction', { handler });
 
 ## CDK Singleton Function
 
+The `CdkSingletonFunction` construct represents a Lambda `SingletonFunction` that will act as a custom resource provider. The key difference between `CdkSingletonFunction` and Lambda `SingletonFunction` is that `runtime`, `handler`, and `code` are all determined for `CdkSingletonFunction` via `CdkHandler` which is a required property.
+
+Note that the build will fail if the latest `runtime` found is marked as deprecated. If this happens you must specify a latest `code` compatible `runtime` that is not deprecated. Additionally, the build will fail if none of the `compatibleRuntimes` are in the python or nodejs family.
+
 The following is an example of how to use `CdkSingletonFunction`:
 
 ```ts
