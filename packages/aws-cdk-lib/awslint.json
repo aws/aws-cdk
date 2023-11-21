@@ -2880,6 +2880,15 @@
     "docs-public-apis:aws-cdk-lib.aws_guardduty.CfnDetector.CFNFeatureConfigurationProperty.additionalConfiguration",
     "docs-public-apis:aws-cdk-lib.aws_guardduty.CfnDetector.TagItemProperty",
     "docs-public-apis:aws-cdk-lib.aws_guardduty.CfnDetector.TagItemProperty.key",
-    "docs-public-apis:aws-cdk-lib.aws_guardduty.CfnDetector.TagItemProperty.value"
+    "docs-public-apis:aws-cdk-lib.aws_guardduty.CfnDetector.TagItemProperty.value",
+    "props-physical-name:aws-cdk-lib/aws-apigatewayv2-alpha.ApiMappingProps",
+    "props-physical-name:aws-cdk-lib/aws-apigatewayv2-alpha.HttpIntegrationProps",
+    "props-physical-name:aws-cdk-lib/aws-apigatewayv2-alpha.HttpRouteProps",
+    "props-physical-name:aws-cdk-lib/aws-apigatewayv2-alpha.WebSocketIntegrationProps",
+    "props-physical-name:aws-cdk-lib/aws-apigatewayv2-alpha.WebSocketRouteProps",
+    "from-method:aws-cdk-lib/aws-apigatewayv2-alpha.HttpIntegration",
+    "from-method:aws-cdk-lib/aws-apigatewayv2-alpha.HttpRoute",
+    "from-method:aws-cdk-lib/aws-apigatewayv2-alpha.WebSocketIntegration",
+    "from-method:aws-cdk-lib/aws-apigatewayv2-alpha.WebSocketRoute"
   ]
 }
