@@ -58,12 +58,12 @@ export class ReplicaProvider extends NestedStack {
     super(scope, id);
 
     const onEventHandler = CdkHandler.fromAsset(path.join(__dirname, 'replica-handler'), {
-      handler: 'index.onEventHandler',
+      entrypoint: 'index.onEventHandler',
       compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
     });
 
     const onCompleteHandler = CdkHandler.fromAsset(path.join(__dirname, 'replica-handler'), {
-      handler: 'index.isCompleteHandler',
+      entrypoint: 'index.isCompleteHandler',
       compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
     });
 

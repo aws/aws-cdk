@@ -10,7 +10,7 @@ describe('cdk singleton function', () => {
     // GIVEN
     const stack = new Stack();
     const handler = CdkHandler.fromAsset(path.join(__dirname, 'test-handler'), {
-      handler: 'index.handler',
+      entrypoint: 'index.handler',
       compatibleRuntimes: [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X],
     });
 
@@ -43,7 +43,7 @@ describe('cdk singleton function', () => {
     // GIVEN
     const stack = new Stack();
     const handler = CdkHandler.fromAsset(path.join(__dirname, 'test-handler'), {
-      handler: 'index.handler',
+      entrypoint: 'index.handler',
       compatibleRuntimes: [Runtime.JAVA_11, Runtime.RUBY_3_2],
     });
 
@@ -60,7 +60,7 @@ describe('cdk singleton function', () => {
     // GIVEN
     const stack = new Stack();
     const handler = CdkHandler.fromAsset(path.join(__dirname, 'test-handler'), {
-      handler: 'index.handler',
+      entrypoint: 'index.handler',
       compatibleRuntimes: [Runtime.NODEJS_12_X, Runtime.NODEJS_14_X],
     });
 
@@ -77,7 +77,7 @@ describe('cdk singleton function', () => {
     // GIVEN
     const stack = new Stack();
     const handler = CdkHandler.fromAsset(path.join(__dirname, 'test-handler'), {
-      handler: 'index.handler',
+      entrypoint: 'index.handler',
       compatibleRuntimes: [Runtime.PYTHON_2_7, Runtime.PYTHON_3_6],
     });
 

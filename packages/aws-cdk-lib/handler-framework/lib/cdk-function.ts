@@ -43,7 +43,7 @@ export class CdkFunction extends Function {
     super(scope, id, {
       ...props,
       code: props.handler.code,
-      handler: props.handler.handler,
+      handler: props.handler.entrypoint,
       runtime: CdkFunction.determineRuntime(props.handler.compatibleRuntimes),
     });
   }

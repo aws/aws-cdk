@@ -63,7 +63,7 @@ export class CdkSingletonFunction extends SingletonFunction {
     super(scope, id, {
       ...props,
       code: props.handler.code,
-      handler: props.handler.handler,
+      handler: props.handler.entrypoint,
       runtime: CdkSingletonFunction.determineRuntime(props.handler.compatibleRuntimes),
     });
   }

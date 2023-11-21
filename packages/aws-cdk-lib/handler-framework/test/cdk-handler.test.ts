@@ -9,7 +9,7 @@ describe('code from asset', () => {
 
     // WHEN
     const handler = CdkHandler.fromAsset(path.join(__dirname, 'test-handler'), {
-      handler: 'index.handler',
+      entrypoint: 'index.handler',
       compatibleRuntimes,
     });
 
@@ -17,17 +17,17 @@ describe('code from asset', () => {
     expect(handler.compatibleRuntimes).toEqual(compatibleRuntimes);
   });
 
-  test('correctly sets handler property', () => {
+  test('correctly sets entrypoint property', () => {
     // GIVEN
     const compatibleRuntimes = [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X];
 
     // WHEN
     const handler = CdkHandler.fromAsset(path.join(__dirname, 'test-handler'), {
-      handler: 'index.handler',
+      entrypoint: 'index.handler',
       compatibleRuntimes,
     });
 
     // THEN
-    expect(handler.handler).toEqual('index.handler');
+    expect(handler.entrypoint).toEqual('index.handler');
   });
 });

@@ -174,7 +174,7 @@ export class DropSpamReceiptRule extends Construct {
     super(scope, id);
 
     const handler = CdkHandler.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-ses', 'drop-spam-handler'), {
-      handler: 'index.handler',
+      entrypoint: 'index.handler',
       compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
     });
 

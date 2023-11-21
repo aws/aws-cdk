@@ -8,7 +8,7 @@ export interface CdkHandlerProps {
   /**
    * The name of the method within your code that Lambda calls to execute your function.
    */
-  readonly handler: string;
+  readonly entrypoint: string;
 
   /**
    * Runtimes that are compatible with the source code.
@@ -36,7 +36,7 @@ export class CdkHandler {
   /**
    * The name of the method within your code that Lambda calls to execute your function.
    */
-  public readonly handler: string;
+  public readonly entrypoint: string;
 
   /**
    * Runtimes that are compatible with the source code.
@@ -45,7 +45,7 @@ export class CdkHandler {
 
   private constructor(path: string, props: CdkHandlerProps) {
     this.code = Code.fromAsset(path);
-    this.handler = props.handler;
+    this.entrypoint = props.entrypoint;
     this.compatibleRuntimes = props.compatibleRuntimes;
   }
 }
