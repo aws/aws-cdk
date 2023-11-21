@@ -4,7 +4,8 @@
     "Route53CrossAccountInteg/DefaultTest": {
       "stacks": [
         "child-stack",
-        "child-opt-in-stack"
+        "child-opt-in-stack",
+        "parent-stack"
       ],
       "diffAssets": true,
       "assertionStack": "Route53CrossAccountInteg/DefaultTest/DeployAssert",

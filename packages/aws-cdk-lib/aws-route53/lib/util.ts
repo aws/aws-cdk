@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { DelegationGrantNames } from './delegation-grant-names';
 import { IHostedZone } from './hosted-zone-ref';
 import * as iam from '../../aws-iam';
 import { Stack } from '../../core';
@@ -71,7 +72,7 @@ export function makeHostedZoneArn(construct: Construct, hostedZoneId: string): s
   });
 }
 
-export function makeGrantDelegation(grantee: iam.IGrantable, hostedZoneArn: string): iam.Grant {
+export function makeGrantDelegation(grantee: iam.IGrantable, hostedZoneArn: string, names?: DelegationGrantNames): iam.Grant {
   const g1 = iam.Grant.addToPrincipal({
     grantee,
     actions: ['route53:ChangeResourceRecordSets'],
@@ -80,7 +81,15 @@ export function makeGrantDelegation(grantee: iam.IGrantable, hostedZoneArn: stri
       'ForAllValues:StringEquals': {
         'route53:ChangeResourceRecordSetsRecordTypes': ['NS'],
         'route53:ChangeResourceRecordSetsActions': ['UPSERT', 'DELETE'],
+        ...(names?._equals() ? {
+          'route53:ChangeResourceRecordSetsNormalizedRecordNames': names._equals(),
+        } : {}),
       },
+      ...(names?._like() ? {
+        'ForAllValues:StringLike': {
+          'route53:ChangeResourceRecordSetsNormalizedRecordNames': names._like(),
+        },
+      } : {}),
     },
   });
   const g2 = iam.Grant.addToPrincipal({
