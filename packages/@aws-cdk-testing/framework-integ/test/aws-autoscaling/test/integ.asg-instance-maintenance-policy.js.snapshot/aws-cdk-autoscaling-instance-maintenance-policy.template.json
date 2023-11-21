@@ -516,6 +516,10 @@
   "ASG46ED3070": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
    "Properties": {
+    "InstanceMaintenancePolicy": {
+     "MaxHealthyPercentage": 200,
+     "MinHealthyPercentage": 100
+    },
     "LaunchTemplate": {
      "LaunchTemplateId": {
       "Ref": "ASGLaunchTemplate0CA92847"
