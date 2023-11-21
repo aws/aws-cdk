@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CdkHandler } from './cdk-handler';
-import { Function, FunctionOptions, Runtime } from '../../../aws-lambda';
+import { Function, FunctionOptions, Runtime, RuntimeFamily } from '../../../aws-lambda';
 import { RuntimeDeterminer } from '../helpers-internal/runtime-determiner';
 
 /**
@@ -18,7 +18,8 @@ export interface CdkFunctionProps extends FunctionOptions {
  */
 export class CdkFunction extends Function {
   private static determineRuntime(compatibleRuntimes: Runtime[]) {
-    const latestNodeJsRuntime = RuntimeDeterminer.determineLatestNodeJsRuntime(compatibleRuntimes);
+    const nodeJsRuntimes = compatibleRuntimes.filter(runtime => runtime.family === RuntimeFamily.NODEJS);
+    const latestNodeJsRuntime = RuntimeDeterminer.latestNodeJsRuntime(nodeJsRuntimes);
     if (latestNodeJsRuntime !== undefined) {
       if (latestNodeJsRuntime.isDeprecated) {
         throw new Error(`Latest nodejs runtime ${latestNodeJsRuntime} is deprecated`);
@@ -26,7 +27,8 @@ export class CdkFunction extends Function {
       return latestNodeJsRuntime;
     }
 
-    const latestPythonRuntime = RuntimeDeterminer.determineLatestPythonRuntime(compatibleRuntimes);
+    const pythonRuntimes = compatibleRuntimes.filter(runtime => runtime.family === RuntimeFamily.PYTHON);
+    const latestPythonRuntime = RuntimeDeterminer.latestPythonRuntime(pythonRuntimes);
     if (latestPythonRuntime !== undefined) {
       if (latestPythonRuntime.isDeprecated) {
         throw new Error(`Latest python runtime ${latestPythonRuntime} is deprecated`);

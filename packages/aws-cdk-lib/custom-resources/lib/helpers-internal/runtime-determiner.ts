@@ -7,13 +7,14 @@ export class RuntimeDeterminer {
   public static readonly DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
 
   /**
-   * Determines the latest nodejs runtime from a list of runtimes
+   * Determines the latest nodejs runtime from a list of nodejs runtimes
    *
-   * @param runtimes the list of runtimes to search in
+   * @param nodeJsRuntimes the list of nodejs runtimes to search in
    * @returns the latest nodejs runtime or undefined if no nodejs runtimes are provided
    */
-  public static determineLatestNodeJsRuntime(runtimes: Runtime[]) {
-    const nodeJsRuntimes = runtimes.filter(runtime => runtime.family === RuntimeFamily.NODEJS);
+  public static latestNodeJsRuntime(nodeJsRuntimes: Runtime[]) {
+    RuntimeDeterminer.validateRuntimes(nodeJsRuntimes, RuntimeFamily.NODEJS);
+
     if (nodeJsRuntimes.length === 0) {
       return undefined;
     }
@@ -24,41 +25,34 @@ export class RuntimeDeterminer {
 
     let latestRuntime = nodeJsRuntimes[0];
     for (let idx = 1; idx < nodeJsRuntimes.length; idx++) {
-      latestRuntime = RuntimeDeterminer.compareNodeJsRuntimes(latestRuntime, nodeJsRuntimes[idx]);
+      latestRuntime = RuntimeDeterminer.latestRuntime(latestRuntime, nodeJsRuntimes[idx], RuntimeFamily.NODEJS);
     }
 
     return latestRuntime;
   }
 
   /**
-   * Determines the latest python runtime from a list of runtimes
+   * Determines the latest python runtime from a list of python runtimes
    *
-   * @param runtimes the list of runtimes to search in
+   * @param pythonRuntimes the list of python runtimes to search in
    * @returns the latest python runtime or undefined if no python runtimes are provided
    */
-  public static determineLatestPythonRuntime(runtimes: Runtime[]) {
-    const pythonRuntimes = runtimes.filter(runtime => runtime.family === RuntimeFamily.PYTHON);
+  public static latestPythonRuntime(pythonRuntimes: Runtime[]) {
+    RuntimeDeterminer.validateRuntimes(pythonRuntimes, RuntimeFamily.PYTHON);
+
     if (pythonRuntimes.length === 0) {
       return undefined;
     }
 
     let latestRuntime = pythonRuntimes[0];
     for (let idx = 1; idx < pythonRuntimes.length; idx++) {
-      latestRuntime = RuntimeDeterminer.comparePythonRuntimes(latestRuntime, pythonRuntimes[idx]);
+      latestRuntime = RuntimeDeterminer.latestRuntime(latestRuntime, pythonRuntimes[idx], RuntimeFamily.PYTHON);
     }
 
     return latestRuntime;
   }
 
-  private static compareNodeJsRuntimes(runtime1: Runtime, runtime2: Runtime) {
-    return RuntimeDeterminer.compareRuntimes(runtime1, runtime2, RuntimeFamily.NODEJS);
-  }
-
-  private static comparePythonRuntimes(runtime1: Runtime, runtime2: Runtime) {
-    return RuntimeDeterminer.compareRuntimes(runtime1, runtime2, RuntimeFamily.PYTHON);
-  }
-
-  private static compareRuntimes(runtime1: Runtime, runtime2: Runtime, family: RuntimeFamily) {
+  private static latestRuntime(runtime1: Runtime, runtime2: Runtime, family: RuntimeFamily) {
     let sliceStart: number;
     switch (family) {
       case RuntimeFamily.NODEJS: {
@@ -90,6 +84,14 @@ export class RuntimeDeterminer {
     }
 
     return runtime1;
+  }
+
+  private static validateRuntimes(runtimes: Runtime[], family: RuntimeFamily) {
+    for (let runtime of runtimes) {
+      if (runtime.family !== family) {
+        throw new Error(`All runtime familys must be the same when determining latest runtime. Found runtime family ${runtime.family}, expected ${family}`);
+      }
+    }
   }
 
   private constructor() {}
