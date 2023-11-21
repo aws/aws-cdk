@@ -653,6 +653,67 @@ describe('tests', () => {
     });
   });
 
+  test('Trivial construction: security groups', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const sg1 = new ec2.SecurityGroup(stack, 'SG1', { vpc });
+    const sg2 = new ec2.SecurityGroup(stack, 'SG2', { vpc });
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+      securityGroups: [sg1, sg2],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Subnets: [
+        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
+        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
+      ],
+      SecurityGroups: [
+        {
+          'Fn::GetAtt': [
+            stack.getLogicalId(sg1.node.findChild('Resource') as cdk.CfnElement),
+            'GroupId',
+          ],
+        },
+        {
+          'Fn::GetAtt': [
+            stack.getLogicalId(sg2.node.findChild('Resource') as cdk.CfnElement),
+            'GroupId',
+          ],
+        },
+      ],
+      Type: 'network',
+    });
+  });
+
+  test('Trivial construction: no security groups', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Subnets: [
+        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
+        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
+      ],
+      SecurityGroups: Match.absent(),
+    });
+  });
+
   describe('lookup', () => {
     test('Can look up a NetworkLoadBalancer', () => {
       // GIVEN
@@ -735,6 +796,38 @@ describe('tests', () => {
       expect(stack.resolve(metric.dimensions)).toEqual({
         LoadBalancer: 'network/my-load-balancer/50dc6c495c0c9188',
       });
+    });
+
+    test('can look up security groups', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+
+      // WHEN
+      const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+        securityGroups: [sg],
+      });
+
+      // THEN
+      expect(nlb.securityGroups).toEqual([`${sg.securityGroupId}`]);
+    });
+
+    test('can look up with no security groups', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+      });
+
+      // THEN
+      expect(nlb.securityGroups).toBeUndefined();
     });
   });
 });
