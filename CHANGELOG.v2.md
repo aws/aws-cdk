@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.110.1](https://github.com/aws/aws-cdk/compare/v2.110.0...v2.110.1) (2023-11-21)
+
+
+### Bug Fixes
+
+* **cli:** hotswap cannot evaluate nested stacks within nested stacks ([8fa6bdd](https://github.com/aws/aws-cdk/commit/8fa6bdd86ca673649d2498304311f288fad524c0))
+
 ## [2.110.0](https://github.com/aws/aws-cdk/compare/v2.109.0...v2.110.0) (2023-11-16)
 
 
