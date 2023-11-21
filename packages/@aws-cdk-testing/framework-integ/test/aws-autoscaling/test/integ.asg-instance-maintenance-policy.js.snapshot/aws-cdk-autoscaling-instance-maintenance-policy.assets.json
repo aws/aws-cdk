@@ -1,0 +1,19 @@
+{
+  "version": "35.0.0",
+  "files": {
+    "4dec940604e66b5e8a991fa69a0808e304f6f584fa5f51f6ba503a61df33a1b4": {
+      "source": {
+        "path": "aws-cdk-autoscaling-instance-maintenance-policy.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4dec940604e66b5e8a991fa69a0808e304f6f584fa5f51f6ba503a61df33a1b4.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

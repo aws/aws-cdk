@@ -25,7 +25,6 @@ import {
   Tokenization, withResolved,
 } from '../../core';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
-import { max } from 'lodash';
 
 /**
  * Name tag constant
