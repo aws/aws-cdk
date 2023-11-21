@@ -3,7 +3,7 @@
   "testCases": {
     "integ.bucket-notifications": {
       "stacks": [
-        "lambda-bucket-notifications"
+        "cdk-integ-lambda-bucket-notifications"
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": true
