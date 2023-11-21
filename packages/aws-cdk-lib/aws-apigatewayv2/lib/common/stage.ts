@@ -1,5 +1,5 @@
-import { Metric, MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
-import { IResource } from 'aws-cdk-lib/core';
+import { Metric, MetricOptions } from '../../aws-cloudwatch';
+import { IResource } from '../../core';
 import { IDomainName } from './domain-name';
 
 /**

@@ -1,6 +1,6 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { Stack } from 'aws-cdk-lib';
+import { Template } from '../../assertions';
+import * as ec2 from '../../aws-ec2';
+import { Stack } from 'aws-cdk-lib/core';
 import { VpcLink } from '../../lib';
 
 describe('VpcLink', () => {

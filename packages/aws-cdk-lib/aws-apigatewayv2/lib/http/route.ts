@@ -1,10 +1,10 @@
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { Aws, Resource } from 'aws-cdk-lib/core';
+import * as iam from '../../aws-iam';
+import { Aws, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
 import { HttpRouteIntegration } from './integration';
-import { CfnRoute, CfnRouteProps } from 'aws-cdk-lib/aws-apigatewayv2';
+import { CfnRoute, CfnRouteProps } from './index';
 import { IRoute } from '../common';
 
 /**

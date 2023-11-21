@@ -1,8 +1,8 @@
-import { Duration, Resource } from 'aws-cdk-lib/core';
+import { Duration, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { IHttpRoute } from './route';
-import { CfnAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2';
+import { CfnAuthorizer } from './index';
 
 import { IAuthorizer } from '../common';
 

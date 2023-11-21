@@ -1,6 +1,6 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import { AccountPrincipal, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Stack, App } from 'aws-cdk-lib';
+import { Template } from '../../assertions';
+import { AccountPrincipal, Role, ServicePrincipal } from '../../aws-iam';
+import { Stack, App } from 'aws-cdk-lib/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute,
   HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, HttpRouteIntegration,

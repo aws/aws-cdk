@@ -1,5 +1,5 @@
-import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import { Resource } from 'aws-cdk-lib/core';
+import * as cloudwatch from '../../aws-cloudwatch';
+import { Resource } from '../../core';
 import { IApi } from './api';
 import { ApiMapping } from './api-mapping';
 import { DomainMappingOptions, IStage } from './stage';

@@ -1,5 +1,5 @@
 import { Template } from 'aws-cdk-lib/assertions';
-import { Stack } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType,
 } from '../../lib';

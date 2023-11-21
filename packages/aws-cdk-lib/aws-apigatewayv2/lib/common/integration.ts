@@ -1,4 +1,4 @@
-import { IResource } from 'aws-cdk-lib/core';
+import { IResource } from '../../core';
 
 /**
  * Represents an integration to an API Route.

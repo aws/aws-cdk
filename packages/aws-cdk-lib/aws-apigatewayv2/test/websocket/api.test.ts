@@ -1,6 +1,6 @@
-import { Match, Template } from 'aws-cdk-lib/assertions';
-import { User } from 'aws-cdk-lib/aws-iam';
-import { Stack } from 'aws-cdk-lib';
+import { Match, Template } from '../../assertions';
+import { User } from '../../aws-iam';
+import { Stack } from 'aws-cdk-lib/core';
 import {
   WebSocketRouteIntegration,
   WebSocketApi,

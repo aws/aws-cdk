@@ -1,8 +1,8 @@
-import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
-import { Stack } from 'aws-cdk-lib/core';
+import { Grant, IGrantable } from '../../aws-iam';
+import { Stack } from '../../core';
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
-import { CfnStage } from 'aws-cdk-lib/aws-apigatewayv2';
+import { CfnStage } from './index';
 import { StageOptions, IApi, IStage, StageAttributes } from '../common';
 import { StageBase } from '../common/base';
 
