@@ -90,6 +90,13 @@ new scheduler.Schedule(stack, 'CustomerKmsSchedule', {
   key,
 });
 
+new scheduler.Schedule(stack, 'UseFlexibleTimeWindow', {
+  schedule: expression,
+  target: target,
+  flexibleTimeWindowMode: scheduler.FlexibleTimeWindowMode.FLEXIBLE,
+  maximumWindowInMinutes: cdk.Duration.minutes(10),
+});
+
 new IntegTest(app, 'integtest-schedule', {
   testCases: [stack],
 });

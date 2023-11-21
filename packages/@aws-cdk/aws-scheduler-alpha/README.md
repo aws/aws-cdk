@@ -227,6 +227,24 @@ const schedule = new Schedule(this, 'Schedule', {
 
 > Visit [Data protection in Amazon EventBridge Scheduler](https://docs.aws.amazon.com/scheduler/latest/UserGuide/data-protection.html) for more details.
 
+## Configuring flexible time window
+
+You can configure flexible time windows by specifying the `flexibleTimeWindowMode` and `maximumWindowInMinutes` properties.
+By default, the `flexibleTimeWindowMode` is set to `OFF` and this feature is disabled.
+
+```ts
+declare const target: targets.LambdaInvoke;
+
+const schedule = new Schedule(this, 'Schedule', {
+    schedule: ScheduleExpression.rate(cdk.Duration.hours(12)),
+    target,
+    flexibleTimeWindowMode: FlexibleTimeWindowMode.FLEXIBLE,
+    maximumWindowInMinutes: Duration.minutes(10),
+});
+```
+
+> Visit [Configuring flexible time windows](https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-flexible-time-windows.html) for more details.
+
 ## Error-handling 
 
 You can configure how your schedule handles failures, when EventBridge Scheduler is unable to deliver an event

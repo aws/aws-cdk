@@ -60,6 +60,20 @@ export interface ScheduleTargetProps {
 }
 
 /**
+ * FlexibleTimeWindow mode for the schedule.
+ */
+export enum FlexibleTimeWindowMode {
+  /**
+   * FlexibleTimeWindow is disabled.
+   */
+  OFF = 'OFF',
+  /**
+   * FlexibleTimeWindow is enabled.
+   */
+  FLEXIBLE = 'FLEXIBLE'
+}
+
+/**
  * Construction properties for `Schedule`.
  */
 export interface ScheduleProps {
@@ -104,6 +118,7 @@ export interface ScheduleProps {
 
   /**
    * Indicates whether the schedule is enabled.
+   *
    * @default true
    */
   readonly enabled?: boolean;
@@ -114,6 +129,22 @@ export interface ScheduleProps {
    * @default - All events in Scheduler are encrypted with a key that AWS owns and manages.
    */
   readonly key?: kms.IKey;
+
+  /**
+   * Determines whether the schedule is invoked within a flexible time window.
+   *
+   * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-flexible-time-windows.html
+   *
+   * @default - FlexibleTimeWindowMode.OFF
+   */
+  readonly flexibleTimeWindowMode?: FlexibleTimeWindowMode;
+
+  /**
+   * The maximum time window during which the schedule can be invoked.
+   *
+   * @default - Required if flexibleTimeWindowMode is FLEXIBLE.
+   */
+  readonly maximumWindowInMinutes?: Duration;
 }
 
 /**
@@ -256,7 +287,7 @@ export class Schedule extends Resource implements ISchedule {
 
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,
-      flexibleTimeWindow: { mode: 'OFF' },
+      flexibleTimeWindow: this.renderFlexibleTimeWindow(props.flexibleTimeWindowMode, props.maximumWindowInMinutes),
       scheduleExpression: props.schedule.expressionString,
       scheduleExpressionTimezone: props.schedule.timeZone?.timezoneName,
       groupName: this.group?.groupName,
@@ -305,5 +336,26 @@ export class Schedule extends Resource implements ISchedule {
 
     const isEmptyPolicy = Object.values(policy).every(value => value === undefined);
     return !isEmptyPolicy ? policy : undefined;
+  }
+
+  private renderFlexibleTimeWindow(
+    flexibleTimeWindowMode?: FlexibleTimeWindowMode, maximumWindowInMinutes?: Duration,
+  ): CfnSchedule.FlexibleTimeWindowProperty {
+    if (!flexibleTimeWindowMode || flexibleTimeWindowMode === FlexibleTimeWindowMode.OFF) {
+      return {
+        mode: 'OFF',
+      };
+    }
+
+    if (!maximumWindowInMinutes) {
+      throw new Error('maximumWindowInMinutes must be provided when flexibleTimeWindowMode is set to FLEXIBLE');
+    }
+    if (maximumWindowInMinutes.toMinutes() < 1 || maximumWindowInMinutes.toMinutes() > 1440) {
+      throw new Error(`maximumWindowInMinutes must be between 1 and 1440, got ${maximumWindowInMinutes.toMinutes()}`);
+    }
+    return {
+      mode: 'FLEXIBLE',
+      maximumWindowInMinutes: maximumWindowInMinutes.toMinutes(),
+    };
   }
 }
