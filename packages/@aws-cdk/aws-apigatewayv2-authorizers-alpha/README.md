@@ -70,7 +70,7 @@ Authorization can also be configured for each Route. When a route authorization 
 The example below showcases default authorization, along with route authorization. It also shows how to remove authorization entirely for a route.
 
 - `GET /books` and `GET /books/{id}` use the default authorizer settings on the api
-- `POST /books` will require the ['write:books'] scope
+- `POST /books` will require the `['write:books']` scope
 - `POST /login` removes the default authorizer (unauthenticated route)
 
 ```ts
