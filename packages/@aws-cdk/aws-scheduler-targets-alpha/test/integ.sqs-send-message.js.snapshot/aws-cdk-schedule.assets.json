@@ -1,0 +1,19 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "66a75a849c16543d98ab38ea70d5cc3035fa75c7a54e850550f583b888a8b35b": {
+      "source": {
+        "path": "aws-cdk-schedule.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "66a75a849c16543d98ab38ea70d5cc3035fa75c7a54e850550f583b888a8b35b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
