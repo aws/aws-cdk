@@ -1,4 +1,4 @@
-/// <reference path="../../../../../../../../../node_modules/@aws-cdk/custom-resource-handlers/lib/types.d.ts" />
+/// <reference path="../../../../../../../../../node_modules/aws-cdk-lib/custom-resources/lib/provider-framework/types.d.ts" />
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-console */
 import { S3 } from '@aws-sdk/client-s3';
