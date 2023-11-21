@@ -590,7 +590,7 @@ export interface InstanceMaintenancePolicy {
    *
    * Value range is 100 to 200. After it's set, a value of -1 will clear the previously set value.
    *
-   * Both MinHealthyPercentage and MaxHealthyPercentage must be specified, and the difference between
+   * Both `minHealthyPercentage` and `maxHealthyPercentage` must be specified, and the difference between
    * them cannot be greater than 100. A large range increases the number of instances that can be
    * replaced at the same time.
    *
@@ -605,7 +605,7 @@ export interface InstanceMaintenancePolicy {
    *
    * Value range is 0 to 100. After it's set, a value of -1 will clear the previously set value.
    *
-   * Both MinHealthyPercentage and MaxHealthyPercentage must be specified, and the difference between
+   * Both `minHealthyPercentage` and `maxHealthyPercentage` must be specified, and the difference between
    * them cannot be greater than 100. A large range increases the number of instances that can be
    * replaced at the same time.
    *
