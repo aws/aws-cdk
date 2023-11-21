@@ -1922,6 +1922,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     if (
       maxHealthyPercentage !== undefined
       && minHealthyPercentage !== undefined
+      && maxHealthyPercentage !== -1
+      && minHealthyPercentage !== -1
       && maxHealthyPercentage - minHealthyPercentage > 100
     ) {
       throw new Error(`The difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100, got ${maxHealthyPercentage - minHealthyPercentage}`);

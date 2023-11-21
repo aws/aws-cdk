@@ -2403,6 +2403,206 @@ test('requires imdsv2 when @aws-cdk/aws-autoscaling:generateLaunchTemplateInstea
   });
 });
 
+test('InstanceMaintenancePolicy can be specified', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+  new autoscaling.AutoScalingGroup(stack, 'ASG', {
+    vpc,
+    instanceType: new ec2.InstanceType('t2.micro'),
+    machineImage: ec2.MachineImage.latestAmazonLinux2(),
+    instanceMaintenancePolicy: {
+      maxHealthyPercentage: 200,
+      minHealthyPercentage: 100,
+    },
+  });
+
+  // Then
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+    InstanceMaintenancePolicy: {
+      MaxHealthyPercentage: 200,
+      MinHealthyPercentage: 100,
+    },
+  });
+});
+
+test('maxHealthyPercentage can be set to -1', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+  new autoscaling.AutoScalingGroup(stack, 'ASG', {
+    vpc,
+    instanceType: new ec2.InstanceType('t2.micro'),
+    machineImage: ec2.MachineImage.latestAmazonLinux2(),
+    instanceMaintenancePolicy: {
+      maxHealthyPercentage: -1,
+      minHealthyPercentage: 100,
+    },
+  });
+
+  // Then
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+    InstanceMaintenancePolicy: {
+      MaxHealthyPercentage: -1,
+      MinHealthyPercentage: 100,
+    },
+  });
+});
+
+test('minHealthyPercentage can be set to -1', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+  new autoscaling.AutoScalingGroup(stack, 'ASG', {
+    vpc,
+    instanceType: new ec2.InstanceType('t2.micro'),
+    machineImage: ec2.MachineImage.latestAmazonLinux2(),
+    instanceMaintenancePolicy: {
+      maxHealthyPercentage: 200,
+      minHealthyPercentage: -1,
+    },
+  });
+
+  // Then
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+    InstanceMaintenancePolicy: {
+      MaxHealthyPercentage: 200,
+      MinHealthyPercentage: -1,
+    },
+  });
+});
+
+test('throws if maxHealthyPercentage is greater than 200', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // Then
+  expect(() => {
+    new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: ec2.MachineImage.latestAmazonLinux2(),
+      instanceMaintenancePolicy: {
+        maxHealthyPercentage: 250,
+        minHealthyPercentage: 100,
+      },
+    });
+  }).toThrow(/maxHealthyPercentage must be between 100 and 200, or -1 to clear the previously set value, got 250/);
+});
+
+test('throws if maxHealthyPercentage is less than 100', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // Then
+  expect(() => {
+    new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: ec2.MachineImage.latestAmazonLinux2(),
+      instanceMaintenancePolicy: {
+        maxHealthyPercentage: 50,
+        minHealthyPercentage: 100,
+      },
+    });
+  }).toThrow(/maxHealthyPercentage must be between 100 and 200, or -1 to clear the previously set value, got 50/);
+});
+
+test('throws if minHealthyPercentage is greater than 100', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // Then
+  expect(() => {
+    new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: ec2.MachineImage.latestAmazonLinux2(),
+      instanceMaintenancePolicy: {
+        maxHealthyPercentage: 200,
+        minHealthyPercentage: 150,
+      },
+    });
+  }).toThrow(/minHealthyPercentage must be between 0 and 100, or -1 to clear the previously set value, got 150/);
+});
+
+test('throws if minHealthyPercentage is less than 0', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // Then
+  expect(() => {
+    new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: ec2.MachineImage.latestAmazonLinux2(),
+      instanceMaintenancePolicy: {
+        maxHealthyPercentage: 200,
+        minHealthyPercentage: -100,
+      },
+    });
+  }).toThrow(/minHealthyPercentage must be between 0 and 100, or -1 to clear the previously set value, got -100/);
+});
+
+test('throws if only maxHealthyPercentage is specified', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // Then
+  expect(() => {
+    new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: ec2.MachineImage.latestAmazonLinux2(),
+      instanceMaintenancePolicy: {
+        maxHealthyPercentage: 200,
+      },
+    });
+  }).toThrow(/Both minHealthyPercentage and maxHealthyPercentage must be specified, got minHealthyPercentage: undefined and maxHealthyPercentage: 200/);
+});
+
+test('throws if only minHealthyPercentage is specified', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // Then
+  expect(() => {
+    new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: ec2.MachineImage.latestAmazonLinux2(),
+      instanceMaintenancePolicy: {
+        minHealthyPercentage: 100,
+      },
+    });
+  }).toThrow(/Both minHealthyPercentage and maxHealthyPercentage must be specified, got minHealthyPercentage: 100 and maxHealthyPercentage: undefined/);
+});
+
+test('throws if a difference between minHealthyPercentage and maxHealthyPercentage is greater than 100', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = mockVpc(stack);
+
+  // Then
+  expect(() => {
+    new autoscaling.AutoScalingGroup(stack, 'ASG', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: ec2.MachineImage.latestAmazonLinux2(),
+      instanceMaintenancePolicy: {
+        maxHealthyPercentage: 200,
+        minHealthyPercentage: 0,
+      },
+    });
+  }).toThrow(/The difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100, got 200/);
+});
+
 function mockSecurityGroup(stack: cdk.Stack) {
   return ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');
 }
