@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { Runtime } from '../../../aws-lambda';
-import { CdkHandler } from '../../lib/handler-framework/cdk-handler';
+import { Runtime } from '../../aws-lambda';
+import { CdkHandler } from '../lib/cdk-handler';
 
 describe('code from asset', () => {
   test('correctly sets compatibleRuntimes property', () => {

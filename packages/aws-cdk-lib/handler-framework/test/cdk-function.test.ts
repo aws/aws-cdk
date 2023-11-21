@@ -1,11 +1,11 @@
 import * as path from 'path';
-import { Template } from '../../../assertions';
-import { Runtime } from '../../../aws-lambda';
-import { Stack } from '../../../core';
-import { CdkHandler } from '../../lib/handler-framework/cdk-handler';
-import { CdkSingletonFunction } from '../../lib/handler-framework/cdk-singleton-function';
+import { Template } from '../../assertions';
+import { Runtime } from '../../aws-lambda';
+import { Stack } from '../../core';
+import { CdkFunction } from '../lib/cdk-function';
+import { CdkHandler } from '../lib/cdk-handler';
 
-describe('cdk singleton function', () => {
+describe('cdk function', () => {
   test('stack contains expected lambda function', () => {
     // GIVEN
     const stack = new Stack();
@@ -15,10 +15,7 @@ describe('cdk singleton function', () => {
     });
 
     // WHEN
-    new CdkSingletonFunction(stack, 'Function', {
-      handler,
-      uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
-    });
+    new CdkFunction(stack, 'Function', { handler });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -31,7 +28,7 @@ describe('cdk singleton function', () => {
       Handler: 'index.handler',
       Role: {
         'Fn::GetAtt': [
-          'SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235',
+          'FunctionServiceRole675BB04A',
           'Arn',
         ],
       },
@@ -49,10 +46,7 @@ describe('cdk singleton function', () => {
 
     // WHEN / THEN
     expect(() => {
-      new CdkSingletonFunction(stack, 'Function', {
-        handler,
-        uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
-      });
+      new CdkFunction(stack, 'Function', { handler });
     }).toThrow('Compatible runtimes must contain either nodejs or python runtimes');
   });
 
@@ -66,10 +60,7 @@ describe('cdk singleton function', () => {
 
     // WHEN / THEN
     expect(() => {
-      new CdkSingletonFunction(stack, 'Function', {
-        handler,
-        uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
-      });
+      new CdkFunction(stack, 'Function', { handler });
     }).toThrow(`Latest nodejs runtime ${Runtime.NODEJS_14_X} is deprecated`);
   });
 
@@ -83,10 +74,7 @@ describe('cdk singleton function', () => {
 
     // WHEN / THEN
     expect(() => {
-      new CdkSingletonFunction(stack, 'Function', {
-        handler,
-        uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
-      });
+      new CdkFunction(stack, 'Function', { handler });
     }).toThrow(`Latest python runtime ${Runtime.PYTHON_3_6} is deprecated`);
   });
 });

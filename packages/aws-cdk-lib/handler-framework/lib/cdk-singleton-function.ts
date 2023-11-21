@@ -1,22 +1,42 @@
 import { Construct } from 'constructs';
 import { CdkHandler } from './cdk-handler';
-import { Function, FunctionOptions, Runtime, RuntimeFamily } from '../../../aws-lambda';
-import { RuntimeDeterminer } from '../helpers-internal/runtime-determiner';
+import { RuntimeDeterminer } from './utils/runtime-determiner';
+import { FunctionOptions, Runtime, RuntimeFamily, SingletonFunction } from '../../aws-lambda';
 
 /**
- * Properties used to define a Lambda function used as a custom resource provider.
+ * Properties used to define a singleton Lambda function to be used as a custom resource
+ * provider.
  */
-export interface CdkFunctionProps extends FunctionOptions {
+export interface CdkSingletonFunctionProps extends FunctionOptions {
+  /**
+   * A unique identifier to identify this lambda
+   *
+   * The identifier should be unique across all custom resource providers.
+   * We recommend generating a UUID per provider.
+   */
+  readonly uuid: string;
+
   /**
    * The source code, compatible runtimes, and the method within your code that Lambda calls to execute your function.
    */
   readonly handler: CdkHandler;
+
+  /**
+   * A descriptive name for the purpose of this Lambda.
+   *
+   * If the Lambda does not have a physical name, this string will be
+   * reflected its generated name. The combination of lambdaPurpose
+   * and uuid must be unique.
+   *
+   * @default SingletonLambda
+   */
+  readonly lambdaPurpose?: string;
 }
 
 /**
- * Represents a Lambda function used as a custom resource provider.
+ * Represents a singleton Lambda function to be used as a custom resource provider.
  */
-export class CdkFunction extends Function {
+export class CdkSingletonFunction extends SingletonFunction {
   private static determineRuntime(compatibleRuntimes: Runtime[]) {
     const nodeJsRuntimes = compatibleRuntimes.filter(runtime => runtime.family === RuntimeFamily.NODEJS);
     const latestNodeJsRuntime = RuntimeDeterminer.latestNodeJsRuntime(nodeJsRuntimes);
@@ -39,12 +59,12 @@ export class CdkFunction extends Function {
     throw new Error('Compatible runtimes must contain either nodejs or python runtimes');
   }
 
-  public constructor(scope: Construct, id: string, props: CdkFunctionProps) {
+  public constructor(scope: Construct, id: string, props: CdkSingletonFunctionProps) {
     super(scope, id, {
       ...props,
       code: props.handler.code,
       handler: props.handler.handler,
-      runtime: CdkFunction.determineRuntime(props.handler.compatibleRuntimes),
+      runtime: CdkSingletonFunction.determineRuntime(props.handler.compatibleRuntimes),
     });
   }
 }

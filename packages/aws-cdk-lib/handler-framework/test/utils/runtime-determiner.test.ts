@@ -1,10 +1,10 @@
 import { Runtime } from '../../../aws-lambda';
-import { RuntimeDeterminer } from '../../lib/helpers-internal/runtime-determiner';
+import { RuntimeDeterminer } from '../../lib/utils/runtime-determiner';
 
 describe('nodejs runtimes', () => {
   test('selects default runtime', () => {
     // GIVEN
-    const runtimes = [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X, Runtime.PYTHON_3_11];
+    const runtimes = [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X];
 
     // WHEN
     const latestRuntime = RuntimeDeterminer.latestNodeJsRuntime(runtimes);
@@ -15,7 +15,7 @@ describe('nodejs runtimes', () => {
 
   test('selects latest nodejs runtime', () => {
     // GIVEN
-    const runtimes = [Runtime.NODEJS_16_X, Runtime.NODEJS_14_X, Runtime.NODEJS_20_X, Runtime.PYTHON_3_11, Runtime.PYTHON_3_12];
+    const runtimes = [Runtime.NODEJS_16_X, Runtime.NODEJS_14_X, Runtime.NODEJS_20_X];
 
     // WHEN
     const latestRuntime = RuntimeDeterminer.latestNodeJsRuntime(runtimes);

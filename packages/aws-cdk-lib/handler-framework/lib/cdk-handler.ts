@@ -1,4 +1,4 @@
-import { Code, Runtime } from '../../../aws-lambda';
+import { Code, Runtime } from '../../aws-lambda';
 
 /**
  * Properties used to define source code executed within a Lambda function acting as a

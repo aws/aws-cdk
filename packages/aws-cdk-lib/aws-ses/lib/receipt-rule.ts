@@ -6,8 +6,8 @@ import { CfnReceiptRule } from './ses.generated';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { Aws, IResource, Lazy, Resource } from '../../core';
-import { CdkHandler } from '../../custom-resources/lib/handler-framework/cdk-handler';
-import { CdkSingletonFunction } from '../../custom-resources/lib/handler-framework/cdk-singleton-function';
+import { CdkHandler } from '../../handler-framework/lib/cdk-handler';
+import { CdkSingletonFunction } from '../../handler-framework/lib/cdk-singleton-function';
 
 /**
  * A receipt rule.

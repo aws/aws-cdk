@@ -4,8 +4,8 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { Aws, Duration, NestedStack, Stack } from '../../core';
 import * as cr from '../../custom-resources';
-import { CdkFunction } from '../../custom-resources/lib/handler-framework/cdk-function';
-import { CdkHandler } from '../../custom-resources/lib/handler-framework/cdk-handler';
+import { CdkFunction } from '../../handler-framework/lib/cdk-function';
+import { CdkHandler } from '../../handler-framework/lib/cdk-handler';
 
 /**
  * Properties for a ReplicaProvider
