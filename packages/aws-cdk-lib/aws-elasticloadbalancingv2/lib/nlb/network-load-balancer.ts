@@ -19,6 +19,13 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    * @default false
    */
   readonly crossZoneEnabled?: boolean;
+
+  /**
+   * Security groups to associate with this load balancer
+   *
+   * @default - No security groups associated with the load balancer.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 }
 
 /**
@@ -51,6 +58,13 @@ export interface NetworkLoadBalancerAttributes {
    * balancers.
    */
   readonly vpc?: ec2.IVpc;
+
+  /**
+   * Security groups to associate with this load balancer
+   *
+   * @default - No security groups associated with the load balancer.
+   */
+  readonly loadBalancerSecurityGroups?: string[];
 }
 
 /**
@@ -143,6 +157,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       public readonly loadBalancerArn = attrs.loadBalancerArn;
       public readonly vpc?: ec2.IVpc = attrs.vpc;
       public readonly metrics: INetworkLoadBalancerMetrics = new NetworkLoadBalancerMetrics(this, parseLoadBalancerFullName(attrs.loadBalancerArn));
+      public readonly securityGroups?: string[] = attrs.loadBalancerSecurityGroups;
 
       public addListener(lid: string, props: BaseNetworkListenerProps): NetworkListener {
         return new NetworkListener(this, lid, {
@@ -168,13 +183,16 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   }
 
   public readonly metrics: INetworkLoadBalancerMetrics;
+  public readonly securityGroups?: string[];
 
   constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
     super(scope, id, props, {
       type: 'network',
+      securityGroups: props.securityGroups?.map(sg => sg.securityGroupId),
     });
 
     this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);
+    this.securityGroups = props.securityGroups?.map(sg => sg.securityGroupId);
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
   }
 
@@ -396,6 +414,11 @@ export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointS
   readonly metrics: INetworkLoadBalancerMetrics;
 
   /**
+   * Security groups associated with this load balancer
+   */
+  readonly securityGroups?: string[];
+
+  /**
    * Add a listener to this load balancer
    *
    * @returns The newly created listener
@@ -409,6 +432,7 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
   public readonly loadBalancerArn: string;
   public readonly vpc?: ec2.IVpc;
   public readonly metrics: INetworkLoadBalancerMetrics;
+  public readonly securityGroups?: string[];
 
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerContextResponse) {
     super(scope, id, { environmentFromArn: props.loadBalancerArn });
@@ -417,6 +441,7 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
     this.loadBalancerCanonicalHostedZoneId = props.loadBalancerCanonicalHostedZoneId;
     this.loadBalancerDnsName = props.loadBalancerDnsName;
     this.metrics = new NetworkLoadBalancerMetrics(this, parseLoadBalancerFullName(props.loadBalancerArn));
+    this.securityGroups = props.securityGroupIds;
 
     this.vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
       vpcId: props.vpcId,
