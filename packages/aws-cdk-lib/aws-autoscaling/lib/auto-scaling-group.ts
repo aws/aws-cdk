@@ -729,7 +729,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   /**
    * An instance maintenance policy.
    *
-   * @default - no policy.
+   * @default - no instance maintenance policy.
    */
   readonly instanceMaintenancePolicy?: InstanceMaintenancePolicy;
 }
