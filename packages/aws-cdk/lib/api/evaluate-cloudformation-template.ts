@@ -387,7 +387,7 @@ export class EvaluateCloudFormationTemplate {
 
     if (foundResource.ResourceType == 'AWS::CloudFormation::Stack' && attribute?.startsWith('Outputs.')) {
       // need to resolve attributes from another stack's Output section
-      const dependantStackName = this.nestedStackNames[logicalId]?.nestedStackPhysicalName;
+      const dependantStackName = this.findNestedStack(logicalId, this.nestedStackNames);
       if (!dependantStackName) {
         //this is a newly created nested stack and cannot be hotswapped
         return undefined;
@@ -404,6 +404,19 @@ export class EvaluateCloudFormationTemplate {
     // now, we need to format the appropriate identifier depending on the resource type,
     // and the requested attribute name
     return this.formatResourceAttribute(foundResource, attribute);
+  }
+
+  private findNestedStack(logicalId: string, nestedStackNames: {
+    [nestedStackLogicalId: string]: NestedStackNames;
+  }): string | undefined {
+    for (const [nestedStackLogicalId, { nestedChildStackNames, nestedStackPhysicalName }] of Object.entries(nestedStackNames)) {
+      if (nestedStackLogicalId === logicalId) {
+        return nestedStackPhysicalName;
+      }
+      const checkInNestedChildStacks = this.findNestedStack(logicalId, nestedChildStackNames);
+      if (checkInNestedChildStacks) return checkInNestedChildStacks;
+    }
+    return undefined;
   }
 
   private formatResourceAttribute(resource: AWS.CloudFormation.StackResourceSummary, attribute: string | undefined): string | undefined {
