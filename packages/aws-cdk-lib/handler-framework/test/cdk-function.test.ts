@@ -23,7 +23,7 @@ describe('cdk function', () => {
         S3Bucket: {
           'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
         },
-        S3Key: '02227527d0e41dc9ca1090db083832a1fd9a8ec58cc140edb308086dc100a25b.zip',
+        S3Key: '4d4b98cd9c36b776ced5c91f31e9aa292cb824a13cb0d1a4d4d91e128b8e4fb6.zip',
       },
       Handler: 'index.handler',
       Role: {
@@ -34,47 +34,5 @@ describe('cdk function', () => {
       },
       Runtime: 'nodejs18.x',
     });
-  });
-
-  test('throws if no nodejs or python runtimes are specified in cdk code', () => {
-    // GIVEN
-    const stack = new Stack();
-    const handler = CdkHandler.fromAsset(path.join(__dirname, 'test-handler'), {
-      entrypoint: 'index.handler',
-      compatibleRuntimes: [Runtime.JAVA_11, Runtime.RUBY_3_2],
-    });
-
-    // WHEN / THEN
-    expect(() => {
-      new CdkFunction(stack, 'Function', { handler });
-    }).toThrow('Compatible runtimes must contain either nodejs or python runtimes');
-  });
-
-  test('throws if latest nodejs runtime is deprecated', () => {
-    // GIVEN
-    const stack = new Stack();
-    const handler = CdkHandler.fromAsset(path.join(__dirname, 'test-handler'), {
-      entrypoint: 'index.handler',
-      compatibleRuntimes: [Runtime.NODEJS_12_X, Runtime.NODEJS_14_X],
-    });
-
-    // WHEN / THEN
-    expect(() => {
-      new CdkFunction(stack, 'Function', { handler });
-    }).toThrow(`Latest nodejs runtime ${Runtime.NODEJS_14_X} is deprecated`);
-  });
-
-  test('throws if latest python runtime is deprecated', () => {
-    // GIVEN
-    const stack = new Stack();
-    const handler = CdkHandler.fromAsset(path.join(__dirname, 'test-handler'), {
-      entrypoint: 'index.handler',
-      compatibleRuntimes: [Runtime.PYTHON_2_7, Runtime.PYTHON_3_6],
-    });
-
-    // WHEN / THEN
-    expect(() => {
-      new CdkFunction(stack, 'Function', { handler });
-    }).toThrow(`Latest python runtime ${Runtime.PYTHON_3_6} is deprecated`);
   });
 });

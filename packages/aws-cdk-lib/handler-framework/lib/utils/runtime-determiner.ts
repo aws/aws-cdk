@@ -7,14 +7,42 @@ export class RuntimeDeterminer {
   public static readonly DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
 
   /**
-   * Determines the latest nodejs runtime from a list of nodejs runtimes
+   * Determines the latest runtime from a list of runtimes.
    *
-   * @param nodeJsRuntimes the list of nodejs runtimes to search in
-   * @returns the latest nodejs runtime or undefined if no nodejs runtimes are provided
+   * Note: runtimes must only be nodejs or python. Nodejs runtimes will be given preference over
+   * python runtimes.
+   *
+   * @param runtimes the list of runtimes to search in
+   * @returns the latest nodejs or python runtime found, otherwise undefined if no nodejs or python
+   * runtimes are specified
    */
-  public static latestNodeJsRuntime(nodeJsRuntimes: Runtime[]) {
-    RuntimeDeterminer.validateRuntimes(nodeJsRuntimes, RuntimeFamily.NODEJS);
+  public static determineLatestRuntime(runtimes: Runtime[]) {
+    if (runtimes.length === 0) {
+      throw new Error('You must specify at least one compatible runtime');
+    }
 
+    const nodeJsRuntimes = runtimes.filter(runtime => runtime.family === RuntimeFamily.NODEJS);
+    const latestNodeJsRuntime = RuntimeDeterminer.latestNodeJsRuntime(nodeJsRuntimes);
+    if (latestNodeJsRuntime !== undefined) {
+      if (latestNodeJsRuntime.isDeprecated) {
+        throw new Error(`Latest nodejs runtime ${latestNodeJsRuntime} is deprecated. You must upgrade to the latest code compatible nodejs runtime`);
+      }
+      return latestNodeJsRuntime;
+    }
+
+    const pythonRuntimes = runtimes.filter(runtime => runtime.family === RuntimeFamily.PYTHON);
+    const latestPythonRuntime = RuntimeDeterminer.latestPythonRuntime(pythonRuntimes);
+    if (latestPythonRuntime !== undefined) {
+      if (latestPythonRuntime.isDeprecated) {
+        throw new Error(`Latest python runtime ${latestPythonRuntime} is deprecated. You must upgrade to the latest code compatible python runtime`);
+      }
+      return latestPythonRuntime;
+    }
+
+    throw new Error('Compatible runtimes must contain only nodejs or python runtimes');
+  }
+
+  private static latestNodeJsRuntime(nodeJsRuntimes: Runtime[]) {
     if (nodeJsRuntimes.length === 0) {
       return undefined;
     }
@@ -31,15 +59,7 @@ export class RuntimeDeterminer {
     return latestRuntime;
   }
 
-  /**
-   * Determines the latest python runtime from a list of python runtimes
-   *
-   * @param pythonRuntimes the list of python runtimes to search in
-   * @returns the latest python runtime or undefined if no python runtimes are provided
-   */
-  public static latestPythonRuntime(pythonRuntimes: Runtime[]) {
-    RuntimeDeterminer.validateRuntimes(pythonRuntimes, RuntimeFamily.PYTHON);
-
+  private static latestPythonRuntime(pythonRuntimes: Runtime[]) {
     if (pythonRuntimes.length === 0) {
       return undefined;
     }
@@ -84,14 +104,6 @@ export class RuntimeDeterminer {
     }
 
     return runtime1;
-  }
-
-  private static validateRuntimes(runtimes: Runtime[], family: RuntimeFamily) {
-    for (let runtime of runtimes) {
-      if (runtime.family !== family) {
-        throw new Error(`All runtime familys must be the same when determining latest runtime. Found runtime family ${runtime.family}, expected ${family}`);
-      }
-    }
   }
 
   private constructor() {}

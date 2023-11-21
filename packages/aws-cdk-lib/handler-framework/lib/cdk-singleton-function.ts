@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CdkHandler } from './cdk-handler';
 import { RuntimeDeterminer } from './utils/runtime-determiner';
-import { FunctionOptions, Runtime, RuntimeFamily, SingletonFunction } from '../../aws-lambda';
+import { FunctionOptions, SingletonFunction } from '../../aws-lambda';
 
 /**
  * Properties used to define a singleton Lambda function to be used as a custom resource
@@ -37,34 +37,12 @@ export interface CdkSingletonFunctionProps extends FunctionOptions {
  * Represents a singleton Lambda function to be used as a custom resource provider.
  */
 export class CdkSingletonFunction extends SingletonFunction {
-  private static determineRuntime(compatibleRuntimes: Runtime[]) {
-    const nodeJsRuntimes = compatibleRuntimes.filter(runtime => runtime.family === RuntimeFamily.NODEJS);
-    const latestNodeJsRuntime = RuntimeDeterminer.latestNodeJsRuntime(nodeJsRuntimes);
-    if (latestNodeJsRuntime !== undefined) {
-      if (latestNodeJsRuntime.isDeprecated) {
-        throw new Error(`Latest nodejs runtime ${latestNodeJsRuntime} is deprecated`);
-      }
-      return latestNodeJsRuntime;
-    }
-
-    const pythonRuntimes = compatibleRuntimes.filter(runtime => runtime.family === RuntimeFamily.PYTHON);
-    const latestPythonRuntime = RuntimeDeterminer.latestPythonRuntime(pythonRuntimes);
-    if (latestPythonRuntime !== undefined) {
-      if (latestPythonRuntime.isDeprecated) {
-        throw new Error(`Latest python runtime ${latestPythonRuntime} is deprecated`);
-      }
-      return latestPythonRuntime;
-    }
-
-    throw new Error('Compatible runtimes must contain either nodejs or python runtimes');
-  }
-
   public constructor(scope: Construct, id: string, props: CdkSingletonFunctionProps) {
     super(scope, id, {
       ...props,
       code: props.handler.code,
       handler: props.handler.entrypoint,
-      runtime: CdkSingletonFunction.determineRuntime(props.handler.compatibleRuntimes),
+      runtime: RuntimeDeterminer.determineLatestRuntime(props.handler.compatibleRuntimes),
     });
   }
 }
