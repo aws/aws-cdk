@@ -4,6 +4,9 @@ import { Runtime, RuntimeFamily } from '../../../aws-lambda';
  * A utility class used to determine the latest runtime for a specific runtime family
  */
 export class RuntimeDeterminer {
+  /**
+   * The latest nodejs runtime version available across all AWS regions
+   */
   public static readonly DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
 
   /**
