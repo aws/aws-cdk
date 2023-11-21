@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-import * as apigw from '../../lib';
+import * as apigw from 'aws-cdk-lib/aws-apigatewayv2/lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-aws-apigatewayv2-http-stage');

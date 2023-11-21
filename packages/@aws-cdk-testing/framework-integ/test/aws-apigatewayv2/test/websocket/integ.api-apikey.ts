@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-import * as apigw from '../../lib';
-import { WebSocketApiKeySelectionExpression } from '../../lib';
+import * as apigw from '../../../../../../aws-cdk-lib/aws-apigatewayv2/lib';
+import { WebSocketApiKeySelectionExpression } from '../../../../../../aws-cdk-lib/aws-apigatewayv2/lib';
 
 const app = new cdk.App();
 
