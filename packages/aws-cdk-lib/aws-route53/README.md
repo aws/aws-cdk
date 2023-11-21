@@ -225,6 +225,29 @@ new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
 });
 ```
 
+You can optionally restrict the domain names that can be delegated with the IAM role. This allows you to follow the
+minimum privilege principle:
+
+```ts
+const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
+  zoneName: 'someexample.com',
+});
+
+const betaCrossAccountRole = new iam.Role(this, 'BetaCrossAccountRole', {
+  // ...
+});
+parentZone.grantDelegation(betaCrossAccountRole, route53.DelegationGrantNames.ofEquals({
+  names: ['beta.someexample.com']
+}));
+
+const prodCrossAccountRole = new iam.Role(this, 'ProdCrossAccountRole', {
+  // ...
+});
+parentZone.grantDelegation(prodCrossAccountRole, route53.DelegationGrantNames.ofEquals({
+  names: ['prod.someexample.com']
+}));
+```
+
 ### Add Trailing Dot to Domain Names
 
 In order to continue managing existing domain names with trailing dots using CDK, you can set `addTrailingDot: false` to prevent the Construct from adding a dot at the end of the domain name.

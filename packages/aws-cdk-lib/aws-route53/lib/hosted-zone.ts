@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { DelegationGrantNames } from './delegation-grant-names';
 import { HostedZoneProviderProps } from './hosted-zone-provider';
 import { HostedZoneAttributes, IHostedZone, PublicHostedZoneAttributes } from './hosted-zone-ref';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
@@ -84,8 +85,8 @@ export class HostedZone extends Resource implements IHostedZone {
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      public grantDelegation(grantee: iam.IGrantable, names?: DelegationGrantNames): iam.Grant {
+        return makeGrantDelegation(grantee, this.hostedZoneArn, names);
       }
     }
 
@@ -108,8 +109,8 @@ export class HostedZone extends Resource implements IHostedZone {
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      public grantDelegation(grantee: iam.IGrantable, names?: DelegationGrantNames): iam.Grant {
+        return makeGrantDelegation(grantee, this.hostedZoneArn, names);
       }
     }
 
@@ -199,8 +200,8 @@ export class HostedZone extends Resource implements IHostedZone {
     this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.env.region ?? Stack.of(vpc).region });
   }
 
-  public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-    return makeGrantDelegation(grantee, this.hostedZoneArn);
+  public grantDelegation(grantee: iam.IGrantable, names?: DelegationGrantNames): iam.Grant {
+    return makeGrantDelegation(grantee, this.hostedZoneArn, names);
   }
 }
 
@@ -274,8 +275,8 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      public grantDelegation(grantee: iam.IGrantable, names?: DelegationGrantNames): iam.Grant {
+        return makeGrantDelegation(grantee, this.hostedZoneArn, names);
       }
     }
     return new Import(scope, id);
@@ -297,8 +298,8 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      public grantDelegation(grantee: iam.IGrantable, names?: DelegationGrantNames): iam.Grant {
+        return makeGrantDelegation(grantee, this.hostedZoneArn, names);
       }
     }
     return new Import(scope, id);
@@ -435,8 +436,8 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      public grantDelegation(grantee: iam.IGrantable, names?: DelegationGrantNames): iam.Grant {
+        return makeGrantDelegation(grantee, this.hostedZoneArn, names);
       }
     }
     return new Import(scope, id);
