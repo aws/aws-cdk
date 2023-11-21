@@ -25,6 +25,7 @@ import {
   Tokenization, withResolved,
 } from '../../core';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
+import { max } from 'lodash';
 
 /**
  * Name tag constant
@@ -576,6 +577,45 @@ export interface LaunchTemplateOverrides {
 }
 
 /**
+ * InstanceMaintenancePolicy allows you to configure an instance maintenance policy for your Auto Scaling group to
+ * meet specific capacity requirements during events that cause instances to be replaced, such as an instance
+ * refresh or the health check process.
+ *
+ * https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-maintenance-policy.html
+ */
+export interface InstanceMaintenancePolicy {
+  /**
+   * Specifies the upper threshold as a percentage of the desired capacity of the Auto Scaling group.
+   * It represents the maximum percentage of the group that can be in service and healthy, or pending,
+   * to support your workload when replacing instances.
+   *
+   * Value range is 100 to 200. After it's set, a value of -1 will clear the previously set value.
+   *
+   * Both MinHealthyPercentage and MaxHealthyPercentage must be specified, and the difference between
+   * them cannot be greater than 100. A large range increases the number of instances that can be
+   * replaced at the same time.
+   *
+   * @default - no value.
+   */
+  readonly maxHealthyPercentage?: number;
+
+  /**
+   * Specifies the lower threshold as a percentage of the desired capacity of the Auto Scaling group.
+   * It represents the minimum percentage of the group to keep in service, healthy, and ready to use
+   * to support your workload when replacing instances.
+   *
+   * Value range is 0 to 100. After it's set, a value of -1 will clear the previously set value.
+   *
+   * Both MinHealthyPercentage and MaxHealthyPercentage must be specified, and the difference between
+   * them cannot be greater than 100. A large range increases the number of instances that can be
+   * replaced at the same time.
+   *
+   * @default - no value.
+   */
+  readonly minHealthyPercentage?: number;
+}
+
+/**
  * Properties of a Fleet
  */
 export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
@@ -686,6 +726,13 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default false
    */
   readonly requireImdsv2?: boolean;
+
+  /**
+   * An instance maintenance policy.
+   *
+   * @default - no policy.
+   */
+  readonly instanceMaintenancePolicy?: InstanceMaintenancePolicy;
 }
 
 /**
@@ -1408,6 +1455,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       }));
     }
 
+    this.validateInstanceMaintenancePolicy(props.instanceMaintenancePolicy);
+
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       autoScalingGroupName: this.physicalName,
@@ -1427,6 +1476,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       terminationPolicies: props.terminationPolicies,
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
+      instanceMaintenancePolicy: props.instanceMaintenancePolicy,
       ...this.getLaunchSettings(launchConfig, props.launchTemplate ?? launchTemplateFromConfig, props.mixedInstancesPolicy),
     };
 
@@ -1839,6 +1889,43 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     return errors;
+  }
+
+  private validateInstanceMaintenancePolicy(policy: InstanceMaintenancePolicy | undefined) {
+    if (!policy) {
+      return;
+    }
+
+    const maxHealthyPercentage = policy.maxHealthyPercentage
+    const minHealthyPercentage = policy.minHealthyPercentage
+
+    if (
+      maxHealthyPercentage !== undefined
+      && maxHealthyPercentage !== -1
+      && (maxHealthyPercentage < 100 || maxHealthyPercentage > 200)
+    ) {
+      throw new Error(`maxHealthyPercentage must be between 100 and 200, or -1 to clear the previously set value, got ${maxHealthyPercentage}`);
+    }
+    if (
+      minHealthyPercentage !== undefined
+      && minHealthyPercentage !== -1
+      && (minHealthyPercentage < 0 || minHealthyPercentage > 100)
+    ) {
+      throw new Error(`minHealthyPercentage must be between 0 and 100, or -1 to clear the previously set value, got ${minHealthyPercentage}`);
+    }
+    if (
+      (maxHealthyPercentage !== undefined && minHealthyPercentage === undefined)
+      || (maxHealthyPercentage === undefined && minHealthyPercentage !== undefined)
+    ) {
+      throw new Error(`Both minHealthyPercentage and maxHealthyPercentage must be specified, got minHealthyPercentage: ${minHealthyPercentage} and maxHealthyPercentage: ${maxHealthyPercentage}`);
+    }
+    if (
+      maxHealthyPercentage !== undefined
+      && minHealthyPercentage !== undefined
+      && maxHealthyPercentage - minHealthyPercentage > 100
+    ) {
+      throw new Error(`The difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100, got ${maxHealthyPercentage - minHealthyPercentage}`);
+    }
   }
 }
 
