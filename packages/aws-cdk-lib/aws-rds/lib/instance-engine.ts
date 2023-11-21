@@ -609,6 +609,8 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_42 = MysqlEngineVersion.of('5.7.42', '5.7');
   /** Version "5.7.43". */
   public static readonly VER_5_7_43 = MysqlEngineVersion.of('5.7.43', '5.7');
+  /** Version "5.7.44". */
+  public static readonly VER_5_7_44 = MysqlEngineVersion.of('5.7.44', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -648,6 +650,8 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_33 = MysqlEngineVersion.of('8.0.33', '8.0');
   /** Version "8.0.34". */
   public static readonly VER_8_0_34 = MysqlEngineVersion.of('8.0.34', '8.0');
+  /** Version "8.0.35". */
+  public static readonly VER_8_0_35 = MysqlEngineVersion.of('8.0.35', '8.0');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -1571,6 +1575,10 @@ export class OracleEngineVersion {
   public static readonly VER_19_0_0_0_2023_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2023-01.rur-2023-01.r1', '19');
   /** Version "19.0.0.0.ru-2023-04.rur-2023-04.r1". */
   public static readonly VER_19_0_0_0_2023_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2023-04.rur-2023-04.r1', '19');
+  /** Version "19.0.0.0.ru-2023-07.rur-2023-07.r1"  */
+  public static readonly VER_19_0_0_0_2023_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2023-07.rur-2023-07.r1', '19');
+  /** Version "19.0.0.0.ru-2023-10.rur-2023-10.r1"  */
+  public static readonly VER_19_0_0_0_2023_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2023-10.rur-2023-10.r1', '19');
 
   /** Version "21" (only a major version, without a specific minor version). */
   public static readonly VER_21 = OracleEngineVersion.of('21', '21');
@@ -1586,6 +1594,10 @@ export class OracleEngineVersion {
   public static readonly VER_21_0_0_0_2023_01_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-01.rur-2023-01.r1', '21');
   /** Version "21.0.0.0.ru-2023-04.rur-2023-04.r1". */
   public static readonly VER_21_0_0_0_2023_04_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-04.rur-2023-04.r1', '21');
+  /** Version "21.0.0.0.ru-2023-07.rur-2023-07.r1". */
+  public static readonly VER_21_0_0_0_2023_07_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-07.rur-2023-07.r1', '21');
+  /** Version "21.0.0.0.ru-2023-10.rur-2023-10.r1". */
+  public static readonly VER_21_0_0_0_2023_10_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-10.rur-2023-10.r1', '21');
 
   /**
    * Creates a new OracleEngineVersion with an arbitrary version.
@@ -1928,6 +1940,12 @@ export class SqlServerEngineVersion {
   public static readonly VER_15_00_4312_2_V1 = SqlServerEngineVersion.of('15.00.4312.2.v1', '15.00');
   /** Version "15.00.4316.3.v1". */
   public static readonly VER_15_00_4316_3_V1 = SqlServerEngineVersion.of('15.00.4316.3.v1', '15.00');
+  /** Version "15.00.4322.2.v1". */
+  public static readonly VER_15_00_4322_2_V1 = SqlServerEngineVersion.of('15.00.4322.2.v1', '15.00');
+  /** Version "15.00.4335.1.v1". */
+  public static readonly VER_15_00_4335_1_V1 = SqlServerEngineVersion.of('15.00.4335.1.v1', '15.00');
+  /** Version "16.00.4085.2.v1". */
+  public static readonly VER_16_00_4085_2_V1 = SqlServerEngineVersion.of('16.00.4085.2.v1', '16.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.

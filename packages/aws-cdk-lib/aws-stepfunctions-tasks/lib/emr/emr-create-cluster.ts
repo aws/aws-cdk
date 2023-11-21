@@ -655,10 +655,14 @@ export namespace EmrCreateCluster {
      * @default - No allocation strategy, i.e. spot instance type will be chosen based on current price only
      */
     readonly allocationStrategy?: SpotAllocationStrategy;
+
     /**
      * The defined duration for Spot instances (also known as Spot blocks) in minutes.
      *
      * @default - No blockDurationMinutes
+     *
+     * @deprecated - Spot Instances with a defined duration (also known as Spot blocks) are no longer available to new customers from July 1, 2021.
+     * For customers who have previously used the feature, we will continue to support Spot Instances with a defined duration until December 31, 2022.
      */
     readonly blockDurationMinutes?: number;
 
