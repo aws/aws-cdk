@@ -1895,8 +1895,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       return;
     }
 
-    const maxHealthyPercentage = policy.maxHealthyPercentage
-    const minHealthyPercentage = policy.minHealthyPercentage
+    const maxHealthyPercentage = policy.maxHealthyPercentage;
+    const minHealthyPercentage = policy.minHealthyPercentage;
 
     if (
       maxHealthyPercentage !== undefined
