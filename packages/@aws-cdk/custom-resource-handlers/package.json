@@ -56,6 +56,7 @@
     "esbuild": "^0.19.5"
   },
   "dependencies": {
+    "@aws-cdk/asset-node-proxy-agent-v6": "^2.0.1",
     "@aws-sdk/client-lambda": "3.421.0",
     "@aws-sdk/client-synthetics": "3.421.0",
     "@aws-sdk/client-ecr": "3.421.0",
