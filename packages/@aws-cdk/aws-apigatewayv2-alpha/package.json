@@ -2,7 +2,7 @@
   "name": "@aws-cdk/aws-apigatewayv2-alpha",
   "version": "0.0.0",
   "private": false,
-  "description": "The CDK Construct Library for AWS::APIGatewayv2",
+  "description": "This module is deprecated. All constructs are now available under aws-cdk-lib/aws-apigatewayv2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -101,8 +101,8 @@
   "engines": {
     "node": ">= 14.15.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "deprecated",
+  "maturity": "deprecated",
   "features": [
     {
       "name": "Higher level constructs for HTTP APIs",
