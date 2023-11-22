@@ -1,7 +1,7 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnScheduleGroup } from 'aws-cdk-lib/aws-scheduler';
-import { Arn, ArnFormat, Aws, IResource, PhysicalName, RemovalPolicy, Resource, Stack } from 'aws-cdk-lib/core';
+import { Arn, ArnFormat, Aws, IResource, Names, RemovalPolicy, Resource, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 
 export interface GroupProps {
@@ -338,12 +338,15 @@ export class Group extends GroupBase {
   public readonly groupArn: string;
 
   public constructor(scope: Construct, id: string, props: GroupProps) {
-    super(scope, id, {
-      physicalName: props.groupName ?? PhysicalName.GENERATE_IF_NEEDED,
+    super(scope, id);
+
+    this.groupName = props.groupName ?? Names.uniqueResourceName(this, {
+      maxLength: 64,
+      separator: '-',
     });
 
     const group = new CfnScheduleGroup(this, 'Resource', {
-      name: this.physicalName,
+      name: this.groupName,
     });
 
     group.applyRemovalPolicy(props.removalPolicy);
@@ -351,8 +354,7 @@ export class Group extends GroupBase {
     this.groupArn = this.getResourceArnAttribute(group.attrArn, {
       service: 'scheduler',
       resource: 'schedule-group',
-      resourceName: this.physicalName,
+      resourceName: this.groupName,
     });
-    this.groupName = this.physicalName;
   }
 }

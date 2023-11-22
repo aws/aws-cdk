@@ -148,7 +148,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
     super(scope, id);
 
     const asset = new s3_assets.Asset(this, 'Code', {
-      path: path.join(__dirname, 'log-retention-provider'),
+      path: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-logs', 'log-retention-handler'),
     });
 
     const role = props.role || new iam.Role(this, 'ServiceRole', {

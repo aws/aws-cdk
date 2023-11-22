@@ -1,0 +1,13 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "integ-sqs-send-message/DefaultTest": {
+      "stacks": [
+        "aws-cdk-schedule"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integ-sqs-send-message/DefaultTest/DeployAssert",
+      "assertionStackName": "integsqssendmessageDefaultTestDeployAssert883D0D33"
+    }
+  }
+}

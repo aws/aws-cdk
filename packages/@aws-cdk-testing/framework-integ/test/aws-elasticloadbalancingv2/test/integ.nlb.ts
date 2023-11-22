@@ -11,9 +11,13 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAzs: 2,
 });
 
+const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), 'allow https access from the world');
+
 const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
   vpc,
   internetFacing: true,
+  securityGroups: [sg],
 });
 
 const listener = lb.addListener('Listener', {

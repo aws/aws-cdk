@@ -96,6 +96,7 @@
   "MyAuthorizer6575980E": {
    "Type": "AWS::ApiGateway::Authorizer",
    "Properties": {
+    "AuthorizerResultTtlInSeconds": 600,
     "AuthorizerUri": {
      "Fn::Join": [
       "",
@@ -208,7 +209,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "MyRestApiDeploymentB555B582e0e53f2547b469b538202de55968eaf0": {
+  "MyRestApiDeploymentB555B5827a9cde8f137f97e5aa74fca164d09d74": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -226,7 +227,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "MyRestApiDeploymentB555B582e0e53f2547b469b538202de55968eaf0"
+     "Ref": "MyRestApiDeploymentB555B5827a9cde8f137f97e5aa74fca164d09d74"
     },
     "RestApiId": {
      "Ref": "MyRestApi2D1F47A9"
