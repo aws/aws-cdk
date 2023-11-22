@@ -122,6 +122,12 @@ export interface FunctionProps {
    * The source code of the function.
    */
   readonly code: FunctionCode;
+
+  /**
+   * The runtime environment for the function.
+   * @default FunctionRuntime.JS_1_0
+   */
+  readonly runtime?: FunctionRuntime;
 }
 
 /**
@@ -165,7 +171,7 @@ export class Function extends Resource implements IFunction {
       functionCode: props.code.render(),
       functionConfig: {
         comment: props.comment ?? this.functionName,
-        runtime: 'cloudfront-js-1.0',
+        runtime: props.runtime ?? FunctionRuntime.JS_1_0,
       },
       name: this.functionName,
     });
@@ -211,4 +217,20 @@ export interface FunctionAssociation {
 
   /** The type of event which should invoke the function. */
   readonly eventType: FunctionEventType;
+}
+
+/**
+ * The function's runtime environment version.
+ */
+export enum FunctionRuntime {
+
+  /**
+   * cloudfront-js-1.0
+   */
+  JS_1_0 = 'cloudfront-js-1.0',
+
+  /**
+   * cloudfront-js-2.0
+   */
+  JS_2_0 = 'cloudfront-js-2.0',
 }
