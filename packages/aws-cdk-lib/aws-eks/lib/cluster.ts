@@ -440,8 +440,6 @@ export interface CommonClusterOptions {
   /**
    * Where to place EKS Control Plane ENIs
    *
-   * If you want to create public load balancers, this must include public subnets.
-   *
    * For example, to only select private subnets, supply the following:
    *
    * `vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }]`
@@ -928,6 +926,15 @@ export class KubernetesVersion {
   public static readonly V1_27 = KubernetesVersion.of('1.27');
 
   /**
+   * Kubernetes version 1.28
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV28Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v28`.
+   */
+  public static readonly V1_28 = KubernetesVersion.of('1.28');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -939,6 +946,7 @@ export class KubernetesVersion {
   private constructor(public readonly version: string) { }
 }
 
+// Shared definition with packages/@aws-cdk/custom-resource-handlers/test/aws-eks/compare-log.test.ts
 /**
  * EKS cluster logging types
  */

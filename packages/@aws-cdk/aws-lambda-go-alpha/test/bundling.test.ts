@@ -185,7 +185,7 @@ test('Local bundling', () => {
     environment: {
       KEY: 'value',
     },
-    runtime: Runtime.PROVIDED_AL2,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
   });
 
@@ -213,7 +213,7 @@ test('Incorrect go version', () => {
   const bundler = new Bundling({
     entry,
     moduleDir,
-    runtime: Runtime.PROVIDED_AL2,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
   });
 
@@ -308,7 +308,7 @@ test('with command hooks', () => {
   Bundling.bundle({
     entry,
     moduleDir,
-    runtime: Runtime.PROVIDED_AL2,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     commandHooks: {
       beforeBundling(inputDir: string, outputDir: string): string[] {

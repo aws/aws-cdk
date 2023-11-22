@@ -1722,6 +1722,19 @@ new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
 });
 ```
 
+*Kinesis Data Firehose*
+
+```ts
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+
+declare const vpc: ec2.Vpc;
+declare const deliveryStream: firehose.CfnDeliveryStream;
+
+vpc.addFlowLog('FlowLogsKinesisDataFirehose', {
+  destination: ec2.FlowLogDestination.toKinesisDataFirehoseDestination(deliveryStream.attrArn),
+});
+```
+
 When the S3 destination is configured, AWS will automatically create an S3 bucket policy
 that allows the service to write logs to the bucket. This makes it impossible to later update
 that bucket policy. To have CDK create the bucket policy so that future updates can be made,

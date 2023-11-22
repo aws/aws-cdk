@@ -134,7 +134,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
     const memorySize = cluster.kubectlMemory ? cluster.kubectlMemory.toMebibytes() : 1024;
 
     const handler = new lambda.Function(this, 'Handler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'kubectl-handler')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-eks', 'kubectl-handler')),
       runtime: lambda.Runtime.PYTHON_3_10,
       handler: 'index.handler',
       timeout: Duration.minutes(15),
