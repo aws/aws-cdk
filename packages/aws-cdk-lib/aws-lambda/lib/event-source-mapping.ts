@@ -345,7 +345,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
 
-    if (props.maxConcurrency && (props.maxConcurrency < 2 || props.maxConcurrency > 1000)) {
+    if (props.maxConcurrency && !cdk.Token.isUnresolved(props.maxConcurrency) && (props.maxConcurrency < 2 || props.maxConcurrency > 1000)) {
       throw new Error('maxConcurrency must be between 2 and 1000 concurrent instances');
     }
 
