@@ -23,7 +23,7 @@ of millions of tasks across many AWS services without provisioning or managing u
 2. **Targets**: A target is an API operation that EventBridge Scheduler calls on your behalf every time your schedule runs. EventBridge Scheduler
 supports two types of targets: templated targets and universal targets. Templated targets invoke common API operations across a core groups of 
 services. For example, EventBridge Scheduler supports templated targets for invoking AWS Lambda Function or starting execution of Step Function state
-machine. For API operations that are not supported by templated targets you can use customizeable universal targets. Universal targets support calling
+machine. For API operations that are not supported by templated targets you can use customizable universal targets. Universal targets support calling
 more than 6,000 API operations across over 270 AWS services.
 3. **Schedule Group**: A schedule group is an Amazon EventBridge Scheduler resource that you use to organize your schedules. Your AWS account comes
 with a default scheduler group. A new schedule will always be added to a scheduling group. If you do not provide a scheduling group to add to, it 
@@ -143,7 +143,7 @@ new Schedule(this, 'Schedule', {
 
 The `@aws-cdk/aws-scheduler-targets-alpha` module includes classes that implement the `IScheduleTarget` interface for
 various AWS services. EventBridge Scheduler supports two types of targets: templated targets invoke common API
-operations across a core groups of services, and customizeable universal targets that you can use to call more
+operations across a core groups of services, and customizable universal targets that you can use to call more
 than 6,000 operations across over 270 services. A list of supported targets can be found at `@aws-cdk/aws-scheduler-targets-alpha`. 
 
 ### Input 
@@ -236,7 +236,7 @@ By default, the `flexibleTimeWindowMode` is set to `OFF` and this feature is dis
 declare const target: targets.LambdaInvoke;
 
 const schedule = new Schedule(this, 'Schedule', {
-    schedule: ScheduleExpression.rate(cdk.Duration.hours(12)),
+    schedule: ScheduleExpression.rate(Duration.hours(12)),
     target,
     flexibleTimeWindowMode: FlexibleTimeWindowMode.FLEXIBLE,
     maximumWindowInMinutes: Duration.minutes(10),
