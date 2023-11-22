@@ -518,7 +518,7 @@ You can also deploy CloudFront functions and add them to a CloudFront distributi
 // Add a cloudfront Function to a Distribution
 const cfFunction = new cloudfront.Function(this, 'Function', {
   code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
-  runtime: FunctionRuntime.JS_2_0,
+  runtime: cloudfront.FunctionRuntime.JS_2_0,
 });
 
 declare const s3Bucket: s3.Bucket;
