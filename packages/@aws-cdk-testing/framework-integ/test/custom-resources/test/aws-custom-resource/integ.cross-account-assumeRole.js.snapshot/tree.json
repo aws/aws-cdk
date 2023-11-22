@@ -32,7 +32,7 @@
                           "Action": "sts:AssumeRole",
                           "Effect": "Allow",
                           "Principal": {
-                            "AWS": "arn:aws:iam::165799800970:root"
+                            "AWS": "arn:aws:iam::234567890123:root"
                           }
                         }
                       ],
@@ -247,7 +247,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-165799800970-us-east-1",
+                      "s3Bucket": "cdk-hnb659fds-assets-234567890123-us-east-1",
                       "s3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
                     },
                     "handler": "index.handler",
@@ -467,7 +467,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-165799800970-af-south-1",
+                      "s3Bucket": "cdk-hnb659fds-assets-234567890123-af-south-1",
                       "s3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
                     },
                     "handler": "index.handler",
