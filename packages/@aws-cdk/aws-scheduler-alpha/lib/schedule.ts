@@ -1,4 +1,4 @@
-import { Duration, IResource, Resource } from 'aws-cdk-lib';
+import { Annotations, Duration, IResource, Resource } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
@@ -342,6 +342,9 @@ export class Schedule extends Resource implements ISchedule {
     flexibleTimeWindowMode?: FlexibleTimeWindowMode, maximumWindowInMinutes?: Duration,
   ): CfnSchedule.FlexibleTimeWindowProperty {
     if (!flexibleTimeWindowMode || flexibleTimeWindowMode === FlexibleTimeWindowMode.OFF) {
+      if (maximumWindowInMinutes) {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-scheduler:maximumWindowInMinutesIgnored', 'maximumWindowInMinutes is ignored when flexibleTimeWindowMode is not FLEXIBLE');
+      }
       return {
         mode: 'OFF',
       };
