@@ -518,13 +518,13 @@ new rds.DatabaseInstance(this, 'Instance', {
 
 ## Setting Public Accessibility
 
-You can set public accessibility for the database instance or cluster instance using the `publiclyAccessible` property.
+You can set public accessibility for the `DatabaseInstance` or the `ClusterInstance` using the `publiclyAccessible` property.
 If you specify `true`, it creates an instance with a publicly resolvable DNS name, which resolves to a public IP address.
 If you specify `false`, it creates an internal instance with a DNS name that resolves to a private IP address.
 
-The default value will be `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise. This default value
-will be determined based on the vpc placement of the `DatabaseInstance` or in the case of a cluster, the vpc placement of
-the `ClusterInstance`.
+The default value will be `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise. In the case of a
+cluster, the default value will be determined on the vpc placement of the `DatabaseCluster` otherwise it will be determined
+based on the vpc placement of standalone `DatabaseInstance`.
 
 ```ts
 declare const vpc: ec2.Vpc;
