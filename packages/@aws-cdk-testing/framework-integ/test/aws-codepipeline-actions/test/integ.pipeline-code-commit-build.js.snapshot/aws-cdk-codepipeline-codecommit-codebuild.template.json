@@ -91,7 +91,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
@@ -180,6 +179,15 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": {
+     "Fn::GetAtt": [
+      "PipelineArtifactsBucketEncryptionKey01D58D69",
+      "Arn"
+     ]
+    },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
      "Image": "aws/codebuild/standard:1.0",
@@ -195,15 +203,6 @@
     },
     "Source": {
      "Type": "CODEPIPELINE"
-    },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "EncryptionKey": {
-     "Fn::GetAtt": [
-      "PipelineArtifactsBucketEncryptionKey01D58D69",
-      "Arn"
-     ]
     }
    }
   },
@@ -359,7 +358,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
@@ -445,6 +443,21 @@
   "PipelineC660917D": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
+    "ArtifactStore": {
+     "EncryptionKey": {
+      "Id": {
+       "Fn::GetAtt": [
+        "PipelineArtifactsBucketEncryptionKey01D58D69",
+        "Arn"
+       ]
+      },
+      "Type": "KMS"
+     },
+     "Location": {
+      "Ref": "PipelineArtifactsBucket22248F97"
+     },
+     "Type": "S3"
+    },
     "RoleArn": {
      "Fn::GetAtt": [
       "PipelineRoleD68726F7",
@@ -468,7 +481,7 @@
            "Name"
           ]
          },
-         "BranchName": "master",
+         "BranchName": "main",
          "PollForSourceChanges": true
         },
         "Name": "source",
@@ -551,22 +564,7 @@
       ],
       "Name": "build"
      }
-    ],
-    "ArtifactStore": {
-     "EncryptionKey": {
-      "Id": {
-       "Fn::GetAtt": [
-        "PipelineArtifactsBucketEncryptionKey01D58D69",
-        "Arn"
-       ]
-      },
-      "Type": "KMS"
-     },
-     "Location": {
-      "Ref": "PipelineArtifactsBucket22248F97"
-     },
-     "Type": "S3"
-    }
+    ]
    },
    "DependsOn": [
     "PipelineRoleDefaultPolicyC7A05455",
@@ -616,7 +614,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",

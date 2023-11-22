@@ -951,7 +951,7 @@ function expectedAssetRolePolicy(assumeRolePattern: string | string[], attachedR
         Resource: unsingleton(assumeRolePattern.map(arn => { return { 'Fn::Sub': arn }; })),
       },
       {
-        Action: ['s3:GetObject*', 's3:GetBucket*', 's3:HeadObject', 's3:List*'],
+        Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
         Effect: 'Allow',
         Resource: [
           { 'Fn::GetAtt': ['CdkPipelineArtifactsBucket7B46C7BF', 'Arn'] },

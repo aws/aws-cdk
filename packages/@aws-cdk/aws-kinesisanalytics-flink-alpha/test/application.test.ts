@@ -81,7 +81,7 @@ describe('Application', () => {
           { Action: 'cloudwatch:PutMetricData', Effect: 'Allow', Resource: '*' },
           // Access to read from the code bucket
           {
-            Action: ['s3:GetObject*', 's3:GetBucket*', 's3:HeadObject', 's3:List*'],
+            Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
             Effect: 'Allow',
             Resource: Match.anyValue(),
           },
@@ -209,7 +209,7 @@ describe('Application', () => {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: Match.arrayWith([
-          Match.objectLike({ Action: ['s3:GetObject*', 's3:GetBucket*', 's3:HeadObject', 's3:List*'] }),
+          Match.objectLike({ Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'] }),
         ]),
       },
     });

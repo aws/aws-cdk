@@ -1,4 +1,5 @@
 import * as AWS from 'aws-sdk';
+import { PromiseResult } from 'aws-sdk/lib/request';
 import { ISDK } from './aws-auth';
 import { NestedStackNames } from './nested-stack-helpers';
 
@@ -34,7 +35,57 @@ export class LazyListStackResources implements ListStackResources {
   }
 }
 
-export class CfnEvaluationException extends Error {}
+export interface LookupExport {
+  lookupExport(name: string): Promise<AWS.CloudFormation.Export | undefined>;
+}
+
+export class LookupExportError extends Error { }
+
+export class LazyLookupExport implements LookupExport {
+  private cachedExports: { [name: string]: AWS.CloudFormation.Export } = {}
+
+  constructor(private readonly sdk: ISDK) { }
+
+  async lookupExport(name: string): Promise<AWS.CloudFormation.Export | undefined> {
+    if (this.cachedExports[name]) {
+      return this.cachedExports[name];
+    }
+
+    for await (const cfnExport of this.listExports()) {
+      if (!cfnExport.Name) {
+        continue; // ignore any result that omits a name
+      }
+      this.cachedExports[cfnExport.Name] = cfnExport;
+
+      if (cfnExport.Name === name) {
+        return cfnExport;
+      }
+
+    }
+
+    return undefined; // export not found
+  }
+
+  private async * listExports() {
+    let nextToken: string | undefined = undefined;
+    while (true) {
+      const response: PromiseResult<AWS.CloudFormation.ListExportsOutput, AWS.AWSError> = await this.sdk.cloudFormation().listExports({
+        NextToken: nextToken,
+      }).promise();
+
+      for (const cfnExport of response.Exports ?? []) {
+        yield cfnExport;
+      }
+
+      if (!response.NextToken) {
+        return;
+      }
+      nextToken = response.NextToken;
+    }
+  }
+}
+
+export class CfnEvaluationException extends Error { }
 
 export interface ResourceDefinition {
   readonly LogicalId: string;
@@ -64,7 +115,8 @@ export class EvaluateCloudFormationTemplate {
   private readonly urlSuffix: (region: string) => string;
   private readonly sdk: ISDK;
   private readonly nestedStackNames: { [nestedStackLogicalId: string]: NestedStackNames };
-  private readonly stackResources: LazyListStackResources;
+  private readonly stackResources: ListStackResources;
+  private readonly lookupExport: LookupExport;
 
   private cachedUrlSuffix: string | undefined;
 
@@ -90,6 +142,9 @@ export class EvaluateCloudFormationTemplate {
     // We need them to figure out the physical name of a resource in case it wasn't specified by the user.
     // We fetch it lazily, to save a service call, in case all hotswapped resources have their physical names set.
     this.stackResources = new LazyListStackResources(this.sdk, this.stackName);
+
+    // CloudFormation Exports lookup to be able to resolve Fn::ImportValue intrinsics in template
+    this.lookupExport = new LazyLookupExport(this.sdk);
   }
 
   // clones current EvaluateCloudFormationTemplate object, but updates the stack name
@@ -152,6 +207,14 @@ export class EvaluateCloudFormationTemplate {
 
   public async evaluateCfnExpression(cfnExpression: any): Promise<any> {
     const self = this;
+    /**
+     * Evaluates CloudFormation intrinsic functions
+     *
+     * Note that supported intrinsic functions are documented in README.md -- please update
+     * list of supported functions when adding new evaluations
+     *
+     * See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
+     */
     class CfnIntrinsics {
       public evaluateIntrinsic(intrinsic: Intrinsic): any {
         const intrinsicFunc = (this as any)[intrinsic.name];
@@ -213,6 +276,17 @@ export class EvaluateCloudFormationTemplate {
               : this['Fn::GetAtt'](splitKey[0], splitKey.slice(1).join('.'));
           }
         });
+      }
+
+      async 'Fn::ImportValue'(name: string): Promise<string> {
+        const exported = await self.lookupExport.lookupExport(name);
+        if (!exported) {
+          throw new CfnEvaluationException(`Export '${name}' could not be found for evaluation`);
+        }
+        if (!exported.Value) {
+          throw new CfnEvaluationException(`Export '${name}' exists without a value`);
+        }
+        return exported.Value;
       }
     }
 
@@ -313,7 +387,7 @@ export class EvaluateCloudFormationTemplate {
 
     if (foundResource.ResourceType == 'AWS::CloudFormation::Stack' && attribute?.startsWith('Outputs.')) {
       // need to resolve attributes from another stack's Output section
-      const dependantStackName = this.nestedStackNames[logicalId]?.nestedStackPhysicalName;
+      const dependantStackName = this.findNestedStack(logicalId, this.nestedStackNames);
       if (!dependantStackName) {
         //this is a newly created nested stack and cannot be hotswapped
         return undefined;
@@ -330,6 +404,19 @@ export class EvaluateCloudFormationTemplate {
     // now, we need to format the appropriate identifier depending on the resource type,
     // and the requested attribute name
     return this.formatResourceAttribute(foundResource, attribute);
+  }
+
+  private findNestedStack(logicalId: string, nestedStackNames: {
+    [nestedStackLogicalId: string]: NestedStackNames;
+  }): string | undefined {
+    for (const [nestedStackLogicalId, { nestedChildStackNames, nestedStackPhysicalName }] of Object.entries(nestedStackNames)) {
+      if (nestedStackLogicalId === logicalId) {
+        return nestedStackPhysicalName;
+      }
+      const checkInNestedChildStacks = this.findNestedStack(logicalId, nestedChildStackNames);
+      if (checkInNestedChildStacks) return checkInNestedChildStacks;
+    }
+    return undefined;
   }
 
   private formatResourceAttribute(resource: AWS.CloudFormation.StackResourceSummary, attribute: string | undefined): string | undefined {

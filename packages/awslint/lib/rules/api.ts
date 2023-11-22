@@ -126,7 +126,7 @@ apiLinter.add({
           return;
         }
 
-        if (type.type.fqn === e.ctx.core.constructClass.fqn) {
+        if (type.type.fqn === e.ctx.core.baseConstructClassFqn) {
           return;
         }
 

@@ -298,7 +298,6 @@
        "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -383,7 +382,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
@@ -1557,7 +1555,6 @@
        "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -1825,7 +1822,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
@@ -2368,7 +2364,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8aa652c34c594d3c7ff1fe10240de14208e0d856f77eb4d56bd01bd9fc1f1273.zip"
+     "S3Key": "c2adac8ea3baf51ce56c33ef5da361ea693f7ed128ddbc9777c557e9e7c741a6.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -2547,7 +2543,6 @@
        "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -2713,7 +2708,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8aa652c34c594d3c7ff1fe10240de14208e0d856f77eb4d56bd01bd9fc1f1273.zip"
+     "S3Key": "c2adac8ea3baf51ce56c33ef5da361ea693f7ed128ddbc9777c557e9e7c741a6.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -2892,7 +2887,6 @@
        "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*"
        ],
        "Effect": "Allow",

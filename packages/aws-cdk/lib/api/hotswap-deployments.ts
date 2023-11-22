@@ -19,7 +19,7 @@ type HotswapDetector = (
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate
 ) => Promise<ChangeHotswapResult>;
 
-const RESOURCE_DETECTORS: { [key:string]: HotswapDetector } = {
+const RESOURCE_DETECTORS: { [key: string]: HotswapDetector } = {
   // Lambda
   'AWS::Lambda::Function': isHotswappableLambdaFunctionChange,
   'AWS::Lambda::Version': isHotswappableLambdaFunctionChange,
@@ -29,6 +29,7 @@ const RESOURCE_DETECTORS: { [key:string]: HotswapDetector } = {
   'AWS::AppSync::Resolver': isHotswappableAppSyncChange,
   'AWS::AppSync::FunctionConfiguration': isHotswappableAppSyncChange,
   'AWS::AppSync::GraphQLSchema': isHotswappableAppSyncChange,
+  'AWS::AppSync::ApiKey': isHotswappableAppSyncChange,
 
   'AWS::ECS::TaskDefinition': isHotswappableEcsServiceChange,
   'AWS::CodeBuild::Project': isHotswappableCodeBuildProjectChange,
@@ -247,8 +248,8 @@ async function findNestedHotswappableChanges(
 /** Returns 'true' if a pair of changes is for the same resource. */
 function changesAreForSameResource(oldChange: cfn_diff.ResourceDifference, newChange: cfn_diff.ResourceDifference): boolean {
   return oldChange.oldResourceType === newChange.newResourceType &&
-      // this isn't great, but I don't want to bring in something like underscore just for this comparison
-      JSON.stringify(oldChange.oldProperties) === JSON.stringify(newChange.newProperties);
+    // this isn't great, but I don't want to bring in something like underscore just for this comparison
+    JSON.stringify(oldChange.oldProperties) === JSON.stringify(newChange.newProperties);
 }
 
 function makeRenameDifference(
@@ -371,7 +372,7 @@ function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange
 
   for (const change of nonHotswappableChanges) {
     change.rejectedChanges.length > 0 ?
-      print('    logicalID: %s, type: %s, rejected changes: %s, reason: %s', chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.bold(change.rejectedChanges), chalk.red(change.reason)):
+      print('    logicalID: %s, type: %s, rejected changes: %s, reason: %s', chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.bold(change.rejectedChanges), chalk.red(change.reason)) :
       print('    logicalID: %s, type: %s, reason: %s', chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.red(change.reason));
   }
 

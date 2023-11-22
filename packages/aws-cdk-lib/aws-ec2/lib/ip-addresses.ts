@@ -1,4 +1,4 @@
-import { calculateCidrSplits } from './cidr-splits';
+import { CidrSplit, calculateCidrSplits } from './cidr-splits';
 import { NetworkBuilder } from './network-util';
 import { SubnetConfiguration } from './vpc';
 import { Fn, Token } from '../../core';
@@ -230,7 +230,7 @@ class AwsIpam implements IIpAddresses {
 
     const allocatedSubnets: AllocatedSubnet[] = cidrSplit.map(subnet => {
       return {
-        cidr: Fn.select(subnet.index, Fn.cidr(input.vpcCidr, subnet.count, `${32-subnet.netmask}`)),
+        cidr: cidrSplitToCfnExpression(input.vpcCidr, subnet),
       };
     });
 
@@ -239,6 +239,45 @@ class AwsIpam implements IIpAddresses {
     };
 
   }
+}
+
+/**
+ * Convert a CIDR split command to a CFN expression that calculates the same CIDR
+ *
+ * Can recursively produce multiple `{ Fn::Cidr }` expressions.
+ *
+ * This is necessary because CFN's `{ Fn::Cidr }` reifies the split to an actual list of
+ * strings, and to limit resource consumption `count` may never be higher than 256. So
+ * if we need to split deeper, we need to do more than one split.
+ *
+ * (Function public for testing)
+ */
+export function cidrSplitToCfnExpression(parentCidr: string, split: CidrSplit) {
+  const MAX_COUNT = 256;
+  const MAX_COUNT_BITS = 8;
+
+  if (split.count === 1) {
+    return parentCidr;
+  }
+
+  if (split.count <= MAX_COUNT) {
+    return Fn.select(split.index, Fn.cidr(parentCidr, split.count, `${32-split.netmask}`));
+  }
+
+  if (split.netmask - MAX_COUNT_BITS < 1) {
+    throw new Error(`Cannot split an IP range into ${split.count} /${split.netmask}s`);
+  }
+
+  const parentSplit = {
+    netmask: split.netmask - MAX_COUNT_BITS,
+    count: Math.ceil(split.count / MAX_COUNT),
+    index: Math.floor(split.index / MAX_COUNT),
+  };
+  return cidrSplitToCfnExpression(cidrSplitToCfnExpression(parentCidr, parentSplit), {
+    netmask: split.netmask,
+    count: MAX_COUNT,
+    index: split.index - (parentSplit.index * MAX_COUNT),
+  });
 }
 
 /**

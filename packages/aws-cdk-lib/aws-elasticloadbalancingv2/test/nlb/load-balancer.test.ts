@@ -124,7 +124,7 @@ describe('tests', () => {
       ]),
     });
 
-    // verify the bucket policy allows the ALB to put objects in the bucket
+    // verify the bucket policy allows the NLB to put objects in the bucket
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Version: '2012-10-17',
@@ -160,9 +160,9 @@ describe('tests', () => {
       },
     });
 
-    // verify the ALB depends on the bucket *and* the bucket policy
+    // verify the NLB depends on the bucket policy
     Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-      DependsOn: ['AccessLoggingBucketPolicy700D7CC6', 'AccessLoggingBucketA6D88F29'],
+      DependsOn: ['AccessLoggingBucketPolicy700D7CC6'],
     });
   });
 
@@ -196,7 +196,7 @@ describe('tests', () => {
       ]),
     });
 
-    // verify the bucket policy allows the ALB to put objects in the bucket
+    // verify the bucket policy allows the NLB to put objects in the bucket
     Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       PolicyDocument: {
         Version: '2012-10-17',
@@ -233,13 +233,113 @@ describe('tests', () => {
     });
   });
 
+  test('Access logging on imported bucket', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const bucket = s3.Bucket.fromBucketName(stack, 'ImportedAccessLoggingBucket', 'imported-bucket');
+    // Imported buckets have `autoCreatePolicy` disabled by default
+    bucket.policy = new s3.BucketPolicy(stack, 'ImportedAccessLoggingBucketPolicy', {
+      bucket,
+    });
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    // WHEN
+    lb.logAccessLogs(bucket);
+
+    // THEN
+
+    // verify that the LB attributes reference the bucket
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      LoadBalancerAttributes: Match.arrayWith([
+        {
+          Key: 'access_logs.s3.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'access_logs.s3.bucket',
+          Value: 'imported-bucket',
+        },
+        {
+          Key: 'access_logs.s3.prefix',
+          Value: '',
+        },
+      ]),
+    });
+
+    // verify the bucket policy allows the NLB to put objects in the bucket
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Action: 's3:PutObject',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':s3:::imported-bucket/AWSLogs/',
+                  { Ref: 'AWS::AccountId' },
+                  '/*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: 's3:PutObject',
+            Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
+            Effect: 'Allow',
+            Principal: { Service: 'delivery.logs.amazonaws.com' },
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':s3:::imported-bucket/AWSLogs/',
+                  { Ref: 'AWS::AccountId' },
+                  '/*',
+                ],
+              ],
+            },
+          },
+          {
+            Action: 's3:GetBucketAcl',
+            Effect: 'Allow',
+            Principal: { Service: 'delivery.logs.amazonaws.com' },
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':s3:::imported-bucket',
+                ],
+              ],
+            },
+          },
+        ],
+      },
+    });
+
+    // verify the NLB depends on the bucket policy
+    Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      DependsOn: ['ImportedAccessLoggingBucketPolicy97AE3371'],
+    });
+  });
+
   test('loadBalancerName', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN
-    new elbv2.NetworkLoadBalancer(stack, 'ALB', {
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
       loadBalancerName: 'myLoadBalancer',
       vpc,
     });
@@ -371,7 +471,7 @@ describe('tests', () => {
 
     // WHEN
     const albArn = 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/app/my-load-balancer/50dc6c495c0c9188';
-    const alb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'ALB', {
+    const alb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
       loadBalancerArn: albArn,
     });
 
@@ -553,6 +653,67 @@ describe('tests', () => {
     });
   });
 
+  test('Trivial construction: security groups', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const sg1 = new ec2.SecurityGroup(stack, 'SG1', { vpc });
+    const sg2 = new ec2.SecurityGroup(stack, 'SG2', { vpc });
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+      securityGroups: [sg1, sg2],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Subnets: [
+        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
+        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
+      ],
+      SecurityGroups: [
+        {
+          'Fn::GetAtt': [
+            stack.getLogicalId(sg1.node.findChild('Resource') as cdk.CfnElement),
+            'GroupId',
+          ],
+        },
+        {
+          'Fn::GetAtt': [
+            stack.getLogicalId(sg2.node.findChild('Resource') as cdk.CfnElement),
+            'GroupId',
+          ],
+        },
+      ],
+      Type: 'network',
+    });
+  });
+
+  test('Trivial construction: no security groups', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Subnets: [
+        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
+        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
+      ],
+      SecurityGroups: Match.absent(),
+    });
+  });
+
   describe('lookup', () => {
     test('Can look up a NetworkLoadBalancer', () => {
       // GIVEN
@@ -635,6 +796,38 @@ describe('tests', () => {
       expect(stack.resolve(metric.dimensions)).toEqual({
         LoadBalancer: 'network/my-load-balancer/50dc6c495c0c9188',
       });
+    });
+
+    test('can look up security groups', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+
+      // WHEN
+      const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+        securityGroups: [sg],
+      });
+
+      // THEN
+      expect(nlb.securityGroups).toEqual([`${sg.securityGroupId}`]);
+    });
+
+    test('can look up with no security groups', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+      });
+
+      // THEN
+      expect(nlb.securityGroups).toBeUndefined();
     });
   });
 

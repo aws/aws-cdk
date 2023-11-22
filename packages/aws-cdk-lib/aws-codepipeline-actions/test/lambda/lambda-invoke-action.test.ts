@@ -140,7 +140,6 @@ describe('', () => {
               'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
-                's3:HeadObject',
                 's3:List*',
               ],
               'Effect': 'Allow',
@@ -225,7 +224,6 @@ describe('', () => {
               'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
-                's3:HeadObject',
                 's3:List*',
               ],
               'Effect': 'Allow',

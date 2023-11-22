@@ -233,12 +233,14 @@ Balancers:
 ```ts
 declare const vpc: ec2.Vpc;
 declare const asg: autoscaling.AutoScalingGroup;
+declare const sg: ec2.ISecurityGroup;
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
 const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   vpc,
-  internetFacing: true
+  internetFacing: true,
+  securityGroups: [sg],
 });
 
 // Add a listener on a particular port.

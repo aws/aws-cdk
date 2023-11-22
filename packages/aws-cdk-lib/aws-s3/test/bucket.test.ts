@@ -1400,7 +1400,6 @@ describe('bucket', () => {
               'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
-                's3:HeadObject',
                 's3:List*',
               ],
               'Resource': [{
@@ -1540,7 +1539,6 @@ describe('bucket', () => {
                   'Action': [
                     's3:GetObject*',
                     's3:GetBucket*',
-                    's3:HeadObject',
                     's3:List*',
                   ],
                   'Effect': 'Allow',
@@ -1613,7 +1611,6 @@ describe('bucket', () => {
                     'Action': [
                       's3:GetObject*',
                       's3:GetBucket*',
-                      's3:HeadObject',
                       's3:List*',
                       's3:DeleteObject*',
                       's3:PutObject',
@@ -1676,7 +1673,7 @@ describe('bucket', () => {
           'Version': '2012-10-17',
           'Statement': [
             {
-              'Action': ['s3:GetObject*', 's3:GetBucket*', 's3:HeadObject', 's3:List*'],
+              'Action': ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
               'Condition': { 'StringEquals': { 'aws:PrincipalOrgID': 'o-1234' } },
               'Effect': 'Allow',
               'Principal': { AWS: '*' },
@@ -1720,7 +1717,6 @@ describe('bucket', () => {
               'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
-                's3:HeadObject',
                 's3:List*',
                 's3:DeleteObject*',
                 's3:PutObject',
@@ -2044,7 +2040,6 @@ describe('bucket', () => {
                     'Action': [
                       's3:GetObject*',
                       's3:GetBucket*',
-                      's3:HeadObject',
                       's3:List*',
                     ],
                     'Effect': 'Allow',
@@ -2104,7 +2099,6 @@ describe('bucket', () => {
               'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
-                's3:HeadObject',
                 's3:List*',
               ],
               'Effect': 'Allow',
@@ -2134,7 +2128,6 @@ describe('bucket', () => {
               'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
-                's3:HeadObject',
                 's3:List*',
               ],
               'Effect': 'Allow',
@@ -3141,6 +3134,49 @@ describe('bucket', () => {
     });
   });
 
+  test('Inventory Ids are shortened to 64 characters', () => {
+    // Given
+    const stack = new cdk.Stack();
+
+    const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket');
+    new s3.Bucket(stack, 'AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVery@#$+:;?!&LongNodeIdName', {
+      inventories: [
+        {
+          destination: {
+            bucket: inventoryBucket,
+          },
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      InventoryConfigurations: Match.arrayWith([
+        Match.objectLike({
+          Id: 'VeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongNodeIdNameInventory0',
+        }),
+      ]),
+    });
+  });
+
+  test('throws when inventoryid is invalid', () => {
+    // Given
+    const stack = new cdk.Stack();
+
+    const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket');
+    new s3.Bucket(stack, 'MyBucket2', {
+      inventories: [
+        {
+          destination: {
+            bucket: inventoryBucket,
+          },
+          inventoryId: 'InvalidId&123',
+        },
+      ],
+    });
+
+    expect(() => Template.fromStack(stack)).toThrow(/inventoryId should not exceed 64 characters and should not contain special characters except . and -, got InvalidId&123/);
+  });
+
   test('Bucket with objectOwnership set to BUCKET_OWNER_ENFORCED', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
@@ -3651,3 +3687,4 @@ describe('bucket', () => {
     });
   });
 });
+

@@ -1,7 +1,7 @@
 {
   "version": "34.0.0",
   "files": {
-    "8e518d2f0d7b4fcf41623a37d5a30fa0a49f5185d9301205cad6e72cc59b84a8": {
+    "a512067604698fe41cacf63c82484e8e597c04456ac3f27ded0a390ca25f0908": {
       "source": {
         "path": "aws-cdk-scheduler-schedule.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8e518d2f0d7b4fcf41623a37d5a30fa0a49f5185d9301205cad6e72cc59b84a8.json",
+          "objectKey": "a512067604698fe41cacf63c82484e8e597c04456ac3f27ded0a390ca25f0908.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

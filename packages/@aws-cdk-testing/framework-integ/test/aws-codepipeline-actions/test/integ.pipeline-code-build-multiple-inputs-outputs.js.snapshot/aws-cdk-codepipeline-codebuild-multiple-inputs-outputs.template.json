@@ -30,7 +30,7 @@
        "referenceUpdated"
       ],
       "referenceName": [
-       "master"
+       "main"
       ]
      }
     },
@@ -109,7 +109,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
@@ -171,7 +170,6 @@
        "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -226,6 +224,12 @@
   "PipelineC660917D": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
+    "ArtifactStore": {
+     "Location": {
+      "Ref": "MyBucketF68F3FF0"
+     },
+     "Type": "S3"
+    },
     "RoleArn": {
      "Fn::GetAtt": [
       "PipelineRoleD68726F7",
@@ -249,7 +253,7 @@
            "Name"
           ]
          },
-         "BranchName": "master",
+         "BranchName": "main",
          "PollForSourceChanges": false
         },
         "Name": "Source1",
@@ -374,13 +378,7 @@
       ],
       "Name": "Build"
      }
-    ],
-    "ArtifactStore": {
-     "Location": {
-      "Ref": "MyBucketF68F3FF0"
-     },
-     "Type": "S3"
-    }
+    ]
    },
    "DependsOn": [
     "PipelineRoleDefaultPolicyC7A05455",
@@ -532,7 +530,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
@@ -581,6 +578,10 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
      "Image": "aws/codebuild/standard:1.0",
@@ -596,11 +597,7 @@
     },
     "Source": {
      "Type": "CODEPIPELINE"
-    },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "EncryptionKey": "alias/aws/s3"
+    }
    }
   }
  },

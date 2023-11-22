@@ -258,6 +258,26 @@ export class Owner {
   }
 
   /**
+   * Make an IAM assumed role the environment owner
+   *
+   * @param accountId The account id of the target account
+   * @param roleName The name of the assumed role
+   */
+  public static assumedRole(accountId: string, roleName: string): Owner {
+    return { ownerArn: `arn:${cdk.Aws.PARTITION}:sts::${accountId}:assumed-role/${roleName}` };
+  }
+
+  /**
+   * Make an IAM federated user the environment owner
+   *
+   * @param accountId The AccountId of the target account
+   * @param userName The name of the federated user
+   */
+  public static federatedUser(accountId: string, userName: string): Owner {
+    return { ownerArn: `arn:${cdk.Aws.PARTITION}:sts::${accountId}:federated-user/${userName}` };
+  }
+
+  /**
    * Make the Account Root User the environment owner (not recommended)
    *
    * @param accountId the AccountId to use as the environment owner.

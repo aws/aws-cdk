@@ -16,6 +16,9 @@ import { IEnvironment } from './environment';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import { getHash } from './private/hash';
 
+/**
+ * Options for the Configuration construct
+ */
 export interface ConfigurationOptions {
   /**
    * The deployment strategy for the configuration.
@@ -71,6 +74,9 @@ export interface ConfigurationOptions {
   readonly deploymentKey?: kms.IKey;
 }
 
+/**
+ * Properties for the Configuration construct.
+ */
 export interface ConfigurationProps extends ConfigurationOptions {
   /**
    * The application associated with the configuration.
@@ -327,6 +333,9 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
   }
 }
 
+/**
+ * Options for HostedConfiguration
+ */
 export interface HostedConfigurationOptions extends ConfigurationOptions {
   /**
    * The content of the hosted configuration.
@@ -335,15 +344,22 @@ export interface HostedConfigurationOptions extends ConfigurationOptions {
 
   /**
    * The latest version number of the hosted configuration.
+   *
+   * @default - None.
    */
   readonly latestVersionNumber?: number;
 
   /**
    * The version label of the hosted configuration.
+   *
+   * @default - None.
    */
   readonly versionLabel?: string;
 }
 
+/**
+ * Properties for HostedConfiguration
+ */
 export interface HostedConfigurationProps extends ConfigurationProps {
   /**
    * The content of the hosted configuration.
@@ -352,15 +368,22 @@ export interface HostedConfigurationProps extends ConfigurationProps {
 
   /**
    * The latest version number of the hosted configuration.
+   *
+   * @default - None.
    */
   readonly latestVersionNumber?: number;
 
   /**
    * The version label of the hosted configuration.
+   *
+   * @default - None.
    */
   readonly versionLabel?: string;
 }
 
+/**
+ * A hosted configuration represents configuration stored in the AWS AppConfig hosted configuration store.
+ */
 export class HostedConfiguration extends ConfigurationBase {
   /**
    * The content of the hosted configuration.
@@ -461,6 +484,9 @@ export class HostedConfiguration extends ConfigurationBase {
   }
 }
 
+/**
+ * Options for SourcedConfiguration
+ */
 export interface SourcedConfigurationOptions extends ConfigurationOptions {
   /**
    * The location where the configuration is stored.
@@ -483,6 +509,9 @@ export interface SourcedConfigurationOptions extends ConfigurationOptions {
   readonly retrievalRole?: iam.IRole;
 }
 
+/**
+ * Properties for SourcedConfiguration.
+ */
 export interface SourcedConfigurationProps extends ConfigurationProps {
   /**
    * The location where the configuration is stored.
@@ -505,6 +534,10 @@ export interface SourcedConfigurationProps extends ConfigurationProps {
   readonly retrievalRole?: iam.IRole;
 }
 
+/**
+ * A sourced configuration represents configuration stored in an Amazon S3 bucket, AWS Secrets Manager secret, Systems Manager
+ * (SSM) Parameter Store parameter, SSM document, or AWS CodePipeline.
+ */
 export class SourcedConfiguration extends ConfigurationBase {
   /**
    * The location where the configuration is stored.
@@ -672,7 +705,19 @@ export class SourcedConfiguration extends ConfigurationBase {
  * The configuration type.
  */
 export enum ConfigurationType {
+  /**
+   * Freeform configuration profile. Allows you to store your data in the AWS AppConfig
+   * hosted configuration store or another Systems Manager capability or AWS service that integrates
+   * with AWS AppConfig.
+   *
+   * @see https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-free-form-configurations-creating.html
+   */
   FREEFORM = 'AWS.Freeform',
+
+  /**
+   * Feature flag configuration profile. This configuration stores its data
+   * in the AWS AppConfig hosted configuration store and the URI is simply hosted.
+   */
   FEATURE_FLAGS = 'AWS.AppConfig.FeatureFlags',
 }
 
@@ -680,7 +725,14 @@ export enum ConfigurationType {
  * The validator type.
  */
 export enum ValidatorType {
+  /**
+   * JSON Scema validator.
+   */
   JSON_SCHEMA = 'JSON_SCHEMA',
+
+  /**
+   * Validate using a Lambda function.
+   */
   LAMBDA = 'LAMBDA',
 }
 
@@ -692,7 +744,7 @@ export enum ConfigurationSourceType {
   SECRETS_MANAGER = 'SECRETS_MANAGER',
   SSM_PARAMETER = 'SSM_PARAMETER',
   SSM_DOCUMENT = 'SSM_DOCUMENT',
-  CODE_PIPELINE = 'CODE_PIPELINE'
+  CODE_PIPELINE = 'CODE_PIPELINE',
 }
 
 export interface IValidator {
@@ -817,6 +869,18 @@ export abstract class ConfigurationContent {
     return {
       content,
       contentType: 'text/plain',
+    };
+  }
+
+  /**
+   * Defines the hosted configuration content as YAML from inline code.
+   *
+   * @param content The inline code that defines the configuration content
+   */
+  public static fromInlineYaml(content: string): ConfigurationContent {
+    return {
+      content,
+      contentType: 'application/x-yaml',
     };
   }
 

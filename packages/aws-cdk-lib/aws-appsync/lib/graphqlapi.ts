@@ -336,7 +336,7 @@ export abstract class Definition {
   /**
    * Schema from schema object.
    * @param schema SchemaFile.fromAsset(filePath: string) allows schema definition through schema.graphql file
-   * @returns API Source with schema from file
+   * @returns Definition with schema from file
    */
   public static fromSchema(schema: ISchema): Definition {
     return {
@@ -347,7 +347,7 @@ export abstract class Definition {
   /**
    * Schema from file, allows schema definition through schema.graphql file
    * @param filePath the file path of the schema file
-   * @returns API Source with schema from file
+   * @returns Definition with schema from file
    */
   public static fromFile(filePath: string): Definition {
     return this.fromSchema(SchemaFile.fromAsset(filePath));
@@ -356,7 +356,7 @@ export abstract class Definition {
   /**
    * Schema from existing AppSync APIs - used for creating a AppSync Merged API
    * @param sourceApiOptions Configuration for AppSync Merged API
-   * @returns API Source with for AppSync Merged API
+   * @returns Definition with for AppSync Merged API
    */
   public static fromSourceApis(sourceApiOptions: SourceApiOptions): Definition {
     return {
@@ -409,7 +409,7 @@ export interface GraphqlApiProps {
    * SchemaFile.fromAsset(filePath: string) allows schema definition through schema.graphql file
    *
    * @default - schema will be generated code-first (i.e. addType, addObjectType, etc.)
-   * @deprecated use apiSource.schema instead
+   * @deprecated use Definition.schema instead
    */
   readonly schema?: ISchema;
   /**
