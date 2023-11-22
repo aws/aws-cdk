@@ -907,14 +907,14 @@
     "docs-public-apis:aws-cdk-lib.aws_guardduty.CfnDetector.TagItemProperty",
     "docs-public-apis:aws-cdk-lib.aws_guardduty.CfnDetector.TagItemProperty.key",
     "docs-public-apis:aws-cdk-lib.aws_guardduty.CfnDetector.TagItemProperty.value",
-    "props-physical-name:aws-cdk-lib/aws-apigatewayv2.ApiMappingProps",
-    "props-physical-name:aws-cdk-lib/aws-apigatewayv2.HttpIntegrationProps",
-    "props-physical-name:aws-cdk-lib/aws-apigatewayv2.HttpRouteProps",
-    "props-physical-name:aws-cdk-lib/aws-apigatewayv2.WebSocketIntegrationProps",
-    "props-physical-name:aws-cdk-lib/aws-apigatewayv2.WebSocketRouteProps",
-    "from-method:aws-cdk-lib/aws-apigatewayv2.HttpIntegration",
-    "from-method:aws-cdk-lib/aws-apigatewayv2.HttpRoute",
-    "from-method:aws-cdk-lib/aws-apigatewayv2.WebSocketIntegration",
-    "from-method:aws-cdk-lib/aws-apigatewayv2.WebSocketRoute"
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.ApiMappingProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.HttpIntegrationProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.HttpRouteProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.WebSocketIntegrationProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.WebSocketRouteProps",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.WebSocketIntegration",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.WebSocketRoute"
   ]
 }
