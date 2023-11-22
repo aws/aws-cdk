@@ -1,8 +1,8 @@
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { IWebSocketRoute } from './route';
-import { CfnAuthorizer } from './index';
+import { CfnAuthorizer } from '.././index';
+import { Resource } from '../../../core';
 
 import { IAuthorizer } from '../common';
 

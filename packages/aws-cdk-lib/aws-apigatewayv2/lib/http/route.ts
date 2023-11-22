@@ -1,10 +1,10 @@
-import * as iam from '../../aws-iam';
-import { Aws, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
 import { HttpRouteIntegration } from './integration';
-import { CfnRoute, CfnRouteProps } from './index';
+import { CfnRoute, CfnRouteProps } from '.././index';
+import * as iam from '../../../aws-iam';
+import { Aws, Resource } from '../../../core';
 import { IRoute } from '../common';
 
 /**

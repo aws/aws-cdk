@@ -1,9 +1,9 @@
-import { IRole } from '../../aws-iam';
-import { Aws, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
-import { CfnIntegration } from './index';
+import { CfnIntegration } from '.././index';
+import { IRole } from '../../../aws-iam';
+import { Aws, Resource } from '../../../core';
 import { IIntegration } from '../common';
 import { ParameterMapping } from '../parameter-mapping';
 

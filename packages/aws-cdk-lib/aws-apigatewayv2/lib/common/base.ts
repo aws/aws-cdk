@@ -1,8 +1,8 @@
-import * as cloudwatch from '../../aws-cloudwatch';
-import { Resource } from '../../core';
 import { IApi } from './api';
 import { ApiMapping } from './api-mapping';
 import { DomainMappingOptions, IStage } from './stage';
+import * as cloudwatch from '../../../aws-cloudwatch';
+import { Resource } from '../../../core';
 
 /**
  * Base class representing an API

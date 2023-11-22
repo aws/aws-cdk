@@ -1,5 +1,5 @@
-import * as cloudwatch from '../../aws-cloudwatch';
-import { IResource } from '../../core';
+import * as cloudwatch from '../../../aws-cloudwatch';
+import { IResource } from '../../../core';
 
 /**
  * Represents a API Gateway HTTP/WebSocket API

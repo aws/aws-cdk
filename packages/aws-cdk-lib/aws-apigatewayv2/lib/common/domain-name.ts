@@ -1,8 +1,8 @@
-import { ICertificate } from '../../aws-certificatemanager';
-import { IBucket } from '../../aws-s3';
-import { IResource, Lazy, Resource, Token } from '../../core';
 import { Construct } from 'constructs';
-import { CfnDomainName, CfnDomainNameProps } from './index';
+import { CfnDomainName, CfnDomainNameProps } from '.././index';
+import { ICertificate } from '../../../aws-certificatemanager';
+import { IBucket } from '../../../aws-s3';
+import { IResource, Lazy, Resource, Token } from '../../../core';
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.

@@ -1,8 +1,8 @@
-import { Grant, IGrantable } from '../../aws-iam';
-import { Stack } from '../../core';
 import { Construct } from 'constructs';
 import { WebSocketRoute, WebSocketRouteOptions } from './route';
-import { CfnApi } from './index';
+import { CfnApi } from '.././index';
+import { Grant, IGrantable } from '../../../aws-iam';
+import { Stack } from '../../../core';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 

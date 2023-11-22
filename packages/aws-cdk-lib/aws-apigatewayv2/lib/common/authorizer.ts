@@ -1,4 +1,4 @@
-import { IResource } from '../../core';
+import { IResource } from '../../../core';
 
 /**
  * Represents an Authorizer.

@@ -1,7 +1,7 @@
-import * as ec2 from '../../aws-ec2';
-import { IResource, Lazy, Names, Resource } from '../../core';
 import { Construct } from 'constructs';
-import { CfnVpcLink } from './index';
+import { CfnVpcLink } from '.././index';
+import * as ec2 from '../../../aws-ec2';
+import { IResource, Lazy, Names, Resource } from '../../../core';
 
 /**
  * Represents an API Gateway VpcLink

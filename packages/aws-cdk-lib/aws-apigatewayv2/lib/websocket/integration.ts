@@ -1,8 +1,8 @@
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { IWebSocketRoute } from './route';
-import { CfnIntegration } from './index';
+import { CfnIntegration } from '.././index';
+import { Resource } from '../../../core';
 import { IIntegration } from '../common';
 
 /**

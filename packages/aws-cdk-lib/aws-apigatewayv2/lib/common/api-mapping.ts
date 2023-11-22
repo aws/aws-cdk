@@ -1,9 +1,9 @@
-import { IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IApi } from './api';
 import { IDomainName } from './domain-name';
 import { IStage } from './stage';
-import { CfnApiMapping, CfnApiMappingProps } from './index';
+import { CfnApiMapping, CfnApiMappingProps } from '.././index';
+import { IResource, Resource } from '../../../core';
 
 /**
  * Represents an ApiGatewayV2 ApiMapping resource

@@ -1,6 +1,6 @@
-import { Metric, MetricOptions } from '../../aws-cloudwatch';
-import { IResource } from '../../core';
 import { IDomainName } from './domain-name';
+import { Metric, MetricOptions } from '../../../aws-cloudwatch';
+import { IResource } from '../../../core';
 
 /**
  * Represents a Stage.

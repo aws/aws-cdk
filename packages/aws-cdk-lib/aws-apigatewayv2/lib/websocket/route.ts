@@ -1,9 +1,9 @@
-import { Resource } from '../../core';
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { IWebSocketRouteAuthorizer, WebSocketNoneAuthorizer } from './authorizer';
 import { WebSocketRouteIntegration } from './integration';
-import { CfnRoute, CfnRouteResponse } from './index';
+import { CfnRoute, CfnRouteResponse } from '.././index';
+import { Resource } from '../../../core';
 import { IRoute } from '../common';
 
 /**

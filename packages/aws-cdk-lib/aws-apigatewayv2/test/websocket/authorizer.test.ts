@@ -1,5 +1,5 @@
-import { Template } from '../../assertions';
 import { Stack } from 'aws-cdk-lib/core';
+import { Template } from '../../../assertions';
 import {
   WebSocketApi, WebSocketAuthorizer, WebSocketAuthorizerType,
 } from '../../lib';

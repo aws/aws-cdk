@@ -1,6 +1,6 @@
-import { Match, Template } from '../../assertions';
-import { User } from '../../aws-iam';
 import { Stack } from 'aws-cdk-lib/core';
+import { Match, Template } from '../../../assertions';
+import { User } from '../../../aws-iam';
 import { WebSocketApi, WebSocketStage } from '../../lib';
 
 describe('WebSocketStage', () => {

@@ -1,8 +1,8 @@
-import { Metric, MetricOptions } from '../../aws-cloudwatch';
-import { Stack } from '../../core';
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
-import { CfnStage } from './index';
+import { CfnStage } from '.././index';
+import { Metric, MetricOptions } from '../../../aws-cloudwatch';
+import { Stack } from '../../../core';
 import { StageOptions, IStage, StageAttributes } from '../common';
 import { IApi } from '../common/api';
 import { StageBase } from '../common/base';
