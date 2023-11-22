@@ -340,6 +340,7 @@
     "docs-public-apis:aws-cdk-lib.aws_elasticloadbalancing.LoadBalancer.loadBalancerSourceSecurityGroupOwnerAlias",
     "docs-public-apis:aws-cdk-lib.aws_elasticloadbalancing.LoadBalancer.addTarget",
     "docs-public-apis:aws-cdk-lib.aws_elasticloadbalancingv2.BaseLoadBalancer.loadBalancerSecurityGroups",
+    "docs-public-apis:aws-cdk-lib.aws_elasticloadbalancingv2.NetworkLoadBalancer.securityGroups",
     "docs-public-apis:aws-cdk-lib.aws_elasticloadbalancingv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes",
     "docs-public-apis:aws-cdk-lib.aws_elasticloadbalancingv2_targets.InstanceTarget",
     "docs-public-apis:aws-cdk-lib.aws_elasticloadbalancingv2_targets.LambdaTarget",
