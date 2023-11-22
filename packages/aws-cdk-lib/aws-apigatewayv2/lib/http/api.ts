@@ -299,6 +299,7 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
 export interface HttpApiAttributes {
   /**
    * The identifier of the HttpApi
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-api.html#aws-resource-apigatewayv2-api-return-values
    */
   readonly httpApiId: string;
   /**
