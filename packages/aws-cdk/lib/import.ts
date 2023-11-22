@@ -290,7 +290,7 @@ export class ResourceImporter {
       for (const idProp of idProps) {
         // If we have a value from the template, use it as default. This will only be a partial
         // identifier if present, otherwise we would have done the import already above.
-        const defaultValue = typeof resourceProps[idProp] ?? '';
+        const defaultValue = resourceProps[idProp] ? typeof resourceProps[idProp] : '';
 
         const prompt = [
           promptPattern.replace(/%/g, chalk.blue(idProp)),
