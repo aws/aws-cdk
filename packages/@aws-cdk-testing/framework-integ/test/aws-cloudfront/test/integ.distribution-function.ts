@@ -7,7 +7,6 @@ const stack = new cdk.Stack(app, 'integ-distribution-function', { env: { region:
 
 const cfFunction = new cloudfront.Function(stack, 'Function', {
   code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
-  runtime: cloudfront.FunctionRuntime.JS_2_0,
 });
 
 new cloudfront.Distribution(stack, 'Dist', {
