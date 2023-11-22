@@ -1,5 +1,5 @@
-import { Stack } from 'aws-cdk-lib/core';
 import { Template } from '../../../assertions';
+import { Stack } from '../../../core';
 import {
   WebSocketRouteIntegration, WebSocketApi, WebSocketIntegrationType,
   WebSocketRoute, WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig,
