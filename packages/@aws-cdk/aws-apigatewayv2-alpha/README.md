@@ -11,7 +11,7 @@
 
 <!--END STABILITY BANNER-->
 
-All constructs moved to aws-cdk-lib/aws-<module>.
+All constructs moved to aws-cdk-lib/aws-apigatewayv2.
 
 
 ## Table of Contents
