@@ -320,6 +320,8 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+> Visit [Instance maintenance policies](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-maintenance-policy.html) for more details.
+
 ### Block Devices
 
 This type specifies how block devices are exposed to the instance. You can specify virtual devices and EBS volumes.

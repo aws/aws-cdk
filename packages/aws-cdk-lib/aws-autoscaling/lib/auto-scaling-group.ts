@@ -576,11 +576,11 @@ export interface LaunchTemplateOverrides {
 }
 
 /**
- * InstanceMaintenancePolicy allows you to configure an instance maintenance policy for your Auto Scaling group to
+ * Allows you to configure an instance maintenance policy for your Auto Scaling group to
  * meet specific capacity requirements during events that cause instances to be replaced, such as an instance
  * refresh or the health check process.
  *
- * https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-maintenance-policy.html
+ * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-maintenance-policy.html
  */
 export interface InstanceMaintenancePolicy {
   /**
@@ -593,10 +593,8 @@ export interface InstanceMaintenancePolicy {
    * Both `minHealthyPercentage` and `maxHealthyPercentage` must be specified, and the difference between
    * them cannot be greater than 100. A large range increases the number of instances that can be
    * replaced at the same time.
-   *
-   * @default - no value.
    */
-  readonly maxHealthyPercentage?: number;
+  readonly maxHealthyPercentage: number;
 
   /**
    * Specifies the lower threshold as a percentage of the desired capacity of the Auto Scaling group.
@@ -608,10 +606,8 @@ export interface InstanceMaintenancePolicy {
    * Both `minHealthyPercentage` and `maxHealthyPercentage` must be specified, and the difference between
    * them cannot be greater than 100. A large range increases the number of instances that can be
    * replaced at the same time.
-   *
-   * @default - no value.
    */
-  readonly minHealthyPercentage?: number;
+  readonly minHealthyPercentage: number;
 }
 
 /**
@@ -1890,7 +1886,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     return errors;
   }
 
-  private validateInstanceMaintenancePolicy(policy: InstanceMaintenancePolicy | undefined) {
+  private validateInstanceMaintenancePolicy(policy?: InstanceMaintenancePolicy) {
     if (!policy) {
       return;
     }
@@ -1898,33 +1894,16 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     const maxHealthyPercentage = policy.maxHealthyPercentage;
     const minHealthyPercentage = policy.minHealthyPercentage;
 
-    if (
-      maxHealthyPercentage !== undefined
-      && maxHealthyPercentage !== -1
-      && (maxHealthyPercentage < 100 || maxHealthyPercentage > 200)
-    ) {
+    if (maxHealthyPercentage !== -1 && (maxHealthyPercentage < 100 || maxHealthyPercentage > 200)) {
       throw new Error(`maxHealthyPercentage must be between 100 and 200, or -1 to clear the previously set value, got ${maxHealthyPercentage}`);
     }
-    if (
-      minHealthyPercentage !== undefined
-      && minHealthyPercentage !== -1
-      && (minHealthyPercentage < 0 || minHealthyPercentage > 100)
-    ) {
+    if (minHealthyPercentage !== -1 && (minHealthyPercentage < 0 || minHealthyPercentage > 100)) {
       throw new Error(`minHealthyPercentage must be between 0 and 100, or -1 to clear the previously set value, got ${minHealthyPercentage}`);
     }
-    if (
-      (maxHealthyPercentage !== undefined && minHealthyPercentage === undefined)
-      || (maxHealthyPercentage === undefined && minHealthyPercentage !== undefined)
-    ) {
-      throw new Error(`Both minHealthyPercentage and maxHealthyPercentage must be specified, got minHealthyPercentage: ${minHealthyPercentage} and maxHealthyPercentage: ${maxHealthyPercentage}`);
+    if ((maxHealthyPercentage !== -1 && minHealthyPercentage === -1) || (maxHealthyPercentage === -1 && minHealthyPercentage !== -1)) {
+      throw new Error(`Both minHealthyPercentage and maxHealthyPercentage must be -1 to clear the previously set value, got minHealthyPercentage: ${minHealthyPercentage} and maxHealthyPercentage: ${maxHealthyPercentage}`);
     }
-    if (
-      maxHealthyPercentage !== undefined
-      && minHealthyPercentage !== undefined
-      && maxHealthyPercentage !== -1
-      && minHealthyPercentage !== -1
-      && maxHealthyPercentage - minHealthyPercentage > 100
-    ) {
+    if (maxHealthyPercentage !== -1 && minHealthyPercentage !== -1 && maxHealthyPercentage - minHealthyPercentage > 100) {
       throw new Error(`The difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100, got ${maxHealthyPercentage - minHealthyPercentage}`);
     }
   }
