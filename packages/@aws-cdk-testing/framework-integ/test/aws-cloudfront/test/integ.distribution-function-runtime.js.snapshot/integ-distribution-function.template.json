@@ -1,0 +1,141 @@
+{
+ "Resources": {
+  "FunctionRequest95528B2F": {
+   "Type": "AWS::CloudFront::Function",
+   "Properties": {
+    "AutoPublish": true,
+    "FunctionCode": "function handler(event) { return event.request }",
+    "FunctionConfig": {
+     "Comment": "eu-west-1integdistributionfunctionFunctionRequest8E65DEEB",
+     "Runtime": "cloudfront-js-1.0"
+    },
+    "Name": "eu-west-1integdistributionfunctionFunctionRequest8E65DEEB"
+   }
+  },
+  "FunctionResponse4EF2D1D3": {
+   "Type": "AWS::CloudFront::Function",
+   "Properties": {
+    "AutoPublish": true,
+    "FunctionCode": "function handler(event) { return event.response }",
+    "FunctionConfig": {
+     "Comment": "eu-west-1integdistributionfunctionFunctionResponseDD4BADA1",
+     "Runtime": "cloudfront-js-1.0"
+    },
+    "Name": "eu-west-1integdistributionfunctionFunctionResponseDD4BADA1"
+   }
+  },
+  "DistB3B78991": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "4135ea2d-6df8-44a3-9df3-4b5a84be39ad",
+      "Compress": true,
+      "FunctionAssociations": [
+       {
+        "EventType": "viewer-request",
+        "FunctionARN": {
+         "Fn::GetAtt": [
+          "FunctionRequest95528B2F",
+          "FunctionARN"
+         ]
+        }
+       },
+       {
+        "EventType": "viewer-response",
+        "FunctionARN": {
+         "Fn::GetAtt": [
+          "FunctionResponse4EF2D1D3",
+          "FunctionARN"
+         ]
+        }
+       }
+      ],
+      "TargetOriginId": "integdistributionfunctionDistOrigin1D1E9DF17",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only"
+       },
+       "DomainName": "www.example.com",
+       "Id": "integdistributionfunctionDistOrigin1D1E9DF17"
+      }
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "RequestFunctionArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FunctionRequest95528B2F",
+     "FunctionARN"
+    ]
+   }
+  },
+  "RequestFunctionStage": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FunctionRequest95528B2F",
+     "Stage"
+    ]
+   }
+  },
+  "ResponseFunctionArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FunctionResponse4EF2D1D3",
+     "FunctionARN"
+    ]
+   }
+  },
+  "ResponseFunctionStage": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FunctionResponse4EF2D1D3",
+     "Stage"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
