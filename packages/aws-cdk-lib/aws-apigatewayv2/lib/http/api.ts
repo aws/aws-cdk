@@ -16,14 +16,6 @@ import { DomainMappingOptions } from '../common/stage';
  */
 export interface IHttpApi extends IApi {
   /**
-   * The identifier of this API Gateway HTTP API.
-   *
-   * @attribute
-   * @deprecated - use apiId instead
-   */
-  readonly httpApiId: string;
-
-  /**
    * Default Authorizer applied to all routes in the gateway.
    *
    * @attribute
