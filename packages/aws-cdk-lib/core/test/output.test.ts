@@ -9,7 +9,7 @@ beforeEach(() => {
 });
 
 describe('output', () => {
-  test('outputs can be added to the stack', () => {
+  test('outputs can be added to the stack with no key provided', () => {
     const res = new CfnResource(stack, 'MyResource', { type: 'R' });
     const ref = res.ref;
 
@@ -29,6 +29,30 @@ describe('output', () => {
         Value: { Ref: 'MyResource' },
       },
      },
+    });
+  });
+
+  test('outputs can be added to the stack with a key provided', () => {
+    const res = new CfnResource(stack, 'MyResource', { type: 'R' });
+    const ref = res.ref;
+
+    new CfnOutput(stack, 'MyOutput', {
+      exportName: 'ExportName',
+      key: 'MyOutputWithKey',
+      value: ref,
+      description: 'CfnOutput properties',
+    });
+    expect(toCloudFormation(stack)).toEqual({
+      Resources: { MyResource: { Type: 'R' } },
+      Outputs:
+      {
+        MyOutputWithKey:
+        {
+          Description: 'CfnOutput properties',
+          Export: { Name: 'ExportName' },
+          Value: { Ref: 'MyResource' },
+        },
+      },
     });
   });
 
