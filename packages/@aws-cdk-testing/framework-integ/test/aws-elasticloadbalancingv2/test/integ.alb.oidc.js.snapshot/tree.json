@@ -721,11 +721,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CertificateManager::Certificate",
                   "aws:cdk:cloudformation:props": {
-                    "domainName": "colifran.people.aws.dev",
+                    "domainName": "*.example.com",
                     "domainValidationOptions": [
                       {
-                        "domainName": "colifran.people.aws.dev",
-                        "hostedZoneId": "Z0179184ELB7YDZK7RWK"
+                        "domainName": "*.example.com",
+                        "hostedZoneId": "Z23ABC4XYZL05B"
                       }
                     ],
                     "tags": [
@@ -805,7 +805,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolDomain",
                       "aws:cdk:cloudformation:props": {
-                        "domain": "z0179184elb7ydzk7rwk",
+                        "domain": "z23abc4xyzl05b",
                         "userPoolId": {
                           "Ref": "UserPool6BA7E5F2"
                         }
@@ -844,7 +844,7 @@
                           "aws.cognito.signin.user.admin"
                         ],
                         "callbackUrLs": [
-                          "https://colifran.people.aws.dev/oauth2/idpresponse"
+                          "https://*.example.com/oauth2/idpresponse"
                         ],
                         "generateSecret": true,
                         "supportedIdentityProviders": [
@@ -1321,8 +1321,8 @@
                         ]
                       }
                     },
-                    "hostedZoneId": "Z0179184ELB7YDZK7RWK",
-                    "name": "colifran.people.aws.dev.",
+                    "hostedZoneId": "Z23ABC4XYZL05B",
+                    "name": "example.com.",
                     "type": "A"
                   }
                 },
@@ -1610,7 +1610,7 @@
                       "variables": {
                         "TEST_USERNAME": "test-user@example.com",
                         "TEST_PASSWORD": "TestUser@123",
-                        "TEST_URL": "https://colifran.people.aws.dev"
+                        "TEST_URL": "https://*.example.com"
                       }
                     },
                     "functionName": "cdk-integ-alb-oidc-signin-handler",

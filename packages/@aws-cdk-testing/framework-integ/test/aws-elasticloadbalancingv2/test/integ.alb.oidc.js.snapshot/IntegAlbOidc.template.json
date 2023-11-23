@@ -510,11 +510,11 @@
   "Certificate4E7ABB08": {
    "Type": "AWS::CertificateManager::Certificate",
    "Properties": {
-    "DomainName": "colifran.people.aws.dev",
+    "DomainName": "*.example.com",
     "DomainValidationOptions": [
      {
-      "DomainName": "colifran.people.aws.dev",
-      "HostedZoneId": "Z0179184ELB7YDZK7RWK"
+      "DomainName": "*.example.com",
+      "HostedZoneId": "Z23ABC4XYZL05B"
      }
     ],
     "Tags": [
@@ -566,7 +566,7 @@
   "UserPoolDomainD0EA232A": {
    "Type": "AWS::Cognito::UserPoolDomain",
    "Properties": {
-    "Domain": "z0179184elb7ydzk7rwk",
+    "Domain": "z23abc4xyzl05b",
     "UserPoolId": {
      "Ref": "UserPool6BA7E5F2"
     }
@@ -587,7 +587,7 @@
      "aws.cognito.signin.user.admin"
     ],
     "CallbackURLs": [
-     "https://colifran.people.aws.dev/oauth2/idpresponse"
+     "https://*.example.com/oauth2/idpresponse"
     ],
     "GenerateSecret": true,
     "SupportedIdentityProviders": [
@@ -936,8 +936,8 @@
       ]
      }
     },
-    "HostedZoneId": "Z0179184ELB7YDZK7RWK",
-    "Name": "colifran.people.aws.dev.",
+    "HostedZoneId": "Z23ABC4XYZL05B",
+    "Name": "example.com.",
     "Type": "A"
    }
   },
@@ -962,7 +962,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "UserCustomResourcePolicyC2EB5139"
@@ -1024,7 +1024,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "UserCustomResourcePolicyC2EB5139",
@@ -1108,7 +1108,7 @@
      "Variables": {
       "TEST_USERNAME": "test-user@example.com",
       "TEST_PASSWORD": "TestUser@123",
-      "TEST_URL": "https://colifran.people.aws.dev"
+      "TEST_URL": "https://*.example.com"
      }
     },
     "FunctionName": "cdk-integ-alb-oidc-signin-handler",
