@@ -1,4 +1,5 @@
 import { IClusterEngine } from './cluster-engine';
+import * as iam from '../../aws-iam';
 import { Endpoint } from './endpoint';
 import { DatabaseProxy, DatabaseProxyOptions } from './proxy';
 import * as ec2 from '../../aws-ec2';
@@ -53,6 +54,15 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsma
    * Add a new db proxy to this cluster.
    */
   addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy;
+
+  /**
+   * Grant the given identity connection access to the Cluster.
+   *
+   * @param grantee the Principal to grant the permissions to
+   * @param dbUser the name of the database user to allow connecting
+   *
+   */
+  grantConnect(grantee: iam.IGrantable, dbUser: string): iam.Grant;
 }
 
 /**
