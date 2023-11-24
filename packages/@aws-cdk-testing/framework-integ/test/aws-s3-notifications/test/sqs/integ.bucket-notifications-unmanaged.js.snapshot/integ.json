@@ -1,0 +1,13 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "SQSBucketNotificationsTest/DefaultTest": {
+      "stacks": [
+        "integ-sqs-bucket-notifications"
+      ],
+      "diffAssets": true,
+      "assertionStack": "SQSBucketNotificationsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E"
+    }
+  }
+}

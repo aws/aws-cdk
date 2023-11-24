@@ -38,6 +38,9 @@ def handle_managed(request_type, notification_configuration):
     return {}
   return notification_configuration
 
+def getId(stack_id, notification):
+    return f"{stack_id}-{hash(json.dumps(notification, sort_keys=True))}"
+
 def handle_unmanaged(bucket, stack_id, request_type, notification_configuration):
   # find external notifications
   external_notifications = find_external_notifications(bucket, stack_id)
@@ -47,7 +50,7 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration)
     return external_notifications
 
   def with_id(notification):
-    notification['Id'] = f"{stack_id}-{hash(json.dumps(notification, sort_keys=True))}"
+    notification['Id'] = getId(stack_id, notification)
     return notification
 
   # otherwise, merge external with incoming config and augment with id
@@ -71,7 +74,7 @@ def find_external_notifications(bucket, stack_id):
   for t in CONFIGURATION_TYPES:
     # if the notification was created by us, we know what id to expect
     # so we can filter by it.
-    external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'].startswith(f"{stack_id}-")]
+    external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'] == getId(stack_id, n)]
 
   # always treat EventBridge configuration as an external config if it already exists
   # as there is no way to determine whether it's managed by us or not
