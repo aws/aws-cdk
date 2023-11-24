@@ -1,4 +1,4 @@
-import { Annotations, Duration, IResource, Resource } from 'aws-cdk-lib';
+import { Duration, IResource, Resource } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { CfnSchedule } from 'aws-cdk-lib/aws-scheduler';
