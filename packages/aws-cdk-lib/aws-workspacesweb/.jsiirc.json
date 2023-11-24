@@ -1,7 +1,7 @@
 {
   "targets": {
     "java": {
-      "package": "services.workspacesweb"
+      "package": "software.amazon.awscdk.services.workspacesweb"
     },
     "dotnet": {
       "package": "Amazon.CDK.AWS.WorkSpacesWeb"

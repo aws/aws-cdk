@@ -1,7 +1,7 @@
 {
   "targets": {
     "java": {
-      "package": "services.pcaconnectorad"
+      "package": "software.amazon.awscdk.services.pcaconnectorad"
     },
     "dotnet": {
       "package": "Amazon.CDK.AWS.PCAConnectorAD"

@@ -1,7 +1,7 @@
 {
   "targets": {
     "java": {
-      "package": "services.mediapackagev2"
+      "package": "software.amazon.awscdk.services.mediapackagev2"
     },
     "dotnet": {
       "package": "Amazon.CDK.AWS.MediaPackageV2"
