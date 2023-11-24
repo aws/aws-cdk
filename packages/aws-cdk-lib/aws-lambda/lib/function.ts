@@ -466,7 +466,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * Sets the logFormat for the function.
    * @default Text format
    */
-  readonly logFormat?: string;
+  readonly logFormat?: LogFormat;
 
   /**
    * Sets the application log level for the function.
