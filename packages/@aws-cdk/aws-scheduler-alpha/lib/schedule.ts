@@ -344,9 +344,11 @@ export class Schedule extends Resource implements ISchedule {
   private renderFlexibleTimeWindow(
     flexibleTimeWindowMode?: FlexibleTimeWindowMode, maximumWindowInMinutes?: Duration,
   ): CfnSchedule.FlexibleTimeWindowProperty {
-    if (!flexibleTimeWindowMode || flexibleTimeWindowMode === FlexibleTimeWindowMode.OFF) {
+    const mode = flexibleTimeWindowMode ?? FlexibleTimeWindowMode.OFF;
+
+    if (mode === FlexibleTimeWindowMode.OFF) {
       return {
-        mode: FlexibleTimeWindowMode.OFF,
+        mode,
       };
     }
 
@@ -357,7 +359,7 @@ export class Schedule extends Resource implements ISchedule {
       throw new Error(`maximumWindowInMinutes must be between 1 and 1440, got ${maximumWindowInMinutes.toMinutes()}`);
     }
     return {
-      mode: flexibleTimeWindowMode,
+      mode,
       maximumWindowInMinutes: maximumWindowInMinutes.toMinutes(),
     };
   }
