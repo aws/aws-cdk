@@ -1945,6 +1945,8 @@ const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
 });
 ```
 
+Please note this feature does not support Launch Configurations.
+
 ## Detailed Monitoring
 
 The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).
