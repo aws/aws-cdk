@@ -67,6 +67,7 @@ export enum FlexibleTimeWindowMode {
    * FlexibleTimeWindow is disabled.
    */
   OFF = 'OFF',
+
   /**
    * FlexibleTimeWindow is enabled.
    */
@@ -141,6 +142,8 @@ export interface ScheduleProps {
 
   /**
    * The maximum time window during which the schedule can be invoked.
+   *
+   * Must be between 1 to 1440 minutes.
    *
    * @default - Required if flexibleTimeWindowMode is FLEXIBLE.
    */
@@ -342,11 +345,8 @@ export class Schedule extends Resource implements ISchedule {
     flexibleTimeWindowMode?: FlexibleTimeWindowMode, maximumWindowInMinutes?: Duration,
   ): CfnSchedule.FlexibleTimeWindowProperty {
     if (!flexibleTimeWindowMode || flexibleTimeWindowMode === FlexibleTimeWindowMode.OFF) {
-      if (maximumWindowInMinutes) {
-        Annotations.of(this).addWarningV2('@aws-cdk/aws-scheduler:maximumWindowInMinutesIgnored', 'maximumWindowInMinutes is ignored when flexibleTimeWindowMode is not FLEXIBLE');
-      }
       return {
-        mode: 'OFF',
+        mode: FlexibleTimeWindowMode.OFF,
       };
     }
 
@@ -357,7 +357,7 @@ export class Schedule extends Resource implements ISchedule {
       throw new Error(`maximumWindowInMinutes must be between 1 and 1440, got ${maximumWindowInMinutes.toMinutes()}`);
     }
     return {
-      mode: 'FLEXIBLE',
+      mode: flexibleTimeWindowMode,
       maximumWindowInMinutes: maximumWindowInMinutes.toMinutes(),
     };
   }

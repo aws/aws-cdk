@@ -173,7 +173,7 @@ describe('Schedule', () => {
       }).toThrow('maximumWindowInMinutes must be provided when flexibleTimeWindowMode is set to FLEXIBLE');
     });
 
-    test('throw error when maximumWindowInMinutes is more than 1440', () => {
+    test('throw error when maximumWindowInMinutes is greater than 1440', () => {
       expect(() => {
         new Schedule(stack, 'TestSchedule', {
           schedule: expr,
