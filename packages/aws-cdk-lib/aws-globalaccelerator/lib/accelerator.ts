@@ -23,7 +23,7 @@ export interface IAccelerator extends cdk.IResource {
   readonly dnsName: string;
 
   /**
-   * IP addressess associated with the accelerator.
+   * IP addresses associated with the accelerator.
    *
    * @attribute
    */
@@ -58,7 +58,13 @@ export interface AcceleratorProps {
   readonly enabled?: boolean;
 
   /**
-   * IP addressess associated with the accelerator.
+   * IP addresses associated with the accelerator.
+   *
+   * Optionally, if you've added your own IP address pool to Global Accelerator (BYOIP), you can choose IP addresses from your own pool to use for the accelerator's static IP addresses when you create an accelerator. You can specify one or two addresses, separated by a comma. Do not include the /32 suffix.
+   *
+   * Only one IP address from each of your IP address ranges can be used for each accelerator. If you specify only one IP address from your IP address range, Global Accelerator assigns a second static IP address for the accelerator from the AWS IP address pool.
+   *
+   * Note that you can't update IP addresses for an existing accelerator. To change them, you must create a new accelerator with the new addresses.
    *
    * @default - undefined. IP addresses will be from Amazon's pool of IP addresses.
    */
@@ -89,7 +95,7 @@ export interface AcceleratorAttributes {
   readonly dnsName: string;
 
   /**
-   * IP addressess associated with the accelerator.
+   * IP addresses associated with the accelerator.
    */
   readonly ipAddresses?: string[];
 
@@ -109,6 +115,7 @@ export enum IpAddressType {
    * IPV4
    */
   IPV4 = 'IPV4',
+
   /**
    * DUAL_STACK
    */
@@ -143,7 +150,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
   public readonly dnsName: string;
 
   /**
-   * IP addressess associated with the accelerator.
+   * IP addresses  associated with the accelerator.
    */
   public readonly ipAddresses?: string[];
 
@@ -164,10 +171,8 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
     const resource = new ga.CfnAccelerator(this, 'Resource', {
       enabled: props.enabled ?? true,
       name,
-      ipAddresses: props.ipAddresses ?? undefined,
-      // ipAddressType is undefined as a default here for backwards compatibility,
-      // but the service selects "IPV4".
-      ipAddressType: props.ipAddressType ?? undefined,
+      ipAddresses: props.ipAddresses,
+      ipAddressType: props.ipAddressType,
     });
 
     this.acceleratorArn = resource.attrAcceleratorArn;
