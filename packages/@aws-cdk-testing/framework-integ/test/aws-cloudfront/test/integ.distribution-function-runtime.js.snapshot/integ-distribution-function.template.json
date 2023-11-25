@@ -19,7 +19,7 @@
     "FunctionCode": "function handler(event) { return event.response }",
     "FunctionConfig": {
      "Comment": "eu-west-1integdistributionfunctionFunctionResponseDD4BADA1",
-     "Runtime": "cloudfront-js-1.0"
+     "Runtime": "cloudfront-js-2.0"
     },
     "Name": "eu-west-1integdistributionfunctionFunctionResponseDD4BADA1"
    }
