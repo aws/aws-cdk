@@ -28,21 +28,21 @@ export interface IAccelerator extends cdk.IResource {
    *
    * @attribute
    */
-  readonly dualStackDnsName: string;
+  readonly dualStackDnsName?: string;
 
   /**
    * The array of IPv4 addresses in the IP address set. An IP address set can have a maximum of two IP addresses.
    *
    * @attribute
    */
-  readonly ipv4Addresses: string[];
+  readonly ipv4Addresses?: string[];
 
   /**
    * The array of IPv6 addresses in the IP address set. An IP address set can have a maximum of two IP addresses.
    *
    * @attribute
    */
-  readonly ipv6Addresses: string[];
+  readonly ipv6Addresses?: string[];
 }
 
 /**
@@ -103,17 +103,17 @@ export interface AcceleratorAttributes {
   /**
    * The DNS name that points to the dual-stack accelerator's four static IP addresses: two IPv4 addresses and two IPv6 addresses.
    */
-  readonly dualStackDnsName: string;
+  readonly dualStackDnsName?: string;
 
   /**
    * The array of IPv4 addresses in the IP address set
    */
-  readonly ipv4Addresses: string[];
+  readonly ipv4Addresses?: string[];
 
   /**
    * The array of IPv6 addresses in the IP address set
    */
-  readonly ipv6Addresses: string[];
+  readonly ipv6Addresses?: string[];
 }
 
 /**
@@ -163,17 +163,17 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
    * The DNS name that points to the dual-stack accelerator's four static IP addresses:
    * two IPv4 addresses and two IPv6 addresses.
    */
-  public readonly dualStackDnsName: string;
+  public readonly dualStackDnsName?: string;
 
   /**
    * The array of IPv4 addresses in the IP address set
    */
-  public readonly ipv4Addresses: string[];
+  public readonly ipv4Addresses?: string[];
 
   /**
    * The array of IPv6 addresses in the IP address set
    */
-  public readonly ipv6Addresses: string[];
+  public readonly ipv6Addresses?: string[];
 
   constructor(scope: Construct, id: string, props: AcceleratorProps = {}) {
     super(scope, id);
