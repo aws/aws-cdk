@@ -61,6 +61,7 @@ table.grant(user, redshift.TableAction.INSERT, redshift.TableAction.DELETE);
 
 new integ.IntegTest(app, 'redshift-cluster-database-integ', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 app.synth();
