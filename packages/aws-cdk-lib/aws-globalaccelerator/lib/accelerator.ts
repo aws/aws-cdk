@@ -23,20 +23,26 @@ export interface IAccelerator extends cdk.IResource {
   readonly dnsName: string;
 
   /**
-   * IP addresses associated with the accelerator.
+   * The DNS name that Global Accelerator creates that points to a dual-stack accelerator's four static IP addresses:
+   * two IPv4 addresses and two IPv6 addresses.
    *
    * @attribute
    */
-  readonly ipAddresses?: string[];
+  readonly dualStackDnsName: string;
 
   /**
-   * The IP address type that the accelerator supports.
-   *
-   * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
+   * The array of IPv4 addresses in the IP address set. An IP address set can have a maximum of two IP addresses.
    *
    * @attribute
    */
-  readonly ipAddressType?: IpAddressType;
+  readonly ipv4Addresses: string[];
+
+  /**
+   * The array of IPv6 addresses in the IP address set. An IP address set can have a maximum of two IP addresses.
+   *
+   * @attribute
+   */
+  readonly ipv6Addresses: string[];
 }
 
 /**
@@ -95,16 +101,19 @@ export interface AcceleratorAttributes {
   readonly dnsName: string;
 
   /**
-   * IP addresses associated with the accelerator.
+   * The DNS name that points to the dual-stack accelerator's four static IP addresses: two IPv4 addresses and two IPv6 addresses.
    */
-  readonly ipAddresses?: string[];
+  readonly dualStackDnsName: string;
 
   /**
-   * The IP address type that an accelerator supports.
-   *
-   * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
+   * The array of IPv4 addresses in the IP address set
    */
-  readonly ipAddressType?: IpAddressType;
+  readonly ipv4Addresses: string[];
+
+  /**
+   * The array of IPv6 addresses in the IP address set
+   */
+  readonly ipv6Addresses: string[];
 }
 
 /**
@@ -133,8 +142,9 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
     class Import extends cdk.Resource implements IAccelerator {
       public readonly acceleratorArn = attrs.acceleratorArn;
       public readonly dnsName = attrs.dnsName;
-      public readonly ipAddresses = attrs.ipAddresses?? undefined;
-      public readonly ipAddressType = attrs.ipAddressType ?? undefined;
+      public readonly dualStackDnsName = attrs.dualStackDnsName;
+      public readonly ipv4Addresses = attrs.ipv4Addresses;
+      public readonly ipv6Addresses = attrs.ipv6Addresses;
     }
     return new Import(scope, id);
   }
@@ -150,16 +160,20 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
   public readonly dnsName: string;
 
   /**
-   * IP addresses  associated with the accelerator.
+   * The DNS name that points to the dual-stack accelerator's four static IP addresses:
+   * two IPv4 addresses and two IPv6 addresses.
    */
-  public readonly ipAddresses?: string[];
+  public readonly dualStackDnsName: string;
 
   /**
-   * The IP address type that an accelerator supports.
-   *
-   * For a standard accelerator, the value can be IPV4 or DUAL_STACK.
-  */
-  public readonly ipAddressType?: IpAddressType;
+   * The array of IPv4 addresses in the IP address set
+   */
+  public readonly ipv4Addresses: string[];
+
+  /**
+   * The array of IPv6 addresses in the IP address set
+   */
+  public readonly ipv6Addresses: string[];
 
   constructor(scope: Construct, id: string, props: AcceleratorProps = {}) {
     super(scope, id);
@@ -177,8 +191,9 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
 
     this.acceleratorArn = resource.attrAcceleratorArn;
     this.dnsName = resource.attrDnsName;
-    this.ipAddresses = props.ipAddresses ?? undefined;
-    this.ipAddressType = props.ipAddressType ?? undefined;
+    this.dualStackDnsName = resource.attrDualStackDnsName;
+    this.ipv4Addresses = resource.attrIpv4Addresses;
+    this.ipv6Addresses = resource.attrIpv6Addresses;
   }
 
   /**

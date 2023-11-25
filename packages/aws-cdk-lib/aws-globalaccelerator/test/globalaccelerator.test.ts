@@ -230,7 +230,7 @@ test('create accelerator with IpAddresses and IpAddressType', () => {
   const { stack } = testFixture();
 
   // WHEN
-  new ga.Accelerator(stack, 'Accelerator', {
+  const acc = new ga.Accelerator(stack, 'Accelerator', {
     ipAddresses: [
       '1.1.1.1',
       '2.2.2.2',
