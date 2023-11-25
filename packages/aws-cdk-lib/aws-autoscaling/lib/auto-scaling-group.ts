@@ -576,41 +576,6 @@ export interface LaunchTemplateOverrides {
 }
 
 /**
- * Allows you to configure an instance maintenance policy for your Auto Scaling group to
- * meet specific capacity requirements during events that cause instances to be replaced, such as an instance
- * refresh or the health check process.
- *
- * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-maintenance-policy.html
- */
-export interface InstanceMaintenancePolicy {
-  /**
-   * Specifies the upper threshold as a percentage of the desired capacity of the Auto Scaling group.
-   * It represents the maximum percentage of the group that can be in service and healthy, or pending,
-   * to support your workload when replacing instances.
-   *
-   * Value range is 100 to 200. After it's set, a value of -1 will clear the previously set value.
-   *
-   * Both `minHealthyPercentage` and `maxHealthyPercentage` must be specified, and the difference between
-   * them cannot be greater than 100. A large range increases the number of instances that can be
-   * replaced at the same time.
-   */
-  readonly maxHealthyPercentage: number;
-
-  /**
-   * Specifies the lower threshold as a percentage of the desired capacity of the Auto Scaling group.
-   * It represents the minimum percentage of the group to keep in service, healthy, and ready to use
-   * to support your workload when replacing instances.
-   *
-   * Value range is 0 to 100. After it's set, a value of -1 will clear the previously set value.
-   *
-   * Both `minHealthyPercentage` and `maxHealthyPercentage` must be specified, and the difference between
-   * them cannot be greater than 100. A large range increases the number of instances that can be
-   * replaced at the same time.
-   */
-  readonly minHealthyPercentage: number;
-}
-
-/**
  * Properties of a Fleet
  */
 export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
@@ -723,11 +688,40 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   readonly requireImdsv2?: boolean;
 
   /**
-   * An instance maintenance policy.
+   * Specifies the upper threshold as a percentage of the desired capacity of the Auto Scaling group.
+   * It represents the maximum percentage of the group that can be in service and healthy, or pending,
+   * to support your workload when replacing instances.
    *
-   * @default - no instance maintenance policy.
+   * Value range is 0 to 100. After it's set, both `maintenancePolicyMinHealthPercentage` and
+   * `maintenancePolicyMaxHealthPercentage` to -1 will clear the previously set value.
+   *
+   * Both or neither of `maintenancePolicyMinHealthPercentage` and `maintenancePolicyMaxHealthPercentage`
+   * must be specified, and the difference between them cannot be greater than 100. A large range increases
+   * the number of instances that can be replaced at the same time.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-maintenance-policy.html
+   *
+   * @default - Do not provide percentage.
    */
-  readonly instanceMaintenancePolicy?: InstanceMaintenancePolicy;
+  readonly maintenancePolicyMaxHealthPercentage?: number;
+
+  /**
+   * Specifies the lower threshold as a percentage of the desired capacity of the Auto Scaling group.
+   * It represents the minimum percentage of the group to keep in service, healthy, and ready to use
+   * to support your workload when replacing instances.
+   *
+   * Value range is 0 to 100. After it's set, both `maintenancePolicyMinHealthPercentage` and
+   * `maintenancePolicyMaxHealthPercentage` to -1 will clear the previously set value.
+   *
+   * Both or neither of `maintenancePolicyMinHealthPercentage` and `maintenancePolicyMaxHealthPercentage`
+   * must be specified, and the difference between them cannot be greater than 100. A large range increases
+   * the number of instances that can be replaced at the same time.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-maintenance-policy.html
+   *
+   * @default - Do not provide percentage.
+   */
+  readonly maintenancePolicyMinHealthPercentage?: number;
 }
 
 /**
@@ -1450,8 +1444,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       }));
     }
 
-    this.validateInstanceMaintenancePolicy(props.instanceMaintenancePolicy);
-
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     const asgProps: CfnAutoScalingGroupProps = {
       autoScalingGroupName: this.physicalName,
@@ -1471,7 +1463,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       terminationPolicies: props.terminationPolicies,
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
-      instanceMaintenancePolicy: props.instanceMaintenancePolicy,
+      instanceMaintenancePolicy: this.renderInstanceMaintenancePolicy(
+        props.maintenancePolicyMaxHealthPercentage,
+        props.maintenancePolicyMinHealthPercentage,
+      ),
       ...this.getLaunchSettings(launchConfig, props.launchTemplate ?? launchTemplateFromConfig, props.mixedInstancesPolicy),
     };
 
@@ -1886,26 +1881,43 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     return errors;
   }
 
-  private validateInstanceMaintenancePolicy(policy?: InstanceMaintenancePolicy) {
-    if (!policy) {
+  private renderInstanceMaintenancePolicy(
+    maxHealthPercentage?: number,
+    minHealthPercentage?: number,
+  ): CfnAutoScalingGroup.InstanceMaintenancePolicyProperty | undefined {
+    if (maxHealthPercentage === undefined && minHealthPercentage === undefined) {
       return;
     }
 
-    const maxHealthyPercentage = policy.maxHealthyPercentage;
-    const minHealthyPercentage = policy.minHealthyPercentage;
+    if (
+      (maxHealthPercentage !== undefined && minHealthPercentage === undefined)
+      || (maxHealthPercentage === undefined && minHealthPercentage !== undefined)
+    ) {
+      throw new Error(`Both or neither of maintenancePolicyMinHealthPercentage and maintenancePolicyMaxHealthPercentage must be specified, got maintenancePolicyMinHealthPercentage: ${minHealthPercentage} and maintenancePolicyMaxHealthPercentage: ${maxHealthPercentage}`);
+    }
+    if ((maxHealthPercentage !== -1 && minHealthPercentage === -1) || (maxHealthPercentage === -1 && minHealthPercentage !== -1)) {
+      throw new Error(`Both maintenancePolicyMinHealthPercentage and maintenancePolicyMaxHealthPercentage must be -1 to clear the previously set value, got maintenancePolicyMinHealthPercentage: ${minHealthPercentage} and maintenancePolicyMaxHealthPercentage: ${maxHealthPercentage}`);
+    }
+    if (maxHealthPercentage !== undefined && maxHealthPercentage !== -1 && (maxHealthPercentage < 100 || maxHealthPercentage > 200)) {
+      throw new Error(`maintenancePolicyMaxHealthPercentage must be between 100 and 200, or -1 to clear the previously set value, got ${maxHealthPercentage}`);
+    }
+    if (minHealthPercentage !== undefined && minHealthPercentage !== -1 && (minHealthPercentage < 0 || minHealthPercentage > 100)) {
+      throw new Error(`maintenancePolicyMinHealthPercentage must be between 0 and 100, or -1 to clear the previously set value, got ${minHealthPercentage}`);
+    }
+    if (
+      maxHealthPercentage !== undefined
+      && minHealthPercentage !== undefined
+      && maxHealthPercentage !== -1
+      && minHealthPercentage !== -1
+      && maxHealthPercentage - minHealthPercentage > 100
+    ) {
+      throw new Error(`The difference between maintenancePolicyMinHealthPercentage and maintenancePolicyMaxHealthPercentage cannot be greater than 100, got ${maxHealthPercentage - minHealthPercentage}`);
+    }
 
-    if (maxHealthyPercentage !== -1 && (maxHealthyPercentage < 100 || maxHealthyPercentage > 200)) {
-      throw new Error(`maxHealthyPercentage must be between 100 and 200, or -1 to clear the previously set value, got ${maxHealthyPercentage}`);
-    }
-    if (minHealthyPercentage !== -1 && (minHealthyPercentage < 0 || minHealthyPercentage > 100)) {
-      throw new Error(`minHealthyPercentage must be between 0 and 100, or -1 to clear the previously set value, got ${minHealthyPercentage}`);
-    }
-    if ((maxHealthyPercentage !== -1 && minHealthyPercentage === -1) || (maxHealthyPercentage === -1 && minHealthyPercentage !== -1)) {
-      throw new Error(`Both minHealthyPercentage and maxHealthyPercentage must be -1 to clear the previously set value, got minHealthyPercentage: ${minHealthyPercentage} and maxHealthyPercentage: ${maxHealthyPercentage}`);
-    }
-    if (maxHealthyPercentage !== -1 && minHealthyPercentage !== -1 && maxHealthyPercentage - minHealthyPercentage > 100) {
-      throw new Error(`The difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100, got ${maxHealthyPercentage - minHealthyPercentage}`);
-    }
+    return {
+      maxHealthyPercentage: maxHealthPercentage,
+      minHealthyPercentage: minHealthPercentage,
+    };
   }
 }
 

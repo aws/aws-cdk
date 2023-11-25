@@ -16,10 +16,8 @@ new autoscaling.AutoScalingGroup(stack, 'ASG', {
   vpc,
   instanceType: new ec2.InstanceType('t2.micro'),
   machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
-  instanceMaintenancePolicy: {
-    maxHealthyPercentage: 200,
-    minHealthyPercentage: 100,
-  },
+  maintenancePolicyMaxHealthPercentage: 200,
+  maintenancePolicyMinHealthPercentage: 100,
 });
 
 new integ.IntegTest(app, 'InstanceMaintenancePolicyTest', {
