@@ -280,3 +280,31 @@ test('should validate acceleratorName minimum and maximum length', () => {
     });
   }).toThrowError(/must have length between 1 and 64/);
 });
+
+test('should validate ipAddresses minimum and maximum length', () => {
+  const { stack } = testFixture();
+
+  expect(() => {
+    new ga.Accelerator(stack, 'Acc1', {});
+  }).not.toThrow();
+  expect(() => {
+    new ga.Accelerator(stack, 'Acc2', {
+      ipAddresses: ['1.1.1.1'],
+    });
+  }).not.toThrow();
+  expect(() => {
+    new ga.Accelerator(stack, 'Acc3', {
+      ipAddresses: ['1.1.1.1', '2.2.2.2'],
+    });
+  }).not.toThrow();
+  expect(() => {
+    new ga.Accelerator(stack, 'Acc4', {
+      ipAddresses: [],
+    });
+  }).toThrow('Invalid ipAddresses value [], you can specify one or two addresses separated by a comma.');
+  expect(() => {
+    new ga.Accelerator(stack, 'Acc5', {
+      ipAddresses: ['1.1.1.1', '2.2.2.2', '3.3.3.3'],
+    });
+  }).toThrow('Invalid ipAddresses value [1.1.1.1,2.2.2.2,3.3.3.3], you can specify one or two addresses separated by a comma.');
+});

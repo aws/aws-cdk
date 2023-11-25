@@ -179,6 +179,8 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
     super(scope, id);
 
     this.validateAcceleratorName(props.acceleratorName);
+    this.validateIpAddresses(props.ipAddresses);
+
     const name = props.acceleratorName ?? cdk.Names.uniqueResourceName(this, {
       maxLength: 64,
     });
@@ -209,6 +211,12 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
   private validateAcceleratorName(name?: string) {
     if (!cdk.Token.isUnresolved(name) && name !== undefined && (name.length < 1 || name.length > 64)) {
       throw new Error(`Invalid acceleratorName value ${name}, must have length between 1 and 64, got: ${name.length}`);
+    }
+  }
+
+  private validateIpAddresses(ipAddresses?: string[]) {
+    if (ipAddresses !== undefined && (ipAddresses.length < 1 || ipAddresses.length > 2)) {
+      throw new Error(`Invalid ipAddresses value [${ipAddresses}], you can specify one or two addresses separated by a comma.`);
     }
   }
 }
