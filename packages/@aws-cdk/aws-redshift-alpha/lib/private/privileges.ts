@@ -4,7 +4,7 @@ import { DatabaseOptions } from '../database-options';
 import { ITable, TableAction } from '../table';
 import { IUser } from '../user';
 import { DatabaseQuery } from './database-query';
-import { HandlerName } from './database-query-provider/handler-name';
+import { HandlerName } from './handler-name';
 import { TablePrivilege as SerializedTablePrivilege, UserTablePrivilegesHandlerProps } from './handler-props';
 
 /**

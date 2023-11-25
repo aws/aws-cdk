@@ -5,8 +5,8 @@ import { Construct, IConstruct } from 'constructs';
 import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
 import { DatabaseQuery } from './private/database-query';
-import { HandlerName } from './private/database-query-provider/handler-name';
-import { getDistKeyColumn, getSortKeyColumns } from './private/database-query-provider/util';
+import { HandlerName } from './private/handler-name';
+import { getDistKeyColumn, getSortKeyColumns } from './private/util';
 import { TableHandlerProps } from './private/handler-props';
 import { IUser } from './user';
 

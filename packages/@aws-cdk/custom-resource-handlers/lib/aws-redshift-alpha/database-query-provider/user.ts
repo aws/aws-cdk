@@ -5,7 +5,7 @@ import { SecretsManager } from '@aws-sdk/client-secrets-manager';
 import { executeStatement } from './redshift-data';
 import { ClusterProps } from './types';
 import { makePhysicalId } from './util';
-import { UserHandlerProps } from '../handler-props';
+import { UserHandlerProps } from './handler-props';
 
 const secretsManager = new SecretsManager({});
 

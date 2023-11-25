@@ -39,7 +39,7 @@ jest.mock('@aws-sdk/client-redshift-data', () => {
   };
 });
 
-import { handler as managePrivileges } from '../../lib/private/database-query-provider/privileges';
+import { handler as managePrivileges } from '../../../lib/aws-redshift-alpha/database-query-provider/privileges';
 
 beforeEach(() => {
   jest.clearAllMocks();

@@ -1,9 +1,8 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
 import { executeStatement } from './redshift-data';
-import { ClusterProps, TableAndClusterProps, TableSortStyle } from './types';
+import { ClusterProps, TableAndClusterProps, TableSortStyle, Column } from './types';
 import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns } from './util';
-import { Column } from '../../table';
 
 export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const tableNamePrefix = props.tableName.prefix;

@@ -46,7 +46,7 @@ jest.mock('@aws-sdk/client-secrets-manager', () => ({
   },
 }));
 
-import { handler as manageUser } from '../../lib/private/database-query-provider/user';
+import { handler as manageUser } from '../../../lib/aws-redshift-alpha/database-query-provider/user';
 
 beforeEach(() => {
   jest.clearAllMocks();

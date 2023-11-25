@@ -1,6 +1,6 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
-import { TablePrivilege, UserTablePrivilegesHandlerProps } from '../handler-props';
+import { TablePrivilege, UserTablePrivilegesHandlerProps } from './handler-props';
 import { executeStatement } from './redshift-data';
 import { ClusterProps } from './types';
 import { makePhysicalId } from './util';
