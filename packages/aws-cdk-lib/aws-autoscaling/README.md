@@ -290,7 +290,7 @@ autoScalingGroup.scaleOnSchedule('AllowDownscalingAtNight', {
 
 ### Instance Maintenance Policy
 
-The Instance Maintenance Policy allows you to configure an instance maintenance policy for
+The instance maintenance policy allows you to configure an instance maintenance policy for
 your Auto Scaling group to meet specific capacity requirements during events that cause
 instances to be replaced, such as an instance refresh or the health check process.
 
