@@ -99,6 +99,21 @@ export interface AcceleratorAttributes {
    * The DNS name of the accelerator
    */
   readonly dnsName: string;
+
+  /**
+   * The DNS name that points to the dual-stack accelerator's four static IP addresses: two IPv4 addresses and two IPv6 addresses.
+   */
+  readonly dualStackDnsName?: string;
+
+  /**
+   * The array of IPv4 addresses in the IP address set
+   */
+  readonly ipv4Addresses?: string[];
+
+  /**
+   * The array of IPv6 addresses in the IP address set
+   */
+  readonly ipv6Addresses?: string[];
 }
 
 /**
