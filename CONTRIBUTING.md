@@ -28,7 +28,6 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
   - [Rosetta](#rosetta)
 - [Tools](#tools-advanced)
   - [Linters](#linters)
-  - [cfn2ts](#cfn2ts)
   - [scripts/foreach.sh](#scriptsforeachsh)
   - [Jetbrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
   - [Linking against this repository](#linking-against-this-repository)
@@ -49,7 +48,47 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
 - [Related Repositories](#related-repositories)
 
 ## Contribution Workflow Diagram
-![A workflow diagram for contributing code to the aws-cdk ecosytem](./docs/contribution_flow.png)
+```mermaid
+flowchart TD
+    A(Identify Desired Functionality) --> B(Search For Existing Artifacts)
+    B --> C[External Packages]
+    B --> D[Relevant Issues And PRs]
+    C --> E{"Does A High Quality
+            Solution Exist?"}
+    D --> F{"Is There A PR In Progress"}
+    E --> |Yes| G(("Ask How You
+                    Can Help"))
+    F --> |Yes| G
+    E --> |No| H(Evaluate Where To Contribute)
+    F --> |No| H
+    H --> I{"Is There Clear Evidence
+            For Inclusion In AWS-CDK"}
+    I --> |Yes| subEvidence
+    I --> |No| J{"Do You Want To Pursue Eventual
+                  Inclusion In AWS-CDK"}
+    J --> |No| L(("Create Private
+                  Implementation"))
+    J --> |Yes| K((Publish A Package))
+    subEvidence --> M(Make Pull Request)
+    M --> N{"Passes CI Checks, Linters,
+            And Follows Design Guidelines"}
+    N --> O(Review)
+    O --> |Accepted| R(Hooray!)
+    O --> P(Changes Requested)
+    P --> Q(Make Changes)
+    Q --> O
+    O --> |Refused| K
+
+subgraph subEvidence[Gather Evidence]
+    direction LR
+    engagement[Engagement from Multiple users]
+    core[Intersects With Core Framework Concerns]
+    quality["Clear, Well Defined, Solution With
+            Limited Scope And Clear Boundaries"]
+    external[External Packages]
+    issues[Relevant Issues And PRs]
+end
+```
 
 ## Where to Contribute
 
@@ -107,7 +146,7 @@ The following tools need to be installed on your system prior to installing the 
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
 - [.NET SDK >= 6.0.x](https://www.microsoft.com/net/download)
-- [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
+- [Python >= 3.8.0, < 4.0](https://www.python.org/downloads/release/python-380/)
 - [Docker >= 19.03](https://docs.docker.com/get-docker/)
   - the Docker daemon must also be running
 
@@ -1054,22 +1093,6 @@ Here are a few useful commands:
  * `lerna run awslint -- -i <RULE>` will run awslint throughout the repo and
    evaluate only the rule specified [awslint README](./packages/awslint/README.md)
    for details on include/exclude rule patterns.
-
-### cfn2ts
-
-This tool is used to generate our low-level CloudFormation resources
-(L1/`CfnFoo`). It is executed as part of the build step of all modules in the
-AWS Construct Library.
-
-The tool consults the `cdk-build.cloudformation` key in `package.json` to
-determine which CloudFormation namespace this library represents (e.g.
-`AWS::EC2` is the namespace for `aws-ec2`). We maintain strict 1:1 relationship
-between those.
-
-Each module also has an npm script called `cfn2ts`:
-
-* `yarn cfn2ts`: generates L1 for a specific module
-* `lerna run cfn2ts`: generates L1 for the entire repo
 
 ### Jetbrains support (WebStorm/IntelliJ)
 
