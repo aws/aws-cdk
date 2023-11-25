@@ -9,9 +9,9 @@ jest.mock('@aws-sdk/client-redshift-data', () => ({
   },
 }));
 
-import { Column, ColumnEncoding, TableDistStyle, TableSortStyle } from '../../../lib/aws-redshift-alpha/database-query-provider/types';
-import { handler as manageTable } from '../../../lib/aws-redshift-alpha/database-query-provider/table';
-import { TableAndClusterProps } from '../../../lib/aws-redshift-alpha/database-query-provider/handler-props';
+import { Column, ColumnEncoding, TableDistStyle, TableSortStyle } from '../../../lib/aws-redshift-alpha/database-query-handlers/types';
+import { handler as manageTable } from '../../../lib/aws-redshift-alpha/database-query-handlers/table';
+import { TableAndClusterProps } from '../../../lib/aws-redshift-alpha/database-query-handlers/handler-props';
 
 type ResourcePropertiesType = TableAndClusterProps & { ServiceToken: string };
 

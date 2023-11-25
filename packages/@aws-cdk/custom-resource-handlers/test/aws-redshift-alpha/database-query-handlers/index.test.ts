@@ -22,7 +22,7 @@ jest.mock('../../lib/private/database-query-provider/table', () => ({
   __esModule: true,
   handler: mockSubHandler,
 }));
-import { handler } from '../../../lib/aws-redshift-alpha/database-query-provider/index';
+import { handler } from '../../../lib/aws-redshift-alpha/database-query-handlers/index';
 
 beforeEach(() => {
   jest.clearAllMocks();
