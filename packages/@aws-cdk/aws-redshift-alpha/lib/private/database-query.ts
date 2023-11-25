@@ -31,7 +31,7 @@ export class DatabaseQuery<HandlerProps> extends Construct implements iam.IGrant
 
     const adminUser = this.getAdminUser(props);
     const handler = new lambda.SingletonFunction(this, 'Handler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-redshift-alpha', 'database-query-handlers'), {
+      code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-redshift-alpha', 'database-query-handlers'), {
         exclude: ['*.ts'],
       }),
       runtime: lambda.Runtime.NODEJS_18_X,
