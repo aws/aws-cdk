@@ -14,8 +14,10 @@ def handler(event: dict, context):
   error_message = ""
   try:
     props = event["ResourceProperties"]
+    old_props = event["OldResourceProperties"]
     bucket = props["BucketName"]
     notification_configuration = props["NotificationConfiguration"]
+    old_notification_configuration = old_props["NotificationConfiguration"]
     request_type = event["RequestType"]
     managed = props.get('Managed', 'true').lower() == 'true'
     stack_id = event['StackId']
@@ -23,7 +25,7 @@ def handler(event: dict, context):
     if managed:
       config = handle_managed(request_type, notification_configuration)
     else:
-      config = handle_unmanaged(bucket, stack_id, request_type, notification_configuration)
+      config = handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old_notification_configuration)
 
     put_bucket_notification_configuration(bucket, config)
   except Exception as e:
@@ -41,13 +43,21 @@ def handle_managed(request_type, notification_configuration):
 def getId(stack_id, notification):
     return f"{stack_id}-{hash(json.dumps(notification, sort_keys=True))}"
 
-def handle_unmanaged(bucket, stack_id, request_type, notification_configuration):
+def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old_notification_configuration):
   # find external notifications
-  external_notifications = find_external_notifications(bucket, stack_id)
+  external_notifications = {}
+  if request_type == 'Update':
+    for t in CONFIGURATION_TYPES:
+        external = external_notifications.get(t, [])
+        # get what the id would have been from the old properties.
+        # and then use that to filter
+        old_incoming_ids = [getId(stack_id, n) for n in old_notification_configuration.get(t, [])]
+        external_notifications = find_external_notifications(bucket, stack_id, old_incoming_ids)
 
   # if delete, that's all we need
   if request_type == 'Delete':
     return external_notifications
+
 
   def with_id(notification):
     notification['Id'] = getId(stack_id, notification)
@@ -68,13 +78,13 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration)
 
   return notifications
 
-def find_external_notifications(bucket, stack_id):
+def find_external_notifications(bucket, stack_id, ids):
   existing_notifications = get_bucket_notification_configuration(bucket)
   external_notifications = {}
   for t in CONFIGURATION_TYPES:
     # if the notification was created by us, we know what id to expect
     # so we can filter by it.
-    external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'] == getId(stack_id, n)]
+    external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'] in ids]
 
   # always treat EventBridge configuration as an external config if it already exists
   # as there is no way to determine whether it's managed by us or not
