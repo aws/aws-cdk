@@ -18,7 +18,7 @@ const baseEvent: AWSLambda.CloudFormationCustomResourceEvent = {
 };
 
 const mockSubHandler = jest.fn();
-jest.mock('../../lib/private/database-query-provider/table', () => ({
+jest.mock('../../../lib/aws-redshift-alpha/database-query-handlers/table', () => ({
   __esModule: true,
   handler: mockSubHandler,
 }));
