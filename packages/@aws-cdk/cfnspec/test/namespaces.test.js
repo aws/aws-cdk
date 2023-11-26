@@ -1,0 +1,7 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const index_1 = require("../lib/index");
+test('namespaces() includes some namespaces', () => {
+    expect((0, index_1.namespaces)().length).toBeGreaterThan(10);
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibmFtZXNwYWNlcy50ZXN0LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsibmFtZXNwYWNlcy50ZXN0LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsd0NBQTBDO0FBRTFDLElBQUksQ0FBQyx1Q0FBdUMsRUFBRSxHQUFHLEVBQUU7SUFDakQsTUFBTSxDQUFDLElBQUEsa0JBQVUsR0FBRSxDQUFDLE1BQU0sQ0FBQyxDQUFDLGVBQWUsQ0FBQyxFQUFFLENBQUMsQ0FBQztBQUNsRCxDQUFDLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IG5hbWVzcGFjZXMgfSBmcm9tICcuLi9saWIvaW5kZXgnO1xuXG50ZXN0KCduYW1lc3BhY2VzKCkgaW5jbHVkZXMgc29tZSBuYW1lc3BhY2VzJywgKCkgPT4ge1xuICBleHBlY3QobmFtZXNwYWNlcygpLmxlbmd0aCkudG9CZUdyZWF0ZXJUaGFuKDEwKTtcbn0pO1xuIl19
