@@ -1,5 +1,0 @@
-*.d.ts
-*.js
-
-!decs.d.ts
-!.eslintrc.js
