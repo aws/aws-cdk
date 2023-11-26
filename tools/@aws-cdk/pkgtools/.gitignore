@@ -1,0 +1,13 @@
+*.js
+*.js.map
+*.d.ts
+dist
+
+.LAST_BUILD
+*.snk
+!.eslintrc.js
+
+.nyc_output
+coverage
+nyc.config.js
+junit.xml

@@ -1,0 +1,10 @@
+*.snap linguist-generated
+/.eslintrc.json linguist-generated
+/.gitattributes linguist-generated
+/.gitignore linguist-generated
+/.npmignore linguist-generated
+/LICENSE linguist-generated
+/package.json linguist-generated
+/tsconfig.dev.json linguist-generated
+/tsconfig.json linguist-generated
+/yarn.lock linguist-generated

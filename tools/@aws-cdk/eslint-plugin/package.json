@@ -1,0 +1,37 @@
+{
+  "name": "@aws-cdk/eslint-plugin",
+  "private": true,
+  "version": "0.0.0",
+  "description": "ESLint plugin for private use within the AWS CDK repo",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc --build",
+    "watch": "tsc -w",
+    "test": "jest",
+    "build+test+package": "npm run build+test",
+    "build+test": "npm run build && npm test",
+    "build+test+extract": "npm run build+test",
+    "build+extract": "npm run build"
+  },
+  "devDependencies": {
+    "@types/eslint": "^7.29.0",
+    "@types/fs-extra": "^9.0.13",
+    "@types/jest": "^29.5.8",
+    "@types/estree": "*",
+    "jest": "^29.7.0",
+    "typescript": "~5.1.6"
+  },
+  "dependencies": {
+    "@typescript-eslint/parser": "^6.11.0",
+    "eslint": "^7.32.0",
+    "fs-extra": "^9.1.0"
+  },
+  "jest": {
+    "testMatch": [
+      "**/*.test.js"
+    ]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0"
+}

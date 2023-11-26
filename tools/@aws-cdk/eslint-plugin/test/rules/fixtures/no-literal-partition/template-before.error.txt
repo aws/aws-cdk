@@ -1,0 +1,1 @@
+There are more partitions than just 'aws'. Silence this message if you are sure this is safe, or switch to using 'Aws.PARTITION'

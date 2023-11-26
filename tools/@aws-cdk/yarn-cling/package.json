@@ -1,0 +1,68 @@
+{
+  "name": "@aws-cdk/yarn-cling",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Tool for generating npm-shrinkwrap from yarn.lock",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "tools/@aws-cdk/yarn-cling"
+  },
+  "bin": {
+    "yarn-cling": "bin/yarn-cling"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "pkglint": "pkglint -f",
+    "test": "ln -sf ../../cdk test/test-fixture/jsii/node_modules/ && jest",
+    "build+test+package": "yarn build+test",
+    "build+test": "yarn build && yarn test",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "pkglint": {
+    "exclude": [
+      "dependencies/build-tools",
+      "package-info/scripts/build",
+      "package-info/scripts/watch",
+      "package-info/scripts/test"
+    ]
+  },
+  "devDependencies": {
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^29.5.8",
+    "@types/node": "18.11.19",
+    "@types/semver": "^7.5.5",
+    "@types/yarnpkg__lockfile": "^1.1.9",
+    "jest": "^29.7.0",
+    "typescript": "~5.1.6"
+  },
+  "dependencies": {
+    "@yarnpkg/lockfile": "^1.1.0",
+    "semver": "^7.5.4"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "nozem": {
+    "ostools": [
+      "ln"
+    ]
+  },
+  "ubergen": {
+    "exclude": true
+  }
+}

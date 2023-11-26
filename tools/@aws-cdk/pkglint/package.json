@@ -1,0 +1,72 @@
+{
+  "name": "@aws-cdk/pkglint",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Validate and fix package.json files",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aws/aws-cdk"
+  },
+  "pkglint": {
+    "ignore": true
+  },
+  "bin": {
+    "pkglint": "bin/pkglint"
+  },
+  "scripts": {
+    "build": "tsc -b && eslint . --ext=.ts && chmod +x bin/pkglint",
+    "test": "jest",
+    "build+test": "npm run build && npm test",
+    "build+test+package": "npm run build && npm test",
+    "build+extract": "npm run build",
+    "build+test+extract": "npm run build+test",
+    "watch": "tsc -b -w",
+    "lint": "tsc -b && eslint . --ext=.ts"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "s3"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/eslint-plugin": "0.0.0",
+    "@types/fs-extra": "^9.0.13",
+    "@types/glob": "^7.2.0",
+    "@types/jest": "^29.5.8",
+    "@types/semver": "^7.5.5",
+    "@types/yargs": "^15.0.18",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
+    "eslint": "^7.32.0",
+    "eslint-import-resolver-node": "^0.3.9",
+    "eslint-import-resolver-typescript": "^2.7.1",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-jest": "^24.7.0",
+    "jest": "^29.7.0",
+    "typescript": "~5.1.6"
+  },
+  "nozem": {
+    "ostools": [
+      "chmod",
+      "cp"
+    ]
+  },
+  "dependencies": {
+    "@aws-cdk/node-bundle": "0.0.0",
+    "case": "^1.6.3",
+    "chalk": "^4",
+    "fs-extra": "^9.1.0",
+    "glob": "^7.2.3",
+    "npm-bundled": "^1.1.2",
+    "semver": "^7.5.4",
+    "yargs": "^16.2.0"
+  }
+}

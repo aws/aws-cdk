@@ -1,0 +1,90 @@
+{
+  "name": "@aws-cdk/node-bundle",
+  "bin": {
+    "node-bundle": "bin/node-bundle"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "build+test": "npm run build && npm run test",
+    "lint": "eslint --ext .ts,.tsx --fix --no-error-on-unmatched-pattern src test",
+    "package": "mkdir -p dist/js && mv $(npm pack) dist/js/",
+    "test": "jest --passWithNoTests --updateSnapshot",
+    "test:watch": "jest --watch",
+    "watch": "tsc --build -w tsconfig.dev.json"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.8",
+    "@types/license-checker": "^25.0.6",
+    "@types/madge": "^5.0.3",
+    "@types/node": "^16",
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
+    "eslint": "^8",
+    "eslint-import-resolver-node": "^0.3.9",
+    "eslint-import-resolver-typescript": "^2.7.1",
+    "eslint-plugin-import": "^2.29.0",
+    "jest": "^29",
+    "jest-junit": "^15",
+    "npm-check-updates": "^16",
+    "standard-version": "^9",
+    "ts-jest": "^29",
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "esbuild": "^0.19.5",
+    "fs-extra": "^10.1.0",
+    "license-checker": "^25.0.1",
+    "madge": "^5.0.2",
+    "shlex": "^2.1.2",
+    "yargs": "^17.7.2"
+  },
+  "main": "lib/index.js",
+  "license": "Apache-2.0",
+  "version": "0.0.0",
+  "jest": {
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.ts?(x)",
+      "<rootDir>/(test|src)/**/*(*.)@(spec|test).ts?(x)"
+    ],
+    "clearMocks": true,
+    "collectCoverage": true,
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "clover",
+      "cobertura",
+      "text"
+    ],
+    "coverageDirectory": "coverage",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "watchPathIgnorePatterns": [
+      "/node_modules/"
+    ],
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "test-reports"
+        }
+      ]
+    ],
+    "preset": "ts-jest",
+    "transform": {
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "tsconfig": "tsconfig.dev.json",
+          "isolatedModules": true
+        }
+      ]
+    }
+  },
+  "types": "lib/index.d.ts",
+  "private": true
+}
