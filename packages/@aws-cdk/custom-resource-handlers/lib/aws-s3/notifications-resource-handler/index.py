@@ -6,7 +6,6 @@ import urllib.request
 s3 = boto3.client("s3")
 
 EVENTBRIDGE_CONFIGURATION = 'EventBridgeConfiguration'
-
 CONFIGURATION_TYPES = ["TopicConfigurations", "QueueConfigurations", "LambdaFunctionConfigurations"]
 
 def handler(event: dict, context):
@@ -49,15 +48,12 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration,
   if request_type == 'Update':
     for t in CONFIGURATION_TYPES:
         external = external_notifications.get(t, [])
-        # get what the id would have been from the old properties.
-        # and then use that to filter
         old_incoming_ids = [getId(stack_id, n) for n in old_notification_configuration.get(t, [])]
         external_notifications = find_external_notifications(bucket, stack_id, old_incoming_ids)
 
   # if delete, that's all we need
   if request_type == 'Delete':
     return external_notifications
-
 
   def with_id(notification):
     notification['Id'] = getId(stack_id, notification)
