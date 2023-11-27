@@ -721,6 +721,11 @@ export class Cluster extends ClusterBase {
           physicalResourceId: cr.PhysicalResourceId.of(
             'ZooKeeperConnectionString',
           ),
+          // Limit the output of describeCluster that is otherwise too large
+          outputPaths: [
+            'ClusterInfo.ZookeeperConnectString',
+            'ClusterInfo.ZookeeperConnectStringTls',
+          ],
         },
         policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
           resources: [this.clusterArn],

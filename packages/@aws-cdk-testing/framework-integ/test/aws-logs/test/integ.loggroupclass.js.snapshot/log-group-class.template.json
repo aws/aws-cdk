@@ -1,0 +1,90 @@
+{
+ "Resources": {
+  "loggroupdefaultAF2B13AE": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "loggroupstandard035A0C26": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupClass": "STANDARD",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "loggroupinfrequentaccessBE348C18": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupClass": "INFREQUENT_ACCESS",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefloggroupdefaultAF2B13AEA68E3E99": {
+   "Value": {
+    "Ref": "loggroupdefaultAF2B13AE"
+   },
+   "Export": {
+    "Name": "log-group-class:ExportsOutputRefloggroupdefaultAF2B13AEA68E3E99"
+   }
+  },
+  "ExportsOutputRefloggroupstandard035A0C267EF270A0": {
+   "Value": {
+    "Ref": "loggroupstandard035A0C26"
+   },
+   "Export": {
+    "Name": "log-group-class:ExportsOutputRefloggroupstandard035A0C267EF270A0"
+   }
+  },
+  "ExportsOutputRefloggroupinfrequentaccessBE348C18D714344D": {
+   "Value": {
+    "Ref": "loggroupinfrequentaccessBE348C18"
+   },
+   "Export": {
+    "Name": "log-group-class:ExportsOutputRefloggroupinfrequentaccessBE348C18D714344D"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
