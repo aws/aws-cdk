@@ -16,7 +16,6 @@
 
 <!--END STABILITY BANNER-->
 
-
 ## Overview
 
 This tool has been created to be used initially by this repo (aws/aws-cdk). Long term the goal is
@@ -38,11 +37,14 @@ integ-runner [ARGS] [TEST...]
 This will look for all files that match the naming convention of `/integ.*.js$/`. Each of these files will be expected
 to be a self contained CDK app. The runner will execute the following for each file (app):
 
-1. Check if a snapshot file exists (i.e. `/*.snapshot$/`)
-2. If the snapshot does not exist
-	2a. Synth the integ app which will produce the `integ.json` file
+1. Check if snapshot files exist (i.e. `*.snapshot/**`)
+2. If the snapshot does not exist\
+   a) Synth the integ app which will produce the `integ.json` file
 3. Read the `integ.json` file which contains instructions on what the runner should do.
 4. Execute instructions
+
+All snapshot files (i.e. `*.snapshot/**`) must be checked-in to version control.
+If not, changes cannot be compared across systems.
 
 ### Options
 

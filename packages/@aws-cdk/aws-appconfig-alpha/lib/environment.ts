@@ -22,16 +22,22 @@ export interface EnvironmentAttributes {
 
   /**
    * The name of the environment.
+   *
+   * @default - None.
    */
   readonly name?: string;
 
   /**
    * The description of the environment.
+   *
+   * @default - None.
    */
   readonly description?: string;
 
   /**
    * The monitors for the environment.
+   *
+   * @default - None.
    */
   readonly monitors?: Monitor[];
 }
@@ -79,6 +85,9 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
   }
 }
 
+/**
+ * Options for the Environment construct.
+ */
 export interface EnvironmentOptions {
   /**
    * The name of the environment.
@@ -102,6 +111,9 @@ export interface EnvironmentOptions {
   readonly monitors?: Monitor[];
 }
 
+/**
+ * Properties for the Environment construct.
+ */
 export interface EnvironmentProps extends EnvironmentOptions {
   /**
    * The application to be associated with the environment.
@@ -153,11 +165,11 @@ export class Environment extends EnvironmentBase {
    *
    * @param scope The parent construct
    * @param id The name of the environment construct
-   * @param attr The attributes of the environment
+   * @param attrs The attributes of the environment
    */
-  public static fromEnvironmentAttributes(scope: Construct, id: string, attr: EnvironmentAttributes): IEnvironment {
-    const applicationId = attr.application.applicationId;
-    const environmentId = attr.environmentId;
+  public static fromEnvironmentAttributes(scope: Construct, id: string, attrs: EnvironmentAttributes): IEnvironment {
+    const applicationId = attrs.application.applicationId;
+    const environmentId = attrs.environmentId;
 
     const stack = Stack.of(scope);
     const environmentArn = stack.formatArn({
@@ -167,13 +179,13 @@ export class Environment extends EnvironmentBase {
     });
 
     class Import extends EnvironmentBase {
-      public readonly application = attr.application;
-      public readonly applicationId = attr.application.applicationId;
-      public readonly name = attr.name;
+      public readonly application = attrs.application;
+      public readonly applicationId = attrs.application.applicationId;
+      public readonly name = attrs.name;
       public readonly environmentId = environmentId;
       public readonly environmentArn = environmentArn;
-      public readonly description = attr.description;
-      public readonly monitors = attr.monitors;
+      public readonly description = attrs.description;
+      public readonly monitors = attrs.monitors;
     }
 
     return new Import(scope, id, {
@@ -203,11 +215,15 @@ export class Environment extends EnvironmentBase {
 
   /**
    * The ID of the environment.
+   *
+   * @attribute
    */
   public readonly environmentId: string;
 
   /**
    * The Amazon Resource Name (ARN) of the environment.
+   *
+   * @attribute
    */
   public readonly environmentArn: string;
 
@@ -238,8 +254,10 @@ export class Environment extends EnvironmentBase {
       description: this.description,
       monitors: this.monitors?.map((monitor, index) => {
         return {
-          alarmArn: monitor.alarm.alarmArn,
-          alarmRoleArn: monitor.alarmRole?.roleArn || this.createAlarmRole(monitor.alarm.alarmArn, index).roleArn,
+          alarmArn: monitor.alarmArn,
+          ...(monitor.monitorType === MonitorType.CLOUDWATCH
+            ? { alarmRoleArn: monitor.alarmRoleArn || this.createAlarmRole(monitor.alarmArn, index).roleArn }
+            : { alarmRoleArn: monitor.alarmRoleArn }),
         };
       }),
     });
@@ -277,20 +295,66 @@ export class Environment extends EnvironmentBase {
 }
 
 /**
- * Defines monitors that will be associated with an AWS AppConfig environment.
+ * The type of Monitor.
  */
-export interface Monitor {
+export enum MonitorType {
   /**
-   * The Amazon CloudWatch alarm.
+   * A Monitor from a CloudWatch alarm.
    */
-  readonly alarm: cloudwatch.IAlarm;
+  CLOUDWATCH,
 
   /**
-   * The IAM role for AWS AppConfig to view the alarm state.
-   *
-   * @default - A role is generated.
+   * A Monitor from a CfnEnvironment.MonitorsProperty construct.
    */
-  readonly alarmRole?: iam.IRole;
+  CFN_MONITORS_PROPERTY,
+}
+
+/**
+ * Defines monitors that will be associated with an AWS AppConfig environment.
+ */
+export abstract class Monitor {
+  /**
+   * Creates a Monitor from a CloudWatch alarm. If the alarm role is not specified, a role will
+   * be generated.
+   *
+   * @param alarm The Amazon CloudWatch alarm.
+   * @param alarmRole The IAM role for AWS AppConfig to view the alarm state.
+   */
+  public static fromCloudWatchAlarm(alarm: cloudwatch.IAlarm, alarmRole?: iam.IRole): Monitor {
+    return {
+      alarmArn: alarm.alarmArn,
+      alarmRoleArn: alarmRole?.roleArn,
+      monitorType: MonitorType.CLOUDWATCH,
+    };
+  }
+
+  /**
+   * Creates a Monitor from a CfnEnvironment.MonitorsProperty construct.
+   *
+   * @param monitorsProperty The monitors property.
+   */
+  public static fromCfnMonitorsProperty(monitorsProperty: CfnEnvironment.MonitorsProperty): Monitor {
+    return {
+      alarmArn: monitorsProperty.alarmArn!,
+      alarmRoleArn: monitorsProperty.alarmRoleArn,
+      monitorType: MonitorType.CFN_MONITORS_PROPERTY,
+    };
+  }
+
+  /**
+   * The alarm ARN for AWS AppConfig to monitor.
+   */
+  public abstract readonly alarmArn: string;
+
+  /**
+   * The type of monitor.
+   */
+  public abstract readonly monitorType: MonitorType;
+
+  /**
+   * The IAM role ARN for AWS AppConfig to view the alarm state.
+   */
+  public abstract readonly alarmRoleArn?: string;
 }
 
 export interface IEnvironment extends IResource {
@@ -321,11 +385,13 @@ export interface IEnvironment extends IResource {
 
   /**
    * The ID of the environment.
+   * @attribute
    */
   readonly environmentId: string;
 
   /**
    * The Amazon Resource Name (ARN) of the environment.
+   * @attribute
    */
   readonly environmentArn: string;
 

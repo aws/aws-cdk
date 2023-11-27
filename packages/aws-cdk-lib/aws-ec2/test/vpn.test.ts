@@ -212,6 +212,48 @@ describe('vpn', () => {
 
   });
 
+  test('with two tunnel options and no tunnelInsideCidr', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Vpc(stack, 'VpcNetwork', {
+      vpnConnections: {
+        VpnConnection: {
+          ip: '192.0.2.1',
+          tunnelOptions: [
+            {
+              preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
+            },
+            {
+              preSharedKeySecret: SecretValue.unsafePlainText('secretkey5678'),
+            },
+          ],
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPNConnection', {
+      CustomerGatewayId: {
+        Ref: 'VpcNetworkVpnConnectionCustomerGateway8B56D9AF',
+      },
+      Type: 'ipsec.1',
+      VpnGatewayId: {
+        Ref: 'VpcNetworkVpnGateway501295FA',
+      },
+      StaticRoutesOnly: false,
+      VpnTunnelOptionsSpecifications: [
+        {
+          PreSharedKey: 'secretkey1234',
+        },
+        {
+          PreSharedKey: 'secretkey5678',
+        },
+      ],
+    });
+  });
+
   testDeprecated('fails when specifying an invalid pre-shared key', () => {
     // GIVEN
     const stack = new Stack();
