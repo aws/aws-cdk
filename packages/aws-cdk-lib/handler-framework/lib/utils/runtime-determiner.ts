@@ -25,7 +25,7 @@ export class RuntimeDeterminer {
     }
 
     const nodeJsRuntimes = runtimes.filter(runtime => runtime.family === RuntimeFamily.NODEJS);
-    const latestNodeJsRuntime = RuntimeDeterminer.latestNodeJsRuntime(nodeJsRuntimes);
+    const latestNodeJsRuntime = this.latestNodeJsRuntime(nodeJsRuntimes);
     if (latestNodeJsRuntime !== undefined) {
       if (latestNodeJsRuntime.isDeprecated) {
         throw new Error(`Latest nodejs runtime ${latestNodeJsRuntime} is deprecated. You must upgrade to the latest code compatible nodejs runtime`);
@@ -34,7 +34,7 @@ export class RuntimeDeterminer {
     }
 
     const pythonRuntimes = runtimes.filter(runtime => runtime.family === RuntimeFamily.PYTHON);
-    const latestPythonRuntime = RuntimeDeterminer.latestPythonRuntime(pythonRuntimes);
+    const latestPythonRuntime = this.latestPythonRuntime(pythonRuntimes);
     if (latestPythonRuntime !== undefined) {
       if (latestPythonRuntime.isDeprecated) {
         throw new Error(`Latest python runtime ${latestPythonRuntime} is deprecated. You must upgrade to the latest code compatible python runtime`);
@@ -50,13 +50,13 @@ export class RuntimeDeterminer {
       return undefined;
     }
 
-    if (nodeJsRuntimes.some(runtime => runtime.runtimeEquals(RuntimeDeterminer.DEFAULT_RUNTIME))) {
-      return RuntimeDeterminer.DEFAULT_RUNTIME;
+    if (nodeJsRuntimes.some(runtime => runtime.runtimeEquals(this.DEFAULT_RUNTIME))) {
+      return this.DEFAULT_RUNTIME;
     }
 
     let latestRuntime = nodeJsRuntimes[0];
     for (let idx = 1; idx < nodeJsRuntimes.length; idx++) {
-      latestRuntime = RuntimeDeterminer.latestRuntime(latestRuntime, nodeJsRuntimes[idx], RuntimeFamily.NODEJS);
+      latestRuntime = this.latestRuntime(latestRuntime, nodeJsRuntimes[idx], RuntimeFamily.NODEJS);
     }
 
     return latestRuntime;
@@ -69,7 +69,7 @@ export class RuntimeDeterminer {
 
     let latestRuntime = pythonRuntimes[0];
     for (let idx = 1; idx < pythonRuntimes.length; idx++) {
-      latestRuntime = RuntimeDeterminer.latestRuntime(latestRuntime, pythonRuntimes[idx], RuntimeFamily.PYTHON);
+      latestRuntime = this.latestRuntime(latestRuntime, pythonRuntimes[idx], RuntimeFamily.PYTHON);
     }
 
     return latestRuntime;
