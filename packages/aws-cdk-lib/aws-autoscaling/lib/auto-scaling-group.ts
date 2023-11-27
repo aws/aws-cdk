@@ -1885,35 +1885,28 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     maxHealthPercentage?: number,
     minHealthPercentage?: number,
   ): CfnAutoScalingGroup.InstanceMaintenancePolicyProperty | undefined {
-    if (maxHealthPercentage === undefined && minHealthPercentage === undefined) {
-      return;
-    }
-
-    if (
-      (maxHealthPercentage !== undefined && minHealthPercentage === undefined)
-      || (maxHealthPercentage === undefined && minHealthPercentage !== undefined)
-    ) {
+    if (maxHealthPercentage === undefined && minHealthPercentage === undefined) return;
+    if (maxHealthPercentage === undefined || minHealthPercentage === undefined) {
       throw new Error(`Both or neither of maintenancePolicyMinHealthPercentage and maintenancePolicyMaxHealthPercentage must be specified, got maintenancePolicyMinHealthPercentage: ${minHealthPercentage} and maintenancePolicyMaxHealthPercentage: ${maxHealthPercentage}`);
     }
-    if ((maxHealthPercentage !== -1 && minHealthPercentage === -1) || (maxHealthPercentage === -1 && minHealthPercentage !== -1)) {
+    if (maxHealthPercentage === -1 && minHealthPercentage === -1) {
+      return {
+        maxHealthyPercentage: maxHealthPercentage,
+        minHealthyPercentage: minHealthPercentage,
+      };
+    }
+    if (minHealthPercentage === -1 || maxHealthPercentage === -1) {
       throw new Error(`Both maintenancePolicyMinHealthPercentage and maintenancePolicyMaxHealthPercentage must be -1 to clear the previously set value, got maintenancePolicyMinHealthPercentage: ${minHealthPercentage} and maintenancePolicyMaxHealthPercentage: ${maxHealthPercentage}`);
     }
-    if (maxHealthPercentage !== undefined && maxHealthPercentage !== -1 && (maxHealthPercentage < 100 || maxHealthPercentage > 200)) {
+    if (maxHealthPercentage < 100 || maxHealthPercentage > 200) {
       throw new Error(`maintenancePolicyMaxHealthPercentage must be between 100 and 200, or -1 to clear the previously set value, got ${maxHealthPercentage}`);
     }
-    if (minHealthPercentage !== undefined && minHealthPercentage !== -1 && (minHealthPercentage < 0 || minHealthPercentage > 100)) {
+    if (minHealthPercentage < 0 || minHealthPercentage > 100) {
       throw new Error(`maintenancePolicyMinHealthPercentage must be between 0 and 100, or -1 to clear the previously set value, got ${minHealthPercentage}`);
     }
-    if (
-      maxHealthPercentage !== undefined
-      && minHealthPercentage !== undefined
-      && maxHealthPercentage !== -1
-      && minHealthPercentage !== -1
-      && maxHealthPercentage - minHealthPercentage > 100
-    ) {
+    if (maxHealthPercentage - minHealthPercentage > 100) {
       throw new Error(`The difference between maintenancePolicyMinHealthPercentage and maintenancePolicyMaxHealthPercentage cannot be greater than 100, got ${maxHealthPercentage - minHealthPercentage}`);
     }
-
     return {
       maxHealthyPercentage: maxHealthPercentage,
       minHealthyPercentage: minHealthPercentage,
