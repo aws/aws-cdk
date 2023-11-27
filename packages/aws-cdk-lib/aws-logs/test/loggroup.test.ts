@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
 import { CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
-import { LogGroup, RetentionDays, DataProtectionPolicy, DataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern } from '../lib';
+import { LogGroup, RetentionDays, DataProtectionPolicy, DataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern, LogGroupClass } from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -685,6 +685,22 @@ describe('log group', () => {
       },
     });
   });
+
+  test('set IA Log Group Class', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      logGroupClass: LogGroupClass.INFREQUENT_ACCESS,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupClass: 'INFREQUENT_ACCESS',
+    });
+  });
+
 });
 
 describe('subscription filter', () => {

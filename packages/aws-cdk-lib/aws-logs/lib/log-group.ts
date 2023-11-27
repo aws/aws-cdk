@@ -368,6 +368,21 @@ export enum RetentionDays {
 }
 
 /**
+ * Specifies the log group class for this log group.
+ */
+export enum LogGroupClass {
+  /**
+   * The Standard log class supports all CloudWatch Logs features.
+   */
+  STANDARD = 'STANDARD',
+
+  /**
+   * The Infrequent Access log class supports a subset of CloudWatch Logs features and incurs lower costs.
+   */
+  INFREQUENT_ACCESS = 'INFREQUENT_ACCESS',
+}
+
+/**
  * Properties for a LogGroup
  */
 export interface LogGroupProps {
@@ -412,6 +427,13 @@ export interface LogGroupProps {
    * @default RemovalPolicy.Retain
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Specifies the log group class for this log group.
+   *
+   * @default - LogGroupClass.STANDARD.
+   */
+  readonly logGroupClass?: LogGroupClass;
 }
 
 /**
@@ -479,6 +501,7 @@ export class LogGroup extends LogGroupBase {
     const resource = new CfnLogGroup(this, 'Resource', {
       kmsKeyId: props.encryptionKey?.keyArn,
       logGroupName: this.physicalName,
+      logGroupClass: props.logGroupClass ?? LogGroupClass.STANDARD,
       retentionInDays,
       dataProtectionPolicy: props.dataProtectionPolicy?._bind(this),
     });

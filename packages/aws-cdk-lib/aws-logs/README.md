@@ -93,6 +93,22 @@ new logs.LogGroup(this, 'LogGroup', {
 See the AWS documentation for more detailed information about [encrypting CloudWatch
 Logs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/encrypt-log-data-kms.html).
 
+## Log Groups Class
+
+CloudWatch Logs offers two classes of log groups:
+
+- Standard 
+  - The CloudWatch Logs Standard log class is a full-featured option for logs that require real-time monitoring or logs that you access frequently.
+
+- Infrequent Access
+  - The CloudWatch Logs Infrequent Access log class is a new log class that you can use to cost-effectively consolidate your logs. This log class offers a subset of CloudWatch Logs capabilities including managed ingestion, storage, cross-account log analytics, and encryption with a lower ingestion price per GB. The Infrequent Access class is ideal for ad-hoc querying and after-the-fact forensic analysis on infrequently accessed logs.
+
+```ts
+new logs.LogGroup(stack, 'LogGroup', {
+  logGroupClass: logs.LogGroupClass.INFREQUENT_ACCESS,
+});
+```
+
 ## Subscriptions and Destinations
 
 Log events matching a particular filter can be sent to either a Lambda function
