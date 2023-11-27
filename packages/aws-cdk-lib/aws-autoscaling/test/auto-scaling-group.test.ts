@@ -2404,7 +2404,7 @@ test('requires imdsv2 when @aws-cdk/aws-autoscaling:generateLaunchTemplateInstea
 });
 
 describe('InstanceMaintenancePolicy', () => {
-  test('instanceMaintenancePolicyMaxHealthPercentage and instanceMaintenancePolicyMinHealthPercentage can be specified', () => {
+  test('maintenancePolicyMaxHealthPercentage and maintenancePolicyMinHealthPercentage can be specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -2412,8 +2412,8 @@ describe('InstanceMaintenancePolicy', () => {
       vpc,
       instanceType: new ec2.InstanceType('t2.micro'),
       machineImage: ec2.MachineImage.latestAmazonLinux2(),
-      instanceMaintenancePolicyMaxHealthPercentage: 200,
-      instanceMaintenancePolicyMinHealthPercentage: 100,
+      maintenancePolicyMaxHealthPercentage: 200,
+      maintenancePolicyMinHealthPercentage: 100,
     });
 
     // Then
@@ -2425,7 +2425,7 @@ describe('InstanceMaintenancePolicy', () => {
     });
   });
 
-  test('instanceMaintenancePolicyMaxHealthPercentage and instanceMaintenancePolicyMinHealthPercentage can be set to -1', () => {
+  test('maintenancePolicyMaxHealthPercentage and maintenancePolicyMinHealthPercentage can be set to -1', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -2433,8 +2433,8 @@ describe('InstanceMaintenancePolicy', () => {
       vpc,
       instanceType: new ec2.InstanceType('t2.micro'),
       machineImage: ec2.MachineImage.latestAmazonLinux2(),
-      instanceMaintenancePolicyMaxHealthPercentage: -1,
-      instanceMaintenancePolicyMinHealthPercentage: -1,
+      maintenancePolicyMaxHealthPercentage: -1,
+      maintenancePolicyMinHealthPercentage: -1,
     });
 
     // Then
@@ -2446,7 +2446,7 @@ describe('InstanceMaintenancePolicy', () => {
     });
   });
 
-  test('throws if instanceMaintenancePolicyMaxHealthPercentage is greater than 200', () => {
+  test('throws if maintenancePolicyMaxHealthPercentage is greater than 200', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -2457,13 +2457,13 @@ describe('InstanceMaintenancePolicy', () => {
         vpc,
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: ec2.MachineImage.latestAmazonLinux2(),
-        instanceMaintenancePolicyMaxHealthPercentage: 250,
-        instanceMaintenancePolicyMinHealthPercentage: 100,
+        maintenancePolicyMaxHealthPercentage: 250,
+        maintenancePolicyMinHealthPercentage: 100,
       });
-    }).toThrow(/instanceMaintenancePolicyMaxHealthPercentage must be between 100 and 200, or -1 to clear the previously set value, got 250/);
+    }).toThrow(/maintenancePolicyMaxHealthPercentage must be between 100 and 200, or -1 to clear the previously set value, got 250/);
   });
 
-  test('throws if instanceMaintenancePolicyMaxHealthPercentage is less than 100', () => {
+  test('throws if maintenancePolicyMaxHealthPercentage is less than 100', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -2474,13 +2474,13 @@ describe('InstanceMaintenancePolicy', () => {
         vpc,
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: ec2.MachineImage.latestAmazonLinux2(),
-        instanceMaintenancePolicyMaxHealthPercentage: 50,
-        instanceMaintenancePolicyMinHealthPercentage: 100,
+        maintenancePolicyMaxHealthPercentage: 50,
+        maintenancePolicyMinHealthPercentage: 100,
       });
-    }).toThrow(/instanceMaintenancePolicyMaxHealthPercentage must be between 100 and 200, or -1 to clear the previously set value, got 50/);
+    }).toThrow(/maintenancePolicyMaxHealthPercentage must be between 100 and 200, or -1 to clear the previously set value, got 50/);
   });
 
-  test('throws if instanceMaintenancePolicyMinHealthPercentage is greater than 100', () => {
+  test('throws if maintenancePolicyMinHealthPercentage is greater than 100', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -2491,13 +2491,13 @@ describe('InstanceMaintenancePolicy', () => {
         vpc,
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: ec2.MachineImage.latestAmazonLinux2(),
-        instanceMaintenancePolicyMaxHealthPercentage: 200,
-        instanceMaintenancePolicyMinHealthPercentage: 150,
+        maintenancePolicyMaxHealthPercentage: 200,
+        maintenancePolicyMinHealthPercentage: 150,
       });
-    }).toThrow(/instanceMaintenancePolicyMinHealthPercentage must be between 0 and 100, or -1 to clear the previously set value, got 150/);
+    }).toThrow(/maintenancePolicyMinHealthPercentage must be between 0 and 100, or -1 to clear the previously set value, got 150/);
   });
 
-  test('throws if instanceMaintenancePolicyMinHealthPercentage is less than 0', () => {
+  test('throws if maintenancePolicyMinHealthPercentage is less than 0', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -2508,13 +2508,13 @@ describe('InstanceMaintenancePolicy', () => {
         vpc,
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: ec2.MachineImage.latestAmazonLinux2(),
-        instanceMaintenancePolicyMaxHealthPercentage: 200,
-        instanceMaintenancePolicyMinHealthPercentage: -100,
+        maintenancePolicyMaxHealthPercentage: 200,
+        maintenancePolicyMinHealthPercentage: -100,
       });
-    }).toThrow(/instanceMaintenancePolicyMinHealthPercentage must be between 0 and 100, or -1 to clear the previously set value, got -100/);
+    }).toThrow(/maintenancePolicyMinHealthPercentage must be between 0 and 100, or -1 to clear the previously set value, got -100/);
   });
 
-  test('throws if only instanceMaintenancePolicyMinHealthPercentage is set to -1', () => {
+  test('throws if only maintenancePolicyMinHealthPercentage is set to -1', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -2525,13 +2525,13 @@ describe('InstanceMaintenancePolicy', () => {
         vpc,
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: ec2.MachineImage.latestAmazonLinux2(),
-        instanceMaintenancePolicyMaxHealthPercentage: 200,
-        instanceMaintenancePolicyMinHealthPercentage: -1,
+        maintenancePolicyMaxHealthPercentage: 200,
+        maintenancePolicyMinHealthPercentage: -1,
       });
-    }).toThrow(/Both instanceMaintenancePolicyMinHealthPercentage and instanceMaintenancePolicyMaxHealthPercentage must be -1 to clear the previously set value, got instanceMaintenancePolicyMinHealthPercentage: -1 and instanceMaintenancePolicyMaxHealthPercentage: 200/);
+    }).toThrow(/Both maintenancePolicyMinHealthPercentage and maintenancePolicyMaxHealthPercentage must be -1 to clear the previously set value, got maintenancePolicyMinHealthPercentage: -1 and maintenancePolicyMaxHealthPercentage: 200/);
   });
 
-  test('throws if only instanceMaintenancePolicyMaxHealthPercentage is set to -1', () => {
+  test('throws if only maintenancePolicyMaxHealthPercentage is set to -1', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -2542,13 +2542,13 @@ describe('InstanceMaintenancePolicy', () => {
         vpc,
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: ec2.MachineImage.latestAmazonLinux2(),
-        instanceMaintenancePolicyMaxHealthPercentage: -1,
-        instanceMaintenancePolicyMinHealthPercentage: 100,
+        maintenancePolicyMaxHealthPercentage: -1,
+        maintenancePolicyMinHealthPercentage: 100,
       });
-    }).toThrow(/Both instanceMaintenancePolicyMinHealthPercentage and instanceMaintenancePolicyMaxHealthPercentage must be -1 to clear the previously set value, got instanceMaintenancePolicyMinHealthPercentage: 100 and instanceMaintenancePolicyMaxHealthPercentage: -1/);
+    }).toThrow(/Both maintenancePolicyMinHealthPercentage and maintenancePolicyMaxHealthPercentage must be -1 to clear the previously set value, got maintenancePolicyMinHealthPercentage: 100 and maintenancePolicyMaxHealthPercentage: -1/);
   });
 
-  test('throws if only instanceMaintenancePolicyMinHealthPercentage is specified', () => {
+  test('throws if only maintenancePolicyMinHealthPercentage is specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -2559,12 +2559,12 @@ describe('InstanceMaintenancePolicy', () => {
         vpc,
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: ec2.MachineImage.latestAmazonLinux2(),
-        instanceMaintenancePolicyMinHealthPercentage: 100,
+        maintenancePolicyMinHealthPercentage: 100,
       });
-    }).toThrow(/Both or neither of instanceMaintenancePolicyMinHealthPercentage and instanceMaintenancePolicyMaxHealthPercentage must be specified, got instanceMaintenancePolicyMinHealthPercentage: 100 and instanceMaintenancePolicyMaxHealthPercentage: undefined/);
+    }).toThrow(/Both or neither of maintenancePolicyMinHealthPercentage and maintenancePolicyMaxHealthPercentage must be specified, got maintenancePolicyMinHealthPercentage: 100 and maintenancePolicyMaxHealthPercentage: undefined/);
   });
 
-  test('throws if only instanceMaintenancePolicyMaxHealthPercentage is specified', () => {
+  test('throws if only maintenancePolicyMaxHealthPercentage is specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -2575,12 +2575,12 @@ describe('InstanceMaintenancePolicy', () => {
         vpc,
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: ec2.MachineImage.latestAmazonLinux2(),
-        instanceMaintenancePolicyMaxHealthPercentage: 200,
+        maintenancePolicyMaxHealthPercentage: 200,
       });
-    }).toThrow(/Both or neither of instanceMaintenancePolicyMinHealthPercentage and instanceMaintenancePolicyMaxHealthPercentage must be specified, got instanceMaintenancePolicyMinHealthPercentage: undefined and instanceMaintenancePolicyMaxHealthPercentage: 200/);
+    }).toThrow(/Both or neither of maintenancePolicyMinHealthPercentage and maintenancePolicyMaxHealthPercentage must be specified, got maintenancePolicyMinHealthPercentage: undefined and maintenancePolicyMaxHealthPercentage: 200/);
   });
 
-  test('throws if a difference between instanceMaintenancePolicyMinHealthPercentage and instanceMaintenancePolicyMaxHealthPercentage is greater than 100', () => {
+  test('throws if a difference between maintenancePolicyMinHealthPercentage and maintenancePolicyMaxHealthPercentage is greater than 100', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -2591,10 +2591,10 @@ describe('InstanceMaintenancePolicy', () => {
         vpc,
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: ec2.MachineImage.latestAmazonLinux2(),
-        instanceMaintenancePolicyMaxHealthPercentage: 200,
-        instanceMaintenancePolicyMinHealthPercentage: 0,
+        maintenancePolicyMaxHealthPercentage: 200,
+        maintenancePolicyMinHealthPercentage: 0,
       });
-    }).toThrow(/The difference between instanceMaintenancePolicyMinHealthPercentage and instanceMaintenancePolicyMaxHealthPercentage cannot be greater than 100, got 200/);
+    }).toThrow(/The difference between maintenancePolicyMinHealthPercentage and maintenancePolicyMaxHealthPercentage cannot be greater than 100, got 200/);
   });
 });
 
