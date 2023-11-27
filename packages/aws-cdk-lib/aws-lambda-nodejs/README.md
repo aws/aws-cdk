@@ -214,7 +214,7 @@ new nodejs.NodejsFunction(this, 'my-handler', {
       'process.env.PRODUCTION': JSON.stringify(true),
       'process.env.NUMBER': JSON.stringify(123),
     },
-    logLevel: nodejs.LogLevel.SILENT, // defaults to LogLevel.WARNING
+    logLevel: nodejs.LogLevel.ERROR, // defaults to LogLevel.WARNING
     keepNames: true, // defaults to false
     tsconfig: 'custom-tsconfig.json', // use custom-tsconfig.json instead of default,
     metafile: true, // include meta file, defaults to false

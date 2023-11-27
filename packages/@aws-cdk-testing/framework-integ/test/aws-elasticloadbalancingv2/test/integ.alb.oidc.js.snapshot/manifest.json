@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "IntegAlbOidc.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5811b336c555368b7a362b36dfb404d90854d312ccdcd019fe8449da53446182.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/437541a43c7005157a8d163c7fa9493990859a238a344543929492e2dbf814c2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -193,7 +193,10 @@
         "/IntegAlbOidc/Certificate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Certificate4E7ABB08"
+            "data": "Certificate4E7ABB08",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegAlbOidc/UserPool/Resource": [
@@ -205,7 +208,10 @@
         "/IntegAlbOidc/UserPool/Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "UserPoolDomainD0EA232A"
+            "data": "UserPoolDomainD0EA232A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegAlbOidc/UserPool/UserPoolClient/Resource": [
@@ -259,7 +265,10 @@
         "/IntegAlbOidc/ARecord/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ARecordE7B57761"
+            "data": "ARecordE7B57761",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegAlbOidc/User/Resource/Resource/Default": [
@@ -336,7 +345,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ba99c445f93e993845898c1a483b46473e6d8a9c246428e35707a6bc566d2314.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5832add75f47a26d649bc5100e51e02cd91683d66c78cd579603ad5c06c69bfd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

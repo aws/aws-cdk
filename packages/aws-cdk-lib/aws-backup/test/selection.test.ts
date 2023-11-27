@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as dynamodb from '../../aws-dynamodb';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
@@ -76,6 +76,22 @@ test('create a selection', () => {
         ],
       },
     ],
+  });
+});
+
+test('no policy is attached if disableDefaultBackupPolicy is true', () => {
+  // WHEN
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn1'),
+    ],
+    disableDefaultBackupPolicy: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    ManagedPolicyArns: Match.absent(),
   });
 });
 

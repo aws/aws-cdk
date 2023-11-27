@@ -1,0 +1,144 @@
+{
+ "Resources": {
+  "MyQueueE6CA6235": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "ContentBasedDeduplication": true,
+    "FifoQueue": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Schedule83A77FD1": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "ScheduleExpression": "rate(1 minute)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
+    "State": "ENABLED",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "MyQueueE6CA6235",
+       "Arn"
+      ]
+     },
+     "Input": "\"test\"",
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 86400,
+      "MaximumRetryAttempts": 185
+     },
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "SchedulerRoleForTarget1441a743A31888",
+       "Arn"
+      ]
+     },
+     "SqsParameters": {
+      "MessageGroupId": "id"
+     }
+    }
+   }
+  },
+  "SchedulerRoleForTarget1441a743A31888": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "scheduler.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyQueueE6CA6235",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD",
+    "Roles": [
+     {
+      "Ref": "SchedulerRoleForTarget1441a743A31888"
+     }
+    ]
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefMyQueueE6CA623512A57419": {
+   "Value": {
+    "Ref": "MyQueueE6CA6235"
+   },
+   "Export": {
+    "Name": "aws-cdk-schedule:ExportsOutputRefMyQueueE6CA623512A57419"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

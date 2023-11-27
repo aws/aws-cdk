@@ -946,6 +946,7 @@ export class KubernetesVersion {
   private constructor(public readonly version: string) { }
 }
 
+// Shared definition with packages/@aws-cdk/custom-resource-handlers/test/aws-eks/compare-log.test.ts
 /**
  * EKS cluster logging types
  */

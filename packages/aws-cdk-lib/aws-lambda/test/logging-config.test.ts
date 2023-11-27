@@ -133,6 +133,60 @@ describe('logging Config', () => {
           logGroupName: 'customLogGroup',
         }),
       });
-    }).toThrowError('CDK does not support setting logRetention and logGroup');
+    }).toThrow(/CDK does not support setting logRetention and logGroup/);
+  });
+
+  test('Throws when applicationLogLevel is specified with TEXT logFormat', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    expect(() => {
+      new lambda.Function(stack, 'Lambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        logFormat: lambda.LogFormat.TEXT,
+        applicationLogLevel: lambda.ApplicationLogLevel.INFO,
+      });
+    }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'Text'./);
+  });
+
+  test('Throws when systemLogLevel is specified with TEXT logFormat', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    expect(() => {
+      new lambda.Function(stack, 'Lambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        logFormat: lambda.LogFormat.TEXT,
+        systemLogLevel: lambda.SystemLogLevel.INFO,
+      });
+    }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'Text'./);
+  });
+
+  test('Throws when applicationLogLevel is specified if logFormat is undefined', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    expect(() => {
+      new lambda.Function(stack, 'Lambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        applicationLogLevel: lambda.ApplicationLogLevel.INFO,
+      });
+    }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'undefined'./);
+  });
+
+  test('Throws when systemLogLevel is specified if logFormat is undefined', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    expect(() => {
+      new lambda.Function(stack, 'Lambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        systemLogLevel: lambda.SystemLogLevel.INFO,
+      });
+    }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'undefined'./);
   });
 });
