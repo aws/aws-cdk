@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ea755ac1ccc8e2c8816cf7e0a2b3789e472a166174037cb50eb45ec4ed621ba4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4acf8ce55e047ee524070ef3dbc29548495dfbd975bb2ec9927da4e529199c8f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -52,16 +52,52 @@
             "data": "MyRoleF48FFE04"
           }
         ],
+        "/aws-appconfig-environment/MyCompositeAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCompositeAlarm0F045229"
+          }
+        ],
         "/aws-appconfig-environment/MyEnvironment/Role0/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyEnvironmentRole01C8C013F"
           }
         ],
+        "/aws-appconfig-environment/MyEnvironment/Role5/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyEnvironmentRole51BFC2F05"
+          }
+        ],
         "/aws-appconfig-environment/MyEnvironment/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyEnvironment465E4DEA"
+          }
+        ],
+        "/aws-appconfig-environment/MyDeploymentStrategy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeploymentStrategy60D31FB0"
+          }
+        ],
+        "/aws-appconfig-environment/MyHostedConfig/ConfigurationProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigConfigurationProfile2E1A2BBC"
+          }
+        ],
+        "/aws-appconfig-environment/MyHostedConfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfig51D3877D"
+          }
+        ],
+        "/aws-appconfig-environment/MyHostedConfig/Deployment99294": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigDeployment992941D06B01E"
           }
         ],
         "/aws-appconfig-environment/BootstrapVersion": [

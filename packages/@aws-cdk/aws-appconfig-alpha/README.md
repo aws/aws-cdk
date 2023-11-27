@@ -326,11 +326,13 @@ Basic environment with monitors:
 ```ts
 declare const application: appconfig.Application;
 declare const alarm: cloudwatch.Alarm;
+declare const compositeAlarm: cloudwatch.CompositeAlarm;
 
 new appconfig.Environment(this, 'MyEnvironment', {
   application,
   monitors: [
     appconfig.Monitor.fromCloudWatchAlarm(alarm),
+    appconfig.Monitor.fromCloudWatchAlarm(compositeAlarm),
   ],
 });
 ```

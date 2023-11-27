@@ -1,7 +1,7 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
-import { Application, Environment, Monitor } from '../lib';
-import { Alarm, Metric } from 'aws-cdk-lib/aws-cloudwatch';
+import { Application, ConfigurationContent, DeploymentStrategy, Environment, HostedConfiguration, Monitor, RolloutStrategy } from '../lib';
+import { Alarm, CompositeAlarm, Metric } from 'aws-cdk-lib/aws-cloudwatch';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 const app = new App();
@@ -23,9 +23,12 @@ const alarm = new Alarm(stack, 'MyAlarm', {
 const role = new Role(stack, 'MyRole', {
   assumedBy: new ServicePrincipal('appconfig.amazonaws.com'),
 });
+const compositeAlarm = new CompositeAlarm(stack, 'MyCompositeAlarm', {
+  alarmRule: alarm,
+});
 
 // create environment with all props defined
-new Environment(stack, 'MyEnvironment', {
+const env = new Environment(stack, 'MyEnvironment', {
   application: appForEnv,
   description: 'This is the environment for integ testing',
   monitors: [
@@ -34,8 +37,22 @@ new Environment(stack, 'MyEnvironment', {
       alarmArn: alarm.alarmArn,
       alarmRoleArn: role.roleArn,
     }),
+    Monitor.fromCloudWatchAlarm(compositeAlarm),
   ],
 });
+
+// try to deploy to that environment to make sure everything is
+// configured properly
+const config = new HostedConfiguration(stack, 'MyHostedConfig', {
+  content: ConfigurationContent.fromInlineText('config content'),
+  deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
+    rolloutStrategy: RolloutStrategy.LINEAR_50_PERCENT_EVERY_30_SECONDS,
+  }),
+  application: appForEnv,
+  deployTo: [env],
+});
+
+config.node.addDependency(alarm, compositeAlarm);
 
 new IntegTest(app, 'appconfig-environment', {
   testCases: [stack],
