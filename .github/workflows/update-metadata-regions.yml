@@ -28,6 +28,14 @@ jobs:
           script: |
             const script = require('./scripts/update-metadata-regions.js')
             script()
+      - name: Update snapshot
+        working-directory: packages/aws-cdk-lib
+        run: |-
+          yarn install
+          ../../scripts/buildup
+          # After updating the snapshots, jest will exit with code 1 even
+          # the tests pass.
+          npx jest -u -- ./region-info/test/region-info.test.ts || true
       - name: Create Patch
         run: |-
           git add .
