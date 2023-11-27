@@ -173,6 +173,8 @@ new lambda.Function(this, 'Lambda', {
 });
 ```
 
+To use `applicationLogLevel` and/or `systemLogLevel` you must set `logFormat` to `LogFormat.JSON`.
+
 ## Resource-based Policies
 
 AWS Lambda supports resource-based policies for controlling access to Lambda
@@ -784,9 +786,9 @@ const fn = lambda.Function.fromFunctionAttributes(this, 'Function', {
 });
 ```
 
-If `fromFunctionArn()` causes an error related to having to provide an account and/or region in a different construct,
-and the lambda is in the same account and region as the stack you're importing it into,
-you can use `Function.fromFunctionName()` instead:
+`Function.fromFunctionArn()` and `Function.fromFunctionAttributes()` will attempt to parse the Function's Region and Account ID from the ARN. `addPermissions` will only work on the `Function` object if the Region and Account ID are deterministically the same as the scope of the Stack the referenced `Function` object is created in.
+If the containing Stack is environment-agnostic or the Function ARN is a Token, this comparison will fail, and calls to `Function.addPermission` will do nothing.
+If you know Function permissions can safely be added, you can use `Function.fromFunctionName()` instead, or pass `sameEnvironment: true` to `Function.fromFunctionAttributes()`.
 
 ```ts
 const fn = lambda.Function.fromFunctionName(this, 'Function', 'MyFn');
