@@ -3,6 +3,7 @@ import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as s3n from 'aws-cdk-lib/aws-s3-notifications';
+import * as constructs from 'constructs';
 
 const app = new cdk.App();
 
@@ -12,19 +13,30 @@ const bucket1 = new s3.Bucket(stack, 'Bucket1', {
   autoDeleteObjects: true,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
-const unmanagedBucket = s3.Bucket.fromBucketName(stack, 'IntegUnmanagedBucket1', bucket1.bucketName);
+const c1 = new constructs.Construct(stack, 'Construct1');
+const unmanagedBucket = s3.Bucket.fromBucketName(c1, 'IntegUnmanagedBucket1', bucket1.bucketName);
+const c2 = new constructs.Construct(stack, 'Construct2');
+const unmanagedBucket2 = s3.Bucket.fromBucketName(c2, 'IntegUnmanagedBucket2', bucket1.bucketName);
 const queue1 = new sqs.Queue(stack, 'IntegQueue1');
 const queue2 = new sqs.Queue(stack, 'IntegQueue2');
 
 unmanagedBucket.addObjectCreatedNotification(new s3n.SqsDestination(queue1), {
   prefix: 'bucket1',
 });
-unmanagedBucket.addObjectCreatedNotification(new s3n.SqsDestination(queue2), {
+unmanagedBucket2.addObjectCreatedNotification(new s3n.SqsDestination(queue2), {
   prefix: 'bucket2',
-  suffix: '.png',
 });
 
+c2.node.addDependency(c1);
+
 const integTest = new integ.IntegTest(app, 'SQSBucketNotificationsTest', {
+  cdkCommandOptions: {
+    deploy: {
+      args: {
+        rollback: false,
+      },
+    },
+  },
   testCases: [stack],
   diffAssets: true,
 });

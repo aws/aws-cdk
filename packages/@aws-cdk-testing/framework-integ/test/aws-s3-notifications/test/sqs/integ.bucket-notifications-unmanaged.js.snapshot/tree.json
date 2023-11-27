@@ -159,32 +159,80 @@
               "version": "0.0.0"
             }
           },
-          "IntegUnmanagedBucket1": {
-            "id": "IntegUnmanagedBucket1",
-            "path": "integ-sqs-bucket-notifications/IntegUnmanagedBucket1",
+          "Construct1": {
+            "id": "Construct1",
+            "path": "integ-sqs-bucket-notifications/Construct1",
             "children": {
-              "Notifications": {
-                "id": "Notifications",
-                "path": "integ-sqs-bucket-notifications/IntegUnmanagedBucket1/Notifications",
+              "IntegUnmanagedBucket1": {
+                "id": "IntegUnmanagedBucket1",
+                "path": "integ-sqs-bucket-notifications/Construct1/IntegUnmanagedBucket1",
                 "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-sqs-bucket-notifications/IntegUnmanagedBucket1/Notifications/Resource",
+                  "Notifications": {
+                    "id": "Notifications",
+                    "path": "integ-sqs-bucket-notifications/Construct1/IntegUnmanagedBucket1/Notifications",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-sqs-bucket-notifications/Construct1/IntegUnmanagedBucket1/Notifications/Resource",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "Construct2": {
+            "id": "Construct2",
+            "path": "integ-sqs-bucket-notifications/Construct2",
+            "children": {
+              "IntegUnmanagedBucket2": {
+                "id": "IntegUnmanagedBucket2",
+                "path": "integ-sqs-bucket-notifications/Construct2/IntegUnmanagedBucket2",
+                "children": {
+                  "Notifications": {
+                    "id": "Notifications",
+                    "path": "integ-sqs-bucket-notifications/Construct2/IntegUnmanagedBucket2/Notifications",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-sqs-bucket-notifications/Construct2/IntegUnmanagedBucket2/Notifications/Resource",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "IntegQueue1": {
