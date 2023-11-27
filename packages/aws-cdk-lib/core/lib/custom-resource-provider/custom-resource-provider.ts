@@ -14,7 +14,7 @@ import { Stack } from '../stack';
 import { Token } from '../token';
 
 const ENTRYPOINT_FILENAME = '__entrypoint__';
-const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
+const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'core', 'nodejs-entrypoint-handler', 'index.js');
 export const INLINE_CUSTOM_RESOURCE_CONTEXT = '@aws-cdk/core:inlineCustomResourceIfPossible';
 
 /**

@@ -10,7 +10,8 @@ function recFolderStructure(fileOrDir: string) {
       recFolderStructure(path.join(fileOrDir, i));
     }
   } else {
-    if (['index.ts', 'index.js', 'index.py', '__init__.py'].some(fileName => fileOrDir.includes(fileName))) {
+    if (!fileOrDir.includes('nodejs-entrypoint-handler/index.ts') &&
+      ['index.ts', 'index.js', 'index.py', '__init__.py'].some(fileName => fileOrDir.includes(fileName))) {
       entryPoints.push(fileOrDir);
     }
   }
@@ -22,7 +23,8 @@ async function main() {
   recFolderStructure(bindingsDir);
 
   for (const ep of entryPoints) {
-    if (['index.py', '__init__.py'].some(fileName => ep.includes(fileName))) {
+    // Do not bundle python files. Additionally, do not bundle nodejs-entrypoint-handler due to require import
+    if (['index.py', '__init__.py', 'nodejs-entrypoint-handler/index.js'].some(fileName => ep.includes(fileName))) {
       const outfile = calculateOutfile(ep);
       fs.mkdirSync(path.dirname(outfile), { recursive: true });
       fs.copyFileSync(ep, outfile);
