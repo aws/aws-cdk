@@ -501,7 +501,7 @@ export class LogGroup extends LogGroupBase {
     const resource = new CfnLogGroup(this, 'Resource', {
       kmsKeyId: props.encryptionKey?.keyArn,
       logGroupName: this.physicalName,
-      logGroupClass: props.logGroupClass ?? LogGroupClass.STANDARD,
+      logGroupClass: props.logGroupClass,
       retentionInDays,
       dataProtectionPolicy: props.dataProtectionPolicy?._bind(this),
     });
