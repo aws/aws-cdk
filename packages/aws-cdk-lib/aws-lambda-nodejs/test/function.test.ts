@@ -316,6 +316,6 @@ test('defaults to NODEJS_LATEST with feature flag enabled', () => {
   new NodejsFunction(stackLocal, 'handler1');
 
   Template.fromStack(stackLocal).hasResourceProperties('AWS::Lambda::Function', {
-    Runtime: 'nodejs18.x',
+    Runtime: Runtime.NODEJS_LATEST.name,
   });
 });
