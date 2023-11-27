@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.111.0](https://github.com/aws/aws-cdk/compare/v2.110.1...v2.111.0) (2023-11-27)
+
+
+### Features
+
+* **aws-logs:** add LogGroupClass property to AWS::Logs::LogGroup ([da47ee6](https://github.com/aws/aws-cdk/commit/da47ee6c0259a7640701f092b272372e734f8e93))
+
 ## [2.110.1](https://github.com/aws/aws-cdk/compare/v2.110.0...v2.110.1) (2023-11-21)
 
 
