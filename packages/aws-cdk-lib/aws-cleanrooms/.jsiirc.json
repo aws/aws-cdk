@@ -1,7 +1,7 @@
 {
   "targets": {
     "java": {
-      "package": "services.cleanrooms"
+      "package": "software.amazon.awscdk.services.cleanrooms"
     },
     "dotnet": {
       "package": "Amazon.CDK.AWS.CleanRooms"
