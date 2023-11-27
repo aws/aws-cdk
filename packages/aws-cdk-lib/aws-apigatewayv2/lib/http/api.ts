@@ -302,6 +302,7 @@ export interface HttpApiAttributes {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-api.html#aws-resource-apigatewayv2-api-return-values
    */
   readonly httpApiId: string;
+
   /**
    * The endpoint URL of the HttpApi
    * @default - throws an error if apiEndpoint is accessed.
@@ -338,6 +339,11 @@ export class HttpApi extends HttpApiBase {
    */
   public readonly httpApiName?: string;
   public readonly apiId: string;
+
+  /**
+   * The identifier of the HTTP API.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-api.html#aws-resource-apigatewayv2-api-return-values
+   */
   public readonly httpApiId: string;
 
   /**
