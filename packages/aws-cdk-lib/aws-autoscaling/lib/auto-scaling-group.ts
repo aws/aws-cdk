@@ -701,7 +701,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-maintenance-policy.html
    *
-   * @default - Do not provide percentage.
+   * @default - No instance maintenance policy.
    */
   readonly maintenancePolicyMaxHealthPercentage?: number;
 
@@ -719,7 +719,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-maintenance-policy.html
    *
-   * @default - Do not provide percentage.
+   * @default - No instance maintenance policy.
    */
   readonly maintenancePolicyMinHealthPercentage?: number;
 }
