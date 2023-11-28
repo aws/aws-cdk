@@ -1,10 +1,10 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import { WebSocketApi } from 'aws-cdk-lib/aws-apigatewayv2';
-import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
-import { Code, Function } from 'aws-cdk-lib/aws-lambda';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { Stack } from 'aws-cdk-lib';
-import { WebSocketLambdaAuthorizer } from '../../lib';
+import { Template } from '../../../assertions';
+import { WebSocketApi } from '../../../aws-apigatewayv2';
+import { WebSocketLambdaIntegration } from '../../../aws-apigatewayv2-integrations';
+import { Code, Function } from '../../../aws-lambda';
+import * as lambda from '../../../aws-lambda';
+import { Stack } from '../../../core';
+import { WebSocketLambdaAuthorizer } from './../../lib/websocket/lambda';
 
 describe('WebSocketLambdaAuthorizer', () => {
   test('default', () => {

@@ -7,8 +7,8 @@ import {
   PayloadFormatVersion,
   HttpMethod,
   IVpcLink,
-} from '@aws-cdk/aws-apigatewayv2-alpha';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+} from '../../../../aws-apigatewayv2';
+import * as ec2 from '../../../../aws-ec2';
 
 /**
  * Options required to use an existing vpcLink or configure a new one

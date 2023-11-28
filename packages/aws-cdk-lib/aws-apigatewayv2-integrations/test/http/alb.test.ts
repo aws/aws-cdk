@@ -1,8 +1,8 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey, VpcLink, ParameterMapping, MappingValue } from 'aws-cdk-lib/aws-apigatewayv2';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { Stack } from 'aws-cdk-lib';
+import { Template } from '../../../assertions';
+import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey, VpcLink, ParameterMapping, MappingValue } from '../../../aws-apigatewayv2';
+import * as ec2 from '../../../aws-ec2';
+import * as elbv2 from '../../../aws-elasticloadbalancingv2';
+import { Stack } from '../../..';
 import { HttpAlbIntegration } from '../../lib';
 
 describe('HttpAlbIntegration', () => {

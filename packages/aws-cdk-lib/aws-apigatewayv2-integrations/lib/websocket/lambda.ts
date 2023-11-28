@@ -3,10 +3,10 @@ import {
   WebSocketIntegrationType,
   WebSocketRouteIntegrationBindOptions,
   WebSocketRouteIntegrationConfig,
-} from 'aws-cdk-lib/aws-apigatewayv2';
-import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { Stack } from 'aws-cdk-lib/core';
+} from '../../../aws-apigatewayv2';
+import { ServicePrincipal } from '../../../aws-iam';
+import { IFunction } from '../../../aws-lambda';
+import { Stack } from '../../../core';
 
 /**
  * Lambda WebSocket Integration

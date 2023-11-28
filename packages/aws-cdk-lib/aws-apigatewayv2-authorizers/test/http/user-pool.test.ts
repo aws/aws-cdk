@@ -1,9 +1,9 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import { HttpApi } from 'aws-cdk-lib/aws-apigatewayv2';
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
-import { Stack } from 'aws-cdk-lib';
+import { Template } from '../../../assertions';
+import { HttpApi } from '../../../aws-apigatewayv2';
+import { UserPool } from '../../../aws-cognito';
+import { Stack } from '../../../core';
 import { DummyRouteIntegration } from './integration';
-import { HttpUserPoolAuthorizer } from '../../lib';
+import { HttpUserPoolAuthorizer } from './../../lib/http/user-pool';
 
 describe('HttpUserPoolAuthorizer', () => {
   test('default', () => {

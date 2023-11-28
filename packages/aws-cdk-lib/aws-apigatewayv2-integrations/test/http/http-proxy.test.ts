@@ -1,7 +1,7 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import { HttpApi, HttpIntegration, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from 'aws-cdk-lib/aws-apigatewayv2';
-import { Stack } from 'aws-cdk-lib';
-import { HttpUrlIntegration } from '../../lib';
+import { Template } from '../../../assertions';
+import { HttpApi, HttpIntegration, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from '../../../aws-apigatewayv2';
+import { Stack } from '../../..';
+import { HttpUrlIntegration } from './../../lib/http/http-proxy';
 
 describe('HttpProxyIntegration', () => {
   test('default', () => {

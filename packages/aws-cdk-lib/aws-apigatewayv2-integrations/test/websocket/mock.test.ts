@@ -1,7 +1,7 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import { WebSocketApi } from 'aws-cdk-lib/aws-apigatewayv2';
-import { Stack } from 'aws-cdk-lib';
-import { WebSocketMockIntegration } from '../../lib';
+import { Template } from '../../../assertions';
+import { WebSocketApi } from '../../../aws-apigatewayv2';
+import { Stack } from '../../../core';
+import { WebSocketMockIntegration } from './../../lib/websocket/mock';
 
 describe('MockWebSocketIntegration', () => {
   test('default', () => {

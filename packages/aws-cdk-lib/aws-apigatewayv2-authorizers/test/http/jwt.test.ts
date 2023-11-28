@@ -1,8 +1,8 @@
-import { Template } from 'aws-cdk-lib/assertions';
-import { HttpApi } from 'aws-cdk-lib/aws-apigatewayv2';
-import { Stack } from 'aws-cdk-lib';
+import { Template } from '../../../assertions';
+import { HttpApi } from '../../../aws-apigatewayv2';
+import { Stack } from '../../..';
 import { DummyRouteIntegration } from './integration';
-import { HttpJwtAuthorizer } from '../../lib';
+import { HttpJwtAuthorizer } from './../../lib/http/jwt';
 
 describe('HttpJwtAuthorizer', () => {
   test('default', () => {

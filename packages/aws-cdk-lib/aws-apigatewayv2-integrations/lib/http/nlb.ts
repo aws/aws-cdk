@@ -1,6 +1,6 @@
-import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from 'aws-cdk-lib/aws-apigatewayv2';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '../../../aws-apigatewayv2';
+import * as ec2 from '../../../aws-ec2';
+import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import { HttpPrivateIntegrationOptions } from './base-types';
 import { HttpPrivateIntegration } from './private/integration';
 

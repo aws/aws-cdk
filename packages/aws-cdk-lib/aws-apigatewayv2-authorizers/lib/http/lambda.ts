@@ -6,10 +6,10 @@ import {
   IHttpRouteAuthorizer,
   AuthorizerPayloadVersion,
   IHttpApi,
-} from 'aws-cdk-lib/aws-apigatewayv2';
-import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { IFunction } from 'aws-cdk-lib/aws-lambda';
-import { Stack, Duration, Names } from 'aws-cdk-lib/core';
+} from '../../../aws-apigatewayv2';
+import { ServicePrincipal } from '../../../aws-iam';
+import { IFunction } from '../../../aws-lambda';
+import { Stack, Duration, Names } from '../../../core';
 
 /**
  * Specifies the type responses the lambda returns

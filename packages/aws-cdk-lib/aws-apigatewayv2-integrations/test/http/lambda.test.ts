@@ -1,9 +1,9 @@
-import { Match, Template } from 'aws-cdk-lib/assertions';
-import { HttpApi, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from 'aws-cdk-lib/aws-apigatewayv2';
-import { Code, Function } from 'aws-cdk-lib/aws-lambda';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { App, Stack } from 'aws-cdk-lib';
-import { HttpLambdaIntegration } from '../../lib';
+import { Match, Template } from '../../../assertions';
+import { HttpApi, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from '../../../aws-apigatewayv2';
+import { Code, Function } from '../../../aws-lambda';
+import * as lambda from '../../../aws-lambda';
+import { App, Stack } from '../../..';
+import { HttpLambdaIntegration } from './../../lib/http/lambda';
 
 describe('LambdaProxyIntegration', () => {
   test('default', () => {
