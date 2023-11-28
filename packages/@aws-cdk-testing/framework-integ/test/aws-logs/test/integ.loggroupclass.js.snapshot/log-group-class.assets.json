@@ -1,15 +1,15 @@
 {
   "version": "35.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "ab699e395615b40137befb908d9ffc8ef0b26de6dc9f87e58c22c34cb21fc827": {
       "source": {
-        "path": "cdkinteglifecycleDefaultTestDeployAssert83FA03B1.template.json",
+        "path": "log-group-class.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "ab699e395615b40137befb908d9ffc8ef0b26de6dc9f87e58c22c34cb21fc827.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
