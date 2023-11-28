@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
 import { CdkHandler } from './cdk-handler';
-import { RuntimeDeterminer } from './utils/runtime-determiner';
 import { Function, FunctionOptions } from '../../aws-lambda';
 
 /**
@@ -22,7 +21,7 @@ export class CdkFunction extends Function {
       ...props,
       code: props.handler.code,
       handler: props.handler.entrypoint,
-      runtime: RuntimeDeterminer.determineLatestRuntime(props.handler.compatibleRuntimes),
+      runtime: props.handler.runtime,
     });
   }
 }

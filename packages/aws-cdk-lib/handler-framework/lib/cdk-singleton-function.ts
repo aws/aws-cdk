@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
 import { CdkHandler } from './cdk-handler';
-import { RuntimeDeterminer } from './utils/runtime-determiner';
 import { FunctionOptions, SingletonFunction } from '../../aws-lambda';
 
 /**
@@ -42,7 +41,7 @@ export class CdkSingletonFunction extends SingletonFunction {
       ...props,
       code: props.handler.code,
       handler: props.handler.entrypoint,
-      runtime: RuntimeDeterminer.determineLatestRuntime(props.handler.compatibleRuntimes),
+      runtime: props.handler.runtime,
     });
   }
 }
