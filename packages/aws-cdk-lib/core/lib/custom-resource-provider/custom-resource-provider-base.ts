@@ -63,10 +63,10 @@ export abstract class CustomResourceProviderBase extends Construct {
    */
   public readonly roleArn: string;
 
-  public constructor(scope: Construct, id: string, props: CustomResourceProviderBaseProps) {
+  protected constructor(scope: Construct, id: string, props: CustomResourceProviderBaseProps) {
     super(scope, id);
 
-    const stack = Stack.of(this);
+    const stack = Stack.of(scope);
 
     // verify we have an index file there
     if (!fs.existsSync(path.join(props.codeDirectory, 'index.js'))) {
@@ -267,7 +267,7 @@ export abstract class CustomResourceProviderBase extends Construct {
   }
 }
 
-type Code = {
+export type Code = {
   ZipFile: string,
 } | {
   S3Bucket: string,
