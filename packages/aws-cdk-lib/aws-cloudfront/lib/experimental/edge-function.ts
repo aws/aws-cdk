@@ -8,14 +8,14 @@ import * as ssm from '../../../aws-ssm';
 import {
   CfnResource,
   CustomResource,
-  CustomResourceProvider,
-  CustomResourceProviderRuntime,
   Lazy,
   Resource,
   Stack,
   Stage,
   Token,
 } from '../../../core';
+import { CdkCustomResourceProvider } from '../../../core/lib/custom-resource-provider/cdk-custom-resource-provider';
+import { CdkHandler } from '../../../handler-framework/lib/cdk-handler';
 
 /**
  * Properties for creating a Lambda@Edge function
@@ -199,18 +199,32 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     });
 
     const resourceType = 'Custom::CrossRegionStringParameterReader';
-    const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
-      codeDirectory: path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-cloudfront', 'edge-function'),
-      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+    const handler = CdkHandler.fromAsset(path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-cloudfront', 'edge-function'), {
+      entrypoint: '__entrypoint__.handler',
+      compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
+    });
+    const provider = CdkCustomResourceProvider.getOrCreateProvider(this, resourceType, {
+      handler,
       policyStatements: [{
         Effect: 'Allow',
         Resource: parameterArnPrefix,
         Action: ['ssm:GetParameter'],
       }],
     });
+
+    // const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
+    //   codeDirectory: path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-cloudfront', 'edge-function'),
+    //   runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+    //   policyStatements: [{
+    //     Effect: 'Allow',
+    //     Resource: parameterArnPrefix,
+    //     Action: ['ssm:GetParameter'],
+    //   }],
+    // });
+
     const resource = new CustomResource(this, 'ArnReader', {
       resourceType: resourceType,
-      serviceToken,
+      serviceToken: provider.serviceToken,
       properties: {
         Region: EdgeFunction.EDGE_REGION,
         ParameterName: parameterName,
