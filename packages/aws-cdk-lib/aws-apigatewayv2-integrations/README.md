@@ -1,19 +1,4 @@
 # AWS APIGatewayv2 Integrations
-<!--BEGIN STABILITY BANNER-->
-
----
-
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
-
----
-
-<!--END STABILITY BANNER-->
 
 ## Table of Contents
 
@@ -41,7 +26,7 @@ proxy integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide
 The following code configures a route `GET /books` with a Lambda proxy integration.
 
 ```ts
-import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 declare const booksDefaultFn: lambda.Function;
 const booksIntegration = new HttpLambdaIntegration('BooksIntegration', booksDefaultFn);
@@ -66,7 +51,7 @@ The following code configures a route `GET /books` with an HTTP proxy integratio
 `get-books-proxy.example.com`.
 
 ```ts
-import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpUrlIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 const booksIntegration = new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.example.com');
 
@@ -92,7 +77,7 @@ The following integrations are supported for private resources in a VPC.
 The following code is a basic application load balancer private integration of HTTP API:
 
 ```ts
-import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpAlbIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 const vpc = new ec2.Vpc(this, 'VPC');
 const lb = new elbv2.ApplicationLoadBalancer(this, 'lb', { vpc });
@@ -113,7 +98,7 @@ When an imported load balancer is used, the `vpc` option must be specified for `
 The following code is a basic network load balancer private integration of HTTP API:
 
 ```ts
-import { HttpNlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpNlbIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 const vpc = new ec2.Vpc(this, 'VPC');
 const lb = new elbv2.NetworkLoadBalancer(this, 'lb', { vpc });
@@ -135,7 +120,7 @@ The following code is a basic discovery service private integration of HTTP API:
 
 ```ts
 import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
-import { HttpServiceDiscoveryIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpServiceDiscoveryIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 const vpc = new ec2.Vpc(this, 'VPC');
 const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
@@ -161,7 +146,7 @@ responses](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api
 The following example creates a new header - `header2` - as a copy of `header1` and removes `header1`.
 
 ```ts
-import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpAlbIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 declare const lb: elbv2.ApplicationLoadBalancer;
 const listener = lb.addListener('listener', { port: 80 });
@@ -181,7 +166,7 @@ const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
 To add mapping keys and values not yet supported by the CDK, use the `custom()` method:
 
 ```ts
-import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpAlbIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 declare const lb: elbv2.ApplicationLoadBalancer;
 const listener = lb.addListener('listener', { port: 80 });
@@ -211,7 +196,7 @@ The API Gateway service will invoke the Lambda function with an event payload of
 The following code configures a `sendMessage` route with a Lambda integration
 
 ```ts
-import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
 new apigwv2.WebSocketStage(this, 'mystage', {

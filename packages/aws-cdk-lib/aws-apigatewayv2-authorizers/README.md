@@ -1,21 +1,5 @@
 # AWS APIGatewayv2 Authorizers
 
-<!--BEGIN STABILITY BANNER-->
-
----
-
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
-
----
-
-<!--END STABILITY BANNER-->
-
 ## Table of Contents
 
 - [Introduction](#introduction)
@@ -50,7 +34,7 @@ When using default authorization, all routes of the API will inherit the configu
 In the example below, all routes will require the `manage:books` scope present in order to invoke the integration.
 
 ```ts
-import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
+import { HttpJwtAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 
 const issuer = 'https://test.us.auth0.com';
 const authorizer = new HttpJwtAuthorizer('DefaultAuthorizer', issuer, {
@@ -74,8 +58,8 @@ The example below showcases default authorization, along with route authorizatio
 - `POST /login` removes the default authorizer (unauthenticated route)
 
 ```ts
-import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
-import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpJwtAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
+import { HttpUrlIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 const issuer = 'https://test.us.auth0.com';
 const authorizer = new HttpJwtAuthorizer('DefaultAuthorizer', issuer, {
@@ -131,8 +115,8 @@ Clients that fail authorization are presented with either 2 responses:
 - `403 - Forbidden` - When the JWT validation is successful but the required scopes are not met
 
 ```ts
-import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
-import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpJwtAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
+import { HttpUrlIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 const issuer = 'https://test.us.auth0.com';
 const authorizer = new HttpJwtAuthorizer('BooksAuthorizer', issuer, {
@@ -158,8 +142,8 @@ pools as authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguid
 
 ```ts
 import * as cognito from 'aws-cdk-lib/aws-cognito';
-import { HttpUserPoolAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
-import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpUserPoolAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
+import { HttpUrlIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 const userPool = new cognito.UserPool(this, 'UserPool');
 
@@ -182,8 +166,8 @@ Lambda authorizers depending on their response, fall into either two types - Sim
 
 
 ```ts
-import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
-import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpLambdaAuthorizer, HttpLambdaResponseType } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
+import { HttpUrlIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 // This function handles your auth logic
 declare const authHandler: lambda.Function;
@@ -206,8 +190,8 @@ api.addRoutes({
 API Gateway supports IAM via the included `HttpIamAuthorizer` and grant syntax:
 
 ```ts
-import { HttpIamAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
-import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpIamAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
+import { HttpUrlIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 declare const principal: iam.AnyPrincipal;
 
@@ -234,8 +218,8 @@ You can set an authorizer to your WebSocket API's `$connect` route to control ac
 Lambda authorizers use a Lambda function to control access to your WebSocket API. When a client connects to your API, API Gateway invokes your Lambda function and uses the response to determine whether the client can access your API.
 
 ```ts
-import { WebSocketLambdaAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
-import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { WebSocketLambdaAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
+import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 // This function handles your auth logic
 declare const authHandler: lambda.Function;
@@ -263,8 +247,8 @@ new apigwv2.WebSocketApi(this, 'WebSocketApi', {
 IAM authorizers can be used to allow identity-based access to your WebSocket API.
 
 ```ts
-import { WebSocketIamAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers-alpha';
-import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { WebSocketIamAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
+import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 // This function handles your connect route
 declare const connectHandler: lambda.Function;
