@@ -1,7 +1,7 @@
 import { HttpApi } from 'aws-cdk-lib/aws-apigatewayv2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
-import { HttpUrlIntegration, HttpLambdaIntegration } from '../../lib';
+import { HttpUrlIntegration, HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 /*
  * Stack verification steps:

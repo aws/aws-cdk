@@ -3,7 +3,7 @@ import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey } from 'aws-cdk-lib/aws-ap
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack, CfnOutput } from 'aws-cdk-lib';
-import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';
+import { HttpLambdaAuthorizer, HttpLambdaResponseType } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 
 /*
  * Stack verification steps:

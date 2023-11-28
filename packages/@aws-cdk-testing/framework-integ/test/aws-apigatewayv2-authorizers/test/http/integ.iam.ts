@@ -1,7 +1,7 @@
 import * as apigatewayv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
-import { HttpIamAuthorizer } from '../../lib';
+import { HttpIamAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 
 class ExampleComIntegration extends apigatewayv2.HttpRouteIntegration {
   public bind(): apigatewayv2.HttpRouteIntegrationConfig {

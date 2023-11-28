@@ -5,7 +5,7 @@ import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { WebSocketIamAuthorizer } from '../../lib';
+import { WebSocketIamAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'IntegApiGatewayV2Iam');

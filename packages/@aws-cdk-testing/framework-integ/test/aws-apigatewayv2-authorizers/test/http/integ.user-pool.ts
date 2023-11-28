@@ -4,7 +4,7 @@ import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack } from 'aws-cdk-lib';
-import { HttpUserPoolAuthorizer } from '../../lib';
+import { HttpUserPoolAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 
 /*
  * Stack verification steps:

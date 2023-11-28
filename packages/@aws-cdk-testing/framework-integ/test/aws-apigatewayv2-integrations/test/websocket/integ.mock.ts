@@ -1,6 +1,6 @@
 import { WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
-import { WebSocketMockIntegration } from '../../lib';
+import { WebSocketMockIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 /*
  * Stack verification steps:

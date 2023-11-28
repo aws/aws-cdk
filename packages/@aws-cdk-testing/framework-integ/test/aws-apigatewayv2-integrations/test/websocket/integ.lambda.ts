@@ -1,7 +1,7 @@
 import { WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
-import { WebSocketLambdaIntegration } from '../../lib';
+import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 /*
  * Stack verification steps:
