@@ -1884,7 +1884,7 @@ export class Bucket extends BucketBase {
     this.encryptionKey = encryptionKey;
     this.eventBridgeEnabled = props.eventBridgeEnabled;
 
-    this.attrBucketName = this.getResourceNameAttribute(resource.ref);
+    this.attrBucketName = resource.attrBucketName;
     this.bucketName = this.attrBucketName;
     this.attrArn = this.getResourceArnAttribute(resource.attrArn, {
       region: '',
