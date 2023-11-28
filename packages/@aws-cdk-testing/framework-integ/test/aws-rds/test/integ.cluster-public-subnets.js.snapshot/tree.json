@@ -703,982 +703,724 @@
               "version": "0.0.0"
             }
           },
-          "integ-aurora-serverlessv2-0": {
-            "id": "integ-aurora-serverlessv2-0",
-            "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0",
+          "Integ-Cluster-0": {
+            "id": "Integ-Cluster-0",
+            "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-0",
             "children": {
-              "Integ-Cluster": {
-                "id": "Integ-Cluster",
-                "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster",
+              "Subnets": {
+                "id": "Subnets",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-0/Subnets",
                 "children": {
-                  "Subnets": {
-                    "id": "Subnets",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/Subnets",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/Subnets/Default",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
-                          "aws:cdk:cloudformation:props": {
-                            "dbSubnetGroupDescription": "Subnets for Integ-Cluster database",
-                            "subnetIds": [
-                              {
-                                "Ref": "IntegVPCPublicSubnet1SubnetE05F7E7D"
-                              },
-                              {
-                                "Ref": "IntegVPCPublicSubnet2Subnet9648DE97"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_rds.CfnDBSubnetGroup",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_rds.SubnetGroup",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "SecurityGroup": {
-                    "id": "SecurityGroup",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/SecurityGroup",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/SecurityGroup/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                          "aws:cdk:cloudformation:props": {
-                            "groupDescription": "RDS security group",
-                            "securityGroupEgress": [
-                              {
-                                "cidrIp": "0.0.0.0/0",
-                                "description": "Allow all outbound traffic by default",
-                                "ipProtocol": "-1"
-                              }
-                            ],
-                            "vpcId": {
-                              "Ref": "IntegVPC2FF1AB0E"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
-                    "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Secret": {
-                    "id": "Secret",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/Secret",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/Secret/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
-                          "aws:cdk:cloudformation:props": {
-                            "description": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "Generated by the CDK for stack: ",
-                                  {
-                                    "Ref": "AWS::StackName"
-                                  }
-                                ]
-                              ]
-                            },
-                            "generateSecretString": {
-                              "passwordLength": 30,
-                              "secretStringTemplate": "{\"username\":\"admin\"}",
-                              "generateStringKey": "password",
-                              "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Attachment": {
-                        "id": "Attachment",
-                        "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/Secret/Attachment",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/Secret/Attachment/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
-                              "aws:cdk:cloudformation:props": {
-                                "secretId": {
-                                  "Ref": "integauroraserverlessv20IntegClusterSecretB9E432EB"
-                                },
-                                "targetId": {
-                                  "Ref": "integauroraserverlessv20IntegCluster5133790E"
-                                },
-                                "targetType": "AWS::RDS::DBCluster"
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecretTargetAttachment",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_rds.DatabaseSecret",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/Resource",
+                  "Default": {
+                    "id": "Default",
+                    "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-0/Subnets/Default",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                       "aws:cdk:cloudformation:props": {
-                        "copyTagsToSnapshot": true,
-                        "dbClusterParameterGroupName": "default.aurora-mysql8.0",
-                        "dbSubnetGroupName": {
-                          "Ref": "integauroraserverlessv20IntegClusterSubnets2462DA9D"
-                        },
-                        "engine": "aurora-mysql",
-                        "engineVersion": "8.0.mysql_aurora.3.03.0",
-                        "masterUsername": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "{{resolve:secretsmanager:",
-                              {
-                                "Ref": "integauroraserverlessv20IntegClusterSecretB9E432EB"
-                              },
-                              ":SecretString:username::}}"
-                            ]
-                          ]
-                        },
-                        "masterUserPassword": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "{{resolve:secretsmanager:",
-                              {
-                                "Ref": "integauroraserverlessv20IntegClusterSecretB9E432EB"
-                              },
-                              ":SecretString:password::}}"
-                            ]
-                          ]
-                        },
-                        "serverlessV2ScalingConfiguration": {
-                          "minCapacity": 0.5,
-                          "maxCapacity": 2
-                        },
-                        "vpcSecurityGroupIds": [
+                        "dbSubnetGroupDescription": "Subnets for Integ-Cluster-0 database",
+                        "subnetIds": [
                           {
-                            "Fn::GetAtt": [
-                              "integauroraserverlessv20IntegClusterSecurityGroup0FF1F93F",
-                              "GroupId"
-                            ]
+                            "Ref": "IntegVPCPublicSubnet1SubnetE05F7E7D"
+                          },
+                          {
+                            "Ref": "IntegVPCPublicSubnet2Subnet9648DE97"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
+                      "fqn": "aws-cdk-lib.aws_rds.CfnDBSubnetGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_rds.SubnetGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-0/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-0/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "RDS security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "IntegVPC2FF1AB0E"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
+                "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-0/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Secret": {
+                "id": "Secret",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-0/Secret",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-0/Secret/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                      "aws:cdk:cloudformation:props": {
+                        "description": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "Generated by the CDK for stack: ",
+                              {
+                                "Ref": "AWS::StackName"
+                              }
+                            ]
+                          ]
+                        },
+                        "generateSecretString": {
+                          "passwordLength": 30,
+                          "secretStringTemplate": "{\"username\":\"admin\"}",
+                          "generateStringKey": "password",
+                          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                       "version": "0.0.0"
                     }
                   },
-                  "writer": {
-                    "id": "writer",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/writer",
+                  "Attachment": {
+                    "id": "Attachment",
+                    "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-0/Secret/Attachment",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/writer/Resource",
+                        "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-0/Secret/Attachment/Resource",
                         "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
+                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                           "aws:cdk:cloudformation:props": {
-                            "dbClusterIdentifier": {
-                              "Ref": "integauroraserverlessv20IntegCluster5133790E"
+                            "secretId": {
+                              "Ref": "IntegCluster0Secret18CF39B2"
                             },
-                            "dbInstanceClass": "db.serverless",
-                            "engine": "aurora-mysql",
-                            "promotionTier": 0,
-                            "publiclyAccessible": true
+                            "targetId": {
+                              "Ref": "IntegCluster0EE0FF168"
+                            },
+                            "targetType": "AWS::RDS::DBCluster"
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
+                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecretTargetAttachment",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_rds.DatabaseCluster",
+                  "fqn": "aws-cdk-lib.aws_rds.DatabaseSecret",
                   "version": "0.0.0"
                 }
               },
-              "capacity": {
-                "id": "capacity",
-                "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/capacity",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/capacity/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                      "aws:cdk:cloudformation:props": {
-                        "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                        "dimensions": [
-                          {
-                            "name": "DBClusterIdentifier",
-                            "value": {
-                              "Ref": "integauroraserverlessv20IntegCluster5133790E"
-                            }
-                          }
-                        ],
-                        "evaluationPeriods": 3,
-                        "metricName": "ServerlessDatabaseCapacity",
-                        "namespace": "AWS/RDS",
-                        "period": 600,
-                        "statistic": "Average",
-                        "threshold": 1.5
-                      }
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-0/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
+                  "aws:cdk:cloudformation:props": {
+                    "copyTagsToSnapshot": true,
+                    "dbClusterParameterGroupName": "default.aurora-mysql8.0",
+                    "dbSubnetGroupName": {
+                      "Ref": "IntegCluster0SubnetsEED4DE8C"
                     },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                      "version": "0.0.0"
-                    }
+                    "engine": "aurora-mysql",
+                    "engineVersion": "8.0.mysql_aurora.3.03.0",
+                    "masterUsername": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "IntegCluster0Secret18CF39B2"
+                          },
+                          ":SecretString:username::}}"
+                        ]
+                      ]
+                    },
+                    "masterUserPassword": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "IntegCluster0Secret18CF39B2"
+                          },
+                          ":SecretString:password::}}"
+                        ]
+                      ]
+                    },
+                    "serverlessV2ScalingConfiguration": {
+                      "minCapacity": 0.5,
+                      "maxCapacity": 2
+                    },
+                    "vpcSecurityGroupIds": [
+                      {
+                        "Fn::GetAtt": [
+                          "IntegCluster0SecurityGroup00F9C694",
+                          "GroupId"
+                        ]
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
                   "version": "0.0.0"
                 }
               },
-              "alarm": {
-                "id": "alarm",
-                "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/alarm",
+              "writer": {
+                "id": "writer",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-0/writer",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/alarm/Resource",
+                    "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-0/writer/Resource",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                       "aws:cdk:cloudformation:props": {
-                        "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                        "dimensions": [
-                          {
-                            "name": "DBClusterIdentifier",
-                            "value": {
-                              "Ref": "integauroraserverlessv20IntegCluster5133790E"
-                            }
-                          }
-                        ],
-                        "evaluationPeriods": 3,
-                        "metricName": "ACUUtilization",
-                        "namespace": "AWS/RDS",
-                        "period": 600,
-                        "statistic": "Average",
-                        "threshold": 90
+                        "dbClusterIdentifier": {
+                          "Ref": "IntegCluster0EE0FF168"
+                        },
+                        "dbInstanceClass": "db.serverless",
+                        "engine": "aurora-mysql",
+                        "promotionTier": 0,
+                        "publiclyAccessible": true
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                      "fqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_rds.DatabaseCluster",
+              "version": "0.0.0"
             }
           },
-          "integ-aurora-serverlessv2-1": {
-            "id": "integ-aurora-serverlessv2-1",
-            "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1",
+          "Integ-Cluster-1": {
+            "id": "Integ-Cluster-1",
+            "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-1",
             "children": {
-              "Integ-Cluster": {
-                "id": "Integ-Cluster",
-                "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster",
+              "Subnets": {
+                "id": "Subnets",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-1/Subnets",
                 "children": {
-                  "Subnets": {
-                    "id": "Subnets",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/Subnets",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/Subnets/Default",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
-                          "aws:cdk:cloudformation:props": {
-                            "dbSubnetGroupDescription": "Subnets for Integ-Cluster database",
-                            "subnetIds": [
-                              {
-                                "Ref": "IntegVPCPublicSubnet1SubnetE05F7E7D"
-                              },
-                              {
-                                "Ref": "IntegVPCPublicSubnet2Subnet9648DE97"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_rds.CfnDBSubnetGroup",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_rds.SubnetGroup",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "SecurityGroup": {
-                    "id": "SecurityGroup",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/SecurityGroup",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/SecurityGroup/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                          "aws:cdk:cloudformation:props": {
-                            "groupDescription": "RDS security group",
-                            "securityGroupEgress": [
-                              {
-                                "cidrIp": "0.0.0.0/0",
-                                "description": "Allow all outbound traffic by default",
-                                "ipProtocol": "-1"
-                              }
-                            ],
-                            "vpcId": {
-                              "Ref": "IntegVPC2FF1AB0E"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
-                    "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Secret": {
-                    "id": "Secret",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/Secret",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/Secret/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
-                          "aws:cdk:cloudformation:props": {
-                            "description": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "Generated by the CDK for stack: ",
-                                  {
-                                    "Ref": "AWS::StackName"
-                                  }
-                                ]
-                              ]
-                            },
-                            "generateSecretString": {
-                              "passwordLength": 30,
-                              "secretStringTemplate": "{\"username\":\"admin\"}",
-                              "generateStringKey": "password",
-                              "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Attachment": {
-                        "id": "Attachment",
-                        "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/Secret/Attachment",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/Secret/Attachment/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
-                              "aws:cdk:cloudformation:props": {
-                                "secretId": {
-                                  "Ref": "integauroraserverlessv21IntegClusterSecretA8DA28CB"
-                                },
-                                "targetId": {
-                                  "Ref": "integauroraserverlessv21IntegClusterDFF12F00"
-                                },
-                                "targetType": "AWS::RDS::DBCluster"
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecretTargetAttachment",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_rds.DatabaseSecret",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/Resource",
+                  "Default": {
+                    "id": "Default",
+                    "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-1/Subnets/Default",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                       "aws:cdk:cloudformation:props": {
-                        "copyTagsToSnapshot": true,
-                        "dbClusterParameterGroupName": "default.aurora-mysql8.0",
-                        "dbSubnetGroupName": {
-                          "Ref": "integauroraserverlessv21IntegClusterSubnetsAEE71920"
-                        },
-                        "engine": "aurora-mysql",
-                        "engineVersion": "8.0.mysql_aurora.3.03.0",
-                        "masterUsername": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "{{resolve:secretsmanager:",
-                              {
-                                "Ref": "integauroraserverlessv21IntegClusterSecretA8DA28CB"
-                              },
-                              ":SecretString:username::}}"
-                            ]
-                          ]
-                        },
-                        "masterUserPassword": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "{{resolve:secretsmanager:",
-                              {
-                                "Ref": "integauroraserverlessv21IntegClusterSecretA8DA28CB"
-                              },
-                              ":SecretString:password::}}"
-                            ]
-                          ]
-                        },
-                        "serverlessV2ScalingConfiguration": {
-                          "minCapacity": 0.5,
-                          "maxCapacity": 2
-                        },
-                        "vpcSecurityGroupIds": [
+                        "dbSubnetGroupDescription": "Subnets for Integ-Cluster-1 database",
+                        "subnetIds": [
                           {
-                            "Fn::GetAtt": [
-                              "integauroraserverlessv21IntegClusterSecurityGroup483E60E7",
-                              "GroupId"
-                            ]
+                            "Ref": "IntegVPCPublicSubnet1SubnetE05F7E7D"
+                          },
+                          {
+                            "Ref": "IntegVPCPublicSubnet2Subnet9648DE97"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
+                      "fqn": "aws-cdk-lib.aws_rds.CfnDBSubnetGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_rds.SubnetGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-1/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-1/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "RDS security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "IntegVPC2FF1AB0E"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
+                "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-1/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Secret": {
+                "id": "Secret",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-1/Secret",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-1/Secret/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                      "aws:cdk:cloudformation:props": {
+                        "description": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "Generated by the CDK for stack: ",
+                              {
+                                "Ref": "AWS::StackName"
+                              }
+                            ]
+                          ]
+                        },
+                        "generateSecretString": {
+                          "passwordLength": 30,
+                          "secretStringTemplate": "{\"username\":\"admin\"}",
+                          "generateStringKey": "password",
+                          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                       "version": "0.0.0"
                     }
                   },
-                  "writer": {
-                    "id": "writer",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/writer",
+                  "Attachment": {
+                    "id": "Attachment",
+                    "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-1/Secret/Attachment",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/writer/Resource",
+                        "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-1/Secret/Attachment/Resource",
                         "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
+                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                           "aws:cdk:cloudformation:props": {
-                            "dbClusterIdentifier": {
-                              "Ref": "integauroraserverlessv21IntegClusterDFF12F00"
+                            "secretId": {
+                              "Ref": "IntegCluster1Secret8C69CB87"
                             },
-                            "dbInstanceClass": "db.serverless",
-                            "engine": "aurora-mysql",
-                            "promotionTier": 0,
-                            "publiclyAccessible": true
+                            "targetId": {
+                              "Ref": "IntegCluster1DA2E2086"
+                            },
+                            "targetType": "AWS::RDS::DBCluster"
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
+                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecretTargetAttachment",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_rds.DatabaseCluster",
+                  "fqn": "aws-cdk-lib.aws_rds.DatabaseSecret",
                   "version": "0.0.0"
                 }
               },
-              "capacity": {
-                "id": "capacity",
-                "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/capacity",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/capacity/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                      "aws:cdk:cloudformation:props": {
-                        "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                        "dimensions": [
-                          {
-                            "name": "DBClusterIdentifier",
-                            "value": {
-                              "Ref": "integauroraserverlessv21IntegClusterDFF12F00"
-                            }
-                          }
-                        ],
-                        "evaluationPeriods": 3,
-                        "metricName": "ServerlessDatabaseCapacity",
-                        "namespace": "AWS/RDS",
-                        "period": 600,
-                        "statistic": "Average",
-                        "threshold": 1.5
-                      }
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
+                  "aws:cdk:cloudformation:props": {
+                    "copyTagsToSnapshot": true,
+                    "dbClusterParameterGroupName": "default.aurora-mysql8.0",
+                    "dbSubnetGroupName": {
+                      "Ref": "IntegCluster1SubnetsFAB09E4C"
                     },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                      "version": "0.0.0"
-                    }
+                    "engine": "aurora-mysql",
+                    "engineVersion": "8.0.mysql_aurora.3.03.0",
+                    "masterUsername": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "IntegCluster1Secret8C69CB87"
+                          },
+                          ":SecretString:username::}}"
+                        ]
+                      ]
+                    },
+                    "masterUserPassword": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "IntegCluster1Secret8C69CB87"
+                          },
+                          ":SecretString:password::}}"
+                        ]
+                      ]
+                    },
+                    "serverlessV2ScalingConfiguration": {
+                      "minCapacity": 0.5,
+                      "maxCapacity": 2
+                    },
+                    "vpcSecurityGroupIds": [
+                      {
+                        "Fn::GetAtt": [
+                          "IntegCluster1SecurityGroupF2EFE159",
+                          "GroupId"
+                        ]
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
                   "version": "0.0.0"
                 }
               },
-              "alarm": {
-                "id": "alarm",
-                "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/alarm",
+              "writer": {
+                "id": "writer",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-1/writer",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/alarm/Resource",
+                    "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-1/writer/Resource",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                       "aws:cdk:cloudformation:props": {
-                        "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                        "dimensions": [
-                          {
-                            "name": "DBClusterIdentifier",
-                            "value": {
-                              "Ref": "integauroraserverlessv21IntegClusterDFF12F00"
-                            }
-                          }
-                        ],
-                        "evaluationPeriods": 3,
-                        "metricName": "ACUUtilization",
-                        "namespace": "AWS/RDS",
-                        "period": 600,
-                        "statistic": "Average",
-                        "threshold": 90
+                        "dbClusterIdentifier": {
+                          "Ref": "IntegCluster1DA2E2086"
+                        },
+                        "dbInstanceClass": "db.serverless",
+                        "engine": "aurora-mysql",
+                        "promotionTier": 0,
+                        "publiclyAccessible": true
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                      "fqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_rds.DatabaseCluster",
+              "version": "0.0.0"
             }
           },
-          "integ-aurora-serverlessv2-2": {
-            "id": "integ-aurora-serverlessv2-2",
-            "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2",
+          "Integ-Cluster-2": {
+            "id": "Integ-Cluster-2",
+            "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-2",
             "children": {
-              "Integ-Cluster": {
-                "id": "Integ-Cluster",
-                "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster",
+              "Subnets": {
+                "id": "Subnets",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-2/Subnets",
                 "children": {
-                  "Subnets": {
-                    "id": "Subnets",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/Subnets",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/Subnets/Default",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
-                          "aws:cdk:cloudformation:props": {
-                            "dbSubnetGroupDescription": "Subnets for Integ-Cluster database",
-                            "subnetIds": [
-                              {
-                                "Ref": "IntegVPCPublicSubnet1SubnetE05F7E7D"
-                              },
-                              {
-                                "Ref": "IntegVPCPublicSubnet2Subnet9648DE97"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_rds.CfnDBSubnetGroup",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_rds.SubnetGroup",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "SecurityGroup": {
-                    "id": "SecurityGroup",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/SecurityGroup",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/SecurityGroup/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                          "aws:cdk:cloudformation:props": {
-                            "groupDescription": "RDS security group",
-                            "securityGroupEgress": [
-                              {
-                                "cidrIp": "0.0.0.0/0",
-                                "description": "Allow all outbound traffic by default",
-                                "ipProtocol": "-1"
-                              }
-                            ],
-                            "vpcId": {
-                              "Ref": "IntegVPC2FF1AB0E"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
-                    "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Secret": {
-                    "id": "Secret",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/Secret",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/Secret/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
-                          "aws:cdk:cloudformation:props": {
-                            "description": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "Generated by the CDK for stack: ",
-                                  {
-                                    "Ref": "AWS::StackName"
-                                  }
-                                ]
-                              ]
-                            },
-                            "generateSecretString": {
-                              "passwordLength": 30,
-                              "secretStringTemplate": "{\"username\":\"admin\"}",
-                              "generateStringKey": "password",
-                              "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Attachment": {
-                        "id": "Attachment",
-                        "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/Secret/Attachment",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/Secret/Attachment/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
-                              "aws:cdk:cloudformation:props": {
-                                "secretId": {
-                                  "Ref": "integauroraserverlessv22IntegClusterSecretBF74DBA3"
-                                },
-                                "targetId": {
-                                  "Ref": "integauroraserverlessv22IntegCluster1F86F0C6"
-                                },
-                                "targetType": "AWS::RDS::DBCluster"
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecretTargetAttachment",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_rds.DatabaseSecret",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/Resource",
+                  "Default": {
+                    "id": "Default",
+                    "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-2/Subnets/Default",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                       "aws:cdk:cloudformation:props": {
-                        "copyTagsToSnapshot": true,
-                        "dbClusterParameterGroupName": "default.aurora-mysql8.0",
-                        "dbSubnetGroupName": {
-                          "Ref": "integauroraserverlessv22IntegClusterSubnets241DB50C"
-                        },
-                        "engine": "aurora-mysql",
-                        "engineVersion": "8.0.mysql_aurora.3.03.0",
-                        "masterUsername": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "{{resolve:secretsmanager:",
-                              {
-                                "Ref": "integauroraserverlessv22IntegClusterSecretBF74DBA3"
-                              },
-                              ":SecretString:username::}}"
-                            ]
-                          ]
-                        },
-                        "masterUserPassword": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "{{resolve:secretsmanager:",
-                              {
-                                "Ref": "integauroraserverlessv22IntegClusterSecretBF74DBA3"
-                              },
-                              ":SecretString:password::}}"
-                            ]
-                          ]
-                        },
-                        "serverlessV2ScalingConfiguration": {
-                          "minCapacity": 0.5,
-                          "maxCapacity": 2
-                        },
-                        "vpcSecurityGroupIds": [
+                        "dbSubnetGroupDescription": "Subnets for Integ-Cluster-2 database",
+                        "subnetIds": [
                           {
-                            "Fn::GetAtt": [
-                              "integauroraserverlessv22IntegClusterSecurityGroup0EDBBE37",
-                              "GroupId"
-                            ]
+                            "Ref": "IntegVPCPublicSubnet1SubnetE05F7E7D"
+                          },
+                          {
+                            "Ref": "IntegVPCPublicSubnet2Subnet9648DE97"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
+                      "fqn": "aws-cdk-lib.aws_rds.CfnDBSubnetGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_rds.SubnetGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-2/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-2/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "RDS security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "IntegVPC2FF1AB0E"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup": {
+                "id": "AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-2/AuroraMySqlDatabaseClusterEngineDefaultParameterGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Secret": {
+                "id": "Secret",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-2/Secret",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-2/Secret/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                      "aws:cdk:cloudformation:props": {
+                        "description": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "Generated by the CDK for stack: ",
+                              {
+                                "Ref": "AWS::StackName"
+                              }
+                            ]
+                          ]
+                        },
+                        "generateSecretString": {
+                          "passwordLength": 30,
+                          "secretStringTemplate": "{\"username\":\"admin\"}",
+                          "generateStringKey": "password",
+                          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                       "version": "0.0.0"
                     }
                   },
-                  "writer": {
-                    "id": "writer",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/writer",
+                  "Attachment": {
+                    "id": "Attachment",
+                    "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-2/Secret/Attachment",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/writer/Resource",
+                        "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-2/Secret/Attachment/Resource",
                         "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
+                          "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                           "aws:cdk:cloudformation:props": {
-                            "dbClusterIdentifier": {
-                              "Ref": "integauroraserverlessv22IntegCluster1F86F0C6"
+                            "secretId": {
+                              "Ref": "IntegCluster2SecretAAB6B7B2"
                             },
-                            "dbInstanceClass": "db.serverless",
-                            "engine": "aurora-mysql",
-                            "promotionTier": 0,
-                            "publiclyAccessible": false
+                            "targetId": {
+                              "Ref": "IntegCluster2A1E91492"
+                            },
+                            "targetType": "AWS::RDS::DBCluster"
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
+                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecretTargetAttachment",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_rds.DatabaseCluster",
+                  "fqn": "aws-cdk-lib.aws_rds.DatabaseSecret",
                   "version": "0.0.0"
                 }
               },
-              "capacity": {
-                "id": "capacity",
-                "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/capacity",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/capacity/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
-                      "aws:cdk:cloudformation:props": {
-                        "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                        "dimensions": [
-                          {
-                            "name": "DBClusterIdentifier",
-                            "value": {
-                              "Ref": "integauroraserverlessv22IntegCluster1F86F0C6"
-                            }
-                          }
-                        ],
-                        "evaluationPeriods": 3,
-                        "metricName": "ServerlessDatabaseCapacity",
-                        "namespace": "AWS/RDS",
-                        "period": 600,
-                        "statistic": "Average",
-                        "threshold": 1.5
-                      }
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
+                  "aws:cdk:cloudformation:props": {
+                    "copyTagsToSnapshot": true,
+                    "dbClusterParameterGroupName": "default.aurora-mysql8.0",
+                    "dbSubnetGroupName": {
+                      "Ref": "IntegCluster2SubnetsB118DC94"
                     },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
-                      "version": "0.0.0"
-                    }
+                    "engine": "aurora-mysql",
+                    "engineVersion": "8.0.mysql_aurora.3.03.0",
+                    "masterUsername": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "IntegCluster2SecretAAB6B7B2"
+                          },
+                          ":SecretString:username::}}"
+                        ]
+                      ]
+                    },
+                    "masterUserPassword": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{{resolve:secretsmanager:",
+                          {
+                            "Ref": "IntegCluster2SecretAAB6B7B2"
+                          },
+                          ":SecretString:password::}}"
+                        ]
+                      ]
+                    },
+                    "serverlessV2ScalingConfiguration": {
+                      "minCapacity": 0.5,
+                      "maxCapacity": 2
+                    },
+                    "vpcSecurityGroupIds": [
+                      {
+                        "Fn::GetAtt": [
+                          "IntegCluster2SecurityGroupB468D38C",
+                          "GroupId"
+                        ]
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
                   "version": "0.0.0"
                 }
               },
-              "alarm": {
-                "id": "alarm",
-                "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/alarm",
+              "writer": {
+                "id": "writer",
+                "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-2/writer",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/alarm/Resource",
+                    "path": "integ-aurora-pub-sn-cluster/Integ-Cluster-2/writer/Resource",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                       "aws:cdk:cloudformation:props": {
-                        "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                        "dimensions": [
-                          {
-                            "name": "DBClusterIdentifier",
-                            "value": {
-                              "Ref": "integauroraserverlessv22IntegCluster1F86F0C6"
-                            }
-                          }
-                        ],
-                        "evaluationPeriods": 3,
-                        "metricName": "ACUUtilization",
-                        "namespace": "AWS/RDS",
-                        "period": 600,
-                        "statistic": "Average",
-                        "threshold": 90
+                        "dbClusterIdentifier": {
+                          "Ref": "IntegCluster2A1E91492"
+                        },
+                        "dbInstanceClass": "db.serverless",
+                        "engine": "aurora-mysql",
+                        "promotionTier": 0,
+                        "publiclyAccessible": false
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                      "fqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_rds.DatabaseCluster",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
@@ -1703,17 +1445,17 @@
           "version": "0.0.0"
         }
       },
-      "integ-test": {
-        "id": "integ-test",
-        "path": "integ-test",
+      "test-aurora-pub-sn-cluster": {
+        "id": "test-aurora-pub-sn-cluster",
+        "path": "test-aurora-pub-sn-cluster",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "integ-test/DefaultTest",
+            "path": "test-aurora-pub-sn-cluster/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "integ-test/DefaultTest/Default",
+                "path": "test-aurora-pub-sn-cluster/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -1721,11 +1463,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "integ-test/DefaultTest/DeployAssert",
+                "path": "test-aurora-pub-sn-cluster/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "integ-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "test-aurora-pub-sn-cluster/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -1733,7 +1475,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "test-aurora-pub-sn-cluster/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

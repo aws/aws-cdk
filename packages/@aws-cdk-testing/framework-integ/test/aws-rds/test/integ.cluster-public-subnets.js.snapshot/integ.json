@@ -1,12 +1,12 @@
 {
   "version": "35.0.0",
   "testCases": {
-    "integ-test/DefaultTest": {
+    "test-aurora-pub-sn-cluster/DefaultTest": {
       "stacks": [
         "integ-aurora-pub-sn-cluster"
       ],
-      "assertionStack": "integ-test/DefaultTest/DeployAssert",
-      "assertionStackName": "integtestDefaultTestDeployAssert24D5C536"
+      "assertionStack": "test-aurora-pub-sn-cluster/DefaultTest/DeployAssert",
+      "assertionStackName": "testaurorapubsnclusterDefaultTestDeployAssert6E7F54F3"
     }
   }
 }

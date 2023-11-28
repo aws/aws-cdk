@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/234efbe3fad59b447d77fd65d9f49208591d315e1f4dcf05eaded642647b4a88.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bb8b2462efe328c2f283a7955d90e4d2a6ad452f37cab7c6814ab51c0a64ade9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -190,148 +190,112 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/Subnets/Default": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-0/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv20IntegClusterSubnets2462DA9D"
+            "data": "IntegCluster0SubnetsEED4DE8C"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/SecurityGroup/Resource": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-0/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv20IntegClusterSecurityGroup0FF1F93F"
+            "data": "IntegCluster0SecurityGroup00F9C694"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/Secret/Resource": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-0/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv20IntegClusterSecretB9E432EB"
+            "data": "IntegCluster0Secret18CF39B2"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/Secret/Attachment/Resource": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-0/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv20IntegClusterSecretAttachmentABF2342B"
+            "data": "IntegCluster0SecretAttachmentF274C8AA"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/Resource": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-0/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv20IntegCluster5133790E"
+            "data": "IntegCluster0EE0FF168"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/Integ-Cluster/writer/Resource": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-0/writer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv20IntegClusterwriter68858AE9"
+            "data": "IntegCluster0writer825E34BB"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/capacity/Resource": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-1/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv20capacity09BB04C7"
+            "data": "IntegCluster1SubnetsFAB09E4C"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-0/alarm/Resource": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-1/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv20alarmA67BFE09"
+            "data": "IntegCluster1SecurityGroupF2EFE159"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/Subnets/Default": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-1/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv21IntegClusterSubnetsAEE71920"
+            "data": "IntegCluster1Secret8C69CB87"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/SecurityGroup/Resource": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-1/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv21IntegClusterSecurityGroup483E60E7"
+            "data": "IntegCluster1SecretAttachment210FB7C5"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/Secret/Resource": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv21IntegClusterSecretA8DA28CB"
+            "data": "IntegCluster1DA2E2086"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/Secret/Attachment/Resource": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-1/writer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv21IntegClusterSecretAttachmentB7E69BEA"
+            "data": "IntegCluster1writer2545F93A"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/Resource": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-2/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv21IntegClusterDFF12F00"
+            "data": "IntegCluster2SubnetsB118DC94"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/Integ-Cluster/writer/Resource": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-2/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv21IntegClusterwriterD87D3A20"
+            "data": "IntegCluster2SecurityGroupB468D38C"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/capacity/Resource": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-2/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv21capacityAFD8D6D1"
+            "data": "IntegCluster2SecretAAB6B7B2"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-1/alarm/Resource": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-2/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv21alarmE70B8A00"
+            "data": "IntegCluster2SecretAttachment7777DFE5"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/Subnets/Default": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv22IntegClusterSubnets241DB50C"
+            "data": "IntegCluster2A1E91492"
           }
         ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/SecurityGroup/Resource": [
+        "/integ-aurora-pub-sn-cluster/Integ-Cluster-2/writer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv22IntegClusterSecurityGroup0EDBBE37"
-          }
-        ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/Secret/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv22IntegClusterSecretBF74DBA3"
-          }
-        ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/Secret/Attachment/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv22IntegClusterSecretAttachment4864E40A"
-          }
-        ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv22IntegCluster1F86F0C6"
-          }
-        ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/Integ-Cluster/writer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv22IntegClusterwriter4C20F6E7"
-          }
-        ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/capacity/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv22capacityCC6A400C"
-          }
-        ],
-        "/integ-aurora-pub-sn-cluster/integ-aurora-serverlessv2-2/alarm/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "integauroraserverlessv22alarmA8DB3F10"
+            "data": "IntegCluster2writerDC7056F8"
           }
         ],
         "/integ-aurora-pub-sn-cluster/BootstrapVersion": [
@@ -345,23 +309,239 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "integauroraserverlessv20IntegClusterSubnets2462DA9D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv20IntegClusterSubnets2462DA9D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv20IntegClusterSecurityGroup0FF1F93F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv20IntegClusterSecurityGroup0FF1F93F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv20IntegClusterSecretB9E432EB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv20IntegClusterSecretB9E432EB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv20IntegClusterSecretAttachmentABF2342B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv20IntegClusterSecretAttachmentABF2342B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv20IntegCluster5133790E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv20IntegCluster5133790E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv20IntegClusterwriter68858AE9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv20IntegClusterwriter68858AE9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv20capacity09BB04C7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv20capacity09BB04C7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv20alarmA67BFE09": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv20alarmA67BFE09",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv21IntegClusterSubnetsAEE71920": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv21IntegClusterSubnetsAEE71920",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv21IntegClusterSecurityGroup483E60E7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv21IntegClusterSecurityGroup483E60E7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv21IntegClusterSecretA8DA28CB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv21IntegClusterSecretA8DA28CB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv21IntegClusterSecretAttachmentB7E69BEA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv21IntegClusterSecretAttachmentB7E69BEA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv21IntegClusterDFF12F00": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv21IntegClusterDFF12F00",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv21IntegClusterwriterD87D3A20": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv21IntegClusterwriterD87D3A20",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv21capacityAFD8D6D1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv21capacityAFD8D6D1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv21alarmE70B8A00": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv21alarmE70B8A00",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv22IntegClusterSubnets241DB50C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv22IntegClusterSubnets241DB50C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv22IntegClusterSecurityGroup0EDBBE37": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv22IntegClusterSecurityGroup0EDBBE37",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv22IntegClusterSecretBF74DBA3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv22IntegClusterSecretBF74DBA3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv22IntegClusterSecretAttachment4864E40A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv22IntegClusterSecretAttachment4864E40A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv22IntegCluster1F86F0C6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv22IntegCluster1F86F0C6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv22IntegClusterwriter4C20F6E7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv22IntegClusterwriter4C20F6E7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv22capacityCC6A400C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv22capacityCC6A400C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "integauroraserverlessv22alarmA8DB3F10": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "integauroraserverlessv22alarmA8DB3F10",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "integ-aurora-pub-sn-cluster"
     },
-    "integtestDefaultTestDeployAssert24D5C536.assets": {
+    "testaurorapubsnclusterDefaultTestDeployAssert6E7F54F3.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integtestDefaultTestDeployAssert24D5C536.assets.json",
+        "file": "testaurorapubsnclusterDefaultTestDeployAssert6E7F54F3.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integtestDefaultTestDeployAssert24D5C536": {
+    "testaurorapubsnclusterDefaultTestDeployAssert6E7F54F3": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integtestDefaultTestDeployAssert24D5C536.template.json",
+        "templateFile": "testaurorapubsnclusterDefaultTestDeployAssert6E7F54F3.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -370,7 +550,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integtestDefaultTestDeployAssert24D5C536.assets"
+          "testaurorapubsnclusterDefaultTestDeployAssert6E7F54F3.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -379,23 +559,23 @@
         }
       },
       "dependencies": [
-        "integtestDefaultTestDeployAssert24D5C536.assets"
+        "testaurorapubsnclusterDefaultTestDeployAssert6E7F54F3.assets"
       ],
       "metadata": {
-        "/integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/test-aurora-pub-sn-cluster/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/test-aurora-pub-sn-cluster/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-test/DefaultTest/DeployAssert"
+      "displayName": "test-aurora-pub-sn-cluster/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

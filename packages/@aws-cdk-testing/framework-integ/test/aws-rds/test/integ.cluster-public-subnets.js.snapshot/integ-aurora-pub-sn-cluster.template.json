@@ -507,10 +507,10 @@
     "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
    ]
   },
-  "integauroraserverlessv20IntegClusterSubnets2462DA9D": {
+  "IntegCluster0SubnetsEED4DE8C": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
-    "DBSubnetGroupDescription": "Subnets for Integ-Cluster database",
+    "DBSubnetGroupDescription": "Subnets for Integ-Cluster-0 database",
     "SubnetIds": [
      {
       "Ref": "IntegVPCPublicSubnet1SubnetE05F7E7D"
@@ -521,7 +521,7 @@
     ]
    }
   },
-  "integauroraserverlessv20IntegClusterSecurityGroup0FF1F93F": {
+  "IntegCluster0SecurityGroup00F9C694": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "RDS security group",
@@ -537,7 +537,7 @@
     }
    }
   },
-  "integauroraserverlessv20IntegClusterSecretB9E432EB": {
+  "IntegCluster0Secret18CF39B2": {
    "Type": "AWS::SecretsManager::Secret",
    "Properties": {
     "Description": {
@@ -561,25 +561,25 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "integauroraserverlessv20IntegClusterSecretAttachmentABF2342B": {
+  "IntegCluster0SecretAttachmentF274C8AA": {
    "Type": "AWS::SecretsManager::SecretTargetAttachment",
    "Properties": {
     "SecretId": {
-     "Ref": "integauroraserverlessv20IntegClusterSecretB9E432EB"
+     "Ref": "IntegCluster0Secret18CF39B2"
     },
     "TargetId": {
-     "Ref": "integauroraserverlessv20IntegCluster5133790E"
+     "Ref": "IntegCluster0EE0FF168"
     },
     "TargetType": "AWS::RDS::DBCluster"
    }
   },
-  "integauroraserverlessv20IntegCluster5133790E": {
+  "IntegCluster0EE0FF168": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
     "DBClusterParameterGroupName": "default.aurora-mysql8.0",
     "DBSubnetGroupName": {
-     "Ref": "integauroraserverlessv20IntegClusterSubnets2462DA9D"
+     "Ref": "IntegCluster0SubnetsEED4DE8C"
     },
     "Engine": "aurora-mysql",
     "EngineVersion": "8.0.mysql_aurora.3.03.0",
@@ -589,7 +589,7 @@
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "integauroraserverlessv20IntegClusterSecretB9E432EB"
+        "Ref": "IntegCluster0Secret18CF39B2"
        },
        ":SecretString:password::}}"
       ]
@@ -601,7 +601,7 @@
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "integauroraserverlessv20IntegClusterSecretB9E432EB"
+        "Ref": "IntegCluster0Secret18CF39B2"
        },
        ":SecretString:username::}}"
       ]
@@ -614,7 +614,7 @@
     "VpcSecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "integauroraserverlessv20IntegClusterSecurityGroup0FF1F93F",
+       "IntegCluster0SecurityGroup00F9C694",
        "GroupId"
       ]
      }
@@ -623,11 +623,11 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "integauroraserverlessv20IntegClusterwriter68858AE9": {
+  "IntegCluster0writer825E34BB": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "DBClusterIdentifier": {
-     "Ref": "integauroraserverlessv20IntegCluster5133790E"
+     "Ref": "IntegCluster0EE0FF168"
     },
     "DBInstanceClass": "db.serverless",
     "Engine": "aurora-mysql",
@@ -643,50 +643,10 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "integauroraserverlessv20capacity09BB04C7": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "DBClusterIdentifier",
-      "Value": {
-       "Ref": "integauroraserverlessv20IntegCluster5133790E"
-      }
-     }
-    ],
-    "EvaluationPeriods": 3,
-    "MetricName": "ServerlessDatabaseCapacity",
-    "Namespace": "AWS/RDS",
-    "Period": 600,
-    "Statistic": "Average",
-    "Threshold": 1.5
-   }
-  },
-  "integauroraserverlessv20alarmA67BFE09": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "DBClusterIdentifier",
-      "Value": {
-       "Ref": "integauroraserverlessv20IntegCluster5133790E"
-      }
-     }
-    ],
-    "EvaluationPeriods": 3,
-    "MetricName": "ACUUtilization",
-    "Namespace": "AWS/RDS",
-    "Period": 600,
-    "Statistic": "Average",
-    "Threshold": 90
-   }
-  },
-  "integauroraserverlessv21IntegClusterSubnetsAEE71920": {
+  "IntegCluster1SubnetsFAB09E4C": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
-    "DBSubnetGroupDescription": "Subnets for Integ-Cluster database",
+    "DBSubnetGroupDescription": "Subnets for Integ-Cluster-1 database",
     "SubnetIds": [
      {
       "Ref": "IntegVPCPublicSubnet1SubnetE05F7E7D"
@@ -697,7 +657,7 @@
     ]
    }
   },
-  "integauroraserverlessv21IntegClusterSecurityGroup483E60E7": {
+  "IntegCluster1SecurityGroupF2EFE159": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "RDS security group",
@@ -713,7 +673,7 @@
     }
    }
   },
-  "integauroraserverlessv21IntegClusterSecretA8DA28CB": {
+  "IntegCluster1Secret8C69CB87": {
    "Type": "AWS::SecretsManager::Secret",
    "Properties": {
     "Description": {
@@ -737,25 +697,25 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "integauroraserverlessv21IntegClusterSecretAttachmentB7E69BEA": {
+  "IntegCluster1SecretAttachment210FB7C5": {
    "Type": "AWS::SecretsManager::SecretTargetAttachment",
    "Properties": {
     "SecretId": {
-     "Ref": "integauroraserverlessv21IntegClusterSecretA8DA28CB"
+     "Ref": "IntegCluster1Secret8C69CB87"
     },
     "TargetId": {
-     "Ref": "integauroraserverlessv21IntegClusterDFF12F00"
+     "Ref": "IntegCluster1DA2E2086"
     },
     "TargetType": "AWS::RDS::DBCluster"
    }
   },
-  "integauroraserverlessv21IntegClusterDFF12F00": {
+  "IntegCluster1DA2E2086": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
     "DBClusterParameterGroupName": "default.aurora-mysql8.0",
     "DBSubnetGroupName": {
-     "Ref": "integauroraserverlessv21IntegClusterSubnetsAEE71920"
+     "Ref": "IntegCluster1SubnetsFAB09E4C"
     },
     "Engine": "aurora-mysql",
     "EngineVersion": "8.0.mysql_aurora.3.03.0",
@@ -765,7 +725,7 @@
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "integauroraserverlessv21IntegClusterSecretA8DA28CB"
+        "Ref": "IntegCluster1Secret8C69CB87"
        },
        ":SecretString:password::}}"
       ]
@@ -777,7 +737,7 @@
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "integauroraserverlessv21IntegClusterSecretA8DA28CB"
+        "Ref": "IntegCluster1Secret8C69CB87"
        },
        ":SecretString:username::}}"
       ]
@@ -790,7 +750,7 @@
     "VpcSecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "integauroraserverlessv21IntegClusterSecurityGroup483E60E7",
+       "IntegCluster1SecurityGroupF2EFE159",
        "GroupId"
       ]
      }
@@ -799,11 +759,11 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "integauroraserverlessv21IntegClusterwriterD87D3A20": {
+  "IntegCluster1writer2545F93A": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "DBClusterIdentifier": {
-     "Ref": "integauroraserverlessv21IntegClusterDFF12F00"
+     "Ref": "IntegCluster1DA2E2086"
     },
     "DBInstanceClass": "db.serverless",
     "Engine": "aurora-mysql",
@@ -819,50 +779,10 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "integauroraserverlessv21capacityAFD8D6D1": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "DBClusterIdentifier",
-      "Value": {
-       "Ref": "integauroraserverlessv21IntegClusterDFF12F00"
-      }
-     }
-    ],
-    "EvaluationPeriods": 3,
-    "MetricName": "ServerlessDatabaseCapacity",
-    "Namespace": "AWS/RDS",
-    "Period": 600,
-    "Statistic": "Average",
-    "Threshold": 1.5
-   }
-  },
-  "integauroraserverlessv21alarmE70B8A00": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "DBClusterIdentifier",
-      "Value": {
-       "Ref": "integauroraserverlessv21IntegClusterDFF12F00"
-      }
-     }
-    ],
-    "EvaluationPeriods": 3,
-    "MetricName": "ACUUtilization",
-    "Namespace": "AWS/RDS",
-    "Period": 600,
-    "Statistic": "Average",
-    "Threshold": 90
-   }
-  },
-  "integauroraserverlessv22IntegClusterSubnets241DB50C": {
+  "IntegCluster2SubnetsB118DC94": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
-    "DBSubnetGroupDescription": "Subnets for Integ-Cluster database",
+    "DBSubnetGroupDescription": "Subnets for Integ-Cluster-2 database",
     "SubnetIds": [
      {
       "Ref": "IntegVPCPublicSubnet1SubnetE05F7E7D"
@@ -873,7 +793,7 @@
     ]
    }
   },
-  "integauroraserverlessv22IntegClusterSecurityGroup0EDBBE37": {
+  "IntegCluster2SecurityGroupB468D38C": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "RDS security group",
@@ -889,7 +809,7 @@
     }
    }
   },
-  "integauroraserverlessv22IntegClusterSecretBF74DBA3": {
+  "IntegCluster2SecretAAB6B7B2": {
    "Type": "AWS::SecretsManager::Secret",
    "Properties": {
     "Description": {
@@ -913,25 +833,25 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "integauroraserverlessv22IntegClusterSecretAttachment4864E40A": {
+  "IntegCluster2SecretAttachment7777DFE5": {
    "Type": "AWS::SecretsManager::SecretTargetAttachment",
    "Properties": {
     "SecretId": {
-     "Ref": "integauroraserverlessv22IntegClusterSecretBF74DBA3"
+     "Ref": "IntegCluster2SecretAAB6B7B2"
     },
     "TargetId": {
-     "Ref": "integauroraserverlessv22IntegCluster1F86F0C6"
+     "Ref": "IntegCluster2A1E91492"
     },
     "TargetType": "AWS::RDS::DBCluster"
    }
   },
-  "integauroraserverlessv22IntegCluster1F86F0C6": {
+  "IntegCluster2A1E91492": {
    "Type": "AWS::RDS::DBCluster",
    "Properties": {
     "CopyTagsToSnapshot": true,
     "DBClusterParameterGroupName": "default.aurora-mysql8.0",
     "DBSubnetGroupName": {
-     "Ref": "integauroraserverlessv22IntegClusterSubnets241DB50C"
+     "Ref": "IntegCluster2SubnetsB118DC94"
     },
     "Engine": "aurora-mysql",
     "EngineVersion": "8.0.mysql_aurora.3.03.0",
@@ -941,7 +861,7 @@
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "integauroraserverlessv22IntegClusterSecretBF74DBA3"
+        "Ref": "IntegCluster2SecretAAB6B7B2"
        },
        ":SecretString:password::}}"
       ]
@@ -953,7 +873,7 @@
       [
        "{{resolve:secretsmanager:",
        {
-        "Ref": "integauroraserverlessv22IntegClusterSecretBF74DBA3"
+        "Ref": "IntegCluster2SecretAAB6B7B2"
        },
        ":SecretString:username::}}"
       ]
@@ -966,7 +886,7 @@
     "VpcSecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "integauroraserverlessv22IntegClusterSecurityGroup0EDBBE37",
+       "IntegCluster2SecurityGroupB468D38C",
        "GroupId"
       ]
      }
@@ -975,11 +895,11 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "integauroraserverlessv22IntegClusterwriter4C20F6E7": {
+  "IntegCluster2writerDC7056F8": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "DBClusterIdentifier": {
-     "Ref": "integauroraserverlessv22IntegCluster1F86F0C6"
+     "Ref": "IntegCluster2A1E91492"
     },
     "DBInstanceClass": "db.serverless",
     "Engine": "aurora-mysql",
@@ -994,46 +914,6 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  },
-  "integauroraserverlessv22capacityCC6A400C": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "DBClusterIdentifier",
-      "Value": {
-       "Ref": "integauroraserverlessv22IntegCluster1F86F0C6"
-      }
-     }
-    ],
-    "EvaluationPeriods": 3,
-    "MetricName": "ServerlessDatabaseCapacity",
-    "Namespace": "AWS/RDS",
-    "Period": 600,
-    "Statistic": "Average",
-    "Threshold": 1.5
-   }
-  },
-  "integauroraserverlessv22alarmA8DB3F10": {
-   "Type": "AWS::CloudWatch::Alarm",
-   "Properties": {
-    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "Dimensions": [
-     {
-      "Name": "DBClusterIdentifier",
-      "Value": {
-       "Ref": "integauroraserverlessv22IntegCluster1F86F0C6"
-      }
-     }
-    ],
-    "EvaluationPeriods": 3,
-    "MetricName": "ACUUtilization",
-    "Namespace": "AWS/RDS",
-    "Period": 600,
-    "Statistic": "Average",
-    "Threshold": 90
-   }
   }
  },
  "Parameters": {
