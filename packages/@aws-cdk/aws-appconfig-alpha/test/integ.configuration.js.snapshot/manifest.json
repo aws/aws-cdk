@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "aws-appconfig-configuration.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cdb2df2d01c3d2e405d608dcfa9a277a475d8574f0ef1bf555da9d71547f5b97.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/df33d9dc000fae6b4ae1252e22f268275eac602b701d0e4c4aa8c463411bb15e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -56,6 +56,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyAppConfigHostedEnvFromYaml82D3D1B2"
+          }
+        ],
+        "/aws-appconfig-configuration/MyAppConfig/EnvDeployLater/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAppConfigEnvDeployLater26FA1032"
           }
         ],
         "/aws-appconfig-configuration/MyAppConfig/ParameterEnv/Resource": [
@@ -128,6 +134,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyHostedConfigFromJsonDeploymentCD82E3049E374"
+          }
+        ],
+        "/aws-appconfig-configuration/MyHostedConfigFromJson/DeploymentEFECD": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromJsonDeploymentEFECDBC4087F1"
           }
         ],
         "/aws-appconfig-configuration/MyHostedConfigFromYaml/ConfigurationProfile": [

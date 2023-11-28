@@ -149,6 +149,45 @@ describe('configuration', () => {
     Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 1);
   });
 
+  test('configuration using deploy method', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig', {
+      name: 'MyApplication',
+    });
+    app.addEnvironment('MyEnv1');
+    const env = app.addEnvironment('MyEnv2');
+    const config = new HostedConfiguration(stack, 'MyHostedConfig', {
+      content: ConfigurationContent.fromInlineText('This is my content'),
+      application: app,
+      deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
+      }),
+    });
+    config.deploy(env);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Deployment', {
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      EnvironmentId: {
+        Ref: 'MyAppConfigMyEnv2350437D6',
+      },
+      ConfigurationVersion: {
+        Ref: 'MyHostedConfig51D3877D',
+      },
+      ConfigurationProfileId: {
+        Ref: 'MyHostedConfigConfigurationProfile2E1A2BBC',
+      },
+      DeploymentStrategyId: {
+        Ref: 'MyDeploymentStrategy60D31FB0',
+      },
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 1);
+  });
+
   test('configuration with two configurations specified', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig', {

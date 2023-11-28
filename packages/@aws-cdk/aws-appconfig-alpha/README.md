@@ -174,6 +174,20 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 });
 ```
 
+If you want to deploy a configuration to an environment later and not on creation, you can call the `deploy` method on the configuration.
+
+```ts
+declare const application: appconfig.Application;
+declare const env: appconfig.Environment;
+
+const config = new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
+  application,
+  content: appconfig.ConfigurationContent.fromInlineText('This is my configuration content.'),
+});
+
+config.deploy(env);
+```
+
 ### SourcedConfiguration
 
 A sourced configuration represents configuration stored in an Amazon S3 bucket, AWS Secrets Manager secret, Systems Manager 
