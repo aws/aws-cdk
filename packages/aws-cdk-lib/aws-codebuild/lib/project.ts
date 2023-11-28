@@ -1955,7 +1955,7 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * Corresponds to the standard CodeBuild image `aws/codebuild/windows-base:1.0`.
    *
-   * @deprecated `WindowsBuildImage.WINDOWS_BASE_2_0` should be used instead.
+   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0` should be used instead.
    */
   public static readonly WIN_SERVER_CORE_2016_BASE: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:1.0',
@@ -1965,6 +1965,8 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * The standard CodeBuild image `aws/codebuild/windows-base:2.0`, which is
    * based off Windows Server Core 2016.
+   *
+   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0` should be used instead.
    */
   public static readonly WINDOWS_BASE_2_0: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:2.0',
@@ -2066,8 +2068,8 @@ export class WindowsBuildImage implements IBuildImage {
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret: string[] = [];
-    if (buildEnvironment.computeType === ComputeType.SMALL) {
-      ret.push('Windows images do not support the Small ComputeType');
+    if (buildEnvironment.computeType === ComputeType.SMALL || buildEnvironment.computeType === ComputeType.X2_LARGE) {
+      ret.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
     }
     return ret;
   }
