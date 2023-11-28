@@ -1,5 +1,5 @@
 import { Match, Template } from 'aws-cdk-lib/assertions';
-import { HttpApi, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2-alpha';
+import { HttpApi, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from 'aws-cdk-lib/aws-apigatewayv2';
 import { Code, Function } from 'aws-cdk-lib/aws-lambda';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack } from 'aws-cdk-lib';
