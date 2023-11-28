@@ -1,77 +1,67 @@
 import { Construct } from 'constructs';
-import { CustomResourceProviderBase, CustomResourceProviderOptions } from './custom-resource-provider-base';
-import { CdkHandler } from '../../../handler-framework/lib/cdk-handler';
+import { CustomResourceProviderBase } from './custom-resource-provider-base';
+import { CustomResourceProviderOptions } from './shared';
+import { Runtime } from '../../../aws-lambda';
 import { RuntimeDeterminer } from '../../../handler-framework/lib/utils/runtime-determiner';
-import { CfnResource } from '../cfn-resource';
-import { Duration } from '../duration';
-import { Size } from '../size';
 import { Stack } from '../stack';
-import { Token } from '../token';
 
+/**
+ * Initialization properties for `CdkCustomResourceProvider`
+ */
 export interface CdkCustomResourceProviderProps extends CustomResourceProviderOptions {
   /**
-   * The source code, compatible runtimes, and the method within your code that Lambda calls to execute your function.
+   * A local file system directory with the provider's code. The code will be
+   * bundled into a zip asset and wired to the provider's AWS Lambda function.
    */
-  readonly handler: CdkHandler;
+  readonly codeDirectory: string;
+
+  /**
+   * Runtimes that are compatible with the source code.
+   */
+  readonly compatibleRuntimes: Runtime[];
 }
 
 export class CdkCustomResourceProvider extends CustomResourceProviderBase {
+  /**
+   * Returns a stack-level singleton ARN (service token) for the custom resource
+   * provider.
+   *
+   * @param scope Construct scope
+   * @param uniqueid A globally unique id that will be used for the stack-level
+   * construct.
+   * @param props Provider properties which will only be applied when the
+   * provider is first created.
+   * @returns the service token of the custom resource provider, which should be
+   * used when defining a `CustomResource`.
+   */
   public static getOrCreate(scope: Construct, uniqueid: string, props: CdkCustomResourceProviderProps) {
     return this.getOrCreateProvider(scope, uniqueid, props).serviceToken;
   }
 
+  /**
+   * Returns a stack-level singleton for the custom resource provider.
+   *
+   * @param scope Construct scope
+   * @param uniqueid A globally unique id that will be used for the stack-level
+   * construct.
+   * @param props Provider properties which will only be applied when the
+   * provider is first created.
+   * @returns the service token of the custom resource provider, which should be
+   * used when defining a `CustomResource`.
+   */
   public static getOrCreateProvider(scope: Construct, uniqueid: string, props: CdkCustomResourceProviderProps) {
     const id = `${uniqueid}CustomResourceProvider`;
     const stack = Stack.of(scope);
     const provider = stack.node.tryFindChild(id) as CdkCustomResourceProvider
-      ?? new CdkCustomResourceProvider(stack, id, props);
+      ?? new CdkCustomResourceProvider(scope, id, props);
+
     return provider;
   }
 
-  public readonly serviceToken;
-  public readonly roleArn;
-
   protected constructor(scope: Construct, id: string, props: CdkCustomResourceProviderProps) {
-    super(scope, id);
-
-    if (props.policyStatements) {
-      for (const statement of props.policyStatements) {
-        this.addToRolePolicy(statement);
-      }
-    }
-
-    this.roleArn = this.renderRoleArn(id);
-
-    const code = props.handler.code.bind(Stack.of(this));
-
-    const timeout = props.timeout ?? Duration.minutes(15);
-    const memory = props.memorySize ?? Size.mebibytes(128);
-
-    const handler = new CfnResource(this, 'Handler', {
-      type: 'AWS::Lambda::Function',
-      properties: {
-        Code: {
-          code: {
-            S3Bucket: code.s3Location?.bucketName,
-            S3Key: code.s3Location?.objectKey,
-          },
-        },
-        Timeout: timeout.toSeconds(),
-        MemorySize: memory.toMebibytes(),
-        Handler: props.handler.entrypoint,
-        Role: this.roleArn,
-        Runtime: RuntimeDeterminer.determineLatestRuntime(props.handler.compatibleRuntimes).name,
-        Environment: this.renderEnvironmentVariables(props.environment),
-        Description: props.description ?? undefined,
-      },
+    super(scope, id, {
+      ...props,
+      runtimeName: RuntimeDeterminer.determineLatestRuntime(props.compatibleRuntimes).name,
     });
-
-    props.handler.code.bindToResource(handler);
-
-    if (this._role) {
-      handler.addDependency(this._role);
-    }
-
-    this.serviceToken = Token.asString(handler.getAtt('Arn'));
   }
 }
