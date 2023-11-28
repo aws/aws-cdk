@@ -189,4 +189,53 @@ describe('logging Config', () => {
       });
     }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'undefined'./);
   });
+
+  test('Logging Config TEXT logFormat with string type', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    new lambda.Function(stack, 'Lambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      logFormat: 'Text',
+    });
+    // WHEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogFormat: 'Text',
+      },
+    });
+  });
+
+  test('Logging Config JSON logFormat with string type', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    new lambda.Function(stack, 'Lambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      logFormat: 'JSON',
+    });
+    // WHEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogFormat: 'JSON',
+      },
+    });
+  });
+
+  test('Throws When a string which is not defined in enum LogFormat is used', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    expect(() => {
+      new lambda.Function(stack, 'Lambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        logFormat: 'XML',
+      });
+    }).toThrow('XML is not a legal LogFormat type');
+  });
 });
