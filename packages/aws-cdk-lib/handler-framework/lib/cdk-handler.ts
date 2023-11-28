@@ -1,3 +1,4 @@
+import { RuntimeDeterminer } from './utils/runtime-determiner';
 import { Code, Runtime } from '../../aws-lambda';
 
 /**
@@ -39,13 +40,13 @@ export class CdkHandler {
   public readonly entrypoint: string;
 
   /**
-   * Runtimes that are compatible with the source code.
+   * The latest runtime that is compatible with the source code.
    */
-  public readonly compatibleRuntimes: Runtime[];
+  public readonly runtime: Runtime;
 
   private constructor(path: string, props: CdkHandlerProps) {
     this.code = Code.fromAsset(path);
     this.entrypoint = props.entrypoint;
-    this.compatibleRuntimes = props.compatibleRuntimes;
+    this.runtime = RuntimeDeterminer.determineLatestRuntime(props.compatibleRuntimes);
   }
 }

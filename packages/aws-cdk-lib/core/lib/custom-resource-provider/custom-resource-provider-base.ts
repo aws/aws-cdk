@@ -73,6 +73,12 @@ export abstract class CustomResourceProviderBase extends Construct {
       throw new Error(`cannot find ${props.codeDirectory}/index.js`);
     }
 
+    if (props.policyStatements) {
+      for (const statement of props.policyStatements) {
+        this.addToRolePolicy(statement);
+      }
+    }
+
     const { code, codeHandler, metadata } = this.createCodePropAndMetadata(props, stack);
 
     const config = getPrecreatedRoleConfig(this, `${this.node.path}/Role`);

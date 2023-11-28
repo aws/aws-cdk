@@ -109,8 +109,7 @@ export class CustomResourceProvider extends CustomResourceProviderBase {
     const id = `${uniqueid}CustomResourceProvider`;
     const stack = Stack.of(scope);
     const provider = stack.node.tryFindChild(id) as CustomResourceProvider
-      ?? new CustomResourceProvider(scope, id, props);
-
+      ?? new CustomResourceProvider(stack, id, props);
     return provider;
   }
 
