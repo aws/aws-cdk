@@ -9,7 +9,8 @@ describe('cdk singleton function', () => {
   test('stack contains expected lambda function', () => {
     // GIVEN
     const stack = new Stack();
-    const handler = CdkHandler.fromAsset(path.join(__dirname, 'test-handler'), {
+    const handler = new CdkHandler(stack, 'CdkHandler', {
+      codeDirectory: path.join(__dirname, 'test-handler'),
       entrypoint: 'index.handler',
       compatibleRuntimes: [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X],
     });

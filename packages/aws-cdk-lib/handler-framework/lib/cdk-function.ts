@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CdkHandler } from './cdk-handler';
-import { Function, FunctionOptions } from '../../aws-lambda';
+import { Code, Function, FunctionOptions } from '../../aws-lambda';
 
 /**
  * Properties used to define a Lambda function used as a custom resource provider.
@@ -19,7 +19,7 @@ export class CdkFunction extends Function {
   public constructor(scope: Construct, id: string, props: CdkFunctionProps) {
     super(scope, id, {
       ...props,
-      code: props.handler.code,
+      code: Code.fromAsset(props.handler.codeDirectory),
       handler: props.handler.entrypoint,
       runtime: props.handler.runtime,
     });

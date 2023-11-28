@@ -173,8 +173,8 @@ export class DropSpamReceiptRule extends Construct {
   constructor(scope: Construct, id: string, props: DropSpamReceiptRuleProps) {
     super(scope, id);
 
-    const handler = CdkHandler.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-ses', 'drop-spam-handler'), {
-      entrypoint: 'index.handler',
+    const handler = new CdkHandler(this, 'DropSpamHandler', {
+      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-ses', 'drop-spam-handler'),
       compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
     });
 

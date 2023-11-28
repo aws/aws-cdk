@@ -1,5 +1,6 @@
+import { Construct } from 'constructs';
 import { RuntimeDeterminer } from './utils/runtime-determiner';
-import { Code, Runtime } from '../../aws-lambda';
+import { Runtime } from '../../aws-lambda';
 
 /**
  * Properties used to define source code executed within a Lambda function acting as a
@@ -7,32 +8,33 @@ import { Code, Runtime } from '../../aws-lambda';
  */
 export interface CdkHandlerProps {
   /**
-   * The name of the method within your code that Lambda calls to execute your function.
+   * A local file system directory with the provider's code. The code will be
+   * bundled into a zip asset and wired to the provider's AWS Lambda function.
    */
-  readonly entrypoint: string;
+  readonly codeDirectory: string;
 
   /**
    * Runtimes that are compatible with the source code.
    */
   readonly compatibleRuntimes: Runtime[];
+
+  /**
+   * The name of the method within your code that Lambda calls to execute your function.
+   *
+   * @default 'index.handler'
+   */
+  readonly entrypoint?: string;
 }
 
 /**
  * Represents source code that will be executed within a Lambda function acting as a
  * custom resource provider.
  */
-export class CdkHandler {
-  /**
-   * Loads the source code from a local disk path.
-   */
-  public static fromAsset(path: string, props: CdkHandlerProps) {
-    return new CdkHandler(path, props);
-  }
-
+export class CdkHandler extends Construct {
   /**
    * The source code loaded from a local disk path.
    */
-  public readonly code: Code;
+  public readonly codeDirectory: string;
 
   /**
    * The name of the method within your code that Lambda calls to execute your function.
@@ -44,9 +46,10 @@ export class CdkHandler {
    */
   public readonly runtime: Runtime;
 
-  private constructor(path: string, props: CdkHandlerProps) {
-    this.code = Code.fromAsset(path);
-    this.entrypoint = props.entrypoint;
+  public constructor(scope: Construct, id: string, props: CdkHandlerProps) {
+    super(scope, id);
+    this.codeDirectory = props.codeDirectory;
+    this.entrypoint = props.entrypoint ?? 'index.handler';
     this.runtime = RuntimeDeterminer.determineLatestRuntime(props.compatibleRuntimes);
   }
 }

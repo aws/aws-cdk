@@ -8,6 +8,9 @@ import { Stack } from '../stack';
  * Initialization properties for `CdkCustomResourceProvider`
  */
 export interface CdkCustomResourceProviderProps extends CustomResourceProviderOptions {
+  /**
+   * The source code, compatible runtimes, and the method within your code that Lambda calls to execute your function.
+   */
   readonly handler: CdkHandler
 }
 
@@ -50,7 +53,7 @@ export class CdkCustomResourceProvider extends CustomResourceProviderBase {
   protected constructor(scope: Construct, id: string, props: CdkCustomResourceProviderProps) {
     super(scope, id, {
       ...props,
-      codeDirectory: props.handler.entrypoint,
+      codeDirectory: props.handler.codeDirectory,
       runtimeName: props.handler.runtime.name,
     });
   }
