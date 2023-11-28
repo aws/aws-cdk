@@ -657,6 +657,10 @@ export class CfnParser {
         }
         return { Condition: condition.logicalId };
       }
+      case 'Fn::AccountIdFromAlias': {
+        const value = this.parseValue(object[key]);
+        return Fn.accountIdFromAlias(value);
+      }
       default:
         if (this.options.context === CfnParsingContext.RULES) {
           return this.handleRulesIntrinsic(key, object);
