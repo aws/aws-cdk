@@ -1,9 +1,9 @@
+import { HttpLambdaIntegration } from './../../lib/http/lambda';
+import { App, Stack } from '../../..';
 import { Match, Template } from '../../../assertions';
 import { HttpApi, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from '../../../aws-apigatewayv2';
 import { Code, Function } from '../../../aws-lambda';
 import * as lambda from '../../../aws-lambda';
-import { App, Stack } from '../../..';
-import { HttpLambdaIntegration } from './../../lib/http/lambda';
 
 describe('LambdaProxyIntegration', () => {
   test('default', () => {

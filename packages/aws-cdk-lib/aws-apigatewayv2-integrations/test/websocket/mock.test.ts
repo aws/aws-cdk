@@ -1,7 +1,7 @@
+import { WebSocketMockIntegration } from './../../lib/websocket/mock';
 import { Template } from '../../../assertions';
 import { WebSocketApi } from '../../../aws-apigatewayv2';
 import { Stack } from '../../../core';
-import { WebSocketMockIntegration } from './../../lib/websocket/mock';
 
 describe('MockWebSocketIntegration', () => {
   test('default', () => {

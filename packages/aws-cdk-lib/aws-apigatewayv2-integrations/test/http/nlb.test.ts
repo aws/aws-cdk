@@ -1,9 +1,9 @@
+import { HttpNlbIntegration } from './../../lib/http/nlb';
 import { Template } from '../../../assertions';
 import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, VpcLink } from '../../../aws-apigatewayv2';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import { Stack } from '../../../core';
-import { HttpNlbIntegration } from './../../lib/http/nlb';
 
 describe('HttpNlbIntegration', () => {
   test('default', () => {

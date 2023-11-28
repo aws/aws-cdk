@@ -1,8 +1,8 @@
+import { HttpPrivateIntegrationOptions } from './base-types';
+import { HttpPrivateIntegration } from './private/integration';
 import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '../../../aws-apigatewayv2';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
-import { HttpPrivateIntegrationOptions } from './base-types';
-import { HttpPrivateIntegration } from './private/integration';
 
 /**
  * Properties to initialize `HttpNlbIntegration`.

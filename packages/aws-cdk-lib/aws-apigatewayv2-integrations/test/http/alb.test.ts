@@ -1,8 +1,8 @@
+import { Stack } from '../../..';
 import { Template } from '../../../assertions';
 import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey, VpcLink, ParameterMapping, MappingValue } from '../../../aws-apigatewayv2';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
-import { Stack } from '../../..';
 import { HttpAlbIntegration } from '../../lib';
 
 describe('HttpAlbIntegration', () => {

@@ -1,6 +1,6 @@
+import { HttpPrivateIntegration } from './../../../lib/http/private/integration';
 import { HttpApi, HttpRoute, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, HttpRouteKey } from '../../../../aws-apigatewayv2';
 import { Stack } from '../../../../core';
-import { HttpPrivateIntegration } from './../../../lib/http/private/integration';
 
 describe('HttpPrivateIntegration', () => {
   test('throws error if both vpcLink and vpc are not passed', () => {

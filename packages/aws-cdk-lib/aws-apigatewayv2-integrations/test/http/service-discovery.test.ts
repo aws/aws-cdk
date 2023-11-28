@@ -1,9 +1,9 @@
+import { HttpServiceDiscoveryIntegration } from './../../lib/http/service-discovery';
 import { Template } from '../../../assertions';
 import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, VpcLink } from '../../../aws-apigatewayv2';
 import * as ec2 from '../../../aws-ec2';
 import * as servicediscovery from '../../../aws-servicediscovery';
 import { Stack } from '../../../core';
-import { HttpServiceDiscoveryIntegration } from './../../lib/http/service-discovery';
 
 describe('HttpServiceDiscoveryIntegration', () => {
   test('default', () => {

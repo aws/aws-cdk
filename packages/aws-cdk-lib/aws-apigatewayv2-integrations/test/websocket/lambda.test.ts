@@ -1,9 +1,9 @@
+import { WebSocketLambdaIntegration } from './../../lib/websocket/lambda';
 import { Template } from '../../../assertions';
 import { WebSocketApi } from '../../../aws-apigatewayv2';
 import { Code, Function } from '../../../aws-lambda';
 import * as lambda from '../../../aws-lambda';
 import { Stack } from '../../../core';
-import { WebSocketLambdaIntegration } from './../../lib/websocket/lambda';
 
 describe('LambdaWebSocketIntegration', () => {
   test('default', () => {
