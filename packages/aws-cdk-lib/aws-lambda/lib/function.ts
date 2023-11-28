@@ -297,11 +297,11 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly tracing?: Tracing;
 
   /**
-  * Enable SnapStart for Lambda Function.
-  * SnapStart is currently supported only for Java 11, 17 runtime
-  *
-  * @default - No snapstart
-  */
+   * Enable SnapStart for Lambda Function.
+   * SnapStart is currently supported only for Java 11, 17 runtime
+   *
+   * @default - No snapstart
+   */
   readonly snapStart?: SnapStartConf;
 
   /**
