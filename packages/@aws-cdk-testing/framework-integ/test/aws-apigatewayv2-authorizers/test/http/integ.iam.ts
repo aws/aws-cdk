@@ -1,4 +1,4 @@
-import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2-alpha';
+import * as apigatewayv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import { HttpIamAuthorizer } from '../../lib';

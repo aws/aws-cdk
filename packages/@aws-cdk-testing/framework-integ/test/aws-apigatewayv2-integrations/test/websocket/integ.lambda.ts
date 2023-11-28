@@ -1,4 +1,4 @@
-import { WebSocketApi, WebSocketStage } from '@aws-cdk/aws-apigatewayv2-alpha';
+import { WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { WebSocketLambdaIntegration } from '../../lib';

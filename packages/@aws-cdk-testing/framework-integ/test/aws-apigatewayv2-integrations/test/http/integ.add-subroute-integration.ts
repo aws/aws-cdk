@@ -1,4 +1,4 @@
-import { HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2-alpha';
+import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';

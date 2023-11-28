@@ -1,6 +1,6 @@
 import * as path from 'path';
-import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2-alpha';
-import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey } from 'aws-cdk-lib/aws-apigatewayv2';
+import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack, CfnOutput } from 'aws-cdk-lib';
 import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';

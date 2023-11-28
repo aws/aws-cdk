@@ -1,5 +1,5 @@
-import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2-alpha';
-import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import * as apigatewayv2 from 'aws-cdk-lib/aws-apigatewayv2';
+import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
