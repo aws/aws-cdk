@@ -5,7 +5,7 @@ import {
   WebSocketRouteAuthorizerConfig,
   IWebSocketRouteAuthorizer,
   IWebSocketApi,
-} from '@aws-cdk/aws-apigatewayv2-alpha';
+} from 'aws-cdk-lib/aws-apigatewayv2';
 import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { Stack, Names } from 'aws-cdk-lib/core';

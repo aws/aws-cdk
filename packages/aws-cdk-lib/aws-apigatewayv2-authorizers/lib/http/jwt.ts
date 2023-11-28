@@ -4,7 +4,7 @@ import {
   HttpRouteAuthorizerBindOptions,
   HttpRouteAuthorizerConfig,
   IHttpRouteAuthorizer,
-} from '@aws-cdk/aws-apigatewayv2-alpha';
+} from 'aws-cdk-lib/aws-apigatewayv2';
 
 /**
  * Properties to initialize HttpJwtAuthorizer.

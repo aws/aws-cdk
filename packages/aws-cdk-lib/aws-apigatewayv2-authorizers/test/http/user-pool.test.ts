@@ -1,5 +1,5 @@
 import { Template } from 'aws-cdk-lib/assertions';
-import { HttpApi } from '@aws-cdk/aws-apigatewayv2-alpha';
+import { HttpApi } from 'aws-cdk-lib/aws-apigatewayv2';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { Stack } from 'aws-cdk-lib';
 import { DummyRouteIntegration } from './integration';
