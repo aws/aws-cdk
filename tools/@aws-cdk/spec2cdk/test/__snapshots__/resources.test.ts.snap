@@ -18,7 +18,7 @@ export interface ICfnResource extends constructs.IConstruct {
    *
    * @cloudformationAttribute Ref
    */
-  readonly attrId?: string;
+  readonly attrId: string;
 }
 
 /**
@@ -62,7 +62,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IC
    *
    * @cloudformationAttribute Ref
    */
-  public readonly attrId?: string;
+  public readonly attrId: string;
 
   /**
    * The identifier of the resource.
@@ -1107,14 +1107,14 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface ICfnResource extends constructs.IConstruct {
   /**
    * The identifier of the resource.
    * This property gets determined after the resource is created.
    *
    * @cloudformationAttribute Ref
    */
-  readonly attrId?: string;
+  readonly attrId: string;
 
   /**
    * Another identifier of the resource.
@@ -1122,7 +1122,7 @@ export interface ICfnResource {
    *
    * @cloudformationAttribute Ref
    */
-  readonly attrAnotherId?: string;
+  readonly attrAnotherId: string;
 }
 
 /**
@@ -1166,7 +1166,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IC
    *
    * @cloudformationAttribute Ref
    */
-  public readonly attrAnotherId?: string;
+  public readonly attrAnotherId: string;
 
   /**
    * The identifier of the resource.
@@ -1174,7 +1174,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IC
    *
    * @cloudformationAttribute Ref
    */
-  public readonly attrId?: string;
+  public readonly attrId: string;
 
   /**
    * Another identifier of the resource.
@@ -1305,14 +1305,14 @@ import * as cfn_parse from "aws-cdk-lib/core/lib/helpers-internal";
  *
  * @stability external
  */
-export interface ICfnResource {
+export interface ICfnResource extends constructs.IConstruct {
   /**
    * The identifier of the resource.
    * This property gets determined after the resource is created.
    *
    * @cloudformationAttribute Ref
    */
-  readonly attrId?: string;
+  readonly attrId: string;
 }
 
 /**
@@ -1356,7 +1356,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IC
    *
    * @cloudformationAttribute Ref
    */
-  public readonly attrId?: string;
+  public readonly attrId: string;
 
   /**
    * The identifier of the resource.
