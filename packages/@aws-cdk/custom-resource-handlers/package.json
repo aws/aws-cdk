@@ -42,6 +42,9 @@
     "@aws-sdk/client-route-53": "3.421.0",
     "@aws-sdk/client-cloudwatch-logs": "3.421.0",
     "@aws-sdk/client-dynamodb": "3.421.0",
+    "@aws-sdk/client-eks": "3.421.0",
+    "@aws-sdk/client-sts": "3.421.0",
+    "@aws-sdk/node-http-handler": "^3.370.0",
     "@smithy/util-stream": "^2.0.20",
     "@types/jest": "^29.5.8",
     "aws-sdk-client-mock": "^3.0.0",
@@ -54,6 +57,7 @@
     "esbuild": "^0.19.5"
   },
   "dependencies": {
+    "@aws-cdk/asset-node-proxy-agent-v6": "^2.0.1",
     "@aws-sdk/client-lambda": "3.421.0",
     "@aws-sdk/client-synthetics": "3.421.0",
     "@aws-sdk/client-ecr": "3.421.0",
