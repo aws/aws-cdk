@@ -90,6 +90,23 @@ describe('autoscaled capacity', () => {
     });
   });
 
+  test('can specify seed capacity', () => {
+    // GIVEN
+    const capacity = Capacity.autoscaled({ maxCapacity: 10, seedCapacity: 20 });
+
+    // WHEN / THEN
+    expect(capacity._renderReadCapacity()).toEqual({
+      readCapacityAutoScalingSettings: {
+        minCapacity: 1,
+        maxCapacity: 10,
+        seedCapacity: 20,
+        targetTrackingScalingPolicyConfiguration: {
+          targetValue: 70,
+        },
+      },
+    });
+  });
+
   test('capacity mode is AUTOSCALED', () => {
     // GIVEN
     const capacity = Capacity.autoscaled({ minCapacity: 1, maxCapacity: 10 });
@@ -117,5 +134,12 @@ describe('autoscaled capacity', () => {
     expect(() => {
       Capacity.autoscaled({ maxCapacity: 10, targetUtilizationPercent: 91 });
     }).toThrow('`targetUtilizationPercent` cannot be less than 20 or greater than 90');
+  });
+
+  test('throws if seed capacity is less than 1', () => {
+    // GIVEN / WHEN / THEN
+    expect(() => {
+      Capacity.autoscaled({ maxCapacity: 10, seedCapacity: 0 });
+    }).toThrow("'seedCapacity' cannot be less than 1 - received 0");
   });
 });

@@ -11,6 +11,10 @@
         "rootPath": "packages/@aws-cdk/cli-lib-alpha"
       },
       {
+        "name": "cloudformation-diff",
+        "rootPath": "packages/@aws-cdk/cloudformation-diff"
+      },
+      {
         "name": "custom-resource-handlers",
         "rootPath": "packages/@aws-cdk/custom-resource-handlers"
       },

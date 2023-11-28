@@ -305,12 +305,12 @@ class Formatter {
     for (const [logicalId, resourceDiff] of Object.entries(templateDiff.resources)) {
       if (!resourceDiff) { continue; }
 
-      const oldPathMetadata = resourceDiff.oldValue && resourceDiff.oldValue.Metadata && resourceDiff.oldValue.Metadata[PATH_METADATA_KEY];
+      const oldPathMetadata = resourceDiff.oldValue?.Metadata?.[PATH_METADATA_KEY];
       if (oldPathMetadata && !(logicalId in this.logicalToPathMap)) {
         this.logicalToPathMap[logicalId] = oldPathMetadata;
       }
 
-      const newPathMetadata = resourceDiff.newValue && resourceDiff.newValue.Metadata && resourceDiff.newValue.Metadata[PATH_METADATA_KEY];
+      const newPathMetadata = resourceDiff.newValue?.Metadata?.[PATH_METADATA_KEY];
       if (newPathMetadata && !(logicalId in this.logicalToPathMap)) {
         this.logicalToPathMap[logicalId] = newPathMetadata;
       }
