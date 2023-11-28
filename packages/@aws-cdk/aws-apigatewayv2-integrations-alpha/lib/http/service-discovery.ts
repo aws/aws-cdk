@@ -1,4 +1,4 @@
-import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from 'aws-cdk-lib/aws-apigatewayv2';
+import { HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig } from '@aws-cdk/aws-apigatewayv2-alpha';
 import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
 import { HttpPrivateIntegrationOptions } from './base-types';
 import { HttpPrivateIntegration } from './private/integration';
