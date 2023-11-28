@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CustomResourceProviderBase } from './custom-resource-provider-base';
+import { CustomResourceProviderBase, CustomResourceProviderOptions } from './custom-resource-provider-base';
 import { CdkHandler } from '../../../handler-framework/lib/cdk-handler';
 import { RuntimeDeterminer } from '../../../handler-framework/lib/utils/runtime-determiner';
 import { CfnResource } from '../cfn-resource';
@@ -8,64 +8,11 @@ import { Size } from '../size';
 import { Stack } from '../stack';
 import { Token } from '../token';
 
-export interface CdkCustomResourceProviderProps {
+export interface CdkCustomResourceProviderProps extends CustomResourceProviderOptions {
   /**
    * The source code, compatible runtimes, and the method within your code that Lambda calls to execute your function.
    */
   readonly handler: CdkHandler;
-
-  /**
-   * A set of IAM policy statements to include in the inline policy of the
-   * provider's lambda function.
-   *
-   * **Please note**: these are direct IAM JSON policy blobs, *not* `iam.PolicyStatement`
-   * objects like you will see in the rest of the CDK.
-   *
-   * @default - no additional inline policy
-   *
-   * @example
-   * const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
-   *   codeDirectory: `${__dirname}/my-handler`,
-   *   runtime: CustomResourceProviderRuntime.NODEJS_18_X,
-   *   policyStatements: [
-   *     {
-   *       Effect: 'Allow',
-   *       Action: 's3:PutObject*',
-   *       Resource: '*',
-   *     }
-   *   ],
-   * });
-   */
-  readonly policyStatements?: any[];
-
-  /**
-   * AWS Lambda timeout for the provider.
-   *
-   * @default Duration.minutes(15)
-   */
-  readonly timeout?: Duration;
-
-  /**
-   * The amount of memory that your function has access to. Increasing the function's memory also increases its CPU
-   * allocation.
-   *
-   * @default Size.mebibytes(128)
-   */
-  readonly memorySize?: Size;
-
-  /**
-   * Key-value pairs that are passed to Lambda as Environment
-   *
-   * @default - No environment variables.
-   */
-  readonly environment?: { [key: string]: string };
-
-  /**
-   * A description of the function.
-   *
-   * @default - No description.
-   */
-  readonly description?: string;
 }
 
 export class CdkCustomResourceProvider extends CustomResourceProviderBase {
@@ -95,13 +42,20 @@ export class CdkCustomResourceProvider extends CustomResourceProviderBase {
 
     this.roleArn = this.renderRoleArn(id);
 
+    const code = props.handler.code.bind(Stack.of(this));
+
     const timeout = props.timeout ?? Duration.minutes(15);
     const memory = props.memorySize ?? Size.mebibytes(128);
 
     const handler = new CfnResource(this, 'Handler', {
       type: 'AWS::Lambda::Function',
       properties: {
-        Code: props.handler.code.bind(Stack.of(this)),
+        Code: {
+          code: {
+            S3Bucket: code.s3Location?.bucketName,
+            S3Key: code.s3Location?.objectKey,
+          },
+        },
         Timeout: timeout.toSeconds(),
         MemorySize: memory.toMebibytes(),
         Handler: props.handler.entrypoint,
