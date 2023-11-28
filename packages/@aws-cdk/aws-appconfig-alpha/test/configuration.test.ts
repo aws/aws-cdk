@@ -149,7 +149,11 @@ describe('configuration', () => {
     Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 1);
   });
 
+<<<<<<< HEAD
   test('configuration using deploy method and no environment associated', () => {
+=======
+  test('configuration using deploy method', () => {
+>>>>>>> 39c360bbc0 (feat(appconfig): add deploy method to configuration constructs)
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig', {
       name: 'MyApplication',
