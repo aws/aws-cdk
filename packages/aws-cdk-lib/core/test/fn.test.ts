@@ -303,6 +303,16 @@ test('Fn.len with resolved value', () => {
   expect(Fn.len(Fn.split('|', 'a|b|c'))).toBe(3);
 });
 
+test('Fn.AccountIdFromAlias', () => {
+  const stack = new Stack();
+  const token = Fn.accountIdFromAlias('test-aws-account-alias');
+
+  expect(stack.resolve(token)).toEqual({
+    'Fn::AccountIdFromAlias':
+      'test-aws-account-alias',
+  });
+});
+
 function stringListToken(o: any): string[] {
   return Token.asList(new Intrinsic(o));
 }

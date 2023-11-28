@@ -178,6 +178,16 @@ export class Fn {
   }
 
   /**
+   * The intrinsic function ``Fn::AccountIdfromAlias`` returns the AWS account ID that
+   * corresponds to the provided AWS account alias.
+   * @param alias The user-provided AWS account alias string.
+   * @returns a token represented as a string
+   */
+  public static accountIdFromAlias(alias: string): string {
+    return Token.asString(new FnAccountIdFromAlias(alias));
+  }
+
+  /**
    * Given an url, parse the domain name
    * @param url the url to parse
    */
@@ -437,7 +447,7 @@ export class Fn {
 
   /**
    * The intrinsic function `Fn::Length` returns the number of elements within an array
-   * or an intrinsic function that returns an array.
+   * or an intrinsic function that returns an array
    *
    * @param array The array you want to return the number of elements from
    */
@@ -672,6 +682,21 @@ class FnCidr extends FnBase {
       throw new Error(`Fn::Cidr's count attribute must be between 1 and 256, ${count} was provided.`);
     }
     super('Fn::Cidr', [ipBlock, count, sizeMask]);
+  }
+}
+
+/**
+ * The intrinsic function ``Fn::AccountIdFromAlias`` which resolves an AWS account
+ * alias to its account id. This function is typically used to to reference another
+ * account within your template.
+ */
+class FnAccountIdFromAlias extends FnBase {
+  /**
+   * Creates an ``FnAccountIdFromAlias`` function.
+   * @param alias The user-provided account alias string.
+   */
+  constructor(alias: string) {
+    super('Fn::AccountIdFromAlias', alias);
   }
 }
 
