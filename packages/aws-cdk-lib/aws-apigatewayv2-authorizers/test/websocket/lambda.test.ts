@@ -1,10 +1,10 @@
+import { WebSocketLambdaIntegration } from './../../../aws-apigatewayv2-integrations/lib/websocket/lambda';
+import { WebSocketLambdaAuthorizer } from './../../lib/websocket/lambda';
 import { Template } from '../../../assertions';
 import { WebSocketApi } from '../../../aws-apigatewayv2';
-import { WebSocketLambdaIntegration } from '../../../aws-apigatewayv2-integrations';
 import { Code, Function } from '../../../aws-lambda';
 import * as lambda from '../../../aws-lambda';
 import { Stack } from '../../../core';
-import { WebSocketLambdaAuthorizer } from './../../lib/websocket/lambda';
 
 describe('WebSocketLambdaAuthorizer', () => {
   test('default', () => {

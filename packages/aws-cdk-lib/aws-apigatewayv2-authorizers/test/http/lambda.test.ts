@@ -1,10 +1,10 @@
+import { HttpLambdaAuthorizer, HttpLambdaResponseType } from './../../lib/http/lambda';
+import { DummyRouteIntegration } from './integration';
+import { Duration, Stack } from '../../..';
 import { Match, Template } from '../../../assertions';
 import { HttpApi } from '../../../aws-apigatewayv2';
 import { Code, Function } from '../../../aws-lambda';
 import * as lambda from '../../../aws-lambda';
-import { Duration, Stack } from '../../..';
-import { DummyRouteIntegration } from './integration';
-import { HttpLambdaAuthorizer, HttpLambdaResponseType } from './../../lib/http/lambda';
 
 describe('HttpLambdaAuthorizer', () => {
 

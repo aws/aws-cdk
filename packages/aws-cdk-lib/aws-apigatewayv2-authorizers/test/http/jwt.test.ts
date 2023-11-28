@@ -1,8 +1,8 @@
+import { HttpJwtAuthorizer } from './../../lib/http/jwt';
+import { DummyRouteIntegration } from './integration';
+import { Stack } from '../../..';
 import { Template } from '../../../assertions';
 import { HttpApi } from '../../../aws-apigatewayv2';
-import { Stack } from '../../..';
-import { DummyRouteIntegration } from './integration';
-import { HttpJwtAuthorizer } from './../../lib/http/jwt';
 
 describe('HttpJwtAuthorizer', () => {
   test('default', () => {

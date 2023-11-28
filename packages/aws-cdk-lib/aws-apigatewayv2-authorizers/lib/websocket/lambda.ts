@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import {
   WebSocketAuthorizer,
   WebSocketAuthorizerType,
@@ -9,7 +10,6 @@ import {
 import { ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
 import { Stack, Names } from '../../../core';
-import { Construct } from 'constructs';
 
 /**
  * Properties to initialize WebSocketTokenAuthorizer.

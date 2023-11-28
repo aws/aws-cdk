@@ -1,9 +1,9 @@
+import { HttpUserPoolAuthorizer } from './../../lib/http/user-pool';
+import { DummyRouteIntegration } from './integration';
 import { Template } from '../../../assertions';
 import { HttpApi } from '../../../aws-apigatewayv2';
 import { UserPool } from '../../../aws-cognito';
 import { Stack } from '../../../core';
-import { DummyRouteIntegration } from './integration';
-import { HttpUserPoolAuthorizer } from './../../lib/http/user-pool';
 
 describe('HttpUserPoolAuthorizer', () => {
   test('default', () => {
