@@ -1,8 +1,9 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { DescribeTableCommand, DynamoDBClient, UpdateTableCommand } from '@aws-sdk/client-dynamodb';
+import { OnEventRequest } from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
 import { mockClient } from 'aws-sdk-client-mock';
 import * as sinon from 'sinon';
-import { OnEventRequest } from '../../custom-resources/lib/provider-framework/types';
-import { isCompleteHandler, onEventHandler } from '../lib/replica-handler';
+import { isCompleteHandler, onEventHandler } from '../../../lib/aws-dynamodb/replica-handler/index';
 
 let oldConsoleLog: any;
 
