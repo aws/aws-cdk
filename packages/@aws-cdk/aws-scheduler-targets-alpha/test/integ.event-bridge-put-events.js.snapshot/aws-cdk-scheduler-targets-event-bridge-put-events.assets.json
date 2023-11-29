@@ -1,0 +1,19 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "aabfc7953498365d6da19170b10ee2a19c523e8a6ee99af2a7f3e71abfec59b6": {
+      "source": {
+        "path": "aws-cdk-scheduler-targets-event-bridge-put-events.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "aabfc7953498365d6da19170b10ee2a19c523e8a6ee99af2a7f3e71abfec59b6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
