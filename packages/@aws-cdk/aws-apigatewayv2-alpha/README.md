@@ -3,20 +3,16 @@
 
 ---
 
-Features                                   | Stability
--------------------------------------------|--------------------------------------------------------
-Higher level constructs for HTTP APIs      | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
-Higher level constructs for Websocket APIs | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
-> **Experimental:** Higher level constructs in this module that are marked as experimental are
-> under active development. They are subject to non-backward compatible changes or removal in any
-> future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and
-> breaking changes will be announced in the release notes. This means that while you may use them,
-> you may need to update your source code when upgrading to a newer version of this package.
+> This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
 
 <!--END STABILITY BANNER-->
+
+All constructs moved to aws-cdk-lib/aws-apigatewayv2.
+
 
 ## Table of Contents
 

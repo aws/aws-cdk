@@ -1,0 +1,87 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "aws-cdk-aws-apigatewayv2-http-stage": {
+        "id": "aws-cdk-aws-apigatewayv2-http-stage",
+        "path": "aws-cdk-aws-apigatewayv2-http-stage",
+        "children": {
+          "HttpApi": {
+            "id": "HttpApi",
+            "path": "aws-cdk-aws-apigatewayv2-http-stage/HttpApi",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-apigatewayv2-http-stage/HttpApi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "HttpApi",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "HttpStageWithProperties": {
+            "id": "HttpStageWithProperties",
+            "path": "aws-cdk-aws-apigatewayv2-http-stage/HttpStageWithProperties",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-apigatewayv2-http-stage/HttpStageWithProperties/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "HttpApiF5A9A8A7"
+                    },
+                    "stageName": "$default",
+                    "defaultRouteSettings": {
+                      "throttlingBurstLimit": 1000,
+                      "throttlingRateLimit": 1000
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2.CfnStage",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2.HttpStage",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

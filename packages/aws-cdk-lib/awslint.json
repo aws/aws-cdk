@@ -886,6 +886,15 @@
     "props-physical-name:aws-cdk-lib.aws_apigateway.ResourceProps",
     "props-physical-name:aws-cdk-lib.aws_appsync.SourceApiAssociationProps",
     "docs-public-apis:aws-cdk-lib.aws_backup.Schedule",
-    "props-default-doc:aws-cdk-lib.aws_appsync.SourceApi.description"
+    "props-default-doc:aws-cdk-lib.aws_appsync.SourceApi.description",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.ApiMappingProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.HttpIntegrationProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.HttpRouteProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.WebSocketIntegrationProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.WebSocketRouteProps",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.WebSocketIntegration",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.WebSocketRoute"
   ]
 }
