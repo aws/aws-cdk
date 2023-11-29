@@ -703,8 +703,8 @@ export class CdkToolkit {
    * @param options Options for CDK app creation
    */
   public async migrate(options: MigrateOptions): Promise<void> {
-    warning('This is an experimental feature. We make no guarantees about the outcome or stability of the functionality.');
-    const language = options.language ?? 'typescript';
+    warning('This is an experimental feature and development on it is still in progress. We make no guarantees about the outcome or stability of the functionality.');
+    const language = options.language?.toLowerCase() ?? 'typescript';
 
     try {
       validateSourceOptions(options.fromPath, options.fromStack);

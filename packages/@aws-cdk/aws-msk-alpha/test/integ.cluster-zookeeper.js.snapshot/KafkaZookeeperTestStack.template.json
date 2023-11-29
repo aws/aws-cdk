@@ -477,7 +477,7 @@
        {
         "Ref": "ClusterZookeeper29ECF2D7"
        },
-       "\"},\"physicalResourceId\":{\"id\":\"ZooKeeperConnectionString\"}}"
+       "\"},\"physicalResourceId\":{\"id\":\"ZooKeeperConnectionString\"},\"outputPaths\":[\"ClusterInfo.ZookeeperConnectString\",\"ClusterInfo.ZookeeperConnectStringTls\"]}"
       ]
      ]
     },
@@ -489,7 +489,7 @@
        {
         "Ref": "ClusterZookeeper29ECF2D7"
        },
-       "\"},\"physicalResourceId\":{\"id\":\"ZooKeeperConnectionString\"}}"
+       "\"},\"physicalResourceId\":{\"id\":\"ZooKeeperConnectionString\"},\"outputPaths\":[\"ClusterInfo.ZookeeperConnectString\",\"ClusterInfo.ZookeeperConnectStringTls\"]}"
       ]
      ]
     },

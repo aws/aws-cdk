@@ -1,7 +1,7 @@
 {
   "targets": {
     "java": {
-      "package": "services.osis"
+      "package": "software.amazon.awscdk.services.osis"
     },
     "dotnet": {
       "package": "Amazon.CDK.AWS.OSIS"

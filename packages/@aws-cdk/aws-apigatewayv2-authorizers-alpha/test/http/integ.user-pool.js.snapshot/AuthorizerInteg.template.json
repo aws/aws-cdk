@@ -1,5 +1,119 @@
 {
  "Resources": {
+  "userpool0AC4AA96": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "userpoolUserPoolAuthorizerClient6A7486E8": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "profile",
+     "phone",
+     "email",
+     "openid",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "userpool0AC4AA96"
+    }
+   }
+  },
+  "userpoolForDefaultAuthorizerDFBE8E74": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "userpoolForDefaultAuthorizerUserPoolAuthorizerClient3AA110E7": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "implicit",
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "profile",
+     "phone",
+     "email",
+     "openid",
+     "aws.cognito.signin.user.admin"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "userpoolForDefaultAuthorizerDFBE8E74"
+    }
+   }
+  },
   "MyHttpApi8AEAAC21": {
    "Type": "AWS::ApiGatewayV2::Api",
    "Properties": {
@@ -129,61 +243,56 @@
     "Name": "UserPoolAuthorizer"
    }
   },
-  "userpool0AC4AA96": {
-   "Type": "AWS::Cognito::UserPool",
+  "MyHttpApiWithDefaultAuthorizerE08800A1": {
+   "Type": "AWS::ApiGatewayV2::Api",
    "Properties": {
-    "AccountRecoverySetting": {
-     "RecoveryMechanisms": [
-      {
-       "Name": "verified_phone_number",
-       "Priority": 1
-      },
-      {
-       "Name": "verified_email",
-       "Priority": 2
-      }
-     ]
-    },
-    "AdminCreateUserConfig": {
-     "AllowAdminCreateUserOnly": true
-    },
-    "EmailVerificationMessage": "The verification code to your new account is {####}",
-    "EmailVerificationSubject": "Verify your new account",
-    "SmsVerificationMessage": "The verification code to your new account is {####}",
-    "VerificationMessageTemplate": {
-     "DefaultEmailOption": "CONFIRM_WITH_CODE",
-     "EmailMessage": "The verification code to your new account is {####}",
-     "EmailSubject": "Verify your new account",
-     "SmsMessage": "The verification code to your new account is {####}"
-    }
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+    "Name": "MyHttpApiWithDefaultAuthorizer",
+    "ProtocolType": "HTTP"
+   }
   },
-  "userpoolUserPoolAuthorizerClient6A7486E8": {
-   "Type": "AWS::Cognito::UserPoolClient",
+  "MyHttpApiWithDefaultAuthorizerDefaultStage7A9EE9B6": {
+   "Type": "AWS::ApiGatewayV2::Stage",
    "Properties": {
-    "AllowedOAuthFlows": [
-     "implicit",
-     "code"
+    "ApiId": {
+     "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
+   }
+  },
+  "MyHttpApiWithDefaultAuthorizerUserPoolDefaultAuthorizerF10D4FFF": {
+   "Type": "AWS::ApiGatewayV2::Authorizer",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
+    },
+    "AuthorizerType": "JWT",
+    "IdentitySource": [
+     "$request.header.Authorization"
     ],
-    "AllowedOAuthFlowsUserPoolClient": true,
-    "AllowedOAuthScopes": [
-     "profile",
-     "phone",
-     "email",
-     "openid",
-     "aws.cognito.signin.user.admin"
-    ],
-    "CallbackURLs": [
-     "https://example.com"
-    ],
-    "SupportedIdentityProviders": [
-     "COGNITO"
-    ],
-    "UserPoolId": {
-     "Ref": "userpool0AC4AA96"
-    }
+    "JwtConfiguration": {
+     "Audience": [
+      {
+       "Ref": "userpoolForDefaultAuthorizerUserPoolAuthorizerClient3AA110E7"
+      }
+     ],
+     "Issuer": {
+      "Fn::Join": [
+       "",
+       [
+        "https://cognito-idp.",
+        {
+         "Ref": "AWS::Region"
+        },
+        ".amazonaws.com/",
+        {
+         "Ref": "userpoolForDefaultAuthorizerDFBE8E74"
+        }
+       ]
+      ]
+     }
+    },
+    "Name": "UserPoolDefaultAuthorizer"
    }
   },
   "lambdaServiceRole494E4CA6": {
@@ -238,6 +347,87 @@
    "DependsOn": [
     "lambdaServiceRole494E4CA6"
    ]
+  },
+  "RouteRootIntegration1CF58575": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
+    },
+    "IntegrationType": "AWS_PROXY",
+    "IntegrationUri": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "PayloadFormatVersion": "2.0"
+   }
+  },
+  "RouteRootIntegrationPermissionC2C15701": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "lambda8B5974B5",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
+       },
+       "/*/*/v1/mything/{proxy+}"
+      ]
+     ]
+    }
+   }
+  },
+  "RouteA67450D2": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
+    },
+    "AuthorizationScopes": [
+     "scope1",
+     "scope2"
+    ],
+    "AuthorizationType": "JWT",
+    "AuthorizerId": {
+     "Ref": "MyHttpApiWithDefaultAuthorizerUserPoolDefaultAuthorizerF10D4FFF"
+    },
+    "RouteKey": "ANY /v1/mything/{proxy+}",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "RouteRootIntegration1CF58575"
+       }
+      ]
+     ]
+    }
+   }
   }
  },
  "Parameters": {

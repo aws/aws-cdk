@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as sfn from '../../aws-stepfunctions';
 import { StateMachine, DefinitionBody } from '../../aws-stepfunctions';
 import * as cdk from '../../core';
@@ -154,6 +154,23 @@ describe('Step Functions api', () => {
           Ref: 'ApisfnPOSTStartSyncExecutionRole8E8879B0',
         },
       ],
+    });
+  });
+
+  test('default method responses are not created when useDefaultMethodResponses is false', () => {
+    //GIVEN
+    const { stack, stateMachine } = givenSetup();
+
+    //WHEN
+    new apigw.StepFunctionsRestApi(stack, 'StepFunctionsRestApi', {
+      stateMachine: stateMachine,
+      useDefaultMethodResponses: false,
+    });
+
+    //THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'ANY',
+      MethodResponses: Match.absent(),
     });
   });
 
