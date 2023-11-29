@@ -3,7 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'dynamodb-global-replicas-provisioned');
+const stack = new cdk.Stack(app, 'aws-cdkdynamodb-global-replicas-provisioned');
 
 const table = new dynamodb.Table(stack, 'Table', {
   partitionKey: { name: 'hashKey', type: dynamodb.AttributeType.STRING },
@@ -17,7 +17,7 @@ table.autoScaleWriteCapacity({
   maxCapacity: 10,
 }).scaleOnUtilization({ targetUtilizationPercent: 75 });
 
-new IntegTest(app, 'aws-cdk-dynamodb-global-replicas-provisioned-integ', {
+new IntegTest(app, 'aws-cdk-dynamodb-global-replicas-provisioned-test', {
   testCases: [stack],
   diffAssets: true,
 });

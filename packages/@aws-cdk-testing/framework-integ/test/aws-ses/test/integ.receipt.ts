@@ -4,7 +4,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'AwsCdkSesReceipt');
+const stack = new cdk.Stack(app, 'aws-cdk-ses-receipt');
 
 const ruleSet = new ses.ReceiptRuleSet(stack, 'RuleSet', {
   dropSpam: true,
@@ -25,7 +25,7 @@ new ses.AllowListReceiptFilter(stack, 'Allowlist', {
   ],
 });
 
-new IntegTest(app, 'CdkSesReceiptInteg', {
+new IntegTest(app, 'cdk-ses-receipt-integ', {
   testCases: [stack],
   diffAssets: true,
 });
