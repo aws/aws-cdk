@@ -786,7 +786,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * If encryption is used, permission to use the key to encrypt the contents
    * of written files will also be granted to the same principal.
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public grantPut(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
     return this.grant(identity, this.putActions, perms.KEY_WRITE_ACTIONS,
