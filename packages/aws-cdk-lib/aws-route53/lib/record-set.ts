@@ -774,7 +774,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
     }
 
     const provider = CustomResourceProvider.getOrCreateProvider(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, 'cross-account-zone-delegation-handler'),
+      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-route53', 'cross-account-zone-delegation-handler'),
       runtime: CustomResourceProviderRuntime.NODEJS_18_X,
     });
 
