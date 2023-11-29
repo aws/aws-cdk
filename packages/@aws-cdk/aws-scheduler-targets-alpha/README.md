@@ -157,7 +157,7 @@ new Schedule(this, 'Schedule', {
 
 Use the `SnsPublish` target to publish messages to an Amazon SNS topic.
 
-The code snippets below create create an event rule with a Amazon SNS topic as a target.
+The code snippets below create an event rule with a Amazon SNS topic as a target.
 It's called every hour by Amazon Event Bridge Scheduler with custom payload.
 
 ```ts
