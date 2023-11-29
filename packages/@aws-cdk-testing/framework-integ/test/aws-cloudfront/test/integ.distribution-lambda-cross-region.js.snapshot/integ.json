@@ -1,14 +1,13 @@
 {
-  "version": "20.0.0",
+  "version": "35.0.0",
   "testCases": {
-    "integ.distribution-lambda-cross-region": {
+    "cdk-integ-distribution-lambda-cross-region/DefaultTest": {
       "stacks": [
-        "*"
+        "integ-distribution-lambda-cross-region"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "cdk-integ-distribution-lambda-cross-region/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegdistributionlambdacrossregionDefaultTestDeployAssert47F14485"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
