@@ -55,7 +55,7 @@ export class ReplicaProvider extends NestedStack {
   private constructor(scope: Construct, id: string, props: ReplicaProviderProps) {
     super(scope, id);
 
-    const code = lambda.Code.fromAsset(path.join(__dirname, 'replica-handler'));
+    const code = lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-dynamodb', 'replica-handler'));
 
     // Issues UpdateTable API calls
     this.onEventHandler = new lambda.Function(this, 'OnEventHandler', {
