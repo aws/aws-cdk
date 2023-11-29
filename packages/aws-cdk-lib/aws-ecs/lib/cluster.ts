@@ -1187,6 +1187,14 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
    * @default 100
    */
   readonly targetCapacityPercent?: number;
+
+  /**
+   * The period of time, in seconds, after a newly launched Amazon EC2 instance
+   * can contribute to CloudWatch metrics for Auto Scaling group.
+   *
+   * @default 300
+   */
+  readonly instanceWarmupPeriod?: number;
 }
 
 /**
@@ -1244,6 +1252,13 @@ export class AsgCapacityProvider extends Construct {
         throw new Error(`Invalid Capacity Provider Name: ${props.capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
       }
     }
+
+    if (props.instanceWarmupPeriod) {
+      if (props.instanceWarmupPeriod < 0 || props.instanceWarmupPeriod > 10000) {
+        throw new Error(`InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: ${props.instanceWarmupPeriod}.`);
+      }
+    }
+
     const capacityProvider = new CfnCapacityProvider(this, id, {
       name: props.capacityProviderName,
       autoScalingGroupProvider: {
@@ -1253,6 +1268,7 @@ export class AsgCapacityProvider extends Construct {
           targetCapacity: props.targetCapacityPercent || 100,
           maximumScalingStepSize: props.maximumScalingStepSize,
           minimumScalingStepSize: props.minimumScalingStepSize,
+          instanceWarmupPeriod: props.instanceWarmupPeriod,
         },
         managedTerminationProtection: this.enableManagedTerminationProtection ? 'ENABLED' : 'DISABLED',
       },
