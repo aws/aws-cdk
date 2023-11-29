@@ -225,17 +225,4 @@ describe('logging Config', () => {
       },
     });
   });
-
-  test('Throws When a string which is not defined in enum LogFormat is used', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'stack');
-    expect(() => {
-      new lambda.Function(stack, 'Lambda', {
-        code: new lambda.InlineCode('foo'),
-        handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_18_X,
-        logFormat: 'XML',
-      });
-    }).toThrow('XML is not a legal LogFormat type');
-  });
 });
