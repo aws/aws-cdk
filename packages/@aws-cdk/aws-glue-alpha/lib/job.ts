@@ -710,14 +710,14 @@ export class Job extends JobBase {
     const sparkUI = props.sparkUI?.enabled ? this.setupSparkUI(executable, this.role, props.sparkUI) : undefined;
     this.sparkUILoggingLocation = sparkUI?.location;
     const continuousLoggingArgs = props.continuousLogging?.enabled ? this.setupContinuousLogging(this.role, props.continuousLogging) : {};
-	const profilingMetricsArgs = props.enableProfilingMetrics ? { '--enable-metrics': '' } : {};
+    const profilingMetricsArgs = props.enableProfilingMetrics ? { '--enable-metrics': '' } : {};
     const observabilityMetricsArgs = props.enableObservabilityMetrics ? { '--enable-observability-metrics': '' } : {};
 
     const defaultArguments = {
       ...this.executableArguments(executable),
       ...continuousLoggingArgs,
       ...profilingMetricsArgs,
-	  ...observabilityMetricsArgs,
+      ...observabilityMetricsArgs,
       ...sparkUI?.args,
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
