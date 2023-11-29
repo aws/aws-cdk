@@ -212,16 +212,6 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
       }],
     });
 
-    // const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
-    //   codeDirectory: path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-cloudfront', 'edge-function'),
-    //   runtime: CustomResourceProviderRuntime.NODEJS_18_X,
-    //   policyStatements: [{
-    //     Effect: 'Allow',
-    //     Resource: parameterArnPrefix,
-    //     Action: ['ssm:GetParameter'],
-    //   }],
-    // });
-
     const resource = new CustomResource(this, 'ArnReader', {
       resourceType: resourceType,
       serviceToken: serviceToken,
