@@ -1,0 +1,19 @@
+{
+  "version": "35.0.0",
+  "files": {
+    "3d345d5cdfe818ebc39effa8e5c6fb9c54773d6f751661cf1e74f4da8934f695": {
+      "source": {
+        "path": "aws-cdk-lambda-logging-config-logformat.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3d345d5cdfe818ebc39effa8e5c6fb9c54773d6f751661cf1e74f4da8934f695.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

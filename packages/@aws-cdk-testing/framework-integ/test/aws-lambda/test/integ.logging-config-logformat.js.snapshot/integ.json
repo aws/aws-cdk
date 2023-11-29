@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "lambda-logging-config-logformat/DefaultTest": {
+      "stacks": [
+        "aws-cdk-lambda-logging-config-logformat"
+      ],
+      "assertionStack": "lambda-logging-config-logformat/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaloggingconfiglogformatDefaultTestDeployAssert6EFEEADB"
+    }
+  }
+}
