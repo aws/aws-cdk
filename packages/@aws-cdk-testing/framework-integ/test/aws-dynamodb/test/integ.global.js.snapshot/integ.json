@@ -1,13 +1,13 @@
 {
   "version": "35.0.0",
   "testCases": {
-    "cdk-dynamodb-global-integ/DefaultTest": {
+    "cdk-dynamodb-global-integ-20191121-test/DefaultTest": {
       "stacks": [
-        "cdk-dynamodb-global"
+        "cdk-dynamodb-global-20191121"
       ],
       "diffAssets": true,
-      "assertionStack": "cdk-dynamodb-global-integ/DefaultTest/DeployAssert",
-      "assertionStackName": "cdkdynamodbglobalintegDefaultTestDeployAssert31B551A3"
+      "assertionStack": "cdk-dynamodb-global-integ-20191121-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkdynamodbglobalinteg20191121testDefaultTestDeployAssert97799095"
     }
   }
 }
