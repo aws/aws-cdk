@@ -606,6 +606,15 @@ export interface JobProps {
   readonly enableProfilingMetrics? :boolean;
 
   /**
+   * Enables the collection of observability metrics for resource profiling.
+   *
+   * @default - no observability metrics emitted.
+   *
+   * @see `--enable-observability-metrics` at https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly enableObservabilityMetrics? :boolean;
+
+  /**
    * Enables the Spark UI debugging and monitoring with the specified props.
    *
    * @default - Spark UI debugging and monitoring is disabled.
@@ -701,12 +710,14 @@ export class Job extends JobBase {
     const sparkUI = props.sparkUI?.enabled ? this.setupSparkUI(executable, this.role, props.sparkUI) : undefined;
     this.sparkUILoggingLocation = sparkUI?.location;
     const continuousLoggingArgs = props.continuousLogging?.enabled ? this.setupContinuousLogging(this.role, props.continuousLogging) : {};
-    const profilingMetricsArgs = props.enableProfilingMetrics ? { '--enable-metrics': '' } : {};
+	const profilingMetricsArgs = props.enableProfilingMetrics ? { '--enable-metrics': '' } : {};
+    const observabilityMetricsArgs = props.enableObservabilityMetrics ? { '--enable-observability-metrics': '' } : {};
 
     const defaultArguments = {
       ...this.executableArguments(executable),
       ...continuousLoggingArgs,
       ...profilingMetricsArgs,
+	  ...observabilityMetricsArgs,
       ...sparkUI?.args,
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
