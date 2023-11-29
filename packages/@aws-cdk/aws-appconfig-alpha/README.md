@@ -121,6 +121,8 @@ configuration data is syntactically and semantically correct. You can create val
 Lambda function.
 See [About validators](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-configuration-and-profile.html#appconfig-creating-configuration-and-profile-validators) for more information.
 
+When you import a JSON Schema validator from a file, you can pass in a relative path.
+
 A hosted configuration with validators:
 
 ```ts
