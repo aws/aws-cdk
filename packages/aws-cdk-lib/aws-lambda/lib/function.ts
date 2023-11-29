@@ -466,7 +466,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * Sets the logFormat for the function.
    * @default Text format
    */
-  readonly logFormat?: LogFormat | keyof typeof LogFormat;
+  readonly logFormat?: LogFormat | `${LogFormat}`;
 
   /**
    * Sets the application log level for the function.
@@ -1085,10 +1085,6 @@ export class Function extends FunctionBase {
    * function and undefined if not.
    */
   private getLoggingConfig(props: FunctionProps): CfnFunction.LoggingConfigProperty | undefined {
-    if (props.logFormat !== undefined && !Object.values(LogFormat).includes(props.logFormat as LogFormat)) {
-      throw new TypeError(`${props.logFormat} is not a legal LogFormat type`);
-    }
-
     if ((props.applicationLogLevel || props.systemLogLevel) && props.logFormat !== LogFormat.JSON) {
       throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`);
     }
