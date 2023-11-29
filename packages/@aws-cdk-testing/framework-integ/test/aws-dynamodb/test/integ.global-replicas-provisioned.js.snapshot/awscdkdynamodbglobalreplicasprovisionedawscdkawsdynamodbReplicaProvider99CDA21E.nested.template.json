@@ -82,7 +82,7 @@
            },
            ":table/",
            {
-            "Ref": "referencetodynamodbglobalreplicasprovisionedTable9DA4055ARef"
+            "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedTableAD6C1461Ref"
            }
           ]
          ]
@@ -101,7 +101,7 @@
            },
            ":table/",
            {
-            "Ref": "referencetodynamodbglobalreplicasprovisionedTable9DA4055ARef"
+            "Ref": "referencetoawscdkdynamodbglobalreplicasprovisionedTableAD6C1461Ref"
            }
           ]
          ]
@@ -126,7 +126,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "654051b03fb3684cba885b9015a42237db092a98a4fd2ffc75f07919dde1aca4.zip"
+     "S3Key": "a66c13b51b3fbe914918d2aa7c27cdd149c533899a3a73517fcc70bc74e548b4.zip"
     },
     "Handler": "index.onEventHandler",
     "Role": {
@@ -181,7 +181,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "654051b03fb3684cba885b9015a42237db092a98a4fd2ffc75f07919dde1aca4.zip"
+     "S3Key": "a66c13b51b3fbe914918d2aa7c27cdd149c533899a3a73517fcc70bc74e548b4.zip"
     },
     "Handler": "index.isCompleteHandler",
     "Role": {
@@ -306,7 +306,7 @@
      },
      "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
-    "Description": "AWS CDK resource provider framework - onEvent (dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
+    "Description": "AWS CDK resource provider framework - onEvent (aws-cdkdynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
@@ -443,7 +443,7 @@
      },
      "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
-    "Description": "AWS CDK resource provider framework - isComplete (dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
+    "Description": "AWS CDK resource provider framework - isComplete (aws-cdkdynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
@@ -577,7 +577,7 @@
      },
      "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
-    "Description": "AWS CDK resource provider framework - onTimeout (dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
+    "Description": "AWS CDK resource provider framework - onTimeout (aws-cdkdynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
      "Variables": {
       "USER_ON_EVENT_FUNCTION_ARN": {
@@ -727,17 +727,17 @@
   }
  },
  "Outputs": {
-  "dynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD0261788Ref": {
+  "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole916E49C8Ref": {
    "Value": {
     "Ref": "OnEventHandlerServiceRole15A26729"
    }
   },
-  "dynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleDB297932Ref": {
+  "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleB0A3AF6DRef": {
    "Value": {
     "Ref": "IsCompleteHandlerServiceRole5810CC58"
    }
   },
-  "dynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderframeworkonEvent26039801Arn": {
+  "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderframeworkonEventC7001F92Arn": {
    "Value": {
     "Fn::GetAtt": [
      "ProviderframeworkonEvent83C1D0A7",
@@ -747,7 +747,7 @@
   }
  },
  "Parameters": {
-  "referencetodynamodbglobalreplicasprovisionedTable9DA4055ARef": {
+  "referencetoawscdkdynamodbglobalreplicasprovisionedTableAD6C1461Ref": {
    "Type": "String"
   }
  }

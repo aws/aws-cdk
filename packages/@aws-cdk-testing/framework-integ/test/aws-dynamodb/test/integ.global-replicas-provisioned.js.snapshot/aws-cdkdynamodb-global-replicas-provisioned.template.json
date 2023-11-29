@@ -26,7 +26,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "TableSourceTableAttachedManagedPolicydynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleDA9F503D9C475F16": {
+  "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole822EC82ADB4D0FB5": {
    "Type": "AWS::IAM::ManagedPolicy",
    "Properties": {
     "Description": {
@@ -103,13 +103,13 @@
      {
       "Fn::GetAtt": [
        "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
-       "Outputs.dynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD0261788Ref"
+       "Outputs.awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole916E49C8Ref"
       ]
      }
     ]
    }
   },
-  "TableSourceTableAttachedManagedPolicydynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole82B5DD9869B95621": {
+  "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole5D58C5404E50EB53": {
    "Type": "AWS::IAM::ManagedPolicy",
    "Properties": {
     "Description": {
@@ -148,7 +148,7 @@
      {
       "Fn::GetAtt": [
        "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
-       "Outputs.dynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleDB297932Ref"
+       "Outputs.awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleB0A3AF6DRef"
       ]
      }
     ]
@@ -160,7 +160,7 @@
     "ServiceToken": {
      "Fn::GetAtt": [
       "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
-      "Outputs.dynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderframeworkonEvent26039801Arn"
+      "Outputs.awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderframeworkonEventC7001F92Arn"
      ]
     },
     "TableName": {
@@ -169,8 +169,8 @@
     "Region": "us-east-2"
    },
    "DependsOn": [
-    "TableSourceTableAttachedManagedPolicydynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole82B5DD9869B95621",
-    "TableSourceTableAttachedManagedPolicydynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleDA9F503D9C475F16",
+    "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole5D58C5404E50EB53",
+    "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole822EC82ADB4D0FB5",
     "TableWriteScalingTargetE5669214",
     "TableWriteScalingTargetTrackingD78DCCD8"
    ],
@@ -184,7 +184,7 @@
     "ServiceToken": {
      "Fn::GetAtt": [
       "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D",
-      "Outputs.dynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderframeworkonEvent26039801Arn"
+      "Outputs.awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderframeworkonEventC7001F92Arn"
      ]
     },
     "TableName": {
@@ -193,8 +193,8 @@
     "Region": "eu-west-3"
    },
    "DependsOn": [
-    "TableSourceTableAttachedManagedPolicydynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole82B5DD9869B95621",
-    "TableSourceTableAttachedManagedPolicydynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleDA9F503D9C475F16",
+    "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole5D58C5404E50EB53",
+    "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole822EC82ADB4D0FB5",
     "TableWriteScalingTargetE5669214",
     "TableWriteScalingTargetTrackingD78DCCD8"
    ],
@@ -254,7 +254,7 @@
   "TableWriteScalingTargetTrackingD78DCCD8": {
    "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
    "Properties": {
-    "PolicyName": "dynamodbglobalreplicasprovisionedTableWriteScalingTargetTracking682B78E1",
+    "PolicyName": "awscdkdynamodbglobalreplicasprovisionedTableWriteScalingTargetTracking757FA9B6",
     "PolicyType": "TargetTrackingScaling",
     "ScalingTargetId": {
      "Ref": "TableWriteScalingTargetE5669214"
@@ -271,7 +271,7 @@
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
     "Parameters": {
-     "referencetodynamodbglobalreplicasprovisionedTable9DA4055ARef": {
+     "referencetoawscdkdynamodbglobalreplicasprovisionedTableAD6C1461Ref": {
       "Ref": "TableCD117FA1"
      }
     },
@@ -291,7 +291,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/7a7a2d86b7169f9048cc5d44abd020f16bef82b092d0199d9601115c5df80abe.json"
+       "/8e7e19e8bee6e499feeefd3ffc26213965df7c6e819475f459f9531334a3a556.json"
       ]
      ]
     }
