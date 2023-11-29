@@ -77,6 +77,7 @@ export class ResourceDecider {
         remarks: (propSpec.docs?.remarks ?? '').concat('@cloudformationAttribute Ref'),
       },
       immutable: true,
+      optional: false,
     };
   }
 
