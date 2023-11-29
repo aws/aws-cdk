@@ -56,7 +56,7 @@
                           "Action": "sts:AssumeRole",
                           "Effect": "Allow",
                           "Principal": {
-                            "AWS": "arn:aws:iam::165799800970:root"
+                            "AWS": "arn:aws:iam::234567890123:root"
                           }
                         }
                       ],
@@ -230,7 +230,7 @@
                                 {
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
-                                  "Resource": "arn:aws:iam::586193817576:role/MyUniqueDelegationRole"
+                                  "Resource": "arn:aws:iam::12345678:role/MyUniqueDelegationRole"
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -430,7 +430,7 @@
                                 {
                                   "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
-                                  "Resource": "arn:aws:iam::586193817576:role/MyUniqueDelegationRole"
+                                  "Resource": "arn:aws:iam::12345678:role/MyUniqueDelegationRole"
                                 }
                               ],
                               "Version": "2012-10-17"

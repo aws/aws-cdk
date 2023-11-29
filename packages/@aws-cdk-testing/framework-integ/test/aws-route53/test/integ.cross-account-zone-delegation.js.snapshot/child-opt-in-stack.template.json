@@ -14,7 +14,7 @@
       {
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
-       "Resource": "arn:aws:iam::586193817576:role/MyUniqueDelegationRole"
+       "Resource": "arn:aws:iam::12345678:role/MyUniqueDelegationRole"
       }
      ],
      "Version": "2012-10-17"
@@ -59,7 +59,7 @@
       "Arn"
      ]
     },
-    "AssumeRoleArn": "arn:aws:iam::586193817576:role/MyUniqueDelegationRole",
+    "AssumeRoleArn": "arn:aws:iam::12345678:role/MyUniqueDelegationRole",
     "ParentZoneName": "uniqueexample.com",
     "DelegatedZoneName": "sub.uniqueexample.com",
     "DelegatedZoneNameServers": {
@@ -102,7 +102,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-165799800970-af-south-1",
+     "S3Bucket": "cdk-hnb659fds-assets-234567890123-af-south-1",
      "S3Key": "8b3eb4893317dd327e9817a7e5472f97fd34125627ca21ac8cd6b0303a869b9a.zip"
     },
     "Timeout": 900,
