@@ -1,4 +1,4 @@
-import { handler } from '../../lib/cross-account-zone-delegation-handler';
+import { handler } from '../../lib/aws-route53/cross-account-zone-delegation-handler/index';
 
 const mockAssumeRole = jest.fn();
 const mockChangeResourceRecordSets = jest.fn();
