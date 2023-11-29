@@ -744,6 +744,7 @@ describe('Job', () => {
           connections: [glue.Connection.fromConnectionName(stack, 'ImportedConnection', 'ConnectionName')],
           securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'ImportedSecurityConfiguration', 'SecurityConfigurationName'),
           enableProfilingMetrics: true,
+          enableObservabilityMetrics: true,
           tags: {
             key: 'value',
           },
@@ -766,6 +767,7 @@ describe('Job', () => {
             '--job-language': 'scala',
             '--class': 'com.amazon.test.ClassName',
             '--enable-metrics': '',
+            '--enable-observability-metrics': '',
             'arg1': 'value1',
             'arg2': 'value2',
           },
