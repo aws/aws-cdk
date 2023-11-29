@@ -1,5 +1,4 @@
 import { App, Stack } from 'aws-cdk-lib';
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as ga from 'aws-cdk-lib/aws-globalaccelerator';
 

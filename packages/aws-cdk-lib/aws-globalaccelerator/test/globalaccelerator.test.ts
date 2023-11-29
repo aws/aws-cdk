@@ -301,10 +301,10 @@ test('should validate ipAddresses minimum and maximum length', () => {
     new ga.Accelerator(stack, 'Acc4', {
       ipAddresses: [],
     });
-  }).toThrow('Invalid ipAddresses value [], you can specify one or two addresses separated by a comma.');
+  }).toThrow('Invalid ipAddresses value [], you can specify one or two addresses, got: 0');
   expect(() => {
     new ga.Accelerator(stack, 'Acc5', {
       ipAddresses: ['1.1.1.1', '2.2.2.2', '3.3.3.3'],
     });
-  }).toThrow('Invalid ipAddresses value [1.1.1.1,2.2.2.2,3.3.3.3], you can specify one or two addresses separated by a comma.');
+  }).toThrow('Invalid ipAddresses value [1.1.1.1,2.2.2.2,3.3.3.3], you can specify one or two addresses, got: 3');
 });

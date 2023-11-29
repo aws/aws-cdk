@@ -66,11 +66,16 @@ export interface AcceleratorProps {
   /**
    * IP addresses associated with the accelerator.
    *
-   * Optionally, if you've added your own IP address pool to Global Accelerator (BYOIP), you can choose IP addresses from your own pool to use for the accelerator's static IP addresses when you create an accelerator. You can specify one or two addresses, separated by a comma. Do not include the /32 suffix.
+   * Optionally, if you've added your own IP address pool to Global Accelerator (BYOIP), you can choose IP
+   * addresses from your own pool to use for the accelerator's static IP addresses when you create an accelerator.
+   * You can specify one or two addresses, separated by a comma. Do not include the /32 suffix.
    *
-   * Only one IP address from each of your IP address ranges can be used for each accelerator. If you specify only one IP address from your IP address range, Global Accelerator assigns a second static IP address for the accelerator from the AWS IP address pool.
+   * Only one IP address from each of your IP address ranges can be used for each accelerator. If you specify
+   * only one IP address from your IP address range, Global Accelerator assigns a second static IP address for
+   * the accelerator from the AWS IP address pool.
    *
-   * Note that you can't update IP addresses for an existing accelerator. To change them, you must create a new accelerator with the new addresses.
+   * Note that you can't update IP addresses for an existing accelerator. To change them, you must create a
+   * new accelerator with the new addresses.
    *
    * @default - undefined. IP addresses will be from Amazon's pool of IP addresses.
    */
@@ -216,7 +221,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
 
   private validateIpAddresses(ipAddresses?: string[]) {
     if (ipAddresses !== undefined && (ipAddresses.length < 1 || ipAddresses.length > 2)) {
-      throw new Error(`Invalid ipAddresses value [${ipAddresses}], you can specify one or two addresses separated by a comma.`);
+      throw new Error(`Invalid ipAddresses value [${ipAddresses}], you can specify one or two addresses, got: ${ipAddresses.length}`);
     }
   }
 }
