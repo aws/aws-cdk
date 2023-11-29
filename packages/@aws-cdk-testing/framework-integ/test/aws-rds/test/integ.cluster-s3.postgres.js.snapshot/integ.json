@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "postgres-s3-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-s3-postgres-15-integ"
+      ],
+      "assertionStack": "postgres-s3-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "postgress3integtestDefaultTestDeployAssert71482B98"
+    }
+  }
+}
