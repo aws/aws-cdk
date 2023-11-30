@@ -257,7 +257,7 @@ describe('cdk custom resource provider', () => {
                 'Arn',
               ],
             },
-            Runtime: STANDARD_PROVIDER,
+            Runtime: STANDARD_PROVIDER.name,
           },
           DependsOn: [
             'CustomMyResourceTypeCustomResourceProviderRoleBD5E655F',
