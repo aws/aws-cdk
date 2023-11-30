@@ -1,0 +1,13 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "integrationtest-event-bridge-put-events/DefaultTest": {
+      "stacks": [
+        "aws-cdk-scheduler-targets-event-bridge-put-events"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integrationtest-event-bridge-put-events/DefaultTest/DeployAssert",
+      "assertionStackName": "integrationtesteventbridgeputeventsDefaultTestDeployAssert13FA3DD8"
+    }
+  }
+}

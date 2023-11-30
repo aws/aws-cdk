@@ -337,7 +337,7 @@ const app = new App();
 
 // since the EKS optimized AMI is hard-coded here based on the region,
 // we need to actually pass in a specific region.
-const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-test', {
+const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster', {
   env: { region: 'us-east-1' },
 });
 
@@ -356,7 +356,7 @@ if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
 
 }
 
-new integ.IntegTest(app, 'aws-cdk-eks-cluster', {
+new integ.IntegTest(app, 'aws-cdk-eks-cluster-integ', {
   testCases: [stack],
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,
