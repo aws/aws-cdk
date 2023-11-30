@@ -112,6 +112,7 @@ const eventPattern = {
   },
 };
 declare const repo: codecommit.Repository;
+declare const lambdaFuntion: lambda.LambdaFunction;
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
   actionName: 'CodeCommit',
@@ -119,11 +120,7 @@ const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
   output: sourceOutput,
   customEventRule: {
     eventPattern,
-    target: new LambdaFunction(new Function(stack, 'TestFunction', {
-      code: Code.fromInline('foo'),
-      handler: 'bar',
-      runtime: Runtime.NODEJS_LATEST,
-    })),
+    target: lambdaFuntion,
   }
 });
 ```
