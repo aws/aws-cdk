@@ -1,8 +1,6 @@
 import { Construct } from 'constructs';
-import { CustomResourceProviderBase } from './custom-resource-provider-base';
-import { CustomResourceProviderOptions } from './shared';
-import { CdkHandler } from '../../../handler-framework/lib/cdk-handler';
-import { Stack } from '../stack';
+import { CdkHandler } from './cdk-handler';
+import { Stack, CustomResourceProviderBase, CustomResourceProviderOptions } from '../../core';
 
 /**
  * Initialization properties for `CdkCustomResourceProvider`

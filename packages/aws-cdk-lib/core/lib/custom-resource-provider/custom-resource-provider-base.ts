@@ -28,7 +28,7 @@ export interface CustomResourceProviderBaseProps extends CustomResourceProviderO
   readonly codeDirectory: string;
 
   /**
-   * The AWS Lambda runtime and version to use for the provider.
+   * The AWS Lambda runtime and version name to use for the provider.
    */
   readonly runtimeName: string;
 }

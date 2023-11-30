@@ -1,12 +1,15 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Runtime } from '../../../aws-lambda';
-import * as cxapi from '../../../cx-api';
-import { CdkHandler } from '../../../handler-framework/lib/cdk-handler';
-import { App, AssetStaging, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack, CfnResource } from '../../lib';
-import { CdkCustomResourceProvider } from '../../lib/custom-resource-provider/cdk-custom-resource-provider';
-import { CUSTOMIZE_ROLES_CONTEXT_KEY } from '../../lib/helpers-internal';
-import { toCloudFormation } from '../util';
+import { Runtime } from '../../aws-lambda';
+import {
+  App, AssetStaging, DockerImageAssetLocation, DockerImageAssetSource, Duration,
+  FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack, CfnResource,
+} from '../../core';
+import { CUSTOMIZE_ROLES_CONTEXT_KEY } from '../../core/lib/helpers-internal';
+import { toCloudFormation } from '../../core/test/util';
+import * as cxapi from '../../cx-api';
+import { CdkCustomResourceProvider } from '../lib/cdk-custom-resource-provider';
+import { CdkHandler } from '../lib/cdk-handler';
 
 const TEST_HANDLER = `${__dirname}/mock-provider`;
 const STANDARD_PROVIDER = Runtime.NODEJS_18_X;

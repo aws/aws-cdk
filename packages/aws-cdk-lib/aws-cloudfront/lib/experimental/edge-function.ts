@@ -14,7 +14,7 @@ import {
   Stage,
   Token,
 } from '../../../core';
-import { CdkCustomResourceProvider } from '../../../core/lib/custom-resource-provider/cdk-custom-resource-provider';
+import { CdkCustomResourceProvider } from '../../../handler-framework/lib/cdk-custom-resource-provider';
 import { CdkHandler } from '../../../handler-framework/lib/cdk-handler';
 
 /**
