@@ -946,12 +946,6 @@
       ]
      ]
     },
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRole39E8529F",
-      "Arn"
-     ]
-    },
     "LoggingConfiguration": {
      "Destinations": [
       {
@@ -967,6 +961,12 @@
      ],
      "IncludeExecutionData": false,
      "Level": "ERROR"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRole39E8529F",
+      "Arn"
+     ]
     }
    },
    "DependsOn": [

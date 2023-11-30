@@ -412,4 +412,28 @@ describe('cfn resource', () => {
       delete process.env.CDK_DEBUG;
     }
   });
+
+  test('isCfnResource returns true with a CfnResource', () => {
+    const app = new core.App();
+    const stack = new core.Stack(app, 'Stack');
+    const res = new core.CfnResource(stack, 'SomeCfnResource', {
+      type: 'Some::Resource',
+    });
+
+    // THEN
+    expect(core.CfnResource.isCfnResource(res)).toBe(true);
+  });
+
+  test('isCfnResource returns false with a construct', () => {
+    const app = new core.App();
+    const stack = new core.Stack(app, 'Stack');
+
+    // THEN
+    expect(core.CfnResource.isCfnResource(stack)).toBe(false);
+  });
+
+  test('isCfnResource returns false with undefined', () => {
+    // THEN
+    expect(core.CfnResource.isCfnResource(undefined)).toBe(false);
+  });
 });

@@ -1291,12 +1291,6 @@
       ]
      ]
     },
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "SnapshoterSnapshotProviderwaiterstatemachineRole76E414C5",
-      "Arn"
-     ]
-    },
     "LoggingConfiguration": {
      "Destinations": [
       {
@@ -1312,6 +1306,12 @@
      ],
      "IncludeExecutionData": true,
      "Level": "ALL"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "SnapshoterSnapshotProviderwaiterstatemachineRole76E414C5",
+      "Arn"
+     ]
     }
    },
    "DependsOn": [
