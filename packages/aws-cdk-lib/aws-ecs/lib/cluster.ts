@@ -11,7 +11,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect } from '../../core';
+import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token } from '../../core';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -1192,6 +1192,8 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
    * The period of time, in seconds, after a newly launched Amazon EC2 instance
    * can contribute to CloudWatch metrics for Auto Scaling group.
    *
+   * Must be between 0 and 10000.
+   *
    * @default 300
    */
   readonly instanceWarmupPeriod?: number;
@@ -1253,7 +1255,7 @@ export class AsgCapacityProvider extends Construct {
       }
     }
 
-    if (props.instanceWarmupPeriod) {
+    if (props.instanceWarmupPeriod && !Token.isUnresolved(props.instanceWarmupPeriod)) {
       if (props.instanceWarmupPeriod < 0 || props.instanceWarmupPeriod > 10000) {
         throw new Error(`InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: ${props.instanceWarmupPeriod}.`);
       }
