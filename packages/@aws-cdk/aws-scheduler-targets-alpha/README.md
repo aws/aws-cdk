@@ -223,4 +223,5 @@ declare const assessmentTemplate: inspector.CfnAssessmentTemplate;
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.minutes(60)),
   target: new targets.InspectorStartAssessmentRun(assessmentTemplate),
+});
 ```
