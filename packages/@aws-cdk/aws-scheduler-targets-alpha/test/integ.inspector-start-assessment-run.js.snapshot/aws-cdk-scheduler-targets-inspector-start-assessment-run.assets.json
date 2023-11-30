@@ -1,0 +1,19 @@
+{
+  "version": "35.0.0",
+  "files": {
+    "10231fb41027881befbf524597b5f1e8d07112ffee024b665450f95bcc2a972d": {
+      "source": {
+        "path": "aws-cdk-scheduler-targets-inspector-start-assessment-run.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "10231fb41027881befbf524597b5f1e8d07112ffee024b665450f95bcc2a972d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
