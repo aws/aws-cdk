@@ -5,6 +5,10 @@ import { CfnAssessmentTarget, CfnAssessmentTemplate } from 'aws-cdk-lib/aws-insp
 import { InspectorStartAssessmentRun } from '../lib';
 
 /*
+ * Pre-Stack Verification:
+ * Create a managed EC2 instance via console: https://docs.aws.amazon.com/systems-manager/latest/userguide/getting-started-launch-managed-instance.html
+ * and install Amazon Inspector Agent: https://docs.aws.amazon.com/inspector/v1/userguide/inspector_installing-uninstalling-agents.html#install-run-command
+ *
  * Stack verification steps:
  * An inspector assessment run by the scheduler
  * The assertion checks whether the assessment run
@@ -16,6 +20,7 @@ const assessmentTarget = new CfnAssessmentTarget(stack, 'MyAssessmentTarget');
 const assessmentTemplate = new CfnAssessmentTemplate(stack, 'MyAssessmentTemplate', {
   assessmentTargetArn: assessmentTarget.attrArn,
   durationInSeconds: 3600,
+  // https://docs.aws.amazon.com/inspector/v1/userguide/inspector_rules-arns.html#us-east-1
   rulesPackageArns: ['arn:aws:inspector:us-east-1:316112463485:rulespackage/0-gEjTy7T7'],
 });
 
