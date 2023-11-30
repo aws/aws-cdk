@@ -37,8 +37,7 @@ export class CdkCustomResourceProvider extends CustomResourceProviderBase {
    * construct.
    * @param props Provider properties which will only be applied when the
    * provider is first created.
-   * @returns the service token of the custom resource provider, which should be
-   * used when defining a `CustomResource`.
+   * @returns the custom resource provider.
    */
   public static getOrCreateProvider(scope: Construct, uniqueid: string, props: CdkCustomResourceProviderProps) {
     const id = `${uniqueid}CustomResourceProvider`;
