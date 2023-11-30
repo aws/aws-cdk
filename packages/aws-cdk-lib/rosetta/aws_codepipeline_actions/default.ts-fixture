@@ -8,6 +8,7 @@ import codepipeline_actions = require('aws-cdk-lib/aws-codepipeline-actions');
 import codecommit = require('aws-cdk-lib/aws-codecommit');
 import iam = require('aws-cdk-lib/aws-iam');
 import lambda = require('aws-cdk-lib/aws-lambda');
+import targets = require('aws-cdk-lib/aws-events-targets)
 import s3 = require('aws-cdk-lib/aws-s3');
 
 class Fixture extends Stack {
