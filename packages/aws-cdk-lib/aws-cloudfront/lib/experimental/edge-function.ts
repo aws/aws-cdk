@@ -213,8 +213,8 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     });
 
     const resource = new CustomResource(this, 'ArnReader', {
-      resourceType: resourceType,
-      serviceToken: serviceToken,
+      resourceType,
+      serviceToken,
       properties: {
         Region: EdgeFunction.EDGE_REGION,
         ParameterName: parameterName,
