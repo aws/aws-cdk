@@ -228,4 +228,5 @@ new Schedule(this, 'Schedule', {
   target: new targets.KinesisDataFirehosePutRecord(deliveryStream, {
     input: ScheduleTargetInput.fromObject(payload),
   }),
+});
 ```
