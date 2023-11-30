@@ -133,7 +133,7 @@
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.0.30",
+    "@aws-cdk/aws-service-spec": "^0.0.32",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -219,6 +219,8 @@
     "./aws-amplifyuibuilder": "./aws-amplifyuibuilder/index.js",
     "./aws-apigateway": "./aws-apigateway/index.js",
     "./aws-apigatewayv2": "./aws-apigatewayv2/index.js",
+    "./aws-apigatewayv2-authorizers": "./aws-apigatewayv2-authorizers/index.js",
+    "./aws-apigatewayv2-integrations": "./aws-apigatewayv2-integrations/index.js",
     "./aws-appconfig": "./aws-appconfig/index.js",
     "./aws-appflow": "./aws-appflow/index.js",
     "./aws-appintegrations": "./aws-appintegrations/index.js",

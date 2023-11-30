@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "ApiGatewayV2WebSocketIamTest/DefaultTest": {
+      "stacks": [
+        "IntegApiGatewayV2Iam"
+      ],
+      "assertionStack": "ApiGatewayV2WebSocketIamTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ApiGatewayV2WebSocketIamTestDefaultTestDeployAssert2B412D7B"
+    }
+  }
+}
