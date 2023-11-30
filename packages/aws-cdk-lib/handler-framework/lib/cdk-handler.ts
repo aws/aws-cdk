@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { RuntimeDeterminer } from './utils/runtime-determiner';
-import { Runtime } from '../../aws-lambda';
+import { Code, Runtime } from '../../aws-lambda';
 
 /**
  * Properties used to define source code executed within a Lambda function acting as a
@@ -37,6 +37,11 @@ export class CdkHandler extends Construct {
   public readonly codeDirectory: string;
 
   /**
+   * The source code of your Lambda function.
+   */
+  public readonly code: Code;
+
+  /**
    * The name of the method within your code that Lambda calls to execute your function.
    */
   public readonly entrypoint: string;
@@ -49,6 +54,7 @@ export class CdkHandler extends Construct {
   public constructor(scope: Construct, id: string, props: CdkHandlerProps) {
     super(scope, id);
     this.codeDirectory = props.codeDirectory;
+    this.code = Code.fromAsset(props.codeDirectory);
     this.entrypoint = props.entrypoint ?? 'index.handler';
     this.runtime = RuntimeDeterminer.determineLatestRuntime(props.compatibleRuntimes);
   }

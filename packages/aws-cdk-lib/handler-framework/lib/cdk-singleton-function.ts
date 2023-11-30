@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CdkHandler } from './cdk-handler';
-import { Code, FunctionOptions, SingletonFunction } from '../../aws-lambda';
+import { FunctionOptions, SingletonFunction } from '../../aws-lambda';
 
 /**
  * Properties used to define a singleton Lambda function to be used as a custom resource
@@ -39,7 +39,7 @@ export class CdkSingletonFunction extends SingletonFunction {
   public constructor(scope: Construct, id: string, props: CdkSingletonFunctionProps) {
     super(scope, id, {
       ...props,
-      code: Code.fromAsset(props.handler.codeDirectory),
+      code: props.handler.code,
       handler: props.handler.entrypoint,
       runtime: props.handler.runtime,
     });
