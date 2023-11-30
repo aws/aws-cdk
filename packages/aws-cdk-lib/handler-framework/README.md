@@ -7,17 +7,21 @@ In addition to including a default runtime version, this framework forces the us
 ## CDK Handler
 
 `CdkHandler` is a class that represents the source code that will be executed within a Lambda `Function` acting as a custom resource provider. Once constructed, this class contains three attributes:
-1. `code` - the source code that is loaded from a local disk path
-2. `entrypoint` - the name of the method within your `code` that Lambda calls to execute your `Function`
-3. `compatibleRuntimes` - the runtimes that your `code` is compatible with
+1. `codeDirectory` - the local file system directory with the provider's code. This the code that will be bundled into a zip asset and wired to the provider's AWS Lambda function.
+2. `code` - the source code that is loaded from a local disk path
+3. `entrypoint` - the name of the method within your `code` that Lambda calls to execute your `Function`. Note that the default entrypoint is 'index.handler'
+4. `compatibleRuntimes` - the runtimes that your `code` is compatible with
 
-Note that `compatibleRuntimes` can be any python or nodejs runtimes, but the nodejs runtime family are preferred. Python runtimes are supported to provide support for legacy handler code that was written using python.
+Note that `compatibleRuntimes` can be any python or nodejs runtimes, but the nodejs runtime family is preferred. Python runtimes are supported to provide support for legacy handler code that was written using python.
 
 The following is an example of how to use `CdkHandler`:
 
 ```ts
-const handler = CdkHandler.fromAsset(path.join(__dirname, 'my-handler'), {
-  entrypoint: 'index.handler',
+const stack = new Stack();
+
+const handler = new CdkHandler(stack, 'Handler', {
+  codeDirectory: path.join(__dirname, 'my-handler'),
+  entrypoint: 'index.onEventHandler',
   compatibleRuntimes: [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X],
 });
 ```
@@ -33,8 +37,9 @@ The following is an example of how to use `CdkFunction`:
 ```ts
 const stack = new Stack();
 
-const handler = CdkHandler.fromAsset(path.join(__dirname, 'my-handler'), {
-  entrypoint: 'index.handler',
+const handler = new CdkHandler(stack, 'Handler', {
+  codeDirectory: path.join(__dirname, 'my-handler'),
+  entrypoint: 'index.onEventHandler',
   compatibleRuntimes: [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X],
 });
 
@@ -52,8 +57,8 @@ The following is an example of how to use `CdkSingletonFunction`:
 ```ts
 const stack = new Stack();
 
-const handler = CdkHandler.fromAsset(path.join(__dirname, 'my-handler'), {
-  entrypoint: 'index.handler',
+const handler = new CdkHandler(stack, 'Handler', {
+  codeDirectory: path.join(__dirname, 'my-handler'),
   compatibleRuntimes: [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X],
 });
 
@@ -61,3 +66,19 @@ const fn = new CdkSingletonFunction(stack, 'CdkSingletonFunction', { handler });
 ```
 
 ## CDK Custom Resource Provider
+
+The `CdkCustomResourceProvider` construct enables the construction of a custom resource provider with runtime compatibility checking. The key difference between `CdkCustomResourceProvider` and `CustomResourceProvider` is that `CdkHandler` is a required property when using the static `getOrCreate` or `getOrCreateProvider` methods.
+
+The following is an example of how to use `CdkCustomResourceProvider`:
+
+```ts
+const stack = new Stack();
+
+const handler = new CdkHandler(stack, 'Handler', {
+  codeDirectory: path.join(__dirname, 'my-handler'),
+  compatibleRuntimes: [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X],
+});
+
+const resourceType = 'Custom::Resource';
+const serviceToken = CdkCustomResourceProvider.getOrCreate(this, resourceType, { handler });
+```
