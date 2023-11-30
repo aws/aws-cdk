@@ -1,6 +1,7 @@
 *.js
 *.js.map
 *.d.ts
+*.gz
 !lib/init-templates/**/javascript/**/*
 node_modules
 dist
