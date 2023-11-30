@@ -275,8 +275,7 @@ export class Environment extends EnvironmentBase {
   }
 
   private createAlarmRole(monitor: Monitor, index: number): iam.IRole {
-    const roleHash = monitor.isCompositeAlarm ? 5 : index;
-    const logicalId = `Role${roleHash}`;
+    const logicalId = monitor.isCompositeAlarm ? 'RoleCompositeAlarm' : `Role${index}`;
     const existingRole = this.node.tryFindChild(logicalId) as iam.IRole;
     if (existingRole) {
       return existingRole;
