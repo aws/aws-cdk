@@ -1,19 +1,19 @@
 {
-  "version": "35.0.0",
+  "version": "34.0.0",
   "artifacts": {
-    "AwsCdkSesReceipt.assets": {
+    "aws-cdk-ses-receipt.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "AwsCdkSesReceipt.assets.json",
+        "file": "aws-cdk-ses-receipt.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "AwsCdkSesReceipt": {
+    "aws-cdk-ses-receipt": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "AwsCdkSesReceipt.template.json",
+        "templateFile": "aws-cdk-ses-receipt.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -22,7 +22,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "AwsCdkSesReceipt.assets"
+          "aws-cdk-ses-receipt.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,91 +31,91 @@
         }
       },
       "dependencies": [
-        "AwsCdkSesReceipt.assets"
+        "aws-cdk-ses-receipt.assets"
       ],
       "metadata": {
-        "/AwsCdkSesReceipt/RuleSet/Resource": [
+        "/aws-cdk-ses-receipt/RuleSet/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RuleSetE30C6C48"
           }
         ],
-        "/AwsCdkSesReceipt/RuleSet/DropSpam/Rule/Resource": [
+        "/aws-cdk-ses-receipt/RuleSet/DropSpam/Rule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RuleSetDropSpamRule5809F51B"
           }
         ],
-        "/AwsCdkSesReceipt/RuleSet/FirstRule/Resource": [
+        "/aws-cdk-ses-receipt/RuleSet/FirstRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RuleSetFirstRule0A27C8CC"
           }
         ],
-        "/AwsCdkSesReceipt/RuleSet/SecondRule/Resource": [
+        "/aws-cdk-ses-receipt/RuleSet/SecondRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "RuleSetSecondRule03178AD4"
           }
         ],
-        "/AwsCdkSesReceipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/Resource": [
+        "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonLambda224e77f9a32e4b4dac32983477abba16ServiceRole3037F5B4"
           }
         ],
-        "/AwsCdkSesReceipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Resource": [
+        "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonLambda224e77f9a32e4b4dac32983477abba164533EA15"
           }
         ],
-        "/AwsCdkSesReceipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/AllowSes": [
+        "/aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/AllowSes": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonLambda224e77f9a32e4b4dac32983477abba16AllowSesB42DF904"
           }
         ],
-        "/AwsCdkSesReceipt/Allowlist/BlockAll/Resource": [
+        "/aws-cdk-ses-receipt/Allowlist/BlockAll/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AllowlistBlockAll7E0A7F11"
           }
         ],
-        "/AwsCdkSesReceipt/Allowlist/Allow1000016/Resource": [
+        "/aws-cdk-ses-receipt/Allowlist/Allow1000016/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AllowlistAllow1000016E9465A18"
           }
         ],
-        "/AwsCdkSesReceipt/BootstrapVersion": [
+        "/aws-cdk-ses-receipt/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/AwsCdkSesReceipt/CheckBootstrapVersion": [
+        "/aws-cdk-ses-receipt/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "AwsCdkSesReceipt"
+      "displayName": "aws-cdk-ses-receipt"
     },
-    "CdkSesReceiptIntegDefaultTestDeployAssert45B267B0.assets": {
+    "cdksesreceiptintegDefaultTestDeployAssertA2776C75.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "CdkSesReceiptIntegDefaultTestDeployAssert45B267B0.assets.json",
+        "file": "cdksesreceiptintegDefaultTestDeployAssertA2776C75.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "CdkSesReceiptIntegDefaultTestDeployAssert45B267B0": {
+    "cdksesreceiptintegDefaultTestDeployAssertA2776C75": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "CdkSesReceiptIntegDefaultTestDeployAssert45B267B0.template.json",
+        "templateFile": "cdksesreceiptintegDefaultTestDeployAssertA2776C75.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -124,7 +124,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "CdkSesReceiptIntegDefaultTestDeployAssert45B267B0.assets"
+          "cdksesreceiptintegDefaultTestDeployAssertA2776C75.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -133,23 +133,23 @@
         }
       },
       "dependencies": [
-        "CdkSesReceiptIntegDefaultTestDeployAssert45B267B0.assets"
+        "cdksesreceiptintegDefaultTestDeployAssertA2776C75.assets"
       ],
       "metadata": {
-        "/CdkSesReceiptInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/cdk-ses-receipt-integ/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/CdkSesReceiptInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/cdk-ses-receipt-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "CdkSesReceiptInteg/DefaultTest/DeployAssert"
+      "displayName": "cdk-ses-receipt-integ/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

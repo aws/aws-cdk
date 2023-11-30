@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "AwsCdkSesReceipt": {
-        "id": "AwsCdkSesReceipt",
-        "path": "AwsCdkSesReceipt",
+      "aws-cdk-ses-receipt": {
+        "id": "aws-cdk-ses-receipt",
+        "path": "aws-cdk-ses-receipt",
         "children": {
           "RuleSet": {
             "id": "RuleSet",
-            "path": "AwsCdkSesReceipt/RuleSet",
+            "path": "aws-cdk-ses-receipt/RuleSet",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "AwsCdkSesReceipt/RuleSet/Resource",
+                "path": "aws-cdk-ses-receipt/RuleSet/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SES::ReceiptRuleSet",
                   "aws:cdk:cloudformation:props": {}
@@ -26,11 +26,11 @@
               },
               "DropSpam": {
                 "id": "DropSpam",
-                "path": "AwsCdkSesReceipt/RuleSet/DropSpam",
+                "path": "aws-cdk-ses-receipt/RuleSet/DropSpam",
                 "children": {
                   "Function": {
                     "id": "Function",
-                    "path": "AwsCdkSesReceipt/RuleSet/DropSpam/Function",
+                    "path": "aws-cdk-ses-receipt/RuleSet/DropSpam/Function",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0"
@@ -38,11 +38,11 @@
                   },
                   "Rule": {
                     "id": "Rule",
-                    "path": "AwsCdkSesReceipt/RuleSet/DropSpam/Rule",
+                    "path": "aws-cdk-ses-receipt/RuleSet/DropSpam/Rule",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "AwsCdkSesReceipt/RuleSet/DropSpam/Rule/Resource",
+                        "path": "aws-cdk-ses-receipt/RuleSet/DropSpam/Rule/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SES::ReceiptRule",
                           "aws:cdk:cloudformation:props": {
@@ -87,11 +87,11 @@
               },
               "FirstRule": {
                 "id": "FirstRule",
-                "path": "AwsCdkSesReceipt/RuleSet/FirstRule",
+                "path": "aws-cdk-ses-receipt/RuleSet/FirstRule",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "AwsCdkSesReceipt/RuleSet/FirstRule/Resource",
+                    "path": "aws-cdk-ses-receipt/RuleSet/FirstRule/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SES::ReceiptRule",
                       "aws:cdk:cloudformation:props": {
@@ -125,11 +125,11 @@
               },
               "SecondRule": {
                 "id": "SecondRule",
-                "path": "AwsCdkSesReceipt/RuleSet/SecondRule",
+                "path": "aws-cdk-ses-receipt/RuleSet/SecondRule",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "AwsCdkSesReceipt/RuleSet/SecondRule/Resource",
+                    "path": "aws-cdk-ses-receipt/RuleSet/SecondRule/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SES::ReceiptRule",
                       "aws:cdk:cloudformation:props": {
@@ -163,15 +163,15 @@
           },
           "SingletonLambda224e77f9a32e4b4dac32983477abba16": {
             "id": "SingletonLambda224e77f9a32e4b4dac32983477abba16",
-            "path": "AwsCdkSesReceipt/SingletonLambda224e77f9a32e4b4dac32983477abba16",
+            "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "AwsCdkSesReceipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole",
+                "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "AwsCdkSesReceipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/ImportServiceRole",
+                    "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -179,7 +179,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "AwsCdkSesReceipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/Resource",
+                    "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -224,11 +224,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "AwsCdkSesReceipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Code",
+                "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "AwsCdkSesReceipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Code/Stage",
+                    "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -236,7 +236,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "AwsCdkSesReceipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Code/AssetBucket",
+                    "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -250,7 +250,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "AwsCdkSesReceipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Resource",
+                "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -277,7 +277,7 @@
               },
               "AllowSes": {
                 "id": "AllowSes",
-                "path": "AwsCdkSesReceipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/AllowSes",
+                "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/AllowSes",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -307,15 +307,15 @@
           },
           "Allowlist": {
             "id": "Allowlist",
-            "path": "AwsCdkSesReceipt/Allowlist",
+            "path": "aws-cdk-ses-receipt/Allowlist",
             "children": {
               "BlockAll": {
                 "id": "BlockAll",
-                "path": "AwsCdkSesReceipt/Allowlist/BlockAll",
+                "path": "aws-cdk-ses-receipt/Allowlist/BlockAll",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "AwsCdkSesReceipt/Allowlist/BlockAll/Resource",
+                    "path": "aws-cdk-ses-receipt/Allowlist/BlockAll/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SES::ReceiptFilter",
                       "aws:cdk:cloudformation:props": {
@@ -340,11 +340,11 @@
               },
               "Allow1000016": {
                 "id": "Allow1000016",
-                "path": "AwsCdkSesReceipt/Allowlist/Allow1000016",
+                "path": "aws-cdk-ses-receipt/Allowlist/Allow1000016",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "AwsCdkSesReceipt/Allowlist/Allow1000016/Resource",
+                    "path": "aws-cdk-ses-receipt/Allowlist/Allow1000016/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SES::ReceiptFilter",
                       "aws:cdk:cloudformation:props": {
@@ -375,7 +375,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "AwsCdkSesReceipt/BootstrapVersion",
+            "path": "aws-cdk-ses-receipt/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -383,7 +383,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "AwsCdkSesReceipt/CheckBootstrapVersion",
+            "path": "aws-cdk-ses-receipt/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -395,29 +395,29 @@
           "version": "0.0.0"
         }
       },
-      "CdkSesReceiptInteg": {
-        "id": "CdkSesReceiptInteg",
-        "path": "CdkSesReceiptInteg",
+      "cdk-ses-receipt-integ": {
+        "id": "cdk-ses-receipt-integ",
+        "path": "cdk-ses-receipt-integ",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "CdkSesReceiptInteg/DefaultTest",
+            "path": "cdk-ses-receipt-integ/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "CdkSesReceiptInteg/DefaultTest/Default",
+                "path": "cdk-ses-receipt-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "CdkSesReceiptInteg/DefaultTest/DeployAssert",
+                "path": "cdk-ses-receipt-integ/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "CdkSesReceiptInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "cdk-ses-receipt-integ/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -425,7 +425,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "CdkSesReceiptInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "cdk-ses-receipt-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
@@ -454,7 +454,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.2.70"
         }
       }
     },

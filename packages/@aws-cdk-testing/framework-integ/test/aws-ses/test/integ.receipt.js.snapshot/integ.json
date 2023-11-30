@@ -1,13 +1,13 @@
 {
-  "version": "35.0.0",
+  "version": "34.0.0",
   "testCases": {
-    "CdkSesReceiptInteg/DefaultTest": {
+    "cdk-ses-receipt-integ/DefaultTest": {
       "stacks": [
-        "AwsCdkSesReceipt"
+        "aws-cdk-ses-receipt"
       ],
       "diffAssets": true,
-      "assertionStack": "CdkSesReceiptInteg/DefaultTest/DeployAssert",
-      "assertionStackName": "CdkSesReceiptIntegDefaultTestDeployAssert45B267B0"
+      "assertionStack": "cdk-ses-receipt-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "cdksesreceiptintegDefaultTestDeployAssertA2776C75"
     }
   }
 }

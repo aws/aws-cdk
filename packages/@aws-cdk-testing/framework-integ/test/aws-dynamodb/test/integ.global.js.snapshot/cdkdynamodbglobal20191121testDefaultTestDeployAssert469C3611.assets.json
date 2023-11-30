@@ -1,9 +1,9 @@
 {
-  "version": "35.0.0",
+  "version": "34.0.0",
   "files": {
     "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
       "source": {
-        "path": "CdkSesReceiptIntegDefaultTestDeployAssert45B267B0.template.json",
+        "path": "cdkdynamodbglobal20191121testDefaultTestDeployAssert469C3611.template.json",
         "packaging": "file"
       },
       "destinations": {

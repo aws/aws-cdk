@@ -186,7 +186,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.2.70"
                 }
               },
               "SourceTableAttachedManagedPolicy-cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole39716128": {
@@ -278,7 +278,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.2.70"
                 }
               },
               "Replicaeu-west-2": {
@@ -327,22 +327,6 @@
             "id": "@aws-cdk--aws-dynamodb.ReplicaProvider",
             "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider",
             "children": {
-              "OnEvent": {
-                "id": "OnEvent",
-                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEvent",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
-                }
-              },
-              "OnComplete": {
-                "id": "OnComplete",
-                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/OnComplete",
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
-                }
-              },
               "OnEventHandler": {
                 "id": "OnEventHandler",
                 "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler",
@@ -542,7 +526,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
                           },
-                          "s3Key": "a66c13b51b3fbe914918d2aa7c27cdd149c533899a3a73517fcc70bc74e548b4.zip"
+                          "s3Key": "654051b03fb3684cba885b9015a42237db092a98a4fd2ffc75f07919dde1aca4.zip"
                         },
                         "handler": "index.onEventHandler",
                         "role": {
@@ -627,32 +611,6 @@
                       "version": "0.0.0"
                     }
                   },
-                  "Code": {
-                    "id": "Code",
-                    "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Code",
-                    "children": {
-                      "Stage": {
-                        "id": "Stage",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Code/Stage",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "AssetBucket": {
-                        "id": "AssetBucket",
-                        "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Code/AssetBucket",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
-                    }
-                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Resource",
@@ -663,7 +621,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
                           },
-                          "s3Key": "a66c13b51b3fbe914918d2aa7c27cdd149c533899a3a73517fcc70bc74e548b4.zip"
+                          "s3Key": "654051b03fb3684cba885b9015a42237db092a98a4fd2ffc75f07919dde1aca4.zip"
                         },
                         "handler": "index.isCompleteHandler",
                         "role": {
@@ -1493,7 +1451,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "version": "10.2.70"
                     }
                   }
                 },
@@ -1567,7 +1525,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
                           },
-                          "/f8cc0de8fd8b3648ee152ba43e46460b1072238e8623c323d01eac63c9d3c192.json"
+                          "/fa797e339f4708c4396c4b321b5c32d871a3392d5baced2d17a9b8ad742e5c0b.json"
                         ]
                       ]
                     }
@@ -1581,7 +1539,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {
@@ -1606,29 +1564,29 @@
           "version": "0.0.0"
         }
       },
-      "cdk-dynamodb-global-integ-20191121-test": {
-        "id": "cdk-dynamodb-global-integ-20191121-test",
-        "path": "cdk-dynamodb-global-integ-20191121-test",
+      "cdk-dynamodb-global-20191121-test": {
+        "id": "cdk-dynamodb-global-20191121-test",
+        "path": "cdk-dynamodb-global-20191121-test",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "cdk-dynamodb-global-integ-20191121-test/DefaultTest",
+            "path": "cdk-dynamodb-global-20191121-test/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "cdk-dynamodb-global-integ-20191121-test/DefaultTest/Default",
+                "path": "cdk-dynamodb-global-20191121-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "cdk-dynamodb-global-integ-20191121-test/DefaultTest/DeployAssert",
+                "path": "cdk-dynamodb-global-20191121-test/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "cdk-dynamodb-global-integ-20191121-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "cdk-dynamodb-global-20191121-test/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -1636,7 +1594,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "cdk-dynamodb-global-integ-20191121-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "cdk-dynamodb-global-20191121-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
@@ -1665,7 +1623,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.2.70"
         }
       }
     },

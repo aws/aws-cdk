@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "cdk-dynamodb-global-20191121.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-eu-west-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-eu-west-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/3b4ab68841d1b5d3c781f91198fb20ebcf94dc9e6125ce8155019524b6c8c527.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1/9ebc85633ef1527d7c80b34da1ead09e0bcc8b1a5381dbda27965c4d617a14fa.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -211,19 +211,19 @@
       },
       "displayName": "cdk-dynamodb-global-20191121"
     },
-    "cdkdynamodbglobalinteg20191121testDefaultTestDeployAssert97799095.assets": {
+    "cdkdynamodbglobal20191121testDefaultTestDeployAssert469C3611.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdkdynamodbglobalinteg20191121testDefaultTestDeployAssert97799095.assets.json",
+        "file": "cdkdynamodbglobal20191121testDefaultTestDeployAssert469C3611.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdkdynamodbglobalinteg20191121testDefaultTestDeployAssert97799095": {
+    "cdkdynamodbglobal20191121testDefaultTestDeployAssert469C3611": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdkdynamodbglobalinteg20191121testDefaultTestDeployAssert97799095.template.json",
+        "templateFile": "cdkdynamodbglobal20191121testDefaultTestDeployAssert469C3611.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -232,7 +232,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdkdynamodbglobalinteg20191121testDefaultTestDeployAssert97799095.assets"
+          "cdkdynamodbglobal20191121testDefaultTestDeployAssert469C3611.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -241,23 +241,23 @@
         }
       },
       "dependencies": [
-        "cdkdynamodbglobalinteg20191121testDefaultTestDeployAssert97799095.assets"
+        "cdkdynamodbglobal20191121testDefaultTestDeployAssert469C3611.assets"
       ],
       "metadata": {
-        "/cdk-dynamodb-global-integ-20191121-test/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/cdk-dynamodb-global-20191121-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-dynamodb-global-integ-20191121-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/cdk-dynamodb-global-20191121-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cdk-dynamodb-global-integ-20191121-test/DefaultTest/DeployAssert"
+      "displayName": "cdk-dynamodb-global-20191121-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
