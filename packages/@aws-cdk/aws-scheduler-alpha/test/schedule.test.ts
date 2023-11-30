@@ -128,4 +128,124 @@ describe('Schedule', () => {
       },
     });
   });
+
+  describe('schedule timeFrame', () => {
+    beforeAll(() => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2023-04-15T06:30:00.000Z'));
+    });
+    afterAll(() => {
+      jest.useRealTimers();
+    });
+
+    test('schedule cant set startDate and endDate', () => {
+      // WHEN
+      new Schedule(stack, 'TestSchedule', {
+        schedule: expr,
+        target: new SomeLambdaTarget(func, role),
+        startDate: '2023-04-15T06:30:00.000Z',
+        endDate: '2023-10-01T00:00:00.000Z',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
+        StartDate: '2023-04-15T06:30:00.000Z',
+        EndDate: '2023-10-01T00:00:00.000Z',
+      });
+    });
+
+    test('schedule cant set startDate', () => {
+      // WHEN
+      new Schedule(stack, 'TestSchedule', {
+        schedule: expr,
+        target: new SomeLambdaTarget(func, role),
+        startDate: '2023-04-15T06:25:00.000Z',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
+        StartDate: '2023-04-15T06:25:00.000Z',
+      });
+    });
+
+    test('schedule cant set endDate', () => {
+      // WHEN
+      new Schedule(stack, 'TestSchedule', {
+        schedule: expr,
+        target: new SomeLambdaTarget(func, role),
+        endDate: '2023-10-01T00:00:00.000Z',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
+        EndDate: '2023-10-01T00:00:00.000Z',
+      });
+    });
+
+    test('throw error when startDate is invalid format', () => {
+      expect(() => {
+        new Schedule(stack, 'TestSchedule', {
+          schedule: expr,
+          target: new SomeLambdaTarget(func, role),
+          startDate: '2023-10-01T00:00:00.000+09:00',
+        });
+      }).toThrow('startDate needs to follow the format yyyy-MM-ddTHH:mm:ss.SSSZ but got 2023-10-01T00:00:00.000+09:00');
+
+      expect(() => {
+        new Schedule(stack, 'TestSchedule2', {
+          schedule: expr,
+          target: new SomeLambdaTarget(func, role),
+          startDate: '2023-10-01T00:00:00Z',
+        });
+      }).toThrow('startDate needs to follow the format yyyy-MM-ddTHH:mm:ss.SSSZ but got 2023-10-01T00:00:00Z');
+    });
+
+    test('throw error when endDate is invalid format', () => {
+      expect(() => {
+        new Schedule(stack, 'TestSchedule', {
+          schedule: expr,
+          target: new SomeLambdaTarget(func, role),
+          endDate: '2023-10-01T00:00:00.000+09:00',
+        });
+      }).toThrow('endDate needs to follow the format yyyy-MM-ddTHH:mm:ss.SSSZ but got 2023-10-01T00:00:00.000+09:00');
+
+      expect(() => {
+        new Schedule(stack, 'TestSchedule2', {
+          schedule: expr,
+          target: new SomeLambdaTarget(func, role),
+          endDate: '2023-10-01T00:00:00Z',
+        });
+      }).toThrow('endDate needs to follow the format yyyy-MM-ddTHH:mm:ss.SSSZ but got 2023-10-01T00:00:00Z');
+    });
+
+    test('throw error when endDate come before startDate', () => {
+      expect(() => {
+        new Schedule(stack, 'TestSchedule', {
+          schedule: expr,
+          target: new SomeLambdaTarget(func, role),
+          startDate: '2023-10-01T00:00:00.000Z',
+          endDate: '2023-10-01T00:00:00.000Z',
+        });
+      }).toThrow('startDate you specify must come before the endDate but got startDate: 2023-10-01T00:00:00.000Z, endDate: 2023-10-01T00:00:00.000Z');
+
+      expect(() => {
+        new Schedule(stack, 'TestSchedule2', {
+          schedule: expr,
+          target: new SomeLambdaTarget(func, role),
+          startDate: '2023-10-01T00:00:00.000Z',
+          endDate: '2023-09-01T00:00:00.000Z',
+        });
+      }).toThrow('startDate you specify must come before the endDate but got startDate: 2023-10-01T00:00:00.000Z, endDate: 2023-09-01T00:00:00.000Z');
+    });
+
+    test('throw error when startDate is earlier than 5 minutes ago', () => {
+      expect(() => {
+        new Schedule(stack, 'TestSchedule', {
+          schedule: expr,
+          target: new SomeLambdaTarget(func, role),
+          startDate: '2023-04-15T06:24:00.000Z',
+        });
+      }).toThrow('startDate you specify cannot be earlier than 5 minutes ago but got 2023-04-15T06:24:00.000Z');
+    });
+  });
 });

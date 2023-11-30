@@ -114,6 +114,24 @@ export interface ScheduleProps {
    * @default - All events in Scheduler are encrypted with a key that AWS owns and manages.
    */
   readonly key?: kms.IKey;
+
+  /**
+   * The date, in UTC, after which the schedule can begin invoking its target.
+   *
+   * Specify an absolute time in the ISO 8601 format. For example, 2020-12-01T00:00:00.000Z.
+   *
+   * @default - no value
+   */
+  readonly startDate?: string;
+
+  /**
+   * The date, in UTC, before which the schedule can invoke its target.
+   *
+   * Specify an absolute time in the ISO 8601 format. For example, 2020-12-01T00:00:00.000Z.
+   *
+   * @default - no value
+   */
+  readonly endDate?: string;
 }
 
 /**
@@ -213,6 +231,8 @@ export class Schedule extends Resource implements ISchedule {
     return this.metricAll('InvocationsSentToDeadLetterCount_Truncated_MessageSizeExceeded', props);
   }
 
+  private static readonly ISO8601_REGEX = /^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])\.[0-9]{3}(Z)?$/;
+
   /**
    * The schedule group associated with this schedule.
    */
@@ -254,6 +274,8 @@ export class Schedule extends Resource implements ISchedule {
 
     this.retryPolicy = targetConfig.retryPolicy;
 
+    this.validateTimeFrame(props.startDate, props.endDate);
+
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,
       flexibleTimeWindow: { mode: 'OFF' },
@@ -276,6 +298,8 @@ export class Schedule extends Resource implements ISchedule {
         sageMakerPipelineParameters: targetConfig.sageMakerPipelineParameters,
         sqsParameters: targetConfig.sqsParameters,
       },
+      startDate: props.startDate,
+      endDate: props.endDate,
     });
 
     this.scheduleName = this.getResourceNameAttribute(resource.ref);
@@ -305,5 +329,32 @@ export class Schedule extends Resource implements ISchedule {
 
     const isEmptyPolicy = Object.values(policy).every(value => value === undefined);
     return !isEmptyPolicy ? policy : undefined;
+  }
+
+  private validateTimeFrame(startDate?: string, endDate?: string) {
+    if (startDate) {
+      if (!Schedule.ISO8601_REGEX.test(startDate)) {
+        throw new Error(`startDate needs to follow the format yyyy-MM-ddTHH:mm:ss.SSSZ but got ${startDate}`);
+      }
+
+      const start = new Date(startDate);
+      const now = new Date();
+      const fiveMinutesAgo = new Date(now.getTime() - 5 * 60000);
+      if (start < fiveMinutesAgo) {
+        throw new Error(`startDate you specify cannot be earlier than 5 minutes ago but got ${startDate}`);
+      }
+    }
+    if (endDate && !Schedule.ISO8601_REGEX.test(endDate)) {
+      throw new Error(`endDate needs to follow the format yyyy-MM-ddTHH:mm:ss.SSSZ but got ${endDate}`);
+    }
+
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      if (end <= start) {
+        throw new Error(`startDate you specify must come before the endDate but got startDate: ${startDate}, endDate: ${endDate}`);
+      }
+    }
   }
 }
