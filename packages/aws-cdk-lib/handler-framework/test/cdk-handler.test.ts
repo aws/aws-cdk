@@ -4,14 +4,15 @@ import { Stack } from '../../core';
 import { CdkHandler } from '../lib/cdk-handler';
 
 describe('cdk handler', () => {
-  let stack: Stack;
   let codeDirectory: string;
   beforeAll(() => {
-    stack = new Stack();
     codeDirectory = path.join(__dirname, 'test-handler');
   });
 
   test('code directory property is correctly set', () => {
+    // GIVEN
+    const stack = new Stack();
+
     // WHEN
     const handler = new CdkHandler(stack, 'CdkHandler', {
       codeDirectory,
@@ -23,6 +24,9 @@ describe('cdk handler', () => {
   });
 
   test('runtime property is correctly set', () => {
+    // GIVEN
+    const stack = new Stack();
+
     // WHEN
     const handler = new CdkHandler(stack, 'CdkHandler', {
       codeDirectory,
@@ -34,6 +38,9 @@ describe('cdk handler', () => {
   });
 
   test('index.handler is default entrypoint', () => {
+    // GIVEN
+    const stack = new Stack();
+
     // WHEN
     const handler = new CdkHandler(stack, 'CdkHandler', {
       codeDirectory,
@@ -45,6 +52,9 @@ describe('cdk handler', () => {
   });
 
   test('entrypoint property is set correctly for non-default entrypoint', () => {
+    // GIVEN
+    const stack = new Stack();
+
     // WHEN
     const handler = new CdkHandler(stack, 'CdkHandler', {
       codeDirectory,
