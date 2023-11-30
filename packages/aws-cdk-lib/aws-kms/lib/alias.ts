@@ -59,12 +59,27 @@ abstract class AliasBase extends Resource implements IAlias {
 
   public abstract readonly aliasTargetKey: IKey;
 
+  /**
+   * The ARN of the alias.
+   *
+   * @attribute
+   * @deprecated use `aliasArn` instead
+   */
   public get keyArn(): string {
     return Stack.of(this).formatArn({
       service: 'kms',
       // aliasName already contains the '/'
       resource: this.aliasName,
     });
+  }
+
+  /**
+   * The ARN of the alias.
+   *
+   * @attribute
+   */
+  public get aliasArn(): string {
+    return this.keyArn;
   }
 
   public get keyId(): string {

@@ -357,6 +357,16 @@ test('does not add alias if starts with token', () => {
   });
 });
 
+test('aliasArn and keyArn from alias should match', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Test');
+  const key = new Key(stack, 'Key');
+
+  const alias = new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
+
+  expect(alias.aliasArn).toEqual(alias.keyArn);
+});
+
 class AliasOutputsConstruct extends Construct {
   constructor(scope: Construct, id: string, key: IKey) {
     super(scope, id);
