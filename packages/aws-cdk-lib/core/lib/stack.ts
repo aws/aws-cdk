@@ -36,7 +36,7 @@ const TEMPLATE_BODY_MAXIMUM_SIZE = 1_000_000;
 
 const VALID_STACK_NAME_REGEX = /^[A-Za-z][A-Za-z0-9-]*$/;
 
-const MAX_RESOURCES = 500;
+const MAX_RESOURCES = 2500;
 
 const STRING_LIST_REFERENCE_DELIMITER = '||';
 export interface StackProps {

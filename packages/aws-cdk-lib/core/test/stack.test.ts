@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct, Node } from 'constructs';
 import { toCloudFormation } from './util';
+import { Annotations } from '../../assertions';
 import * as cxapi from '../../cx-api';
 import { Fact, RegionInfo } from '../../region-info';
 import {
@@ -71,13 +72,28 @@ describe('stack', () => {
     const stack = new Stack(app, 'MyStack');
 
     // WHEN
-    for (let index = 0; index < 1000; index++) {
+    for (let index = 0; index < 3000; index++) {
       new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
     }
 
     expect(() => {
       app.synth();
-    }).toThrow('Number of resources in stack \'MyStack\': 1000 is greater than allowed maximum of 500');
+    }).toThrow('Number of resources in stack \'MyStack\': 3000 is greater than allowed maximum of 2500');
+  });
+
+  test('when stackResourceLimit is default, should show message when approaching limit', () => {
+    // GIVEN
+    const app = new App({});
+
+    const stack = new Stack(app, 'MyStack');
+
+    // WHEN
+    const numberOfResources = 2300;
+    for (let index = 0; index < numberOfResources; index++) {
+      new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
+    }
+
+    Annotations.fromStack(stack).hasInfo('/MyStack', `Number of resources: ${numberOfResources} is approaching allowed maximum of 2500`);
   });
 
   test('when stackResourceLimit is defined, should give the proper error', () => {
