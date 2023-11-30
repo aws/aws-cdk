@@ -450,7 +450,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
     const handler = new CdkHandler(this, 'Handler', {
       codeDirectory: path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'custom-resources', 'aws-custom-resource-handler'),
-      compatibleRuntimes: [lambda.Runtime.NODEJS_LATEST],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
     });
 
     const provider = new CdkSingletonFunction(this, 'Provider', {
