@@ -120,7 +120,7 @@ const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
   output: sourceOutput,
   customEventRule: {
     eventPattern,
-    target: lambdaFuntion,
+    target: new targets.LambdaFunction(lambdaFuntion),
   }
 });
 ```
