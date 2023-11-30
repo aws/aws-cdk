@@ -93,7 +93,7 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 
 You can define hosted configuration content using any of the following ConfigurationContent methods:
 
-* `fromFile` - Defines the hosted configuration content from a file.
+* `fromFile` - Defines the hosted configuration content from a file (you can specify a relative path).
 * `fromInlineText` - Defines the hosted configuration from inline text.
 * `fromInlineJson` - Defines the hosted configuration from inline JSON.
 * `fromInlineYaml` - Defines the hosted configuration from inline YAML.
