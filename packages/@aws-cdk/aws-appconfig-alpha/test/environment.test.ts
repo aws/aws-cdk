@@ -272,7 +272,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRole51BFC2F05',
+              'MyEnvironmentRoleCompositeAlarm8C2A0542',
               'Arn',
             ],
           },
@@ -357,7 +357,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRole51BFC2F05',
+              'MyEnvironmentRoleCompositeAlarm8C2A0542',
               'Arn',
             ],
           },
@@ -371,7 +371,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRole51BFC2F05',
+              'MyEnvironmentRoleCompositeAlarm8C2A0542',
               'Arn',
             ],
           },
