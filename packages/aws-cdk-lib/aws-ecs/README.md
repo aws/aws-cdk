@@ -1283,6 +1283,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 
 const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
   autoScalingGroup,
+  instanceWarmupPeriod: 300,
 });
 cluster.addAsgCapacityProvider(capacityProvider);
 
