@@ -17,9 +17,8 @@ export class CodePipelineStartPipelineExecution extends ScheduleTargetBase imple
   }
 
   protected addTargetActionToRole(schedule: ISchedule, role: IRole): void {
-    const pipelineArn = Arn.split(this.pipeline.pipelineArn, ArnFormat.NO_RESOURCE_NAME);
-    const region = pipelineArn.region ?? '';
-    const account = pipelineArn.account ?? '';
+    const region = this.pipeline.env.region ?? '';
+    const account = this.pipeline.env.account ?? '';
 
     if (!sameEnvDimension(region, schedule.env.region)) {
       throw new Error(`Cannot assign pipeline in region ${region} to the schedule ${Names.nodeUniqueId(schedule.node)} in region ${schedule.env.region}. Both the schedule and the pipeline must be in the same region.`);
