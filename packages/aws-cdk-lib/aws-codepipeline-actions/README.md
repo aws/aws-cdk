@@ -112,7 +112,7 @@ const eventPattern = {
   },
 };
 declare const repo: codecommit.Repository;
-declare const lambdaFuntion: lambda.LambdaFunction;
+declare const lambdaFuntion: lambda.Function;
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
   actionName: 'CodeCommit',
