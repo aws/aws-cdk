@@ -711,7 +711,7 @@ export class Job extends JobBase {
     this.sparkUILoggingLocation = sparkUI?.location;
     const continuousLoggingArgs = props.continuousLogging?.enabled ? this.setupContinuousLogging(this.role, props.continuousLogging) : {};
     const profilingMetricsArgs = props.enableProfilingMetrics ? { '--enable-metrics': '' } : {};
-    const observabilityMetricsArgs = props.enableObservabilityMetrics ? { '--enable-observability-metrics': '' } : {};
+    const observabilityMetricsArgs = props.enableObservabilityMetrics ? { '--enable-observability-metrics': 'true' } : {};
 
     const defaultArguments = {
       ...this.executableArguments(executable),
