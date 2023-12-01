@@ -15,7 +15,7 @@ export interface QueueProps {
    *
    * If specified and this is a FIFO queue, must end in the string '.fifo'.
    *
-   * @default CloudFormation-generated name
+   * @default - CloudFormation generated name
    */
   readonly queueName?: string;
 
@@ -78,7 +78,7 @@ export interface QueueProps {
   /**
    * Send messages to this queue if they were unsuccessfully dequeued a number of times.
    *
-   * @default no dead-letter queue
+   * @default - no dead-letter queue
    */
   readonly deadLetterQueue?: DeadLetterQueue;
 
@@ -102,7 +102,7 @@ export interface QueueProps {
    * If the 'encryptionMasterKey' property is set, 'encryption' type will be
    * implicitly set to "KMS".
    *
-   * @default If encryption is set to KMS and not specified, a key will be created.
+   * @default - If encryption is set to KMS and not specified, a key will be created.
    */
   readonly encryptionMasterKey?: kms.IKey;
 
@@ -227,7 +227,6 @@ export enum FifoThroughputLimit {
  * A new Amazon SQS queue
  */
 export class Queue extends QueueBase {
-
   /**
    * Import an existing SQS queue provided an ARN
    *
@@ -249,8 +248,10 @@ export class Queue extends QueueBase {
     const queueUrl = attrs.queueUrl || `https://sqs.${parsedArn.region}.${stack.urlSuffix}/${parsedArn.account}/${queueName}`;
 
     class Import extends QueueBase {
-      public readonly queueArn = attrs.queueArn; // arn:aws:sqs:us-east-1:123456789012:queue1
-      public readonly queueUrl = queueUrl;
+      public readonly attrArn = attrs.queueArn; // arn:aws:sqs:us-east-1:123456789012:queue1
+      public readonly queueArn = this.attrArn;
+      public readonly attrQueueUrl = queueUrl;
+      public readonly queueUrl = this.attrQueueUrl;
       public readonly queueName = queueName;
       public readonly encryptionMasterKey = attrs.keyArn
         ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
@@ -289,6 +290,15 @@ export class Queue extends QueueBase {
 
   /**
    * The ARN of this queue
+   *
+   * @attribute
+   */
+  public readonly attrArn: string;
+
+  /**
+   * The ARN of this queue
+   *
+   * @deprecated use attrArn
    */
   public readonly queueArn: string;
 
@@ -299,6 +309,15 @@ export class Queue extends QueueBase {
 
   /**
    * The URL of this queue
+   *
+   * @attribute
+   */
+  public readonly attrQueueUrl: string;
+
+  /**
+   * The URL of this queue
+   *
+   * @deprecated use attrQUeueUrl
    */
   public readonly queueUrl: string;
 
@@ -356,13 +375,15 @@ export class Queue extends QueueBase {
     });
     queue.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
 
-    this.queueArn = this.getResourceArnAttribute(queue.attrArn, {
+    this.attrArn = this.getResourceArnAttribute(queue.attrArn, {
       service: 'sqs',
       resource: this.physicalName,
     });
+    this.queueArn = this.attrArn;
     this.queueName = this.getResourceNameAttribute(queue.attrQueueName);
     this.encryptionMasterKey = encryptionMasterKey;
-    this.queueUrl = queue.ref;
+    this.attrQueueUrl = queue.ref;
+    this.queueUrl = this.attrQueueUrl;
     this.deadLetterQueue = props.deadLetterQueue;
     this.encryptionType = encryptionType;
 
