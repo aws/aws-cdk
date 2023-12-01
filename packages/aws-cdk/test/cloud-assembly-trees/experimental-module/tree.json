@@ -59,13 +59,13 @@
                     }
                   },
                   "constructInfo": {
-                    "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpStage",
+                    "fqn": "aws-cdk-lib/aws-apigatewayv2.HttpStage",
                     "version": "2.13.0-alpha.0"
                   }
                 }
               },
               "constructInfo": {
-                "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpApi",
+                "fqn": "aws-cdk-lib/aws-apigatewayv2.HttpApi",
                 "version": "2.13.0-alpha.0"
               }
             },
