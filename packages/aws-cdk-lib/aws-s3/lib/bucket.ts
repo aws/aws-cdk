@@ -499,7 +499,7 @@ export interface BucketAttributes {
  */
 export abstract class BucketBase extends Resource implements IBucket {
   public abstract readonly attrArn: string;
-  public abstract readonly attrBucketName?: string;
+  public abstract readonly attrBucketName: string;
   /**
    * @deprecated use attrArn
    */
@@ -1821,7 +1821,7 @@ export class Bucket extends BucketBase {
   }
 
   public readonly attrArn: string;
-  public readonly attrBucketName?: string;
+  public readonly attrBucketName: string;
   public readonly bucketArn: string;
   public readonly bucketName: string;
   public readonly bucketDomainName: string;
