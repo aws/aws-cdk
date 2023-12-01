@@ -439,7 +439,7 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
   public abstract readonly connections: ec2.Connections;
 
   /**
-   * The instance log retentions
+   * The cluster log retentions
    */
   readonly abstract logRetentions: {[key:string]: logs.LogRetention};
 
