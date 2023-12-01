@@ -1,5 +1,6 @@
 export * from './codebuild-start-build';
 export * from './event-bridge-put-events';
+export * from './inspector-start-assessment-run';
 export * from './kinesis-data-firehose-put-record';
 export * from './lambda-invoke';
 export * from './sns-publish';
