@@ -37,6 +37,8 @@ All notable changes to this project will be documented in this file. See [standa
 * **ec2:** IPAM allocated subnets cannot split more than 256 times ([#28027](https://github.com/aws/aws-cdk/issues/28027)) ([91a3e8c](https://github.com/aws/aws-cdk/commit/91a3e8c0fb0b6e91d45146c44c234151c59b3476)), closes [#25537](https://github.com/aws/aws-cdk/issues/25537)
 * **lambda-event-sources:** event source property maxConcurrency is not token-aware ([#27797](https://github.com/aws/aws-cdk/issues/27797)) ([38f54db](https://github.com/aws/aws-cdk/commit/38f54dbd01722baf7781a006da75e109d38cd9db)), closes [#27796](https://github.com/aws/aws-cdk/issues/27796)
 * **s3-bucket-deployment:** update logging statement to ensure one-line logging ([#28057](https://github.com/aws/aws-cdk/issues/28057)) ([b01e17d](https://github.com/aws/aws-cdk/commit/b01e17d1e97bfd59603017ecd46b63c0c3df483a))
+* **cli:** hotswap cannot evaluate nested stacks within nested stacks ([#28080](https://github.com/aws/aws-cdk/pull/28080)) ([6004a17](https://github.com/aws/aws-cdk/commit/6004a17c593728e36ad4f5c3dcdd578ff46fa9bb))
+* **lambda:** validate logLevel with logFormat for advanced logging ([#28045](https://github.com/aws/aws-cdk/pull/28045)) ([f533ba2](https://github.com/aws/aws-cdk/commit/f533ba2d2c00c6c1a8d143aea4b29857a6ed018a))
 
 ## [2.111.0](https://github.com/aws/aws-cdk/compare/v2.110.1...v2.111.0) (2023-11-27)
 
