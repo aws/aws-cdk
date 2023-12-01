@@ -13,7 +13,7 @@ export interface SqsQueueActionProps extends CommonActionProps {
    *
    * @default false
    */
-  readonly useBase64?: boolean
+  readonly useBase64?: boolean;
 }
 
 /**
@@ -21,14 +21,14 @@ export interface SqsQueueActionProps extends CommonActionProps {
  */
 export class SqsQueueAction implements iot.IAction {
   private readonly role?: iam.IRole;
-  private readonly queue: sqs.IQueue;
+  private readonly queue: sqs.ICfnQueue;
   private readonly useBase64?: boolean;
 
   /**
    * @param queue The Amazon SQS queue to which to write data.
    * @param props Optional properties to not use default
    */
-  constructor(queue: sqs.IQueue, props: SqsQueueActionProps = {}) {
+  constructor(queue: sqs.ICfnQueue, props: SqsQueueActionProps = {}) {
     this.queue = queue;
     this.role = props.role;
     this.useBase64 = props.useBase64;
@@ -41,13 +41,13 @@ export class SqsQueueAction implements iot.IAction {
     const role = this.role ?? singletonActionRole(rule);
     role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['sqs:SendMessage'],
-      resources: [this.queue.queueArn],
+      resources: [this.queue.attrArn],
     }));
 
     return {
       configuration: {
         sqs: {
-          queueUrl: this.queue.queueUrl,
+          queueUrl: this.queue.attrQueueUrl,
           useBase64: this.useBase64,
           roleArn: role.roleArn,
         },

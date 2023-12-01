@@ -86,8 +86,8 @@ export class SqsDestination implements IEventDestination {
   public readonly type: SourceType;
   public readonly policyDocument?: iam.PolicyDocument;
 
-  constructor(queue: sqs.IQueue) {
-    this.extensionUri = queue.queueArn;
+  constructor(queue: sqs.ICfnQueue) {
+    this.extensionUri = queue.attrArn;
     this.type = SourceType.SQS;
     const policy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,

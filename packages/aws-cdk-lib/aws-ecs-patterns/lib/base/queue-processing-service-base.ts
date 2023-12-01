@@ -90,7 +90,7 @@ export interface QueueProcessingServiceBaseProps {
    * If specified and this is a FIFO queue, the queue name must end in the string '.fifo'. See
    * [CreateQueue](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_CreateQueue.html)
    *
-   * @default 'SQSQueue with CloudFormation-generated name'
+   * @default - SQS Queue with CloudFormation-generated name
    */
   readonly queue?: IQueue;
 
@@ -125,14 +125,14 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is (desiredTaskCount * 2); if true, the default is 2.
    */
-  readonly maxScalingCapacity?: number
+  readonly maxScalingCapacity?: number;
 
   /**
    * Minimum capacity to scale to.
    *
    * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is the desiredTaskCount; if true, the default is 1.
    */
-  readonly minScalingCapacity?: number
+  readonly minScalingCapacity?: number;
 
   /**
    * The intervals for scaling based on the SQS queue's ApproximateNumberOfMessagesVisible metric.
