@@ -2,7 +2,6 @@
 Shout out to our top contributors!
 
 - [rix0rrr](https://github.com/rix0rrr)
-- [eladb](https://github.com/eladb)
 - [skinny85](https://github.com/skinny85)
 - [RomainMuller](https://github.com/RomainMuller)
 - [njlynch](https://github.com/njlynch)
@@ -14,19 +13,20 @@ Shout out to our top contributors!
 - [otaviomacedo](https://github.com/otaviomacedo)
 - [madeline-k](https://github.com/madeline-k)
 - [NetaNir](https://github.com/NetaNir)
+- [mrgrain](https://github.com/mrgrain)
 - [comcalvi](https://github.com/comcalvi)
 - [robertd](https://github.com/robertd)
-- [MrArnoldPalmer](https://github.com/MrArnoldPalmer)
 - [pahud](https://github.com/pahud)
-- [mrgrain](https://github.com/mrgrain)
+- [MrArnoldPalmer](https://github.com/MrArnoldPalmer)
 - [peterwoodworth](https://github.com/peterwoodworth)
 - [TheRealAmazonKendra](https://github.com/TheRealAmazonKendra)
 - [lpizzinidev](https://github.com/lpizzinidev)
+- [colifran](https://github.com/colifran)
 - [nija-at](https://github.com/nija-at)
 - [hoegertn](https://github.com/hoegertn)
-- [jumic](https://github.com/jumic)
 - [watany-dev](https://github.com/watany-dev)
+- [jumic](https://github.com/jumic)
 - [SoManyHs](https://github.com/SoManyHs)
 
 
-_Last updated: Wed, 01 Nov 23 00:09:18 +0000_
+_Last updated: Fri, 01 Dec 23 00:09:47 +0000_
