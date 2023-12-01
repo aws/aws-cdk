@@ -741,6 +741,8 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
   public readonly connections: ec2.Connections;
 
+  public abstract readonly logRetentions?: {[key:string]: logs.LogRetention};
+
   protected abstract readonly instanceType: ec2.InstanceType;
 
   protected readonly vpcPlacement?: ec2.SubnetSelection;
@@ -884,16 +886,19 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     };
   }
 
-  protected setLogRetention() {
+  protected setLogRetention(): {[key:string]: logs.LogRetention} {
+    const logRetentions: {[key:string]: logs.LogRetention} = {};
     if (this.cloudwatchLogsExports && this.cloudwatchLogsRetention) {
       for (const log of this.cloudwatchLogsExports) {
-        new logs.LogRetention(this, `LogRetention${log}`, {
+        logRetentions[log] = new logs.LogRetention(this, `LogRetention${log}`, {
           logGroupName: `/aws/rds/instance/${this.instanceIdentifier}/${log}`,
           retention: this.cloudwatchLogsRetention,
           role: this.cloudwatchLogsRetentionRole,
         });
       }
     }
+
+    return logRetentions;
   }
 }
 
@@ -1148,6 +1153,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
+  public readonly logRetentions?: {[key:string]: logs.LogRetention};
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
@@ -1179,7 +1185,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
       this.secret = secret.attach(this);
     }
 
-    this.setLogRetention();
+    this.logRetentions = this.setLogRetention();
   }
 }
 
@@ -1217,6 +1223,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
+  public readonly logRetentions?: {[key:string]: logs.LogRetention};
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
@@ -1258,7 +1265,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
       this.secret = secret.attach(this);
     }
 
-    this.setLogRetention();
+    this.logRetentions = this.setLogRetention();
   }
 }
 
@@ -1308,6 +1315,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly instanceEndpoint: Endpoint;
   public readonly engine?: IInstanceEngine = undefined;
   protected readonly instanceType: ec2.InstanceType;
+  public readonly logRetentions?: {[key:string]: logs.LogRetention};
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
     super(scope, id, props);
@@ -1344,7 +1352,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
 
     instance.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
-    this.setLogRetention();
+    this.logRetentions = this.setLogRetention();
   }
 }
 

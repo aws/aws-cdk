@@ -914,6 +914,9 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   // ...
 });
 
+// Access generated LogGroup ARN
+const generalLogGroupArn = cluster.logRetentions.general.logGroupArn;
+
 // Exporting logs from an instance
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({
@@ -923,6 +926,9 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   cloudwatchLogsExports: ['postgresql'], // Export the PostgreSQL logs
   // ...
 });
+
+// Access generated LogGroup ARN
+const postgresqlLogGroupArn = instance.logRetentions.postgresql.logGroupArn;
 ```
 
 ## Option Groups

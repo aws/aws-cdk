@@ -1082,6 +1082,24 @@ describe('instance', () => {
     });
   });
 
+  test('can get log retention cloudwatch group ARN by log type', () => {
+    // GIVEN
+    const cloudwatchLogsExports = ['error', 'general'];
+
+    // WHEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_26 }),
+      vpc,
+      cloudwatchLogsExports,
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    // THEN
+    expect(instance.logRetentions.error.logGroupArn).toBeDefined();
+    expect(instance.logRetentions.general.logGroupArn).toBeDefined();
+    expect(instance.logRetentions.warn).not.toBeDefined();
+  });
+
   test('iam authentication - off by default', () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),

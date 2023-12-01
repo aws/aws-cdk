@@ -958,6 +958,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
   public readonly connections: ec2.Connections;
   public readonly instanceIdentifiers: string[];
   public readonly instanceEndpoints: Endpoint[];
+  public readonly logRetentions?: {[key:string]: logs.LogRetention};
 
   /**
    * The secret attached to this cluster
@@ -995,7 +996,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
 
     cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
-    setLogRetention(this, props);
+    this.logRetentions = setLogRetention(this, props);
     if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
       throw new Error('Cannot provide writer or readers if instances or instanceProps are provided');
     }
@@ -1133,6 +1134,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   public readonly connections: ec2.Connections;
   public readonly instanceIdentifiers: string[];
   public readonly instanceEndpoints: Endpoint[];
+  public readonly logRetentions?: {[key:string]: logs.LogRetention};
 
   /**
    * The secret attached to this cluster
@@ -1186,7 +1188,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
 
     cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
-    setLogRetention(this, props);
+    this.logRetentions = setLogRetention(this, props);
     if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
       throw new Error('Cannot provide clusterInstances if instances or instanceProps are provided');
     }
@@ -1200,7 +1202,8 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
  * Sets up CloudWatch log retention if configured.
  * A function rather than protected member to prevent exposing ``DatabaseClusterBaseProps``.
  */
-function setLogRetention(cluster: DatabaseClusterNew, props: DatabaseClusterBaseProps) {
+function setLogRetention(cluster: DatabaseClusterNew, props: DatabaseClusterBaseProps): {[key:string]: logs.LogRetention} {
+  const logRetentions: {[key:string]: logs.LogRetention} = {};
   if (props.cloudwatchLogsExports) {
     const unsupportedLogTypes = props.cloudwatchLogsExports.filter(logType => !props.engine.supportedLogTypes.includes(logType));
     if (unsupportedLogTypes.length > 0) {
@@ -1209,7 +1212,7 @@ function setLogRetention(cluster: DatabaseClusterNew, props: DatabaseClusterBase
 
     if (props.cloudwatchLogsRetention) {
       for (const log of props.cloudwatchLogsExports) {
-        new logs.LogRetention(cluster, `LogRetention${log}`, {
+        logRetentions[log] = new logs.LogRetention(cluster, `LogRetention${log}`, {
           logGroupName: `/aws/rds/cluster/${cluster.clusterIdentifier}/${log}`,
           retention: props.cloudwatchLogsRetention,
           role: props.cloudwatchLogsRetentionRole,
@@ -1217,6 +1220,8 @@ function setLogRetention(cluster: DatabaseClusterNew, props: DatabaseClusterBase
       }
     }
   }
+
+  return logRetentions;
 }
 
 /** Output from the createInstances method; used to set instance identifiers and endpoints */

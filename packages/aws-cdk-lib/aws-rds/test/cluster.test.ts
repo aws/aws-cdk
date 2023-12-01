@@ -3117,6 +3117,32 @@ describe('cluster', () => {
     });
   });
 
+  test('can get log retention cloudwatch group ARN by log type', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      credentials: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+      cloudwatchLogsExports: ['error', 'general'],
+      cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS,
+    });
+
+    // THEN
+    expect(cluster.logRetentions.error.logGroupArn).toBeDefined();
+    expect(cluster.logRetentions.general.logGroupArn).toBeDefined();
+    expect(cluster.logRetentions.warn).not.toBeDefined();
+  });
+
   test('throws if given unsupported CloudWatch log exports', () => {
     // GIVEN
     const stack = testStack();
