@@ -5,7 +5,8 @@ import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
-import { DeploymentMethod } from './api';
+import * as uuid from 'uuid';
+import { DeploymentMethod, makeBodyParameterAndUpload } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
@@ -14,6 +15,7 @@ import { Deployments } from './api/deployments';
 import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
+import { CloudFormationStack, ResourcesToImport, createChangeSet } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, validateSourceOptions } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
@@ -146,6 +148,33 @@ export class CdkToolkit {
         );
         const currentTemplate = templateWithNames.deployedTemplate;
         const nestedStackCount = templateWithNames.nestedStackCount;
+
+        const preparedSdk = (await this.props.deployments.prepareSdkWithDeployRole(stack));
+        const bodyParameter = await makeBodyParameterAndUpload(
+          stack,
+          preparedSdk.resolvedEnvironment,
+          undefined as any,
+          undefined as any,
+          preparedSdk.stackSdk,
+        );
+        const cfn = preparedSdk.stackSdk.cloudFormation();
+        const exists = (await CloudFormationStack.lookup(cfn, stack.stackName, false)).exists;
+        const diffChangeSetUuid = uuid.v4();
+
+        const changeSet = await createChangeSet({
+          cfn,
+          changeSetName: 'some-name',
+          resourcesToImport: options.resourcesToImport,
+          stack,
+          exists,
+          uuid: diffChangeSetUuid,
+          willExecute: false,
+          bodyParameter,
+        });
+
+        stream.write('---------------ChangeSet Found----------------------\n');
+        stream.write(JSON.stringify(changeSet, undefined, 2));
+        stream.write('---------------End ChangeSet----------------------\n');
 
         const stackCount =
         options.securityOnly
@@ -929,6 +958,13 @@ export interface DiffOptions {
   * @default false
   */
   quiet?: boolean;
+
+  /**
+   * resources to import
+   *
+   * @default - no resources to import
+   */
+  resourcesToImport?: ResourcesToImport;
 }
 
 interface CfnDeployOptions {

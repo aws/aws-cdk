@@ -21,7 +21,7 @@ import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 
-type TemplateBodyParameter = {
+export type TemplateBodyParameter = {
   TemplateBody?: string
   TemplateURL?: string
 };
@@ -572,7 +572,7 @@ class FullCloudFormationDeployment {
  * @param stack     the synthesized stack that provides the CloudFormation template
  * @param toolkitInfo information about the toolkit stack
  */
-async function makeBodyParameter(
+export async function makeBodyParameter(
   stack: cxapi.CloudFormationStackArtifact,
   resolvedEnvironment: cxapi.Environment,
   assetManifest: AssetManifestBuilder,

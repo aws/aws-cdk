@@ -424,6 +424,10 @@ export class Deployments {
     return stack.exists;
   }
 
+  public async prepareSdkWithDeployRole(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<PreparedSdkForEnvironment> {
+    return this.prepareSdkFor(stackArtifact, undefined, Mode.ForWriting);
+  }
+
   private async prepareSdkWithLookupOrDeployRole(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<PreparedSdkForEnvironment> {
     // try to assume the lookup role
     try {
@@ -454,6 +458,12 @@ export class Deployments {
     roleArn: string | undefined,
     mode: Mode,
   ): Promise<PreparedSdkForEnvironment> {
+    // eslint-disable-next-line no-console
+    console.log('-------------------------');
+    // eslint-disable-next-line no-console
+    console.log(roleArn);
+    // eslint-disable-next-line no-console
+    console.log('-------------------------');
     if (!stack.environment) {
       throw new Error(`The stack ${stack.displayName} does not have an environment`);
     }
