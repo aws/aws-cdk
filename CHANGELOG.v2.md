@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file. See [standa
 ### Features
 
 * **apigatewayv2:** graduate to stable 🚀 ([#28094](https://github.com/aws/aws-cdk/issues/28094)) ([187f67b](https://github.com/aws/aws-cdk/commit/187f67b3430dca7ea96a94c66b18694bce213f03))
+* **apigatewayv2-authorizers:** graduate to stable 🚀 ([#28094](https://github.com/aws/aws-cdk/issues/28094)) ([187f67b](https://github.com/aws/aws-cdk/commit/187f67b3430dca7ea96a94c66b18694bce213f03))
+* **apigatewayv2-integrations:** graduate to stable 🚀 ([#28094](https://github.com/aws/aws-cdk/issues/28094)) ([187f67b](https://github.com/aws/aws-cdk/commit/187f67b3430dca7ea96a94c66b18694bce213f03))
 * **backup:** add disableDefaultBackupPolicy property to selection ([#27925](https://github.com/aws/aws-cdk/issues/27925)) ([55ffb3c](https://github.com/aws/aws-cdk/commit/55ffb3c2cede6496699cb3d07542d17d2c8212f8)), closes [#27900](https://github.com/aws/aws-cdk/issues/27900)
 * **ecs:** add instance warmup period prop ([#28194](https://github.com/aws/aws-cdk/issues/28194)) ([990fab3](https://github.com/aws/aws-cdk/commit/990fab3b99117eeca7909c19a12bc975c1b48160)), closes [#28190](https://github.com/aws/aws-cdk/issues/28190)
 * **elasticloadbalancingv2:** add security group support for nlb ([#27978](https://github.com/aws/aws-cdk/issues/27978)) ([645d4e9](https://github.com/aws/aws-cdk/commit/645d4e9db8c4a1cf2c324e88d9d49891386171ef)), closes [#26735](https://github.com/aws/aws-cdk/issues/26735)
