@@ -1892,6 +1892,12 @@
     "ref-via-ref-interface:aws-cdk-lib.triggers.TriggerFunctionProps.environmentEncryption",
     "ref-via-ref-interface:aws-cdk-lib.triggers.TriggerFunctionProps.profilingGroup",
     "ref-via-ref-interface:aws-cdk-lib.triggers.TriggerFunctionProps.vpc",
-    "props-default-doc:aws-cdk-lib.aws_appsync.SourceApi.description"
+    "props-default-doc:aws-cdk-lib.aws_appsync.SourceApi.description",
+    "ref-via-ref-interface:aws-cdk-lib.aws_cloudfront.experimental.EdgeFunctionProps.logGroup",
+    "ref-via-ref-interface:aws-cdk-lib.aws_lambda.DockerImageFunctionProps.logGroup",
+    "ref-via-ref-interface:aws-cdk-lib.aws_lambda.FunctionProps.logGroup",
+    "ref-via-ref-interface:aws-cdk-lib.aws_lambda.SingletonFunctionProps.logGroup",
+    "ref-via-ref-interface:aws-cdk-lib.aws_lambda_nodejs.NodejsFunctionProps.logGroup",
+    "ref-via-ref-interface:aws-cdk-lib.triggers.TriggerFunctionProps.logGroup"
   ]
 }
