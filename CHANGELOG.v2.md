@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.113.0](https://github.com/aws/aws-cdk/compare/v2.112.0...v2.113.0) (2023-12-01)
+
+
+### Features
+
+* update AWS Service Spec ([#28222](https://github.com/aws/aws-cdk/issues/28222)) ([f4c1d12](https://github.com/aws/aws-cdk/commit/f4c1d1253ee34c2837a57a93faa47c9da97ef6d8))
+
 ## [2.112.0](https://github.com/aws/aws-cdk/compare/v2.111.0...v2.112.0) (2023-12-01)
 
 
