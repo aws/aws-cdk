@@ -48,6 +48,17 @@ const FRAMEWORK_2_1_0_AFFECTED_NOTICE = {
   schemaVersion: '1',
 };
 
+const NOTICE_FOR_APIGATEWAYV2 = {
+  title: 'Regression on module foobar',
+  issueNumber: 1234,
+  overview: 'Some bug description',
+  components: [{
+    name: '@aws-cdk/aws-apigatewayv2-alpha.',
+    version: '<= 2.13.0-alpha.0',
+  }],
+  schemaVersion: '1',
+};
+
 const NOTICE_FOR_APIGATEWAY = {
   title: 'Regression on module foobar',
   issueNumber: 1234,
