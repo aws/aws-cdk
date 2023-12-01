@@ -77,6 +77,11 @@ export class KafkaVersion {
   public static readonly V2_8_1 = KafkaVersion.of('2.8.1');
 
   /**
+   * AWS MSK Kafka version 2.8.2.tiered
+   */
+  public static readonly V2_8_2_TIERED = KafkaVersion.of('2.8.2.tiered');
+
+  /**
    * Kafka version 3.1.1
    */
   public static readonly V3_1_1 = KafkaVersion.of('3.1.1');
@@ -102,6 +107,11 @@ export class KafkaVersion {
   public static readonly V3_4_0 = KafkaVersion.of('3.4.0');
 
   /**
+   * Kafka version 3.5.1
+   */
+  public static readonly V3_5_1 = KafkaVersion.of('3.5.1');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -114,4 +124,11 @@ export class KafkaVersion {
    * @param version cluster version number
    */
   private constructor(public readonly version: string) {}
+
+  /**
+   * Checks if the cluster version supports tiered storage mode.
+   */
+  public isTieredStorageCompatible() {
+    return this.version.endsWith('.tiered');
+  };
 }

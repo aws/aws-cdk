@@ -37,11 +37,13 @@ describe('MSK Cluster', () => {
     [msk.KafkaVersion.V2_7_2, '2.7.2'],
     [msk.KafkaVersion.V2_8_0, '2.8.0'],
     [msk.KafkaVersion.V2_8_1, '2.8.1'],
+    [msk.KafkaVersion.V2_8_2_TIERED, '2.8.2.tiered'],
     [msk.KafkaVersion.V3_1_1, '3.1.1'],
     [msk.KafkaVersion.V3_2_0, '3.2.0'],
     [msk.KafkaVersion.V3_3_1, '3.3.1'],
     [msk.KafkaVersion.V3_3_2, '3.3.2'],
     [msk.KafkaVersion.V3_4_0, '3.4.0'],
+    [msk.KafkaVersion.V3_5_1, '3.5.1'],
   ],
   )('created with expected Kafka version %j', (parameter, result) => {
     new msk.Cluster(stack, 'Cluster', {
@@ -782,6 +784,66 @@ describe('MSK Cluster', () => {
             ],
           ],
         },
+      });
+    });
+  });
+
+  describe('created with storage mode', () => {
+    describe('with tiered storage mode', () => {
+      test('create a cluster with tiered storage mode', () => {
+        new msk.Cluster(stack, 'Cluster', {
+          clusterName: 'cluster',
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+          kafkaVersion: msk.KafkaVersion.V2_8_2_TIERED,
+          vpc,
+          storageMode: msk.StorageMode.TIERED,
+        }),
+        Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
+          StorageMode: 'TIERED',
+        });
+      });
+
+      test('fails if incompatible Kafka version', () => {
+        expect(
+          () =>
+            new msk.Cluster(stack, 'Cluster', {
+              clusterName: 'cluster',
+              kafkaVersion: msk.KafkaVersion.V2_6_1,
+              vpc,
+              storageMode: msk.StorageMode.TIERED,
+            }),
+        ).toThrow(
+          'To deploy a tiered cluster you must select a compatible Kafka version, got 2.6.1',
+        );
+      });
+
+      test('fails if instance type is t3.small', () => {
+        expect(
+          () =>
+            new msk.Cluster(stack, 'Cluster', {
+              clusterName: 'cluster',
+              instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
+              kafkaVersion: msk.KafkaVersion.V2_8_2_TIERED,
+              vpc,
+              storageMode: msk.StorageMode.TIERED,
+            }),
+        ).toThrow(
+          'Tiered storage doesn\'t support broker type t3.small',
+        );
+      });
+    });
+
+    describe('with local storage mode', () => {
+      test('create a cluster with local storage mode', () => {
+        new msk.Cluster(stack, 'Cluster', {
+          clusterName: 'cluster',
+          kafkaVersion: msk.KafkaVersion.V2_6_1,
+          vpc,
+          storageMode: msk.StorageMode.LOCAL,
+        });
+        Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
+          StorageMode: 'LOCAL',
+        });
       });
     });
   });
