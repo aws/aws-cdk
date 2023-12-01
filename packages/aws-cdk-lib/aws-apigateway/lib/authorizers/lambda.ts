@@ -183,7 +183,7 @@ export interface TokenAuthorizerProps extends LambdaAuthorizerProps {
 
   /**
    * The request header mapping expression for the bearer token. This is typically passed as part of the header, in which case
-   * this should be `method.request.header.Authorizer` where 'Authorizer' is the header containing the bearer token.
+   * this should be `method.request.header.Authorizer` where `Authorizer` is the header containing the bearer token.
    *
    * @see https://docs.aws.amazon.com/apigateway/latest/api/API_CreateAuthorizer.html#apigw-CreateAuthorizer-request-identitySource
    * @default `IdentitySource.header('Authorization')`
