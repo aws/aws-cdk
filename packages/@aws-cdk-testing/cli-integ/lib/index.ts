@@ -3,6 +3,7 @@ export * from './corking';
 export * from './integ-test';
 export * from './memoize';
 export * from './resource-pool';
+export * from './with-cli-lib';
 export * from './with-sam';
 export * from './shell';
 export * from './with-aws';

@@ -29,6 +29,8 @@ The following targets are supported:
 3. `targets.CodeBuildStartBuild`: [Start a CodeBuild job](#start-a-codebuild-job)
 4. `targets.SqsSendMessage`: [Send a Message to an Amazon SQS Queue](#send-a-message-to-sqs-queue)
 5. `targets.SnsPublish`: [Publish messages to an Amazon SNS topic](#publish-messages-to-an-amazon-sns-topic)
+6. `targets.EventBridgePutEvents`: [Put Events on EventBridge](#send-events-to-an-eventbridge-event-bus)
+7. `targets.InspectorStartAssessmentRun`: [Start an Amazon Inspector assessment run](#start-an-amazon-inspector-assessment-run)
 
 ## Invoke a Lambda function
 
@@ -176,5 +178,50 @@ const target = new targets.SnsPublish(topic, {
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.hours(1)),
   target,
+});
+```
+
+## Send events to an EventBridge event bus
+
+Use the `EventBridgePutEvents` target to send events to an EventBridge event bus.
+
+The code snippet below creates an event rule with an EventBridge event bus as a target
+called every hour by Event Bridge Scheduler with a custom event payload.
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+
+const eventBus = new events.EventBus(this, 'EventBus', {
+  eventBusName: 'DomainEvents',
+});
+
+const eventEntry: targets.EventBridgePutEventsEntry = {
+  eventBus,
+  source: 'PetService',
+  detail: ScheduleTargetInput.fromObject({ Name: 'Fluffy' }),
+  detailType: '🐶',
+};
+
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.hours(1)),
+  target: new targets.EventBridgePutEvents(eventEntry, {}),
+});
+```
+
+## Start an Amazon Inspector assessment run
+
+Use the `InspectorStartAssessmentRun` target to start an Inspector assessment run.
+
+The code snippet below creates an event rule with an assessment template as target which is
+called every hour by Event Bridge Scheduler.
+
+```ts
+import * as inspector from 'aws-cdk-lib/aws-inspector';
+
+declare const assessmentTemplate: inspector.CfnAssessmentTemplate;
+
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.InspectorStartAssessmentRun(assessmentTemplate),
 });
 ```
