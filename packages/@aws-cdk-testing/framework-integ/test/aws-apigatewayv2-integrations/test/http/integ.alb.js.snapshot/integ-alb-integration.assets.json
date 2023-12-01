@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "f11c6ceac4cb2b8f267a4416107765cb75f20ea260e7835fefdd1a6f801d6c88": {
+      "source": {
+        "path": "integ-alb-integration.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f11c6ceac4cb2b8f267a4416107765cb75f20ea260e7835fefdd1a6f801d6c88.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
