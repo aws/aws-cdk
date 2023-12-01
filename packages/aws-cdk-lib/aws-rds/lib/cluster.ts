@@ -439,6 +439,11 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
   public abstract readonly connections: ec2.Connections;
 
   /**
+   * The instance log retentions
+   */
+  readonly abstract logRetentions: {[key:string]: logs.LogRetention};
+
+  /**
    * Add a new db proxy to this cluster.
    */
   public addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy {
@@ -862,6 +867,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
   public readonly engine?: IClusterEngine;
+  public readonly logRetentions: {[key:string]: logs.LogRetention};
 
   private readonly _clusterResourceIdentifier?: string;
   private readonly _clusterEndpoint?: Endpoint;
@@ -881,6 +887,8 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
       defaultPort,
     });
     this.engine = attrs.engine;
+
+    this.logRetentions = {};
 
     this._clusterEndpoint = (attrs.clusterEndpointAddress && attrs.port) ? new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
     this._clusterReadEndpoint = (attrs.readerEndpointAddress && attrs.port) ? new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;
@@ -958,7 +966,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
   public readonly connections: ec2.Connections;
   public readonly instanceIdentifiers: string[];
   public readonly instanceEndpoints: Endpoint[];
-  public readonly logRetentions?: {[key:string]: logs.LogRetention};
+  public readonly logRetentions: {[key:string]: logs.LogRetention};
 
   /**
    * The secret attached to this cluster
@@ -1134,7 +1142,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   public readonly connections: ec2.Connections;
   public readonly instanceIdentifiers: string[];
   public readonly instanceEndpoints: Endpoint[];
-  public readonly logRetentions?: {[key:string]: logs.LogRetention};
+  public readonly logRetentions: {[key:string]: logs.LogRetention};
 
   /**
    * The secret attached to this cluster
