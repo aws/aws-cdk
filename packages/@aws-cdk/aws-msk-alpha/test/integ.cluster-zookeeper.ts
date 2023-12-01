@@ -19,7 +19,7 @@ class KafkaZookeeperTest extends Stack {
 
     const cluster = new msk.Cluster(this, 'ClusterZookeeper', {
       clusterName: 'cluster-zookeeper',
-      kafkaVersion: msk.KafkaVersion.V3_4_0,
+      kafkaVersion: msk.KafkaVersion.V3_5_1,
       vpc,
       removalPolicy: RemovalPolicy.DESTROY,
     });

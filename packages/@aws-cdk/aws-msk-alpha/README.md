@@ -69,7 +69,7 @@ new CfnOutput(this, 'ZookeeperConnectionTls', { value: cluster.zookeeperConnecti
 To import an existing MSK cluster into your CDK app use the `.fromClusterArn()` method.
 
 ```ts
-const cluster = msk.Cluster.fromClusterArn(this, 'Cluster', 
+const cluster = msk.Cluster.fromClusterArn(this, 'Cluster',
   'arn:aws:kafka:us-west-2:1234567890:cluster/a-cluster/11111111-1111-1111-1111-111111111111-1',
 );
 ```
@@ -146,7 +146,7 @@ const cluster = new msk.Cluster(this, 'cluster', {
 
 ### SASL/IAM + TLS
 
-Enable client authentication with [IAM](https://docs.aws.amazon.com/msk/latest/developerguide/iam-access-control.html) 
+Enable client authentication with [IAM](https://docs.aws.amazon.com/msk/latest/developerguide/iam-access-control.html)
 as well as enable client authentication with TLS by setting the `certificateAuthorityArns` property to reference your ACM Private CA. [More info on Private CAs.](https://docs.aws.amazon.com/msk/latest/developerguide/msk-authentication.html)
 
 ```ts
@@ -210,3 +210,23 @@ in the `cdk.json` file.
 }
 ```
 
+## Storage Mode
+
+You can configure an MSK cluster storage mode using the `storageMode` property.
+
+Tiered storage is a low-cost storage tier for Amazon MSK that scales to virtually unlimited storage,
+making it cost-effective to build streaming data applications.
+
+> Visit [Tiered storage](https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html) for more details.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const bucket: s3.IBucket;
+
+const cluster = new msk.Cluster(this, 'cluster', {
+  clusterName: 'myCluster',
+  kafkaVersion: msk.KafkaVersion.V2_8_2_TIERED,
+  vpc,
+  storageMode: msk.StorageMode.TIERED,
+});
+```
