@@ -594,11 +594,15 @@ export class Function extends FunctionBase {
         resourceName: functionName,
         arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       }),
+      sameEnvironment: true,
     });
   }
 
   /**
-   * Import a lambda function into the CDK using its ARN
+   * Import a lambda function into the CDK using its ARN.
+   *
+   * For `Function.addPermissions()` to work on this imported lambda, make sure that is
+   * in the same account and region as the stack you are importing it into.
    */
   public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
     return Function.fromFunctionAttributes(scope, id, { functionArn });
@@ -607,6 +611,9 @@ export class Function extends FunctionBase {
   /**
    * Creates a Lambda function object which represents a function not defined
    * within this stack.
+   *
+   * For `Function.addPermissions()` to work on this imported lambda, set the sameEnvironment property to true
+   * if this imported lambda is in the same account and region as the stack you are importing it into.
    *
    * @param scope The parent construct
    * @param id The name of the lambda construct
@@ -1048,6 +1055,7 @@ export class Function extends FunctionBase {
     const reservedEnvironmentVariables = [
       '_HANDLER',
       '_X_AMZN_TRACE_ID',
+      'AWS_DEFAULT_REGION',
       'AWS_REGION',
       'AWS_EXECUTION_ENV',
       'AWS_LAMBDA_FUNCTION_NAME',
@@ -1077,6 +1085,10 @@ export class Function extends FunctionBase {
    * function and undefined if not.
    */
   private getLoggingConfig(props: FunctionProps): CfnFunction.LoggingConfigProperty | undefined {
+    if ((props.applicationLogLevel || props.systemLogLevel) && props.logFormat !== LogFormat.JSON) {
+      throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`);
+    }
+
     let loggingConfig: CfnFunction.LoggingConfigProperty;
     if (props.logFormat || props.logGroup) {
       loggingConfig = {

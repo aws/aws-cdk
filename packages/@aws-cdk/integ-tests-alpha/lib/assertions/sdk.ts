@@ -156,7 +156,7 @@ export enum LogType {
 }
 
 /**
- * The type of invocation. Default is REQUEST_RESPONE
+ * The type of invocation. Default is REQUEST_RESPONSE
  */
 export enum InvocationType {
   /**
@@ -172,7 +172,7 @@ export enum InvocationType {
    * Keep the connection open until the function returns a response or times out.
    * The API response includes the function response and additional data.
    */
-  REQUEST_RESPONE = 'RequestResponse',
+  REQUEST_RESPONSE = 'RequestResponse',
 
   /**
    * Validate parameter values and verify that the user
@@ -193,7 +193,7 @@ export interface LambdaInvokeFunctionProps {
   /**
    * The type of invocation to use
    *
-   * @default InvocationType.REQUEST_RESPONE
+   * @default InvocationType.REQUEST_RESPONSE
    */
   readonly invocationType?: InvocationType;
 

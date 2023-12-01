@@ -32,7 +32,6 @@ test('built-in data is correct', () => {
     }
 
     snapshot[name] = {
-      cdkMetadataResourceAvailable: region.cdkMetadataResourceAvailable,
       domainSuffix: region.domainSuffix,
       partition: region.partition,
       s3StaticWebsiteEndpoint: region.s3StaticWebsiteEndpoint,

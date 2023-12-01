@@ -13,7 +13,7 @@ import { addAlias, flatMap } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { Annotations, ArnFormat, IResource, Resource, Token } from '../../core';
+import { Annotations, ArnFormat, IResource, Resource, Token, Stack } from '../../core';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
@@ -344,7 +344,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    */
   public addPermission(id: string, permission: Permission) {
     if (!this.canCreatePermissions) {
-      // FIXME: @deprecated(v2) - throw an error if calling `addPermission` on a resource that doesn't support it.
+      Annotations.of(this).addWarningV2('UnclearLambdaEnvironment', `addPermission() has no effect on a Lambda Function with region=${this.env.region}, account=${this.env.account}, in a Stack with region=${Stack.of(this).region}, account=${Stack.of(this).account}. Suppress this warning if this is is intentional, or pass sameEnvironment=true to fromFunctionAttributes() if you would like to add the permissions.`);
       return;
     }
 

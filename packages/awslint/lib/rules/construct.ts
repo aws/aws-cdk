@@ -24,11 +24,6 @@ export class ConstructReflection {
     return typeRef.fqn;
   }
 
-  /**
-   * @deprecated - use `CoreTypes.constructClass()` or `CoreTypes.baseConstructClass()` as appropriate
-   */
-  public readonly ROOT_CLASS: reflect.ClassType; // constructs.Construct
-
   public readonly fqn: string;
   public readonly interfaceFqn: string;
   public readonly propsFqn: string;
@@ -43,7 +38,6 @@ export class ConstructReflection {
     this.fqn = classType.fqn;
     this.sys = classType.system;
     this.core = new CoreTypes(this.sys);
-    this.ROOT_CLASS = this.sys.findClass(this.core.constructClass.fqn);
     this.interfaceFqn = `${this.typePrefix(classType)}.I${classType.name}`;
     this.propsFqn = `${this.typePrefix(classType)}.${classType.name}Props`;
     this.interfaceType = this.tryFindInterface();
@@ -99,16 +93,9 @@ constructLinter.add({
     }
 
     const expectedParams = new Array<MethodSignatureParameterExpectation>();
-
-    let baseType;
-    if (process.env.AWSLINT_BASE_CONSTRUCT && !CoreTypes.isCfnResource(e.ctx.classType)) {
-      baseType = e.ctx.core.baseConstructClass;
-    } else {
-      baseType = e.ctx.core.constructClass;
-    }
     expectedParams.push({
       name: 'scope',
-      type: baseType.fqn,
+      type: e.ctx.core.baseConstructClassFqn,
     });
 
     expectedParams.push({
@@ -184,7 +171,7 @@ constructLinter.add({
   message: 'construct interface must extend core.IConstruct',
   eval: e => {
     if (!e.ctx.interfaceType) { return; }
-    const interfaceBase = e.ctx.sys.findInterface(e.ctx.core.constructInterface.fqn);
+    const interfaceBase = e.ctx.sys.findInterface(e.ctx.core.baseConstructInterfaceFqn);
     e.assert(e.ctx.interfaceType.extends(interfaceBase), e.ctx.interfaceType.fqn);
   },
 });
@@ -247,7 +234,7 @@ constructLinter.add({
 
       const found = (fqn && e.ctx.sys.tryFindFqn(fqn));
       if (found) {
-        e.assert(!(fqn === e.ctx.core.tokenInterface.fqn), `${e.ctx.propsFqn}.${property.name}`);
+        e.assert(!(fqn === e.ctx.core.tokenInterfaceFqn), `${e.ctx.propsFqn}.${property.name}`);
       }
     }
   },

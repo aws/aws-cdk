@@ -11,6 +11,7 @@ const vpc = new Vpc(stack, 'Vpc', {
 
 const integ = new IntegTest(app, 'integ-test', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 const res = integ.assertions.awsApiCall('EC2', 'describeSecurityGroups', {

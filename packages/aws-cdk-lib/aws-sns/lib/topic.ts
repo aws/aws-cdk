@@ -69,7 +69,9 @@ export class Topic extends TopicBase {
       protected autoCreatePolicy: boolean = false;
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: topicArn,
+    });
   }
 
   public readonly topicArn: string;

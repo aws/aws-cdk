@@ -477,7 +477,7 @@
        {
         "Ref": "ClusterZookeeper29ECF2D7"
        },
-       "\"},\"physicalResourceId\":{\"id\":\"ZooKeeperConnectionString\"}}"
+       "\"},\"physicalResourceId\":{\"id\":\"ZooKeeperConnectionString\"},\"outputPaths\":[\"ClusterInfo.ZookeeperConnectString\",\"ClusterInfo.ZookeeperConnectStringTls\"]}"
       ]
      ]
     },
@@ -489,7 +489,7 @@
        {
         "Ref": "ClusterZookeeper29ECF2D7"
        },
-       "\"},\"physicalResourceId\":{\"id\":\"ZooKeeperConnectionString\"}}"
+       "\"},\"physicalResourceId\":{\"id\":\"ZooKeeperConnectionString\"},\"outputPaths\":[\"ClusterInfo.ZookeeperConnectString\",\"ClusterInfo.ZookeeperConnectStringTls\"]}"
       ]
      ]
     },
@@ -562,7 +562,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e5178afc49b7c6a85127a67856ce958e4f0879ce6aad5e974cac2a088bf939db.zip"
+     "S3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
     },
     "Handler": "index.handler",
     "Role": {

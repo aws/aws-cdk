@@ -4,17 +4,16 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
 
 <!--END STABILITY BANNER-->
+
+All constructs moved to aws-cdk-lib/aws-apigatewayv2-authorizers.
+
 
 ## Table of Contents
 
@@ -33,19 +32,19 @@
 ## Introduction
 
 API Gateway supports multiple mechanisms for controlling and managing access to your HTTP API. They are mainly
-classified into Lambda Authorizers, JWT authorizers and standard AWS IAM roles and policies. More information is
+classified into Lambda Authorizers, JWT authorizers, and standard AWS IAM roles and policies. More information is
 available at [Controlling and managing access to an HTTP
 API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html).
 
 ## HTTP APIs
 
-Access control for Http Apis is managed by restricting which routes can be invoked via.
+Access control for HTTP APIs is managed by restricting which routes can be invoked via.
 
-Authorizers and scopes can either be applied to the api, or specifically for each route.
+Authorizers and scopes can either be applied to the API, or specifically for each route.
 
 ### Default Authorization
 
-When using default authorization, all routes of the api will inherit the configuration.
+When using default authorization, all routes of the API will inherit the configuration.
 
 In the example below, all routes will require the `manage:books` scope present in order to invoke the integration.
 
@@ -65,12 +64,12 @@ const api = new apigwv2.HttpApi(this, 'HttpApi', {
 
 ### Route Authorization
 
-Authorization can also configured for each Route. When a route authorization is configured, it takes precedence over default authorization.
+Authorization can also be configured for each Route. When a route authorization is configured, it takes precedence over default authorization.
 
 The example below showcases default authorization, along with route authorization. It also shows how to remove authorization entirely for a route.
 
 - `GET /books` and `GET /books/{id}` use the default authorizer settings on the api
-- `POST /books` will require the [write:books] scope
+- `POST /books` will require the `['write:books']` scope
 - `POST /login` removes the default authorizer (unauthenticated route)
 
 ```ts
@@ -120,7 +119,7 @@ JWT authorizers allow the use of JSON Web Tokens (JWTs) as part of [OpenID Conne
 
 When configured, API Gateway validates the JWT submitted by the client, and allows or denies access based on its content.
 
-The location of the token is defined by the `identitySource` which defaults to the http `Authorization` header. However it also
+The location of the token is defined by the `identitySource` which defaults to the HTTP `Authorization` header. However it also
 [supports a number of other options](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-lambda-authorizer.html#http-api-lambda-authorizer.identity-sources).
 It then decodes the JWT and validates the signature and claims, against the options defined in the authorizer and route (scopes).
 For more information check the [JWT Authorizer documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-jwt-authorizer.html).
@@ -150,7 +149,7 @@ api.addRoutes({
 
 #### User Pool Authorizer
 
-User Pool Authorizer is a type of JWT Authorizer that uses a Cognito user pool and app client to control who can access your Api. After a successful authorization from the app client, the generated access token will be used as the JWT.
+User Pool Authorizer is a type of JWT Authorizer that uses a Cognito user pool and app client to control who can access your API. After a successful authorization from the app client, the generated access token will be used as the JWT.
 
 Clients accessing an API that uses a user pool authorizer must first sign in to a user pool and obtain an identity or access token.
 They must then use this token in the specified `identitySource` for the API call. More information is available at [using Amazon Cognito user

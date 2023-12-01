@@ -184,5 +184,5 @@ function database(): SpecDatabase {
  * The database is loaded lazily and cached across multiple calls to `loadResourceModel`.
  */
 export function loadResourceModel(type: string): Resource | undefined {
-  return database().lookup('resource', 'cloudFormationType', 'equals', type).at(0);
+  return database().lookup('resource', 'cloudFormationType', 'equals', type)[0];
 }

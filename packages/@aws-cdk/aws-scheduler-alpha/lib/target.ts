@@ -16,7 +16,7 @@ export interface IScheduleTarget {
 }
 
 /**
- * Config of a Schedule Target used during initalization of Schedule
+ * Config of a Schedule Target used during initialization of Schedule
  */
 export interface ScheduleTargetConfig {
   /**
@@ -30,7 +30,7 @@ export interface ScheduleTargetConfig {
   readonly role: iam.IRole;
 
   /**
-   *  What input to pass to the tatget
+   *  What input to pass to the target
    */
   readonly input?: ScheduleTargetInput;
 

@@ -106,7 +106,7 @@ describe('rules', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
-          ExpirationDate: '2018-01-01T00:00:00',
+          ExpirationDate: '2018-01-01T00:00:00Z',
           Status: 'Enabled',
         }],
       },

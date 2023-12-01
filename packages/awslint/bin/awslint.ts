@@ -50,7 +50,8 @@ async function main() {
 
   if (args._.length > 1) {
     argv.showHelp();
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   const command = args._[0] || 'lint';
@@ -204,7 +205,7 @@ async function main() {
     }
 
     if (errors && !args.save) {
-      process.exit(1);
+      process.exitCode = 1;
     }
 
     return;
@@ -241,13 +242,16 @@ main().catch(e => {
   if (stackTrace) {
     console.error(e.stack);
   }
-  process.exit(1);
+  process.exitCode = 1;
 });
 
 async function loadModule(dir: string) {
   const ts = new reflect.TypeSystem();
   await ts.load(dir, { validate: false }); // Don't validate to save 66% of execution time (20s vs 1min).
   // We run 'awslint' during build time, assemblies are guaranteed to be ok.
+
+  // We won't load any more assemblies. Lock the typesystem to benefit from performance improvements.
+  ts.lock();
 
   if (ts.roots.length !== 1) {
     throw new Error('Expecting only a single root assembly');

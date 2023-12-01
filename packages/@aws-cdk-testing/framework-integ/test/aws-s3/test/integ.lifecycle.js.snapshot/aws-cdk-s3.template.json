@@ -6,11 +6,11 @@
     "LifecycleConfiguration": {
      "Rules": [
       {
-       "ExpirationDate": "2019-10-01T00:00:00",
+       "ExpirationDate": "2019-10-01T00:00:00Z",
        "Status": "Enabled"
       },
       {
-       "ExpirationDate": "2019-10-01T00:00:00",
+       "ExpirationDate": "2019-10-01T00:00:00Z",
        "ObjectSizeGreaterThan": 500,
        "ObjectSizeLessThan": 600,
        "Status": "Enabled"
