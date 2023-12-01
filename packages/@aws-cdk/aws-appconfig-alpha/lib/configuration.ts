@@ -308,16 +308,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    * @param environment The environment to deploy the configuration to
    */
   public deploy(environment: IEnvironment) {
-    const logicalId = `Deployment${this.getDeploymentHash(environment)}`;
-    new CfnDeployment(this, logicalId, {
-      applicationId: this.application.applicationId,
-      configurationProfileId: this.configurationProfileId,
-      deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
-      environmentId: environment.environmentId,
-      configurationVersion: this.versionNumber!,
-      description: this.description,
-      kmsKeyIdentifier: this.deploymentKey?.keyArn,
-    });
+    this.createDeployment(environment);
   }
 
   protected addExistingEnvironmentsToApplication() {
@@ -337,16 +328,20 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
       if ((this.deployTo && !this.deployTo.includes(environment))) {
         return;
       }
-      const logicalId = `Deployment${this.getDeploymentHash(environment)}`;
-      new CfnDeployment(this, logicalId, {
-        applicationId: this.application.applicationId,
-        configurationProfileId: this.configurationProfileId,
-        deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
-        environmentId: environment.environmentId,
-        configurationVersion: this.versionNumber!,
-        description: this.description,
-        kmsKeyIdentifier: this.deploymentKey?.keyArn,
-      });
+      this.createDeployment(environment);
+    });
+  }
+
+  private createDeployment(environment: IEnvironment) {
+    const logicalId = `Deployment${this.getDeploymentHash(environment)}`;
+    new CfnDeployment(this, logicalId, {
+      applicationId: this.application.applicationId,
+      configurationProfileId: this.configurationProfileId,
+      deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
+      environmentId: environment.environmentId,
+      configurationVersion: this.versionNumber!,
+      description: this.description,
+      kmsKeyIdentifier: this.deploymentKey?.keyArn,
     });
   }
 }
