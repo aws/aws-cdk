@@ -268,7 +268,7 @@ export interface ExampleResourceProps {
    *
    * @default - no Bucket will be used
    */
-  readonly bucket?: s3.IBucket;
+  readonly bucket?: s3.ICfnBucket;
 
   /**
    * Many resources can be attached to a VPC.

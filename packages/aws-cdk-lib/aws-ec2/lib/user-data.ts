@@ -1,5 +1,5 @@
 import { OperatingSystemType } from './machine-image';
-import { IBucket } from '../../aws-s3';
+import { ICfnBucket } from '../../aws-s3';
 import { Fn, Resource, Stack, CfnResource } from '../../core';
 
 /**
@@ -40,7 +40,7 @@ export interface S3DownloadOptions {
   /**
    * Name of the S3 bucket to download from
    */
-  readonly bucket: IBucket;
+  readonly bucket: ICfnBucket;
 
   /**
    * The key of the file to download
@@ -176,7 +176,7 @@ class LinuxUserData extends UserData {
   }
 
   public addS3DownloadCommand(params: S3DownloadOptions): string {
-    const s3Path = `s3://${params.bucket.bucketName}/${params.bucketKey}`;
+    const s3Path = `s3://${params.bucket.attrBucketName}/${params.bucketKey}`;
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `/tmp/${ params.bucketKey }`;
     this.addCommands(
       `mkdir -p $(dirname '${localPath}')`,
@@ -239,7 +239,7 @@ class WindowsUserData extends UserData {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `C:/temp/${ params.bucketKey }`;
     this.addCommands(
       `mkdir (Split-Path -Path '${localPath}' ) -ea 0`,
-      `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${params.region}` : ''),
+      `Read-S3Object -BucketName '${params.bucket.attrBucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${params.region}` : ''),
     );
     return localPath;
   }

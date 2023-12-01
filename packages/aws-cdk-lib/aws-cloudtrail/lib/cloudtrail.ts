@@ -421,7 +421,7 @@ export class Trail extends Resource {
    */
   public addS3EventSelector(s3Selector: S3EventSelector[], options: AddEventSelectorOptions = {}) {
     if (s3Selector.length === 0) { return; }
-    const dataResourceValues = s3Selector.map((sel) => `${sel.bucket.bucketArn}/${sel.objectPrefix ?? ''}`);
+    const dataResourceValues = s3Selector.map((sel) => `${sel.bucket.attrArn}/${sel.objectPrefix ?? ''}`);
     return this.addEventSelector(DataResourceType.S3_OBJECT, dataResourceValues, options);
   }
 
@@ -504,7 +504,7 @@ export enum ManagementEventSources {
  */
 export interface S3EventSelector {
   /** S3 bucket */
-  readonly bucket: s3.IBucket;
+  readonly bucket: s3.ICfnBucket;
 
   /**
    * Data events for objects whose key matches this prefix will be logged.

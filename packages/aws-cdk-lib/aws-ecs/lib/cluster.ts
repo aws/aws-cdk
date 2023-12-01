@@ -331,7 +331,7 @@ export class Cluster extends Resource implements ICluster {
     return {
       cloudWatchEncryptionEnabled: logConfiguration?.cloudWatchEncryptionEnabled,
       cloudWatchLogGroupName: logConfiguration?.cloudWatchLogGroup?.logGroupName,
-      s3BucketName: logConfiguration?.s3Bucket?.bucketName,
+      s3BucketName: logConfiguration?.s3Bucket?.attrBucketName,
       s3EncryptionEnabled: logConfiguration?.s3EncryptionEnabled,
       s3KeyPrefix: logConfiguration?.s3KeyPrefix,
     };
@@ -1107,7 +1107,7 @@ export interface ExecuteCommandLogConfiguration {
    *
    * @default - none
    */
-  readonly s3Bucket?: s3.IBucket,
+  readonly s3Bucket?: s3.ICfnBucket,
 
   /**
    * Whether or not to enable encryption on the S3 bucket.
