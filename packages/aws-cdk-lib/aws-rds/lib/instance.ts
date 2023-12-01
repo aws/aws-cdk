@@ -69,6 +69,11 @@ export interface IDatabaseInstance extends IResource, ec2.IConnectable, secretsm
   readonly engine?: IInstanceEngine;
 
   /**
+   * The instance log retentions
+   */
+  readonly logRetentions: {[key:string]: logs.LogRetention};
+
+  /**
    * Add a new db proxy to this instance.
    */
   addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy;
@@ -149,6 +154,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
       public readonly engine = attrs.engine;
       protected enableIamAuthentication = true;
       public readonly instanceResourceId = attrs.instanceResourceId;
+      public readonly logRetentions: {[key:string]: logs.LogRetention} = {};
     }
 
     return new Import(scope, id);
@@ -162,6 +168,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
   // only required because of JSII bug: https://github.com/aws/jsii/issues/2040
   public abstract readonly engine?: IInstanceEngine;
   protected abstract enableIamAuthentication?: boolean;
+  public abstract readonly logRetentions: {[key:string]: logs.LogRetention};
 
   /**
    * Access to network connections.
@@ -741,7 +748,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
   public readonly connections: ec2.Connections;
 
-  public abstract readonly logRetentions?: {[key:string]: logs.LogRetention};
+  public readonly logRetentions: {[key:string]: logs.LogRetention};
 
   protected abstract readonly instanceType: ec2.InstanceType;
 
@@ -794,6 +801,8 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       securityGroups,
       defaultPort: ec2.Port.tcp(Lazy.number({ produce: () => this.instanceEndpoint.port })),
     });
+
+    this.logRetentions = {};
 
     let monitoringRole;
     if (props.monitoringInterval && props.monitoringInterval.toSeconds()) {
@@ -1153,7 +1162,7 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
   public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
-  public readonly logRetentions?: {[key:string]: logs.LogRetention};
+  public readonly logRetentions: {[key:string]: logs.LogRetention};
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceProps) {
     super(scope, id, props);
@@ -1223,7 +1232,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
   public readonly instanceResourceId?: string;
   public readonly instanceEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
-  public readonly logRetentions?: {[key:string]: logs.LogRetention};
+  public readonly logRetentions: {[key:string]: logs.LogRetention};
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceFromSnapshotProps) {
     super(scope, id, props);
@@ -1315,7 +1324,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
   public readonly instanceEndpoint: Endpoint;
   public readonly engine?: IInstanceEngine = undefined;
   protected readonly instanceType: ec2.InstanceType;
-  public readonly logRetentions?: {[key:string]: logs.LogRetention};
+  public readonly logRetentions: {[key:string]: logs.LogRetention};
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
     super(scope, id, props);
