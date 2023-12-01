@@ -1,28 +1,28 @@
 {
-  "version": "35.0.0",
+  "version": "34.0.0",
   "artifacts": {
-    "KafkaZookeeperTestStack.assets": {
+    "KafkaStorageModeTestStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "KafkaZookeeperTestStack.assets.json",
+        "file": "KafkaStorageModeTestStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "KafkaZookeeperTestStack": {
+    "KafkaStorageModeTestStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "KafkaZookeeperTestStack.template.json",
+        "templateFile": "KafkaStorageModeTestStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e3be505e96ac937f37590b661b81fa3c3ae801a0b0f7cf7fc2096696ddf04227.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/74c577aa04ac95ab00d45704bdb862b7d2762219f4e54f9d3882db5a42c3abb3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "KafkaZookeeperTestStack.assets"
+          "KafkaStorageModeTestStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,217 +31,199 @@
         }
       },
       "dependencies": [
-        "KafkaZookeeperTestStack.assets"
+        "KafkaStorageModeTestStack.assets"
       ],
       "metadata": {
-        "/KafkaZookeeperTestStack/Vpc/Resource": [
+        "/KafkaStorageModeTestStack/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PublicSubnet1/Subnet": [
+        "/KafkaStorageModeTestStack/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PublicSubnet1/RouteTable": [
+        "/KafkaStorageModeTestStack/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/KafkaStorageModeTestStack/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PublicSubnet1/DefaultRoute": [
+        "/KafkaStorageModeTestStack/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PublicSubnet1/EIP": [
+        "/KafkaStorageModeTestStack/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1EIPD7E02669"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PublicSubnet1/NATGateway": [
+        "/KafkaStorageModeTestStack/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PublicSubnet2/Subnet": [
+        "/KafkaStorageModeTestStack/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PublicSubnet2/RouteTable": [
+        "/KafkaStorageModeTestStack/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/KafkaStorageModeTestStack/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PublicSubnet2/DefaultRoute": [
+        "/KafkaStorageModeTestStack/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PublicSubnet2/EIP": [
+        "/KafkaStorageModeTestStack/Vpc/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2EIP3C605A87"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PublicSubnet2/NATGateway": [
+        "/KafkaStorageModeTestStack/Vpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2NATGateway9182C01D"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PrivateSubnet1/Subnet": [
+        "/KafkaStorageModeTestStack/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PrivateSubnet1/RouteTable": [
+        "/KafkaStorageModeTestStack/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/KafkaStorageModeTestStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/KafkaStorageModeTestStack/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PrivateSubnet2/Subnet": [
+        "/KafkaStorageModeTestStack/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2Subnet3788AAA1"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PrivateSubnet2/RouteTable": [
+        "/KafkaStorageModeTestStack/Vpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableA678073B"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/KafkaStorageModeTestStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/PrivateSubnet2/DefaultRoute": [
+        "/KafkaStorageModeTestStack/Vpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/IGW": [
+        "/KafkaStorageModeTestStack/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIGWD7BA715C"
           }
         ],
-        "/KafkaZookeeperTestStack/Vpc/VPCGW": [
+        "/KafkaStorageModeTestStack/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/KafkaZookeeperTestStack/ClusterZookeeper/SecurityGroup/Resource": [
+        "/KafkaStorageModeTestStack/storageModetiered/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterZookeeperSecurityGroupD3CFED03"
+            "data": "storageModetieredSecurityGroupAAF9F00E"
           }
         ],
-        "/KafkaZookeeperTestStack/ClusterZookeeper/Resource": [
+        "/KafkaStorageModeTestStack/storageModetiered/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterZookeeper29ECF2D7"
+            "data": "storageModetieredB9EDE2DF"
           }
         ],
-        "/KafkaZookeeperTestStack/ClusterZookeeper/ZookeeperConnect/Resource/Default": [
+        "/KafkaStorageModeTestStack/storageModelocal/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterZookeeperZookeeperConnectDBC3303D"
+            "data": "storageModelocalSecurityGroupFD0A95DE"
           }
         ],
-        "/KafkaZookeeperTestStack/ClusterZookeeper/ZookeeperConnect/CustomResourcePolicy/Resource": [
+        "/KafkaStorageModeTestStack/storageModelocal/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterZookeeperZookeeperConnectCustomResourcePolicy762D4B4E"
+            "data": "storageModelocal9CEF347D"
           }
         ],
-        "/KafkaZookeeperTestStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-          }
-        ],
-        "/KafkaZookeeperTestStack/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
-          }
-        ],
-        "/KafkaZookeeperTestStack/Zookeeper": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Zookeeper"
-          }
-        ],
-        "/KafkaZookeeperTestStack/BootstrapVersion": [
+        "/KafkaStorageModeTestStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/KafkaZookeeperTestStack/CheckBootstrapVersion": [
+        "/KafkaStorageModeTestStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "KafkaZookeeperTestStack"
+      "displayName": "KafkaStorageModeTestStack"
     },
-    "KafkaZookeeperIntegTestDefaultTestDeployAssert731E1402.assets": {
+    "KafkaStorageModeIntegTestDefaultTestDeployAssertE4141594.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "KafkaZookeeperIntegTestDefaultTestDeployAssert731E1402.assets.json",
+        "file": "KafkaStorageModeIntegTestDefaultTestDeployAssertE4141594.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "KafkaZookeeperIntegTestDefaultTestDeployAssert731E1402": {
+    "KafkaStorageModeIntegTestDefaultTestDeployAssertE4141594": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "KafkaZookeeperIntegTestDefaultTestDeployAssert731E1402.template.json",
+        "templateFile": "KafkaStorageModeIntegTestDefaultTestDeployAssertE4141594.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -250,7 +232,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "KafkaZookeeperIntegTestDefaultTestDeployAssert731E1402.assets"
+          "KafkaStorageModeIntegTestDefaultTestDeployAssertE4141594.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -259,23 +241,23 @@
         }
       },
       "dependencies": [
-        "KafkaZookeeperIntegTestDefaultTestDeployAssert731E1402.assets"
+        "KafkaStorageModeIntegTestDefaultTestDeployAssertE4141594.assets"
       ],
       "metadata": {
-        "/KafkaZookeeperIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/KafkaStorageModeIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/KafkaZookeeperIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/KafkaStorageModeIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "KafkaZookeeperIntegTest/DefaultTest/DeployAssert"
+      "displayName": "KafkaStorageModeIntegTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
