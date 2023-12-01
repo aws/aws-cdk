@@ -30,7 +30,8 @@ The following targets are supported:
 4. `targets.SqsSendMessage`: [Send a Message to an Amazon SQS Queue](#send-a-message-to-sqs-queue)
 5. `targets.SnsPublish`: [Publish messages to an Amazon SNS topic](#publish-messages-to-an-amazon-sns-topic)
 6. `targets.EventBridgePutEvents`: [Put Events on EventBridge](#send-events-to-an-eventbridge-event-bus)
-7. `targets.KinesisStreamPutRecord`: [Put a record to an Amazon Kinesis Data Streams](#put-a-record-to-an-amazon-kinesis-data-streams)
+7. `targets.InspectorStartAssessmentRun`: [Start an Amazon Inspector assessment run](#start-an-amazon-inspector-assessment-run)
+8. `targets.KinesisStreamPutRecord`: [Put a record to an Amazon Kinesis Data Streams](#put-a-record-to-an-amazon-kinesis-data-streams)
 
 ## Invoke a Lambda function
 
@@ -205,6 +206,24 @@ const eventEntry: targets.EventBridgePutEventsEntry = {
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.hours(1)),
   target: new targets.EventBridgePutEvents(eventEntry, {}),
+});
+```
+
+## Start an Amazon Inspector assessment run
+
+Use the `InspectorStartAssessmentRun` target to start an Inspector assessment run.
+
+The code snippet below creates an event rule with an assessment template as target which is
+called every hour by Event Bridge Scheduler.
+
+```ts
+import * as inspector from 'aws-cdk-lib/aws-inspector';
+
+declare const assessmentTemplate: inspector.CfnAssessmentTemplate;
+
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.InspectorStartAssessmentRun(assessmentTemplate),
 });
 ```
 
