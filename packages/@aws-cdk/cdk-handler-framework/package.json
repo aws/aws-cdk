@@ -26,10 +26,12 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/pkglint": "0.0.0"
+    "@aws-cdk/pkglint": "0.0.0",
+    "jest": "^29.7.0"
   },
   "dependencies": {
-    "@cdklabs/typewriter": "^0.0.3"
+    "@cdklabs/typewriter": "^0.0.3",
+    "fs-extra": "^11.2.0"
   },
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
