@@ -17,6 +17,10 @@ const user = new iam.User(stack, 'MyUser');
 repo.grantRead(user);
 repo.grantPullPush(user);
 
+new ecr.Repository(stack, 'RepoWithEmptyOnDelete', {
+  emptyOnDelete: true,
+});
+
 new cdk.CfnOutput(stack, 'RepositoryURI', {
   value: repo.repositoryUri,
 });

@@ -569,6 +569,13 @@ export interface RepositoryProps {
    * @default false
    */
   readonly autoDeleteImages?: boolean;
+
+  /**
+   * If true, deleting the repository force deletes the contents of the repository. If false, the repository must be empty before attempting to delete it.
+   *
+   * @default false
+   */
+  readonly emptyOnDelete?: boolean;
 }
 
 export interface RepositoryAttributes {
@@ -706,6 +713,7 @@ export class Repository extends RepositoryBase {
       imageScanningConfiguration: props.imageScanOnPush !== undefined ? { scanOnPush: props.imageScanOnPush } : undefined,
       imageTagMutability: props.imageTagMutability || undefined,
       encryptionConfiguration: this.parseEncryption(props),
+      emptyOnDelete: props.emptyOnDelete,
     });
     this._resource = resource;
 

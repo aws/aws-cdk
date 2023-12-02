@@ -77,6 +77,17 @@ describe('repository', () => {
     });
   });
 
+  test('emptyOnDelete can be set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    new ecr.Repository(stack, 'Repo', { emptyOnDelete: true });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+      EmptyOnDelete: true,
+    });
+  });
+
   test('add day-based lifecycle policy', () => {
     // GIVEN
     const stack = new cdk.Stack();

@@ -65,6 +65,14 @@
      }
     ]
    }
+  },
+  "RepoWithEmptyOnDeleteCA5C67FA": {
+   "Type": "AWS::ECR::Repository",
+   "Properties": {
+    "EmptyOnDelete": true
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Outputs": {
