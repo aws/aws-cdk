@@ -567,6 +567,7 @@ export interface RepositoryProps {
    * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
    *
    * @default false
+   * @deprecated Use `emptyOnDelete` instead.
    */
   readonly autoDeleteImages?: boolean;
 
