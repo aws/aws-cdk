@@ -15,15 +15,13 @@ test('test fargate queue worker service construct - with only required props', (
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(
-    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
     }),
-  );
+  }));
 
   // WHEN
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
@@ -40,7 +38,10 @@ test('test fargate queue worker service construct - with only required props', (
   Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
     RedrivePolicy: {
       deadLetterTargetArn: {
-        'Fn::GetAtt': ['ServiceEcsProcessingDeadLetterQueue4A89196E', 'Arn'],
+        'Fn::GetAtt': [
+          'ServiceEcsProcessingDeadLetterQueue4A89196E',
+          'Arn',
+        ],
       },
       maxReceiveCount: 3,
     },
@@ -63,7 +64,10 @@ test('test fargate queue worker service construct - with only required props', (
           ],
           Effect: 'Allow',
           Resource: {
-            'Fn::GetAtt': ['ServiceEcsProcessingQueueC266885C', 'Arn'],
+            'Fn::GetAtt': [
+              'ServiceEcsProcessingQueueC266885C',
+              'Arn',
+            ],
           },
         },
       ],
@@ -78,7 +82,10 @@ test('test fargate queue worker service construct - with only required props', (
           {
             Name: 'QUEUE_NAME',
             Value: {
-              'Fn::GetAtt': ['ServiceEcsProcessingQueueC266885C', 'QueueName'],
+              'Fn::GetAtt': [
+                'ServiceEcsProcessingQueueC266885C',
+                'QueueName',
+              ],
             },
           },
         ],
@@ -126,15 +133,13 @@ test('test fargate queue worker service construct - with optional props for queu
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(
-    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
     }),
-  );
+  }));
 
   // WHEN
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
@@ -154,7 +159,10 @@ test('test fargate queue worker service construct - with optional props for queu
   Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
     RedrivePolicy: {
       deadLetterTargetArn: {
-        'Fn::GetAtt': ['ServiceEcsProcessingDeadLetterQueue4A89196E', 'Arn'],
+        'Fn::GetAtt': [
+          'ServiceEcsProcessingDeadLetterQueue4A89196E',
+          'Arn',
+        ],
       },
       maxReceiveCount: 42,
     },
@@ -178,7 +186,10 @@ test('test fargate queue worker service construct - with optional props for queu
           ],
           Effect: 'Allow',
           Resource: {
-            'Fn::GetAtt': ['ServiceEcsProcessingQueueC266885C', 'Arn'],
+            'Fn::GetAtt': [
+              'ServiceEcsProcessingQueueC266885C',
+              'Arn',
+            ],
           },
         },
       ],
@@ -193,7 +204,10 @@ test('test fargate queue worker service construct - with optional props for queu
           {
             Name: 'QUEUE_NAME',
             Value: {
-              'Fn::GetAtt': ['ServiceEcsProcessingQueueC266885C', 'QueueName'],
+              'Fn::GetAtt': [
+                'ServiceEcsProcessingQueueC266885C',
+                'QueueName',
+              ],
             },
           },
         ],
@@ -269,7 +283,10 @@ test('test Fargate queue worker service construct - with ECS Exec', () => {
           ],
           Effect: 'Allow',
           Resource: {
-            'Fn::GetAtt': ['ServiceEcsProcessingQueueC266885C', 'Arn'],
+            'Fn::GetAtt': [
+              'ServiceEcsProcessingQueueC266885C',
+              'Arn',
+            ],
           },
         },
       ],
@@ -289,15 +306,13 @@ test('test Fargate queue worker service construct - without desiredCount specifi
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(
-    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
     }),
-  );
+  }));
   const queue = new sqs.Queue(stack, 'fargate-test-queue', {
     queueName: 'fargate-test-sqs-queue',
   });
@@ -340,22 +355,21 @@ test('test Fargate queue worker service construct - without desiredCount specifi
     },
   });
 
-  Template.fromStack(stack).hasResourceProperties(
-    'AWS::ApplicationAutoScaling::ScalableTarget',
-    {
-      MaxCapacity: 5,
-      MinCapacity: 2,
-    },
-  );
-
-  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
-    QueueName: 'fargate-test-sqs-queue',
+  Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
+    MaxCapacity: 5,
+    MinCapacity: 2,
   });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', { QueueName: 'fargate-test-sqs-queue' });
 
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       Match.objectLike({
-        Command: ['-c', '4', 'amazon.com'],
+        Command: [
+          '-c',
+          '4',
+          'amazon.com',
+        ],
         Environment: [
           {
             Name: 'TEST_ENVIRONMENT_VARIABLE1',
@@ -368,7 +382,10 @@ test('test Fargate queue worker service construct - without desiredCount specifi
           {
             Name: 'QUEUE_NAME',
             Value: {
-              'Fn::GetAtt': ['fargatetestqueue28B43841', 'QueueName'],
+              'Fn::GetAtt': [
+                'fargatetestqueue28B43841',
+                'QueueName',
+              ],
             },
           },
         ],
@@ -379,118 +396,109 @@ test('test Fargate queue worker service construct - without desiredCount specifi
   });
 });
 
-testDeprecated(
-  'test Fargate queue worker service construct - with optional props',
-  () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addAsgCapacityProvider(
-      new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-        autoScalingGroup: new AutoScalingGroup(
-          stack,
-          'DefaultAutoScalingGroup',
-          {
-            vpc,
-            instanceType: new ec2.InstanceType('t2.micro'),
-            machineImage: MachineImage.latestAmazonLinux(),
-          },
-        ),
-      }),
-    );
-    const queue = new sqs.Queue(stack, 'fargate-test-queue', {
-      queueName: 'fargate-test-sqs-queue',
-    });
+testDeprecated('test Fargate queue worker service construct - with optional props', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+  const queue = new sqs.Queue(stack, 'fargate-test-queue', {
+    queueName: 'fargate-test-sqs-queue',
+  });
 
-    // WHEN
-    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
-      cluster,
-      memoryLimitMiB: 512,
-      image: ecs.ContainerImage.fromRegistry('test'),
-      command: ['-c', '4', 'amazon.com'],
-      enableLogging: false,
-      environment: {
-        TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
-        TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 512,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    command: ['-c', '4', 'amazon.com'],
+    enableLogging: false,
+    environment: {
+      TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+      TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+    },
+    queue,
+    maxScalingCapacity: 5,
+    minHealthyPercent: 60,
+    maxHealthyPercent: 150,
+    serviceName: 'fargate-test-service',
+    family: 'fargate-task-family',
+    platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    circuitBreaker: { rollback: true },
+  });
+
+  // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    DeploymentConfiguration: {
+      MinimumHealthyPercent: 60,
+      MaximumPercent: 150,
+      DeploymentCircuitBreaker: {
+        Enable: true,
+        Rollback: true,
       },
-      queue,
-      maxScalingCapacity: 5,
-      minHealthyPercent: 60,
-      maxHealthyPercent: 150,
-      serviceName: 'fargate-test-service',
-      family: 'fargate-task-family',
-      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-      circuitBreaker: { rollback: true },
-    });
+    },
+    LaunchType: 'FARGATE',
+    ServiceName: 'fargate-test-service',
+    PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    DeploymentController: {
+      Type: 'ECS',
+    },
+  });
 
-    // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
-    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-      DeploymentConfiguration: {
-        MinimumHealthyPercent: 60,
-        MaximumPercent: 150,
-        DeploymentCircuitBreaker: {
-          Enable: true,
-          Rollback: true,
-        },
-      },
-      LaunchType: 'FARGATE',
-      ServiceName: 'fargate-test-service',
-      PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-      DeploymentController: {
-        Type: 'ECS',
-      },
-    });
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', { QueueName: 'fargate-test-sqs-queue' });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
-      QueueName: 'fargate-test-sqs-queue',
-    });
-
-    Template.fromStack(stack).hasResourceProperties(
-      'AWS::ECS::TaskDefinition',
-      {
-        ContainerDefinitions: [
-          Match.objectLike({
-            Command: ['-c', '4', 'amazon.com'],
-            Environment: [
-              {
-                Name: 'TEST_ENVIRONMENT_VARIABLE1',
-                Value: 'test environment variable 1 value',
-              },
-              {
-                Name: 'TEST_ENVIRONMENT_VARIABLE2',
-                Value: 'test environment variable 2 value',
-              },
-              {
-                Name: 'QUEUE_NAME',
-                Value: {
-                  'Fn::GetAtt': ['fargatetestqueue28B43841', 'QueueName'],
-                },
-              },
-            ],
-            Image: 'test',
-          }),
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    ContainerDefinitions: [
+      Match.objectLike({
+        Command: [
+          '-c',
+          '4',
+          'amazon.com',
         ],
-        Family: 'fargate-task-family',
-      },
-    );
-  },
-);
+        Environment: [
+          {
+            Name: 'TEST_ENVIRONMENT_VARIABLE1',
+            Value: 'test environment variable 1 value',
+          },
+          {
+            Name: 'TEST_ENVIRONMENT_VARIABLE2',
+            Value: 'test environment variable 2 value',
+          },
+          {
+            Name: 'QUEUE_NAME',
+            Value: {
+              'Fn::GetAtt': [
+                'fargatetestqueue28B43841',
+                'QueueName',
+              ],
+            },
+          },
+        ],
+        Image: 'test',
+      }),
+    ],
+    Family: 'fargate-task-family',
+  });
+});
 
 test('can set custom containerName', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addAsgCapacityProvider(
-    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
-      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
-        vpc,
-        instanceType: new ec2.InstanceType('t2.micro'),
-        machineImage: MachineImage.latestAmazonLinux(),
-      }),
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
     }),
-  );
+  }));
 
   // WHEN
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
@@ -545,7 +553,10 @@ test('can set custom networking options', () => {
         AssignPublicIp: 'DISABLED',
         SecurityGroups: [
           {
-            'Fn::GetAtt': ['MyCustomSGDE27C661', 'GroupId'],
+            'Fn::GetAtt': [
+              'MyCustomSGDE27C661',
+              'GroupId',
+            ],
           },
         ],
         Subnets: [
@@ -718,11 +729,7 @@ it('throws validation errors of the specific queue prop, when setting queue and 
       visibilityTimeout: cdk.Duration.seconds(200),
       maxReceiveCount: 10,
     });
-  }).toThrow(
-    new Error(
-      'retentionPeriod, visibilityTimeout, maxReceiveCount can be set only when queue is not set. Specify them in the QueueProps of the queue',
-    ),
-  );
+  }).toThrow(new Error('retentionPeriod, visibilityTimeout, maxReceiveCount can be set only when queue is not set. Specify them in the QueueProps of the queue'));
 
   // Setting only visibilityTimeout
   expect(() => {
@@ -731,11 +738,7 @@ it('throws validation errors of the specific queue prop, when setting queue and 
       queue: queue,
       visibilityTimeout: cdk.Duration.seconds(200),
     });
-  }).toThrow(
-    new Error(
-      'visibilityTimeout can be set only when queue is not set. Specify them in the QueueProps of the queue',
-    ),
-  );
+  }).toThrow(new Error('visibilityTimeout can be set only when queue is not set. Specify them in the QueueProps of the queue'));
 });
 
 test('test Fargate queue worker service construct - with task definition', () => {

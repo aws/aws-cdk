@@ -1,24 +1,15 @@
 import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
-import {
-  FargateService,
-  FargateTaskDefinition,
-  HealthCheck,
-} from '../../../aws-ecs';
+import { FargateService, FargateTaskDefinition, HealthCheck } from '../../../aws-ecs';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
-import {
-  QueueProcessingServiceBase,
-  QueueProcessingServiceBaseProps,
-} from '../base/queue-processing-service-base';
+import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 
 /**
  * The properties for the QueueProcessingFargateService service.
  */
-export interface QueueProcessingFargateServiceProps
-  extends QueueProcessingServiceBaseProps,
-  FargateServiceBaseProps {
+export interface QueueProcessingFargateServiceProps extends QueueProcessingServiceBaseProps, FargateServiceBaseProps {
   /**
    * Optional name for the container added
    *
@@ -73,11 +64,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
   /**
    * Constructs a new instance of the QueueProcessingFargateService class.
    */
-  constructor(
-    scope: Construct,
-    id: string,
-    props: QueueProcessingFargateServiceProps,
-  ) {
+  constructor(scope: Construct, id: string, props: QueueProcessingFargateServiceProps) {
     super(scope, id, props);
 
     // Create a Task Definition for the container to start
@@ -102,11 +89,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
     });
 
     // The desiredCount should be removed from the fargate service when the feature flag is removed.
-    const desiredCount = FeatureFlags.of(this).isEnabled(
-      cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT,
-    )
-      ? undefined
-      : this.desiredCount;
+    const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? undefined : this.desiredCount;
 
     // Create a Fargate service with the previously defined Task Definition and configure
     // autoscaling based on cpu utilization and number of messages visible in the SQS queue.
