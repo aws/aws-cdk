@@ -1,5 +1,10 @@
 import { SuperInitializer, ClassType, Type, IScope, expr, stmt } from '@cdklabs/typewriter';
-import { CDK_FUNCTION_MODULE, CDK_SINGLETON_FUNCTION_MODULE, CONSTRUCTS_MODULE } from './cdk-imports';
+import {
+  CDK_CUSTOM_RESOURCE_PROVIDER_MODULE,
+  CDK_FUNCTION_MODULE,
+  CDK_SINGLETON_FUNCTION_MODULE,
+  CONSTRUCTS_MODULE,
+} from './cdk-imports';
 
 interface CdkHandlerClassOptions {
   readonly entrypoint?: string;
@@ -24,7 +29,7 @@ export abstract class CdkHandlerClass extends ClassType {
   }
 
   public static buildCdkSingletonFunction(scope: IScope, props: CdkHandlerClassProps): ClassType {
-    return new (class CdkSingleFunction extends CdkHandlerClass {
+    return new (class CdkSingletonFunction extends CdkHandlerClass {
       public constructor() {
         super(scope, {
           name: props.className,
@@ -35,7 +40,17 @@ export abstract class CdkHandlerClass extends ClassType {
     })();
   }
 
-  public static buildCdkCustomResourceProvider() {}
+  public static buildCdkCustomResourceProvider(scope: IScope, props: CdkHandlerClassProps): ClassType {
+    return new (class CdkCustomResourceProvider extends CdkHandlerClass {
+      public constructor() {
+        super(scope, {
+          name: props.className,
+          extends: CDK_CUSTOM_RESOURCE_PROVIDER_MODULE.CdkCustomResourceProvider,
+        });
+        this.buildConstructor(props);
+      }
+    })();
+  }
 
   private buildConstructor(props: CdkHandlerClassProps) {
     // constructor
@@ -46,15 +61,17 @@ export abstract class CdkHandlerClass extends ClassType {
       stmt.constVar(
         expr.ident('cdkHandlerProps'),
         expr.object({
-          codeDirectory: expr.directCode(props.codeDirectory),
-          entrypoint: props.entrypoint ? expr.directCode(props.entrypoint) : expr.lit('index.handler'),
+          codeDirectory: expr.lit(`${props.codeDirectory}`),
+          entrypoint: props.entrypoint
+            ? expr.lit(`${props.entrypoint}`)
+            : expr.lit('index.handler'),
         }),
       ),
     );
     init.addBody(
       stmt.constVar(
         expr.ident('cdkHandler'),
-        expr.directCode('new CdkHandler(scope, `Handler`, cdkHandlerProps)'),
+        expr.directCode("new CdkHandler(scope, 'Handler', cdkHandlerProps)"),
       ),
     );
 

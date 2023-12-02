@@ -33,7 +33,16 @@ class CdkSingletonFunctionModule extends ExternalModule {
   }
 }
 
+class CdkCustomResourceProviderModule extends ExternalModule {
+  public readonly CdkCustomResourceProvider = Type.fromName(this, 'CdkCustomResourceProvider');
+
+  public constructor() {
+    super('../../handler-framework/lib/cdk-custom-resource-provider');
+  }
+}
+
 export const CONSTRUCTS_MODULE = new ConstructsModule();
 export const CDK_HANDLER_MODULE = new CdkHandlerModule();
 export const CDK_FUNCTION_MODULE = new CdkFunctionModule();
 export const CDK_SINGLETON_FUNCTION_MODULE = new CdkSingletonFunctionModule();
+export const CDK_CUSTOM_RESOURCE_PROVIDER_MODULE = new CdkCustomResourceProviderModule();
