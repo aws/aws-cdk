@@ -72,13 +72,14 @@ describe('stack', () => {
     const stack = new Stack(app, 'MyStack');
 
     // WHEN
-    for (let index = 0; index < 3000; index++) {
+    for (let index = 0; index < 1000; index++) {
       new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
     }
 
+    // THEN
     expect(() => {
       app.synth();
-    }).toThrow('Number of resources in stack \'MyStack\': 3000 is greater than allowed maximum of 2500');
+    }).toThrow('Number of resources in stack \'MyStack\': 1000 is greater than allowed maximum of 500');
   });
 
   test('when stackResourceLimit is default, should show message when approaching limit', () => {
@@ -88,12 +89,13 @@ describe('stack', () => {
     const stack = new Stack(app, 'MyStack');
 
     // WHEN
-    const numberOfResources = 2300;
+    const numberOfResources = 400;
     for (let index = 0; index < numberOfResources; index++) {
       new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
     }
 
-    Annotations.fromStack(stack).hasInfo('/MyStack', `Number of resources: ${numberOfResources} is approaching allowed maximum of 2500`);
+    // THEN
+    Annotations.fromStack(stack).hasInfo('/MyStack', `Number of resources: ${numberOfResources} is approaching allowed maximum of 500`);
   });
 
   test('when stackResourceLimit is defined, should give the proper error', () => {
@@ -131,6 +133,23 @@ describe('stack', () => {
       new CfnResource(stack, `MyResource-${index}`, { type: 'MyResourceType' });
     }
 
+    expect(() => {
+      app.synth();
+    }).not.toThrow();
+  });
+
+  test('stackResourceLimit is not enforced on nested stacks', () => {
+    // GIVEN
+    const app = new App({});
+    const parent = new Stack(app, 'Parent');
+    const child = new NestedStack(parent, 'Child');
+
+    // WHEN
+    for (let index = 0; index < 1000; index++) {
+      new CfnResource(child, `MyResource-${index}`, { type: 'MyResourceType' });
+    }
+
+    // THEN
     expect(() => {
       app.synth();
     }).not.toThrow();

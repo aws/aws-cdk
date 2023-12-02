@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "integ-nested-stack/DefaultTest": {
+      "stacks": [
+        "Parent"
+      ],
+      "assertionStack": "integ-nested-stack/DefaultTest/DeployAssert",
+      "assertionStackName": "integnestedstackDefaultTestDeployAssert8CBD0FA9"
+    }
+  }
+}

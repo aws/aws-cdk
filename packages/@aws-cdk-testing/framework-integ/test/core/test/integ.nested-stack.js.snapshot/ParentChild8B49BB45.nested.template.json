@@ -1,0 +1,4087 @@
+{
+ "Resources": {
+  "WaitConditionHandle": {
+   "Type": "AWS::CloudFormation::WaitConditionHandle"
+  },
+  "ExampleResource0": {
+    "Type": "AWS::CloudFormation::WaitCondition",
+    "Properties": {
+        "Count": 0,
+        "Handle": { "Ref": "WaitConditionHandle" },
+        "Timeout": "1"
+    }
+  },
+  "ExampleResource1": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource2": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource3": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource4": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource5": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource6": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource7": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource8": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource9": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource10": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource11": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource12": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource13": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource14": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource15": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource16": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource17": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource18": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource19": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource20": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource21": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource22": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource23": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource24": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource25": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource26": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource27": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource28": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource29": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource30": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource31": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource32": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource33": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource34": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource35": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource36": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource37": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource38": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource39": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource40": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource41": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource42": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource43": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource44": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource45": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource46": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource47": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource48": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource49": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource50": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource51": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource52": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource53": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource54": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource55": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource56": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource57": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource58": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource59": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource60": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource61": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource62": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource63": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource64": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource65": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource66": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource67": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource68": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource69": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource70": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource71": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource72": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource73": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource74": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource75": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource76": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource77": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource78": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource79": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource80": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource81": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource82": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource83": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource84": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource85": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource86": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource87": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource88": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource89": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource90": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource91": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource92": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource93": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource94": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource95": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource96": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource97": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource98": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource99": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource100": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource101": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource102": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource103": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource104": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource105": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource106": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource107": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource108": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource109": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource110": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource111": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource112": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource113": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource114": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource115": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource116": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource117": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource118": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource119": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource120": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource121": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource122": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource123": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource124": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource125": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource126": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource127": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource128": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource129": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource130": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource131": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource132": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource133": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource134": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource135": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource136": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource137": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource138": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource139": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource140": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource141": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource142": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource143": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource144": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource145": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource146": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource147": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource148": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource149": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource150": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource151": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource152": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource153": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource154": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource155": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource156": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource157": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource158": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource159": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource160": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource161": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource162": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource163": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource164": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource165": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource166": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource167": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource168": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource169": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource170": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource171": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource172": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource173": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource174": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource175": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource176": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource177": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource178": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource179": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource180": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource181": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource182": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource183": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource184": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource185": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource186": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource187": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource188": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource189": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource190": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource191": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource192": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource193": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource194": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource195": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource196": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource197": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource198": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource199": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource200": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource201": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource202": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource203": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource204": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource205": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource206": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource207": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource208": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource209": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource210": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource211": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource212": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource213": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource214": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource215": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource216": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource217": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource218": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource219": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource220": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource221": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource222": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource223": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource224": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource225": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource226": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource227": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource228": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource229": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource230": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource231": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource232": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource233": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource234": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource235": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource236": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource237": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource238": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource239": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource240": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource241": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource242": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource243": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource244": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource245": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource246": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource247": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource248": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource249": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource250": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource251": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource252": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource253": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource254": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource255": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource256": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource257": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource258": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource259": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource260": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource261": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource262": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource263": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource264": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource265": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource266": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource267": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource268": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource269": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource270": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource271": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource272": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource273": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource274": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource275": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource276": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource277": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource278": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource279": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource280": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource281": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource282": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource283": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource284": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource285": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource286": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource287": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource288": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource289": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource290": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource291": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource292": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource293": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource294": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource295": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource296": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource297": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource298": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource299": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource300": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource301": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource302": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource303": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource304": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource305": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource306": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource307": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource308": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource309": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource310": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource311": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource312": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource313": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource314": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource315": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource316": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource317": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource318": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource319": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource320": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource321": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource322": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource323": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource324": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource325": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource326": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource327": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource328": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource329": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource330": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource331": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource332": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource333": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource334": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource335": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource336": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource337": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource338": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource339": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource340": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource341": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource342": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource343": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource344": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource345": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource346": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource347": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource348": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource349": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource350": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource351": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource352": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource353": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource354": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource355": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource356": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource357": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource358": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource359": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource360": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource361": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource362": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource363": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource364": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource365": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource366": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource367": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource368": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource369": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource370": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource371": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource372": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource373": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource374": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource375": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource376": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource377": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource378": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource379": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource380": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource381": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource382": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource383": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource384": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource385": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource386": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource387": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource388": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource389": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource390": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource391": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource392": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource393": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource394": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource395": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource396": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource397": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource398": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource399": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource400": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource401": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource402": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource403": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource404": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource405": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource406": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource407": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource408": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource409": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource410": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource411": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource412": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource413": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource414": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource415": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource416": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource417": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource418": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource419": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource420": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource421": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource422": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource423": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource424": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource425": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource426": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource427": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource428": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource429": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource430": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource431": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource432": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource433": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource434": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource435": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource436": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource437": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource438": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource439": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource440": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource441": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource442": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource443": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource444": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource445": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource446": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource447": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource448": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource449": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource450": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource451": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource452": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource453": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource454": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource455": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource456": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource457": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource458": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource459": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource460": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource461": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource462": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource463": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource464": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource465": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource466": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource467": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource468": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource469": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource470": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource471": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource472": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource473": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource474": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource475": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource476": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource477": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource478": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource479": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource480": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource481": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource482": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource483": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource484": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource485": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource486": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource487": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource488": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource489": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource490": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource491": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource492": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource493": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource494": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource495": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource496": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource497": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource498": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource499": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource500": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource501": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource502": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource503": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource504": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource505": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource506": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource507": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource508": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  },
+  "ExampleResource509": {
+      "Type": "AWS::CloudFormation::WaitCondition",
+      "Properties": {
+          "Count": 0,
+          "Handle": { "Ref": "WaitConditionHandle" },
+          "Timeout": "1"
+      }
+  }
+ }
+}
