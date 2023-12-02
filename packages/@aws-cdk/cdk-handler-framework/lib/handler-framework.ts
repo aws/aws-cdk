@@ -1,32 +1,34 @@
 import { Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import { CDK_FUNCTION_MODULE, CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, CDK_SINGLETON_FUNCTION_MODULE } from './cdk-imports';
-import { CdkHandlerClass } from './class-builder';
+import { CdkHandlerClass, CdkHandlerClassProps } from './class-builder';
+
+export interface CdkHandlerFrameworkProps extends CdkHandlerClassProps {}
 
 export abstract class CdkHandlerFramework {
   /**
    * Generates a CdkHandler class that can be rendered to produce code.
    */
-  public static cdkFunction(className: string, codeDirectory: string): CdkHandlerFramework {
+  public static cdkFunction(props: CdkHandlerFrameworkProps): CdkHandlerFramework {
     return new (class CdkFunction extends CdkHandlerFramework {
       public constructor() {
         const module = new Module('cdk-function');
         CONSTRUCTS_MODULE.importSelective(module, ['Construct']);
         CDK_HANDLER_MODULE.importSelective(module, ['CdkHandler']);
         CDK_FUNCTION_MODULE.importSelective(module, ['CdkFunction']);
-        CdkHandlerClass.buildCdkFunction(module, className, codeDirectory);
+        CdkHandlerClass.buildCdkFunction(module, props);
         super(module);
       }
     })();
   }
 
-  public static cdkSingletonFunction(className: string, codeDirectory: string): CdkHandlerFramework {
+  public static cdkSingletonFunction(props: CdkHandlerFrameworkProps): CdkHandlerFramework {
     return new (class CdkSingletonFunction extends CdkHandlerFramework {
       public constructor() {
         const module = new Module('cdk-singleton-function');
         CONSTRUCTS_MODULE.importSelective(module, ['Construct']);
         CDK_HANDLER_MODULE.importSelective(module, ['CdkHandler']);
         CDK_SINGLETON_FUNCTION_MODULE.importSelective(module, ['CdkSingletonFunction']);
-        CdkHandlerClass.buildCdkSingletonFunction(module, className, codeDirectory);
+        CdkHandlerClass.buildCdkSingletonFunction(module, props);
         super(module);
       }
     })();

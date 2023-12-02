@@ -1,34 +1,43 @@
 import { SuperInitializer, ClassType, Type, IScope, expr, stmt } from '@cdklabs/typewriter';
 import { CDK_FUNCTION_MODULE, CDK_SINGLETON_FUNCTION_MODULE, CONSTRUCTS_MODULE } from './cdk-imports';
 
+interface CdkHandlerClassOptions {
+  readonly entrypoint?: string;
+}
+
+export interface CdkHandlerClassProps extends CdkHandlerClassOptions {
+  readonly className: string;
+  readonly codeDirectory: string;
+}
+
 export abstract class CdkHandlerClass extends ClassType {
-  public static buildCdkFunction(scope: IScope, className: string, codeDirectory: string): ClassType {
+  public static buildCdkFunction(scope: IScope, props: CdkHandlerClassProps): ClassType {
     return new (class CdkFunction extends CdkHandlerClass {
       public constructor() {
         super(scope, {
-          name: className,
+          name: props.className,
           extends: CDK_FUNCTION_MODULE.CdkFunction,
         });
-        this.buildConstructor(codeDirectory);
+        this.buildConstructor(props);
       }
     })();
   }
 
-  public static buildCdkSingletonFunction(scope: IScope, className: string, codeDirectory: string): ClassType {
+  public static buildCdkSingletonFunction(scope: IScope, props: CdkHandlerClassProps): ClassType {
     return new (class CdkSingleFunction extends CdkHandlerClass {
       public constructor() {
         super(scope, {
-          name: className,
+          name: props.className,
           extends: CDK_SINGLETON_FUNCTION_MODULE.CdkSingletonFunction,
         });
-        this.buildConstructor(codeDirectory);
+        this.buildConstructor(props);
       }
     })();
   }
 
   public static buildCdkCustomResourceProvider() {}
 
-  private buildConstructor(codeDirectory: string, entrypoint?: string) {
+  private buildConstructor(props: CdkHandlerClassProps) {
     // constructor
     const init = this.addInitializer({});
 
@@ -37,8 +46,8 @@ export abstract class CdkHandlerClass extends ClassType {
       stmt.constVar(
         expr.ident('cdkHandlerProps'),
         expr.object({
-          codeDirectory: expr.directCode(codeDirectory),
-          entrypoint: entrypoint ? expr.directCode(entrypoint) : expr.lit('index.handler'),
+          codeDirectory: expr.directCode(props.codeDirectory),
+          entrypoint: props.entrypoint ? expr.directCode(props.entrypoint) : expr.lit('index.handler'),
         }),
       ),
     );
