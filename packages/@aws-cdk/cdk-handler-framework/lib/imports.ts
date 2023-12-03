@@ -19,6 +19,7 @@ class CdkHandlerModule extends ExternalModule {
 
 class CoreModule extends ExternalModule {
   public readonly CustomResourceProviderBase = Type.fromName(this, 'CustomResourceProviderBase');
+  public readonly CustomResourceProviderOptions = Type.fromName(this, 'CustomResourceProviderOptions');
 
   public constructor() {
     super('../../core');

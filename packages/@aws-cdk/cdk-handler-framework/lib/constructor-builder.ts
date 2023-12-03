@@ -1,6 +1,6 @@
-import { Expression, ParameterSpec, Type, stmt, expr, SuperInitializer, StructType, ObjectLiteral, Splat } from '@cdklabs/typewriter';
+import { Expression, ParameterSpec, Type, stmt, expr, SuperInitializer, ObjectLiteral, Splat } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkClass } from './class-builder';
-import { CONSTRUCTS_MODULE, LAMBDA_MODULE } from './imports';
+import { CONSTRUCTS_MODULE } from './imports';
 
 interface ConstructorOptions {
   readonly constructorPropsParam?: ParameterSpec,
@@ -14,7 +14,7 @@ export abstract class CdkHandlerFrameworkConstructor {
   public static forCdkFunction(_class: CdkHandlerFrameworkClass) {
     const constructorPropsParam: ParameterSpec = {
       name: 'props',
-      type: LAMBDA_MODULE.FunctionOptions,
+      type: _class.propsType,
     };
     const superProps = new ObjectLiteral([
       new Splat(expr.directCode('props')),
@@ -29,23 +29,9 @@ export abstract class CdkHandlerFrameworkConstructor {
    * Builds a constructor for a CdkSingletonFunction class.
    */
   public static forCdkSingletonFunction(_class: CdkHandlerFrameworkClass) {
-    const cdkSingletonFunctionProps = new StructType(_class, {
-      name: 'CdkSingletonFunctionProps',
-      extends: [LAMBDA_MODULE.FunctionOptions],
-      export: true,
-    });
-    cdkSingletonFunctionProps.addProperty({
-      name: 'uuid',
-      type: Type.STRING,
-    });
-    cdkSingletonFunctionProps.addProperty({
-      name: 'lambdaPurpose',
-      type: Type.STRING,
-      optional: true,
-    });
     const constructorPropsParam: ParameterSpec = {
       name: 'props',
-      type: cdkSingletonFunctionProps.type,
+      type: _class.propsType,
     };
     const superProps = new ObjectLiteral([
       new Splat(expr.directCode('props')),
