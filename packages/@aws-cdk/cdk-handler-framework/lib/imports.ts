@@ -17,6 +17,14 @@ class CdkHandlerModule extends ExternalModule {
   }
 }
 
+class CoreModule extends ExternalModule {
+  public readonly CustomResourceProviderBase = Type.fromName(this, 'CustomResourceProviderBase');
+
+  public constructor() {
+    super('../../core');
+  }
+}
+
 class LambdaModule extends ExternalModule {
   public readonly Function = Type.fromName(this, 'Function');
   public readonly SingletonFunction = Type.fromName(this, 'SingletonFunction');
@@ -29,4 +37,5 @@ class LambdaModule extends ExternalModule {
 
 export const CONSTRUCTS_MODULE = new ConstructsModule();
 export const CDK_HANDLER_MODULE = new CdkHandlerModule();
+export const CORE_MODULE = new CoreModule();
 export const LAMBDA_MODULE = new LambdaModule();

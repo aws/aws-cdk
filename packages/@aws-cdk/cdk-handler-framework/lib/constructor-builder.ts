@@ -8,6 +8,9 @@ interface ConstructorOptions {
 }
 
 export abstract class CdkHandlerFrameworkConstructor {
+  /**
+   * Builds a constructor for a CdkFunction class.
+   */
   public static forCdkFunction(_class: CdkHandlerFrameworkClass) {
     const constructorPropsParam: ParameterSpec = {
       name: 'props',
@@ -22,6 +25,9 @@ export abstract class CdkHandlerFrameworkConstructor {
     CdkHandlerFrameworkConstructor.forCdkHandlerFrameworkClass(_class, { constructorPropsParam, superProps });
   }
 
+  /**
+   * Builds a constructor for a CdkSingletonFunction class.
+   */
   public static forCdkSingletonFunction(_class: CdkHandlerFrameworkClass) {
     const cdkSingletonFunctionProps = new StructType(_class, {
       name: 'CdkSingletonFunctionProps',
@@ -50,6 +56,9 @@ export abstract class CdkHandlerFrameworkConstructor {
     CdkHandlerFrameworkConstructor.forCdkHandlerFrameworkClass(_class, { constructorPropsParam, superProps });
   }
 
+  /**
+   * Builds a constructor for a CdkCustomResourceProvider class.
+   */
   public static forCdkCustomResourceProvider(_class: CdkHandlerFrameworkClass) {}
 
   private static forCdkHandlerFrameworkClass(_class: CdkHandlerFrameworkClass, constructorOptions: ConstructorOptions = {}) {
