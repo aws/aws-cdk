@@ -1,10 +1,6 @@
-import { SuperInitializer, ClassType, Type, IScope, expr, stmt } from '@cdklabs/typewriter';
-import {
-  CDK_CUSTOM_RESOURCE_PROVIDER_MODULE,
-  CDK_FUNCTION_MODULE,
-  CDK_SINGLETON_FUNCTION_MODULE,
-  CONSTRUCTS_MODULE,
-} from './cdk-imports';
+import { ClassType, IScope } from '@cdklabs/typewriter';
+import { LAMBDA_MODULE } from './cdk-imports';
+import { CdkHandlerFrameworkConstructor } from './constructor-builder';
 
 interface CdkHandlerClassOptions {
   readonly entrypoint?: string;
@@ -15,77 +11,54 @@ export interface CdkHandlerClassProps extends CdkHandlerClassOptions {
   readonly codeDirectory: string;
 }
 
-export abstract class CdkHandlerClass extends ClassType {
-  public static buildCdkFunction(scope: IScope, props: CdkHandlerClassProps): ClassType {
-    return new (class CdkFunction extends CdkHandlerClass {
+export abstract class CdkHandlerFrameworkClass extends ClassType {
+  /**
+   *
+   */
+  public static buildCdkFunction(scope: IScope, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
+    return new (class CdkFunction extends CdkHandlerFrameworkClass {
+      public readonly codeDirectory: string;
+      public readonly entrypoint: string;
+
       public constructor() {
         super(scope, {
           name: props.className,
-          extends: CDK_FUNCTION_MODULE.CdkFunction,
+          extends: LAMBDA_MODULE.Function,
         });
-        this.buildConstructor(props);
+        this.codeDirectory = props.codeDirectory;
+        this.entrypoint = props.entrypoint ?? 'index.handler';
+        CdkHandlerFrameworkConstructor.forCdkFunction(this);
       }
     })();
   }
 
+  /**
+   *
+   */
   public static buildCdkSingletonFunction(scope: IScope, props: CdkHandlerClassProps): ClassType {
-    return new (class CdkSingletonFunction extends CdkHandlerClass {
+    return new (class CdkSingletonFunction extends CdkHandlerFrameworkClass {
+      public readonly codeDirectory: string;
+      public readonly entrypoint: string;
+
       public constructor() {
         super(scope, {
           name: props.className,
-          extends: CDK_SINGLETON_FUNCTION_MODULE.CdkSingletonFunction,
+          extends: LAMBDA_MODULE.SingletonFunction,
         });
-        this.buildConstructor(props);
+        this.codeDirectory = props.codeDirectory;
+        this.entrypoint = props.entrypoint ?? 'index.handler';
+        CdkHandlerFrameworkConstructor.forCdkSingletonFunction(this);
       }
     })();
   }
 
-  public static buildCdkCustomResourceProvider(scope: IScope, props: CdkHandlerClassProps): ClassType {
-    return new (class CdkCustomResourceProvider extends CdkHandlerClass {
-      public constructor() {
-        super(scope, {
-          name: props.className,
-          extends: CDK_CUSTOM_RESOURCE_PROVIDER_MODULE.CdkCustomResourceProvider,
-        });
-        this.buildConstructor(props);
-      }
-    })();
-  }
+  /**
+   *
+   */
+  public abstract readonly codeDirectory: string;
 
-  private buildConstructor(props: CdkHandlerClassProps) {
-    // constructor
-    const init = this.addInitializer({});
-
-    // build CdkHandler instance
-    init.addBody(
-      stmt.constVar(
-        expr.ident('cdkHandlerProps'),
-        expr.object({
-          codeDirectory: expr.lit(`${props.codeDirectory}`),
-          entrypoint: props.entrypoint
-            ? expr.lit(`${props.entrypoint}`)
-            : expr.lit('index.handler'),
-        }),
-      ),
-    );
-    init.addBody(
-      stmt.constVar(
-        expr.ident('cdkHandler'),
-        expr.directCode("new CdkHandler(scope, 'Handler', cdkHandlerProps)"),
-      ),
-    );
-
-    // build super call
-    const scope = init.addParameter({
-      name: 'scope',
-      type: CONSTRUCTS_MODULE.Construct,
-    });
-    const id = init.addParameter({
-      name: 'id',
-      type: Type.STRING,
-    });
-    init.addBody(new SuperInitializer(scope, id, expr.object({
-      handler: expr.ident('cdkHandler'),
-    })));
-  }
+  /**
+   *
+   */
+  public abstract readonly entrypoint: string;
 }
