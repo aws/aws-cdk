@@ -1,4 +1,4 @@
-import { Expression, ParameterSpec, Type, stmt, expr, SuperInitializer, StructType } from '@cdklabs/typewriter';
+import { Expression, ParameterSpec, Type, stmt, expr, SuperInitializer, StructType, ObjectLiteral, Splat } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkClass } from './class-builder';
 import { CONSTRUCTS_MODULE, LAMBDA_MODULE } from './imports';
 
@@ -13,11 +13,12 @@ export abstract class CdkHandlerFrameworkConstructor {
       name: 'props',
       type: LAMBDA_MODULE.FunctionOptions,
     };
-    const superProps = expr.object({
-      code: expr.directCode('cdkHandler.code'),
-      handler: expr.directCode('cdkHandler.entrypoint'),
-      runtime: expr.directCode('cdkHandler.runtime'),
-    });
+    const superProps = new ObjectLiteral([
+      new Splat(expr.directCode('props')),
+      ['code', expr.directCode('cdkHandler.code')],
+      ['handler', expr.directCode('cdkHandler.entrypoint')],
+      ['runtime', expr.directCode('cdkHandler.runtime')],
+    ]);
     CdkHandlerFrameworkConstructor.forCdkHandlerFrameworkClass(_class, { constructorPropsParam, superProps });
   }
 
@@ -40,11 +41,12 @@ export abstract class CdkHandlerFrameworkConstructor {
       name: 'props',
       type: cdkSingletonFunctionProps.type,
     };
-    const superProps = expr.object({
-      code: expr.directCode('cdkHandler.code'),
-      handler: expr.directCode('cdkHandler.entrypoint'),
-      runtime: expr.directCode('cdkHandler.runtime'),
-    });
+    const superProps = new ObjectLiteral([
+      new Splat(expr.directCode('props')),
+      ['code', expr.directCode('cdkHandler.code')],
+      ['handler', expr.directCode('cdkHandler.entrypoint')],
+      ['runtime', expr.directCode('cdkHandler.runtime')],
+    ]);
     CdkHandlerFrameworkConstructor.forCdkHandlerFrameworkClass(_class, { constructorPropsParam, superProps });
   }
 
