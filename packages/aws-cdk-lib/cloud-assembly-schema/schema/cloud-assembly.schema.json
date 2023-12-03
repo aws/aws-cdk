@@ -263,7 +263,7 @@
                 },
                 "cacheDisabled": {
                     "description": "Disable the cache and pass `--no-cache` to the `docker build` command. (Default - cache is used)",
-                    "$ref": "#/definitions/ContainerImageAssetCacheDisabled"
+                    "type": "boolean"
                 },
                 "id": {
                     "description": "Logical identifier for the asset",
