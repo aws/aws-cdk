@@ -253,7 +253,7 @@ const app = new App({
 
 By default, the staging resources will be cleaned up on stack deletion. That means that the
 S3 Bucket and ECR Repositories are set to `RemovalPolicy.DESTROY` and have `autoDeleteObjects`
-or `emptyOnDelete` turned on. This creates a custom resources under the hood to facilitate
+or `emptyOnDelete` turned on. This creates custom resources under the hood to facilitate
 cleanup. To turn this off, specify `autoDeleteStagingAssets: false`.
 
 ```ts
