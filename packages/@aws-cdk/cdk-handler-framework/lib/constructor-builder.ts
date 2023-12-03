@@ -1,6 +1,6 @@
-import { Expression, ParameterSpec, Type, stmt, expr, SuperInitializer } from '@cdklabs/typewriter';
-import { CONSTRUCTS_MODULE } from './cdk-imports';
+import { Expression, ParameterSpec, Type, stmt, expr, SuperInitializer, StructType } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkClass } from './class-builder';
+import { CONSTRUCTS_MODULE, LAMBDA_MODULE } from './imports';
 
 interface ConstructorOptions {
   readonly constructorPropsParam?: ParameterSpec,
@@ -9,12 +9,46 @@ interface ConstructorOptions {
 
 export abstract class CdkHandlerFrameworkConstructor {
   public static forCdkFunction(_class: CdkHandlerFrameworkClass) {
-    CdkHandlerFrameworkConstructor.forCdkHandlerFrameworkClass(_class);
+    const constructorPropsParam: ParameterSpec = {
+      name: 'props',
+      type: LAMBDA_MODULE.FunctionOptions,
+    };
+    const superProps = expr.object({
+      code: expr.directCode('cdkHandler.code'),
+      handler: expr.directCode('cdkHandler.entrypoint'),
+      runtime: expr.directCode('cdkHandler.runtime'),
+    });
+    CdkHandlerFrameworkConstructor.forCdkHandlerFrameworkClass(_class, { constructorPropsParam, superProps });
   }
 
   public static forCdkSingletonFunction(_class: CdkHandlerFrameworkClass) {
-    CdkHandlerFrameworkConstructor.forCdkHandlerFrameworkClass(_class);
+    const cdkSingletonFunctionProps = new StructType(_class, {
+      name: 'CdkSingletonFunctionProps',
+      extends: [LAMBDA_MODULE.FunctionOptions],
+      export: true,
+    });
+    cdkSingletonFunctionProps.addProperty({
+      name: 'uuid',
+      type: Type.STRING,
+    });
+    cdkSingletonFunctionProps.addProperty({
+      name: 'lambdaPurpose',
+      type: Type.STRING,
+      optional: true,
+    });
+    const constructorPropsParam: ParameterSpec = {
+      name: 'props',
+      type: cdkSingletonFunctionProps.type,
+    };
+    const superProps = expr.object({
+      code: expr.directCode('cdkHandler.code'),
+      handler: expr.directCode('cdkHandler.entrypoint'),
+      runtime: expr.directCode('cdkHandler.runtime'),
+    });
+    CdkHandlerFrameworkConstructor.forCdkHandlerFrameworkClass(_class, { constructorPropsParam, superProps });
   }
+
+  public static forCdkCustomResourceProvider(_class: CdkHandlerFrameworkClass) {}
 
   private static forCdkHandlerFrameworkClass(_class: CdkHandlerFrameworkClass, constructorOptions: ConstructorOptions = {}) {
     // constructor

@@ -1,6 +1,6 @@
 import { ClassType, IScope } from '@cdklabs/typewriter';
-import { LAMBDA_MODULE } from './cdk-imports';
 import { CdkHandlerFrameworkConstructor } from './constructor-builder';
+import { LAMBDA_MODULE } from './imports';
 
 interface CdkHandlerClassOptions {
   readonly entrypoint?: string;

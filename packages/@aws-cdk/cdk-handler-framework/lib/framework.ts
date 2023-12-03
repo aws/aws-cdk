@@ -1,6 +1,6 @@
 import { Module, TypeScriptRenderer } from '@cdklabs/typewriter';
-import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE } from './cdk-imports';
 import { CdkHandlerFrameworkClass, CdkHandlerClassProps } from './class-builder';
+import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE } from './imports';
 
 export interface CdkHandlerFrameworkProps extends CdkHandlerClassProps {}
 
