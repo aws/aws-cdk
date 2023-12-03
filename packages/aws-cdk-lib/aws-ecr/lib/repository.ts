@@ -732,7 +732,7 @@ export class Repository extends RepositoryBase {
       resourceName: this.physicalName,
     });
 
-    if (props.autoDeleteImages) {
+    if (props.emptyOnDelete === undefined && props.autoDeleteImages) {
       if (props.removalPolicy !== RemovalPolicy.DESTROY) {
         throw new Error('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
       }

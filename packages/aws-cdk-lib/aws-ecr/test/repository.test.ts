@@ -989,6 +989,24 @@ describe('repository', () => {
   });
 
   describe('when auto delete images is set to true', () => {
+    test('it is ignored if emptyOnDelete is set', () => {
+      const stack = new cdk.Stack();
+
+      new ecr.Repository(stack, 'Repo1', {
+        autoDeleteImages: true,
+        emptyOnDelete: true,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+
+      new ecr.Repository(stack, 'Repo2', {
+        autoDeleteImages: true,
+        emptyOnDelete: false,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 0);
+    });
+
     test('permissions are correctly for multiple ecr repos', () => {
       const stack = new cdk.Stack();
       new ecr.Repository(stack, 'Repo1', {
