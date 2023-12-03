@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "integ-user-pool-client-basic-test/DefaultTest": {
+      "stacks": [
+        "integ-user-pool-client-basic"
+      ],
+      "assertionStack": "integ-user-pool-client-basic-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integuserpoolclientbasictestDefaultTestDeployAssert39C8FA5A"
+    }
+  }
+}
