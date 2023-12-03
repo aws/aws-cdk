@@ -338,6 +338,7 @@ describe('User Pool Client', () => {
           authorizationCodeGrant: true,
           implicitCodeGrant: true,
         },
+        callbackUrls: ['https://example.com'],
         scopes: [OAuthScope.PHONE],
       },
     });
@@ -377,16 +378,35 @@ describe('User Pool Client', () => {
     pool.addClient('Client2', {
       oAuth: {
         flows: {
-          authorizationCodeGrant: true,
+          clientCredentials: true,
         },
+        callbackUrls: ['https://aws.com'],
       },
     });
 
     pool.addClient('Client3', {
       oAuth: {
         flows: {
+          authorizationCodeGrant: true,
+        },
+        callbackUrls: ['https://aws.com'],
+      },
+    });
+
+    pool.addClient('Client4', {
+      oAuth: {
+        flows: {
           implicitCodeGrant: true,
         },
+        callbackUrls: ['https://aws.com'],
+      },
+    });
+
+    pool.addClient('Client5');
+
+    pool.addClient('Client6', {
+      oAuth: {
+        callbackUrls: ['https://aws.com'],
       },
     });
 
@@ -396,13 +416,28 @@ describe('User Pool Client', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
-      AllowedOAuthFlows: ['implicit'],
-      CallbackURLs: ['https://example.com'],
+      AllowedOAuthFlows: ['client_credentials'],
+      CallbackURLs: ['https://aws.com'],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthFlows: ['code'],
+      CallbackURLs: ['https://aws.com'],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      AllowedOAuthFlows: ['implicit'],
+      CallbackURLs: ['https://aws.com'],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      AllowedOAuthFlows: ['implicit', 'code'],
       CallbackURLs: ['https://example.com'],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      AllowedOAuthFlows: ['implicit', 'code'],
+      CallbackURLs: ['https://aws.com'],
     });
   });
 
@@ -423,7 +458,7 @@ describe('User Pool Client', () => {
     });
   });
 
-  test('fails when callbackUrls is empty for codeGrant or implicitGrant', () => {
+  test('fails when callbackUrls is empty/undefined for codeGrant or implicitGrant', () => {
     const stack = new Stack();
     const pool = new UserPool(stack, 'Pool');
 
@@ -432,20 +467,35 @@ describe('User Pool Client', () => {
         flows: { implicitCodeGrant: true },
         callbackUrls: [],
       },
-    })).toThrow(/callbackUrl must not be empty/);
+    })).toThrow(/callbackUrls must not be empty/);
 
-    expect(() => pool.addClient('Client3', {
+    expect(() => pool.addClient('Client2', {
       oAuth: {
         flows: { authorizationCodeGrant: true },
         callbackUrls: [],
       },
-    })).toThrow(/callbackUrl must not be empty/);
+    })).toThrow(/callbackUrls must not be empty/);
+
+    expect(() => pool.addClient('Client3', {
+      oAuth: {
+        flows: { implicitCodeGrant: true },
+      },
+    })).toThrow(/callbackUrls must not be empty/);
 
     expect(() => pool.addClient('Client4', {
+      oAuth: {
+        flows: { authorizationCodeGrant: true },
+      },
+    })).toThrow(/callbackUrls must not be empty/);
+
+    expect(() => pool.addClient('Client5', {
       oAuth: {
         flows: { clientCredentials: true },
         callbackUrls: [],
       },
+    })).not.toThrow();
+
+    expect(() => pool.addClient('Client6', {
     })).not.toThrow();
   });
 
@@ -474,6 +524,7 @@ describe('User Pool Client', () => {
           authorizationCodeGrant: true,
           clientCredentials: true,
         },
+        callbackUrls: ['https://example.com'],
         scopes: [OAuthScope.PHONE],
       },
     })).toThrow(/clientCredentials OAuth flow cannot be selected/);
@@ -484,6 +535,7 @@ describe('User Pool Client', () => {
           implicitCodeGrant: true,
           clientCredentials: true,
         },
+        callbackUrls: ['https://example.com'],
         scopes: [OAuthScope.PHONE],
       },
     })).toThrow(/clientCredentials OAuth flow cannot be selected/);

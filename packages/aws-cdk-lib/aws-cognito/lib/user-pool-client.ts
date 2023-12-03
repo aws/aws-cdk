@@ -45,12 +45,13 @@ export interface OAuthSettings {
    * OAuth flows that are allowed with this client.
    * @see - the 'Allowed OAuth Flows' section at https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-app-idp-settings.html
    * @default {authorizationCodeGrant:true,implicitCodeGrant:true}
+   * @requires at least one callback if explicity set.
    */
   readonly flows?: OAuthFlows;
 
   /**
    * List of allowed redirect URLs for the identity providers.
-   * @default - ['https://example.com'] if either authorizationCodeGrant or implicitCodeGrant flows are enabled, no callback URLs otherwise.
+   * @default - ['https://example.com'] if `flows` isn't set.
    */
   readonly callbackUrls?: string[];
 
@@ -391,11 +392,11 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     };
 
     let callbackUrls: string[] | undefined = props.oAuth?.callbackUrls;
-    if (this.oAuthFlows.authorizationCodeGrant || this.oAuthFlows.implicitCodeGrant) {
-      if (callbackUrls === undefined) {
-        callbackUrls = ['https://example.com'];
-      } else if (callbackUrls.length === 0) {
-        throw new Error('callbackUrl must not be empty when codeGrant or implicitGrant OAuth flows are enabled.');
+    if (!props.oAuth && callbackUrls === undefined) {
+      callbackUrls = ['https://example.com'];
+    } else if (props.oAuth?.flows?.authorizationCodeGrant || props.oAuth?.flows?.implicitCodeGrant) {
+      if (callbackUrls === undefined || callbackUrls.length === 0) {
+        throw new Error('callbackUrls must not be empty when codeGrant or implicitGrant OAuth flows are enabled.');
       }
     }
 
