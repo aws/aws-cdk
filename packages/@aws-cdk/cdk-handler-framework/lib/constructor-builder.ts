@@ -29,17 +29,7 @@ export abstract class CdkHandlerFrameworkConstructor {
    * Builds a constructor for a CdkSingletonFunction class.
    */
   public static forCdkSingletonFunction(_class: CdkHandlerFrameworkClass) {
-    const constructorPropsParam: ParameterSpec = {
-      name: 'props',
-      type: _class.propsType,
-    };
-    const superProps = new ObjectLiteral([
-      new Splat(expr.directCode('props')),
-      ['code', expr.directCode('cdkHandler.code')],
-      ['handler', expr.directCode('cdkHandler.entrypoint')],
-      ['runtime', expr.directCode('cdkHandler.runtime')],
-    ]);
-    CdkHandlerFrameworkConstructor.forCdkHandlerFrameworkClass(_class, { constructorPropsParam, superProps });
+    CdkHandlerFrameworkConstructor.forCdkFunction(_class);
   }
 
   /**
