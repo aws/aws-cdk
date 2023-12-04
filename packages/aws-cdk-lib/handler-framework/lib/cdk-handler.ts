@@ -3,8 +3,7 @@ import { RuntimeDeterminer } from './utils/runtime-determiner';
 import { Code, Runtime } from '../../aws-lambda';
 
 /**
- * Properties used to define source code executed within a Lambda function acting as a
- * custom resource provider.
+ * Properties used to initialize `CdkHandler`.
  */
 export interface CdkHandlerProps {
   /**
@@ -25,8 +24,7 @@ export interface CdkHandlerProps {
 }
 
 /**
- * Represents source code that will be executed within a Lambda function acting as a
- * custom resource provider.
+ * Represents an instance of `CdkHandler`.
  */
 export class CdkHandler extends Construct {
   /**
@@ -58,7 +56,7 @@ export class CdkHandler extends Construct {
     super(scope, id);
     this.codeDirectory = props.codeDirectory;
     this.code = Code.fromAsset(props.codeDirectory);
-    this.entrypoint = props.entrypoint ?? 'index.handler';
+    this.entrypoint = props.entrypoint;
     this.runtime = RuntimeDeterminer.determineLatestRuntime(CdkHandler.DEFAULT_RUNTIME, props.compatibleRuntimes);
   }
 }
