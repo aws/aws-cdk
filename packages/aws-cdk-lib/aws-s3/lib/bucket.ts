@@ -1717,7 +1717,7 @@ export class Bucket extends BucketBase {
   /**
    * Create a mutable `IBucket` based on a low-level `CfnBucket`.
    */
-  public static fromCfnBucket(cfnBucket: CfnBucket): IBucket {
+  public static fromCfnBucket(cfnBucket: IBucket): IBucket {
     // use a "weird" id that has a higher chance of being unique
     const id = '@FromCfnBucket';
 
@@ -1731,6 +1731,7 @@ export class Bucket extends BucketBase {
 
     // handle the KMS Key if the Bucket references one
     let encryptionKey: kms.IKey | undefined;
+
     if (cfnBucket.bucketEncryption) {
       const serverSideEncryptionConfiguration = (cfnBucket.bucketEncryption as any).serverSideEncryptionConfiguration;
       if (Array.isArray(serverSideEncryptionConfiguration) && serverSideEncryptionConfiguration.length === 1) {
