@@ -26,4 +26,4 @@ const handler = new CdkHandler(stack, 'Handler', {
   entrypoint: 'index.onEventHandler',
   compatibleRuntimes: [Runtime.NODEJS_16_X, Runtime.NODEJS_18_X],
 });
-```xw
+```
