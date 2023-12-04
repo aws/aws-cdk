@@ -1,33 +1,34 @@
-import { ClassType, IScope, stmt, expr, Type, StructType } from '@cdklabs/typewriter';
+import { Module, ClassType, stmt, expr, Type, StructType } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkConstructor } from './constructors';
-import { CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE } from './modules';
+import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
 
-interface CdkHandlerClassOptions {
-  readonly entrypoint?: string;
-}
-
-export interface CdkHandlerClassProps extends CdkHandlerClassOptions {
+export interface CdkHandlerClassProps {
   readonly className: string;
   readonly codeDirectory: string;
+  readonly entrypoint?: string;
 }
 
 export abstract class CdkHandlerFrameworkClass extends ClassType {
   /**
    * Builds a CdkFunction class.
    */
-  public static buildCdkFunction(scope: IScope, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
+  public static buildCdkFunction(module: Module, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
     return new (class CdkFunction extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
       public readonly propsType: Type;
 
       public constructor() {
-        super(scope, {
+        super(module, {
           name: props.className,
           extends: LAMBDA_MODULE.Function,
         });
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
+
+        CONSTRUCTS_MODULE.importSelective(module, ['Constructs']);
+        CDK_HANDLER_MODULE.importSelective(module, ['CdkHandler']);
+        LAMBDA_MODULE.importSelective(module, ['Function']);
 
         const _props = new StructType(this, {
           name: 'CdkFunctionProps',
@@ -44,19 +45,23 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   /**
    * Builds a CdkSingletonFunction class.
    */
-  public static buildCdkSingletonFunction(scope: IScope, props: CdkHandlerClassProps): ClassType {
+  public static buildCdkSingletonFunction(module: Module, props: CdkHandlerClassProps): ClassType {
     return new (class CdkSingletonFunction extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
       public readonly propsType: Type;
 
       public constructor() {
-        super(scope, {
+        super(module, {
           name: props.className,
           extends: LAMBDA_MODULE.SingletonFunction,
         });
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
+
+        CONSTRUCTS_MODULE.importSelective(module, ['Constructs']);
+        CDK_HANDLER_MODULE.importSelective(module, ['CdkHandler']);
+        LAMBDA_MODULE.importSelective(module, ['SingletonFunction']);
 
         const _props = new StructType(this, {
           name: 'CdkSingletonFunctionProps',
@@ -74,7 +79,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           optional: true,
         });
 
-        CdkHandlerFrameworkConstructor.forCdkSingletonFunction(this);
+        CdkHandlerFrameworkConstructor.forCdkFunction(this);
       }
     })();
   }
@@ -82,19 +87,23 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   /**
    * Builds a CdkCustomResourceProvider class.
    */
-  public static buildCdkCustomResourceProvider(scope: IScope, props: CdkHandlerClassProps): ClassType {
+  public static buildCdkCustomResourceProvider(module: Module, props: CdkHandlerClassProps): ClassType {
     return new (class CdkCustomResourceProvider extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
       public readonly propsType: Type;
 
       public constructor() {
-        super(scope, {
+        super(module, {
           name: props.className,
           extends: CORE_MODULE.CustomResourceProviderBase,
         });
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
+
+        CONSTRUCTS_MODULE.importSelective(module, ['Constructs']);
+        CDK_HANDLER_MODULE.importSelective(module, ['CdkHandler']);
+        CORE_MODULE.importSelective(module, ['CustomResourceProviderBase']);
 
         const _props = new StructType(this, {
           name: 'CdkCustomResourceProviderProps',
