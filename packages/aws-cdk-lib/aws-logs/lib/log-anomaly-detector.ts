@@ -31,40 +31,40 @@ export interface LogAnomalyDetectorOptions {
    * The ID of the account to create the anomaly detector in.
    * If not specified, the current account is used.
    */
-  accountId?: string;
+  readonly accountId?: string;
 
   /**
    * The number of days to have visibility on an anomaly.
    * After this period, the anomaly is automatically baselined.
    */
-  anomalyVisibilityTime?: number;
+  readonly anomalyVisibilityTime?: number;
 
   /**
    * A name for this anomaly detector.
    */
-  detectorName?: string;
+  readonly detectorName?: string;
 
   /**
    * Specifies how often the anomaly detector is to run.
    * Choose from the EvaluationFrequency enum.
    */
-  evaluationFrequency?: EvaluationFrequency;
+  readonly evaluationFrequency?: EvaluationFrequency;
 
   /**
    * Pattern to limit the anomaly detection model to examine only log events that match.
    */
-  filterPattern?: string;
+  readonly filterPattern?: string;
 
   /**
    * Optionally assigns a AWS KMS key to secure this anomaly detector and its findings.
    */
-  kmsKeyId?: string;
+  readonly kmsKeyId?: string;
 
   /**
    * The ARN of the log group that is associated with this anomaly detector.
    * You can specify only one log group ARN.
    */
-  logGroupArnList?: string[];
+  readonly logGroupArnList?: string[];
 }
 
 /**

@@ -1,6 +1,6 @@
 import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { LogAnomalyDetector, LogGroup, EvaluationFrequency } from 'aws-cdk-lib/aws-logs';
+import { FilterPattern, LogGroup, MetricFilter } from 'aws-cdk-lib/aws-logs';
 
 class TestStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
@@ -10,23 +10,16 @@ class TestStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    new LogAnomalyDetector(this, 'MyAnomalyDetector', {
+    new MetricFilter(this, 'MetricFilter', {
       logGroup,
-      detectorName: 'MyDetector',
-      evaluationFrequency: EvaluationFrequency.FIVE_MIN,
-      filterPattern: 'ERROR',
+      metricNamespace: 'MyApp',
+      metricName: 'Latency',
+      filterPattern: FilterPattern.exists('$.latency'),
+      metricValue: '$.latency',
+      dimensions: {
+        ErrorCode: '$.errorCode',
+      },
     });
-
-    const logGroup2 = new LogGroup(this, 'LogGroup2', {
-      removalPolicy: RemovalPolicy.DESTROY,
-    });
-
-    logGroup2.addAnomalyDetector('MyAnomalyDetector2', {
-      detectorName: 'MyDetector',
-      evaluationFrequency: EvaluationFrequency.TEN_MIN,
-      filterPattern: 'WARN',
-    });
-
   }
 }
 
