@@ -2,7 +2,6 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import {
   APPMESH_ECR_ACCOUNTS,
-  AWS_CDK_METADATA,
   CLOUDWATCH_LAMBDA_INSIGHTS_ARNS,
   DLC_REPOSITORY_ACCOUNTS,
   ELBV2_ACCOUNTS,
@@ -14,6 +13,7 @@ import {
   PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS,
   APPCONFIG_LAMBDA_LAYER_ARNS,
 } from './fact-tables';
+import { AWS_CDK_METADATA } from './metadata';
 import {
   AWS_REGIONS,
   AWS_SERVICES,

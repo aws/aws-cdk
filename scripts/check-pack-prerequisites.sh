@@ -86,9 +86,9 @@ else
     wrong_version
 fi
 
-# [Python >= 3.6.5, < 4.0]
+# [Python >= 3.8.0, < 4.0]
 app="python3"
-app_min="3.6.5"
+app_min="3.8.0"
 check_which $app $app_min
 app_v=$(${app} --version)
 echo -e "Checking $app version... \c"

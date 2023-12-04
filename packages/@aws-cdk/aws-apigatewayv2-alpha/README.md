@@ -3,20 +3,16 @@
 
 ---
 
-Features                                   | Stability
--------------------------------------------|--------------------------------------------------------
-Higher level constructs for HTTP APIs      | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
-Higher level constructs for Websocket APIs | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
+![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)
 
-> **Experimental:** Higher level constructs in this module that are marked as experimental are
-> under active development. They are subject to non-backward compatible changes or removal in any
-> future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and
-> breaking changes will be announced in the release notes. This means that while you may use them,
-> you may need to update your source code when upgrading to a newer version of this package.
+> This API may emit warnings. Backward compatibility is not guaranteed.
 
 ---
 
 <!--END STABILITY BANNER-->
+
+All constructs moved to aws-cdk-lib/aws-apigatewayv2.
+
 
 ## Table of Contents
 
@@ -46,6 +42,8 @@ This module supports features under [API Gateway v2](https://docs.aws.amazon.com
 that lets users set up Websocket and HTTP APIs.
 REST APIs can be created using the `aws-cdk-lib/aws-apigateway` module.
 
+HTTP and Websocket APIs use the same CloudFormation resources under the hood. However, this module separates them into two separate constructs for a more efficient abstraction since there are a number of CloudFormation properties that specifically apply only to each type of API.
+
 ## HTTP API
 
 HTTP APIs enable creation of RESTful APIs that integrate with AWS Lambda functions, known as Lambda proxy integration,
@@ -65,16 +63,15 @@ integration, HTTP proxy integration and, AWS service integrations, also known as
 [Configuring integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations.html).
 
 Integrations are available at the `aws-apigatewayv2-integrations` module and more information is available in that module.
-As an early example, the following code snippet configures a route `GET /books` with an HTTP proxy integration all
-configures all other HTTP method calls to `/books` to a lambda proxy.
+As an early example, we have a website for a bookstore where the following code snippet configures a route `GET /books` with an HTTP proxy integration. All other HTTP method calls to `/books` route to a default lambda proxy for the bookstore.
 
 ```ts
 import { HttpUrlIntegration, HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 const getBooksIntegration = new HttpUrlIntegration('GetBooksIntegration', 'https://get-books-proxy.example.com');
 
-declare const booksDefaultFn: lambda.Function;
-const booksDefaultIntegration = new HttpLambdaIntegration('BooksIntegration', booksDefaultFn);
+declare const bookStoreDefaultFn: lambda.Function;
+const bookStoreDefaultIntegration = new HttpLambdaIntegration('BooksIntegration', bookStoreDefaultFn);
 
 const httpApi = new apigwv2.HttpApi(this, 'HttpApi');
 
@@ -86,7 +83,7 @@ httpApi.addRoutes({
 httpApi.addRoutes({
   path: '/books',
   methods: [ apigwv2.HttpMethod.ANY ],
-  integration: booksDefaultIntegration,
+  integration: bookStoreDefaultIntegration,
 });
 ```
 
@@ -310,9 +307,16 @@ The following code creates a `VpcLink` to a private VPC.
 
 ```ts
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as elb from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 const vpc = new ec2.Vpc(this, 'VPC');
+const alb = new elb.ApplicationLoadBalancer(this, 'AppLoadBalancer', { vpc });
+
 const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
+
+// Creating an HTTP ALB Integration:
+const albIntegration = new HttpAlbIntegration('ALBIntegration', alb.listeners[0], {});
 ```
 
 Any existing `VpcLink` resource can be imported into the CDK app via the `VpcLink.fromVpcLinkAttributes()`.

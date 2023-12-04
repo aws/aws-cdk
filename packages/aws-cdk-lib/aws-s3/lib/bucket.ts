@@ -184,7 +184,7 @@ export interface IBucket extends IResource {
    * of the bucket will also be granted to the same principal.
    *
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   grantRead(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
@@ -203,7 +203,7 @@ export interface IBucket extends IResource {
    * use the `grantPutAcl` method.
    *
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    * @param allowedActionPatterns Restrict the permissions to certain list of action patterns
    */
   grantWrite(identity: iam.IGrantable, objectsKeyPattern?: any, allowedActionPatterns?: string[]): iam.Grant;
@@ -214,7 +214,7 @@ export interface IBucket extends IResource {
    * If encryption is used, permission to use the key to encrypt the contents
    * of written files will also be granted to the same principal.
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   grantPut(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
@@ -235,7 +235,7 @@ export interface IBucket extends IResource {
    * in this bucket.
    *
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   grantDelete(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
@@ -255,7 +255,7 @@ export interface IBucket extends IResource {
    * use the `grantPutAcl` method.
    *
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   grantReadWrite(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
@@ -765,7 +765,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * of the bucket will also be granted to the same principal.
    *
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public grantRead(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
     return this.grant(identity, perms.BUCKET_READ_ACTIONS, perms.KEY_READ_ACTIONS,
@@ -786,7 +786,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * If encryption is used, permission to use the key to encrypt the contents
    * of written files will also be granted to the same principal.
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public grantPut(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
     return this.grant(identity, this.putActions, perms.KEY_WRITE_ACTIONS,
@@ -803,7 +803,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * in this bucket.
    *
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public grantDelete(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
     return this.grant(identity, perms.BUCKET_DELETE_ACTIONS, [],
@@ -1250,6 +1250,7 @@ export interface Inventory {
   readonly enabled?: boolean;
   /**
    * The inventory configuration ID.
+   * Should be limited to 64 characters and can only contain letters, numbers, periods, dashes, and underscores.
    *
    * @default - generated ID.
    */
@@ -2420,11 +2421,15 @@ export class Bucket extends BucketBase {
     if (!this.inventories || this.inventories.length === 0) {
       return undefined;
     }
+    const inventoryIdValidationRegex = /[^\w\.\-]/g;
 
     return this.inventories.map((inventory, index) => {
       const format = inventory.format ?? InventoryFormat.CSV;
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
-      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`;
+      if (inventory.inventoryId !== undefined && (inventory.inventoryId.length > 64 || inventoryIdValidationRegex.test(inventory.inventoryId))) {
+        throw new Error(`inventoryId should not exceed 64 characters and should not contain special characters except . and -, got ${inventory.inventoryId}`);
+      }
+      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`.replace(inventoryIdValidationRegex, '').slice(-64);
 
       if (inventory.destination.bucket instanceof Bucket) {
         inventory.destination.bucket.addToResourcePolicy(new iam.PolicyStatement({

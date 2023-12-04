@@ -843,10 +843,20 @@ examples of images you might want to use:
 Create your VPC with VPN connections by specifying the `vpnConnections` props (keys are construct `id`s):
 
 ```ts
+import { SecretValue } from 'aws-cdk-lib/core';
+
 const vpc = new ec2.Vpc(this, 'MyVpc', {
   vpnConnections: {
     dynamic: { // Dynamic routing (BGP)
-      ip: '1.2.3.4'
+      ip: '1.2.3.4',
+      tunnelOptions: [
+        {
+          preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
+        },
+        {
+          preSharedKeySecret: SecretValue.unsafePlainText('secretkey5678'),
+        },
+      ],
     },
     static: { // Static routing
       ip: '4.5.6.7',
@@ -1712,6 +1722,19 @@ new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
 });
 ```
 
+*Kinesis Data Firehose*
+
+```ts
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+
+declare const vpc: ec2.Vpc;
+declare const deliveryStream: firehose.CfnDeliveryStream;
+
+vpc.addFlowLog('FlowLogsKinesisDataFirehose', {
+  destination: ec2.FlowLogDestination.toKinesisDataFirehoseDestination(deliveryStream.attrArn),
+});
+```
+
 When the S3 destination is configured, AWS will automatically create an S3 bucket policy
 that allows the service to write logs to the bucket. This makes it impossible to later update
 that bucket policy. To have CDK create the bucket policy so that future updates can be made,
@@ -1921,6 +1944,8 @@ const launchTemplate = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
   machineImage: ec2.MachineImage.resolveSsmParameterAtLaunch('parameterName'),
 });
 ```
+
+Please note this feature does not support Launch Configurations.
 
 ## Detailed Monitoring
 

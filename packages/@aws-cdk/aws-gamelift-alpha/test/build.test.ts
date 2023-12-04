@@ -163,12 +163,14 @@ describe('build', () => {
           buildName: buildName,
           operatingSystem: gamelift.OperatingSystem.AMAZON_LINUX_2,
           buildVersion: '1.0',
+          serverSdkVersion: '5.0.0',
         });
 
         Template.fromStack(stack).hasResourceProperties('AWS::GameLift::Build', {
           Name: buildName,
           OperatingSystem: gamelift.OperatingSystem.AMAZON_LINUX_2,
           Version: '1.0',
+          ServerSdkVersion: '5.0.0',
         });
       });
 
@@ -182,6 +184,20 @@ describe('build', () => {
           content,
           buildName: incorrectBuildName,
         })).toThrow(/Build name can not be longer than 1024 characters but has 1025 characters./);
+      });
+
+      test('with an incorrect serverSdkVersion format', () => {
+        expect(() => new gamelift.Build(stack, 'BuildWithInvalidServerSdkVersion', {
+          content,
+          serverSdkVersion: 'invalid',
+        })).toThrow(/serverSdkVersion must be in the 0.0.0 format, got 'invalid'./);
+      });
+
+      test('with an incorrect serverSdkVersion length', () => {
+        expect(() => new gamelift.Build(stack, 'BuildWithInvalidServerSdkVersion', {
+          content,
+          serverSdkVersion: '1'.repeat(50) + '.' + '1'.repeat(50) + '.' + '1'.repeat(50),
+        })).toThrow(/serverSdkVersion length must be smaller than or equal to 128, got 152./);
       });
     });
   });
