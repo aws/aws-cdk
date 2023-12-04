@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "KafkaZookeeperTestStack/Vpc"
+      "Value": "KafkaStorageModeTestStack/Vpc"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "KafkaZookeeperTestStack/Vpc/PublicSubnet1"
+      "Value": "KafkaStorageModeTestStack/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "KafkaZookeeperTestStack/Vpc/PublicSubnet1"
+      "Value": "KafkaStorageModeTestStack/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "KafkaZookeeperTestStack/Vpc/PublicSubnet1"
+      "Value": "KafkaStorageModeTestStack/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "KafkaZookeeperTestStack/Vpc/PublicSubnet1"
+      "Value": "KafkaStorageModeTestStack/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "KafkaZookeeperTestStack/Vpc/PublicSubnet2"
+      "Value": "KafkaStorageModeTestStack/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "KafkaZookeeperTestStack/Vpc/PublicSubnet2"
+      "Value": "KafkaStorageModeTestStack/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "KafkaZookeeperTestStack/Vpc/PublicSubnet2"
+      "Value": "KafkaStorageModeTestStack/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "KafkaZookeeperTestStack/Vpc/PublicSubnet2"
+      "Value": "KafkaStorageModeTestStack/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "KafkaZookeeperTestStack/Vpc/PrivateSubnet1"
+      "Value": "KafkaStorageModeTestStack/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "KafkaZookeeperTestStack/Vpc/PrivateSubnet1"
+      "Value": "KafkaStorageModeTestStack/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "KafkaZookeeperTestStack/Vpc/PrivateSubnet2"
+      "Value": "KafkaStorageModeTestStack/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "KafkaZookeeperTestStack/Vpc/PrivateSubnet2"
+      "Value": "KafkaStorageModeTestStack/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "KafkaZookeeperTestStack/Vpc"
+      "Value": "KafkaStorageModeTestStack/Vpc"
      }
     ]
    }
@@ -391,7 +391,7 @@
     }
    }
   },
-  "ClusterZookeeperSecurityGroupD3CFED03": {
+  "storageModetieredSecurityGroupAAF9F00E": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "MSK security group",
@@ -407,7 +407,7 @@
     }
    }
   },
-  "ClusterZookeeper29ECF2D7": {
+  "storageModetieredB9EDE2DF": {
    "Type": "AWS::MSK::Cluster",
    "Properties": {
     "BrokerNodeGroupInfo": {
@@ -423,7 +423,7 @@
      "SecurityGroups": [
       {
        "Fn::GetAtt": [
-        "ClusterZookeeperSecurityGroupD3CFED03",
+        "storageModetieredSecurityGroupAAF9F00E",
         "GroupId"
        ]
       }
@@ -434,14 +434,14 @@
       }
      }
     },
-    "ClusterName": "cluster-zookeeper",
+    "ClusterName": "tiered-cluster",
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
-    "KafkaVersion": "3.5.1",
+    "KafkaVersion": "2.8.2.tiered",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -455,138 +455,81 @@
       }
      }
     },
-    "NumberOfBrokerNodes": 2
+    "NumberOfBrokerNodes": 2,
+    "StorageMode": "TIERED"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterZookeeperZookeeperConnectDBC3303D": {
-   "Type": "Custom::AWS",
+  "storageModelocalSecurityGroupFD0A95DE": {
+   "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
-      "Arn"
-     ]
-    },
-    "Create": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"service\":\"Kafka\",\"action\":\"describeCluster\",\"parameters\":{\"ClusterArn\":\"",
-       {
-        "Ref": "ClusterZookeeper29ECF2D7"
-       },
-       "\"},\"physicalResourceId\":{\"id\":\"ZooKeeperConnectionString\"},\"outputPaths\":[\"ClusterInfo.ZookeeperConnectString\",\"ClusterInfo.ZookeeperConnectStringTls\"]}"
-      ]
-     ]
-    },
-    "Update": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"service\":\"Kafka\",\"action\":\"describeCluster\",\"parameters\":{\"ClusterArn\":\"",
-       {
-        "Ref": "ClusterZookeeper29ECF2D7"
-       },
-       "\"},\"physicalResourceId\":{\"id\":\"ZooKeeperConnectionString\"},\"outputPaths\":[\"ClusterInfo.ZookeeperConnectString\",\"ClusterInfo.ZookeeperConnectStringTls\"]}"
-      ]
-     ]
-    },
-    "InstallLatestAwsSdk": false
-   },
-   "DependsOn": [
-    "ClusterZookeeperZookeeperConnectCustomResourcePolicy762D4B4E"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "ClusterZookeeperZookeeperConnectCustomResourcePolicy762D4B4E": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "kafka:DescribeCluster",
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "ClusterZookeeper29ECF2D7"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ClusterZookeeperZookeeperConnectCustomResourcePolicy762D4B4E",
-    "Roles": [
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
      {
-      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
-  "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
-   "Type": "AWS::IAM::Role",
+  "storageModelocal9CEF347D": {
+   "Type": "AWS::MSK::Cluster",
    "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
       {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
       }
      ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "storageModelocalSecurityGroupFD0A95DE",
+        "GroupId"
        ]
-      ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
      }
-    ]
-   }
-  },
-  "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
     },
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
-      "Arn"
-     ]
+    "ClusterName": "local-cluster",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
     },
-    "Runtime": "nodejs18.x",
-    "Timeout": 120
+    "KafkaVersion": "2.8.2.tiered",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2,
+    "StorageMode": "LOCAL"
    },
-   "DependsOn": [
-    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-   ]
-  }
- },
- "Outputs": {
-  "Zookeeper": {
-   "Value": {
-    "Fn::GetAtt": [
-     "ClusterZookeeperZookeeperConnectDBC3303D",
-     "ClusterInfo.ZookeeperConnectString"
-    ]
-   }
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {
