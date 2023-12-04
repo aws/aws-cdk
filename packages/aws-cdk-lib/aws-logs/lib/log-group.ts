@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { DataProtectionPolicy } from './data-protection-policy';
+import { LogAnomalyDetector, LogAnomalyDetectorOptions } from './log-anomaly-detector';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
@@ -48,6 +49,14 @@ export interface ILogGroup extends iam.IResourceWithPolicy {
    * @param props Properties for creating the MetricFilter
    */
   addMetricFilter(id: string, props: MetricFilterOptions): MetricFilter;
+
+  /**
+   * Create a new Anomaly Detector for this Log Group
+   *
+   * @param id Unique identifier for the construct in its parent
+   * @param props Properties for creating the LogStream
+   */
+  addAnomalyDetector(id: string, props?: LogAnomalyDetectorOptions): LogAnomalyDetector;
 
   /**
    * Extract a metric from structured log events in the LogGroup
@@ -141,6 +150,26 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
     });
   }
 
+  /**
+   * Create a new Log Anomaly Detector for this Log Group
+   *
+   * @param id Unique identifier for the construct in its parent
+   * @param props Properties for creating the LogAnomalyDetector
+   * @returns The created LogAnomalyDetector instance
+   */
+  public addAnomalyDetector(id: string, props: LogAnomalyDetectorOptions): LogAnomalyDetector {
+    // Ensure the log group ARN is included in the logGroupArnList
+    const logGroupArnList = props.logGroupArnList ?? [];
+    if (!logGroupArnList.includes(this.logGroupArn)) {
+      logGroupArnList.push(this.logGroupArn);
+    }
+
+    return new LogAnomalyDetector(this, id, {
+      ...props,
+      logGroupArnList: logGroupArnList,
+      logGroup: this,
+    });
+  }
   /**
    * Extract a metric from structured log events in the LogGroup
    *
