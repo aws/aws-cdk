@@ -1,6 +1,6 @@
 import { loadAwsServiceSpecSync } from '@aws-cdk/aws-service-spec';
 import { Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
-import { ResourceReplacements } from '../format';
+import { ResourceReplacement, ResourceReplacements } from '../format';
 
 /**
  * Compares two objects for equality, deeply. The function handles arguments that are
@@ -112,7 +112,7 @@ function dependsOnEqual(lvalue: any, rvalue: any): boolean {
 export function diffKeyedEntities<T>(
   oldValue: { [key: string]: any } | undefined,
   newValue: { [key: string]: any } | undefined,
-  elementDiff: (oldElement: any, newElement: any, key: string, replacements?: boolean) => T,
+  elementDiff: (oldElement: any, newElement: any, key: string, replacements?: ResourceReplacement) => T,
   replacements?: ResourceReplacements): { [name: string]: T } {
   const result: { [name: string]: T } = {};
   for (const logicalId of unionOf(Object.keys(oldValue || {}), Object.keys(newValue || {}))) {

@@ -21,12 +21,14 @@ export interface FormatStream extends NodeJS.WritableStream {
 /**
  * maps logical IDs to their need to be replaced
  */
-export type ResourceReplacements = { [logicalId: string]: boolean };
+export type ResourceReplacements = { [logicalId: string]: ResourceReplacement };
 
 export interface ResourceReplacement {
   replaced: boolean,
-  propertiesReplaced: { [propertyName: string]: boolean };
+  propertiesReplaced: { [propertyName: string]: ChangeSetReplacement };
 }
+
+export type ChangeSetReplacement = 'Always' | 'Never' | 'Conditionally';
 
 /**
  * Renders template differences to the process' console.

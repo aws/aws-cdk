@@ -1,6 +1,8 @@
+/* eslint-disable no-console */
 import { Resource } from '@aws-cdk/service-spec-types';
 import * as types from './types';
 import { deepEqual, diffKeyedEntities, loadResourceModel } from './util';
+import { ResourceReplacement } from '../format';
 
 export function diffAttribute(oldValue: any, newValue: any): types.Difference<string> {
   return new types.Difference<string>(_asString(oldValue), _asString(newValue));
@@ -27,7 +29,7 @@ export function diffParameter(oldValue: types.Parameter, newValue: types.Paramet
 }
 
 // eslint-disable-next-line max-len
-export function diffResource(oldValue?: types.Resource, newValue?: types.Resource, _key?: string, replacement?: boolean): types.ResourceDifference {
+export function diffResource(oldValue?: types.Resource, newValue?: types.Resource, _key?: string, replacement?: ResourceReplacement): types.ResourceDifference {
   const resourceType = {
     oldType: oldValue && oldValue.Type,
     newType: newValue && newValue.Type,
@@ -50,12 +52,28 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
     resourceType, propertyDiffs, otherDiffs,
   });
 
-  function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: Resource, changeSetReplacement?: boolean) {
+  function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: Resource, changeSetReplacement?: ResourceReplacement) {
     let changeImpact: types.ResourceImpact = types.ResourceImpact.NO_CHANGE;
     if (changeSetReplacement === undefined) {
       changeImpact = _resourceSpecImpact(oldV, newV, key, resourceSpec);
     } else {
-      changeImpact = changeSetReplacement ? types.ResourceImpact.WILL_REPLACE : types.ResourceImpact.WILL_UPDATE; // TODO
+      console.log('--------------------------------------');
+      console.log(key);
+      console.log('--------------------------------------');
+
+      switch (changeSetReplacement.propertiesReplaced[key]) {
+        case 'Always':
+          changeImpact = types.ResourceImpact.WILL_REPLACE;
+          break;
+        case 'Conditionally':
+          changeImpact = types.ResourceImpact.MAY_REPLACE;
+          break;
+        case 'Never':
+          changeImpact = types.ResourceImpact.WILL_UPDATE;
+          break;
+      }
+
+      // todo: if key not in properties replaced, probably a no_change
     }
 
     return new types.PropertyDifference(oldV, newV, { changeImpact });

@@ -26,7 +26,7 @@ export function printStackDiff(
   stream?: cfnDiff.FormatStream): number {
 
   const replacements = findResourceReplacements(changeSet);
-  let diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+  let diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template, replacements);
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
@@ -131,8 +131,19 @@ function logicalIdMapFromTemplate(template: any) {
 function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOutput): cfnDiff.ResourceReplacements {
   const replacements: cfnDiff.ResourceReplacements = {};
   for (const resourceChange of changeSet.Changes ?? []) {
-    //const replacementInfo = resourceChange.ResourceChange?.Details[0].Target?.RequiresRecreation
-    replacements[resourceChange.ResourceChange?.LogicalResourceId ?? ''] = resourceChange.ResourceChange?.Replacement === 'True';
+    const propertiesReplaced: { [propName: string]: cfnDiff.ChangeSetReplacement } = {};
+    for (const propertyChange of resourceChange.ResourceChange?.Details ?? []) {
+      if (propertyChange.Target?.Attribute === 'Properties') {
+        if (!propertyChange.Target.RequiresRecreation) {
+          throw new Error('Target.RequiresRecreation is undefined!');
+        }
+        propertiesReplaced[propertyChange.Target.Name!] = propertyChange.Target.RequiresRecreation as cfnDiff.ChangeSetReplacement;
+      }
+    }
+    replacements[resourceChange.ResourceChange?.LogicalResourceId ?? ''] = {
+      replaced: resourceChange.ResourceChange?.Replacement === 'True',
+      propertiesReplaced,
+    };
   }
 
   return replacements;
