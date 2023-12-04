@@ -1,0 +1,19 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "74c577aa04ac95ab00d45704bdb862b7d2762219f4e54f9d3882db5a42c3abb3": {
+      "source": {
+        "path": "KafkaStorageModeTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "74c577aa04ac95ab00d45704bdb862b7d2762219f4e54f9d3882db5a42c3abb3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
