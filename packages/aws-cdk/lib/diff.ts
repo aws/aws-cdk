@@ -1,6 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
+import { CloudFormation } from 'aws-sdk';
 import * as chalk from 'chalk';
 import { print, warning } from './logging';
 
@@ -21,15 +22,17 @@ export function printStackDiff(
   strict: boolean,
   context: number,
   quiet: boolean,
+  changeSet: CloudFormation.DescribeChangeSetOutput,
   stream?: cfnDiff.FormatStream): number {
 
+  const replacements = findResourceReplacements(changeSet);
   let diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
   if (diff.differenceCount && !strict) {
     const mangledNewTemplate = JSON.parse(cfnDiff.mangleLikeCloudFormation(JSON.stringify(newTemplate.template)));
-    const mangledDiff = cfnDiff.diffTemplate(oldTemplate, mangledNewTemplate);
+    const mangledDiff = cfnDiff.diffTemplate(oldTemplate, mangledNewTemplate, replacements);
     filteredChangesCount = Math.max(0, diff.differenceCount - mangledDiff.differenceCount);
     if (filteredChangesCount > 0) {
       diff = mangledDiff;
@@ -74,8 +77,10 @@ export enum RequireApproval {
  *
  * Returns true if the changes are prompt-worthy, false otherwise.
  */
-export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.CloudFormationStackArtifact, requireApproval: RequireApproval): boolean {
-  const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+// eslint-disable-next-line max-len
+export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.CloudFormationStackArtifact, requireApproval: RequireApproval, changeSet?: CloudFormation.DescribeChangeSetOutput): boolean {
+  const replacements = changeSet ? findResourceReplacements(changeSet) : undefined;
+  const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template, replacements);
 
   if (difRequiresApproval(diff, requireApproval)) {
     // eslint-disable-next-line max-len
@@ -121,4 +126,14 @@ function logicalIdMapFromTemplate(template: any) {
     }
   }
   return ret;
+}
+
+function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOutput): cfnDiff.ResourceReplacements {
+  const replacements: cfnDiff.ResourceReplacements = {};
+  for (const resourceChange of changeSet.Changes ?? []) {
+    //const replacementInfo = resourceChange.ResourceChange?.Details[0].Target?.RequiresRecreation
+    replacements[resourceChange.ResourceChange?.LogicalResourceId ?? ''] = resourceChange.ResourceChange?.Replacement === 'True';
+  }
+
+  return replacements;
 }

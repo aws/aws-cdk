@@ -26,7 +26,8 @@ export function diffParameter(oldValue: types.Parameter, newValue: types.Paramet
   return new types.ParameterDifference(oldValue, newValue);
 }
 
-export function diffResource(oldValue?: types.Resource, newValue?: types.Resource): types.ResourceDifference {
+// eslint-disable-next-line max-len
+export function diffResource(oldValue?: types.Resource, newValue?: types.Resource, _key?: string, replacement?: boolean): types.ResourceDifference {
   const resourceType = {
     oldType: oldValue && oldValue.Type,
     newType: newValue && newValue.Type,
@@ -39,7 +40,7 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
     const impl = loadResourceModel(resourceType.oldType);
     propertyDiffs = diffKeyedEntities(oldValue!.Properties,
       newValue!.Properties,
-      (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl));
+      (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl, replacement));
 
     otherDiffs = diffKeyedEntities(oldValue, newValue, _diffOther);
     delete otherDiffs.Properties;
@@ -49,25 +50,32 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
     resourceType, propertyDiffs, otherDiffs,
   });
 
-  function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: Resource) {
-    let changeImpact = types.ResourceImpact.NO_CHANGE;
+  function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: Resource, changeSetReplacement?: boolean) {
+    let changeImpact: types.ResourceImpact = types.ResourceImpact.NO_CHANGE;
+    if (changeSetReplacement === undefined) {
+      changeImpact = _resourceSpecImpact(oldV, newV, key, resourceSpec);
+    } else {
+      changeImpact = changeSetReplacement ? types.ResourceImpact.WILL_REPLACE : types.ResourceImpact.WILL_UPDATE; // TODO
+    }
 
+    return new types.PropertyDifference(oldV, newV, { changeImpact });
+  }
+
+  function _resourceSpecImpact(oldV: any, newV: any, key: string, resourceSpec?: Resource) {
     const spec = resourceSpec?.properties?.[key];
     if (spec && !deepEqual(oldV, newV)) {
       switch (spec.causesReplacement) {
         case 'yes':
-          changeImpact = types.ResourceImpact.WILL_REPLACE;
-          break;
+          return types.ResourceImpact.WILL_REPLACE;
         case 'maybe':
-          changeImpact = types.ResourceImpact.MAY_REPLACE;
-          break;
+          return types.ResourceImpact.MAY_REPLACE;
         default:
           // In those cases, whatever is the current value is what we should keep
-          changeImpact = types.ResourceImpact.WILL_UPDATE;
+          return types.ResourceImpact.WILL_UPDATE;
       }
     }
 
-    return new types.PropertyDifference(oldV, newV, { changeImpact });
+    return types.ResourceImpact.NO_CHANGE;
   }
 
   function _diffOther(oldV: any, newV: any) {

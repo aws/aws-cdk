@@ -1,10 +1,11 @@
 import * as impl from './diff';
 import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
+import { ResourceReplacements } from './format';
 
 export * from './diff/types';
 
-type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any) => void;
+type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any, replacement?: ResourceReplacements) => void;
 type HandlerRegistry = { [section: string]: DiffHandler };
 
 const DIFF_HANDLERS: HandlerRegistry = {
@@ -22,8 +23,8 @@ const DIFF_HANDLERS: HandlerRegistry = {
     diff.conditions = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffCondition)),
   Transform: (diff, oldValue, newValue) =>
     diff.transform = impl.diffAttribute(oldValue, newValue),
-  Resources: (diff, oldValue, newValue) =>
-    diff.resources = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffResource)),
+  Resources: (diff, oldValue, newValue, replacements?: ResourceReplacements) =>
+    diff.resources = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffResource, replacements)),
   Outputs: (diff, oldValue, newValue) =>
     diff.outputs = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffOutput)),
 };
@@ -38,9 +39,10 @@ const DIFF_HANDLERS: HandlerRegistry = {
  *      a stack which current state is described by +currentTemplate+ is updated with
  *      the template +newTemplate+.
  */
-export function diffTemplate(currentTemplate: { [key: string]: any }, newTemplate: { [key: string]: any }): types.TemplateDiff {
+// eslint-disable-next-line max-len
+export function diffTemplate(currentTemplate: { [key: string]: any }, newTemplate: { [key: string]: any }, replacements?: ResourceReplacements): types.TemplateDiff {
   // Base diff
-  const theDiff = calculateTemplateDiff(currentTemplate, newTemplate);
+  const theDiff = calculateTemplateDiff(currentTemplate, newTemplate, replacements);
 
   // We're going to modify this in-place
   const newTemplateCopy = deepCopy(newTemplate);
@@ -48,7 +50,7 @@ export function diffTemplate(currentTemplate: { [key: string]: any }, newTemplat
   let didPropagateReferenceChanges;
   let diffWithReplacements;
   do {
-    diffWithReplacements = calculateTemplateDiff(currentTemplate, newTemplateCopy);
+    diffWithReplacements = calculateTemplateDiff(currentTemplate, newTemplateCopy, replacements);
 
     // Propagate replacements for replaced resources
     didPropagateReferenceChanges = false;
@@ -93,7 +95,8 @@ function propagatePropertyReplacement(source: types.ResourceDifference, dest: ty
   }
 }
 
-function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTemplate: { [key: string]: any }): types.TemplateDiff {
+// eslint-disable-next-line max-len
+function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTemplate: { [key: string]: any }, replacements?: ResourceReplacements): types.TemplateDiff {
   const differences: types.ITemplateDiff = {};
   const unknown: { [key: string]: types.Difference<any> } = {};
   for (const key of unionOf(Object.keys(currentTemplate), Object.keys(newTemplate)).sort()) {
@@ -104,8 +107,7 @@ function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTempl
     }
     const handler: DiffHandler = DIFF_HANDLERS[key]
                   || ((_diff, oldV, newV) => unknown[key] = impl.diffUnknown(oldV, newV));
-    handler(differences, oldValue, newValue);
-
+    handler(differences, oldValue, newValue, replacements);
   }
   if (Object.keys(unknown).length > 0) {
     differences.unknown = new types.DifferenceCollection(unknown);
@@ -117,9 +119,10 @@ function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTempl
 /**
  * Compare two CloudFormation resources and return semantic differences between them
  */
-export function diffResource(oldValue: types.Resource, newValue: types.Resource): types.ResourceDifference {
+/*export function diffResource(oldValue: types.Resource, newValue: types.Resource): types.ResourceDifference {
   return impl.diffResource(oldValue, newValue);
 }
+*/
 
 /**
  * Replace all references to the given logicalID on the given template, in-place
