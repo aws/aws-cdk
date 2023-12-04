@@ -726,7 +726,7 @@
                         "inCluster": true
                       }
                     },
-                    "kafkaVersion": "3.4.0",
+                    "kafkaVersion": "3.5.1",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {

@@ -210,6 +210,7 @@ export * as aws_s3 from './aws-s3';
 export * as aws_s3_assets from './aws-s3-assets';
 export * as aws_s3_deployment from './aws-s3-deployment';
 export * as aws_s3_notifications from './aws-s3-notifications';
+export * as aws_s3express from './aws-s3express';
 export * as aws_s3objectlambda from './aws-s3objectlambda';
 export * as aws_s3outposts from './aws-s3outposts';
 export * as aws_sagemaker from './aws-sagemaker';
