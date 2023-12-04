@@ -570,6 +570,9 @@
   "aws-s3": [
     "AWS::S3"
   ],
+  "aws-s3express": [
+    "AWS::S3Express"
+  ],
   "aws-s3objectlambda": [
     "AWS::S3ObjectLambda"
   ],
