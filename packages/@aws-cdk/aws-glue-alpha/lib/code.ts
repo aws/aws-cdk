@@ -39,15 +39,15 @@ export abstract class Code {
  * Glue job Code from an S3 bucket.
  */
 export class S3Code extends Code {
-  constructor(private readonly bucket: s3.IBucket, private readonly key: string) {
+  constructor(private readonly bucket: s3.ICfnBucket, private readonly key: string) {
     super();
   }
 
   public bind(_scope: constructs.Construct, grantable: iam.IGrantable): CodeConfig {
-    this.bucket.grantRead(grantable, this.key);
+    s3.Bucket.fromCfnBucket(this.bucket).grantRead(grantable, this.key);
     return {
       s3Location: {
-        bucketName: this.bucket.bucketName,
+        bucketName: this.bucket.attrBucketName,
         objectKey: this.key,
       },
     };

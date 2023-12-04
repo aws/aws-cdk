@@ -906,9 +906,9 @@ export abstract class ConfigurationSource {
    * @param objectKey The path to the configuration
    * @param key The KMS Key that the bucket is encrypted with
    */
-  public static fromBucket(bucket: s3.IBucket, objectKey: string, key?: kms.IKey): ConfigurationSource {
+  public static fromBucket(bucket: s3.ICfnBucket, objectKey: string, key?: kms.IKey): ConfigurationSource {
     return {
-      locationUri: bucket.s3UrlForObject(objectKey),
+      locationUri: s3.Bucket.fromCfnBucket(bucket).s3UrlForObject(objectKey),
       type: ConfigurationSourceType.S3,
       key,
     };

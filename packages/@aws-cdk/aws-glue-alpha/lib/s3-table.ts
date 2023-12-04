@@ -36,14 +36,14 @@ export enum TableEncryption {
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
    */
-  CLIENT_SIDE_KMS = 'CSE-KMS'
+  CLIENT_SIDE_KMS = 'CSE-KMS',
 }
 
 export interface S3TableProps extends TableBaseProps {
   /**
  * S3 bucket in which to store data.
  *
- * @default one is created for you
+ * @default - one is created for you
  */
   readonly bucket?: s3.IBucket;
 
@@ -71,7 +71,7 @@ export interface S3TableProps extends TableBaseProps {
    *
    * The `encryption` property must be `SSE-KMS` or `CSE-KMS`.
    *
-   * @default key is managed by KMS.
+   * @default - key is managed by KMS.
    */
   readonly encryptionKey?: kms.IKey;
 }

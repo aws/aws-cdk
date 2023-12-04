@@ -257,7 +257,7 @@ export interface S3LoggingConfiguration {
   /**
    * The S3 bucket that is the destination for broker logs.
    */
-  readonly bucket: s3.IBucket;
+  readonly bucket: s3.ICfnBucket;
   /**
    * The S3 prefix that is the destination for broker logs.
    *
@@ -516,7 +516,7 @@ export class Cluster extends ClusterBase {
         }
         : undefined;
 
-    const loggingBucket = props.logging?.s3?.bucket;
+    const loggingBucket = props.logging?.s3?.bucket ? s3.Bucket.fromCfnBucket(props.logging.s3.bucket) : undefined;
     if (loggingBucket && FeatureFlags.of(this).isEnabled(S3_CREATE_DEFAULT_LOGGING_POLICY)) {
       const stack = core.Stack.of(this);
       loggingBucket.addToResourcePolicy(new iam.PolicyStatement({

@@ -379,14 +379,14 @@ export interface SparkUIProps {
   /**
    * Enable Spark UI.
    */
-  readonly enabled: boolean
+  readonly enabled: boolean;
 
   /**
    * The bucket where the Glue job stores the logs.
    *
    * @default - a new bucket will be created.
    */
-  readonly bucket?: s3.IBucket;
+  readonly bucket?: s3.ICfnBucket;
 
   /**
    * The path inside the bucket (objects prefix) where the Glue job stores the logs.
@@ -818,7 +818,7 @@ export class Job extends JobBase {
     }
 
     this.validatePrefix(props.prefix);
-    const bucket = props.bucket ?? new s3.Bucket(this, 'SparkUIBucket');
+    const bucket = props.bucket ? s3.Bucket.fromCfnBucket(props.bucket) : new s3.Bucket(this, 'SparkUIBucket');
     bucket.grantReadWrite(role, this.cleanPrefixForGrant(props.prefix));
     const args = {
       '--enable-spark-ui': 'true',
