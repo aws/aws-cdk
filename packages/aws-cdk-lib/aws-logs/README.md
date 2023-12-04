@@ -380,6 +380,35 @@ new logs.LogGroup(this, 'LogGroupLambda', {
 });
 ```
 
+## Log Anomaly Detector
+
+The LogAnomalyDetector construct allows you to create and configure an anomaly detector for CloudWatch Log Groups. 
+
+For more information, see [Log anomaly detection](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/LogsAnomalyDetection.html)
+
+```ts
+const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
+
+new logs.LogAnomalyDetector(stack, 'MyAnomalyDetector', {
+  [logGroup],
+  detectorName: 'MyDetector',
+  evaluationFrequency: logs.EvaluationFrequency.FIVE_MIN,
+  filterPattern: 'ERROR',
+});
+```
+
+Adding Anomaly Detector to Existing Log Group
+You can add an anomaly detector directly to an existing log group using the addAnomalyDetector method.
+
+```ts
+const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
+logGroup.addAnomalyDetector('MyAnomalyDetector', {
+  detectorName: 'MyDetector',
+  evaluationFrequency: logs.EvaluationFrequency.TEN_MIN,
+  filterPattern: 'WARN',
+});
+```
+
 ## Notes
 
 Be aware that Log Group ARNs will always have the string `:*` appended to

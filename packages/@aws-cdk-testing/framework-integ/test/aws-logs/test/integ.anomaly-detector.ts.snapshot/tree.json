@@ -1,0 +1,165 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-metricfilter-dimensions-integ": {
+        "id": "aws-cdk-metricfilter-dimensions-integ",
+        "path": "aws-cdk-metricfilter-dimensions-integ",
+        "children": {
+          "LogGroup": {
+            "id": "LogGroup",
+            "path": "aws-cdk-metricfilter-dimensions-integ/LogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-metricfilter-dimensions-integ/LogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "0.0.0"
+            }
+          },
+          "MetricFilter": {
+            "id": "MetricFilter",
+            "path": "aws-cdk-metricfilter-dimensions-integ/MetricFilter",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-metricfilter-dimensions-integ/MetricFilter/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::MetricFilter",
+                  "aws:cdk:cloudformation:props": {
+                    "filterPattern": "{ $.latency = \"*\" }",
+                    "logGroupName": {
+                      "Ref": "LogGroupF5B46931"
+                    },
+                    "metricTransformations": [
+                      {
+                        "metricNamespace": "MyApp",
+                        "metricName": "Latency",
+                        "metricValue": "$.latency",
+                        "dimensions": [
+                          {
+                            "key": "ErrorCode",
+                            "value": "$.errorCode"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnMetricFilter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.MetricFilter",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-metricfilter-dimensions-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-metricfilter-dimensions-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "metricfilter-dimensions": {
+        "id": "metricfilter-dimensions",
+        "path": "metricfilter-dimensions",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "metricfilter-dimensions/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "metricfilter-dimensions/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "metricfilter-dimensions/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "metricfilter-dimensions/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "metricfilter-dimensions/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
