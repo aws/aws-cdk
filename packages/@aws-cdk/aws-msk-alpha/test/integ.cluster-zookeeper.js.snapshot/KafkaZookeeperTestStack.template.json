@@ -441,7 +441,7 @@
       "InCluster": true
      }
     },
-    "KafkaVersion": "3.4.0",
+    "KafkaVersion": "3.5.1",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
