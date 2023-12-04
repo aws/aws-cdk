@@ -1,7 +1,6 @@
 import { Construct } from 'constructs';
-import { ILogGroup } from './log-group';
 import { CfnLogAnomalyDetector } from './logs.generated';
-import { Resource } from '../../core';
+import { Arn, ArnFormat, Resource } from '../../core';
 
 export enum EvaluationFrequency {
   /**
@@ -68,16 +67,6 @@ export interface LogAnomalyDetectorOptions {
 }
 
 /**
- * Properties for a AnomalyDetector
- */
-export interface LogAnomalyDetectorProps extends LogAnomalyDetectorOptions {
-  /**
-   * The log group to create the anomaly detector on.
-   */
-  readonly logGroup: ILogGroup;
-}
-
-/**
  * A detector that identifies anomalies in CloudWatch Log Groups and reports them.
  */
 export class LogAnomalyDetector extends Resource {
@@ -89,15 +78,26 @@ export class LogAnomalyDetector extends Resource {
    * @param id The scoped construct ID. Must be unique amongst siblings in the same scope.
    * @param props The properties for configuring the LogAnomalyDetector.
    */
-  constructor(scope: Construct, id: string, props: LogAnomalyDetectorProps) {
+  constructor(scope: Construct, id: string, props: LogAnomalyDetectorOptions) {
     super(scope, id, {
       physicalName: props.detectorName,
     });
 
     // Validate the logGroupArnList if provided
-    if (props.logGroupArnList && props.logGroupArnList.length === 0) {
-      throw new Error('logGroupArnList cannot be empty if provided.');
+    if (!props.logGroupArnList || props.logGroupArnList.length === 0) {
+      throw new Error('logGroupArnList must be provided and cannot be empty.');
     }
+
+    // Parse and reconstruct each ARN in the list
+    const parsedArnList = props.logGroupArnList.map(arn => {
+      const parsedArn = Arn.split(arn, ArnFormat.COLON_RESOURCE_NAME);
+      return `arn:${parsedArn.partition}:${parsedArn.region}:${parsedArn.account}:${parsedArn.resource}:${parsedArn.resourceName}`;
+    });
+
+    const parsedArnList = props.logGroupArnList.map(arn => {
+      const parsedArn = Arn.parse(arn);
+      return `arn:${parsedArn.partition}:${parsedArn.service}:${parsedArn.region}:${parsedArn.account}:${parsedArn.resource}`;
+    });
 
     // Create the CloudFormation resource for the Log Anomaly Detector
     new CfnLogAnomalyDetector(this, id, {
@@ -107,8 +107,7 @@ export class LogAnomalyDetector extends Resource {
       evaluationFrequency: props.evaluationFrequency,
       filterPattern: props.filterPattern,
       kmsKeyId: props.kmsKeyId,
-      logGroupArnList: props.logGroupArnList,
+      logGroupArnList: parsedArnList,
     });
   }
 }
-

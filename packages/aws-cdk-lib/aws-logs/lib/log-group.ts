@@ -160,14 +160,14 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
   public addAnomalyDetector(id: string, props: LogAnomalyDetectorOptions): LogAnomalyDetector {
     // Ensure the log group ARN is included in the logGroupArnList
     const logGroupArnList = props.logGroupArnList ?? [];
-    if (!logGroupArnList.includes(this.logGroupArn)) {
-      logGroupArnList.push(this.logGroupArn);
+    const logGroupArn = this.logGroupArn;
+    if (!logGroupArnList.includes(logGroupArn)) {
+      logGroupArnList.push(logGroupArn);
     }
 
     return new LogAnomalyDetector(this, id, {
       ...props,
       logGroupArnList: logGroupArnList,
-      logGroup: this,
     });
   }
   /**
@@ -264,7 +264,6 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       // ARN created by this call.
       return new iam.ArnPrincipal(principal.principalAccount);
     }
-
     if (principal instanceof iam.ArnPrincipal) {
       const parsedArn = Arn.split(principal.arn, ArnFormat.SLASH_RESOURCE_NAME);
       if (parsedArn.account) {

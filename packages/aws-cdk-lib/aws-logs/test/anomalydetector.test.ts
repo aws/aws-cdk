@@ -10,10 +10,10 @@ describe('LogAnomalyDetector', () => {
 
     // WHEN
     new LogAnomalyDetector(stack, 'TestAnomalyDetector', {
-      logGroup,
       detectorName: 'TestDetector',
       evaluationFrequency: EvaluationFrequency.FIVE_MIN,
       filterPattern: 'ERROR',
+      logGroupArnList: [logGroup.logGroupArn],
     });
 
     // THEN
@@ -21,7 +21,7 @@ describe('LogAnomalyDetector', () => {
       DetectorName: 'TestDetector',
       EvaluationFrequency: 'FIVE_MIN',
       FilterPattern: 'ERROR',
-      LogGroupArnList: [{ 'Fn::GetAtt': ['TestLogGroup', 'Arn'] }],
+      LogGroupArnList: [{ 'Fn::GetAtt': ['TestLogGroup4EEF7AD4', 'Arn'] }],
     });
   });
 
@@ -32,12 +32,12 @@ describe('LogAnomalyDetector', () => {
 
     // WHEN
     new LogAnomalyDetector(stack, 'TestAnomalyDetector', {
-      logGroup,
       detectorName: 'TestDetector',
       evaluationFrequency: EvaluationFrequency.ONE_HOUR,
       filterPattern: 'WARNING',
       anomalyVisibilityTime: 5,
       kmsKeyId: 'test-kms-key-id',
+      logGroupArnList: [logGroup.logGroupArn],
     });
 
     // THEN
@@ -47,7 +47,7 @@ describe('LogAnomalyDetector', () => {
       FilterPattern: 'WARNING',
       AnomalyVisibilityTime: 5,
       KmsKeyId: 'test-kms-key-id',
-      LogGroupArnList: [{ 'Fn::GetAtt': ['TestLogGroup', 'Arn'] }],
+      LogGroupArnList: [{ 'Fn::GetAtt': ['TestLogGroup4EEF7AD4', 'Arn'] }],
     });
   });
 
@@ -68,7 +68,6 @@ describe('LogAnomalyDetector', () => {
       DetectorName: 'TestDetector',
       EvaluationFrequency: 'FIVE_MIN',
       FilterPattern: 'ERROR',
-      LogGroupArnList: [{ 'Fn::GetAtt': ['TestLogGroup', 'Arn'] }],
     });
   });
 });
