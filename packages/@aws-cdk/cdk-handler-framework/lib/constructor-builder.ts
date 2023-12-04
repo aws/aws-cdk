@@ -7,7 +7,7 @@ interface ConstructorOptions {
   readonly superProps?: Expression,
 }
 
-export abstract class CdkHandlerFrameworkConstructor {
+export class CdkHandlerFrameworkConstructor {
   /**
    * Builds a constructor for a CdkFunction class.
    */
@@ -78,4 +78,6 @@ export abstract class CdkHandlerFrameworkConstructor {
     }
     init.addBody(new SuperInitializer(...superInitializerArgs));
   }
+
+  private constructor() {}
 }
