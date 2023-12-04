@@ -133,7 +133,7 @@
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.0.32",
+    "@aws-cdk/aws-service-spec": "^0.0.33",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -219,6 +219,8 @@
     "./aws-amplifyuibuilder": "./aws-amplifyuibuilder/index.js",
     "./aws-apigateway": "./aws-apigateway/index.js",
     "./aws-apigatewayv2": "./aws-apigatewayv2/index.js",
+    "./aws-apigatewayv2-authorizers": "./aws-apigatewayv2-authorizers/index.js",
+    "./aws-apigatewayv2-integrations": "./aws-apigatewayv2-integrations/index.js",
     "./aws-appconfig": "./aws-appconfig/index.js",
     "./aws-appflow": "./aws-appflow/index.js",
     "./aws-appintegrations": "./aws-appintegrations/index.js",
@@ -423,6 +425,7 @@
     "./aws-s3-assets": "./aws-s3-assets/index.js",
     "./aws-s3-deployment": "./aws-s3-deployment/index.js",
     "./aws-s3-notifications": "./aws-s3-notifications/index.js",
+    "./aws-s3express": "./aws-s3express/index.js",
     "./aws-s3objectlambda": "./aws-s3objectlambda/index.js",
     "./aws-s3outposts": "./aws-s3outposts/index.js",
     "./aws-sagemaker": "./aws-sagemaker/index.js",

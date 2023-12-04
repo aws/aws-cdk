@@ -59,21 +59,25 @@ export interface ClusterProps {
    * The physical name of the cluster.
    */
   readonly clusterName: string;
+
   /**
    * The version of Apache Kafka.
    */
   readonly kafkaVersion: KafkaVersion;
+
   /**
    * Number of Apache Kafka brokers deployed in each Availability Zone.
    *
    * @default 1
    */
   readonly numberOfBrokerNodes?: number;
+
   /**
    * Defines the virtual networking environment for this cluster.
    * Must have at least 2 subnets in two different AZs.
    */
   readonly vpc: ec2.IVpc;
+
   /**
    * Where to place the nodes within the VPC.
    * Amazon MSK distributes the broker nodes evenly across the subnets that you specify.
@@ -83,6 +87,7 @@ export interface ClusterProps {
    * @default - the Vpc default strategy if not specified.
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
+
   /**
    * The EC2 instance type that you want Amazon MSK to use when it creates your brokers.
    *
@@ -90,6 +95,7 @@ export interface ClusterProps {
    * @default kafka.m5.large
    */
   readonly instanceType?: ec2.InstanceType;
+
   /**
    * The AWS security groups to associate with the elastic network interfaces in order to specify who can
    * connect to and communicate with the Amazon MSK cluster.
@@ -97,36 +103,50 @@ export interface ClusterProps {
    * @default - create new security group
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
   /**
    * Information about storage volumes attached to MSK broker nodes.
    *
    * @default - 1000 GiB EBS volume
    */
   readonly ebsStorageInfo?: EbsStorageInfo;
+
+  /**
+   * This controls storage mode for supported storage tiers.
+   *
+   * @default - StorageMode.LOCAL
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html
+   */
+  readonly storageMode?: StorageMode;
+
   /**
    * The Amazon MSK configuration to use for the cluster.
    *
    * @default - none
    */
   readonly configurationInfo?: ClusterConfigurationInfo;
+
   /**
    * Cluster monitoring configuration.
    *
    * @default - DEFAULT monitoring level
    */
   readonly monitoring?: MonitoringConfiguration;
+
   /**
    * Configure your MSK cluster to send broker logs to different destination types.
    *
    * @default - disabled
    */
   readonly logging?: BrokerLogging;
+
   /**
    * Config details for encryption in transit.
    *
    * @default - enabled
    */
   readonly encryptionInTransit?: EncryptionInTransitConfig;
+
   /**
    * Configuration properties for client authentication.
    * MSK supports using private TLS certificates or SASL/SCRAM to authenticate the identity of clients.
@@ -134,6 +154,7 @@ export interface ClusterProps {
    * @default - disabled
    */
   readonly clientAuthentication?: ClientAuthentication;
+
   /**
    * What to do when this resource is deleted from a stack.
    *
@@ -152,12 +173,28 @@ export interface EbsStorageInfo {
    * @default 1000
    */
   readonly volumeSize?: number;
+
   /**
    * The AWS KMS key for encrypting data at rest.
    *
    * @default Uses AWS managed CMK (aws/kafka)
    */
   readonly encryptionKey?: kms.IKey;
+}
+
+/**
+ * The storage mode for the cluster brokers.
+ */
+export enum StorageMode {
+  /**
+   * Local storage mode utilizes network attached EBS storage.
+   */
+  LOCAL = 'LOCAL',
+
+  /**
+   * Tiered storage mode utilizes EBS storage and Tiered storage.
+   */
+  TIERED = 'TIERED',
 }
 
 /**
@@ -170,6 +207,7 @@ export interface ClusterConfigurationInfo {
    * For example, arn:aws:kafka:us-east-1:123456789012:configuration/example-configuration-name/abcdabcd-1234-abcd-1234-abcd123e8e8e-1.
    */
   readonly arn: string;
+
   /**
    * The revision of the Amazon MSK configuration to use.
    */
@@ -186,14 +224,17 @@ export enum ClusterMonitoringLevel {
    * Default metrics are the essential metrics to monitor.
    */
   DEFAULT = 'DEFAULT',
+
   /**
    * Per Broker metrics give you metrics at the broker level.
    */
   PER_BROKER = 'PER_BROKER',
+
   /**
    * Per Topic Per Broker metrics help you understand volume at the topic level.
    */
   PER_TOPIC_PER_BROKER = 'PER_TOPIC_PER_BROKER',
+
   /**
    * Per Topic Per Partition metrics help you understand consumer group lag at the topic partition level.
    */
@@ -210,12 +251,14 @@ export interface MonitoringConfiguration {
    * @default DEFAULT
    */
   readonly clusterMonitoringLevel?: ClusterMonitoringLevel;
+
   /**
    * Indicates whether you want to enable or disable the JMX Exporter.
    *
    * @default false
    */
   readonly enablePrometheusJmxExporter?: boolean;
+
   /**
    * Indicates whether you want to enable or disable the Prometheus Node Exporter.
    *
@@ -236,12 +279,14 @@ export interface BrokerLogging {
    * @default - disabled
    */
   readonly firehoseDeliveryStreamName?: string;
+
   /**
    * The CloudWatch Logs group that is the destination for broker logs.
    *
    * @default - disabled
    */
   readonly cloudwatchLogGroup?: logs.ILogGroup;
+
   /**
    * Details of the Amazon S3 destination for broker logs.
    *
@@ -258,6 +303,7 @@ export interface S3LoggingConfiguration {
    * The S3 bucket that is the destination for broker logs.
    */
   readonly bucket: s3.IBucket;
+
   /**
    * The S3 prefix that is the destination for broker logs.
    *
@@ -274,10 +320,12 @@ export enum ClientBrokerEncryption {
    * TLS means that client-broker communication is enabled with TLS only.
    */
   TLS = 'TLS',
+
   /**
    * TLS_PLAINTEXT means that client-broker communication is enabled for both TLS-encrypted, as well as plaintext data.
    */
   TLS_PLAINTEXT = 'TLS_PLAINTEXT',
+
   /**
    * PLAINTEXT means that client-broker communication is enabled in plaintext only.
    */
@@ -296,6 +344,7 @@ export interface EncryptionInTransitConfig {
    * @default - TLS
    */
   readonly clientBroker?: ClientBrokerEncryption;
+
   /**
    * Indicates that data communication among the broker nodes of the cluster is encrypted.
    *
@@ -314,12 +363,14 @@ export interface SaslAuthProps {
    * @default false
    */
   readonly scram?: boolean;
+
   /**
    * Enable IAM access control.
    *
    * @default false
    */
   readonly iam?: boolean;
+
   /**
    * KMS Key to encrypt SASL/SCRAM secrets.
    *
@@ -485,6 +536,17 @@ export class Cluster extends ClusterBase {
       : this.mskInstanceType(
         ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
       );
+
+    if (props.storageMode && props.storageMode === StorageMode.TIERED) {
+      if (!props.kafkaVersion.isTieredStorageCompatible()) {
+        throw Error(`To deploy a tiered cluster you must select a compatible Kafka version, got ${props.kafkaVersion.version}`);
+      }
+      if (instanceType === this.mskInstanceType(
+        ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL),
+      )) {
+        throw Error('Tiered storage doesn\'t support broker type t3.small');
+      }
+    }
 
     const encryptionAtRest = props.ebsStorageInfo?.encryptionKey
       ? {
@@ -683,6 +745,7 @@ export class Cluster extends ClusterBase {
       configurationInfo: props.configurationInfo,
       enhancedMonitoring: props.monitoring?.clusterMonitoringLevel,
       openMonitoring: openMonitoring,
+      storageMode: props.storageMode,
       loggingInfo: loggingInfo,
       clientAuthentication: clientAuthentication,
     });
