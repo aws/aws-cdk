@@ -8,14 +8,14 @@ import * as ssm from '../../../aws-ssm';
 import {
   CfnResource,
   CustomResource,
+  CustomResourceProvider,
+  CustomResourceProviderRuntime,
   Lazy,
   Resource,
   Stack,
   Stage,
   Token,
 } from '../../../core';
-import { CdkCustomResourceProvider } from '../../../handler-framework/lib/cdk-custom-resource-provider';
-import { CdkHandler } from '../../../handler-framework/lib/cdk-handler';
 
 /**
  * Properties for creating a Lambda@Edge function
@@ -199,19 +199,15 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     });
 
     const resourceType = 'Custom::CrossRegionStringParameterReader';
-    const handler = new CdkHandler(this, 'Handler', {
+    const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-cloudfront', 'edge-function'),
-      compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
-    });
-    const serviceToken = CdkCustomResourceProvider.getOrCreate(this, resourceType, {
-      handler,
+      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       policyStatements: [{
         Effect: 'Allow',
         Resource: parameterArnPrefix,
         Action: ['ssm:GetParameter'],
       }],
     });
-
     const resource = new CustomResource(this, 'ArnReader', {
       resourceType,
       serviceToken,

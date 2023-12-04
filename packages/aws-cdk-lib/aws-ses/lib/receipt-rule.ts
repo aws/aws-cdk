@@ -6,8 +6,6 @@ import { CfnReceiptRule } from './ses.generated';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { Aws, IResource, Lazy, Resource } from '../../core';
-import { CdkHandler } from '../../handler-framework/lib/cdk-handler';
-import { CdkSingletonFunction } from '../../handler-framework/lib/cdk-singleton-function';
 
 /**
  * A receipt rule.
@@ -173,13 +171,10 @@ export class DropSpamReceiptRule extends Construct {
   constructor(scope: Construct, id: string, props: DropSpamReceiptRuleProps) {
     super(scope, id);
 
-    const handler = new CdkHandler(this, 'DropSpamHandler', {
-      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-ses', 'drop-spam-handler'),
-      compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
-    });
-
-    const fn = new CdkSingletonFunction(this, 'Function', {
-      handler,
+    const fn = new lambda.SingletonFunction(this, 'Function', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-ses', 'drop-spam-handler')),
       uuid: '224e77f9-a32e-4b4d-ac32-983477abba16',
     });
 

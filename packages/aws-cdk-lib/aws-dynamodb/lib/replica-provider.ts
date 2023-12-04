@@ -4,8 +4,6 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { Aws, Duration, NestedStack, Stack } from '../../core';
 import * as cr from '../../custom-resources';
-import { CdkFunction } from '../../handler-framework/lib/cdk-function';
-import { CdkHandler } from '../../handler-framework/lib/cdk-handler';
 
 /**
  * Properties for a ReplicaProvider
@@ -57,27 +55,21 @@ export class ReplicaProvider extends NestedStack {
   private constructor(scope: Construct, id: string, props: ReplicaProviderProps) {
     super(scope, id);
 
-    const onEventHandler = new CdkHandler(this, 'OnEvent', {
-      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-dynamodb', 'replica-handler'),
-      entrypoint: 'index.onEventHandler',
-      compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
-    });
-
-    const onCompleteHandler = new CdkHandler(this, 'OnComplete', {
-      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-dynamodb', 'replica-handler'),
-      entrypoint: 'index.isCompleteHandler',
-      compatibleRuntimes: [lambda.Runtime.NODEJS_18_X],
-    });
+    const code = lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-dynamodb', 'replica-handler'));
 
     // Issues UpdateTable API calls
-    this.onEventHandler = new CdkFunction(this, 'OnEventHandler', {
-      handler: onEventHandler,
+    this.onEventHandler = new lambda.Function(this, 'OnEventHandler', {
+      code,
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.onEventHandler',
       timeout: Duration.minutes(5),
     });
 
     // Checks if table is back to `ACTIVE` state
-    this.isCompleteHandler = new CdkFunction(this, 'IsCompleteHandler', {
-      handler: onCompleteHandler,
+    this.isCompleteHandler = new lambda.Function(this, 'IsCompleteHandler', {
+      code,
+      runtime: lambda.Runtime.NODEJS_18_X,
+      handler: 'index.isCompleteHandler',
       timeout: Duration.seconds(30),
     });
 
