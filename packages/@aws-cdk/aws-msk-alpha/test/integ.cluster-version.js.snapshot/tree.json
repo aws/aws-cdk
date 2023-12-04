@@ -45,9 +45,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": "test-region-1a",
                         "cidrBlock": "10.0.0.0/18",
                         "mapPublicIpOnLaunch": true,
@@ -64,7 +61,10 @@
                             "key": "Name",
                             "value": "KafkaVersionTestStack/Vpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -86,15 +86,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "KafkaVersionTestStack/Vpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -127,12 +127,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
                         }
                       }
                     },
@@ -167,14 +167,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VpcPublicSubnet1EIPD7E02669",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
                         },
                         "tags": [
                           {
@@ -205,9 +205,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": "test-region-1b",
                         "cidrBlock": "10.0.64.0/18",
                         "mapPublicIpOnLaunch": true,
@@ -224,7 +221,10 @@
                             "key": "Name",
                             "value": "KafkaVersionTestStack/Vpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -246,15 +246,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "KafkaVersionTestStack/Vpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -287,12 +287,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
                         }
                       }
                     },
@@ -327,14 +327,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VpcPublicSubnet2Subnet691E08A3"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VpcPublicSubnet2EIP3C605A87",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet2Subnet691E08A3"
                         },
                         "tags": [
                           {
@@ -365,9 +365,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": "test-region-1a",
                         "cidrBlock": "10.0.128.0/18",
                         "mapPublicIpOnLaunch": false,
@@ -384,7 +381,10 @@
                             "key": "Name",
                             "value": "KafkaVersionTestStack/Vpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -406,15 +406,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "KafkaVersionTestStack/Vpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -447,12 +447,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
                         }
                       }
                     },
@@ -477,9 +477,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": "test-region-1b",
                         "cidrBlock": "10.0.192.0/18",
                         "mapPublicIpOnLaunch": false,
@@ -496,7 +493,10 @@
                             "key": "Name",
                             "value": "KafkaVersionTestStack/Vpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -518,15 +518,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "KafkaVersionTestStack/Vpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -559,12 +559,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
                         }
                       }
                     },
@@ -604,11 +604,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "Vpc8378EB38"
-                    },
                     "internetGatewayId": {
                       "Ref": "VpcIGWD7BA715C"
+                    },
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
                     }
                   }
                 },
@@ -692,14 +692,13 @@
                       }
                     },
                     "clusterName": "cluster-v2-2-1",
-                    "kafkaVersion": "2.2.1",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "2.2.1",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -712,7 +711,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -795,14 +795,13 @@
                       }
                     },
                     "clusterName": "cluster-v2-3-1",
-                    "kafkaVersion": "2.3.1",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "2.3.1",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -815,7 +814,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -898,14 +898,13 @@
                       }
                     },
                     "clusterName": "cluster-v2-4-1-1",
-                    "kafkaVersion": "2.4.1.1",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "2.4.1.1",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -918,7 +917,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -1001,14 +1001,13 @@
                       }
                     },
                     "clusterName": "cluster-v2-5-1",
-                    "kafkaVersion": "2.5.1",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "2.5.1",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -1021,7 +1020,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -1104,14 +1104,13 @@
                       }
                     },
                     "clusterName": "cluster-v2-6-0",
-                    "kafkaVersion": "2.6.0",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "2.6.0",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -1124,7 +1123,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -1207,14 +1207,13 @@
                       }
                     },
                     "clusterName": "cluster-v2-6-1",
-                    "kafkaVersion": "2.6.1",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "2.6.1",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -1227,7 +1226,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -1310,14 +1310,13 @@
                       }
                     },
                     "clusterName": "cluster-v2-6-2",
-                    "kafkaVersion": "2.6.2",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "2.6.2",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -1330,7 +1329,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -1413,14 +1413,13 @@
                       }
                     },
                     "clusterName": "cluster-v2-6-3",
-                    "kafkaVersion": "2.6.3",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "2.6.3",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -1433,7 +1432,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -1516,14 +1516,13 @@
                       }
                     },
                     "clusterName": "cluster-v2-7-0",
-                    "kafkaVersion": "2.7.0",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "2.7.0",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -1536,7 +1535,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -1619,14 +1619,13 @@
                       }
                     },
                     "clusterName": "cluster-v2-7-1",
-                    "kafkaVersion": "2.7.1",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "2.7.1",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -1639,7 +1638,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -1722,14 +1722,13 @@
                       }
                     },
                     "clusterName": "cluster-v2-7-2",
-                    "kafkaVersion": "2.7.2",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "2.7.2",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -1742,7 +1741,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -1825,14 +1825,13 @@
                       }
                     },
                     "clusterName": "cluster-v2-8-0",
-                    "kafkaVersion": "2.8.0",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "2.8.0",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -1845,7 +1844,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -1928,14 +1928,13 @@
                       }
                     },
                     "clusterName": "cluster-v2-8-1",
-                    "kafkaVersion": "2.8.1",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "2.8.1",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -1948,7 +1947,111 @@
                           "enabled": false
                         }
                       }
+                    },
+                    "numberOfBrokerNodes": 2
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_msk.CfnCluster",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
+              "version": "0.0.0"
+            }
+          },
+          "ClusterVersion2-8-2-tiered": {
+            "id": "ClusterVersion2-8-2-tiered",
+            "path": "KafkaVersionTestStack/ClusterVersion2-8-2-tiered",
+            "children": {
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "KafkaVersionTestStack/ClusterVersion2-8-2-tiered/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "KafkaVersionTestStack/ClusterVersion2-8-2-tiered/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "MSK security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
                     }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "KafkaVersionTestStack/ClusterVersion2-8-2-tiered/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
+                  "aws:cdk:cloudformation:props": {
+                    "brokerNodeGroupInfo": {
+                      "instanceType": "kafka.m5.large",
+                      "clientSubnets": [
+                        {
+                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                        },
+                        {
+                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                        }
+                      ],
+                      "securityGroups": [
+                        {
+                          "Fn::GetAtt": [
+                            "ClusterVersion282tieredSecurityGroup3FA6200D",
+                            "GroupId"
+                          ]
+                        }
+                      ],
+                      "storageInfo": {
+                        "ebsStorageInfo": {
+                          "volumeSize": 1000
+                        }
+                      }
+                    },
+                    "clusterName": "cluster-v2-8-2-tiered",
+                    "encryptionInfo": {
+                      "encryptionInTransit": {
+                        "clientBroker": "TLS",
+                        "inCluster": true
+                      }
+                    },
+                    "kafkaVersion": "2.8.2.tiered",
+                    "loggingInfo": {
+                      "brokerLogs": {
+                        "cloudWatchLogs": {
+                          "enabled": false
+                        },
+                        "firehose": {
+                          "enabled": false
+                        },
+                        "s3": {
+                          "enabled": false
+                        }
+                      }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -2031,14 +2134,13 @@
                       }
                     },
                     "clusterName": "cluster-v3-1-1",
-                    "kafkaVersion": "3.1.1",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "3.1.1",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -2051,7 +2153,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -2134,14 +2237,13 @@
                       }
                     },
                     "clusterName": "cluster-v3-2-0",
-                    "kafkaVersion": "3.2.0",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "3.2.0",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -2154,7 +2256,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -2237,14 +2340,13 @@
                       }
                     },
                     "clusterName": "cluster-v3-3-1",
-                    "kafkaVersion": "3.3.1",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "3.3.1",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -2257,7 +2359,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -2340,14 +2443,13 @@
                       }
                     },
                     "clusterName": "cluster-v3-3-2",
-                    "kafkaVersion": "3.3.2",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "3.3.2",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -2360,7 +2462,8 @@
                           "enabled": false
                         }
                       }
-                    }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -2443,14 +2546,13 @@
                       }
                     },
                     "clusterName": "cluster-v3-4-0",
-                    "kafkaVersion": "3.4.0",
-                    "numberOfBrokerNodes": 2,
                     "encryptionInfo": {
                       "encryptionInTransit": {
                         "clientBroker": "TLS",
                         "inCluster": true
                       }
                     },
+                    "kafkaVersion": "3.4.0",
                     "loggingInfo": {
                       "brokerLogs": {
                         "cloudWatchLogs": {
@@ -2463,7 +2565,111 @@
                           "enabled": false
                         }
                       }
+                    },
+                    "numberOfBrokerNodes": 2
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_msk.CfnCluster",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
+              "version": "0.0.0"
+            }
+          },
+          "ClusterVersion3-5-1": {
+            "id": "ClusterVersion3-5-1",
+            "path": "KafkaVersionTestStack/ClusterVersion3-5-1",
+            "children": {
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "KafkaVersionTestStack/ClusterVersion3-5-1/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "KafkaVersionTestStack/ClusterVersion3-5-1/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "MSK security group",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
                     }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "KafkaVersionTestStack/ClusterVersion3-5-1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
+                  "aws:cdk:cloudformation:props": {
+                    "brokerNodeGroupInfo": {
+                      "instanceType": "kafka.m5.large",
+                      "clientSubnets": [
+                        {
+                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                        },
+                        {
+                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                        }
+                      ],
+                      "securityGroups": [
+                        {
+                          "Fn::GetAtt": [
+                            "ClusterVersion351SecurityGroup866E7223",
+                            "GroupId"
+                          ]
+                        }
+                      ],
+                      "storageInfo": {
+                        "ebsStorageInfo": {
+                          "volumeSize": 1000
+                        }
+                      }
+                    },
+                    "clusterName": "cluster-v3-5-1",
+                    "encryptionInfo": {
+                      "encryptionInTransit": {
+                        "clientBroker": "TLS",
+                        "inCluster": true
+                      }
+                    },
+                    "kafkaVersion": "3.5.1",
+                    "loggingInfo": {
+                      "brokerLogs": {
+                        "cloudWatchLogs": {
+                          "enabled": false
+                        },
+                        "firehose": {
+                          "enabled": false
+                        },
+                        "s3": {
+                          "enabled": false
+                        }
+                      }
+                    },
+                    "numberOfBrokerNodes": 2
                   }
                 },
                 "constructInfo": {
@@ -2512,7 +2718,7 @@
                 "path": "KafkaVersionIntegTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.17"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -2558,7 +2764,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.17"
+          "version": "10.2.70"
         }
       }
     },
