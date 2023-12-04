@@ -43,6 +43,7 @@ export interface BuildEnvironmentCertificate {
    * The bucket where the certificate is
    */
   readonly bucket: s3.IBucket;
+
   /**
    * The full path and name of the key file
    */
@@ -774,7 +775,6 @@ export interface BindToCodePipelineOptions {
  * A representation of a CodeBuild Project.
  */
 export class Project extends ProjectBase {
-
   public static fromProjectArn(scope: Construct, id: string, projectArn: string): IProject {
     const parsedArn = Stack.of(scope).splitArn(projectArn, ArnFormat.SLASH_RESOURCE_NAME);
 
@@ -1923,7 +1923,7 @@ export enum WindowsImageType {
   /**
    * The WINDOWS_SERVER_2019_CONTAINER environment type
    */
-  SERVER_2019 = 'WINDOWS_SERVER_2019_CONTAINER'
+  SERVER_2019 = 'WINDOWS_SERVER_2019_CONTAINER',
 }
 
 /**
@@ -2133,7 +2133,7 @@ export enum BuildEnvironmentVariableType {
   /**
    * An environment variable stored in AWS Secrets Manager.
    */
-  SECRETS_MANAGER = 'SECRETS_MANAGER'
+  SECRETS_MANAGER = 'SECRETS_MANAGER',
 }
 
 /**
