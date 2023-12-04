@@ -8,6 +8,8 @@ export * as aws_amplify from './aws-amplify';
 export * as aws_amplifyuibuilder from './aws-amplifyuibuilder';
 export * as aws_apigateway from './aws-apigateway';
 export * as aws_apigatewayv2 from './aws-apigatewayv2';
+export * as aws_apigatewayv2_authorizers from './aws-apigatewayv2-authorizers';
+export * as aws_apigatewayv2_integrations from './aws-apigatewayv2-integrations';
 export * as aws_appconfig from './aws-appconfig';
 export * as aws_appflow from './aws-appflow';
 export * as aws_appintegrations from './aws-appintegrations';
