@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ea2b130e655c0c74a4099d37ab0b44701887641ac2253eec676e8048f199737e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a512067604698fe41cacf63c82484e8e597c04456ac3f27ded0a390ca25f0908.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -52,10 +52,40 @@
             "data": "Role1ABCC5F0"
           }
         ],
+        "/aws-cdk-scheduler-schedule/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RoleDefaultPolicy5FFB7DAB"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/NamedGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamedGroupA3ABC879"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/UnnamedGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UnnamedGroupBE3E48EE"
+          }
+        ],
         "/aws-cdk-scheduler-schedule/DefaultSchedule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DefaultSchedule597B0B2C"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/NamedGroupSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamedGroupScheduleD7EEFEBC"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/UnnamedGroupSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UnnamedGroupSchedule19260E9B"
           }
         ],
         "/aws-cdk-scheduler-schedule/DisabledSchedule/Resource": [
@@ -64,10 +94,28 @@
             "data": "DisabledScheduleA1DF7F0F"
           }
         ],
+        "/aws-cdk-scheduler-schedule/TargetOverrideSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TargetOverrideScheduleFF8CB184"
+          }
+        ],
         "/aws-cdk-scheduler-schedule/AllSchedulerErrorsAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AllSchedulerErrorsAlarmA3246F8C"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/ScheduleKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduleKey7E6B3A92"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/CustomerKmsSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomerKmsSchedule12B1FEFE"
           }
         ],
         "/aws-cdk-scheduler-schedule/BootstrapVersion": [

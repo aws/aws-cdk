@@ -547,6 +547,31 @@ describe('table', () => {
     });
   });
 
+  test('with tags', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{ region: 'us-west-1' }],
+      tags: [{ key: 'tagKey', value: 'tagValue' }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-1',
+        },
+        {
+          Region: 'us-east-1',
+          Tags: [{ Key: 'tagKey', Value: 'tagValue' }],
+        },
+      ],
+    });
+  });
+
   test('with all properties configured', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2' } });
@@ -605,6 +630,7 @@ describe('table', () => {
               contributorInsights: false,
             },
           },
+          tags: [{ key: 'USE1Key', value: 'USE1Value' }],
         },
         {
           region: 'us-east-2',
@@ -615,8 +641,10 @@ describe('table', () => {
               readCapacity: Capacity.fixed(15),
             },
           },
+          tags: [{ key: 'USE2Key', value: 'USE2Value' }],
         },
       ],
+      tags: [{ key: 'USW2Key', value: 'USW2Value' }],
     });
 
     // THEN
@@ -748,6 +776,7 @@ describe('table', () => {
             KMSMasterKeyId: 'arn:aws:kms:us-east-1:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
           },
           TableClass: 'STANDARD_INFREQUENT_ACCESS',
+          Tags: [{ Key: 'USE1Key', Value: 'USE1Value' }],
         },
         {
           ContributorInsightsSpecification: {
@@ -783,6 +812,7 @@ describe('table', () => {
             KMSMasterKeyId: 'arn:aws:kms:us-east-2:123456789012:key/g24efbna-az9b-42ro-m3bp-cq249l94fca6',
           },
           TableClass: 'STANDARD',
+          Tags: [{ Key: 'USE2Key', Value: 'USE2Value' }],
         },
         {
           ContributorInsightsSpecification: {
@@ -833,6 +863,7 @@ describe('table', () => {
             },
           },
           TableClass: 'STANDARD_INFREQUENT_ACCESS',
+          Tags: [{ Key: 'USW2Key', Value: 'USW2Value' }],
         },
       ],
       SSESpecification: {
@@ -1074,6 +1105,33 @@ describe('replica tables', () => {
           ReadProvisionedThroughputSettings: {
             ReadCapacityUnits: 5,
           },
+        },
+      ],
+    });
+  });
+
+  test('with tags', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+    // WHEN
+    new TableV2(stack, 'Table', {
+      partitionKey: { name: 'pk', type: AttributeType.STRING },
+      replicas: [{
+        region: 'us-west-1',
+        tags: [{ key: 'tagKey', value: 'tagValue' }],
+      }],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: [
+        {
+          Region: 'us-west-1',
+          Tags: [{ Key: 'tagKey', Value: 'tagValue' }],
+        },
+        {
+          Region: 'us-east-1',
         },
       ],
     });
