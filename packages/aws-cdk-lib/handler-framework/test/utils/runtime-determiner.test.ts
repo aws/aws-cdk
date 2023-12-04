@@ -1,16 +1,18 @@
 import { Runtime } from '../../../aws-lambda';
 import { RuntimeDeterminer } from '../../lib/utils/runtime-determiner';
 
+const DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
+
 describe('latest runtime', () => {
   test('selects default runtime', () => {
     // GIVEN
     const runtimes = [Runtime.NODEJS_16_X, Runtime.PYTHON_3_12, Runtime.NODEJS_18_X];
 
     // WHEN
-    const latestRuntime = RuntimeDeterminer.determineLatestRuntime(runtimes);
+    const latestRuntime = RuntimeDeterminer.determineLatestRuntime(DEFAULT_RUNTIME, runtimes);
 
     // THEN
-    expect(latestRuntime?.runtimeEquals(RuntimeDeterminer.DEFAULT_RUNTIME)).toEqual(true);
+    expect(latestRuntime?.runtimeEquals(DEFAULT_RUNTIME)).toEqual(true);
   });
 
   test('selects latest nodejs runtime', () => {
@@ -18,7 +20,7 @@ describe('latest runtime', () => {
     const runtimes = [Runtime.NODEJS_16_X, Runtime.PYTHON_3_12, Runtime.NODEJS_14_X, Runtime.PYTHON_3_11, Runtime.NODEJS_20_X];
 
     // WHEN
-    const latestRuntime = RuntimeDeterminer.determineLatestRuntime(runtimes);
+    const latestRuntime = RuntimeDeterminer.determineLatestRuntime(DEFAULT_RUNTIME, runtimes);
 
     // THEN
     expect(latestRuntime?.runtimeEquals(Runtime.NODEJS_20_X)).toEqual(true);
@@ -29,7 +31,7 @@ describe('latest runtime', () => {
     const runtimes = [Runtime.PYTHON_3_10, Runtime.PYTHON_3_11, Runtime.PYTHON_3_7];
 
     // WHEN
-    const latestRuntime = RuntimeDeterminer.determineLatestRuntime(runtimes);
+    const latestRuntime = RuntimeDeterminer.determineLatestRuntime(DEFAULT_RUNTIME, runtimes);
 
     // THEN
     expect(latestRuntime?.runtimeEquals(Runtime.PYTHON_3_11)).toEqual(true);
@@ -41,7 +43,7 @@ describe('latest runtime', () => {
 
     // WHEN / THEN
     expect(() => {
-      RuntimeDeterminer.determineLatestRuntime(runtimes);
+      RuntimeDeterminer.determineLatestRuntime(DEFAULT_RUNTIME, runtimes);
     }).toThrow('You must specify at least one compatible runtime');
   });
 
@@ -51,7 +53,7 @@ describe('latest runtime', () => {
 
     // WHEN / THEN
     expect(() => {
-      RuntimeDeterminer.determineLatestRuntime(runtimes);
+      RuntimeDeterminer.determineLatestRuntime(DEFAULT_RUNTIME, runtimes);
     }).toThrow(`Latest nodejs runtime ${Runtime.NODEJS_14_X} is deprecated. You must upgrade to the latest code compatible nodejs runtime`);
   });
 
@@ -61,7 +63,7 @@ describe('latest runtime', () => {
 
     // WHEN / THEN
     expect(() => {
-      RuntimeDeterminer.determineLatestRuntime(runtimes);
+      RuntimeDeterminer.determineLatestRuntime(DEFAULT_RUNTIME, runtimes);
     }).toThrow(`Latest python runtime ${Runtime.PYTHON_3_6} is deprecated. You must upgrade to the latest code compatible python runtime`);
   });
 
@@ -71,7 +73,7 @@ describe('latest runtime', () => {
 
     // WHEN / THEN
     expect(() => {
-      RuntimeDeterminer.determineLatestRuntime(runtimes);
+      RuntimeDeterminer.determineLatestRuntime(DEFAULT_RUNTIME, runtimes);
     }).toThrow('Compatible runtimes must contain only nodejs or python runtimes');
   });
 });

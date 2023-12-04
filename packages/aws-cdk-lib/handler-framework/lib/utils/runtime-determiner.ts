@@ -5,11 +5,6 @@ import { Runtime, RuntimeFamily } from '../../../aws-lambda';
  */
 export class RuntimeDeterminer {
   /**
-   * The latest nodejs runtime version available across all AWS regions
-   */
-  public static readonly DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
-
-  /**
    * Determines the latest runtime from a list of runtimes.
    *
    * Note: runtimes must only be nodejs or python. Nodejs runtimes will be given preference over
@@ -19,13 +14,13 @@ export class RuntimeDeterminer {
    * @returns the latest nodejs or python runtime found, otherwise undefined if no nodejs or python
    * runtimes are specified
    */
-  public static determineLatestRuntime(runtimes: Runtime[]) {
+  public static determineLatestRuntime(defaultRuntime: Runtime, runtimes: Runtime[]) {
     if (runtimes.length === 0) {
       throw new Error('You must specify at least one compatible runtime');
     }
 
     const nodeJsRuntimes = runtimes.filter(runtime => runtime.family === RuntimeFamily.NODEJS);
-    const latestNodeJsRuntime = this.latestNodeJsRuntime(nodeJsRuntimes);
+    const latestNodeJsRuntime = this.latestNodeJsRuntime(defaultRuntime, nodeJsRuntimes);
     if (latestNodeJsRuntime !== undefined) {
       if (latestNodeJsRuntime.isDeprecated) {
         throw new Error(`Latest nodejs runtime ${latestNodeJsRuntime} is deprecated. You must upgrade to the latest code compatible nodejs runtime`);
@@ -45,13 +40,13 @@ export class RuntimeDeterminer {
     throw new Error('Compatible runtimes must contain only nodejs or python runtimes');
   }
 
-  private static latestNodeJsRuntime(nodeJsRuntimes: Runtime[]) {
+  private static latestNodeJsRuntime(defaultRuntime: Runtime, nodeJsRuntimes: Runtime[]) {
     if (nodeJsRuntimes.length === 0) {
       return undefined;
     }
 
-    if (nodeJsRuntimes.some(runtime => runtime.runtimeEquals(this.DEFAULT_RUNTIME))) {
-      return this.DEFAULT_RUNTIME;
+    if (nodeJsRuntimes.some(runtime => runtime.runtimeEquals(defaultRuntime))) {
+      return defaultRuntime;
     }
 
     let latestRuntime = nodeJsRuntimes[0];

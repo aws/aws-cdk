@@ -16,6 +16,7 @@ describe('cdk handler', () => {
     // WHEN
     const handler = new CdkHandler(stack, 'CdkHandler', {
       codeDirectory,
+      entrypoint: 'index.handler',
       compatibleRuntimes: [Runtime.NODEJS_LATEST],
     });
 
@@ -30,6 +31,7 @@ describe('cdk handler', () => {
     // WHEN
     const handler = new CdkHandler(stack, 'CdkHandler', {
       codeDirectory,
+      entrypoint: 'index.handler',
       compatibleRuntimes: [Runtime.NODEJS_16_X, Runtime.NODEJS_LATEST, Runtime.PYTHON_3_12],
     });
 
@@ -37,32 +39,19 @@ describe('cdk handler', () => {
     expect(handler.runtime.runtimeEquals(Runtime.NODEJS_LATEST)).toBe(true);
   });
 
-  test('index.handler is default entrypoint', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    const handler = new CdkHandler(stack, 'CdkHandler', {
-      codeDirectory,
-      compatibleRuntimes: [Runtime.NODEJS_LATEST],
-    });
-
-    // THEN
-    expect(handler.entrypoint).toEqual('index.handler');
-  });
-
   test('entrypoint property is set correctly for non-default entrypoint', () => {
     // GIVEN
     const stack = new Stack();
+    const entrypoint = 'index.onEventHandler';
 
     // WHEN
     const handler = new CdkHandler(stack, 'CdkHandler', {
       codeDirectory,
+      entrypoint,
       compatibleRuntimes: [Runtime.NODEJS_LATEST],
-      entrypoint: 'index.onEventHandler',
     });
 
     // THEN
-    expect(handler.entrypoint).toEqual('index.onEventHandler');
+    expect(handler.entrypoint).toEqual(entrypoint);
   });
 });

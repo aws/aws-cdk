@@ -20,10 +20,8 @@ export interface CdkHandlerProps {
 
   /**
    * The name of the method within your code that Lambda calls to execute your function.
-   *
-   * @default 'index.handler'
    */
-  readonly entrypoint?: string;
+  readonly entrypoint: string;
 }
 
 /**
@@ -31,6 +29,11 @@ export interface CdkHandlerProps {
  * custom resource provider.
  */
 export class CdkHandler extends Construct {
+  /**
+   * The latest nodejs runtime version available across all AWS regions
+   */
+  private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
+
   /**
    * The source code loaded from a local disk path.
    */
@@ -56,6 +59,6 @@ export class CdkHandler extends Construct {
     this.codeDirectory = props.codeDirectory;
     this.code = Code.fromAsset(props.codeDirectory);
     this.entrypoint = props.entrypoint ?? 'index.handler';
-    this.runtime = RuntimeDeterminer.determineLatestRuntime(props.compatibleRuntimes);
+    this.runtime = RuntimeDeterminer.determineLatestRuntime(CdkHandler.DEFAULT_RUNTIME, props.compatibleRuntimes);
   }
 }
