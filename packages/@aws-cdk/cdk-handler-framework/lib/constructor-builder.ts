@@ -35,7 +35,18 @@ export class CdkHandlerFrameworkConstructor {
   /**
    * Builds a constructor for a CdkCustomResourceProvider class.
    */
-  public static forCdkCustomResourceProvider(_class: CdkHandlerFrameworkClass) {}
+  public static forCdkCustomResourceProvider(_class: CdkHandlerFrameworkClass) {
+    const constructorPropsParam: ParameterSpec = {
+      name: 'props',
+      type: _class.propsType,
+    };
+    const superProps = new ObjectLiteral([
+      new Splat(expr.directCode('props')),
+      ['codeDirectory', expr.directCode('cdkHandler.codeDirectory')],
+      ['runtimeName', expr.directCode('cdkHandler.runtime.name')],
+    ]);
+    CdkHandlerFrameworkConstructor.forCdkHandlerFrameworkClass(_class, { constructorPropsParam, superProps });
+  }
 
   private static forCdkHandlerFrameworkClass(_class: CdkHandlerFrameworkClass, constructorOptions: ConstructorOptions = {}) {
     // constructor

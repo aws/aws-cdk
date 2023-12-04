@@ -106,6 +106,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         const getOrCreateMethod = this.addMethod({
           name: 'getOrCreate',
           static: true,
+          returnType: Type.STRING,
         });
         getOrCreateMethod.addParameter({
           name: 'scope',
@@ -122,6 +123,31 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         getOrCreateMethod.addBody(
           stmt.ret(expr.directCode('this.getOrCreateProvider(scope, uniqueid, props).serviceToken')),
         );
+
+        const getOrCreateProviderMethod = this.addMethod({
+          name: 'getOrCreateProvider',
+          static: true,
+          returnType: this.type,
+        });
+        getOrCreateProviderMethod.addParameter({
+          name: 'scope',
+          type: CONSTRUCTS_MODULE.Construct,
+        });
+        getOrCreateProviderMethod.addParameter({
+          name: 'uniqueid',
+          type: Type.STRING,
+        });
+        getOrCreateProviderMethod.addParameter({
+          name: 'props',
+          type: this.propsType,
+        });
+        getOrCreateProviderMethod.addBody(
+          stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`')),
+          stmt.constVar(expr.ident('stack'), expr.directCode('Stack.of(scope)')),
+          stmt.ret(expr.ident('provider')),
+        );
+
+        CdkHandlerFrameworkConstructor.forCdkCustomResourceProvider(this);
       }
     })();
   }
