@@ -1,6 +1,4 @@
-import * as path from 'path';
-import { Module, TypeScriptRenderer } from '@cdklabs/typewriter';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { ExternalModule, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { CdkHandlerClassProps, CdkHandlerFrameworkClass } from './classes';
 
@@ -46,11 +44,6 @@ export interface ComponentDefinition {
   readonly codeDirectory: string;
 
   /**
-   * Runtimes that are compatible with the source code.
-   */
-  readonly compatibleRuntimes: Runtime[];
-
-  /**
    * The name of the method within your code that Lambda calls to execute your function.
    *
    * @default 'index.handler'
@@ -63,12 +56,19 @@ export interface ComponentDefinition {
   readonly providerOptions?: any;
 }
 
-export class CdkHandlerFramework {
+export class CdkHandlerFramework extends Module {
   /**
-   * Generate framework using component definitions.
+   * Build a framework module with specified components.
    */
-  public static generate(outputFileLocation: string, components: ComponentDefinition[]) {
-    const module = new Module('cdk-handler-framework');
+  public static build(components: ComponentDefinition[]) {
+    return new CdkHandlerFramework(components);
+  }
+
+  private readonly renderer = new TypeScriptRenderer();
+  private readonly constructs = new Map<string, ExternalModule>();
+
+  private constructor(components: ComponentDefinition[]) {
+    super('cdk-handler-framework');
 
     for (let component of components) {
       const props: CdkHandlerClassProps = {
@@ -77,29 +77,34 @@ export class CdkHandlerFramework {
         entrypoint: component.entrypoint,
       };
 
+      let _class: CdkHandlerFrameworkClass;
       switch (component.type) {
         case ComponentType.CDK_FUNCTION: {
-          CdkHandlerFrameworkClass.buildCdkFunction(module, props);
+          _class = CdkHandlerFrameworkClass.buildCdkFunction(this, props);
           break;
         }
         case ComponentType.CDK_SINGLETON_FUNCTION: {
-          CdkHandlerFrameworkClass.buildCdkSingletonFunction(module, props);
+          _class = CdkHandlerFrameworkClass.buildCdkSingletonFunction(this, props);
           break;
         }
         case ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER: {
-          CdkHandlerFrameworkClass.buildCdkCustomResourceProvider(module, props);
+          _class = CdkHandlerFrameworkClass.buildCdkCustomResourceProvider(this, props);
           break;
         }
       }
-    }
 
-    fs.outputFileSync(
-      `${path.join(__dirname, outputFileLocation)}/index.generated.ts`,
-      CdkHandlerFramework.renderer.render(module),
-    );
+      for (const [construct, module] of Object.entries(_class.constructs)) {
+        if (!this.constructs.has(construct)) {
+          this.constructs.set(construct, module);
+        }
+      }
+    }
   }
 
-  private static readonly renderer = new TypeScriptRenderer();
-
-  private constructor() {}
+  /**
+   * Render built framework into an output file.
+   */
+  public render(outputFileLocation: string) {
+    fs.outputFileSync(`${outputFileLocation}.generated.ts`, this.renderer.render(this));
+  }
 }

@@ -48,7 +48,7 @@ export class CdkHandlerFrameworkConstructor {
     // build CdkHandler instance
     init.addBody(
       stmt.constVar(
-        expr.directCode('cdkHandlerProps: CdkHandlerProps'),
+        expr.directCode('cdkHandlerProps: handler.CdkHandlerProps'),
         expr.object({
           codeDirectory: expr.lit(`${_class.codeDirectory}`),
           entrypoint: _class.entrypoint
@@ -60,7 +60,7 @@ export class CdkHandlerFrameworkConstructor {
     init.addBody(
       stmt.constVar(
         expr.ident('cdkHandler'),
-        expr.directCode("new CdkHandler(scope, 'Handler', cdkHandlerProps)"),
+        expr.directCode("new handler.CdkHandler(scope, 'Handler', cdkHandlerProps)"),
       ),
     );
 

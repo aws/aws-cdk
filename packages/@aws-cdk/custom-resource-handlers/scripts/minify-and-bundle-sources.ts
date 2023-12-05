@@ -1,8 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
+import { config } from '../lib/handler-framework/config';
+import { CdkHandlerFramework, ComponentDefinition } from '../lib/handler-framework/framework';
 
+const framework: { [outputFileLocation: string]: ComponentDefinition[] } = {};
 const entryPoints: string[] = [];
+
 function recFolderStructure(fileOrDir: string) {
   if (fs.statSync(fileOrDir).isDirectory()) {
     const items = fs.readdirSync(fileOrDir);
@@ -73,6 +77,12 @@ async function main() {
     }
   }
 
+  recurse(config, []);
+  for (const [outputFileLocation, components] of Object.entries(framework)) {
+    const module = CdkHandlerFramework.build(components);
+    module.render(outputFileLocation);
+  }
+
   function calculateOutfile(file: string) {
     // turn ts extension into js extension
     if (file.includes('index.ts')) {
@@ -84,6 +94,21 @@ async function main() {
     fileContents[fileContents.lastIndexOf('lib')] = 'dist';
 
     return fileContents.join(path.sep);
+  }
+
+  function recurse(_config: any, _path: string[]) {
+    if (_config instanceof Array) {
+      const outputFileLocation = path.join('/');
+      framework[outputFileLocation] = _config;
+      return;
+    }
+    for (const key in _config) {
+      if (_config.hasOwnProperty(key) && typeof _config[key] === 'object') {
+        _path.push(key);
+        recurse(_config[key], _path);
+        _path.pop(); // backtrack
+      }
+    }
   }
 }
 

@@ -45,6 +45,7 @@
     "@aws-sdk/client-eks": "3.421.0",
     "@aws-sdk/client-sts": "3.421.0",
     "@aws-sdk/node-http-handler": "^3.370.0",
+    "@cdklabs/typewriter": "^0.0.3",
     "@smithy/util-stream": "^2.0.20",
     "@types/jest": "^29.5.8",
     "aws-sdk-client-mock": "^3.0.0",
@@ -62,6 +63,7 @@
     "@aws-sdk/client-synthetics": "3.421.0",
     "@aws-sdk/client-ecr": "3.421.0",
     "@aws-sdk/client-s3": "3.421.0",
+    "@cdklabs/typewriter": "^0.0.3",
     "aws-sdk": "^2.1498.0"
   },
   "repository": {

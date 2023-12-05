@@ -1,4 +1,4 @@
-import { Module, ClassType, stmt, expr, Type } from '@cdklabs/typewriter';
+import { Module, ClassType, stmt, expr, Type, ExternalModule } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkConstructor } from './constructors';
 import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
 
@@ -33,18 +33,25 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
     return new (class CdkFunction extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
+      public readonly constructs: { [construct: string]: ExternalModule } = {
+        Construct: CONSTRUCTS_MODULE,
+        CdkHandlerProps: CDK_HANDLER_MODULE,
+        CdkHandler: CDK_HANDLER_MODULE,
+        Function: LAMBDA_MODULE,
+      };
 
       public constructor() {
         super(scope, {
           name: props.className,
           extends: LAMBDA_MODULE.Function,
+          export: true,
         });
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
 
-        CONSTRUCTS_MODULE.importSelective(scope, ['Construct']),
-        CDK_HANDLER_MODULE.importSelective(scope, ['CdkHandlerProps', 'CdkHandler']),
-        LAMBDA_MODULE.importSelective(scope, ['Function']),
+        CONSTRUCTS_MODULE.import(scope, 'constructs');
+        CDK_HANDLER_MODULE.import(scope, 'handler');
+        LAMBDA_MODULE.import(scope, 'lambda');
 
         CdkHandlerFrameworkConstructor.forCdkFunction(this);
       }
@@ -58,18 +65,25 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
     return new (class CdkSingletonFunction extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
+      public readonly constructs: { [construct: string]: ExternalModule } = {
+        Construct: CONSTRUCTS_MODULE,
+        CdkHandlerProps: CDK_HANDLER_MODULE,
+        CdkHandler: CDK_HANDLER_MODULE,
+        SingletonFunction: LAMBDA_MODULE,
+      };
 
       public constructor() {
         super(scope, {
           name: props.className,
           extends: LAMBDA_MODULE.SingletonFunction,
+          export: true,
         });
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
 
-        CONSTRUCTS_MODULE.importSelective(scope, ['Construct']);
-        CDK_HANDLER_MODULE.importSelective(scope, ['CdkHandlerProps', 'CdkHandler']);
-        LAMBDA_MODULE.importSelective(scope, ['SingletonFunction']);
+        CONSTRUCTS_MODULE.import(scope, 'constructs');
+        CDK_HANDLER_MODULE.import(scope, 'handler');
+        LAMBDA_MODULE.import(scope, 'lambda');
 
         CdkHandlerFrameworkConstructor.forCdkFunction(this);
       }
@@ -83,18 +97,25 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
     return new (class CdkCustomResourceProvider extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
+      public readonly constructs: { [construct: string]: ExternalModule } = {
+        Construct: CONSTRUCTS_MODULE,
+        CdkHandlerProps: CDK_HANDLER_MODULE,
+        CdkHandler: CDK_HANDLER_MODULE,
+        CustomResourceProviderBase: CORE_MODULE,
+      };
 
       public constructor() {
         super(scope, {
           name: props.className,
           extends: CORE_MODULE.CustomResourceProviderBase,
+          export: true,
         });
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
 
-        CONSTRUCTS_MODULE.importSelective(scope, ['Construct']);
-        CDK_HANDLER_MODULE.importSelective(scope, ['CdkHandlerProps', 'CdkHandler']);
-        CORE_MODULE.importSelective(scope, ['CustomResourceProviderBase']);
+        CONSTRUCTS_MODULE.import(scope, 'constructs');
+        CDK_HANDLER_MODULE.import(scope, 'handler');
+        CORE_MODULE.import(scope, 'core');
 
         const getOrCreateMethod = this.addMethod({
           name: 'getOrCreate',
@@ -154,4 +175,10 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
    * The name of the method within your code that Lambda calls to execute your function.
    */
   public abstract readonly entrypoint: string;
+
+  /**
+   * A map representing the constructs this class depends on and the external module that the
+   * consruct can be imported from.
+   */
+  public abstract readonly constructs: { [construct: string]: ExternalModule };
 }
