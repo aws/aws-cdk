@@ -327,6 +327,13 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   }
 
   /**
+   * The deployed root URL of this REST API.
+   */
+  public get url() {
+    return this.urlForPath();
+  }
+
+  /**
    * The ID of this API Gateway RestApi.
    */
   public abstract readonly restApiId: string;
@@ -835,13 +842,6 @@ export class RestApi extends RestApiBase {
     this.restApiRootResourceId = resource.attrRootResourceId;
 
     this.node.addValidation({ validate: () => this.validateRestApi() });
-  }
-
-  /**
-   * The deployed root URL of this REST API.
-   */
-  public get url() {
-    return this.urlForPath();
   }
 
   /**
