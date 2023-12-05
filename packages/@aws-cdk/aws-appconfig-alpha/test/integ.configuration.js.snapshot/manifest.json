@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "aws-appconfig-configuration.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-appconfig-configuration.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/76b9cabe996a7bad89a83038f1c4375968b6a16e8f5f1e2ce353b667d8576cbe.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6ee0190db59f43253bdcd852c99b5c2229188185876571206fbdcab150ea4786.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -49,6 +50,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyAppConfigHostedEnvFromJson9E6E36C4"
+          }
+        ],
+        "/aws-appconfig-configuration/MyAppConfig/HostedEnvFromYaml/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAppConfigHostedEnvFromYaml82D3D1B2"
           }
         ],
         "/aws-appconfig-configuration/MyAppConfig/ParameterEnv/Resource": [
@@ -87,6 +94,24 @@
             "data": "MyDeployStrategy062CAEA2"
           }
         ],
+        "/aws-appconfig-configuration/MyHostedConfigFromFile/DeploymentStrategy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromFileDeploymentStrategyCAF37A7C"
+          }
+        ],
+        "/aws-appconfig-configuration/MyHostedConfigFromFile/ConfigurationProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromFileConfigurationProfile32B2D26F"
+          }
+        ],
+        "/aws-appconfig-configuration/MyHostedConfigFromFile/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromFile943CF9F9"
+          }
+        ],
         "/aws-appconfig-configuration/MyHostedConfig/ConfigurationProfile": [
           {
             "type": "aws:cdk:logicalId",
@@ -121,6 +146,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyHostedConfigFromJsonDeploymentCD82E3049E374"
+          }
+        ],
+        "/aws-appconfig-configuration/MyHostedConfigFromYaml/ConfigurationProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromYamlConfigurationProfile7C77A435"
+          }
+        ],
+        "/aws-appconfig-configuration/MyHostedConfigFromYaml/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromYaml13C5BE35"
+          }
+        ],
+        "/aws-appconfig-configuration/MyHostedConfigFromYaml/DeploymentFE962": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromYamlDeploymentFE9624CBE5FC6"
           }
         ],
         "/aws-appconfig-configuration/MyValidatorFunction/ServiceRole/Resource": [
@@ -403,6 +446,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "appconfigconfigurationDefaultTestDeployAssert6752CD38.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

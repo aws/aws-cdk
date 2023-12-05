@@ -105,7 +105,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
@@ -232,6 +231,9 @@
    "ap-south-1": {
     "FirehoseCidrBlock": "13.232.67.32/27"
    },
+   "ap-south-2": {
+    "FirehoseCidrBlock": "18.60.192.128/27"
+   },
    "ap-southeast-1": {
     "FirehoseCidrBlock": "13.228.64.192/27"
    },
@@ -256,11 +258,17 @@
    "eu-central-1": {
     "FirehoseCidrBlock": "35.158.127.160/27"
    },
+   "eu-central-2": {
+    "FirehoseCidrBlock": "16.62.183.32/27"
+   },
    "eu-north-1": {
     "FirehoseCidrBlock": "13.53.63.224/27"
    },
    "eu-south-1": {
     "FirehoseCidrBlock": "15.161.135.128/27"
+   },
+   "eu-south-2": {
+    "FirehoseCidrBlock": "18.100.71.96/27"
    },
    "eu-west-1": {
     "FirehoseCidrBlock": "52.19.239.192/27"

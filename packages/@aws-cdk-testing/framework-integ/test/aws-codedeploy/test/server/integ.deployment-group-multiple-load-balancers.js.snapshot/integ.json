@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "ServerDeploymentGroupMultipleLB/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codedeploy-server-dg-multi-lb"
+      ],
+      "assertionStack": "ServerDeploymentGroupMultipleLB/DefaultTest/DeployAssert",
+      "assertionStackName": "ServerDeploymentGroupMultipleLBDefaultTestDeployAssertC00E0E7C"
+    }
+  }
+}

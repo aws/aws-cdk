@@ -24,6 +24,15 @@
     "Name": "awsappconfigconfiguration-MyAppConfig-HostedEnvFromJson-140D2DDD"
    }
   },
+  "MyAppConfigHostedEnvFromYaml82D3D1B2": {
+   "Type": "AWS::AppConfig::Environment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "Name": "awsappconfigconfiguration-MyAppConfig-HostedEnvFromYaml-BB2C802A"
+   }
+  },
   "MyAppConfigParameterEnvD769FB19": {
    "Type": "AWS::AppConfig::Environment",
    "Properties": {
@@ -79,6 +88,42 @@
     "ReplicateTo": "NONE"
    }
   },
+  "MyHostedConfigFromFileDeploymentStrategyCAF37A7C": {
+   "Type": "AWS::AppConfig::DeploymentStrategy",
+   "Properties": {
+    "DeploymentDurationInMinutes": 20,
+    "FinalBakeTimeInMinutes": 10,
+    "GrowthFactor": 10,
+    "GrowthType": "EXPONENTIAL",
+    "Name": "awsappconfigconfiguration-MyFromFile-DeploymentStrategy-C2367737",
+    "ReplicateTo": "NONE"
+   }
+  },
+  "MyHostedConfigFromFileConfigurationProfile32B2D26F": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "LocationUri": "hosted",
+    "Name": "awsappconfigconfiguration-MyHostedConfigFromFile-8ED1123C"
+   }
+  },
+  "MyHostedConfigFromFile943CF9F9": {
+   "Type": "AWS::AppConfig::HostedConfigurationVersion",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigFromFileConfigurationProfile32B2D26F"
+    },
+    "Content": "{\n  \"content\": \"This is the configuration content\"\n}",
+    "ContentType": "application/json"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "MyHostedConfigConfigurationProfile2E1A2BBC": {
    "Type": "AWS::AppConfig::ConfigurationProfile",
    "Properties": {
@@ -88,6 +133,10 @@
     "LocationUri": "hosted",
     "Name": "awsappconfigconfiguration-MyHostedConfig-4CF350AE",
     "Validators": [
+     {
+      "Content": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"string\"\n}",
+      "Type": "JSON_SCHEMA"
+     },
      {
       "Content": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"string\"\n}",
       "Type": "JSON_SCHEMA"
@@ -172,6 +221,51 @@
     },
     "EnvironmentId": {
      "Ref": "MyAppConfigHostedEnvFromJson9E6E36C4"
+    }
+   }
+  },
+  "MyHostedConfigFromYamlConfigurationProfile7C77A435": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "LocationUri": "hosted",
+    "Name": "awsappconfigconfiguration-MyHostedConfigFromYaml-87E9786A"
+   }
+  },
+  "MyHostedConfigFromYaml13C5BE35": {
+   "Type": "AWS::AppConfig::HostedConfigurationVersion",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigFromYamlConfigurationProfile7C77A435"
+    },
+    "Content": "This is the configuration content",
+    "ContentType": "application/x-yaml"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyHostedConfigFromYamlDeploymentFE9624CBE5FC6": {
+   "Type": "AWS::AppConfig::Deployment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigFromYamlConfigurationProfile7C77A435"
+    },
+    "ConfigurationVersion": {
+     "Ref": "MyHostedConfigFromYaml13C5BE35"
+    },
+    "DeploymentStrategyId": {
+     "Ref": "MyDeployStrategy062CAEA2"
+    },
+    "EnvironmentId": {
+     "Ref": "MyAppConfigHostedEnvFromYaml82D3D1B2"
     }
    }
   },
@@ -511,7 +605,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
+     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -590,7 +684,6 @@
        "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -634,7 +727,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
@@ -684,7 +776,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
+     "S3Key": "e976a796f036a5efbf44b99e44cfb5a961df08d8dbf7cd37e60bf216fb982a00.zip"
     },
     "Environment": {
      "Variables": {
@@ -1239,7 +1331,6 @@
         "s3:DeleteObject*",
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*",
         "s3:PutObject",
         "s3:PutObjectLegalHold",
@@ -1453,7 +1544,6 @@
        "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*"
        ],
        "Effect": "Allow",
@@ -1615,7 +1705,6 @@
        "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
-        "s3:HeadObject",
         "s3:List*"
        ],
        "Effect": "Allow",

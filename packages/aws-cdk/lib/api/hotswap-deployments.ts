@@ -6,10 +6,10 @@ import { DeployStackResult } from './deploy-stack';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
-import { ICON, ChangeHotswapResult, HotswapMode, HotswappableChange, NonHotswappableChange, HotswappableChangeCandidate, ClassifiedResourceChanges, reportNonHotswappableChange } from './hotswap/common';
+import { ICON, ChangeHotswapResult, HotswapMode, HotswappableChange, NonHotswappableChange, HotswappableChangeCandidate, ClassifiedResourceChanges, reportNonHotswappableChange, reportNonHotswappableResource } from './hotswap/common';
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
-import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
+import { skipChangeForS3DeployCustomResourcePolicy, isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { loadCurrentTemplateWithNestedStacks, NestedStackNames } from './nested-stack-helpers';
 import { CloudFormationStack } from './util/cloudformation';
@@ -19,7 +19,7 @@ type HotswapDetector = (
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate
 ) => Promise<ChangeHotswapResult>;
 
-const RESOURCE_DETECTORS: { [key:string]: HotswapDetector } = {
+const RESOURCE_DETECTORS: { [key: string]: HotswapDetector } = {
   // Lambda
   'AWS::Lambda::Function': isHotswappableLambdaFunctionChange,
   'AWS::Lambda::Version': isHotswappableLambdaFunctionChange,
@@ -29,12 +29,22 @@ const RESOURCE_DETECTORS: { [key:string]: HotswapDetector } = {
   'AWS::AppSync::Resolver': isHotswappableAppSyncChange,
   'AWS::AppSync::FunctionConfiguration': isHotswappableAppSyncChange,
   'AWS::AppSync::GraphQLSchema': isHotswappableAppSyncChange,
+  'AWS::AppSync::ApiKey': isHotswappableAppSyncChange,
 
   'AWS::ECS::TaskDefinition': isHotswappableEcsServiceChange,
   'AWS::CodeBuild::Project': isHotswappableCodeBuildProjectChange,
   'AWS::StepFunctions::StateMachine': isHotswappableStateMachineChange,
   'Custom::CDKBucketDeployment': isHotswappableS3BucketDeploymentChange,
-  'AWS::IAM::Policy': isHotswappableS3BucketDeploymentChange,
+  'AWS::IAM::Policy': async (
+    logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  ): Promise<ChangeHotswapResult> => {
+    // If the policy is for a S3BucketDeploymentChange, we can ignore the change
+    if (await skipChangeForS3DeployCustomResourcePolicy(logicalId, change, evaluateCfnTemplate)) {
+      return [];
+    }
+
+    return reportNonHotswappableResource(change, 'This resource type is not supported for hotswap deployments');
+  },
 
   'AWS::CDK::Metadata': async () => [],
 };
@@ -247,8 +257,8 @@ async function findNestedHotswappableChanges(
 /** Returns 'true' if a pair of changes is for the same resource. */
 function changesAreForSameResource(oldChange: cfn_diff.ResourceDifference, newChange: cfn_diff.ResourceDifference): boolean {
   return oldChange.oldResourceType === newChange.newResourceType &&
-      // this isn't great, but I don't want to bring in something like underscore just for this comparison
-      JSON.stringify(oldChange.oldProperties) === JSON.stringify(newChange.newProperties);
+    // this isn't great, but I don't want to bring in something like underscore just for this comparison
+    JSON.stringify(oldChange.oldProperties) === JSON.stringify(newChange.newProperties);
 }
 
 function makeRenameDifference(
@@ -371,7 +381,7 @@ function logNonHotswappableChanges(nonHotswappableChanges: NonHotswappableChange
 
   for (const change of nonHotswappableChanges) {
     change.rejectedChanges.length > 0 ?
-      print('    logicalID: %s, type: %s, rejected changes: %s, reason: %s', chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.bold(change.rejectedChanges), chalk.red(change.reason)):
+      print('    logicalID: %s, type: %s, rejected changes: %s, reason: %s', chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.bold(change.rejectedChanges), chalk.red(change.reason)) :
       print('    logicalID: %s, type: %s, reason: %s', chalk.bold(change.logicalId), chalk.bold(change.resourceType), chalk.red(change.reason));
   }
 

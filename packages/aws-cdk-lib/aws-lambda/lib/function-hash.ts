@@ -69,9 +69,11 @@ export const VERSION_LOCKED: { [key: string]: boolean } = {
   Timeout: true,
   TracingConfig: true,
   VpcConfig: true,
+  LoggingConfig: true,
 
   // not locked to the version
   CodeSigningConfigArn: false,
+  Policy: true,
   ReservedConcurrentExecutions: false,
   Tags: false,
 };

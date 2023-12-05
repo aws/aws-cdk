@@ -393,7 +393,6 @@ describe('default properties', () => {
                   'Action': [
                     's3:GetObject*',
                     's3:GetBucket*',
-                    's3:HeadObject',
                     's3:List*',
                   ],
                   'Effect': 'Allow',
@@ -1615,7 +1614,25 @@ test('using ComputeType.Small with a Windows image fails validation', () => {
       }),
       environment: invalidEnvironment,
     });
-  }).toThrow(/Windows images do not support the Small ComputeType/);
+  }).toThrow(/Windows images do not support the 'BUILD_GENERAL1_SMALL' compute type/);
+});
+
+test('using ComputeType.X2Large with a Windows image fails validation', () => {
+  const stack = new cdk.Stack();
+  const invalidEnvironment: codebuild.BuildEnvironment = {
+    buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
+    computeType: codebuild.ComputeType.X2_LARGE,
+  };
+
+  expect(() => {
+    new codebuild.Project(stack, 'MyProject', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'MyBucket'),
+        path: 'path',
+      }),
+      environment: invalidEnvironment,
+    });
+  }).toThrow(/Windows images do not support the 'BUILD_GENERAL1_2XLARGE' compute type/);
 });
 
 test('fromCodebuildImage', () => {

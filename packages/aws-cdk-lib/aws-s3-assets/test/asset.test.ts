@@ -131,7 +131,7 @@ test('"readers" or "grantRead" can be used to grant read permissions on the asse
       Version: '2012-10-17',
       Statement: [
         {
-          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:HeadObject', 's3:List*'],
+          Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
           Effect: 'Allow',
           Resource: [
             { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':s3:::', { Ref: 'AssetParameters6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2S3Bucket50B5A10B' }]] },

@@ -1074,8 +1074,10 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
     // using scripts/align-version.sh
     const expectedVersion = require(path.join(monoRepoRoot(), 'package.json')).version; // eslint-disable-line @typescript-eslint/no-require-imports
     const ignore = [
+      '@aws-cdk/aws-service-spec',
+      '@aws-cdk/service-spec-importers',
+      '@aws-cdk/service-spec-types',
       '@aws-cdk/cloudformation-diff',
-      '@aws-cdk/cfnspec',
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
       '@aws-cdk/region-info',
@@ -1301,6 +1303,24 @@ export class NoStarDeps extends ValidationRule {
   }
 }
 
+export class NoMixedDeps extends ValidationRule {
+  public readonly name = 'dependencies/no-mixed-deps';
+
+  public validate(pkg: PackageJson) {
+    const deps = Object.keys(pkg.json.dependencies ?? {});
+    const devDeps = Object.keys(pkg.json.devDependencies ?? {});
+
+    const shared = deps.filter((dep) => devDeps.includes(dep));
+    for (const dep of shared) {
+      pkg.report({
+        ruleName: this.name,
+        message: `dependency may not be both in dependencies and devDependencies: ${dep}`,
+        fix: () => pkg.removeDevDependency(dep),
+      });
+    }
+  }
+}
+
 interface VersionCount {
   version: string;
   count: number;
@@ -1391,18 +1411,6 @@ export class AwsLint extends ValidationRule {
     }
 
     expectJSON(this.name, pkg, 'scripts.awslint', 'cdk-awslint');
-  }
-}
-
-export class Cfn2Ts extends ValidationRule {
-  public readonly name = 'cfn2ts';
-
-  public validate(pkg: PackageJson) {
-    if (!isJSII(pkg) || !isAWS(pkg)) {
-      return expectJSON(this.name, pkg, 'scripts.cfn2ts', undefined);
-    }
-
-    expectJSON(this.name, pkg, 'scripts.cfn2ts', 'cfn2ts');
   }
 }
 
@@ -1669,7 +1677,6 @@ export class UbergenPackageVisibility extends ValidationRule {
   // The ONLY (non-alpha) packages that should be published for v2.
   // These include dependencies of the CDK CLI (aws-cdk).
   private readonly v2PublicPackages = [
-    '@aws-cdk/cfnspec',
     '@aws-cdk/cloud-assembly-schema',
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
