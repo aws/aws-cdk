@@ -613,7 +613,7 @@ describe('destroy', () => {
         force: true,
         fromDeploy: true,
       });
-    }).rejects.toThrowError('Cannot run cdk destroy on stack(s) Test-Stack-A/Test-Stack-C, Test-Stack-X, Test-Stack-Y. Test-Stack-X, Test-Stack-Y not exist.');
+    }).rejects.toThrowError('Cannot run cdk destroy on stack(s). Test-Stack-X, Test-Stack-Y do not exist.');
   });
 });
 
