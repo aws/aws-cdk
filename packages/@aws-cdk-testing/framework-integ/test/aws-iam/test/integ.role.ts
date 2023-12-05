@@ -16,6 +16,10 @@ const policy = new Policy(stack, 'HelloPolicy', { policyName: 'Default' });
 policy.addStatements(new PolicyStatement({ actions: ['ec2:*'], resources: ['*'] }));
 policy.attachToRole(role);
 
+// Idempotent with imported roles, see https://github.com/aws/aws-cdk/issues/28101
+const importedRole = Role.fromRoleArn(stack, 'TestImportedRole', role.roleArn);
+policy.attachToRole(importedRole);
+
 // Role with an external ID
 new Role(stack, 'TestRole2', {
   assumedBy: new AccountRootPrincipal(),
