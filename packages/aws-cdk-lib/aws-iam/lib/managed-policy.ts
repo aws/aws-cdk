@@ -282,7 +282,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    * Attaches this policy to a user.
    */
   public attachToUser(user: IUser) {
-    if (this.users.find(u => u === user)) { return; }
+    if (this.users.find(u => u.userArn === user.userArn)) { return; }
     this.users.push(user);
   }
 
@@ -290,7 +290,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    * Attaches this policy to a role.
    */
   public attachToRole(role: IRole) {
-    if (this.roles.find(r => r === role)) { return; }
+    if (this.roles.find(r => r.roleArn === role.roleArn)) { return; }
     this.roles.push(role);
   }
 
@@ -298,7 +298,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
    * Attaches this policy to a group.
    */
   public attachToGroup(group: IGroup) {
-    if (this.groups.find(g => g === group)) { return; }
+    if (this.groups.find(g => g.groupArn === group.groupArn)) { return; }
     this.groups.push(group);
   }
 

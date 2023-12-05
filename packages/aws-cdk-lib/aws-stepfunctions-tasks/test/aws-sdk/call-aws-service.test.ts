@@ -289,3 +289,31 @@ test('IAM policy for cloudwatchlogs', () => {
     },
   });
 });
+
+test('IAM policy for mwaa', () => {
+  // WHEN
+  const task = new tasks.CallAwsService(stack, 'ListMWAAEnvironments', {
+    service: 'mwaa',
+    action: 'listEnvironments',
+    resultPath: sfn.JsonPath.DISCARD,
+    iamResources: ['*'],
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'airflow:listEnvironments',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});

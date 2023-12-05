@@ -1,0 +1,13 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "integrationtest-kinesis-stream-put-record/DefaultTest": {
+      "stacks": [
+        "aws-cdk-scheduler-targets-kinesis-stream-put-record"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert",
+      "assertionStackName": "integrationtestkinesisstreamputrecordDefaultTestDeployAssert6B5E163F"
+    }
+  }
+}

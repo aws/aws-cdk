@@ -93,7 +93,7 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 
 You can define hosted configuration content using any of the following ConfigurationContent methods:
 
-* `fromFile` - Defines the hosted configuration content from a file.
+* `fromFile` - Defines the hosted configuration content from a file (you can specify a relative path).
 * `fromInlineText` - Defines the hosted configuration from inline text.
 * `fromInlineJson` - Defines the hosted configuration from inline JSON.
 * `fromInlineYaml` - Defines the hosted configuration from inline YAML.
@@ -120,6 +120,8 @@ When you create a configuration and configuration profile, you can specify up to
 configuration data is syntactically and semantically correct. You can create validators in either JSON Schema or as an AWS 
 Lambda function.
 See [About validators](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-configuration-and-profile.html#appconfig-creating-configuration-and-profile-validators) for more information.
+
+When you import a JSON Schema validator from a file, you can pass in a relative path.
 
 A hosted configuration with validators:
 
@@ -354,11 +356,13 @@ Basic environment with monitors:
 ```ts
 declare const application: appconfig.Application;
 declare const alarm: cloudwatch.Alarm;
+declare const compositeAlarm: cloudwatch.CompositeAlarm;
 
 new appconfig.Environment(this, 'MyEnvironment', {
   application,
   monitors: [
     appconfig.Monitor.fromCloudWatchAlarm(alarm),
+    appconfig.Monitor.fromCloudWatchAlarm(compositeAlarm),
   ],
 });
 ```

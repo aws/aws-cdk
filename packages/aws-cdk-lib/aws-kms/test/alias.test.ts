@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { ArnPrincipal, PolicyStatement } from '../../aws-iam';
-import { App, Aws, CfnOutput, Stack } from '../../core';
+import { App, Arn, Aws, CfnOutput, Stack } from '../../core';
 import { KMS_ALIAS_NAME_REF } from '../../cx-api';
 import { Alias } from '../lib/alias';
 import { IKey, Key } from '../lib/key';
@@ -355,6 +355,30 @@ test('does not add alias if starts with token', () => {
       ],
     },
   });
+});
+
+test('aliasArn and keyArn from alias should match', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Test');
+  const key = new Key(stack, 'Key');
+
+  const alias = new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
+
+  expect(alias.aliasArn).toEqual(alias.keyArn);
+});
+
+test('aliasArn should be a valid ARN', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Test');
+  const key = new Key(stack, 'Key');
+
+  const alias = new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
+
+  expect(alias.aliasArn).toEqual(Arn.format({
+    service: 'kms',
+    // aliasName already contains the '/'
+    resource: alias.aliasName,
+  }, stack));
 });
 
 class AliasOutputsConstruct extends Construct {

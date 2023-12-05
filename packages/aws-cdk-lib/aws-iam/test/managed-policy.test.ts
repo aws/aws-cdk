@@ -284,6 +284,63 @@ describe('managed policy', () => {
     });
   });
 
+  test('idempotent if an imported principal (user/group/role) is attached twice', () => {
+    const p = new ManagedPolicy(stack, 'MyManagedPolicy');
+    p.addStatements(new PolicyStatement({ actions: ['*'], resources: ['*'] }));
+
+    const user = new User(stack, 'MyUser');
+    const importedUser = User.fromUserArn(stack, 'MyImportedUser', user.userArn);
+    p.attachToUser(user);
+    p.attachToUser(importedUser);
+
+    const group = new Group(stack, 'MyGroup');
+    const importedGroup = Group.fromGroupArn(stack, 'MyImportedGroup', group.groupArn);
+    p.attachToGroup(group);
+    p.attachToGroup(importedGroup);
+
+    const role = new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('test.service'),
+    });
+    const importedRole = Role.fromRoleArn(stack, 'MyImportedRole', role.roleArn);
+    p.attachToRole(role);
+    p.attachToRole(importedRole);
+
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        MyManagedPolicy9F3720AE: {
+          Type: 'AWS::IAM::ManagedPolicy',
+          Properties: {
+            PolicyDocument: {
+              Statement: [{ Action: '*', Effect: 'Allow', Resource: '*' }],
+              Version: '2012-10-17',
+            },
+            Description: '',
+            Path: '/',
+            Users: [{ Ref: 'MyUserDC45028B' }],
+            Groups: [{ Ref: 'MyGroupCBA54B1B' }],
+            Roles: [{ Ref: 'MyRoleF48FFE04' }],
+          },
+        },
+        MyUserDC45028B: { Type: 'AWS::IAM::User' },
+        MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
+        MyRoleF48FFE04: {
+          Type: 'AWS::IAM::Role',
+          Properties: {
+            AssumeRolePolicyDocument: {
+              Statement:
+                [{
+                  Action: 'sts:AssumeRole',
+                  Effect: 'Allow',
+                  Principal: { Service: 'test.service' },
+                }],
+              Version: '2012-10-17',
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('users, groups, roles and permissions can be added using methods', () => {
     const p = new ManagedPolicy(stack, 'MyManagedPolicy', {
       managedPolicyName: 'Foo',
