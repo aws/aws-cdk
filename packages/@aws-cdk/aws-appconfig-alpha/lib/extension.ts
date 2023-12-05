@@ -75,6 +75,12 @@ export class LambdaDestination implements IEventDestination {
     this.policyDocument = new iam.PolicyDocument({
       statements: [policy],
     });
+
+    if (!func.permissionsNode.tryFindChild('AppConfigPermission')) {
+      func.addPermission('AppConfigPermission', {
+        principal: new iam.ServicePrincipal('appconfig.amazonaws.com'),
+      });
+    }
   }
 }
 
@@ -500,21 +506,19 @@ export class Extension extends Resource implements IExtension {
     this.parameters = props.parameters;
 
     const resource = new CfnExtension(this, 'Resource', {
-      actions: this.actions.reduce((acc: {[key: string]: {[key: string]: string}[]}, cur: Action) => {
+      actions: this.actions.reduce((acc: {[key: string]: {[key: string]: string}[]}, cur: Action, index) => {
         const extensionUri = cur.eventDestination.extensionUri;
         const sourceType = cur.eventDestination.type;
         this.executionRole = cur.executionRole;
+        const name = cur.name ?? `${this.name}-${index}`;
         cur.actionPoints.forEach((actionPoint) => {
           acc[actionPoint] = [
             {
-              Name: cur.name || Names.uniqueResourceName(this, {
-                maxLength: 64,
-                separator: '-',
-              }),
+              Name: name,
               Uri: extensionUri,
               ...(sourceType === SourceType.EVENTS || cur.invokeWithoutExecutionRole
                 ? {}
-                : { RoleArn: this.executionRole?.roleArn || this.getExecutionRole(cur.eventDestination).roleArn }),
+                : { RoleArn: this.executionRole?.roleArn || this.getExecutionRole(cur.eventDestination, name).roleArn }),
               ...(cur.description ? { Description: cur.description } : {}),
             },
           ];
@@ -543,8 +547,10 @@ export class Extension extends Resource implements IExtension {
     });
   }
 
-  private getExecutionRole(eventDestination: IEventDestination): iam.IRole {
-    this.executionRole = new iam.Role(this, `Role${getHash(eventDestination.extensionUri)}`, {
+  private getExecutionRole(eventDestination: IEventDestination, actionName: string): iam.IRole {
+    const versionNumber = this.latestVersionNumber ? this.latestVersionNumber + 1 : 1;
+    const combinedObjects = stringifyObjects(this.name, versionNumber, actionName);
+    this.executionRole = new iam.Role(this, `Role${getHash(combinedObjects)}`, {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
       inlinePolicies: {
@@ -658,7 +664,12 @@ export class ExtensibleBase implements IExtensible {
   }
 
   private getExtensionForActionPoint(eventDestination: IEventDestination, actionPoint: ActionPoint, options?: ExtensionOptions) {
-    const extension = new Extension(this.scope, `Extension${this.getExtensionHash(eventDestination, actionPoint, options)}`, {
+    const name = options?.name || Names.uniqueResourceName(this.scope, {
+      maxLength: 54,
+      separator: '-',
+    }) + '-Extension';
+    const versionNumber = options?.latestVersionNumber ? options?.latestVersionNumber + 1 : 1;
+    const extension = new Extension(this.scope, `Extension${this.getExtensionHash(name, versionNumber)}`, {
       actions: [
         new Action({
           eventDestination,
@@ -667,16 +678,17 @@ export class ExtensibleBase implements IExtensible {
           ],
         }),
       ],
+      name,
       ...(options?.description ? { description: options.description } : {}),
       ...(options?.latestVersionNumber ? { latestVersionNumber: options.latestVersionNumber } : {}),
-      ...(options?.name ? { name: options.name } : {}),
       ...(options?.parameters ? { parameters: options.parameters } : {}),
     });
     this.addExtensionAssociation(extension, options);
   }
 
   private addExtensionAssociation(extension: IExtension, options?: ExtensionOptions) {
-    new CfnExtensionAssociation(this.scope, `AssociationResource${this.getExtensionAssociationHash(extension)}`, {
+    const versionNumber = options?.latestVersionNumber ? options?.latestVersionNumber + 1 : 1;
+    new CfnExtensionAssociation(this.scope, `AssociationResource${this.getExtensionAssociationHash(extension.name!, versionNumber)}`, {
       extensionIdentifier: extension.extensionId,
       resourceIdentifier: this.resourceArn,
       extensionVersionNumber: extension.extensionVersionNumber,
@@ -689,14 +701,14 @@ export class ExtensibleBase implements IExtensible {
     });
   }
 
-  private getExtensionHash(eventDestination: IEventDestination, actionPoint: ActionPoint, options?: ExtensionOptions) {
-    const combinedString = stringifyObjects(eventDestination, actionPoint, options);
+  private getExtensionHash(name: string, versionNumber: number) {
+    const combinedString = stringifyObjects(name, versionNumber);
     return getHash(combinedString);
   }
 
-  private getExtensionAssociationHash(extension: IExtension) {
+  private getExtensionAssociationHash(name: string, versionNumber: number) {
     const resourceIdentifier = this.resourceName ? this.resourceName : this.resourceArn;
-    const combinedString = stringifyObjects(resourceIdentifier, extension.name, extension.extensionVersionNumber);
+    const combinedString = stringifyObjects(resourceIdentifier, name, versionNumber);
     return getHash(combinedString);
   }
 }
