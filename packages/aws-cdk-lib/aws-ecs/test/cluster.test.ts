@@ -2769,6 +2769,54 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
   }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
 });
 
+test('throws when InstanceWarmupPeriod is less than 0', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'test');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+  const autoScalingGroupAl2 = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+    vpc,
+    instanceType: new ec2.InstanceType('t2.micro'),
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  });
+
+  // THEN
+  expect(() => {
+    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2', {
+      autoScalingGroup: autoScalingGroupAl2,
+      instanceWarmupPeriod: -1,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProviderAl2);
+  }).toThrow(/InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: -1./);
+});
+
+test('throws when InstanceWarmupPeriod is greater than 10000', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'test');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+  const autoScalingGroupAl2 = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+    vpc,
+    instanceType: new ec2.InstanceType('t2.micro'),
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  });
+
+  // THEN
+  expect(() => {
+    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2', {
+      autoScalingGroup: autoScalingGroupAl2,
+      instanceWarmupPeriod: 99999,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProviderAl2);
+  }).toThrow(/InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: 99999./);
+});
+
 describe('Accessing container instance role', function () {
 
   const addUserDataMock = jest.fn();

@@ -2,6 +2,7 @@ import { App, Stack, Duration } from 'aws-cdk-lib';
 
 import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { IScheduleTarget, Schedule, ScheduleTargetConfig } from '../lib';
 import { ScheduleExpression } from '../lib/schedule-expression';
@@ -100,5 +101,31 @@ describe('Schedule', () => {
     expect(metric.dimensions).toBeUndefined();
     expect(metric.statistic).toEqual('Maximum');
     expect(metric.period).toEqual(Duration.minutes(1));
+  });
+
+  test('schedule can use customer managed KMS key', () => {
+    // GIVEN
+    const key = new kms.Key(stack, 'Key');
+
+    // WHEN
+    new Schedule(stack, 'TestSchedule', {
+      schedule: expr,
+      target: new SomeLambdaTarget(func, role),
+      key,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['kms:Decrypt', 'kms:Encrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*'],
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
   });
 });

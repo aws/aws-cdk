@@ -151,6 +151,30 @@ if (fn.timeout) {
 }
 ```
 
+## Advanced Logging
+
+You can have more control over your function logs, by specifying the log format
+(Json or plain text), the system log level, the application log level, as well
+as choosing the log group:
+
+```ts
+import { ILogGroup } from 'aws-cdk-lib/aws-logs';
+
+declare const logGroup: ILogGroup;  
+
+new lambda.Function(this, 'Lambda', {
+  code: new lambda.InlineCode('foo'),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_18_X,
+  logFormat: lambda.LogFormat.JSON,
+  systemLogLevel: lambda.SystemLogLevel.INFO,
+  applicationLogLevel: lambda.ApplicationLogLevel.INFO,
+  logGroup: logGroup,
+});
+```
+
+To use `applicationLogLevel` and/or `systemLogLevel` you must set `logFormat` to `LogFormat.JSON`.
+
 ## Resource-based Policies
 
 AWS Lambda supports resource-based policies for controlling access to Lambda
@@ -247,6 +271,20 @@ const servicePrincipalWithConditions = servicePrincipal.withConditions({
 });
 
 fn.grantInvoke(servicePrincipalWithConditions);
+```
+
+### Grant function access to a CompositePrincipal
+
+To grant invoke permissions to a `CompositePrincipal` use the `grantInvokeCompositePrincipal` method:
+
+```ts
+declare const fn: lambda.Function;
+const compositePrincipal = new iam.CompositePrincipal(
+  new iam.OrganizationPrincipal('o-zzzzzzzzzz'),
+  new iam.ServicePrincipal('apigateway.amazonaws.com'),
+);
+
+fn.grantInvokeCompositePrincipal(compositePrincipal);
 ```
 
 ## Versions
@@ -748,9 +786,9 @@ const fn = lambda.Function.fromFunctionAttributes(this, 'Function', {
 });
 ```
 
-If `fromFunctionArn()` causes an error related to having to provide an account and/or region in a different construct,
-and the lambda is in the same account and region as the stack you're importing it into,
-you can use `Function.fromFunctionName()` instead:
+`Function.fromFunctionArn()` and `Function.fromFunctionAttributes()` will attempt to parse the Function's Region and Account ID from the ARN. `addPermissions` will only work on the `Function` object if the Region and Account ID are deterministically the same as the scope of the Stack the referenced `Function` object is created in.
+If the containing Stack is environment-agnostic or the Function ARN is a Token, this comparison will fail, and calls to `Function.addPermission` will do nothing.
+If you know Function permissions can safely be added, you can use `Function.fromFunctionName()` instead, or pass `sameEnvironment: true` to `Function.fromFunctionAttributes()`.
 
 ```ts
 const fn = lambda.Function.fromFunctionName(this, 'Function', 'MyFn');

@@ -1,9 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
 import { App } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { Alarm, Metric } from 'aws-cdk-lib/aws-cloudwatch';
+import { Alarm, CompositeAlarm, Metric } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Application, Environment } from '../lib';
+import { Application, Environment, Monitor } from '../lib';
 
 describe('environment', () => {
   test('default environment', () => {
@@ -58,26 +58,23 @@ describe('environment', () => {
   test('environment with monitors with alarm and alarmRole', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig');
+    const alarm = new Alarm(stack, 'Alarm', {
+      threshold: 5,
+      evaluationPeriods: 5,
+      metric: new Metric(
+        {
+          namespace: 'aws',
+          metricName: 'myMetric',
+        },
+      ),
+    });
+    const alarmRole = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
+    });
     const env = new Environment(stack, 'MyEnvironment', {
       name: 'TestEnv',
       application: app,
-      monitors: [
-        {
-          alarm: new Alarm(stack, 'Alarm', {
-            threshold: 5,
-            evaluationPeriods: 5,
-            metric: new Metric(
-              {
-                namespace: 'aws',
-                metricName: 'myMetric',
-              },
-            ),
-          }),
-          alarmRole: new iam.Role(stack, 'Role', {
-            assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
-          }),
-        },
-      ],
+      monitors: [Monitor.fromCloudWatchAlarm(alarm, alarmRole)],
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::Alarm', 1);
@@ -123,11 +120,7 @@ describe('environment', () => {
     const env = new Environment(stack, 'MyEnvironment', {
       name: 'TestEnv',
       application: app,
-      monitors: [
-        {
-          alarm,
-        },
-      ],
+      monitors: [Monitor.fromCloudWatchAlarm(alarm)],
     });
 
     expect(env).toBeDefined();
@@ -177,37 +170,274 @@ describe('environment', () => {
     });
   });
 
+  test('environment with CfnMonitorsProperty monitor', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    const env = new Environment(stack, 'MyEnvironment', {
+      name: 'TestEnv',
+      application: app,
+      monitors: [
+        Monitor.fromCfnMonitorsProperty({
+          alarmArn: 'thisismyalarm',
+        }),
+      ],
+    });
+
+    expect(env).toBeDefined();
+    Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::Alarm', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Environment', {
+      Name: 'TestEnv',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      Monitors: [
+        {
+          AlarmArn: 'thisismyalarm',
+        },
+      ],
+    });
+  });
+
+  test('environment with CfnMonitorsProperty monitor with roleArn', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    const env = new Environment(stack, 'MyEnvironment', {
+      name: 'TestEnv',
+      application: app,
+      monitors: [
+        Monitor.fromCfnMonitorsProperty({
+          alarmArn: 'thisismyalarm',
+          alarmRoleArn: 'thisismyalarmrolearn',
+        }),
+      ],
+    });
+
+    expect(env).toBeDefined();
+    Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::Alarm', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Environment', {
+      Name: 'TestEnv',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      Monitors: [
+        {
+          AlarmArn: 'thisismyalarm',
+          AlarmRoleArn: 'thisismyalarmrolearn',
+        },
+      ],
+    });
+  });
+
+  test('environment with composite alarm', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    const alarm = new Alarm(stack, 'Alarm', {
+      threshold: 5,
+      evaluationPeriods: 5,
+      metric: new Metric(
+        {
+          namespace: 'aws',
+          metricName: 'myMetric',
+        },
+      ),
+    });
+    const compositeAlarm = new CompositeAlarm(stack, 'MyCompositeAlarm', {
+      alarmRule: alarm,
+    });
+    const env = new Environment(stack, 'MyEnvironment', {
+      name: 'TestEnv',
+      application: app,
+      monitors: [
+        Monitor.fromCloudWatchAlarm(compositeAlarm),
+      ],
+    });
+
+    expect(env).toBeDefined();
+    Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::Alarm', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::CompositeAlarm', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Environment', {
+      Name: 'TestEnv',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      Monitors: [
+        {
+          AlarmArn: {
+            'Fn::GetAtt': [
+              'MyCompositeAlarm0F045229',
+              'Arn',
+            ],
+          },
+          AlarmRoleArn: {
+            'Fn::GetAtt': [
+              'MyEnvironmentRoleCompositeAlarm8C2A0542',
+              'Arn',
+            ],
+          },
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      Policies: [
+        {
+          PolicyDocument: {
+            Statement: [
+              {
+                Effect: iam.Effect.ALLOW,
+                Resource: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':cloudwatch:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':alarm:*',
+                    ],
+                  ],
+                },
+                Action: 'cloudwatch:DescribeAlarms',
+              },
+            ],
+          },
+          PolicyName: 'AllowAppConfigMonitorAlarmPolicy',
+        },
+      ],
+    });
+  });
+
+  test('environment with two composite alarms', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    const alarm = new Alarm(stack, 'Alarm', {
+      threshold: 5,
+      evaluationPeriods: 5,
+      metric: new Metric(
+        {
+          namespace: 'aws',
+          metricName: 'myMetric',
+        },
+      ),
+    });
+    const compositeAlarm1 = new CompositeAlarm(stack, 'MyCompositeAlarm1', {
+      alarmRule: alarm,
+    });
+    const compositeAlarm2 = new CompositeAlarm(stack, 'MyCompositeAlarm2', {
+      alarmRule: alarm,
+    });
+    const env = new Environment(stack, 'MyEnvironment', {
+      name: 'TestEnv',
+      application: app,
+      monitors: [
+        Monitor.fromCloudWatchAlarm(compositeAlarm1),
+        Monitor.fromCloudWatchAlarm(compositeAlarm2),
+      ],
+    });
+
+    expect(env).toBeDefined();
+    Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::Alarm', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::CompositeAlarm', 2);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Environment', {
+      Name: 'TestEnv',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      Monitors: [
+        {
+          AlarmArn: {
+            'Fn::GetAtt': [
+              'MyCompositeAlarm159A950D0',
+              'Arn',
+            ],
+          },
+          AlarmRoleArn: {
+            'Fn::GetAtt': [
+              'MyEnvironmentRoleCompositeAlarm8C2A0542',
+              'Arn',
+            ],
+          },
+        },
+        {
+          AlarmArn: {
+            'Fn::GetAtt': [
+              'MyCompositeAlarm2195BFA48',
+              'Arn',
+            ],
+          },
+          AlarmRoleArn: {
+            'Fn::GetAtt': [
+              'MyEnvironmentRoleCompositeAlarm8C2A0542',
+              'Arn',
+            ],
+          },
+        },
+      ],
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      Policies: [
+        {
+          PolicyDocument: {
+            Statement: [
+              {
+                Effect: iam.Effect.ALLOW,
+                Resource: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      { Ref: 'AWS::Partition' },
+                      ':cloudwatch:',
+                      { Ref: 'AWS::Region' },
+                      ':',
+                      { Ref: 'AWS::AccountId' },
+                      ':alarm:*',
+                    ],
+                  ],
+                },
+                Action: 'cloudwatch:DescribeAlarms',
+              },
+            ],
+          },
+          PolicyName: 'AllowAppConfigMonitorAlarmPolicy',
+        },
+      ],
+    });
+  });
+
   test('environment with monitors with two alarms', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig');
+    const alarm1 = new Alarm(stack, 'Alarm1', {
+      threshold: 5,
+      evaluationPeriods: 5,
+      metric: new Metric(
+        {
+          namespace: 'aws',
+          metricName: 'myMetric',
+        },
+      ),
+    });
+    const alarm2 = new Alarm(stack, 'Alarm2', {
+      threshold: 5,
+      evaluationPeriods: 5,
+      metric: new Metric(
+        {
+          namespace: 'aws',
+          metricName: 'myMetric',
+        },
+      ),
+    });
     new Environment(stack, 'MyEnvironment', {
       name: 'TestEnv',
       application: app,
       monitors: [
-        {
-          alarm: new Alarm(stack, 'Alarm1', {
-            threshold: 5,
-            evaluationPeriods: 5,
-            metric: new Metric(
-              {
-                namespace: 'aws',
-                metricName: 'myMetric',
-              },
-            ),
-          }),
-        },
-        {
-          alarm: new Alarm(stack, 'Alarm2', {
-            threshold: 5,
-            evaluationPeriods: 5,
-            metric: new Metric(
-              {
-                namespace: 'aws',
-                metricName: 'myMetric',
-              },
-            ),
-          }),
-        },
+        Monitor.fromCloudWatchAlarm(alarm1),
+        Monitor.fromCloudWatchAlarm(alarm2),
       ],
     });
 

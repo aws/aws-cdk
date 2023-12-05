@@ -67,6 +67,53 @@
     }
    }
   },
+  "RoleDefaultPolicy5FFB7DAB": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ScheduleKey7E6B3A92",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "RoleDefaultPolicy5FFB7DAB",
+    "Roles": [
+     {
+      "Ref": "Role1ABCC5F0"
+     }
+    ]
+   }
+  },
+  "NamedGroupA3ABC879": {
+   "Type": "AWS::Scheduler::ScheduleGroup",
+   "Properties": {
+    "Name": "TestGroup"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "UnnamedGroupBE3E48EE": {
+   "Type": "AWS::Scheduler::ScheduleGroup",
+   "Properties": {
+    "Name": "awscdkschedulerschedule-UnnamedGroup-97DBE50D"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "DefaultSchedule597B0B2C": {
    "Type": "AWS::Scheduler::Schedule",
    "Properties": {
@@ -82,6 +129,73 @@
        "Function76856677",
        "Arn"
       ]
+     },
+     "Input": "\"Input Text\"",
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 180,
+      "MaximumRetryAttempts": 3
+     },
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "Role1ABCC5F0",
+       "Arn"
+      ]
+     }
+    }
+   }
+  },
+  "NamedGroupScheduleD7EEFEBC": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "GroupName": "TestGroup",
+    "ScheduleExpression": "rate(12 hours)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
+    "State": "ENABLED",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "Function76856677",
+       "Arn"
+      ]
+     },
+     "Input": "\"Input Text\"",
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 180,
+      "MaximumRetryAttempts": 3
+     },
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "Role1ABCC5F0",
+       "Arn"
+      ]
+     }
+    }
+   }
+  },
+  "UnnamedGroupSchedule19260E9B": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "GroupName": "awscdkschedulerschedule-UnnamedGroup-97DBE50D",
+    "ScheduleExpression": "rate(12 hours)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
+    "State": "ENABLED",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "Function76856677",
+       "Arn"
+      ]
+     },
+     "Input": "\"Input Text\"",
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 180,
+      "MaximumRetryAttempts": 3
      },
      "RoleArn": {
       "Fn::GetAtt": [
@@ -108,6 +222,41 @@
        "Arn"
       ]
      },
+     "Input": "\"Input Text\"",
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 180,
+      "MaximumRetryAttempts": 3
+     },
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "Role1ABCC5F0",
+       "Arn"
+      ]
+     }
+    }
+   }
+  },
+  "TargetOverrideScheduleFF8CB184": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "ScheduleExpression": "rate(12 hours)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
+    "State": "ENABLED",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "Function76856677",
+       "Arn"
+      ]
+     },
+     "Input": "\"Changed Text\"",
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 360,
+      "MaximumRetryAttempts": 5
+     },
      "RoleArn": {
       "Fn::GetAtt": [
        "Role1ABCC5F0",
@@ -127,6 +276,77 @@
     "Period": 300,
     "Statistic": "Sum",
     "Threshold": 1
+   }
+  },
+  "ScheduleKey7E6B3A92": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "CustomerKmsSchedule12B1FEFE": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "KmsKeyArn": {
+     "Fn::GetAtt": [
+      "ScheduleKey7E6B3A92",
+      "Arn"
+     ]
+    },
+    "ScheduleExpression": "rate(12 hours)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
+    "State": "ENABLED",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "Function76856677",
+       "Arn"
+      ]
+     },
+     "Input": "\"Input Text\"",
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 180,
+      "MaximumRetryAttempts": 3
+     },
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "Role1ABCC5F0",
+       "Arn"
+      ]
+     }
+    }
    }
   }
  },

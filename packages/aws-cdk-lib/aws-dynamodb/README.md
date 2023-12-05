@@ -201,6 +201,18 @@ const globalTable = new dynamodb.TableV2(stack, 'GlobalTable', {
 });
 ```
 
+When changing the billing for a table from provisioned to on-demand or from on-demand to provisioned, `seedCapacity` must be configured for each autoscaled resource:
+
+```ts
+const globalTable = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  billing: dynamodb.Billing.provisioned({
+    readCapacity: dynamodb.Capacity.fixed(10),
+    writeCapacity: dynamodb.Capacity.autoscaled({ maxCapacity: 10, seedCapacity: 20 }),
+  }),
+});
+```
+
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.html
 
@@ -587,6 +599,31 @@ const table = new dynamodb.TableV2(this, 'Table', {
 
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.TableClasses.html
+
+## Tags
+
+You can add tags to a `TableV2` in several ways. By adding the tags to the construct itself it will apply the tags to the 
+primary table.
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  tags: [{key: 'primaryTableTagKey', value: 'primaryTableTagValue'}],
+});
+```
+
+You can also add tags to replica tables by specifying them within the replica table properties.
+
+```ts
+const table = new dynamodb.TableV2(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  replicas: [
+    {
+      region: 'us-west-1',
+      tags: [{key: 'replicaTableTagKey', value: 'replicaTableTagValue'}]
+    }
+  ]
+});
+```
 
 ## Referencing Existing Global Tables
 

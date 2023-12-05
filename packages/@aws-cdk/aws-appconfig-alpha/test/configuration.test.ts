@@ -379,7 +379,7 @@ describe('configuration', () => {
         }),
       }),
       application: app,
-      content: ConfigurationContent.fromFile('./test/config.json'),
+      content: ConfigurationContent.fromFile('test/config.json'),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
@@ -431,6 +431,39 @@ describe('configuration', () => {
       },
       Content: 'This should be of content type application/octet',
       ContentType: 'application/octet-stream',
+    });
+  });
+
+  test('default configuration from inline yaml', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig');
+    new HostedConfiguration(stack, 'MyConfiguration', {
+      deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
+      }),
+      application: app,
+      content: ConfigurationContent.fromInlineYaml('This should be of content type application/x-yaml'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'MyConfiguration',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      LocationUri: 'hosted',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::HostedConfigurationVersion', {
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      ConfigurationProfileId: {
+        Ref: 'MyConfigurationConfigurationProfileEE0ECA85',
+      },
+      Content: 'This should be of content type application/x-yaml',
+      ContentType: 'application/x-yaml',
     });
   });
 
@@ -730,6 +763,7 @@ describe('configuration', () => {
       application: app,
       validators: [
         JsonSchemaValidator.fromInline(validatorContent),
+        JsonSchemaValidator.fromFile('test/schema.json'),
       ],
       content: ConfigurationContent.fromInlineText('This is my content'),
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
@@ -749,6 +783,10 @@ describe('configuration', () => {
         {
           Type: 'JSON_SCHEMA',
           Content: '\n    {\n      \"type\": \"object\",\n      \"properties\": {\n        \"computeResource\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"ComputeAL1ImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            },\n            \"GPUImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            },\n            \"ARMImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            },\n            \"ComputeAL2ImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            }\n          }\n        }\n      }\n    }',
+        },
+        {
+          Type: 'JSON_SCHEMA',
+          Content: '{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"string\"\n}',
         },
       ],
       LocationUri: 'hosted',

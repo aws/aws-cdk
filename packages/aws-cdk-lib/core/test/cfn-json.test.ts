@@ -1,7 +1,5 @@
 import { App, CfnResource, Lazy, Stack } from '../lib';
 import { CfnJson } from '../lib/cfn-json';
-import { CfnUtilsResourceType } from '../lib/private/cfn-utils-provider/consts';
-import { handler } from '../lib/private/cfn-utils-provider/index';
 
 describe('cfn json', () => {
 
@@ -70,16 +68,5 @@ describe('cfn json', () => {
     expect(stack.resolve(str)).toEqual({
       'Fn::Join': ['', ['"{"ref=', { Ref: 'MyResource' }, '":"this is a I am lazy"}"']],
     });
-  });
-
-  test('resource provider simply parses json and reflects back as an attribute', async () => {
-    const input = { foo: 1234 };
-    const response = await handler({
-      ResourceType: CfnUtilsResourceType.CFN_JSON,
-      ResourceProperties: {
-        Value: JSON.stringify(input),
-      },
-    } as any);
-    expect(input).toEqual(response.Data.Value);
   });
 });
