@@ -1,0 +1,13 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "integrationtest-firehose-put-record/DefaultTest": {
+      "stacks": [
+        "aws-cdk-scheduler-targets-firehose-put-record"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integrationtest-firehose-put-record/DefaultTest/DeployAssert",
+      "assertionStackName": "integrationtestfirehoseputrecordDefaultTestDeployAssert781A189E"
+    }
+  }
+}

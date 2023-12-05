@@ -133,7 +133,7 @@
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.0.33",
+    "@aws-cdk/aws-service-spec": "^0.0.34",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -231,6 +231,7 @@
     "./aws-appstream": "./aws-appstream/index.js",
     "./aws-appsync": "./aws-appsync/index.js",
     "./aws-aps": "./aws-aps/index.js",
+    "./aws-arczonalshift": "./aws-arczonalshift/index.js",
     "./aws-athena": "./aws-athena/index.js",
     "./aws-auditmanager": "./aws-auditmanager/index.js",
     "./aws-autoscaling": "./aws-autoscaling/index.js",
@@ -465,6 +466,7 @@
     "./aws-wafv2": "./aws-wafv2/index.js",
     "./aws-wisdom": "./aws-wisdom/index.js",
     "./aws-workspaces": "./aws-workspaces/index.js",
+    "./aws-workspacesthinclient": "./aws-workspacesthinclient/index.js",
     "./aws-workspacesweb": "./aws-workspacesweb/index.js",
     "./aws-xray": "./aws-xray/index.js",
     "./cloud-assembly-schema": "./cloud-assembly-schema/index.js",
