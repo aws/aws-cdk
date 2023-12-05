@@ -3,7 +3,7 @@ import { CdkHandlerFrameworkConstructor } from './constructors';
 import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
 
 /**
- * Initialization properties used to build a `CdkHandlerFrameworkClass`.
+ * Initialization properties used to build a `CdkHandlerFrameworkClass` instance.
  */
 export interface CdkHandlerClassProps {
   /**
@@ -27,7 +27,7 @@ export interface CdkHandlerClassProps {
 
 export abstract class CdkHandlerFrameworkClass extends ClassType {
   /**
-   * Builds a CdkFunction class.
+   * Builds a `CdkFunction` class.
    */
   public static buildCdkFunction(scope: Module, props: CdkHandlerClassProps) {
     new (class CdkFunction extends CdkHandlerFrameworkClass {
@@ -52,7 +52,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   }
 
   /**
-   * Builds a CdkSingletonFunction class.
+   * Builds a `CdkSingletonFunction` class.
    */
   public static buildCdkSingletonFunction(scope: Module, props: CdkHandlerClassProps) {
     new (class CdkSingletonFunction extends CdkHandlerFrameworkClass {
@@ -77,7 +77,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   }
 
   /**
-   * Builds a CdkCustomResourceProvider class.
+   * Builds a `CdkCustomResourceProvider` class.
    */
   public static buildCdkCustomResourceProvider(scope: Module, props: CdkHandlerClassProps) {
     new (class CdkCustomResourceProvider extends CdkHandlerFrameworkClass {
@@ -100,6 +100,9 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           name: 'getOrCreate',
           static: true,
           returnType: Type.STRING,
+          docs: {
+            summary: 'Returns a stack-level singleton ARN (service token) for the custom resource provider.',
+          },
         });
         getOrCreateMethod.addParameter({
           name: 'scope',
@@ -117,6 +120,9 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           name: 'getOrCreateProvider',
           static: true,
           returnType: this.type,
+          docs: {
+            summary: 'Returns a stack-level singleton for the custom resource provider.',
+          },
         });
         getOrCreateProviderMethod.addParameter({
           name: 'scope',
@@ -139,12 +145,13 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   }
 
   /**
-   *
+   * A local file system directory with the provider's code. The code will be
+   * bundled into a zip asset and wired to the provider's AWS Lambda function.
    */
   public abstract readonly codeDirectory: string;
 
   /**
-   *
+   * The name of the method within your code that Lambda calls to execute your function.
    */
   public abstract readonly entrypoint: string;
 }
