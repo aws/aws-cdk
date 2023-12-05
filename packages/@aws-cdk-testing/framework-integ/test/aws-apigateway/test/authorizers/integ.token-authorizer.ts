@@ -16,6 +16,7 @@ const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
 
 const authorizer = new TokenAuthorizer(stack, 'MyAuthorizer', {
   handler: authorizerFn,
+  resultsCacheTtl: Duration.minutes(10),
 });
 
 const restapi = new RestApi(stack, 'MyRestApi', {
