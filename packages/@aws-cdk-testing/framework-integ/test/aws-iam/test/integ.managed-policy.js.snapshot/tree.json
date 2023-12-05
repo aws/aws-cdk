@@ -38,13 +38,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnUser",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnUser",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.User",
+              "fqn": "aws-cdk-lib.aws_iam.User",
               "version": "0.0.0"
             }
           },
@@ -56,7 +56,7 @@
                 "id": "ImportedOneManagedPolicy",
                 "path": "aws-cdk-iam-managed-policy/OneManagedPolicy/ImportedOneManagedPolicy",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -66,6 +66,9 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::ManagedPolicy",
                   "aws:cdk:cloudformation:props": {
+                    "description": "My Policy",
+                    "managedPolicyName": "Default",
+                    "path": "/some/path/",
                     "policyDocument": {
                       "Statement": [
                         {
@@ -86,9 +89,11 @@
                       ],
                       "Version": "2012-10-17"
                     },
-                    "description": "My Policy",
-                    "managedPolicyName": "Default",
-                    "path": "/some/path/",
+                    "roles": [
+                      {
+                        "Ref": "Role1ABCC5F0"
+                      }
+                    ],
                     "users": [
                       {
                         "Ref": "MyUserDC45028B"
@@ -97,13 +102,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnManagedPolicy",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnManagedPolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.ManagedPolicy",
+              "fqn": "aws-cdk-lib.aws_iam.ManagedPolicy",
               "version": "0.0.0"
             }
           },
@@ -115,7 +120,7 @@
                 "id": "ImportedTwoManagedPolicy",
                 "path": "aws-cdk-iam-managed-policy/TwoManagedPolicy/ImportedTwoManagedPolicy",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -125,6 +130,8 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::ManagedPolicy",
                   "aws:cdk:cloudformation:props": {
+                    "description": "",
+                    "path": "/",
                     "policyDocument": {
                       "Statement": [
                         {
@@ -144,19 +151,17 @@
                         }
                       ],
                       "Version": "2012-10-17"
-                    },
-                    "description": "",
-                    "path": "/"
+                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnManagedPolicy",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnManagedPolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.ManagedPolicy",
+              "fqn": "aws-cdk-lib.aws_iam.ManagedPolicy",
               "version": "0.0.0"
             }
           },
@@ -168,7 +173,7 @@
                 "id": "ImportRole",
                 "path": "aws-cdk-iam-managed-policy/Role/ImportRole",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -208,13 +213,21 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.Role",
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedRole": {
+            "id": "ImportedRole",
+            "path": "aws-cdk-iam-managed-policy/ImportedRole",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -222,7 +235,7 @@
             "id": "BootstrapVersion",
             "path": "aws-cdk-iam-managed-policy/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -230,13 +243,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-cdk-iam-managed-policy/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -253,7 +266,7 @@
                 "path": "ManagedPolicyInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.249"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -264,7 +277,7 @@
                     "id": "BootstrapVersion",
                     "path": "ManagedPolicyInteg/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -272,25 +285,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "ManagedPolicyInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -299,12 +312,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.249"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }
