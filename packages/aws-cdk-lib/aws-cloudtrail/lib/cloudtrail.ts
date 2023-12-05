@@ -114,7 +114,7 @@ export interface TrailProps {
    *
    * @default - if not supplied a bucket will be created with all the correct permisions
    */
-  readonly bucket?: s3.IBucket;
+  readonly bucket?: s3.ICfnBucket;
 
   /**
    * Specifies whether the trail is applied to all accounts in an organization in AWS Organizations, or only for the current AWS account.
@@ -243,7 +243,7 @@ export class Trail extends Resource {
 
     const cloudTrailPrincipal = new iam.ServicePrincipal('cloudtrail.amazonaws.com');
 
-    this.s3bucket = props.bucket || new s3.Bucket(this, 'S3', { enforceSSL: true });
+    this.s3bucket = props.bucket ? s3.Bucket.fromCfnBucket(props.bucket) : new s3.Bucket(this, 'S3', { enforceSSL: true });
 
     this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
       resources: [this.s3bucket.bucketArn],

@@ -671,7 +671,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - None
    */
-  readonly s3ImportBuckets?: s3.IBucket[];
+  readonly s3ImportBuckets?: s3.ICfnBucket[];
 
   /**
    * Role that will be associated with this DB instance to enable S3 export.
@@ -699,7 +699,7 @@ export interface DatabaseInstanceNewProps {
    *
    * @default - None
    */
-  readonly s3ExportBuckets?: s3.IBucket[];
+  readonly s3ExportBuckets?: s3.ICfnBucket[];
 
   /**
    * Indicates whether the DB instance is an internet-facing instance.

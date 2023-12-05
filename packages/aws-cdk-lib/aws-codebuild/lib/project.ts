@@ -42,7 +42,7 @@ export interface BuildEnvironmentCertificate {
   /**
    * The bucket where the certificate is
    */
-  readonly bucket: s3.IBucket;
+  readonly bucket: s3.ICfnBucket;
 
   /**
    * The full path and name of the key file
@@ -768,7 +768,7 @@ export interface BindToCodePipelineOptions {
   /**
    * The artifact bucket that will be used by the action that invokes this project.
    */
-  readonly artifactBucket: s3.IBucket;
+  readonly artifactBucket: s3.ICfnBucket;
 }
 
 /**
@@ -1262,17 +1262,18 @@ export class Project extends ProjectBase {
    * @param options additional options for the binding
    */
   public bindToCodePipeline(_scope: Construct, options: BindToCodePipelineOptions): void {
+    const artifactBucket = s3.Bucket.fromCfnBucket(options.artifactBucket);
     // work around a bug in CodeBuild: it ignores the KMS key set on the pipeline,
     // and always uses its own, project-level key
-    if (options.artifactBucket.encryptionKey && !this._encryptionKey) {
+    if (artifactBucket.encryptionKey && !this._encryptionKey) {
       // we cannot safely do this assignment if the key is of type kms.Key,
       // and belongs to a stack in a different account or region than the project
       // (that would cause an illegal reference, as KMS keys don't have physical names)
-      const keyStack = Stack.of(options.artifactBucket.encryptionKey);
+      const keyStack = Stack.of(artifactBucket.encryptionKey);
       const projectStack = Stack.of(this);
-      if (!(options.artifactBucket.encryptionKey instanceof kms.Key &&
+      if (!(artifactBucket.encryptionKey instanceof kms.Key &&
           (keyStack.account !== projectStack.account || keyStack.region !== projectStack.region))) {
-        this.encryptionKey = options.artifactBucket.encryptionKey;
+        this.encryptionKey = artifactBucket.encryptionKey;
       }
     }
   }
@@ -1370,7 +1371,7 @@ export class Project extends ProjectBase {
           credential: secret.secretFullArn ?? secret.secretName,
         }
         : undefined,
-      certificate: env.certificate?.bucket.arnForObjects(env.certificate.objectKey),
+      certificate: env.certificate ? s3.Bucket.fromCfnBucket(env.certificate.bucket).arnForObjects(env.certificate.objectKey) : undefined,
       privilegedMode: env.privileged || false,
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: hasEnvironmentVars
@@ -1452,10 +1453,10 @@ export class Project extends ProjectBase {
       const s3Logs = props.s3;
       s3Config = {
         status: (s3Logs.enabled ?? true) ? 'ENABLED' : 'DISABLED',
-        location: `${s3Logs.bucket.bucketName}` + (s3Logs.prefix ? `/${s3Logs.prefix}` : ''),
+        location: `${s3Logs.bucket.attrBucketName}` + (s3Logs.prefix ? `/${s3Logs.prefix}` : ''),
         encryptionDisabled: s3Logs.encrypted,
       };
-      s3Logs.bucket?.grantWrite(this);
+      s3.Bucket.fromCfnBucket(s3Logs.bucket).grantWrite(this);
     }
 
     if (props.cloudWatch) {

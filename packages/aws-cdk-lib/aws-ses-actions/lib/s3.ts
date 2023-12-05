@@ -12,7 +12,7 @@ export interface S3Props {
   /**
    * The S3 bucket that incoming email will be saved to.
    */
-  readonly bucket: s3.IBucket;
+  readonly bucket: s3.ICfnBucket;
 
   /**
    * The master key that SES should use to encrypt your emails before saving
@@ -46,22 +46,23 @@ export class S3 implements ses.IReceiptRuleAction {
   }
 
   public bind(rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
+    const bucket = s3.Bucket.fromCfnBucket(this.props.bucket);
     // Allow SES to write to S3 bucket
     // See https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-permissions.html#receiving-email-permissions-s3
     const keyPattern = this.props.objectKeyPrefix || '';
     const s3Statement = new iam.PolicyStatement({
       actions: ['s3:PutObject'],
       principals: [new iam.ServicePrincipal('ses.amazonaws.com')],
-      resources: [this.props.bucket.arnForObjects(`${keyPattern}*`)],
+      resources: [bucket.arnForObjects(`${keyPattern}*`)],
       conditions: {
         StringEquals: {
           'aws:Referer': cdk.Aws.ACCOUNT_ID,
         },
       },
     });
-    this.props.bucket.addToResourcePolicy(s3Statement);
+    bucket.addToResourcePolicy(s3Statement);
 
-    const policy = this.props.bucket.node.tryFindChild('Policy') as s3.BucketPolicy;
+    const policy = bucket.node.tryFindChild('Policy') as s3.BucketPolicy;
     if (policy) { // The bucket could be imported
       rule.node.addDependency(policy);
     } else {
@@ -91,7 +92,7 @@ export class S3 implements ses.IReceiptRuleAction {
 
     return {
       s3Action: {
-        bucketName: this.props.bucket.bucketName,
+        bucketName: bucket.attrBucketName,
         kmsKeyArn: this.props.kmsKey?.keyArn,
         objectKeyPrefix: this.props.objectKeyPrefix,
         topicArn: this.props.topic?.topicArn,

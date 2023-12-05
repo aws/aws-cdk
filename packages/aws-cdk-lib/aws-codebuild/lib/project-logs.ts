@@ -15,7 +15,7 @@ export interface S3LoggingOptions {
   /**
    * The S3 Bucket to send logs to
    */
-  readonly bucket: s3.IBucket;
+  readonly bucket: s3.ICfnBucket;
 
   /**
    * The path prefix for S3 logs

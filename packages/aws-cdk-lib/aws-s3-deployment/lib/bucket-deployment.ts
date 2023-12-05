@@ -29,7 +29,7 @@ export interface BucketDeploymentProps {
   /**
    * The S3 bucket to sync the contents of the zip file to.
    */
-  readonly destinationBucket: s3.IBucket;
+  readonly destinationBucket: s3.ICfnBucket;
 
   /**
    * Key prefix in the destination bucket.
@@ -284,7 +284,7 @@ export class BucketDeployment extends Construct {
       throw new Error('Vpc must be specified if useEfs is set');
     }
 
-    this.destinationBucket = props.destinationBucket;
+    this.destinationBucket = s3.Bucket.fromCfnBucket(props.destinationBucket);
 
     const accessPointPath = '/lambda';
     let accessPoint;

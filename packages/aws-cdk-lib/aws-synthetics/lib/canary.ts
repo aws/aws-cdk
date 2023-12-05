@@ -81,7 +81,7 @@ export interface ArtifactsBucketLocation {
   /**
    * The s3 location that stores the data of each run.
    */
-  readonly bucket: s3.IBucket;
+  readonly bucket: s3.ICfnBucket;
 
   /**
    * The S3 bucket prefix. Specify this if you want a more specific path within the artifacts bucket.
@@ -283,11 +283,13 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       }),
     });
 
-    this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
-      encryption: s3.BucketEncryption.KMS_MANAGED,
-      enforceSSL: true,
-      lifecycleRules: props.artifactsBucketLifecycleRules,
-    });
+    this.artifactsBucket = props.artifactsBucketLocation?.bucket ?
+      s3.Bucket.fromCfnBucket(props.artifactsBucketLocation.bucket) :
+      new s3.Bucket(this, 'ArtifactsBucket', {
+        encryption: s3.BucketEncryption.KMS_MANAGED,
+        enforceSSL: true,
+        lifecycleRules: props.artifactsBucketLifecycleRules,
+      });
 
     this.role = props.role ?? this.createDefaultRole(props);
 

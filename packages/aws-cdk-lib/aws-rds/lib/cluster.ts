@@ -275,7 +275,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - None
    */
-  readonly s3ImportBuckets?: s3.IBucket[];
+  readonly s3ImportBuckets?: s3.ICfnBucket[];
 
   /**
    * Role that will be associated with this DB cluster to enable S3 export.
@@ -306,7 +306,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - None
    */
-  readonly s3ExportBuckets?: s3.IBucket[];
+  readonly s3ExportBuckets?: s3.ICfnBucket[];
 
   /**
    * Existing subnet group for the cluster.

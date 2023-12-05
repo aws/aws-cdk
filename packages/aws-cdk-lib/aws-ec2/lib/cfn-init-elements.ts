@@ -403,15 +403,16 @@ export abstract class InitFile extends InitElement {
   /**
    * Download a file from an S3 bucket at instance startup time
    */
-  public static fromS3Object(fileName: string, bucket: s3.IBucket, key: string, options: InitFileOptions = {}): InitFile {
+  public static fromS3Object(fileName: string, bucket: s3.ICfnBucket, key: string, options: InitFileOptions = {}): InitFile {
     return new class extends InitFile {
       protected _doBind(bindOptions: InitBindOptions) {
-        bucket.grantRead(bindOptions.instanceRole, key);
+        const s3Bucket = s3.Bucket.fromCfnBucket(bucket);
+        s3Bucket.grantRead(bindOptions.instanceRole, key);
         return {
           config: this._standardConfig(options, bindOptions.platform, {
-            source: bucket.urlForObject(key),
+            source: s3Bucket.urlForObject(key),
           }),
-          authentication: standardS3Auth(bindOptions.instanceRole, bucket.bucketName),
+          authentication: standardS3Auth(bindOptions.instanceRole, s3Bucket.attrBucketName),
         };
       }
     }(fileName, options);
@@ -925,14 +926,15 @@ export abstract class InitSource extends InitElement {
   /**
    * Extract an archive stored in an S3 bucket into the given directory
    */
-  public static fromS3Object(targetDirectory: string, bucket: s3.IBucket, key: string, options: InitSourceOptions = {}): InitSource {
+  public static fromS3Object(targetDirectory: string, bucket: s3.ICfnBucket, key: string, options: InitSourceOptions = {}): InitSource {
     return new class extends InitSource {
       protected _doBind(bindOptions: InitBindOptions) {
-        bucket.grantRead(bindOptions.instanceRole, key);
+        const s3Bucket = s3.Bucket.fromCfnBucket(bucket);
+        s3Bucket.grantRead(bindOptions.instanceRole, key);
 
         return {
-          config: { [this.targetDirectory]: bucket.urlForObject(key) },
-          authentication: standardS3Auth(bindOptions.instanceRole, bucket.bucketName),
+          config: { [this.targetDirectory]: s3Bucket.urlForObject(key) },
+          authentication: standardS3Auth(bindOptions.instanceRole, s3Bucket.attrBucketName),
         };
       }
     }(targetDirectory, options.serviceRestartHandles);

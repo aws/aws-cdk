@@ -246,37 +246,38 @@ export abstract class BaseLoadBalancer extends Resource {
    * A region must be specified on the stack containing the load balancer; you cannot enable logging on
    * environment-agnostic stacks. See https://docs.aws.amazon.com/cdk/latest/guide/environments.html
    */
-  public logAccessLogs(bucket: s3.IBucket, prefix?: string) {
+  public logAccessLogs(bucket: s3.ICfnBucket, prefix?: string) {
+    const s3Bucket = s3.Bucket.fromCfnBucket(bucket);
     prefix = prefix || '';
     this.setAttribute('access_logs.s3.enabled', 'true');
-    this.setAttribute('access_logs.s3.bucket', bucket.bucketName.toString());
+    this.setAttribute('access_logs.s3.bucket', s3Bucket.attrBucketName.toString());
     this.setAttribute('access_logs.s3.prefix', prefix);
 
     const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
-    bucket.addToResourcePolicy(new PolicyStatement({
+    s3Bucket.addToResourcePolicy(new PolicyStatement({
       actions: ['s3:PutObject'],
       principals: [this.resourcePolicyPrincipal()],
       resources: [
-        bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
+        s3Bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
       ],
     }));
-    bucket.addToResourcePolicy(
+    s3Bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:PutObject'],
         principals: [logsDeliveryServicePrincipal],
         resources: [
-          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.env.account}/*`),
+          s3Bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.env.account}/*`),
         ],
         conditions: {
           StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
         },
       }),
     );
-    bucket.addToResourcePolicy(
+    s3Bucket.addToResourcePolicy(
       new PolicyStatement({
         actions: ['s3:GetBucketAcl'],
         principals: [logsDeliveryServicePrincipal],
-        resources: [bucket.bucketArn],
+        resources: [s3Bucket.attrArn],
       }),
     );
 
@@ -284,7 +285,7 @@ export abstract class BaseLoadBalancer extends Resource {
     // at the L1 level to avoid creating a circular dependency (see https://github.com/aws/aws-cdk/issues/27528
     // and https://github.com/aws/aws-cdk/issues/27928)
     const lb = this.node.defaultChild;
-    const bucketPolicy = bucket.policy?.node.defaultChild;
+    const bucketPolicy = s3Bucket.policy?.node.defaultChild;
     if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
       lb.addDependency(bucketPolicy);
     }

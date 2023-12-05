@@ -5,7 +5,7 @@ import { EndpointType, IRestApi } from './restapi';
 import { IStage } from './stage';
 import * as apigwv2 from '../../aws-apigatewayv2';
 import * as acm from '../../aws-certificatemanager';
-import { IBucket } from '../../aws-s3';
+import { Bucket, ICfnBucket } from '../../aws-s3';
 import { IResource, Names, Resource, Token } from '../../core';
 
 /**
@@ -253,7 +253,7 @@ export class DomainName extends Resource implements IDomainName {
   private configureMTLS(mtlsConfig?: MTLSConfig): CfnDomainName.MutualTlsAuthenticationProperty | undefined {
     if (!mtlsConfig) return undefined;
     return {
-      truststoreUri: mtlsConfig.bucket.s3UrlForObject(mtlsConfig.key),
+      truststoreUri: Bucket.fromCfnBucket(mtlsConfig.bucket).s3UrlForObject(mtlsConfig.key),
       truststoreVersion: mtlsConfig.version,
     };
   }
@@ -283,7 +283,7 @@ export interface MTLSConfig {
   /**
    * The bucket that the trust store is hosted in.
    */
-  readonly bucket: IBucket;
+  readonly bucket: ICfnBucket;
 
   /**
    * The key in S3 to look at for the trust store.
