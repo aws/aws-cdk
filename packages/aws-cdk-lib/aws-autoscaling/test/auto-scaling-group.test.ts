@@ -2379,6 +2379,30 @@ test('ssm permissions adds right managed policy with mixed instance policy', () 
   });
 });
 
+test('requires imdsv2 when @aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig is set', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
+  const vpc = mockVpc(stack);
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+    vpc,
+    instanceType: new ec2.InstanceType('t2.micro'),
+    machineImage: ec2.MachineImage.latestAmazonLinux2(),
+    requireImdsv2: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+    LaunchTemplateData: {
+      MetadataOptions: {
+        HttpTokens: 'required',
+      },
+    },
+  });
+});
+
 function mockSecurityGroup(stack: cdk.Stack) {
   return ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');
 }

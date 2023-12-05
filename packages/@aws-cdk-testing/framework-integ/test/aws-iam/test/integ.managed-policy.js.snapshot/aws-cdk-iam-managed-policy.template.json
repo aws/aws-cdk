@@ -25,6 +25,9 @@
   "OneManagedPolicy77F9185F": {
    "Type": "AWS::IAM::ManagedPolicy",
    "Properties": {
+    "Description": "My Policy",
+    "ManagedPolicyName": "Default",
+    "Path": "/some/path/",
     "PolicyDocument": {
      "Statement": [
       {
@@ -45,9 +48,11 @@
      ],
      "Version": "2012-10-17"
     },
-    "Description": "My Policy",
-    "ManagedPolicyName": "Default",
-    "Path": "/some/path/",
+    "Roles": [
+     {
+      "Ref": "Role1ABCC5F0"
+     }
+    ],
     "Users": [
      {
       "Ref": "MyUserDC45028B"
@@ -58,6 +63,8 @@
   "TwoManagedPolicy7E701864": {
    "Type": "AWS::IAM::ManagedPolicy",
    "Properties": {
+    "Description": "",
+    "Path": "/",
     "PolicyDocument": {
      "Statement": [
       {
@@ -77,9 +84,7 @@
       }
      ],
      "Version": "2012-10-17"
-    },
-    "Description": "",
-    "Path": "/"
+    }
    }
   },
   "Role1ABCC5F0": {

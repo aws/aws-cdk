@@ -3,14 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace %name.PascalCased%
+namespace %PascalNameSpace%
 {
     sealed class Program
     {
         public static void Main(string[] args)
         {
             var app = new App();
-            new %name.PascalCased%Stack(app, "%stackname%", new StackProps
+            new %name.PascalCased%Stack(app, "%stackname%", new %PascalStackProps%
             {
                 // If you don't specify 'env', this stack will be environment-agnostic.
                 // Account/Region-dependent features and context lookups will not work,

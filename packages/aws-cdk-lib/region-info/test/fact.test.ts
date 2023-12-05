@@ -89,4 +89,23 @@ describe('register', () => {
     // Cleanup
     Fact.unregister(region, name);
   });
+
+  test('registering a fact with a new region adds the region', () => {
+    // GIVEN
+    const region = 'my-custom-region';
+    const name = FactName.PARTITION;
+    const value = 'nebraska';
+
+    // WHEN
+    expect(Fact.find(region, name)).not.toBe(value);
+    expect(() => Fact.register({ region, name, value })).not.toThrowError();
+
+    // THEN
+    expect(Fact.regions.includes('my-custom-region')).toBeTruthy();
+    expect(Fact.find(region, name)).toBe('nebraska');
+  });
+
+  test('regions does not return duplicate regions', () => {
+    expect(new Set(Fact.regions).size == Fact.regions.length).toBeTruthy();
+  });
 });

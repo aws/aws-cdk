@@ -32,9 +32,26 @@ const publishTask = new SnsPublish(stack, 'publish to SNS', {
   message: sfn.TaskInput.fromText('sending message over'),
 });
 
+const fifoTopic = new sns.Topic(stack, 'fifo-topic', {
+  fifo: true,
+});
+const fifoQueue = new sqs.Queue(stack, 'fifo-queue', {
+  fifo: true,
+});
+
+fifoTopic.addSubscription(new subs.SqsSubscription(fifoQueue));
+
+const publishFifoTask = new SnsPublish(stack, 'publish to FIFO SNS', {
+  topic: fifoTopic,
+  message: sfn.TaskInput.fromText('sending message over'),
+  messageGroupId: 'message-group-id',
+  messageDeduplicationId: 'message-deduplication-id',
+});
+
 const finalStatus = new sfn.Pass(stack, 'Final step');
 
 const chain = sfn.Chain.start(publishTask)
+  .next(publishFifoTask)
   .next(finalStatus);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
@@ -48,6 +65,10 @@ new cdk.CfnOutput(stack, 'stateMachineArn', {
 
 new cdk.CfnOutput(stack, 'queueUrl', {
   value: queue.queueUrl,
+});
+
+new cdk.CfnOutput(stack, 'fifoQueueUrl', {
+  value: fifoQueue.queueUrl,
 });
 
 app.synth();

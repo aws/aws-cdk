@@ -73,7 +73,6 @@ module.exports = {
           '**/test/**', // --> Unit tests
         ],
         optionalDependencies: false, // Disallow importing optional dependencies (those shouldn't be in use in the project)
-        peerDependencies: false, // Disallow importing peer dependencies (that aren't also direct dependencies)
       },
     ],
 

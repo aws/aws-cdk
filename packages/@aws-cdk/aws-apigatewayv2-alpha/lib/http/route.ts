@@ -193,7 +193,8 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this,
     });
 
-    this.authBindResult = props.authorizer?.bind({
+    const authorizer = props.authorizer ?? this.httpApi.defaultAuthorizer;
+    this.authBindResult = authorizer?.bind({
       route: this,
       scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
     });
@@ -204,10 +205,10 @@ export class HttpRoute extends Resource implements IHttpRoute {
 
     let authorizationScopes = this.authBindResult?.authorizationScopes;
 
-    if (this.authBindResult && props.authorizationScopes) {
+    if (this.authBindResult && (props.authorizationScopes || this.httpApi.defaultAuthorizationScopes)) {
       authorizationScopes = Array.from(new Set([
         ...authorizationScopes ?? [],
-        ...props.authorizationScopes,
+        ...props.authorizationScopes ?? this.httpApi.defaultAuthorizationScopes ?? [],
       ]));
     }
 

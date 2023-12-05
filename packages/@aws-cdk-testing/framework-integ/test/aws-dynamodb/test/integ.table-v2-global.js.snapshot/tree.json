@@ -90,6 +90,7 @@
                           "writeCapacityAutoScalingSettings": {
                             "minCapacity": 1,
                             "maxCapacity": 20,
+                            "seedCapacity": 10,
                             "targetTrackingScalingPolicyConfiguration": {
                               "targetValue": 60
                             }
@@ -184,7 +185,13 @@
                               "targetValue": 70
                             }
                           }
-                        }
+                        },
+                        "tags": [
+                          {
+                            "key": "USE2ReplicaTagKey",
+                            "value": "USE2ReplicaTagValue"
+                          }
+                        ]
                       },
                       {
                         "region": "us-west-2",
@@ -214,7 +221,13 @@
                         },
                         "readProvisionedThroughputSettings": {
                           "readCapacityUnits": 10
-                        }
+                        },
+                        "tags": [
+                          {
+                            "key": "USW2ReplicaTagKey",
+                            "value": "USW2ReplicaTagValue"
+                          }
+                        ]
                       },
                       {
                         "region": "us-east-1",
@@ -255,7 +268,13 @@
                         },
                         "readProvisionedThroughputSettings": {
                           "readCapacityUnits": 10
-                        }
+                        },
+                        "tags": [
+                          {
+                            "key": "primaryTableTagKey",
+                            "value": "primaryTableTagValue"
+                          }
+                        ]
                       }
                     ],
                     "sseSpecification": {
@@ -274,6 +293,7 @@
                       "writeCapacityAutoScalingSettings": {
                         "minCapacity": 1,
                         "maxCapacity": 20,
+                        "seedCapacity": 10,
                         "targetTrackingScalingPolicyConfiguration": {
                           "targetValue": 60
                         }

@@ -135,10 +135,107 @@
                   "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                   "version": "0.0.0"
                 }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "aws-cdk-scheduler-schedule/Role/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-scheduler-schedule/Role/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "kms:Decrypt",
+                                "kms:Encrypt",
+                                "kms:GenerateDataKey*",
+                                "kms:ReEncrypt*"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "ScheduleKey7E6B3A92",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "RoleDefaultPolicy5FFB7DAB",
+                        "roles": [
+                          {
+                            "Ref": "Role1ABCC5F0"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "NamedGroup": {
+            "id": "NamedGroup",
+            "path": "aws-cdk-scheduler-schedule/NamedGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/NamedGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::ScheduleGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "TestGroup"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnScheduleGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "UnnamedGroup": {
+            "id": "UnnamedGroup",
+            "path": "aws-cdk-scheduler-schedule/UnnamedGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/UnnamedGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::ScheduleGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "awscdkschedulerschedule-UnnamedGroup-97DBE50D"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnScheduleGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -170,6 +267,11 @@
                           "Role1ABCC5F0",
                           "Arn"
                         ]
+                      },
+                      "input": "\"Input Text\"",
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 180,
+                        "maximumRetryAttempts": 3
                       }
                     }
                   }
@@ -181,7 +283,105 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "NamedGroupSchedule": {
+            "id": "NamedGroupSchedule",
+            "path": "aws-cdk-scheduler-schedule/NamedGroupSchedule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/NamedGroupSchedule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
+                  "aws:cdk:cloudformation:props": {
+                    "flexibleTimeWindow": {
+                      "mode": "OFF"
+                    },
+                    "groupName": "TestGroup",
+                    "scheduleExpression": "rate(12 hours)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "state": "ENABLED",
+                    "target": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "Function76856677",
+                          "Arn"
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "Role1ABCC5F0",
+                          "Arn"
+                        ]
+                      },
+                      "input": "\"Input Text\"",
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 180,
+                        "maximumRetryAttempts": 3
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnSchedule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "UnnamedGroupSchedule": {
+            "id": "UnnamedGroupSchedule",
+            "path": "aws-cdk-scheduler-schedule/UnnamedGroupSchedule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/UnnamedGroupSchedule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
+                  "aws:cdk:cloudformation:props": {
+                    "flexibleTimeWindow": {
+                      "mode": "OFF"
+                    },
+                    "groupName": "awscdkschedulerschedule-UnnamedGroup-97DBE50D",
+                    "scheduleExpression": "rate(12 hours)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "state": "ENABLED",
+                    "target": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "Function76856677",
+                          "Arn"
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "Role1ABCC5F0",
+                          "Arn"
+                        ]
+                      },
+                      "input": "\"Input Text\"",
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 180,
+                        "maximumRetryAttempts": 3
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnSchedule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -213,6 +413,11 @@
                           "Role1ABCC5F0",
                           "Arn"
                         ]
+                      },
+                      "input": "\"Input Text\"",
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 180,
+                        "maximumRetryAttempts": 3
                       }
                     }
                   }
@@ -224,7 +429,190 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "TargetOverrideSchedule": {
+            "id": "TargetOverrideSchedule",
+            "path": "aws-cdk-scheduler-schedule/TargetOverrideSchedule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/TargetOverrideSchedule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
+                  "aws:cdk:cloudformation:props": {
+                    "flexibleTimeWindow": {
+                      "mode": "OFF"
+                    },
+                    "scheduleExpression": "rate(12 hours)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "state": "ENABLED",
+                    "target": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "Function76856677",
+                          "Arn"
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "Role1ABCC5F0",
+                          "Arn"
+                        ]
+                      },
+                      "input": "\"Changed Text\"",
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 360,
+                        "maximumRetryAttempts": 5
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnSchedule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "AllSchedulerErrorsAlarm": {
+            "id": "AllSchedulerErrorsAlarm",
+            "path": "aws-cdk-scheduler-schedule/AllSchedulerErrorsAlarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/AllSchedulerErrorsAlarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "evaluationPeriods": 1,
+                    "metricName": "TargetErrorCount",
+                    "namespace": "AWS/Scheduler",
+                    "period": 300,
+                    "statistic": "Sum",
+                    "threshold": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "ScheduleKey": {
+            "id": "ScheduleKey",
+            "path": "aws-cdk-scheduler-schedule/ScheduleKey",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/ScheduleKey/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kms.Key",
+              "version": "0.0.0"
+            }
+          },
+          "CustomerKmsSchedule": {
+            "id": "CustomerKmsSchedule",
+            "path": "aws-cdk-scheduler-schedule/CustomerKmsSchedule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/CustomerKmsSchedule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
+                  "aws:cdk:cloudformation:props": {
+                    "flexibleTimeWindow": {
+                      "mode": "OFF"
+                    },
+                    "kmsKeyArn": {
+                      "Fn::GetAtt": [
+                        "ScheduleKey7E6B3A92",
+                        "Arn"
+                      ]
+                    },
+                    "scheduleExpression": "rate(12 hours)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "state": "ENABLED",
+                    "target": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "Function76856677",
+                          "Arn"
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "Role1ABCC5F0",
+                          "Arn"
+                        ]
+                      },
+                      "input": "\"Input Text\"",
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 180,
+                        "maximumRetryAttempts": 3
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnSchedule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },

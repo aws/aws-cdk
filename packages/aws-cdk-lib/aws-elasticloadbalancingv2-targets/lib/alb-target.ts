@@ -39,7 +39,7 @@ export class AlbTarget extends AlbArnTarget {
    * @param alb The application load balancer to load balance to
    * @param port The port on which the target is listening
    */
-  constructor(alb: elbv2.ApplicationLoadBalancer, port: number) {
+  constructor(alb: elbv2.IApplicationLoadBalancer, port: number) {
     super(alb.loadBalancerArn, port);
   }
 }

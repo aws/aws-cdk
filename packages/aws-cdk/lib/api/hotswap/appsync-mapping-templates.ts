@@ -10,8 +10,8 @@ export async function isHotswappableAppSyncChange(
   const isResolver = change.newValue.Type === 'AWS::AppSync::Resolver';
   const isFunction = change.newValue.Type === 'AWS::AppSync::FunctionConfiguration';
   const isGraphQLSchema = change.newValue.Type === 'AWS::AppSync::GraphQLSchema';
-
-  if (!isResolver && !isFunction && !isGraphQLSchema) {
+  const isAPIKey = change.newValue.Type === 'AWS::AppSync::ApiKey';
+  if (!isResolver && !isFunction && !isGraphQLSchema && !isAPIKey) {
     return [];
   }
 
@@ -26,6 +26,7 @@ export async function isHotswappableAppSyncChange(
     'CodeS3Location',
     'Definition',
     'DefinitionS3Location',
+    'Expires',
   ]);
   classifiedChanges.reportNonHotswappablePropertyChanges(ret);
 
@@ -60,6 +61,7 @@ export async function isHotswappableAppSyncChange(
           responseMappingTemplateS3Location: change.newValue.Properties?.ResponseMappingTemplateS3Location,
           code: change.newValue.Properties?.Code,
           codeS3Location: change.newValue.Properties?.CodeS3Location,
+          expires: change.newValue.Properties?.Expires,
         };
         const evaluatedResourceProperties = await evaluateCfnTemplate.evaluateCfnExpression(sdkProperties);
         const sdkRequestObject = transformObjectKeys(evaluatedResourceProperties, lowerCaseFirstCharacter);
@@ -74,11 +76,11 @@ export async function isHotswappableAppSyncChange(
           delete sdkRequestObject.responseMappingTemplateS3Location;
         }
         if (sdkRequestObject.definitionS3Location) {
-          sdkRequestObject.definition = await fetchFileFromS3(sdkRequestObject.definitionS3Location, sdk);
+          sdkRequestObject.definition = (await fetchFileFromS3(sdkRequestObject.definitionS3Location, sdk))?.toString('utf8');
           delete sdkRequestObject.definitionS3Location;
         }
         if (sdkRequestObject.codeS3Location) {
-          sdkRequestObject.code = await fetchFileFromS3(sdkRequestObject.codeS3Location, sdk);
+          sdkRequestObject.code = (await fetchFileFromS3(sdkRequestObject.codeS3Location, sdk))?.toString('utf8');
           delete sdkRequestObject.codeS3Location;
         }
 
@@ -86,13 +88,22 @@ export async function isHotswappableAppSyncChange(
           await sdk.appsync().updateResolver(sdkRequestObject).promise();
         } else if (isFunction) {
 
+          // Function version is only applicable when using VTL and mapping templates
+          // Runtime only applicable when using code (JS mapping templates)
+          if (sdkRequestObject.code) {
+            delete sdkRequestObject.functionVersion;
+          } else {
+            delete sdkRequestObject.runtime;
+          }
+
           const { functions } = await sdk.appsync().listFunctions({ apiId: sdkRequestObject.apiId }).promise();
           const { functionId } = functions?.find(fn => fn.name === physicalName) ?? {};
+          // Updating multiple functions at the same time or along with graphql schema results in `ConcurrentModificationException`
           await simpleRetry(
             () => sdk.appsync().updateFunction({ ...sdkRequestObject, functionId: functionId! }).promise(),
-            3,
+            5,
             'ConcurrentModificationException');
-        } else {
+        } else if (isGraphQLSchema) {
           let schemaCreationResponse: GetSchemaCreationStatusResponse = await sdk.appsync().startSchemaCreation(sdkRequestObject).promise();
           while (schemaCreationResponse.status && ['PROCESSING', 'DELETING'].some(status => status === schemaCreationResponse.status)) {
             await sleep(1000); // poll every second
@@ -104,6 +115,15 @@ export async function isHotswappableAppSyncChange(
           if (schemaCreationResponse.status === 'FAILED') {
             throw new Error(schemaCreationResponse.details);
           }
+        } else { //isApiKey
+          if (!sdkRequestObject.id) {
+            // ApiKeyId is optional in CFN but required in SDK. Grab the KeyId from physicalArn if not available as part of CFN template
+            const arnParts = physicalName?.split('/');
+            if (arnParts && arnParts.length === 4) {
+              sdkRequestObject.id = arnParts[3];
+            }
+          }
+          await sdk.appsync().updateApiKey(sdkRequestObject).promise();
         }
       },
     });
@@ -124,7 +144,7 @@ async function simpleRetry(fn: () => Promise<any>, numOfRetries: number, errorCo
     await fn();
   } catch (error: any) {
     if (error && error.code === errorCodeToRetry && numOfRetries > 0) {
-      await sleep(500); // wait half a second
+      await sleep(1000); // wait a whole second
       await simpleRetry(fn, numOfRetries - 1, errorCodeToRetry);
     } else {
       throw error;
