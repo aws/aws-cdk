@@ -340,6 +340,129 @@ describe('IAM policy', () => {
     p3.attachToRole(role);
   });
 
+  test('idempotent if a principal (user/group/role) is attached twice', () => {
+    const p = new Policy(stack, 'Policy');
+    p.addStatements(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
+
+    const user = new User(stack, 'MyUser');
+    p.attachToUser(user);
+    p.attachToUser(user);
+
+    const group = new Group(stack, 'MyGroup');
+    p.attachToGroup(group);
+    p.attachToGroup(group);
+
+    const role = new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('test.service'),
+    });
+    p.attachToRole(role);
+    p.attachToRole(role);
+
+    Template.fromStack(stack).templateMatches({
+      Resources:
+      {
+        Policy23B91518:
+         {
+           Type: 'AWS::IAM::Policy',
+           Properties:
+          {
+            Groups: [{ Ref: 'MyGroupCBA54B1B' }],
+            PolicyDocument:
+           {
+             Statement: [{ Action: '*', Effect: 'Allow', Resource: '*' }],
+             Version: '2012-10-17',
+           },
+            PolicyName: 'Policy23B91518',
+            Roles: [{ Ref: 'MyRoleF48FFE04' }],
+            Users: [{ Ref: 'MyUserDC45028B' }],
+          },
+         },
+        MyUserDC45028B: { Type: 'AWS::IAM::User' },
+        MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
+        MyRoleF48FFE04:
+         {
+           Type: 'AWS::IAM::Role',
+           Properties:
+          {
+            AssumeRolePolicyDocument:
+           {
+             Statement:
+            [{
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'test.service' },
+            }],
+             Version: '2012-10-17',
+           },
+          },
+         },
+      },
+    });
+  });
+
+  test('idempotent if an imported principal (user/group/role) is attached twice', () => {
+    const p = new Policy(stack, 'Policy');
+    p.addStatements(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
+
+    const user = new User(stack, 'MyUser');
+    const importedUser = User.fromUserArn(stack, 'MyImportedUser', user.userArn);
+    p.attachToUser(user);
+    p.attachToUser(importedUser);
+
+    const group = new Group(stack, 'MyGroup');
+    const importedGroup = Group.fromGroupArn(stack, 'MyImportedGroup', group.groupArn);
+    p.attachToGroup(group);
+    p.attachToGroup(importedGroup);
+
+    const role = new Role(stack, 'MyRole', {
+      assumedBy: new ServicePrincipal('test.service'),
+    });
+    const importedRole = Role.fromRoleArn(stack, 'MyImportedRole', role.roleArn);
+    p.attachToRole(role);
+    p.attachToRole(importedRole);
+
+    Template.fromStack(stack).templateMatches({
+      Resources:
+      {
+        Policy23B91518:
+         {
+           Type: 'AWS::IAM::Policy',
+           Properties:
+          {
+            Groups: [{ Ref: 'MyGroupCBA54B1B' }],
+            PolicyDocument:
+           {
+             Statement: [{ Action: '*', Effect: 'Allow', Resource: '*' }],
+             Version: '2012-10-17',
+           },
+            PolicyName: 'Policy23B91518',
+            Roles: [{ Ref: 'MyRoleF48FFE04' }],
+            Users: [{ Ref: 'MyUserDC45028B' }],
+          },
+         },
+        MyUserDC45028B: { Type: 'AWS::IAM::User' },
+        MyGroupCBA54B1B: { Type: 'AWS::IAM::Group' },
+        MyRoleF48FFE04:
+         {
+           Type: 'AWS::IAM::Role',
+           Properties:
+          {
+            AssumeRolePolicyDocument:
+           {
+             Statement:
+            [{
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { Service: 'test.service' },
+            }],
+             Version: '2012-10-17',
+           },
+          },
+         },
+      },
+    });
+  });
+
   test('fails if "forced" policy is not attached to a principal', () => {
     new Policy(stack, 'MyPolicy', { force: true });
     expect(() => app.synth()).toThrow(/attached to at least one principal: user, group or role/);
