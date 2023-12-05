@@ -79,7 +79,11 @@ abstract class AliasBase extends Resource implements IAlias {
    * @attribute
    */
   public get aliasArn(): string {
-    return this.keyArn;
+    return Stack.of(this).formatArn({
+      service: 'kms',
+      // aliasName already contains the '/'
+      resource: this.aliasName,
+    });
   }
 
   public get keyId(): string {
