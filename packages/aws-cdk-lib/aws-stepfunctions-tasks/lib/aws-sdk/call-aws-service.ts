@@ -79,9 +79,20 @@ export class CallAwsService extends sfn.TaskStateBase {
     if (this.props.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
       throw new Error('The RUN_JOB integration pattern is not supported for CallAwsService');
     }
+    if (!Token.isUnresolved(this.props.action) && !this.props.action.startsWith(this.props.action[0]?.toLowerCase())) {
+      throw new Error(`action must be camelCase, got: ${this.props.action}`);
+    }
+    if (this.props.parameters) {
+      const invalidKeys = Object.keys(this.props.parameters).filter(key => !key.startsWith(key[0]?.toUpperCase()));
+      if (invalidKeys.length) {
+        throw new Error(`parameter names must be PascalCase, got: ${invalidKeys.join(', ')}`);
+      }
+    }
 
     const iamServiceMap: Record<string, string> = {
       sfn: 'states',
+      cloudwatchlogs: 'logs',
+      mwaa: 'airflow',
     };
     const iamService = iamServiceMap[props.service] ?? props.service;
 

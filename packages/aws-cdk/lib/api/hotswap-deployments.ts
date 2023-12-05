@@ -6,10 +6,10 @@ import { DeployStackResult } from './deploy-stack';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 import { isHotswappableAppSyncChange } from './hotswap/appsync-mapping-templates';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
-import { ICON, ChangeHotswapResult, HotswapMode, HotswappableChange, NonHotswappableChange, HotswappableChangeCandidate, ClassifiedResourceChanges, reportNonHotswappableChange } from './hotswap/common';
+import { ICON, ChangeHotswapResult, HotswapMode, HotswappableChange, NonHotswappableChange, HotswappableChangeCandidate, ClassifiedResourceChanges, reportNonHotswappableChange, reportNonHotswappableResource } from './hotswap/common';
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
-import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
+import { skipChangeForS3DeployCustomResourcePolicy, isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { loadCurrentTemplateWithNestedStacks, NestedStackNames } from './nested-stack-helpers';
 import { CloudFormationStack } from './util/cloudformation';
@@ -29,12 +29,22 @@ const RESOURCE_DETECTORS: { [key: string]: HotswapDetector } = {
   'AWS::AppSync::Resolver': isHotswappableAppSyncChange,
   'AWS::AppSync::FunctionConfiguration': isHotswappableAppSyncChange,
   'AWS::AppSync::GraphQLSchema': isHotswappableAppSyncChange,
+  'AWS::AppSync::ApiKey': isHotswappableAppSyncChange,
 
   'AWS::ECS::TaskDefinition': isHotswappableEcsServiceChange,
   'AWS::CodeBuild::Project': isHotswappableCodeBuildProjectChange,
   'AWS::StepFunctions::StateMachine': isHotswappableStateMachineChange,
   'Custom::CDKBucketDeployment': isHotswappableS3BucketDeploymentChange,
-  'AWS::IAM::Policy': isHotswappableS3BucketDeploymentChange,
+  'AWS::IAM::Policy': async (
+    logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  ): Promise<ChangeHotswapResult> => {
+    // If the policy is for a S3BucketDeploymentChange, we can ignore the change
+    if (await skipChangeForS3DeployCustomResourcePolicy(logicalId, change, evaluateCfnTemplate)) {
+      return [];
+    }
+
+    return reportNonHotswappableResource(change, 'This resource type is not supported for hotswap deployments');
+  },
 
   'AWS::CDK::Metadata': async () => [],
 };

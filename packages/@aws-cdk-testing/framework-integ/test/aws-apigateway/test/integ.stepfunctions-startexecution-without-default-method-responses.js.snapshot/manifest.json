@@ -1,0 +1,161 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8ceb2b359a62fcef8c8d84d394c6af31f4115ac277951fc24570ed06e2099b1d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiBAC2BF45"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiDeployment010A9D4F284640fa221c0b7931c23aed241b95fc"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiDeploymentStageprod3140E1BE"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiEndpoint0DE8A5DE"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Default/GET/StartSyncExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiGETStartSyncExecutionRoleC284C05B"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Default/GET/StartSyncExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiGETStartSyncExecutionRoleDefaultPolicy8B2F6ADF"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/my-rest-api/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myrestapiGET3A49A218"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses"
+    },
+    "awsapigatewaystepfunctionsstartexecutionwithoutdefaultmethodresponsesDefaultTestDeployAssert8B46AA47.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awsapigatewaystepfunctionsstartexecutionwithoutdefaultmethodresponsesDefaultTestDeployAssert8B46AA47.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awsapigatewaystepfunctionsstartexecutionwithoutdefaultmethodresponsesDefaultTestDeployAssert8B46AA47": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awsapigatewaystepfunctionsstartexecutionwithoutdefaultmethodresponsesDefaultTestDeployAssert8B46AA47.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "awsapigatewaystepfunctionsstartexecutionwithoutdefaultmethodresponsesDefaultTestDeployAssert8B46AA47.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "awsapigatewaystepfunctionsstartexecutionwithoutdefaultmethodresponsesDefaultTestDeployAssert8B46AA47.assets"
+      ],
+      "metadata": {
+        "/aws-apigateway-stepfunctions-startexecution-without-default-method-responses/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-apigateway-stepfunctions-startexecution-without-default-method-responses/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-apigateway-stepfunctions-startexecution-without-default-method-responses/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

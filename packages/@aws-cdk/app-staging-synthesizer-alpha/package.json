@@ -83,10 +83,6 @@
       "AWSLINT_BASE_CONSTRUCT": true
     }
   },
-  "dependencies": {
-    "aws-cdk-lib": "0.0.0",
-    "constructs": "^10.0.0"
-  },
   "devDependencies": {
     "aws-cdk-lib": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",

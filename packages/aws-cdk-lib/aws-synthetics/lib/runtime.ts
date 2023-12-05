@@ -190,6 +190,23 @@ export class Runtime {
   public static readonly SYNTHETICS_PYTHON_SELENIUM_1_3 = new Runtime('syn-python-selenium-1.3', RuntimeFamily.PYTHON);
 
   /**
+   * `syn-python-selenium-2.0` includes the following:
+   * - Lambda runtime Python 3.8
+   * - Selenium version 4.10.0
+   * - Chromium version 111.0.5563.146
+   *
+   * New Features:
+   * - **Updated dependencies**: The Chromium and Selenium dependencies are updated to new versions.
+   * - **More precise timestamps**: The start time and stop time of canary runs are now precise to the millisecond.
+   *
+   * Bug fixes:
+   * - **Timestamp added**: A timestamp has been added to canary logs.
+   * - **Session re-use**: A bug was fixed so that canaries are now prevented from reusing the session from their previous canary run.
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-2.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_2_0 = new Runtime('syn-python-selenium-2.0', RuntimeFamily.PYTHON);
+
+  /**
     * @param name The name of the runtime version
     * @param family The Lambda runtime family
     */
