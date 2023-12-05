@@ -188,7 +188,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "MyRestApiDeploymentB555B582d83364d66d67f510f848797cd89349d5": {
+  "MyRestApiDeploymentB555B58276a4103e7ef38befb395a9ace5fdce44": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -208,7 +208,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "MyRestApiDeploymentB555B582d83364d66d67f510f848797cd89349d5"
+     "Ref": "MyRestApiDeploymentB555B58276a4103e7ef38befb395a9ace5fdce44"
     },
     "RestApiId": {
      "Ref": "MyRestApi2D1F47A9"
@@ -306,6 +306,7 @@
   "MyAuthorizer6575980E": {
    "Type": "AWS::ApiGateway::Authorizer",
    "Properties": {
+    "AuthorizerResultTtlInSeconds": 300,
     "AuthorizerUri": {
      "Fn::Join": [
       "",
@@ -366,6 +367,7 @@
   "MySecondAuthorizer25A69B96": {
    "Type": "AWS::ApiGateway::Authorizer",
    "Properties": {
+    "AuthorizerResultTtlInSeconds": 300,
     "AuthorizerUri": {
      "Fn::Join": [
       "",

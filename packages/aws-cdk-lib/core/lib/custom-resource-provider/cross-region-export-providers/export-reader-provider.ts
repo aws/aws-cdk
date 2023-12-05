@@ -36,7 +36,7 @@ export class ExportReader extends Construct {
 
     const resourceType = 'Custom::CrossRegionExportReader';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
-      codeDirectory: path.join(__dirname, 'cross-region-ssm-reader-handler'),
+      codeDirectory: path.join(__dirname, '..', '..', '..', '..', 'custom-resource-handlers', 'dist', 'core', 'cross-region-ssm-reader-handler'),
       runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       policyStatements: [{
         Effect: 'Allow',

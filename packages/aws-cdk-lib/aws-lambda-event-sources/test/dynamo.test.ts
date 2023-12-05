@@ -2,6 +2,7 @@ import { TestFunction } from './test-function';
 import { Template } from '../../assertions';
 import * as dynamodb from '../../aws-dynamodb';
 import * as lambda from '../../aws-lambda';
+import { Bucket } from '../../aws-s3';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
 import * as sources from '../lib';
@@ -796,6 +797,33 @@ describe('DynamoEventSource', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
       'Enabled': false,
     });
+
+  });
+
+  test('S3 onFailure Destination raise unsupport error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const testLambdaFunction = new TestFunction(stack, 'Fn');
+
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+
+    const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+    const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+
+    expect(() => {
+      // WHEN
+      testLambdaFunction.addEventSource(new sources.DynamoEventSource(table, {
+        startingPosition: lambda.StartingPosition.LATEST,
+        onFailure: s3OnFailureDestination,
+      }));
+    //THEN
+    }).toThrowError('S3 onFailure Destination is not supported for this event source');
 
   });
 });

@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-scheduler-schedule.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/70a4ff6207a6b7ce2e7a4354be513e0143bb5f5c671d6826cfb30c010875e4bd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a512067604698fe41cacf63c82484e8e597c04456ac3f27ded0a390ca25f0908.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -58,10 +58,34 @@
             "data": "RoleDefaultPolicy5FFB7DAB"
           }
         ],
+        "/aws-cdk-scheduler-schedule/NamedGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamedGroupA3ABC879"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/UnnamedGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UnnamedGroupBE3E48EE"
+          }
+        ],
         "/aws-cdk-scheduler-schedule/DefaultSchedule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DefaultSchedule597B0B2C"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/NamedGroupSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamedGroupScheduleD7EEFEBC"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/UnnamedGroupSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UnnamedGroupSchedule19260E9B"
           }
         ],
         "/aws-cdk-scheduler-schedule/DisabledSchedule/Resource": [
