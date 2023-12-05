@@ -48,6 +48,12 @@ const deploymentStrategy = new DeploymentStrategy(stack, 'MyDeployStrategy', {
   }),
 });
 
+// hosted config from file
+new HostedConfiguration(stack, 'MyHostedConfigFromFile', {
+  application: appConfigApp,
+  content: ConfigurationContent.fromFile('config.json'),
+});
+
 // create basic config profile and add config version
 const hostedEnv = appConfigApp.addEnvironment('HostedEnv');
 new HostedConfiguration(stack, 'MyHostedConfig', {
@@ -56,7 +62,7 @@ new HostedConfiguration(stack, 'MyHostedConfig', {
   deployTo: [hostedEnv],
   validators: [
     JsonSchemaValidator.fromInline(SCHEMA_STR),
-    // JsonSchemaValidator.fromAsset('/Users/chenjane/Documents/appconfig-l2-constructs/test/schema.json'),
+    JsonSchemaValidator.fromFile('schema.json'),
   ],
   deploymentStrategy,
 });
@@ -138,6 +144,7 @@ new SourcedConfiguration(stack, 'MyConfigFromDocument', {
 const bucketEnv = appConfigApp.addEnvironment('BucketEnv');
 const bucket = new Bucket(stack, 'MyBucket', {
   versioned: true,
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 bucket.applyRemovalPolicy(RemovalPolicy.DESTROY);
 const deployment = new s3Deployment.BucketDeployment(stack, 'DeployConfigInBucket', {

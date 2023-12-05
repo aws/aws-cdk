@@ -303,6 +303,84 @@
               "version": "0.0.0"
             }
           },
+          "MyHostedConfigFromFile": {
+            "id": "MyHostedConfigFromFile",
+            "path": "aws-appconfig-configuration/MyHostedConfigFromFile",
+            "children": {
+              "DeploymentStrategy": {
+                "id": "DeploymentStrategy",
+                "path": "aws-appconfig-configuration/MyHostedConfigFromFile/DeploymentStrategy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appconfig-configuration/MyHostedConfigFromFile/DeploymentStrategy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppConfig::DeploymentStrategy",
+                      "aws:cdk:cloudformation:props": {
+                        "deploymentDurationInMinutes": 20,
+                        "finalBakeTimeInMinutes": 10,
+                        "growthFactor": 10,
+                        "growthType": "EXPONENTIAL",
+                        "name": "awsappconfigconfiguration-MyFromFile-DeploymentStrategy-C2367737",
+                        "replicateTo": "NONE"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appconfig.CfnDeploymentStrategy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appconfig-alpha.DeploymentStrategy",
+                  "version": "0.0.0"
+                }
+              },
+              "ConfigurationProfile": {
+                "id": "ConfigurationProfile",
+                "path": "aws-appconfig-configuration/MyHostedConfigFromFile/ConfigurationProfile",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::ConfigurationProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyAppConfigB4B63E75"
+                    },
+                    "locationUri": "hosted",
+                    "name": "awsappconfigconfiguration-MyHostedConfigFromFile-8ED1123C"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnConfigurationProfile",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-configuration/MyHostedConfigFromFile/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::HostedConfigurationVersion",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyAppConfigB4B63E75"
+                    },
+                    "configurationProfileId": {
+                      "Ref": "MyHostedConfigFromFileConfigurationProfile32B2D26F"
+                    },
+                    "content": "{\n  \"content\": \"This is the configuration content\"\n}",
+                    "contentType": "application/json"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnHostedConfigurationVersion",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appconfig-alpha.HostedConfiguration",
+              "version": "0.0.0"
+            }
+          },
           "MyHostedConfig": {
             "id": "MyHostedConfig",
             "path": "aws-appconfig-configuration/MyHostedConfig",
@@ -319,6 +397,10 @@
                     "locationUri": "hosted",
                     "name": "awsappconfigconfiguration-MyHostedConfig-4CF350AE",
                     "validators": [
+                      {
+                        "content": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"string\"\n}",
+                        "type": "JSON_SCHEMA"
+                      },
                       {
                         "content": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"string\"\n}",
                         "type": "JSON_SCHEMA"

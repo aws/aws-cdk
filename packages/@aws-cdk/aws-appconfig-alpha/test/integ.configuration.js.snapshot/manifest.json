@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/df33d9dc000fae6b4ae1252e22f268275eac602b701d0e4c4aa8c463411bb15e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6ee0190db59f43253bdcd852c99b5c2229188185876571206fbdcab150ea4786.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -98,6 +98,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyDeployStrategy062CAEA2"
+          }
+        ],
+        "/aws-appconfig-configuration/MyHostedConfigFromFile/DeploymentStrategy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromFileDeploymentStrategyCAF37A7C"
+          }
+        ],
+        "/aws-appconfig-configuration/MyHostedConfigFromFile/ConfigurationProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromFileConfigurationProfile32B2D26F"
+          }
+        ],
+        "/aws-appconfig-configuration/MyHostedConfigFromFile/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromFile943CF9F9"
           }
         ],
         "/aws-appconfig-configuration/MyHostedConfig/ConfigurationProfile": [
