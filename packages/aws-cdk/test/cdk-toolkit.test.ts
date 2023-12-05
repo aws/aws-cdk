@@ -603,7 +603,20 @@ describe('destroy', () => {
     }).resolves;
   });
 
-  test('fail on non-existent stack', async () => {
+  test('fail on one non-existent stack', async () => {
+    const toolkit = defaultToolkitSetup();
+
+    await expect(() => {
+      return toolkit.destroy({
+        selector: { patterns: ['Test-Stack-A/Test-Stack-C', 'Test-Stack-X'] },
+        exclusively: true,
+        force: true,
+        fromDeploy: true,
+      });
+    }).rejects.toThrowError('Cannot run cdk destroy on stack(s). Test-Stack-X does not exist.');
+  });
+
+  test('fail on multiple non-existent stacks', async () => {
     const toolkit = defaultToolkitSetup();
 
     await expect(() => {
