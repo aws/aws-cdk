@@ -11,6 +11,7 @@ class ConstructsModule extends ExternalModule {
 
 class CdkHandlerModule extends ExternalModule {
   public readonly CdkHandler = Type.fromName(this, 'CdkHandler');
+  public readonly CdkHandlerProps = Type.fromName(this, 'CdkHandlerProps');
 
   public constructor() {
     super('../../handler-framework/lib/cdk-handler');

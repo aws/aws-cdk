@@ -1,4 +1,4 @@
-import { Expression, Type, stmt, expr, SuperInitializer, ObjectLiteral, Splat } from '@cdklabs/typewriter';
+import { Expression, Type, stmt, expr, SuperInitializer, ObjectLiteral } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkClass } from './classes';
 import { CONSTRUCTS_MODULE } from './modules';
 
@@ -8,7 +8,6 @@ export class CdkHandlerFrameworkConstructor {
    */
   public static forCdkFunction(_class: CdkHandlerFrameworkClass) {
     const superProps = new ObjectLiteral([
-      new Splat(expr.directCode('props')),
       ['code', expr.directCode('cdkHandler.code')],
       ['handler', expr.directCode('cdkHandler.entrypoint')],
       ['runtime', expr.directCode('cdkHandler.runtime')],
@@ -17,11 +16,17 @@ export class CdkHandlerFrameworkConstructor {
   }
 
   /**
+   * Builds a constructor for a CdkSingletonFunction class.
+   */
+  public static forCdkSingletonFunction(_class: CdkHandlerFrameworkClass) {
+    CdkHandlerFrameworkConstructor.forCdkFunction(_class);
+  }
+
+  /**
    * Builds a constructor for a CdkCustomResourceProvider class.
    */
   public static forCdkCustomResourceProvider(_class: CdkHandlerFrameworkClass) {
     const superProps = new ObjectLiteral([
-      new Splat(expr.directCode('props')),
       ['codeDirectory', expr.directCode('cdkHandler.codeDirectory')],
       ['runtimeName', expr.directCode('cdkHandler.runtime.name')],
     ]);
@@ -39,15 +44,11 @@ export class CdkHandlerFrameworkConstructor {
       name: 'id',
       type: Type.STRING,
     });
-    init.addParameter({
-      name: 'props',
-      type: _class.propsType,
-    });
 
     // build CdkHandler instance
     init.addBody(
       stmt.constVar(
-        expr.ident('cdkHandlerProps'),
+        expr.directCode('cdkHandlerProps: CdkHandlerProps'),
         expr.object({
           codeDirectory: expr.lit(`${_class.codeDirectory}`),
           entrypoint: _class.entrypoint

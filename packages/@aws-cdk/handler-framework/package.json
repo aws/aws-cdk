@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/cdk-handler-framework",
+  "name": "@aws-cdk/handler-framework",
   "version": "0.0.0",
   "private": true,
   "description": "CDK Vended Handler Framework",
@@ -40,7 +40,7 @@
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
-    "directory": "packages/@aws-cdk/cdk-handler-framework"
+    "directory": "packages/@aws-cdk/handler-framework"
   },
   "keywords": [
     "aws",

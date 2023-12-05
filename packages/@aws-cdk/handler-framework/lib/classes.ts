@@ -1,10 +1,27 @@
-import { Module, ClassType, stmt, expr, Type, StructType } from '@cdklabs/typewriter';
+import { Module, ClassType, stmt, expr, Type } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkConstructor } from './constructors';
 import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
 
+/**
+ * Initialization properties used to build a `CdkHandlerFrameworkClass`.
+ */
 export interface CdkHandlerClassProps {
+  /**
+   * The name of the class.
+   */
   readonly className: string;
+
+  /**
+   * A local file system directory with the provider's code. The code will be
+   * bundled into a zip asset and wired to the provider's AWS Lambda function.
+   */
   readonly codeDirectory: string;
+
+  /**
+   * The name of the method within your code that Lambda calls to execute your function.
+   *
+   * @default 'index.handler'
+   */
   readonly entrypoint?: string;
 }
 
@@ -12,30 +29,22 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   /**
    * Builds a CdkFunction class.
    */
-  public static buildCdkFunction(module: Module, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
-    return new (class CdkFunction extends CdkHandlerFrameworkClass {
+  public static buildCdkFunction(scope: Module, props: CdkHandlerClassProps) {
+    new (class CdkFunction extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
-      public readonly propsType: Type;
 
       public constructor() {
-        super(module, {
+        super(scope, {
           name: props.className,
           extends: LAMBDA_MODULE.Function,
         });
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
 
-        CONSTRUCTS_MODULE.importSelective(module, ['Constructs']);
-        CDK_HANDLER_MODULE.importSelective(module, ['CdkHandler']);
-        LAMBDA_MODULE.importSelective(module, ['Function']);
-
-        const _props = new StructType(this, {
-          name: 'CdkFunctionProps',
-          extends: [LAMBDA_MODULE.FunctionOptions],
-          export: true,
-        });
-        this.propsType = _props.type;
+        CONSTRUCTS_MODULE.importSelective(scope, ['Construct']);
+        CDK_HANDLER_MODULE.importSelective(scope, ['CdkHandlerProps', 'CdkHandler']);
+        LAMBDA_MODULE.importSelective(scope, ['Function']);
 
         CdkHandlerFrameworkConstructor.forCdkFunction(this);
       }
@@ -45,39 +54,22 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   /**
    * Builds a CdkSingletonFunction class.
    */
-  public static buildCdkSingletonFunction(module: Module, props: CdkHandlerClassProps): ClassType {
-    return new (class CdkSingletonFunction extends CdkHandlerFrameworkClass {
+  public static buildCdkSingletonFunction(scope: Module, props: CdkHandlerClassProps) {
+    new (class CdkSingletonFunction extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
-      public readonly propsType: Type;
 
       public constructor() {
-        super(module, {
+        super(scope, {
           name: props.className,
           extends: LAMBDA_MODULE.SingletonFunction,
         });
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
 
-        CONSTRUCTS_MODULE.importSelective(module, ['Constructs']);
-        CDK_HANDLER_MODULE.importSelective(module, ['CdkHandler']);
-        LAMBDA_MODULE.importSelective(module, ['SingletonFunction']);
-
-        const _props = new StructType(this, {
-          name: 'CdkSingletonFunctionProps',
-          extends: [LAMBDA_MODULE.FunctionOptions],
-          export: true,
-        });
-        this.propsType = _props.type;
-        _props.addProperty({
-          name: 'uuid',
-          type: Type.STRING,
-        });
-        _props.addProperty({
-          name: 'lambdaPurpose',
-          type: Type.STRING,
-          optional: true,
-        });
+        CONSTRUCTS_MODULE.importSelective(scope, ['Construct']);
+        CDK_HANDLER_MODULE.importSelective(scope, ['CdkHandlerProps', 'CdkHandler']);
+        LAMBDA_MODULE.importSelective(scope, ['SingletonFunction']);
 
         CdkHandlerFrameworkConstructor.forCdkFunction(this);
       }
@@ -87,30 +79,22 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   /**
    * Builds a CdkCustomResourceProvider class.
    */
-  public static buildCdkCustomResourceProvider(module: Module, props: CdkHandlerClassProps): ClassType {
-    return new (class CdkCustomResourceProvider extends CdkHandlerFrameworkClass {
+  public static buildCdkCustomResourceProvider(scope: Module, props: CdkHandlerClassProps) {
+    new (class CdkCustomResourceProvider extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
-      public readonly propsType: Type;
 
       public constructor() {
-        super(module, {
+        super(scope, {
           name: props.className,
           extends: CORE_MODULE.CustomResourceProviderBase,
         });
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
 
-        CONSTRUCTS_MODULE.importSelective(module, ['Constructs']);
-        CDK_HANDLER_MODULE.importSelective(module, ['CdkHandler']);
-        CORE_MODULE.importSelective(module, ['CustomResourceProviderBase']);
-
-        const _props = new StructType(this, {
-          name: 'CdkCustomResourceProviderProps',
-          extends: [CORE_MODULE.CustomResourceProviderOptions],
-          export: true,
-        });
-        this.propsType = _props.type;
+        CONSTRUCTS_MODULE.importSelective(scope, ['Construct']);
+        CDK_HANDLER_MODULE.importSelective(scope, ['CdkHandlerProps', 'CdkHandler']);
+        CORE_MODULE.importSelective(scope, ['CustomResourceProviderBase']);
 
         const getOrCreateMethod = this.addMethod({
           name: 'getOrCreate',
@@ -125,12 +109,8 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           name: 'uniqueid',
           type: Type.STRING,
         });
-        getOrCreateMethod.addParameter({
-          name: 'props',
-          type: this.propsType,
-        });
         getOrCreateMethod.addBody(
-          stmt.ret(expr.directCode('this.getOrCreateProvider(scope, uniqueid, props).serviceToken')),
+          stmt.ret(expr.directCode('this.getOrCreateProvider(scope, uniqueid).serviceToken')),
         );
 
         const getOrCreateProviderMethod = this.addMethod({
@@ -146,14 +126,11 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           name: 'uniqueid',
           type: Type.STRING,
         });
-        getOrCreateProviderMethod.addParameter({
-          name: 'props',
-          type: this.propsType,
-        });
         getOrCreateProviderMethod.addBody(
           stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`')),
           stmt.constVar(expr.ident('stack'), expr.directCode('Stack.of(scope)')),
-          stmt.ret(expr.ident('provider')),
+          stmt.constVar(expr.ident('existing'), expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
+          stmt.ret(expr.directCode(`existing ?? new ${this.name}(scope, id)`)),
         );
 
         CdkHandlerFrameworkConstructor.forCdkCustomResourceProvider(this);
@@ -170,9 +147,4 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
    *
    */
   public abstract readonly entrypoint: string;
-
-  /**
-   *
-   */
-  public abstract readonly propsType: Type;
 }
