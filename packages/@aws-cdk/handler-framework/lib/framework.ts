@@ -1,43 +1,102 @@
+import * as path from 'path';
 import { Module, TypeScriptRenderer } from '@cdklabs/typewriter';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as fs from 'fs-extra';
-import { CdkHandlerFrameworkClass, CdkHandlerClassProps } from './classes';
+import { CdkHandlerClassProps, CdkHandlerFrameworkClass } from './classes';
 
 /**
- * Initialization properties for generating `CdkHandlerFramework` components.
+ * Handler framework component types.
  */
-export interface CdkHandlerFrameworkProps extends CdkHandlerClassProps {
+export enum ComponentType {
   /**
-   * The location to render the output file to.
+   * `CdkFunction`
    */
-  readonly outputFileLocation: string;
+  CDK_FUNCTION = 'CdkFunction',
+
+  /**
+   * `CdkSingletonFunction`
+   */
+  CDK_SINGLETON_FUNCTION = 'CdkSingletonFunction',
+
+  /**
+   * `CdkCustomResourceProvider`
+   */
+  CDK_CUSTOM_RESOURCE_PROVIDER = 'CdkCustomResourceProvider',
+}
+
+/**
+ * Properties used to generate a specific handler framework component
+ */
+export interface ComponentDefinition {
+  /**
+   * The component type to generate.
+   */
+  readonly type: ComponentType;
+
+  /**
+   * The name to generate the component with.
+   *
+   * Note: This will be the name of the class, i.e., `MyCdkFunction`, etc.
+   */
+  readonly name: string;
+
+  /**
+   * The local file system directory with the source code.
+   */
+  readonly codeDirectory: string;
+
+  /**
+   * Runtimes that are compatible with the source code.
+   */
+  readonly compatibleRuntimes: Runtime[];
+
+  /**
+   * The name of the method within your code that Lambda calls to execute your function.
+   *
+   * @default 'index.handler'
+   */
+  readonly entrypoint?: string;
+
+  /**
+   * Configurable options for the underlying Lambda function.
+   */
+  readonly providerOptions?: any;
 }
 
 export class CdkHandlerFramework {
   /**
-   * Generates a CdkFunction class and renders it to a specified output file location.
+   * Generate framework using component definitions.
    */
-  public static generateCdkFunction(props: CdkHandlerFrameworkProps) {
-    const module = new Module('cdk-function');
-    CdkHandlerFrameworkClass.buildCdkFunction(module, props);
-    fs.outputFileSync(`${props.outputFileLocation}/index.generated.ts`, CdkHandlerFramework.renderer.render(module));
-  }
+  public static generate(outputFileLocation: string, components: ComponentDefinition[]) {
+    const module = new Module('cdk-handler-framework');
 
-  /**
-   * Generates a CdkSingletonFunction class and renders it to a specified output file location.
-   */
-  public static generateCdkSingletonFunction(props: CdkHandlerFrameworkProps) {
-    const module = new Module('cdk-singleton-function');
-    CdkHandlerFrameworkClass.buildCdkSingletonFunction(module, props);
-    fs.outputFileSync(`${props.outputFileLocation}/index.generated.ts`, CdkHandlerFramework.renderer.render(module));
-  }
+    for (let component of components) {
+      const props: CdkHandlerClassProps = {
+        codeDirectory: component.codeDirectory,
+        className: component.name,
+        entrypoint: component.entrypoint,
+      };
 
-  /**
-   * Generates a CdkCustomResourceProvider class and renders it to a specified output file location.
-   */
-  public static generateCdkCustomResourceProvider(props: CdkHandlerFrameworkProps) {
-    const module = new Module('cdk-custom-resource-provider');
-    CdkHandlerFrameworkClass.buildCdkCustomResourceProvider(module, props);
-    fs.outputFileSync(`${props.outputFileLocation}/index.generated.ts`, CdkHandlerFramework.renderer.render(module));
+      switch (component.type) {
+        case ComponentType.CDK_FUNCTION: {
+          CdkHandlerFrameworkClass.buildCdkFunction(module, props);
+          break;
+        }
+        case ComponentType.CDK_SINGLETON_FUNCTION: {
+          CdkHandlerFrameworkClass.buildCdkSingletonFunction(module, props);
+          break;
+        }
+        case ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER: {
+          CdkHandlerFrameworkClass.buildCdkCustomResourceProvider(module, props);
+          break;
+        }
+      }
+    }
+
+    fs.outputFileSync(
+      `${path.join(__dirname, outputFileLocation)}/index.generated.ts`,
+      CdkHandlerFramework.renderer.render(module),
+    );
   }
 
   private static readonly renderer = new TypeScriptRenderer();

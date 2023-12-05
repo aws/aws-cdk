@@ -29,8 +29,8 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   /**
    * Builds a `CdkFunction` class.
    */
-  public static buildCdkFunction(scope: Module, props: CdkHandlerClassProps) {
-    new (class CdkFunction extends CdkHandlerFrameworkClass {
+  public static buildCdkFunction(scope: Module, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
+    return new (class CdkFunction extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
 
@@ -42,9 +42,9 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
 
-        CONSTRUCTS_MODULE.importSelective(scope, ['Construct']);
-        CDK_HANDLER_MODULE.importSelective(scope, ['CdkHandlerProps', 'CdkHandler']);
-        LAMBDA_MODULE.importSelective(scope, ['Function']);
+        CONSTRUCTS_MODULE.importSelective(scope, ['Construct']),
+        CDK_HANDLER_MODULE.importSelective(scope, ['CdkHandlerProps', 'CdkHandler']),
+        LAMBDA_MODULE.importSelective(scope, ['Function']),
 
         CdkHandlerFrameworkConstructor.forCdkFunction(this);
       }
@@ -54,8 +54,8 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   /**
    * Builds a `CdkSingletonFunction` class.
    */
-  public static buildCdkSingletonFunction(scope: Module, props: CdkHandlerClassProps) {
-    new (class CdkSingletonFunction extends CdkHandlerFrameworkClass {
+  public static buildCdkSingletonFunction(scope: Module, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
+    return new (class CdkSingletonFunction extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
 
@@ -79,8 +79,8 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   /**
    * Builds a `CdkCustomResourceProvider` class.
    */
-  public static buildCdkCustomResourceProvider(scope: Module, props: CdkHandlerClassProps) {
-    new (class CdkCustomResourceProvider extends CdkHandlerFrameworkClass {
+  public static buildCdkCustomResourceProvider(scope: Module, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
+    return new (class CdkCustomResourceProvider extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
 

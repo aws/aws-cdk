@@ -1,46 +1,26 @@
-import * as path from 'path';
-import { ComponentDefinition, ComponentType, config } from '../lib/config';
-import { CdkHandlerFramework } from '../lib/framework';
+import { config } from '../lib/config';
+import { CdkHandlerFramework, ComponentDefinition } from '../lib/framework';
 
-/* eslint-disable no-console */
-
-const componentDefinitions: ComponentDefinition[] = [];
+const generate: { [outputFileLocation: string]: ComponentDefinition[] } = {};
 
 function main() {
-  recurse(config);
-  for (const component of componentDefinitions) {
-    generateFrameworkComponent(component);
+  recurse(config, []);
+  for (const [outputFileLocation, components] of Object.entries(generate)) {
+    CdkHandlerFramework.generate(outputFileLocation, components);
   }
 
-  function recurse(_config: any) {
+  function recurse(_config: any, path: string[]) {
     if (_config instanceof Array) {
-      componentDefinitions.push(..._config);
+      const outputFileLocation = path.join('/');
+      generate[outputFileLocation] = _config;
       return;
     }
     for (const key in _config) {
       if (_config.hasOwnProperty(key) && typeof _config[key] === 'object') {
-        recurse(_config[key]);
+        path.push(key);
+        recurse(_config[key], path);
+        path.pop(); // backtrack
       }
-    }
-  }
-}
-
-function generateFrameworkComponent(component: ComponentDefinition) {
-  switch (component.type) {
-    case ComponentType.CDK_FUNCTION: {
-      CdkHandlerFramework.generateCdkFunction({
-        outputFileLocation: path.join(__dirname),
-        className: component.name,
-        codeDirectory: component.codeDirectory,
-        entrypoint: component.entrypoint,
-      });
-      return;
-    }
-    case ComponentType.CDK_SINGLETON_FUNCTION: {
-      return;
-    }
-    case ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER: {
-      return;
     }
   }
 }
