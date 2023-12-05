@@ -4,7 +4,7 @@
   "private": true,
   "description": "CDK Vended Handler Framework",
   "scripts": {
-    "build": "cdk-build",
+    "build": "tsc -b && node scripts/generate.js",
     "integ": "integ-runner",
     "lint": "cdk-lint",
     "package": "cdk-package",

@@ -4,7 +4,7 @@ import { Runtime } from 'aws-cdk-lib/aws-lambda';
 /**
  * Handler framework component types.
  */
-enum ComponentType {
+export enum ComponentType {
   /**
    * `CdkFunction`
    */
@@ -24,7 +24,7 @@ enum ComponentType {
 /**
  * Properties used to generate a specific handler framework component
  */
-interface ComponentDefinition {
+export interface ComponentDefinition {
   /**
    * The component type to generate.
    */
@@ -60,7 +60,7 @@ interface ComponentDefinition {
   readonly providerOptions?: any;
 }
 
-type HandlerFrameworkConfig = { [module: string]: { [identifier: string]: ComponentDefinition[] } };
+export type HandlerFrameworkConfig = { [module: string]: { [identifier: string]: ComponentDefinition[] } };
 
 // output will be packages/aws-cdk-lib/handler-framework/<module>/<identifier>/index.generated.ts
 export const config: HandlerFrameworkConfig = {
