@@ -98,7 +98,7 @@ async function main() {
 
   function recurse(_config: any, _path: string[]) {
     if (_config instanceof Array) {
-      const outputFileLocation = path.join('/');
+      const outputFileLocation = _path.join('/');
       framework[outputFileLocation] = _config;
       return;
     }

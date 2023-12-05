@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { Expression, Type, stmt, expr, SuperInitializer, ObjectLiteral } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkClass } from './classes';
 import { CONSTRUCTS_MODULE } from './modules';

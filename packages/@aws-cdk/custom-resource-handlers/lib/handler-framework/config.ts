@@ -5,7 +5,7 @@ type HandlerFrameworkConfig = { [module: string]: { [identifier: string]: Compon
 
 // output will be packages/aws-cdk-lib/handler-framework/<module>/<identifier>/index.generated.ts
 export const config: HandlerFrameworkConfig = {
-  'aws-s3': {
+  'aws-dynamodb': {
     'replica-provider': [
       {
         type: ComponentType.CDK_FUNCTION,

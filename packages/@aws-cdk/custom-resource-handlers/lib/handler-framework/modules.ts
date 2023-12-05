@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { ExternalModule, Type } from '@cdklabs/typewriter';
 
 class ConstructsModule extends ExternalModule {

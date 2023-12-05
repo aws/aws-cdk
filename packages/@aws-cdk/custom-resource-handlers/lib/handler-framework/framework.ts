@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { ExternalModule, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { CdkHandlerClassProps, CdkHandlerFrameworkClass } from './classes';
@@ -105,6 +106,6 @@ export class CdkHandlerFramework extends Module {
    * Render built framework into an output file.
    */
   public render(outputFileLocation: string) {
-    fs.outputFileSync(`${outputFileLocation}.generated.ts`, this.renderer.render(this));
+    fs.outputFileSync(`dist/${outputFileLocation}.generated.ts`, this.renderer.render(this));
   }
 }

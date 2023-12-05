@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { Module, ClassType, stmt, expr, Type, ExternalModule } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkConstructor } from './constructors';
 import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
