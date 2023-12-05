@@ -62,9 +62,10 @@ interface ComponentDefinition {
 
 type HandlerFrameworkConfig = { [module: string]: { [identifier: string]: ComponentDefinition[] } };
 
+// output will be packages/aws-cdk-lib/handler-framework/<module>/<identifier>/index.generated.ts
 export const config: HandlerFrameworkConfig = {
-  s3: {
-    replicaProvider: [
+  'aws-s3': {
+    'replica-provider': [
       {
         type: ComponentType.CDK_FUNCTION,
         name: 'ReplicaOnEventProvider',
@@ -81,8 +82,8 @@ export const config: HandlerFrameworkConfig = {
       },
     ],
   },
-  ses: {
-    dropSpamProvider: [
+  'aws-ses': {
+    'drop-spam-provider': [
       {
         type: ComponentType.CDK_SINGLETON_FUNCTION,
         name: 'DropSpamProvider',

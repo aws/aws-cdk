@@ -19,7 +19,7 @@ export class CdkHandlerFramework {
   public static generateCdkFunction(props: CdkHandlerFrameworkProps) {
     const module = new Module('cdk-function');
     CdkHandlerFrameworkClass.buildCdkFunction(module, props);
-    fs.outputFileSync(`${props.outputFileLocation}/index.ts`, CdkHandlerFramework.renderer.render(module));
+    fs.outputFileSync(`${props.outputFileLocation}/index.generated.ts`, CdkHandlerFramework.renderer.render(module));
   }
 
   /**
@@ -28,7 +28,7 @@ export class CdkHandlerFramework {
   public static generateCdkSingletonFunction(props: CdkHandlerFrameworkProps) {
     const module = new Module('cdk-singleton-function');
     CdkHandlerFrameworkClass.buildCdkSingletonFunction(module, props);
-    fs.outputFileSync(`${props.outputFileLocation}/index.ts`, CdkHandlerFramework.renderer.render(module));
+    fs.outputFileSync(`${props.outputFileLocation}/index.generated.ts`, CdkHandlerFramework.renderer.render(module));
   }
 
   /**
@@ -37,7 +37,7 @@ export class CdkHandlerFramework {
   public static generateCdkCustomResourceProvider(props: CdkHandlerFrameworkProps) {
     const module = new Module('cdk-custom-resource-provider');
     CdkHandlerFrameworkClass.buildCdkCustomResourceProvider(module, props);
-    fs.outputFileSync(`${props.outputFileLocation}/index.ts`, CdkHandlerFramework.renderer.render(module));
+    fs.outputFileSync(`${props.outputFileLocation}/index.generated.ts`, CdkHandlerFramework.renderer.render(module));
   }
 
   private static readonly renderer = new TypeScriptRenderer();
