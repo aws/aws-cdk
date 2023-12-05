@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as mimeTypes from 'mime-types';
+import * as path from 'path';
 import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy } from 'aws-cdk-lib';
 import { CfnConfigurationProfile, CfnDeployment, CfnHostedConfigurationVersion } from 'aws-cdk-lib/aws-appconfig';
 import * as cp from 'aws-cdk-lib/aws-codepipeline';
@@ -766,11 +767,11 @@ export abstract class JsonSchemaValidator implements IValidator {
   /**
    * Defines a JSON Schema validator from a file.
    *
-   * @param path The path to the file that defines the validator
+   * @param inputPath The path to the file that defines the validator
    */
-  public static fromFile(path: string): JsonSchemaValidator {
+  public static fromFile(inputPath: string): JsonSchemaValidator {
     return {
-      content: fs.readFileSync(path).toString(),
+      content: fs.readFileSync(path.resolve(inputPath)).toString(),
       type: ValidatorType.JSON_SCHEMA,
     };
   }
@@ -824,13 +825,13 @@ export abstract class ConfigurationContent {
   /**
    * Defines the hosted configuration content from a file.
    *
-   * @param path The path to the file that defines configuration content
+   * @param inputPath The path to the file that defines configuration content
    * @param contentType The content type of the configuration
    */
-  public static fromFile(path: string, contentType?: string): ConfigurationContent {
+  public static fromFile(inputPath: string, contentType?: string): ConfigurationContent {
     return {
-      content: fs.readFileSync(path).toString(),
-      contentType: contentType || mimeTypes.lookup(path) || 'application/json',
+      content: fs.readFileSync(path.resolve(inputPath)).toString(),
+      contentType: contentType || mimeTypes.lookup(inputPath) || 'application/json',
     };
   }
 
