@@ -105,7 +105,7 @@
     "aws-sdk": "^2.1498.0",
     "camelcase": "^6.3.0",
     "cdk-assets": "0.0.0",
-    "cdk-from-cfn": "^0.69.0",
+    "cdk-from-cfn": "^0.83.0",
     "chalk": "^4",
     "chokidar": "^3.5.3",
     "decamelize": "^5.0.1",

@@ -25,7 +25,8 @@ class GoodPythonStack(Stack):
       URL for website hosted on S3
     """
     self.website_url = s3Bucket.attr_website_url
-    cdk.CfnOutput(self, 'WebsiteURL', 
+    cdk.CfnOutput(self, 'CfnOutputWebsiteURL',
+      key = 'WebsiteURL',
       description = 'URL for website hosted on S3',
       value = str(self.website_url),
     )
@@ -37,7 +38,8 @@ class GoodPythonStack(Stack):
       'https://',
       s3Bucket.attr_domain_name,
     ])
-    cdk.CfnOutput(self, 'S3BucketSecureURL', 
+    cdk.CfnOutput(self, 'CfnOutputS3BucketSecureURL', 
+      key = 'S3BucketSecureURL',
       description = 'Name of S3 bucket to hold website content',
       value = str(self.s3_bucket_secure_url),
     )
