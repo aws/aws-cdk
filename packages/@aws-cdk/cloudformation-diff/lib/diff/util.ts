@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { loadAwsServiceSpecSync } from '@aws-cdk/aws-service-spec';
 import { Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { ResourceReplacement, ResourceReplacements } from '../format';
@@ -25,14 +26,33 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
       lvalue.toString() === rvalue.toString()) {
     return true;
   }
+
+  const containsFn = Object.keys(lvalue ?? {}).filter((key => key ? (key.includes('Fn::') ? true : false) : false)).length > 0 &&
+    Object.keys(rvalue ?? {}).filter((key => key ? (key.includes('Fn::') ? true : false) : false)).length > 0;
+
+  if (containsFn) {
+    return yamlFnEqual(lvalue, rvalue);
+  }
   // allows a numeric 10 and a literal "10" to be equivalent;
   // this is consistent with CloudFormation.
   if ((typeof lvalue === 'string' || typeof rvalue === 'string') &&
       safeParseFloat(lvalue) === safeParseFloat(rvalue)) {
     return true;
   }
+  // CFN considers [x] and x to be the same thing, sometimes.
+  if (Array.isArray(lvalue) !== Array.isArray(rvalue)) {
+    if (Array.isArray(lvalue)) {
+      if (lvalue.length === 1) {
+        return deepEqual(lvalue[0], rvalue);
+      }
+    } else if (Array.isArray(rvalue)) {
+      if (rvalue.length === 1) {
+        return deepEqual(lvalue, rvalue[0]);
+      }
+    }
+    return false;
+  }
   if (typeof lvalue !== typeof rvalue) { return false; }
-  if (Array.isArray(lvalue) !== Array.isArray(rvalue)) { return false; }
   if (Array.isArray(lvalue) /* && Array.isArray(rvalue) */) {
     if (lvalue.length !== rvalue.length) { return false; }
     for (let i = 0 ; i < lvalue.length ; i++) {
@@ -98,6 +118,51 @@ function dependsOnEqual(lvalue: any, rvalue: any): boolean {
   }
 
   return false;
+}
+
+function yamlFnEqual(lvalue: any, rvalue: any): boolean {
+  for (const lintrinsic of Object.keys(lvalue)) {
+    for (const rintrinsic of Object.keys(rvalue)) {
+      if (lintrinsic !== rintrinsic) {
+        return false;
+      }
+      const intrinsic = lintrinsic;
+      switch (intrinsic) {
+        // checks for equivalency in both yaml forms of Fn::GetAtt.
+        // !Fn::GetAtt 'foo.bar' is equivalent to
+        // Fn::GetAtt: ['foo', 'bar']
+        case 'Fn::GetAtt':
+          let array = undefined;
+          let str = undefined;
+          if (Array.isArray(lvalue[intrinsic]) && !Array.isArray(rvalue[intrinsic]) && typeof rvalue[intrinsic] === 'string') {
+            array = lvalue[intrinsic];
+            str = rvalue[intrinsic];
+          } else if (!Array.isArray(lvalue[intrinsic]) && Array.isArray(rvalue[intrinsic]) && typeof lvalue[intrinsic] === 'string') {
+            array = rvalue[intrinsic];
+            str = lvalue[intrinsic];
+          }
+
+          // if one value is an array, and the value is a string, check for usage form
+          if (array && str) {
+            // check if array is a string[]
+            let strArr: boolean = true;
+            array.forEach((item: any) => {
+              if (typeof item !== 'string') {
+                strArr = false;
+              }
+            });
+
+            if (strArr && array.join('.') === str) {
+              return true;
+            }
+          }
+
+          return deepEqual(rvalue[intrinsic], lvalue[intrinsic]);
+      }
+    }
+  }
+
+  return true;
 }
 
 /**

@@ -153,9 +153,9 @@ function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOut
     };
   }
 
-  console.log('----=----=-=-=-=-=-=');
-  console.log(JSON.stringify(replacements, undefined, 2));
-  console.log('----=----=-=-=-=-=-=');
+  //console.log('----=----=-=-=-=-=-=');
+  //console.log(JSON.stringify(replacements, undefined, 2));
+  //console.log('----=----=-=-=-=-=-=');
 
   return replacements;
 }

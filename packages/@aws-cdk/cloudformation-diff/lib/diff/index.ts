@@ -46,7 +46,7 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
 
     otherDiffs = diffKeyedEntities(oldValue, newValue, _diffOther);
     delete otherDiffs.Properties;
-    // TODO: should only happen for CDK migrate
+    // TODO: should only happen with the right flag set
     delete otherDiffs.Metadata;
   }
 
@@ -76,8 +76,6 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
           break;
       }
     }
-
-    console.log('changeImpact for key ' + key + ' ' + changeImpact);
 
     return new types.PropertyDifference(oldV, newV, { changeImpact });
   }
