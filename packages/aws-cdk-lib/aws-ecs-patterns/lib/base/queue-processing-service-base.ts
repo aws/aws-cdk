@@ -5,7 +5,7 @@ import {
   AwsLogDriver, BaseService, CapacityProviderStrategy, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
   ICluster, LogDriver, PropagatedTagSource, Secret,
 } from '../../../aws-ecs';
-import { IQueue, Queue } from '../../../aws-sqs';
+import * as sqs from '../../../aws-sqs';
 import { CfnOutput, Duration, FeatureFlags, Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
 
@@ -92,7 +92,7 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default - SQS Queue with CloudFormation-generated name
    */
-  readonly queue?: IQueue;
+  readonly queue?: sqs.ICfnQueue;
 
   /**
    * The maximum number of times that a message can be received by consumers.
@@ -230,12 +230,12 @@ export abstract class QueueProcessingServiceBase extends Construct {
   /**
    * The SQS queue that the service will process from
    */
-  public readonly sqsQueue: IQueue;
+  public readonly sqsQueue: sqs.IQueue;
 
   /**
    * The dead letter queue for the primary SQS queue
    */
-  public readonly deadLetterQueue?: IQueue;
+  public readonly deadLetterQueue?: sqs.IQueue;
 
   /**
    * The cluster where your service will be deployed
@@ -297,12 +297,12 @@ export abstract class QueueProcessingServiceBase extends Construct {
     }
     // Create the SQS queue and it's corresponding DLQ if one is not provided
     if (props.queue) {
-      this.sqsQueue = props.queue;
+      this.sqsQueue = sqs.Queue.fromCfnQueue(props.queue);
     } else {
-      this.deadLetterQueue = new Queue(this, 'EcsProcessingDeadLetterQueue', {
+      this.deadLetterQueue = new sqs.Queue(this, 'EcsProcessingDeadLetterQueue', {
         retentionPeriod: props.retentionPeriod || Duration.days(14),
       });
-      this.sqsQueue = new Queue(this, 'EcsProcessingQueue', {
+      this.sqsQueue = new sqs.Queue(this, 'EcsProcessingQueue', {
         visibilityTimeout: props.visibilityTimeout,
         deadLetterQueue: {
           queue: this.deadLetterQueue,

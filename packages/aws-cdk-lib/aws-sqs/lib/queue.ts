@@ -1,10 +1,11 @@
 import { Construct } from 'constructs';
 import { IQueue, QueueAttributes, QueueBase, QueueEncryption } from './queue-base';
-import { CfnQueue } from './sqs.generated';
+import { ICfnQueue, CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
+import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations, Tokenization } from '../../core';
+import { CfnReference } from '../../core/lib/private/cfn-reference';
 
 /**
  * Properties for creating a new Queue
@@ -286,6 +287,84 @@ export class Queue extends QueueBase {
     return new Import(scope, id, {
       environmentFromArn: attrs.queueArn,
     });
+  }
+
+  /**
+   * Create a mutable `IQueue` out of a `ICfnQueue`.
+   */
+  public static fromCfnQueue(cfnQueue: ICfnQueue): IQueue {
+    // if cfnQueue is already an IQueue, just return itself
+    if ((<IQueue>cfnQueue).grant !== undefined) {
+      return <IQueue>cfnQueue;
+    }
+
+    // use a "weird" id that has a higher chance of being unique
+    const id = '@FromCfnQueue';
+
+    // if fromCfnQueue() was already called on this cfnQueue,
+    // return the same L2
+    const existing = cfnQueue.node.tryFindChild(id);
+    if (existing) {
+      return <IQueue>existing;
+    }
+
+    // if cfnQueue is not a CfnResource, and thus not a CfnQueue, we are in a scenario where
+    // cfnQueue is an ICfnQueue but NOT a CfnQueue, which shouldn't happen
+    if (!CfnQueue.isCfnResource(cfnQueue)) {
+      throw new Error('Encountered an "ICfnQueue" that is not an "IQueue" or "CfnQueue". If you have a legitimate reason for this, please open an issue at https://github.com/aws/aws-cdk/issues');
+    }
+    const _cfnQueue = cfnQueue as CfnQueue;
+
+    let encryptionKey: kms.IKey | undefined;
+    if (_cfnQueue.kmsMasterKeyId) {
+      if (Token.isUnresolved(_cfnQueue.kmsMasterKeyId)) {
+        const kmsIResolvable = Tokenization.reverse(_cfnQueue.kmsMasterKeyId);
+        if (kmsIResolvable instanceof CfnReference) {
+          const cfnElement = kmsIResolvable.target;
+          if (cfnElement instanceof kms.CfnKey) {
+            encryptionKey = kms.Key.fromCfnKey(cfnElement);
+          }
+        }
+      }
+    }
+
+    return new class extends QueueBase {
+      public readonly attrArn = _cfnQueue.attrArn;
+      public readonly queueArn = this.attrArn;
+      public readonly queueName = _cfnQueue.attrQueueName;
+      public readonly attrQueueUrl = _cfnQueue.attrQueueUrl;
+      public readonly queueUrl = this.attrQueueUrl;
+      public readonly fifo = this.determineFifo(_cfnQueue.fifoQueue === true);
+      public readonly autoCreatePolicy = false;
+
+      public readonly encryptionMasterKey = encryptionKey;
+      public readonly encryptionType = encryptionKey ? QueueEncryption.KMS : undefined;
+
+      constructor() {
+        super(_cfnQueue, id);
+
+        this.node.defaultChild = _cfnQueue;
+      }
+
+      /**
+       * Determine fifo flag based on queueName and fifo attribute
+       */
+      private determineFifo(fifo: boolean): boolean {
+        if (Token.isUnresolved(this.queueArn)) {
+          return fifo || false;
+        } else {
+          if (typeof fifo !== 'undefined') {
+            if (fifo && !this.queueName.endsWith('.fifo')) {
+              throw new Error("FIFO queue names must end in '.fifo'");
+            }
+            if (!fifo && this.queueName.endsWith('.fifo')) {
+              throw new Error("Non-FIFO queue name may not end in '.fifo'");
+            }
+          }
+          return this.queueName.endsWith('.fifo') ? true : false;
+        }
+      }
+    }();
   }
 
   /**

@@ -5,17 +5,19 @@ import * as sqs from '../../aws-sqs';
  * An SQS dead letter queue destination configuration for a Lambda event source
  */
 export class SqsDlq implements IEventSourceDlq {
-  constructor(private readonly queue: sqs.IQueue) {
+  private readonly _queue: sqs.IQueue;
+  constructor(queue: sqs.ICfnQueue) {
+    this._queue = sqs.Queue.fromCfnQueue(queue);
   }
 
   /**
    * Returns a destination configuration for the DLQ
    */
   public bind(_target: IEventSourceMapping, targetHandler: IFunction): DlqDestinationConfig {
-    this.queue.grantSendMessages(targetHandler);
+    this._queue.grantSendMessages(targetHandler);
 
     return {
-      destination: this.queue.queueArn,
+      destination: this._queue.attrArn,
     };
   }
 }
