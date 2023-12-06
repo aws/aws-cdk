@@ -4,14 +4,11 @@ import * as esbuild from 'esbuild';
 import { config, ConfigProps } from '../lib/handler-framework/config';
 import { CdkHandlerFrameworkModule } from '../lib/handler-framework/framework';
 
-/* eslint-disable no-console */
-
 const framework: { [renderLocation: string]: ConfigProps[] } = {};
 
 async function main() {
   recurse(config, []);
   for (const [renderLocation, components] of Object.entries(framework)) {
-    console.log(renderLocation);
     const module = new CdkHandlerFrameworkModule('cdk-handler-framework');
     for (const component of components) {
       const outfile = calculateOutfile(component.sourceCode);
