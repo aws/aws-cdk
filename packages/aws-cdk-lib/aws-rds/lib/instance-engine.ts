@@ -1967,6 +1967,8 @@ export class SqlServerEngineVersion {
   public static readonly VER_15_00_4335_1_V1 = SqlServerEngineVersion.of('15.00.4335.1.v1', '15.00');
   /** Version "16.00.4085.2.v1". */
   public static readonly VER_16_00_4085_2_V1 = SqlServerEngineVersion.of('16.00.4085.2.v1', '16.00');
+  /** Version "16.00.4095.4.v1". */
+  public static readonly VER_16_00_4095_4_V1 = SqlServerEngineVersion.of('16.00.4095.4.v1', '16.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.
