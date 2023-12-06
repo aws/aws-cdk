@@ -1,9 +1,9 @@
 {
  "Resources": {
-  "SubZoneF7955E1A": {
+  "NewSubZone1DFF192F": {
    "Type": "AWS::Route53::HostedZone",
    "Properties": {
-    "Name": "sub.uniqueexample.com."
+    "Name": "new.uniqueexample.com."
    }
   },
   "delegatecrossaccountzonedelegationhandlerrolePolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E86169197": {
@@ -61,10 +61,10 @@
     },
     "AssumeRoleArn": "arn:aws:iam::12345678:role/MyUniqueDelegationRole",
     "ParentZoneName": "uniqueexample.com",
-    "DelegatedZoneName": "sub.uniqueexample.com",
+    "DelegatedZoneName": "new.uniqueexample.com",
     "DelegatedZoneNameServers": {
      "Fn::GetAtt": [
-      "SubZoneF7955E1A",
+      "NewSubZone1DFF192F",
       "NameServers"
      ]
     },
