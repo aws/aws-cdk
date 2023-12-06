@@ -3,6 +3,11 @@ import { Route53 } from '@aws-sdk/client-route-53';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 
+export type CrossAccountZoneDelegationEvent = AWSLambda.CloudFormationCustomResourceEvent & {
+  ResourceProperties: ResourceProperties;
+  OldResourceProperties?: ResourceProperties;
+}
+
 interface ResourceProperties {
   AssumeRoleArn: string,
   ParentZoneName?: string,
@@ -12,16 +17,23 @@ interface ResourceProperties {
   TTL: number,
 }
 
-export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
-  const resourceProps = event.ResourceProperties as unknown as ResourceProperties;
-
+export async function handler(event: CrossAccountZoneDelegationEvent) {
+  const resourceProps = event.ResourceProperties;
   switch (event.RequestType) {
     case 'Create':
-    case 'Update':
       return cfnEventHandler(resourceProps, false);
+    case 'Update':
+      return cfnUpdateEventHandler(resourceProps, event.OldResourceProperties);
     case 'Delete':
       return cfnEventHandler(resourceProps, true);
   }
+}
+
+async function cfnUpdateEventHandler(props: ResourceProperties, oldProps: ResourceProperties | undefined) {
+  if (oldProps && props.DelegatedZoneName !== oldProps.DelegatedZoneName) {
+    await cfnEventHandler(oldProps, true);
+  }
+  await cfnEventHandler(props, false);
 }
 
 async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean) {
