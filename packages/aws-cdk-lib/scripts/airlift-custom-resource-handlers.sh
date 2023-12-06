@@ -1,4 +1,4 @@
-# !/bin/bash
+#!/bin/bash
 
 scriptdir=$(cd $(dirname $0) && pwd)
 awscdklibdir=${scriptdir}/..
