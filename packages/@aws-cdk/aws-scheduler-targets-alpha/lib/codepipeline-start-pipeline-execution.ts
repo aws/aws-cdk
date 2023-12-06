@@ -1,9 +1,9 @@
-import { ISchedule, IScheduleTarget } from '@aws-cdk/aws-scheduler-alpha';
-import { Arn, ArnFormat, Names } from 'aws-cdk-lib';
-import { IPipeline } from 'aws-cdk-lib/aws-codepipeline';
-import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import { sameEnvDimension } from './util';
+import {ISchedule, IScheduleTarget} from '@aws-cdk/aws-scheduler-alpha';
+import {Names} from 'aws-cdk-lib';
+import {IPipeline} from 'aws-cdk-lib/aws-codepipeline';
+import {IRole, PolicyStatement} from 'aws-cdk-lib/aws-iam';
+import {ScheduleTargetBase, ScheduleTargetBaseProps} from './target';
+import {sameEnvDimension} from './util';
 
 /**
  * Use an AWS CodePipeline pipeline as a target for AWS EventBridge Scheduler.
