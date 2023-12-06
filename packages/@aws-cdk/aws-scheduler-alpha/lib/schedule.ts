@@ -117,6 +117,7 @@ export interface ScheduleProps {
 
   /**
    * The date, in UTC, after which the schedule can begin invoking its target.
+   * EventBridge Scheduler ignores StartDate for one-time schedules.
    *
    * Specify an absolute time in the ISO 8601 format. For example, 2020-12-01T00:00:00.000Z.
    *
@@ -126,6 +127,7 @@ export interface ScheduleProps {
 
   /**
    * The date, in UTC, before which the schedule can invoke its target.
+   * EventBridge Scheduler ignores endDate for one-time schedules.
    *
    * Specify an absolute time in the ISO 8601 format. For example, 2020-12-01T00:00:00.000Z.
    *
@@ -332,17 +334,8 @@ export class Schedule extends Resource implements ISchedule {
   }
 
   private validateTimeFrame(startDate?: string, endDate?: string) {
-    if (startDate) {
-      if (!Schedule.ISO8601_REGEX.test(startDate)) {
-        throw new Error(`startDate needs to follow the format yyyy-MM-ddTHH:mm:ss.SSSZ but got ${startDate}`);
-      }
-
-      const start = new Date(startDate);
-      const now = new Date();
-      const fiveMinutesAgo = new Date(now.getTime() - 5 * 60000);
-      if (start < fiveMinutesAgo) {
-        throw new Error(`startDate you specify cannot be earlier than 5 minutes ago but got ${startDate}`);
-      }
+    if (startDate && !Schedule.ISO8601_REGEX.test(startDate)) {
+      throw new Error(`startDate needs to follow the format yyyy-MM-ddTHH:mm:ss.SSSZ but got ${startDate}`);
     }
     if (endDate && !Schedule.ISO8601_REGEX.test(endDate)) {
       throw new Error(`endDate needs to follow the format yyyy-MM-ddTHH:mm:ss.SSSZ but got ${endDate}`);
@@ -353,7 +346,7 @@ export class Schedule extends Resource implements ISchedule {
       const end = new Date(endDate);
 
       if (end <= start) {
-        throw new Error(`startDate you specify must come before the endDate but got startDate: ${startDate}, endDate: ${endDate}`);
+        throw new Error(`startDate must come before the endDate but got startDate: ${startDate}, endDate: ${endDate}`);
       }
     }
   }
