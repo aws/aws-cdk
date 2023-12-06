@@ -1,7 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { Module, ClassType, stmt, expr, Type, ExternalModule } from '@cdklabs/typewriter';
+import { ClassType, stmt, expr, Type, ExternalModule } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkConstructor } from './constructors';
 import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
+import { CdkHandlerFrameworkModule } from './framework';
 
 /**
  * Initialization properties used to build a `CdkHandlerFrameworkClass` instance.
@@ -30,16 +31,12 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   /**
    * Builds a `CdkFunction` class.
    */
-  public static buildCdkFunction(scope: Module, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
+  public static buildCdkFunction(scope: CdkHandlerFrameworkModule, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
     return new (class CdkFunction extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
-      public readonly constructs: { [construct: string]: ExternalModule } = {
-        Construct: CONSTRUCTS_MODULE,
-        CdkHandlerProps: CDK_HANDLER_MODULE,
-        CdkHandler: CDK_HANDLER_MODULE,
-        Function: LAMBDA_MODULE,
-      };
+
+      protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE, CDK_HANDLER_MODULE];
 
       public constructor() {
         super(scope, {
@@ -50,9 +47,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
 
-        CONSTRUCTS_MODULE.import(scope, 'constructs');
-        CDK_HANDLER_MODULE.import(scope, 'handler');
-        LAMBDA_MODULE.import(scope, 'lambda');
+        this.externalModules.forEach(module => scope.addExternalModule(module));
 
         CdkHandlerFrameworkConstructor.forCdkFunction(this);
       }
@@ -62,16 +57,12 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   /**
    * Builds a `CdkSingletonFunction` class.
    */
-  public static buildCdkSingletonFunction(scope: Module, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
+  public static buildCdkSingletonFunction(scope: CdkHandlerFrameworkModule, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
     return new (class CdkSingletonFunction extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
-      public readonly constructs: { [construct: string]: ExternalModule } = {
-        Construct: CONSTRUCTS_MODULE,
-        CdkHandlerProps: CDK_HANDLER_MODULE,
-        CdkHandler: CDK_HANDLER_MODULE,
-        SingletonFunction: LAMBDA_MODULE,
-      };
+
+      protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE, CDK_HANDLER_MODULE];
 
       public constructor() {
         super(scope, {
@@ -82,9 +73,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
 
-        CONSTRUCTS_MODULE.import(scope, 'constructs');
-        CDK_HANDLER_MODULE.import(scope, 'handler');
-        LAMBDA_MODULE.import(scope, 'lambda');
+        this.externalModules.forEach(module => scope.addExternalModule(module));
 
         CdkHandlerFrameworkConstructor.forCdkFunction(this);
       }
@@ -94,16 +83,12 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   /**
    * Builds a `CdkCustomResourceProvider` class.
    */
-  public static buildCdkCustomResourceProvider(scope: Module, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
+  public static buildCdkCustomResourceProvider(scope: CdkHandlerFrameworkModule, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
     return new (class CdkCustomResourceProvider extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
-      public readonly constructs: { [construct: string]: ExternalModule } = {
-        Construct: CONSTRUCTS_MODULE,
-        CdkHandlerProps: CDK_HANDLER_MODULE,
-        CdkHandler: CDK_HANDLER_MODULE,
-        CustomResourceProviderBase: CORE_MODULE,
-      };
+
+      protected readonly externalModules = [CONSTRUCTS_MODULE, CORE_MODULE, CDK_HANDLER_MODULE];
 
       public constructor() {
         super(scope, {
@@ -114,9 +99,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
 
-        CONSTRUCTS_MODULE.import(scope, 'constructs');
-        CDK_HANDLER_MODULE.import(scope, 'handler');
-        CORE_MODULE.import(scope, 'core');
+        this.externalModules.forEach(module => scope.addExternalModule(module));
 
         const getOrCreateMethod = this.addMethod({
           name: 'getOrCreate',
@@ -178,8 +161,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   public abstract readonly entrypoint: string;
 
   /**
-   * A map representing the constructs this class depends on and the external module that the
-   * consruct can be imported from.
+   * External modules that this class depends on.
    */
-  public abstract readonly constructs: { [construct: string]: ExternalModule };
+  protected abstract readonly externalModules: ExternalModule[];
 }

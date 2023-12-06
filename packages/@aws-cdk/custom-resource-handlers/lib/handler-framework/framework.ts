@@ -2,6 +2,7 @@
 import { ExternalModule, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { CdkHandlerClassProps, CdkHandlerFrameworkClass } from './classes';
+import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE } from './modules';
 
 /**
  * Handler framework component types.
@@ -57,16 +58,16 @@ export interface ComponentDefinition {
   readonly providerOptions?: any;
 }
 
-export class CdkHandlerFramework extends Module {
+export class CdkHandlerFrameworkModule extends Module {
   /**
    * Build a framework module with specified components.
    */
   public static build(components: ComponentDefinition[]) {
-    return new CdkHandlerFramework(components);
+    return new CdkHandlerFrameworkModule(components);
   }
 
   private readonly renderer = new TypeScriptRenderer();
-  private readonly constructs = new Map<string, ExternalModule>();
+  private readonly externalModules = new Map<string, boolean>();
 
   private constructor(components: ComponentDefinition[]) {
     super('cdk-handler-framework');
@@ -78,28 +79,23 @@ export class CdkHandlerFramework extends Module {
         entrypoint: component.entrypoint,
       };
 
-      let _class: CdkHandlerFrameworkClass;
       switch (component.type) {
         case ComponentType.CDK_FUNCTION: {
-          _class = CdkHandlerFrameworkClass.buildCdkFunction(this, props);
+          CdkHandlerFrameworkClass.buildCdkFunction(this, props);
           break;
         }
         case ComponentType.CDK_SINGLETON_FUNCTION: {
-          _class = CdkHandlerFrameworkClass.buildCdkSingletonFunction(this, props);
+          CdkHandlerFrameworkClass.buildCdkSingletonFunction(this, props);
           break;
         }
         case ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER: {
-          _class = CdkHandlerFrameworkClass.buildCdkCustomResourceProvider(this, props);
+          CdkHandlerFrameworkClass.buildCdkCustomResourceProvider(this, props);
           break;
         }
       }
-
-      for (const [construct, module] of Object.entries(_class.constructs)) {
-        if (!this.constructs.has(construct)) {
-          this.constructs.set(construct, module);
-        }
-      }
     }
+
+    this.importExternalModules();
   }
 
   /**
@@ -107,5 +103,37 @@ export class CdkHandlerFramework extends Module {
    */
   public render(outputFileLocation: string) {
     fs.outputFileSync(`dist/${outputFileLocation}.generated.ts`, this.renderer.render(this));
+  }
+
+  /**
+   * Add an external module to be imported.
+   */
+  public addExternalModule(module: ExternalModule) {
+    if (!this.externalModules.has(module.fqn)) {
+      this.externalModules.set(module.fqn, true);
+    }
+  }
+
+  private importExternalModules() {
+    for (const fqn of this.externalModules.keys()) {
+      switch (fqn) {
+        case CONSTRUCTS_MODULE.fqn: {
+          CONSTRUCTS_MODULE.import(this, 'constructs');
+          break;
+        }
+        case CORE_MODULE.fqn: {
+          CORE_MODULE.import(this, 'core');
+          break;
+        }
+        case LAMBDA_MODULE.fqn: {
+          LAMBDA_MODULE.import(this, 'lambda');
+          break;
+        }
+        case CDK_HANDLER_MODULE.fqn: {
+          CDK_HANDLER_MODULE.import(this, 'handler');
+          break;
+        }
+      }
+    }
   }
 }

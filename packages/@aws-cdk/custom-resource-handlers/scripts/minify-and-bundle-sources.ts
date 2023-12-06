@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
 import { config } from '../lib/handler-framework/config';
-import { CdkHandlerFramework, ComponentDefinition } from '../lib/handler-framework/framework';
+import { CdkHandlerFrameworkModule, ComponentDefinition } from '../lib/handler-framework/framework';
 
 const framework: { [outputFileLocation: string]: ComponentDefinition[] } = {};
 const entryPoints: string[] = [];
@@ -79,7 +79,7 @@ async function main() {
 
   recurse(config, []);
   for (const [outputFileLocation, components] of Object.entries(framework)) {
-    const module = CdkHandlerFramework.build(components);
+    const module = CdkHandlerFrameworkModule.build(components);
     module.render(outputFileLocation);
   }
 
@@ -97,11 +97,14 @@ async function main() {
   }
 
   function recurse(_config: any, _path: string[]) {
+    // base case - this is a framework component array and we will build a module with
+    // all defined components
     if (_config instanceof Array) {
       const outputFileLocation = _path.join('/');
       framework[outputFileLocation] = _config;
       return;
     }
+
     for (const key in _config) {
       if (_config.hasOwnProperty(key) && typeof _config[key] === 'object') {
         _path.push(key);

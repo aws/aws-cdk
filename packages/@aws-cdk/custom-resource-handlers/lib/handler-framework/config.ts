@@ -3,7 +3,6 @@ import { ComponentType, ComponentDefinition } from './framework';
 
 type HandlerFrameworkConfig = { [module: string]: { [identifier: string]: ComponentDefinition[] } };
 
-// output will be packages/aws-cdk-lib/handler-framework/<module>/<identifier>/index.generated.ts
 export const config: HandlerFrameworkConfig = {
   'aws-dynamodb': {
     'replica-provider': [
