@@ -4,7 +4,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "build": "tsc -b && node scripts/minify-and-bundle-sources.js",
+    "build": "tsc -b && node scripts/generate.js",
     "integ": "integ-runner",
     "lint": "cdk-lint",
     "package": "cdk-package",

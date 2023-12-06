@@ -2,84 +2,52 @@
 import { ExternalModule, InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { CdkHandlerClassProps, CdkHandlerFrameworkClass } from './classes';
+import { ComponentType, ConfigProps } from './config';
 import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE, PATH_MODULE } from './modules';
 
-/**
- * Handler framework component types.
- */
-export enum ComponentType {
-  /**
-   * `CdkFunction`
-   */
-  CDK_FUNCTION = 'CdkFunction',
-
-  /**
-   * `CdkSingletonFunction`
-   */
-  CDK_SINGLETON_FUNCTION = 'CdkSingletonFunction',
-
-  /**
-   * `CdkCustomResourceProvider`
-   */
-  CDK_CUSTOM_RESOURCE_PROVIDER = 'CdkCustomResourceProvider',
-}
-
-/**
- * Properties used to generate a specific handler framework component
- */
-export interface ComponentDefinition extends CdkHandlerClassProps {
-  /**
-   * The component type to generate.
-   */
-  readonly type: ComponentType;
-}
-
 export class CdkHandlerFrameworkModule extends Module {
-  /**
-   * Build a framework module with specified components.
-   */
-  public static build(components: ComponentDefinition[]) {
-    return new CdkHandlerFrameworkModule(components);
-  }
-
   private readonly renderer = new TypeScriptRenderer();
   private readonly externalModules = new Map<string, boolean>();
   private readonly _interfaces = new Map<string, InterfaceType>();
 
-  private constructor(components: ComponentDefinition[]) {
-    super('cdk-handler-framework');
+  public constructor(fqn: string) {
+    super(fqn);
+  }
 
-    for (let component of components) {
-      const props: CdkHandlerClassProps = {
-        codeDirectory: component.codeDirectory,
-        className: component.className,
-        compatibleRuntimes: component.compatibleRuntimes,
-        entrypoint: component.entrypoint,
-      };
+  /**
+   *
+   * @param component
+   * @param sourceCodeDirectory
+   */
+  public build(component: ConfigProps, sourceCodeDirectory: string) {
+    const props: CdkHandlerClassProps = {
+      codeDirectory: sourceCodeDirectory,
+      name: component.name,
+      compatibleRuntimes: component.compatibleRuntimes,
+      entrypoint: component.entrypoint,
+    };
 
-      switch (component.type) {
-        case ComponentType.CDK_FUNCTION: {
-          CdkHandlerFrameworkClass.buildCdkFunction(this, props);
-          break;
-        }
-        case ComponentType.CDK_SINGLETON_FUNCTION: {
-          CdkHandlerFrameworkClass.buildCdkSingletonFunction(this, props);
-          break;
-        }
-        case ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER: {
-          CdkHandlerFrameworkClass.buildCdkCustomResourceProvider(this, props);
-          break;
-        }
+    switch (component.type) {
+      case ComponentType.CDK_FUNCTION: {
+        CdkHandlerFrameworkClass.buildCdkFunction(this, props);
+        break;
+      }
+      case ComponentType.CDK_SINGLETON_FUNCTION: {
+        CdkHandlerFrameworkClass.buildCdkSingletonFunction(this, props);
+        break;
+      }
+      case ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER: {
+        CdkHandlerFrameworkClass.buildCdkCustomResourceProvider(this, props);
+        break;
       }
     }
-
-    this.importExternalModules();
   }
 
   /**
    * Render built framework into an output file.
    */
   public render(outputFileLocation: string) {
+    this.importExternalModules();
     fs.outputFileSync(`dist/${outputFileLocation}.generated.ts`, this.renderer.render(this));
   }
 

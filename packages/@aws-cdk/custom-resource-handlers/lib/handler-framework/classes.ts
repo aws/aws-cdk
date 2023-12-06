@@ -1,8 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { ClassType, stmt, expr, Type, ExternalModule, PropertySpec, InterfaceSpec, InterfaceType } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkConstructor } from './constructors';
-import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
 import { CdkHandlerFrameworkModule } from './framework';
+import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
 
 /**
  * Runtimes that map to a Lambda runtime during codegen.
@@ -34,9 +34,9 @@ export enum FrameworkRuntime {
  */
 export interface CdkHandlerClassProps {
   /**
-   * The name of the class.
+   * The name of the component class.
    */
-  readonly className: string;
+  readonly name: string;
 
   /**
    * A local file system directory with the provider's code. The code will be
@@ -72,7 +72,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
 
       public constructor() {
         super(scope, {
-          name: props.className,
+          name: props.name,
           extends: LAMBDA_MODULE.Function,
           export: true,
         });
@@ -101,7 +101,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
 
       public constructor() {
         super(scope, {
-          name: props.className,
+          name: props.name,
           extends: LAMBDA_MODULE.SingletonFunction,
           export: true,
         });
@@ -156,7 +156,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
 
       public constructor() {
         super(scope, {
-          name: props.className,
+          name: props.name,
           extends: CORE_MODULE.CustomResourceProviderBase,
           export: true,
         });
