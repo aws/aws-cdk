@@ -49,9 +49,11 @@ export class S3Origin implements cloudfront.IOrigin {
  */
 class S3BucketOrigin extends cloudfront.OriginBase {
   private originAccessIdentity!: cloudfront.IOriginAccessIdentity;
+  private readonly _bucket: s3.IBucket;
 
-  constructor(private readonly bucket: s3.ICfnBucket, { originAccessIdentity, ...props }: S3OriginProps) {
+  constructor(bucket: s3.ICfnBucket, { originAccessIdentity, ...props }: S3OriginProps) {
     super(s3.Bucket.fromCfnBucket(bucket).bucketRegionalDomainName, props);
+    this._bucket = s3.Bucket.fromCfnBucket(bucket);
     if (originAccessIdentity) {
       this.originAccessIdentity = originAccessIdentity;
     }
@@ -63,7 +65,7 @@ class S3BucketOrigin extends cloudfront.OriginBase {
       // the bucket taking a dependency on the generated S3CanonicalUserId for the grant principal,
       // and the distribution having a dependency on the bucket's domain name.
       // Fix this by parenting the OAI in the bucket's stack when cross-stack usage is detected.
-      const bucketStack = cdk.Stack.of(this.bucket);
+      const bucketStack = cdk.Stack.of(this._bucket);
       const bucketInDifferentStack = bucketStack !== cdk.Stack.of(scope);
       const oaiScope = bucketInDifferentStack ? bucketStack : scope;
       const oaiId = bucketInDifferentStack ? `${cdk.Names.uniqueId(scope)}S3Origin` : 'S3Origin';
@@ -76,8 +78,8 @@ class S3BucketOrigin extends cloudfront.OriginBase {
     // Only GetObject is needed to retrieve objects for the distribution.
     // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.
     // Source: https://aws.amazon.com/blogs/networking-and-content-delivery/serving-sse-kms-encrypted-content-from-s3-using-cloudfront/
-    this.bucket.addToResourcePolicy(new iam.PolicyStatement({
-      resources: [this.bucket.arnForObjects('*')],
+    this._bucket.addToResourcePolicy(new iam.PolicyStatement({
+      resources: [this._bucket.arnForObjects('*')],
       actions: ['s3:GetObject'],
       principals: [this.originAccessIdentity.grantPrincipal],
     }));

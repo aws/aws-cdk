@@ -1351,7 +1351,7 @@ describe('bucket', () => {
     });
   });
 
-  describe('fromCfnBucket()', () => {
+  describe('fromCfnBucket() with s3.CfnBucket', () => {
     let stack: cdk.Stack;
     let cfnBucket: s3.CfnBucket;
     let bucket: s3.IBucket;
@@ -1517,6 +1517,17 @@ describe('bucket', () => {
       }));
 
       Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 2);
+    });
+  });
+
+  describe('fromCfnBucket() with s3.IBucket', () => {
+    test('Returns the same IBucket', () => {
+      const stack = new cdk.Stack();
+      const iBucket: s3.IBucket = new s3.Bucket(stack, 'IBucket');
+      const bucket = s3.Bucket.fromCfnBucket(iBucket);
+
+      expect(bucket.node.id).toStrictEqual(iBucket.node.id);
+      expect(bucket.node.id).not.toStrictEqual('@FromCfnBucket');
     });
   });
 

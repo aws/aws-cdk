@@ -3,8 +3,8 @@ import { NotificationsResourceHandler } from './notifications-resource-handler';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { Bucket, EventType, NotificationKeyFilter } from '../bucket';
-import { ICfnBucket } from '../s3.generated';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
+import { ICfnBucket } from '../s3.generated';
 
 interface NotificationsProps {
   /**

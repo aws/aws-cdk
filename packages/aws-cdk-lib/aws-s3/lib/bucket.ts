@@ -1718,6 +1718,11 @@ export class Bucket extends BucketBase {
    * Create a mutable `IBucket` based on a low-level `CfnBucket`.
    */
   public static fromCfnBucket(cfnBucket: ICfnBucket): IBucket {
+    // if cfnBucket is already an IBucket, just return itself.
+    if ((<IBucket>cfnBucket).grantRead !== undefined) {
+      return <IBucket>cfnBucket;
+    }
+
     // use a "weird" id that has a higher chance of being unique
     const id = '@FromCfnBucket';
 
@@ -1727,11 +1732,6 @@ export class Bucket extends BucketBase {
     const existing = cfnBucket.node.tryFindChild(id);
     if (existing) {
       return <IBucket>existing;
-    }
-
-    // if cfnBucket is already an IBucket, just return itself.
-    if ((<IBucket>cfnBucket).grantRead !== undefined) {
-      return <IBucket>cfnBucket;
     }
 
     // if cfnBucket is not a CfnResource, and thus not a CfnBucket, we are in a scenario where
