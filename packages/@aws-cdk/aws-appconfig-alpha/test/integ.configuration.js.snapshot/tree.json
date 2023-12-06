@@ -107,6 +107,33 @@
                   "version": "0.0.0"
                 }
               },
+              "EnvDeployLater": {
+                "id": "EnvDeployLater",
+                "path": "aws-appconfig-configuration/MyAppConfig/EnvDeployLater",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appconfig-configuration/MyAppConfig/EnvDeployLater/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppConfig::Environment",
+                      "aws:cdk:cloudformation:props": {
+                        "applicationId": {
+                          "Ref": "MyAppConfigB4B63E75"
+                        },
+                        "name": "awsappconfigconfiguration-MyAppConfig-EnvDeployLater-91038922"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appconfig.CfnEnvironment",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appconfig-alpha.Environment",
+                  "version": "0.0.0"
+                }
+              },
               "ParameterEnv": {
                 "id": "ParameterEnv",
                 "path": "aws-appconfig-configuration/MyAppConfig/ParameterEnv",
@@ -504,6 +531,34 @@
                     },
                     "environmentId": {
                       "Ref": "MyAppConfigHostedEnvFromJson9E6E36C4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnDeployment",
+                  "version": "0.0.0"
+                }
+              },
+              "DeploymentEFECD": {
+                "id": "DeploymentEFECD",
+                "path": "aws-appconfig-configuration/MyHostedConfigFromJson/DeploymentEFECD",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyAppConfigB4B63E75"
+                    },
+                    "configurationProfileId": {
+                      "Ref": "MyHostedConfigFromJsonConfigurationProfile863E1E42"
+                    },
+                    "configurationVersion": {
+                      "Ref": "MyHostedConfigFromJsonD8CF9BE4"
+                    },
+                    "deploymentStrategyId": {
+                      "Ref": "MyDeployStrategy062CAEA2"
+                    },
+                    "environmentId": {
+                      "Ref": "MyAppConfigEnvDeployLater26FA1032"
                     }
                   }
                 },
