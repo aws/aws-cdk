@@ -12,6 +12,7 @@ export class CdkHandlerFrameworkConstructor {
       ['code', expr.directCode('cdkHandler.code')],
       ['handler', expr.directCode('cdkHandler.entrypoint')],
       ['runtime', expr.directCode('cdkHandler.runtime')],
+      ..._class.superProps,
     ]);
     CdkHandlerFrameworkConstructor.forClass(_class, superProps);
   }
@@ -30,6 +31,7 @@ export class CdkHandlerFrameworkConstructor {
     const superProps = new ObjectLiteral([
       ['codeDirectory', expr.directCode('cdkHandler.codeDirectory')],
       ['runtimeName', expr.directCode('cdkHandler.runtime.name')],
+      ..._class.superProps,
     ]);
     CdkHandlerFrameworkConstructor.forClass(_class, superProps);
   }

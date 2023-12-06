@@ -8,13 +8,13 @@ export const config: HandlerFrameworkConfig = {
     'replica-provider': [
       {
         type: ComponentType.CDK_FUNCTION,
-        name: 'ReplicaOnEventProvider',
+        className: 'ReplicaOnEventProvider',
         codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-dynamodb', 'replica-handler'),
         entrypoint: 'index.onEventHandler',
       },
       {
         type: ComponentType.CDK_FUNCTION,
-        name: 'ReplicaOnCompleteProvider',
+        className: 'ReplicaOnCompleteProvider',
         codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-dynamodb', 'replica-handler'),
         entrypoint: 'index.onCompleteHandler',
       },
@@ -24,8 +24,18 @@ export const config: HandlerFrameworkConfig = {
     'drop-spam-provider': [
       {
         type: ComponentType.CDK_SINGLETON_FUNCTION,
-        name: 'DropSpamProvider',
+        className: 'DropSpamProvider',
         codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-ses', 'drop-spam-handler'),
+        uuid: '224e77f9-a32e-4b4d-ac32-983477abba16',
+      },
+    ],
+  },
+  'aws-cloudfront': {
+    'cross-region-reader-provider': [
+      {
+        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        className: 'CrossRegionReaderProvider',
+        codeDirectory: path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-cloudfront', 'edge-function'),
       },
     ],
   },

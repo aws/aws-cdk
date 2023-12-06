@@ -15,7 +15,7 @@ class CdkHandlerModule extends ExternalModule {
   public readonly CdkHandlerProps = Type.fromName(this, 'CdkHandlerProps');
 
   public constructor() {
-    super('../../handler-framework/lib/cdk-handler');
+    super('../../../handler-framework/lib/cdk-handler');
   }
 }
 
@@ -24,7 +24,7 @@ class CoreModule extends ExternalModule {
   public readonly CustomResourceProviderOptions = Type.fromName(this, 'CustomResourceProviderOptions');
 
   public constructor() {
-    super('../../core');
+    super('../../../core');
   }
 }
 
@@ -34,7 +34,7 @@ class LambdaModule extends ExternalModule {
   public readonly FunctionOptions = Type.fromName(this, 'FunctionOptions');
 
   public constructor() {
-    super('../../aws-lambda');
+    super('../../../aws-lambda');
   }
 }
 

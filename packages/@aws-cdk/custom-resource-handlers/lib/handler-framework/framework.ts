@@ -27,35 +27,11 @@ export enum ComponentType {
 /**
  * Properties used to generate a specific handler framework component
  */
-export interface ComponentDefinition {
+export interface ComponentDefinition extends CdkHandlerClassProps {
   /**
    * The component type to generate.
    */
   readonly type: ComponentType;
-
-  /**
-   * The name to generate the component with.
-   *
-   * Note: This will be the name of the class, i.e., `MyCdkFunction`, etc.
-   */
-  readonly name: string;
-
-  /**
-   * The local file system directory with the source code.
-   */
-  readonly codeDirectory: string;
-
-  /**
-   * The name of the method within your code that Lambda calls to execute your function.
-   *
-   * @default 'index.handler'
-   */
-  readonly entrypoint?: string;
-
-  /**
-   * Configurable options for the underlying Lambda function.
-   */
-  readonly providerOptions?: any;
 }
 
 export class CdkHandlerFrameworkModule extends Module {
@@ -75,7 +51,7 @@ export class CdkHandlerFrameworkModule extends Module {
     for (let component of components) {
       const props: CdkHandlerClassProps = {
         codeDirectory: component.codeDirectory,
-        className: component.name,
+        className: component.className,
         entrypoint: component.entrypoint,
       };
 
