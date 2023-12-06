@@ -42,7 +42,8 @@ class GoodJavaStack extends Stack {
         s3Bucket.applyRemovalPolicy(RemovalPolicy.RETAIN);
 
         this.websiteUrl = s3Bucket.getAttrWebsiteUrl();
-        CfnOutput.Builder.create(this, "WebsiteURL")
+        CfnOutput.Builder.create(this, "CfnOutputWebsiteURL")
+                .key("WebsiteURL")
                 .value(this.websiteUrl.toString())
                 .description("URL for website hosted on S3")
                 .build();
@@ -50,7 +51,8 @@ class GoodJavaStack extends Stack {
         this.s3BucketSecureUrl = String.join("",
                 "https://",
                 s3Bucket.getAttrDomainName());
-        CfnOutput.Builder.create(this, "S3BucketSecureURL")
+        CfnOutput.Builder.create(this, "CfnOutputS3BucketSecureURL")
+                .key("S3BucketSecureURL")
                 .value(this.s3BucketSecureUrl.toString())
                 .description("Name of S3 bucket to hold website content")
                 .build();

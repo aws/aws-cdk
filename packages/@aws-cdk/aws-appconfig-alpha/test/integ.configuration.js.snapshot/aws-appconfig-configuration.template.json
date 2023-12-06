@@ -97,6 +97,42 @@
     "ReplicateTo": "NONE"
    }
   },
+  "MyHostedConfigFromFileDeploymentStrategyCAF37A7C": {
+   "Type": "AWS::AppConfig::DeploymentStrategy",
+   "Properties": {
+    "DeploymentDurationInMinutes": 20,
+    "FinalBakeTimeInMinutes": 10,
+    "GrowthFactor": 10,
+    "GrowthType": "EXPONENTIAL",
+    "Name": "awsappconfigconfiguration-MyFromFile-DeploymentStrategy-C2367737",
+    "ReplicateTo": "NONE"
+   }
+  },
+  "MyHostedConfigFromFileConfigurationProfile32B2D26F": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "LocationUri": "hosted",
+    "Name": "awsappconfigconfiguration-MyHostedConfigFromFile-8ED1123C"
+   }
+  },
+  "MyHostedConfigFromFile943CF9F9": {
+   "Type": "AWS::AppConfig::HostedConfigurationVersion",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigFromFileConfigurationProfile32B2D26F"
+    },
+    "Content": "{\n  \"content\": \"This is the configuration content\"\n}",
+    "ContentType": "application/json"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "MyHostedConfigConfigurationProfile2E1A2BBC": {
    "Type": "AWS::AppConfig::ConfigurationProfile",
    "Properties": {
@@ -106,6 +142,10 @@
     "LocationUri": "hosted",
     "Name": "awsappconfigconfiguration-MyHostedConfig-4CF350AE",
     "Validators": [
+     {
+      "Content": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"string\"\n}",
+      "Type": "JSON_SCHEMA"
+     },
      {
       "Content": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"string\"\n}",
       "Type": "JSON_SCHEMA"

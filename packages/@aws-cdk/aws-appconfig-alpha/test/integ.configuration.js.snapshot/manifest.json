@@ -100,6 +100,24 @@
             "data": "MyDeployStrategy062CAEA2"
           }
         ],
+        "/aws-appconfig-configuration/MyHostedConfigFromFile/DeploymentStrategy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromFileDeploymentStrategyCAF37A7C"
+          }
+        ],
+        "/aws-appconfig-configuration/MyHostedConfigFromFile/ConfigurationProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromFileConfigurationProfile32B2D26F"
+          }
+        ],
+        "/aws-appconfig-configuration/MyHostedConfigFromFile/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHostedConfigFromFile943CF9F9"
+          }
+        ],
         "/aws-appconfig-configuration/MyHostedConfig/ConfigurationProfile": [
           {
             "type": "aws:cdk:logicalId",
