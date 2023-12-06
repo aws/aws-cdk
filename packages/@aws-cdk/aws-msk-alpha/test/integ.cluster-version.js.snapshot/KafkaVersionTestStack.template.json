@@ -18,9 +18,6 @@
   "VpcPublicSubnet1Subnet5C2D37C4": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": "test-region-1a",
     "CidrBlock": "10.0.0.0/18",
     "MapPublicIpOnLaunch": true,
@@ -37,21 +34,24 @@
       "Key": "Name",
       "Value": "KafkaVersionTestStack/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet1RouteTable6C95E38E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "KafkaVersionTestStack/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet1RouteTableAssociation97140677": {
@@ -68,12 +68,12 @@
   "VpcPublicSubnet1DefaultRoute3DA9E72A": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
     }
    },
    "DependsOn": [
@@ -95,14 +95,14 @@
   "VpcPublicSubnet1NATGateway4D7517AA": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet1EIPD7E02669",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
     },
     "Tags": [
      {
@@ -119,9 +119,6 @@
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": "test-region-1b",
     "CidrBlock": "10.0.64.0/18",
     "MapPublicIpOnLaunch": true,
@@ -138,21 +135,24 @@
       "Key": "Name",
       "Value": "KafkaVersionTestStack/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet2RouteTable94F7E489": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "KafkaVersionTestStack/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
@@ -169,12 +169,12 @@
   "VpcPublicSubnet2DefaultRoute97F91067": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
     }
    },
    "DependsOn": [
@@ -196,14 +196,14 @@
   "VpcPublicSubnet2NATGateway9182C01D": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet2Subnet691E08A3"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet2EIP3C605A87",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet2Subnet691E08A3"
     },
     "Tags": [
      {
@@ -220,9 +220,6 @@
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": "test-region-1a",
     "CidrBlock": "10.0.128.0/18",
     "MapPublicIpOnLaunch": false,
@@ -239,21 +236,24 @@
       "Key": "Name",
       "Value": "KafkaVersionTestStack/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet1RouteTableB2C5B500": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "KafkaVersionTestStack/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
@@ -270,21 +270,18 @@
   "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
     }
    }
   },
   "VpcPrivateSubnet2Subnet3788AAA1": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": "test-region-1b",
     "CidrBlock": "10.0.192.0/18",
     "MapPublicIpOnLaunch": false,
@@ -301,21 +298,24 @@
       "Key": "Name",
       "Value": "KafkaVersionTestStack/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet2RouteTableA678073B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "KafkaVersionTestStack/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
@@ -332,12 +332,12 @@
   "VpcPrivateSubnet2DefaultRoute060D2087": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
     }
    }
   },
@@ -355,11 +355,11 @@
   "VpcVPCGWBF912B6E": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "InternetGatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
     }
    }
   },
@@ -407,14 +407,13 @@
      }
     },
     "ClusterName": "cluster-v2-2-1",
-    "KafkaVersion": "2.2.1",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.2.1",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -427,7 +426,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -476,14 +476,13 @@
      }
     },
     "ClusterName": "cluster-v2-3-1",
-    "KafkaVersion": "2.3.1",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.3.1",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -496,7 +495,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -545,14 +545,13 @@
      }
     },
     "ClusterName": "cluster-v2-4-1-1",
-    "KafkaVersion": "2.4.1.1",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.4.1.1",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -565,7 +564,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -614,14 +614,13 @@
      }
     },
     "ClusterName": "cluster-v2-5-1",
-    "KafkaVersion": "2.5.1",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.5.1",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -634,7 +633,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -683,14 +683,13 @@
      }
     },
     "ClusterName": "cluster-v2-6-0",
-    "KafkaVersion": "2.6.0",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.6.0",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -703,7 +702,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -752,14 +752,13 @@
      }
     },
     "ClusterName": "cluster-v2-6-1",
-    "KafkaVersion": "2.6.1",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.6.1",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -772,7 +771,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -821,14 +821,13 @@
      }
     },
     "ClusterName": "cluster-v2-6-2",
-    "KafkaVersion": "2.6.2",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.6.2",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -841,7 +840,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -890,14 +890,13 @@
      }
     },
     "ClusterName": "cluster-v2-6-3",
-    "KafkaVersion": "2.6.3",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.6.3",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -910,7 +909,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -959,14 +959,13 @@
      }
     },
     "ClusterName": "cluster-v2-7-0",
-    "KafkaVersion": "2.7.0",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.7.0",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -979,7 +978,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1028,14 +1028,13 @@
      }
     },
     "ClusterName": "cluster-v2-7-1",
-    "KafkaVersion": "2.7.1",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.7.1",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -1048,7 +1047,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1097,14 +1097,13 @@
      }
     },
     "ClusterName": "cluster-v2-7-2",
-    "KafkaVersion": "2.7.2",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.7.2",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -1117,7 +1116,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1166,14 +1166,13 @@
      }
     },
     "ClusterName": "cluster-v2-8-0",
-    "KafkaVersion": "2.8.0",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.8.0",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -1186,7 +1185,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1235,14 +1235,13 @@
      }
     },
     "ClusterName": "cluster-v2-8-1",
-    "KafkaVersion": "2.8.1",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.8.1",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -1255,7 +1254,77 @@
        "Enabled": false
       }
      }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterVersion282tieredSecurityGroup3FA6200D": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
     }
+   }
+  },
+  "ClusterVersion282tiered485A19BE": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion282tieredSecurityGroup3FA6200D",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v2-8-2-tiered",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "2.8.2.tiered",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1304,14 +1373,13 @@
      }
     },
     "ClusterName": "cluster-v3-1-1",
-    "KafkaVersion": "3.1.1",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "3.1.1",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -1324,7 +1392,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1373,14 +1442,13 @@
      }
     },
     "ClusterName": "cluster-v3-2-0",
-    "KafkaVersion": "3.2.0",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "3.2.0",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -1393,7 +1461,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1442,14 +1511,13 @@
      }
     },
     "ClusterName": "cluster-v3-3-1",
-    "KafkaVersion": "3.3.1",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "3.3.1",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -1462,7 +1530,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1511,14 +1580,13 @@
      }
     },
     "ClusterName": "cluster-v3-3-2",
-    "KafkaVersion": "3.3.2",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "3.3.2",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -1531,7 +1599,8 @@
        "Enabled": false
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1580,14 +1649,13 @@
      }
     },
     "ClusterName": "cluster-v3-4-0",
-    "KafkaVersion": "3.4.0",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "3.4.0",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -1600,7 +1668,77 @@
        "Enabled": false
       }
      }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterVersion351SecurityGroup866E7223": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
     }
+   }
+  },
+  "ClusterVersion3515E181C3E": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterVersion351SecurityGroup866E7223",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClusterName": "cluster-v3-5-1",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "3.5.1",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Enabled": false
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

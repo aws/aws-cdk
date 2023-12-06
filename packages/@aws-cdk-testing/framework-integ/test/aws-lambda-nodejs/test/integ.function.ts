@@ -6,6 +6,7 @@ import { Aws, App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
+
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -17,6 +18,17 @@ class TestStack extends Stack {
         minify: true,
         sourceMap: true,
         sourceMapMode: lambda.SourceMapMode.BOTH,
+      },
+    });
+
+    new lambda.NodejsFunction(this, 'ts-handler-log-level', {
+      entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
+      runtime: STANDARD_NODEJS_RUNTIME,
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        sourceMapMode: lambda.SourceMapMode.BOTH,
+        logLevel: lambda.LogLevel.VERBOSE,
       },
     });
 
