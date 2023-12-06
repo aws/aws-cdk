@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.114.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.114.0-alpha.0...v2.114.1-alpha.0) (2023-12-06)
+
+## [2.114.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.113.0-alpha.0...v2.114.0-alpha.0) (2023-12-05)
+
+
+### Features
+
+* **appconfig-alpha:** support for composite alarms ([#28156](https://github.com/aws/aws-cdk/issues/28156)) ([d19640b](https://github.com/aws/aws-cdk/commit/d19640b1130f3701945173a81d217763386378a8))
+* **appconfig-alpha:** support for relative file paths when importing config ([#28191](https://github.com/aws/aws-cdk/issues/28191)) ([4867294](https://github.com/aws/aws-cdk/commit/4867294467791b14347feef65fc3ad262bc5834a)), closes [#26937](https://github.com/aws/aws-cdk/issues/26937)
+* **scheduler-targets-alpha:** `KinesisDataFirehosePutRecord` Target ([#27842](https://github.com/aws/aws-cdk/issues/27842)) ([46f3a00](https://github.com/aws/aws-cdk/commit/46f3a00c5f030fa8c6a92fb76063fba45f9b467c)), closes [#27450](https://github.com/aws/aws-cdk/issues/27450)
+* **scheduler-targets-alpha:** `KinesisStreamPutRecord` Target ([#27845](https://github.com/aws/aws-cdk/issues/27845)) ([47a09b5](https://github.com/aws/aws-cdk/commit/47a09b590b5e14385f028e61ed42cd460d122fae)), closes [#27451](https://github.com/aws/aws-cdk/issues/27451)
+
 ## [2.113.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.112.0-alpha.0...v2.113.0-alpha.0) (2023-12-01)
 
 
