@@ -46,6 +46,8 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
 
     otherDiffs = diffKeyedEntities(oldValue, newValue, _diffOther);
     delete otherDiffs.Properties;
+    // TODO: should only happen for CDK migrate
+    delete otherDiffs.Metadata;
   }
 
   return new types.ResourceDifference(oldValue, newValue, {
@@ -57,9 +59,10 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
     if (changeSetReplacement === undefined) {
       changeImpact = _resourceSpecImpact(oldV, newV, key, resourceSpec);
     } else {
-      console.log('--------------------------------------');
-      console.log(key);
-      console.log('--------------------------------------');
+      if (!(key in changeSetReplacement.propertiesReplaced)) {
+        // The changeset does not contain this property, which means it is not going to be updated. Hide this cosmetic template-only change from the diff
+        return new types.PropertyDifference(1, 1, { changeImpact });
+      }
 
       switch (changeSetReplacement.propertiesReplaced[key]) {
         case 'Always':
@@ -72,9 +75,9 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
           changeImpact = types.ResourceImpact.WILL_UPDATE;
           break;
       }
-
-      // todo: if key not in properties replaced, probably a no_change
     }
+
+    console.log('changeImpact for key ' + key + ' ' + changeImpact);
 
     return new types.PropertyDifference(oldV, newV, { changeImpact });
   }

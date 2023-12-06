@@ -308,6 +308,7 @@ export async function createChangeSet(options: CreateChangeSetOptions): Promise<
     ClientToken: `create${options.uuid}`,
     TemplateURL: options.bodyParameter.TemplateURL,
     TemplateBody: options.bodyParameter.TemplateBody,
+    Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
     //...this.commonPrepareOptions(),
   }).promise();
 

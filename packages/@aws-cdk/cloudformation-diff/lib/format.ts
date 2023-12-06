@@ -24,7 +24,7 @@ export interface FormatStream extends NodeJS.WritableStream {
 export type ResourceReplacements = { [logicalId: string]: ResourceReplacement };
 
 export interface ResourceReplacement {
-  replaced: boolean,
+  resourceReplaced: boolean,
   propertiesReplaced: { [propertyName: string]: ChangeSetReplacement };
 }
 

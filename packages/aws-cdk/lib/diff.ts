@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -134,17 +135,27 @@ function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOut
     const propertiesReplaced: { [propName: string]: cfnDiff.ChangeSetReplacement } = {};
     for (const propertyChange of resourceChange.ResourceChange?.Details ?? []) {
       if (propertyChange.Target?.Attribute === 'Properties') {
-        if (!propertyChange.Target.RequiresRecreation) {
-          throw new Error('Target.RequiresRecreation is undefined!');
+        const requiresReplacement = propertyChange.Target.RequiresRecreation === 'Always';
+        if (requiresReplacement && propertyChange.Evaluation === 'Static') {
+          propertiesReplaced[propertyChange.Target.Name!] = 'Always';
+        } else if (requiresReplacement && propertyChange.Evaluation === 'Dynamic') {
+          // If Evaluation is 'Dynamic', then this may cause replacement, or it may not.
+          // see 'Replacement': https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChange.html
+          propertiesReplaced[propertyChange.Target.Name!] = 'Conditionally';
+        } else {
+          propertiesReplaced[propertyChange.Target.Name!] = propertyChange.Target.RequiresRecreation as cfnDiff.ChangeSetReplacement;
         }
-        propertiesReplaced[propertyChange.Target.Name!] = propertyChange.Target.RequiresRecreation as cfnDiff.ChangeSetReplacement;
       }
     }
     replacements[resourceChange.ResourceChange?.LogicalResourceId ?? ''] = {
-      replaced: resourceChange.ResourceChange?.Replacement === 'True',
+      resourceReplaced: resourceChange.ResourceChange?.Replacement === 'True',
       propertiesReplaced,
     };
   }
+
+  console.log('----=----=-=-=-=-=-=');
+  console.log(JSON.stringify(replacements, undefined, 2));
+  console.log('----=----=-=-=-=-=-=');
 
   return replacements;
 }
