@@ -53,6 +53,9 @@
   "aws-aps": [
     "AWS::APS"
   ],
+  "aws-arczonalshift": [
+    "AWS::ARCZonalShift"
+  ],
   "aws-athena": [
     "AWS::Athena"
   ],
@@ -570,6 +573,9 @@
   "aws-s3": [
     "AWS::S3"
   ],
+  "aws-s3express": [
+    "AWS::S3Express"
+  ],
   "aws-s3objectlambda": [
     "AWS::S3ObjectLambda"
   ],
@@ -674,6 +680,9 @@
   ],
   "aws-workspaces": [
     "AWS::WorkSpaces"
+  ],
+  "aws-workspacesthinclient": [
+    "AWS::WorkSpacesThinClient"
   ],
   "aws-workspacesweb": [
     "AWS::WorkSpacesWeb"
