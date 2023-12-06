@@ -32,7 +32,8 @@ export class GoodTypeScriptStack extends cdk.Stack {
 
     // Outputs
     this.websiteUrl = s3Bucket.attrWebsiteUrl;
-    new cdk.CfnOutput(this, 'WebsiteURL', {
+    new cdk.CfnOutput(this, 'CfnOutputWebsiteURL', {
+      key: 'WebsiteURL',
       description: 'URL for website hosted on S3',
       value: this.websiteUrl!.toString(),
     });
@@ -40,7 +41,8 @@ export class GoodTypeScriptStack extends cdk.Stack {
       'https://',
       s3Bucket.attrDomainName,
     ].join('');
-    new cdk.CfnOutput(this, 'S3BucketSecureURL', {
+    new cdk.CfnOutput(this, 'CfnOutputS3BucketSecureURL', {
+      key: 'S3BucketSecureURL',
       description: 'Name of S3 bucket to hold website content',
       value: this.s3BucketSecureUrl!.toString(),
     });
