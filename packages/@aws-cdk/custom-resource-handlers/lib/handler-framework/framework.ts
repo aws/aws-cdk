@@ -52,6 +52,7 @@ export class CdkHandlerFrameworkModule extends Module {
       const props: CdkHandlerClassProps = {
         codeDirectory: component.codeDirectory,
         className: component.className,
+        compatibleRuntimes: component.compatibleRuntimes,
         entrypoint: component.entrypoint,
         uuid: component.uuid,
         lambdaPurpose: component.lambdaPurpose,

@@ -54,6 +54,7 @@ export class CdkHandlerFrameworkConstructor {
         expr.directCode('cdkHandlerProps: handler.CdkHandlerProps'),
         expr.object({
           codeDirectory: expr.directCode(_class.codeDirectory),
+          compatibleRuntimes: expr.directCode(`[${ _class.compatibleRuntimes }]`),
           entrypoint: _class.entrypoint
             ? expr.lit(`${_class.entrypoint}`)
             : expr.lit('index.handler'),

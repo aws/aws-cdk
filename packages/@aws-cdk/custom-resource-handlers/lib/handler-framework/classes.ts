@@ -5,6 +5,26 @@ import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } fro
 import { CdkHandlerFrameworkModule } from './framework';
 
 /**
+ * Runtimes that map to a Lambda runtime.
+ */
+export enum FrameworkRuntime {
+  /**
+   * The NodeJs 16.x runtime.
+   */
+  NODEJS_16_X = 'lambda.Runtime.NODEJS_16_X',
+
+  /**
+   * The NodeJS 18.x runtime.
+   */
+  NODEJS_18_X = 'lambda.Runtime.NODEJS_18_X',
+
+  /**
+   * The NodeJS 20.x runtime.
+   */
+  NODEJS_20_X = 'lambda.Runtime.NODEJS_20_X',
+}
+
+/**
  * Initialization properties used to build a `CdkHandlerFrameworkClass` instance.
  */
 export interface CdkHandlerClassProps {
@@ -18,6 +38,11 @@ export interface CdkHandlerClassProps {
    * bundled into a zip asset and wired to the provider's AWS Lambda function.
    */
   readonly codeDirectory: string;
+
+  /**
+   *
+   */
+  readonly compatibleRuntimes: FrameworkRuntime[];
 
   /**
    * The name of the method within your code that Lambda calls to execute your function.
@@ -56,6 +81,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
     return new (class CdkFunction extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
+      public readonly compatibleRuntimes: FrameworkRuntime[];
       public readonly superProps: [string, Expression][] = [];
 
       protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE, CDK_HANDLER_MODULE];
@@ -68,6 +94,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         });
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
+        this.compatibleRuntimes = props.compatibleRuntimes;
 
         this.buildSuperProps(props);
         this.externalModules.forEach(module => scope.addExternalModule(module));
@@ -84,6 +111,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
     return new (class CdkSingletonFunction extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
+      public readonly compatibleRuntimes: FrameworkRuntime[];
       public readonly superProps: [string, Expression][] = [];
 
       protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE, CDK_HANDLER_MODULE];
@@ -96,6 +124,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         });
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
+        this.compatibleRuntimes = props.compatibleRuntimes;
 
         this.buildSuperProps(props);
         this.externalModules.forEach(module => scope.addExternalModule(module));
@@ -112,6 +141,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
     return new (class CdkCustomResourceProvider extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
+      public readonly compatibleRuntimes: FrameworkRuntime[];
       public readonly superProps: [string, Expression][] = [];
 
       protected readonly externalModules = [CONSTRUCTS_MODULE, CORE_MODULE, CDK_HANDLER_MODULE];
@@ -124,6 +154,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         });
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
+        this.compatibleRuntimes = props.compatibleRuntimes;
 
         this.buildSuperProps(props);
         this.externalModules.forEach(module => scope.addExternalModule(module));
@@ -186,6 +217,11 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
    * The name of the method within your code that Lambda calls to execute your function.
    */
   public abstract readonly entrypoint: string;
+
+  /**
+   *
+   */
+  public abstract readonly compatibleRuntimes: FrameworkRuntime[];
 
   /**
    *
