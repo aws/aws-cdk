@@ -176,7 +176,7 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 });
 ```
 
-To deploy a configuration to an environment after initialization use the `deployTo` method:
+To deploy a configuration to an environment after initialization use the `deploy` method:
 
 ```ts
 declare const application: appconfig.Application;
