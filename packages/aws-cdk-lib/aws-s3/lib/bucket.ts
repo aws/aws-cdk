@@ -501,11 +501,11 @@ export abstract class BucketBase extends Resource implements IBucket {
   public abstract readonly attrArn: string;
   public abstract readonly attrBucketName: string;
   /**
-   * @deprecated use attrArn
+   * Deprecated: use attrArn
    */
   public abstract readonly bucketArn: string;
   /**
-   * @deprecated use attrBucketName
+   * Deprecated: use attrBucketName
    */
   public abstract readonly bucketName: string;
   public abstract readonly bucketDomainName: string;
