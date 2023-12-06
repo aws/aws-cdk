@@ -1,7 +1,7 @@
 {
   "targets": {
     "java": {
-      "package": "services.entityresolution"
+      "package": "software.amazon.awscdk.services.entityresolution"
     },
     "dotnet": {
       "package": "Amazon.CDK.AWS.EntityResolution"

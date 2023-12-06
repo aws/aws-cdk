@@ -510,7 +510,7 @@ export interface DatabaseInstanceNewProps {
    * Indicates whether automated backups should be deleted or retained when
    * you delete a DB instance.
    *
-   * @default false
+   * @default true
    */
   readonly deleteAutomatedBackups?: boolean;
 
@@ -532,7 +532,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * Whether to enable Performance Insights for the DB instance.
    *
-   * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.
+   * @default - false, unless ``performanceInsightRetention`` or ``performanceInsightEncryptionKey`` is set.
    */
   readonly enablePerformanceInsights?: boolean;
 

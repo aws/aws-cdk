@@ -22,7 +22,10 @@ Use AWS AppConfig, a capability of AWS Systems Manager, to create, manage, and q
 
 ## Application
 
-In AWS AppConfig, an application is simply an organizational construct like a folder. This organizational construct has a relationship with some unit of executable code. For example, you could create an application called MyMobileApp to organize and manage configuration data for a mobile application installed by your users. Configurations and environments are associated with the application.
+In AWS AppConfig, an application is simply an organizational construct like a folder. This organizational construct has a 
+relationship with some unit of executable code. For example, you could create an application called MyMobileApp to organize and 
+manage configuration data for a mobile application installed by your users. Configurations and environments are associated with 
+the application.
 
 The name and description of an application are optional.
 
@@ -43,7 +46,8 @@ new appconfig.Application(this, 'MyApplication', {
 
 ## Deployment Strategy
 
-A deployment strategy defines how a configuration will roll out. The roll out is defined by four parameters: deployment type, step percentage, deployment time, and bake time.
+A deployment strategy defines how a configuration will roll out. The roll out is defined by four parameters: deployment type, 
+step percentage, deployment time, and bake time.
 See: https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-deployment-strategy.html
 
 Deployment strategy with predefined values:
@@ -68,11 +72,15 @@ new appconfig.DeploymentStrategy(this, 'MyDeploymentStrategy', {
 
 ## Configuration
 
-A configuration is a higher-level construct that can either be a `HostedConfiguration` (stored internally through AWS AppConfig) or a `SourcedConfiguration` (stored in an Amazon S3 bucket, AWS Secrets Manager secrets, Systems Manager (SSM) Parameter Store parameters, SSM documents, or AWS CodePipeline). This construct manages deployments on creation.
+A configuration is a higher-level construct that can either be a `HostedConfiguration` (stored internally through AWS 
+AppConfig) or a `SourcedConfiguration` (stored in an Amazon S3 bucket, AWS Secrets Manager secrets, Systems Manager (SSM) 
+Parameter Store parameters, SSM documents, or AWS CodePipeline). This construct manages deployments on creation.
 
 ### HostedConfiguration
 
-A hosted configuration represents configuration stored in the AWS AppConfig hosted configuration store. A hosted configuration takes in the configuration content and associated AWS AppConfig application. On construction of a hosted configuration, the configuration is deployed.
+A hosted configuration represents configuration stored in the AWS AppConfig hosted configuration store. A hosted configuration 
+takes in the configuration content and associated AWS AppConfig application. On construction of a hosted configuration, the 
+configuration is deployed.
 
 ```ts
 declare const application: appconfig.Application;
@@ -82,6 +90,14 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
   content: appconfig.ConfigurationContent.fromInlineText('This is my configuration content.'),
 });
 ```
+
+You can define hosted configuration content using any of the following ConfigurationContent methods:
+
+* `fromFile` - Defines the hosted configuration content from a file (you can specify a relative path).
+* `fromInlineText` - Defines the hosted configuration from inline text.
+* `fromInlineJson` - Defines the hosted configuration from inline JSON.
+* `fromInlineYaml` - Defines the hosted configuration from inline YAML.
+* `fromInline` - Defines the hosted configuration from user-specified content types.
 
 AWS AppConfig supports the following types of configuration profiles.
 
@@ -100,8 +116,12 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 });
 ```
 
-When you create a configuration and configuration profile, you can specify up to two validators. A validator ensures that your configuration data is syntactically and semantically correct. You can create validators in either JSON Schema or as an AWS Lambda function.
+When you create a configuration and configuration profile, you can specify up to two validators. A validator ensures that your 
+configuration data is syntactically and semantically correct. You can create validators in either JSON Schema or as an AWS 
+Lambda function.
 See [About validators](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-creating-configuration-and-profile.html#appconfig-creating-configuration-and-profile-validators) for more information.
+
+When you import a JSON Schema validator from a file, you can pass in a relative path.
 
 A hosted configuration with validators:
 
@@ -119,7 +139,8 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 });
 ```
 
-You can attach a deployment strategy (as described in the previous section) to your configuration to specify how you want your configuration to roll out.
+You can attach a deployment strategy (as described in the previous section) to your configuration to specify how you want your 
+configuration to roll out.
 
 A hosted configuration with a deployment strategy:
 
@@ -139,7 +160,8 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 });
 ```
 
-The `deployTo` parameter is used to specify which environments to deploy the configuration to. If this parameter is not specified, there will not be a deployment.
+The `deployTo` parameter is used to specify which environments to deploy the configuration to. If this parameter is not 
+specified, there will not be a deployment.
 
 A hosted configuration with `deployTo`:
 
@@ -156,7 +178,10 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 
 ### SourcedConfiguration
 
-A sourced configuration represents configuration stored in an Amazon S3 bucket, AWS Secrets Manager secret, Systems Manager (SSM) Parameter Store parameter, SSM document, or AWS CodePipeline. A sourced configuration takes in the location source construct and optionally a version number to deploy. On construction of a sourced configuration, the configuration is deployed only if a version number is specified.
+A sourced configuration represents configuration stored in an Amazon S3 bucket, AWS Secrets Manager secret, Systems Manager 
+(SSM) Parameter Store parameter, SSM document, or AWS CodePipeline. A sourced configuration takes in the location source 
+construct and optionally a version number to deploy. On construction of a sourced configuration, the configuration is deployed 
+only if a version number is specified.
 
 ### S3
 
@@ -301,7 +326,8 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 });
 ```
 
-The `deployTo` parameter is used to specify which environments to deploy the configuration to. If this parameter is not specified, there will not be a deployment.
+The `deployTo` parameter is used to specify which environments to deploy the configuration to. If this parameter is not 
+specified, there will not be a deployment.
 
 A sourced configuration with `deployTo`:
 
@@ -319,27 +345,35 @@ new appconfig.SourcedConfiguration(this, 'MySourcedConfiguration', {
 
 ## Environment
 
-For each AWS AppConfig application, you define one or more environments. An environment is a logical deployment group of AWS AppConfig targets, such as applications in a Beta or Production environment. You can also define environments for application subcomponents such as the Web, Mobile, and Back-end components for your application. You can configure Amazon CloudWatch alarms for each environment. The system monitors alarms during a configuration deployment. If an alarm is triggered, the system rolls back the configuration.
+For each AWS AppConfig application, you define one or more environments. An environment is a logical deployment group of AWS 
+AppConfig targets, such as applications in a Beta or Production environment. You can also define environments for application 
+subcomponents such as the Web, Mobile, and Back-end components for your application. You can configure Amazon CloudWatch alarms 
+for each environment. The system monitors alarms during a configuration deployment. If an alarm is triggered, the system rolls 
+back the configuration.
 
 Basic environment with monitors:
 
 ```ts
 declare const application: appconfig.Application;
 declare const alarm: cloudwatch.Alarm;
+declare const compositeAlarm: cloudwatch.CompositeAlarm;
 
 new appconfig.Environment(this, 'MyEnvironment', {
   application,
   monitors: [
     appconfig.Monitor.fromCloudWatchAlarm(alarm),
+    appconfig.Monitor.fromCloudWatchAlarm(compositeAlarm),
   ],
 });
 ```
 
-Environment monitors also support L1 CfnEnvironment.MonitorsProperty constructs. However, this is not the recommended approach for CloudWatch alarms because a role will not be auto-generated if not provided.
+Environment monitors also support L1 CfnEnvironment.MonitorsProperty constructs. However, this is not the recommended approach 
+for CloudWatch alarms because a role will not be auto-generated if not provided.
 
 ## Extension
 
-An extension augments your ability to inject logic or behavior at different points during the AWS AppConfig workflow of creating or deploying a configuration.
+An extension augments your ability to inject logic or behavior at different points during the AWS AppConfig workflow of 
+creating or deploying a configuration.
 See: https://docs.aws.amazon.com/appconfig/latest/userguide/working-with-appconfig-extensions.html
 
 ### AWS Lambda destination
@@ -430,7 +464,9 @@ new appconfig.Extension(this, 'MyExtension', {
 });
 ```
 
-You can also add extensions and their associations directly by calling `onDeploymentComplete()` or any other action point method on the AWS AppConfig application, configuration, or environment resource. To add an association to an existing extension, you can call `addExtension()` on the resource.
+You can also add extensions and their associations directly by calling `onDeploymentComplete()` or any other action point 
+method on the AWS AppConfig application, configuration, or environment resource. To add an association to an existing 
+extension, you can call `addExtension()` on the resource.
 
 Adding an association to an AWS AppConfig application:
 
@@ -442,4 +478,3 @@ declare const lambdaDestination: appconfig.LambdaDestination;
 application.addExtension(extension);
 application.onDeploymentComplete(lambdaDestination);
 ```
-

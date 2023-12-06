@@ -132,6 +132,15 @@
       },
       "Schedule": "cron(0 20 * * ? *)",
       "ScheduledActionName": "ScaleDownAtNight"
+     },
+     {
+      "EndTime": "2023-12-26T00:00:00Z",
+      "ScalableTargetAction": {
+       "MaxCapacity": 20
+      },
+      "Schedule": "cron(0 20 * * ? *)",
+      "ScheduledActionName": "WithStartAndEnd",
+      "StartTime": "2023-12-25T00:00:00Z"
      }
     ],
     "ServiceNamespace": "lambda"

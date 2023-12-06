@@ -71,7 +71,7 @@ export enum DataSource {
    *
    * @see https://docs.aws.amazon.com/location/latest/developerguide/HERE.html
    */
-  HERE = 'Here'
+  HERE = 'Here',
 }
 
 /**
@@ -86,7 +86,7 @@ export enum IntendedUse {
   /**
    * The result can be cached or stored in a database
    */
-  STORAGE = 'Storage'
+  STORAGE = 'Storage',
 }
 
 abstract class PlaceIndexBase extends Resource implements IPlaceIndex {

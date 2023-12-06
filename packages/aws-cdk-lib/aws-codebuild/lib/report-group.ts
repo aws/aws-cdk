@@ -71,7 +71,7 @@ export enum ReportGroupType {
   /**
    * The report group contains code coverage reports.
    */
-  CODE_COVERAGE = 'CODE_COVERAGE'
+  CODE_COVERAGE = 'CODE_COVERAGE',
 }
 
 /**
@@ -118,14 +118,13 @@ export interface ReportGroupProps {
    *
    * @default TEST
    */
-  readonly type?: ReportGroupType
+  readonly type?: ReportGroupType;
 }
 
 /**
  * The ReportGroup resource class.
  */
 export class ReportGroup extends ReportGroupBase {
-
   /**
    * Reference an existing ReportGroup,
    * defined outside of the CDK code,
