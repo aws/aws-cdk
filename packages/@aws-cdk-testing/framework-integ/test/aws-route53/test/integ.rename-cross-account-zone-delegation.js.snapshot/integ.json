@@ -1,0 +1,14 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "Route53RenameCrossAccountInteg/DefaultTest": {
+      "stacks": [
+        "child-stack",
+        "child-stack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "Route53RenameCrossAccountInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "Route53RenameCrossAccountIntegDefaultTestDeployAssert2D0BD417"
+    }
+  }
+}
