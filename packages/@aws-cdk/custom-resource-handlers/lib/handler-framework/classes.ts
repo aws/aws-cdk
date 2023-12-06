@@ -1,15 +1,15 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { ClassType, stmt, expr, Type, ExternalModule, Expression } from '@cdklabs/typewriter';
+import { ClassType, stmt, expr, Type, ExternalModule, PropertySpec, InterfaceSpec, InterfaceType } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkConstructor } from './constructors';
 import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
 import { CdkHandlerFrameworkModule } from './framework';
 
 /**
- * Runtimes that map to a Lambda runtime.
+ * Runtimes that map to a Lambda runtime during codegen.
  */
 export enum FrameworkRuntime {
   /**
-   * The NodeJs 16.x runtime.
+   * The NodeJS 16.x runtime.
    */
   NODEJS_16_X = 'lambda.Runtime.NODEJS_16_X',
 
@@ -22,6 +22,11 @@ export enum FrameworkRuntime {
    * The NodeJS 20.x runtime.
    */
   NODEJS_20_X = 'lambda.Runtime.NODEJS_20_X',
+
+  /**
+   * The Python 3.9 runtime.
+   */
+  PYTHON_3_9 = 'lambda.Runtime.PYTHON_3_9',
 }
 
 /**
@@ -40,7 +45,7 @@ export interface CdkHandlerClassProps {
   readonly codeDirectory: string;
 
   /**
-   *
+   * Runtimes that are compatible with the source code.
    */
   readonly compatibleRuntimes: FrameworkRuntime[];
 
@@ -50,27 +55,6 @@ export interface CdkHandlerClassProps {
    * @default 'index.handler'
    */
   readonly entrypoint?: string;
-
-  /**
-   * A unique identifier to identify this lambda
-   *
-   * The identifier should be unique across all custom resource providers.
-   * We recommend generating a UUID per provider.
-   *
-   * Note: This is only required for `CdkSingletonFunction`
-   */
-  readonly uuid?: string;
-
-  /**
-   * A descriptive name for the purpose of this Lambda.
-   *
-   * If the Lambda does not have a physical name, this string will be
-   * reflected its generated name. The combination of lambdaPurpose
-   * and uuid must be unique.
-   *
-   * @default SingletonLambda
-   */
-  readonly lambdaPurpose?: string;
 }
 
 export abstract class CdkHandlerFrameworkClass extends ClassType {
@@ -82,7 +66,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
       public readonly compatibleRuntimes: FrameworkRuntime[];
-      public readonly superProps: [string, Expression][] = [];
+      public readonly constructorPropsType = LAMBDA_MODULE.FunctionOptions;
 
       protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE, CDK_HANDLER_MODULE];
 
@@ -96,7 +80,6 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         this.entrypoint = props.entrypoint ?? 'index.handler';
         this.compatibleRuntimes = props.compatibleRuntimes;
 
-        this.buildSuperProps(props);
         this.externalModules.forEach(module => scope.addExternalModule(module));
 
         CdkHandlerFrameworkConstructor.forCdkFunction(this);
@@ -112,7 +95,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
       public readonly compatibleRuntimes: FrameworkRuntime[];
-      public readonly superProps: [string, Expression][] = [];
+      public readonly constructorPropsType: Type;
 
       protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE, CDK_HANDLER_MODULE];
 
@@ -126,8 +109,33 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         this.entrypoint = props.entrypoint ?? 'index.handler';
         this.compatibleRuntimes = props.compatibleRuntimes;
 
-        this.buildSuperProps(props);
         this.externalModules.forEach(module => scope.addExternalModule(module));
+
+        const uuid: PropertySpec = {
+          name: 'uuid',
+          type: Type.STRING,
+          docs: {
+            summary: 'A unique identifier to identify this Lambda.\n\nThe identifier should be unique across all custom resource providers.\nWe recommend generating a UUID per provider.',
+          },
+        };
+        const lambdaPurpose: PropertySpec = {
+          name: 'lambdaPurpose',
+          type: Type.STRING,
+          optional: true,
+          docs: {
+            summary: 'A descriptive name for the purpose of this Lambda.\n\nIf the Lambda does not have a physical name, this string will be\nreflected in its generated name. The combination of lambdaPurpose\nand uuid must be unique.',
+            docTags: {
+              default: 'SingletonLambda',
+            },
+          },
+        };
+        const _interface = this.getOrCreateInterface(scope, {
+          name: 'CdkSingletonFunctionProps',
+          export: true,
+          extends: [LAMBDA_MODULE.FunctionOptions],
+          properties: [uuid, lambdaPurpose],
+        });
+        this.constructorPropsType = _interface.type;
 
         CdkHandlerFrameworkConstructor.forCdkFunction(this);
       }
@@ -142,7 +150,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
       public readonly compatibleRuntimes: FrameworkRuntime[];
-      public readonly superProps: [string, Expression][] = [];
+      public readonly constructorPropsType = CORE_MODULE.CustomResourceProviderOptions;
 
       protected readonly externalModules = [CONSTRUCTS_MODULE, CORE_MODULE, CDK_HANDLER_MODULE];
 
@@ -156,7 +164,6 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         this.entrypoint = props.entrypoint ?? 'index.handler';
         this.compatibleRuntimes = props.compatibleRuntimes;
 
-        this.buildSuperProps(props);
         this.externalModules.forEach(module => scope.addExternalModule(module));
 
         const getOrCreateMethod = this.addMethod({
@@ -175,8 +182,12 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           name: 'uniqueid',
           type: Type.STRING,
         });
+        getOrCreateMethod.addParameter({
+          name: 'props',
+          type: CORE_MODULE.CustomResourceProviderOptions,
+        });
         getOrCreateMethod.addBody(
-          stmt.ret(expr.directCode('this.getOrCreateProvider(scope, uniqueid).serviceToken')),
+          stmt.ret(expr.directCode('this.getOrCreateProvider(scope, uniqueid, props).serviceToken')),
         );
 
         const getOrCreateProviderMethod = this.addMethod({
@@ -195,11 +206,15 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           name: 'uniqueid',
           type: Type.STRING,
         });
+        getOrCreateProviderMethod.addParameter({
+          name: 'props',
+          type: CORE_MODULE.CustomResourceProviderOptions,
+        });
         getOrCreateProviderMethod.addBody(
           stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`')),
           stmt.constVar(expr.ident('stack'), expr.directCode('cdk.Stack.of(scope)')),
           stmt.constVar(expr.ident('existing'), expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
-          stmt.ret(expr.directCode(`existing ?? new ${this.name}(scope, id)`)),
+          stmt.ret(expr.directCode(`existing ?? new ${this.name}(scope, id, props)`)),
         );
 
         CdkHandlerFrameworkConstructor.forCdkCustomResourceProvider(this);
@@ -219,27 +234,28 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   public abstract readonly entrypoint: string;
 
   /**
-   *
+   * Runtimes that are compatible with the code that this class will execute.
    */
   public abstract readonly compatibleRuntimes: FrameworkRuntime[];
 
   /**
-   *
+   * Properties used to initialize this class.
    */
-  public abstract readonly superProps: [string, Expression][];
+  public abstract readonly constructorPropsType: Type;
 
   /**
    * External modules that this class depends on.
    */
   protected abstract readonly externalModules: ExternalModule[];
 
-  private buildSuperProps(props: CdkHandlerClassProps) {
-    if (props.uuid) {
-      this.superProps.push(['uuid', expr.lit(props.uuid)]);
+  private getOrCreateInterface(scope: CdkHandlerFrameworkModule, spec: InterfaceSpec) {
+    const existing = scope.getInterface(spec.name);
+    if (existing) {
+      return existing;
     }
 
-    if (props.lambdaPurpose) {
-      this.superProps.push(['lambdaPurpose', expr.lit(props.lambdaPurpose)]);
-    }
+    const _interface = new InterfaceType(scope, { ...spec });
+    scope.registerInterface(_interface);
+    return _interface;
   }
 }

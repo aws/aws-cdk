@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { ExternalModule, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
+import { ExternalModule, InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { CdkHandlerClassProps, CdkHandlerFrameworkClass } from './classes';
 import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE, PATH_MODULE } from './modules';
@@ -44,6 +44,7 @@ export class CdkHandlerFrameworkModule extends Module {
 
   private readonly renderer = new TypeScriptRenderer();
   private readonly externalModules = new Map<string, boolean>();
+  private readonly _interfaces = new Map<string, InterfaceType>();
 
   private constructor(components: ComponentDefinition[]) {
     super('cdk-handler-framework');
@@ -54,8 +55,6 @@ export class CdkHandlerFrameworkModule extends Module {
         className: component.className,
         compatibleRuntimes: component.compatibleRuntimes,
         entrypoint: component.entrypoint,
-        uuid: component.uuid,
-        lambdaPurpose: component.lambdaPurpose,
       };
 
       switch (component.type) {
@@ -91,6 +90,20 @@ export class CdkHandlerFrameworkModule extends Module {
     if (!this.externalModules.has(module.fqn)) {
       this.externalModules.set(module.fqn, true);
     }
+  }
+
+  /**
+   * Register an interface with this module.
+   */
+  public registerInterface(_interface: InterfaceType) {
+    this._interfaces.set(_interface.name, _interface);
+  }
+
+  /**
+   * Retrieve an interface that has been registered with this module.
+   */
+  public getInterface(name: string) {
+    return this._interfaces.get(name);
   }
 
   private importExternalModules() {

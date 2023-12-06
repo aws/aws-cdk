@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { Expression, Type, stmt, expr, SuperInitializer, ObjectLiteral } from '@cdklabs/typewriter';
+import { Expression, Type, stmt, expr, SuperInitializer, ObjectLiteral, Splat } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkClass } from './classes';
 import { CONSTRUCTS_MODULE } from './modules';
 
@@ -9,10 +9,10 @@ export class CdkHandlerFrameworkConstructor {
    */
   public static forCdkFunction(_class: CdkHandlerFrameworkClass) {
     const superProps = new ObjectLiteral([
+      new Splat(expr.ident('props')),
       ['code', expr.directCode('cdkHandler.code')],
       ['handler', expr.directCode('cdkHandler.entrypoint')],
       ['runtime', expr.directCode('cdkHandler.runtime')],
-      ..._class.superProps,
     ]);
     CdkHandlerFrameworkConstructor.forClass(_class, superProps);
   }
@@ -29,14 +29,14 @@ export class CdkHandlerFrameworkConstructor {
    */
   public static forCdkCustomResourceProvider(_class: CdkHandlerFrameworkClass) {
     const superProps = new ObjectLiteral([
+      new Splat(expr.ident('props')),
       ['codeDirectory', expr.directCode('cdkHandler.codeDirectory')],
       ['runtimeName', expr.directCode('cdkHandler.runtime.name')],
-      ..._class.superProps,
     ]);
     CdkHandlerFrameworkConstructor.forClass(_class, superProps);
   }
 
-  private static forClass(_class: CdkHandlerFrameworkClass, superProps?: Expression) {
+  private static forClass(_class: CdkHandlerFrameworkClass, superProps: Expression) {
     // constructor
     const init = _class.addInitializer({});
     const scope = init.addParameter({
@@ -46,6 +46,10 @@ export class CdkHandlerFrameworkConstructor {
     const id = init.addParameter({
       name: 'id',
       type: Type.STRING,
+    });
+    init.addParameter({
+      name: 'props',
+      type: _class.constructorPropsType,
     });
 
     // build CdkHandler instance
@@ -69,10 +73,7 @@ export class CdkHandlerFrameworkConstructor {
     );
 
     // build super call
-    const superInitializerArgs: Expression[] = [scope, id];
-    if (superProps) {
-      superInitializerArgs.push(superProps);
-    }
+    const superInitializerArgs: Expression[] = [scope, id, superProps];
     init.addBody(new SuperInitializer(...superInitializerArgs));
   }
 
