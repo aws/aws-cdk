@@ -33,6 +33,15 @@
     "Name": "awsappconfigconfiguration-MyAppConfig-HostedEnvFromYaml-BB2C802A"
    }
   },
+  "MyAppConfigEnvDeployLater26FA1032": {
+   "Type": "AWS::AppConfig::Environment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "Name": "awsappconfigconfiguration-MyAppConfig-EnvDeployLater-91038922"
+   }
+  },
   "MyAppConfigParameterEnvD769FB19": {
    "Type": "AWS::AppConfig::Environment",
    "Properties": {
@@ -221,6 +230,26 @@
     },
     "EnvironmentId": {
      "Ref": "MyAppConfigHostedEnvFromJson9E6E36C4"
+    }
+   }
+  },
+  "MyHostedConfigFromJsonDeploymentEFECDBC4087F1": {
+   "Type": "AWS::AppConfig::Deployment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigFromJsonConfigurationProfile863E1E42"
+    },
+    "ConfigurationVersion": {
+     "Ref": "MyHostedConfigFromJsonD8CF9BE4"
+    },
+    "DeploymentStrategyId": {
+     "Ref": "MyDeployStrategy062CAEA2"
+    },
+    "EnvironmentId": {
+     "Ref": "MyAppConfigEnvDeployLater26FA1032"
     }
    }
   },
