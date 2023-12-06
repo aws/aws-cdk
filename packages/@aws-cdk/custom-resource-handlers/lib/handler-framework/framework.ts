@@ -2,7 +2,7 @@
 import { ExternalModule, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { CdkHandlerClassProps, CdkHandlerFrameworkClass } from './classes';
-import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE } from './modules';
+import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE, PATH_MODULE } from './modules';
 
 /**
  * Handler framework component types.
@@ -53,6 +53,8 @@ export class CdkHandlerFrameworkModule extends Module {
         codeDirectory: component.codeDirectory,
         className: component.className,
         entrypoint: component.entrypoint,
+        uuid: component.uuid,
+        lambdaPurpose: component.lambdaPurpose,
       };
 
       switch (component.type) {
@@ -91,6 +93,7 @@ export class CdkHandlerFrameworkModule extends Module {
   }
 
   private importExternalModules() {
+    PATH_MODULE.import(this, 'path');
     for (const fqn of this.externalModules.keys()) {
       switch (fqn) {
         case CONSTRUCTS_MODULE.fqn: {
@@ -98,7 +101,7 @@ export class CdkHandlerFrameworkModule extends Module {
           break;
         }
         case CORE_MODULE.fqn: {
-          CORE_MODULE.import(this, 'core');
+          CORE_MODULE.import(this, 'cdk');
           break;
         }
         case LAMBDA_MODULE.fqn: {

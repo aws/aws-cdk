@@ -166,7 +166,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         });
         getOrCreateProviderMethod.addBody(
           stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`')),
-          stmt.constVar(expr.ident('stack'), expr.directCode('Stack.of(scope)')),
+          stmt.constVar(expr.ident('stack'), expr.directCode('cdk.Stack.of(scope)')),
           stmt.constVar(expr.ident('existing'), expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
           stmt.ret(expr.directCode(`existing ?? new ${this.name}(scope, id)`)),
         );
@@ -199,11 +199,11 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
 
   private buildSuperProps(props: CdkHandlerClassProps) {
     if (props.uuid) {
-      this.superProps.push(['uuid', expr.directCode(`${props.uuid}`)]);
+      this.superProps.push(['uuid', expr.lit(props.uuid)]);
     }
 
     if (props.lambdaPurpose) {
-      this.superProps.push(['lambdaPurpose', expr.directCode(`${props.lambdaPurpose}`)]);
+      this.superProps.push(['lambdaPurpose', expr.lit(props.lambdaPurpose)]);
     }
   }
 }
