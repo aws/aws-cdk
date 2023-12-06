@@ -1,14 +1,14 @@
-import { 
-  DatePartitionProjection, 
-  EnumPartitionProjection, 
-  IntegerPartitionProjection } from '../lib';
-
+import {
+  DatePartitionProjection,
+  EnumPartitionProjection,
+  IntegerPartitionProjection,
+} from '../lib';
 
 // console.log(proj.toOutputFormat());
 describe('partition projection output', () => {
   test('Date partition projection', () => {
     const proj = new DatePartitionProjection(
-      'date', 
+      'date',
       's3://DOC-EXAMPLE-BUCKET/prefix/${date}/',
       'NOW-3YEARS,NOW',
       'yyyy-MM-dd');
@@ -23,22 +23,22 @@ describe('partition projection output', () => {
 
   test('Integer partition projection', () => {
     const proj = new IntegerPartitionProjection(
-      'hour', 
+      'hour',
       's3://DOC-EXAMPLE-BUCKET/prefix/${hour}/',
-      '0,23', 
+      '0,23',
       2);
     expect(proj.toOutputFormat()).toEqual({
       'projection.enabled': true,
       'projection.hour.type': 'integer',
       'projection.hour.range': '0,23',
-      'projection.hour.interval': "2",
+      'projection.hour.interval': '2',
       'storage.location.template': 's3://DOC-EXAMPLE-BUCKET/prefix/${hour}/',
     });
   });
 
   test('Enum partition projection', () => {
     const proj = new EnumPartitionProjection(
-      'unit', 
+      'unit',
       's3://DOC-EXAMPLE-BUCKET/prefix/${unit}/',
       'A,B,C');
     expect(proj.toOutputFormat()).toEqual({
@@ -48,6 +48,5 @@ describe('partition projection output', () => {
       'storage.location.template': 's3://DOC-EXAMPLE-BUCKET/prefix/${unit}/',
     });
   });
-
 
 });

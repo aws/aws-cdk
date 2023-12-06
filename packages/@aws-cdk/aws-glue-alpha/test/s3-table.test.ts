@@ -1101,14 +1101,14 @@ describe('Partition-Projection', () => {
     const stack = new cdk.Stack();
     const database = new glue.Database(stack, 'Database');
     const partitionProjection = new DatePartitionProjection(
-        'columnName',
-        's3://DOC-EXAMPLE-BUCKET/prefix/${columnName}/',
-        'NOW-3YEARS,NOW',
-        'dd-MM-yyyy',
-        1,
-        DateIntervalUnit.DAYS,
+      'columnName',
+      's3://DOC-EXAMPLE-BUCKET/prefix/${columnName}/',
+      'NOW-3YEARS,NOW',
+      'dd-MM-yyyy',
+      1,
+      DateIntervalUnit.DAYS,
     );
-  
+
     new glue.S3Table(stack, 'Table', {
       database,
       columns: [{
@@ -1118,7 +1118,7 @@ describe('Partition-Projection', () => {
       partitionProjection: partitionProjection,
       dataFormat: glue.DataFormat.JSON,
     });
-  
+
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
       TableInput: {
         Parameters: {
@@ -1139,16 +1139,16 @@ describe('Partition-Projection', () => {
     const database = new glue.Database(stack, 'Database');
     const bucket = new s3.Bucket(stack, 'Bucket');
     const partitionProjection = new DatePartitionProjection(
-        'columnName',
-        's3://DOC-EXAMPLE-BUCKET/prefix/${columnName}/',
-        '2021/01/01,NOW',
-        'yyyy/MM/dd',
-        1,
-        DateIntervalUnit.DAYS,
+      'columnName',
+      's3://DOC-EXAMPLE-BUCKET/prefix/${columnName}/',
+      '2021/01/01,NOW',
+      'yyyy/MM/dd',
+      1,
+      DateIntervalUnit.DAYS,
     );
-  
+
     new glue.S3Table(stack, 'Table', {
-      tableName: 'glue-table-on-s3', 
+      tableName: 'glue-table-on-s3',
       description: 'The raw data from firehose',
       database,
       columns: [{
@@ -1170,20 +1170,20 @@ describe('Partition-Projection', () => {
       enablePartitionFiltering: true,
       compressed: true,
     });
-  
+
     Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
       CatalogId: {
         Ref: 'AWS::AccountId',
       },
       DatabaseName: {
         Ref: 'DatabaseB269D8BB',
-      },  
+      },
       TableInput: {
         Name: 'glue-table-on-s3',
-        Description: 'The raw data from firehose',  
+        Description: 'The raw data from firehose',
         Parameters: {
-          classification: 'json',
-          has_encrypted_data: true,  
+          'classification': 'json',
+          'has_encrypted_data': true,
           'projection.enabled': true,
           'projection.columnName.type': 'date',
           'projection.columnName.range': '2021/01/01,NOW',
@@ -1194,10 +1194,10 @@ describe('Partition-Projection', () => {
         },
         PartitionKeys: [
           {
-           Name: "columnName",
-           Type: "string"
-          }
-         ],
+            Name: 'columnName',
+            Type: 'string',
+          },
+        ],
         StorageDescriptor: {
           Columns: [
             {
@@ -1221,7 +1221,7 @@ describe('Partition-Projection', () => {
           },
           OutputFormat: 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat',
           Parameters: {
-            compression_type: "gzip"
+            compression_type: 'gzip',
           },
           SerdeInfo: {
             SerializationLibrary: 'org.openx.data.jsonserde.JsonSerDe',

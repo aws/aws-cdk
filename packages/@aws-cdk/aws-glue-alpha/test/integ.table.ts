@@ -137,7 +137,7 @@ new glue.S3Table(stack, 'MyTableWithPartitionProjectionParameters', {
     'dd-MM-yyyy',
     1,
     glue.DateIntervalUnit.DAYS,
-  )
+  ),
 });
 
 new glue.Table(stack, 'MyDeprecatedTable', {
