@@ -396,7 +396,7 @@ export class Queue extends QueueBase {
   /**
    * The URL of this queue
    *
-   * @deprecated use attrQUeueUrl
+   * @deprecated use attrQueueUrl
    */
   public readonly queueUrl: string;
 
