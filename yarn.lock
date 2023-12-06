@@ -6239,12 +6239,14 @@ cdk-generate-synthetic-examples@^0.1.298:
     jsii-rosetta "^1.92.0"
     yargs "^17.7.2"
 
-cdk8s-plus-24@2.12.1:
-  version "2.12.1"
-  resolved "https://registry.npmjs.org/cdk8s-plus-24/-/cdk8s-plus-24-2.12.1.tgz#a7ebe81e4f52b9e2023feee050d4ff70ba068ed3"
-  integrity sha512-R7pJnR3riVINwJzgEbPdPlr662Lasz3IB630+O7xL5Ylu31eLCqCNO3vdIgI5l49qbSui8xD7MBxlhTdsu3/MA==
+cdk8s-plus-27@2.7.69:
+  version "2.7.69"
+  resolved "https://registry.npmjs.org/cdk8s-plus-27/-/cdk8s-plus-27-2.7.69.tgz#a0e3a638f8d7962587911e1cd62cc4c529978841"
+  integrity sha512-xeyrb4cRe4IYzCvTyuhLFxQWiV2bN14/FFvE+H5eNVaXt8x57G/CRK8ZF0inWhDJPXEYi/35WQw2JQSxkVJ3mA==
   dependencies:
     minimatch "^3.1.2"
+  optionalDependencies:
+    backport "8.5.0"
 
 cdk8s@2.68.15:
   version "2.68.15"
