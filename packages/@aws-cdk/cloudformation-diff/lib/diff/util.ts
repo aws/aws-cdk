@@ -27,11 +27,8 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
     return true;
   }
 
-  const containsFn = Object.keys(lvalue ?? {}).filter((key => key ? (key.includes('Fn::') ? true : false) : false)).length > 0 &&
-    Object.keys(rvalue ?? {}).filter((key => key ? (key.includes('Fn::') ? true : false) : false)).length > 0;
-
-  if (containsFn) {
-    return yamlFnEqual(lvalue, rvalue);
+  if (containsIntrinsic(lvalue) && containsIntrinsic(rvalue)) {
+    return yamlIntrinsicEqual(lvalue, rvalue);
   }
   // allows a numeric 10 and a literal "10" to be equivalent;
   // this is consistent with CloudFormation.
@@ -120,7 +117,21 @@ function dependsOnEqual(lvalue: any, rvalue: any): boolean {
   return false;
 }
 
-function yamlFnEqual(lvalue: any, rvalue: any): boolean {
+function containsIntrinsic(value: any): boolean {
+  return Object.keys(value ?? {}).filter((key => key ? (key.includes('Fn::') ? true : false) : false)).length > 0;
+}
+
+/**
+ * Checks if a value has changed intrinsic form.
+ * Only applicable to CDK Migrate.
+ * For example, if a user has created a yaml template that uses
+ *
+ * !Fn::GetAtt 'foo.bar', CDK Migrate converts this to
+ * Fn::GetAtt: ['foo', 'bar']
+ *
+ * Both forms are equivalent
+ */
+function yamlIntrinsicEqual(lvalue: any, rvalue: any): boolean {
   for (const lintrinsic of Object.keys(lvalue)) {
     for (const rintrinsic of Object.keys(rvalue)) {
       if (lintrinsic !== rintrinsic) {
@@ -142,7 +153,7 @@ function yamlFnEqual(lvalue: any, rvalue: any): boolean {
             str = lvalue[intrinsic];
           }
 
-          // if one value is an array, and the value is a string, check for usage form
+          // if one value is an array, and the other is a string, check for form equivalency
           if (array && str) {
             // check if array is a string[]
             let strArr: boolean = true;
