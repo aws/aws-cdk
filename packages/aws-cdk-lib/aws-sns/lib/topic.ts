@@ -52,7 +52,6 @@ export interface TopicProps {
  * A new SNS topic
  */
 export class Topic extends TopicBase {
-
   /**
    * Import an existing SNS topic provided an ARN
    *
@@ -62,7 +61,8 @@ export class Topic extends TopicBase {
    */
   public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
     class Import extends TopicBase {
-      public readonly topicArn = topicArn;
+      public readonly attrTopicArn = topicArn;
+      public readonly topicArn = this.attrTopicArn;
       public readonly topicName = Stack.of(scope).splitArn(topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
       public readonly fifo = this.topicName.endsWith('.fifo');
       public readonly contentBasedDeduplication = false;
@@ -75,6 +75,7 @@ export class Topic extends TopicBase {
   }
 
   public readonly topicArn: string;
+  public readonly attrTopicArn: string;
   public readonly topicName: string;
   public readonly contentBasedDeduplication: boolean;
   public readonly fifo: boolean;
@@ -112,10 +113,11 @@ export class Topic extends TopicBase {
       fifoTopic: props.fifo,
     });
 
-    this.topicArn = this.getResourceArnAttribute(resource.ref, {
+    this.attrTopicArn = this.getResourceArnAttribute(resource.ref, {
       service: 'sns',
       resource: this.physicalName,
     });
+    this.topicArn = this.attrTopicArn;
     this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
     this.fifo = props.fifo || false;
     this.contentBasedDeduplication = props.contentBasedDeduplication || false;

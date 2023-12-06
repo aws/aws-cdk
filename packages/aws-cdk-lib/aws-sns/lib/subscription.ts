@@ -68,6 +68,7 @@ export interface SubscriptionOptions {
    */
   readonly subscriptionRoleArn?: string;
 }
+
 /**
  * Properties for creating a new subscription
  */
@@ -85,7 +86,6 @@ export interface SubscriptionProps extends SubscriptionOptions {
  * this class.
  */
 export class Subscription extends Resource {
-
   /**
    * The DLQ associated with this subscription if present.
    */
