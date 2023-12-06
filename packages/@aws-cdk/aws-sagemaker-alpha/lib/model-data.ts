@@ -29,7 +29,7 @@ export abstract class ModelData {
    * @param bucket The S3 bucket within which the model artifacts are stored
    * @param objectKey The S3 object key at which the model artifacts are stored
    */
-  public static fromBucket(bucket: s3.IBucket, objectKey: string): ModelData {
+  public static fromBucket(bucket: s3.ICfnBucket, objectKey: string): ModelData {
     return new S3ModelData(bucket, objectKey);
   }
 
@@ -52,8 +52,12 @@ export abstract class ModelData {
 }
 
 class S3ModelData extends ModelData {
-  constructor(private readonly bucket: s3.IBucket, private readonly objectKey: string) {
+  private readonly bucket: s3.IBucket;
+
+  constructor(_bucket: s3.ICfnBucket, private readonly objectKey: string) {
     super();
+
+    this.bucket = s3.Bucket.fromCfnBucket(_bucket);
   }
 
   public bind(_scope: Construct, model: IModel): ModelDataConfig {

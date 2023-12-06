@@ -114,7 +114,7 @@ export interface LoggingProperties {
    * Bucket to send logs to.
    * Logging information includes queries and connection attempts, for the specified Amazon Redshift cluster.
    */
-  readonly loggingBucket: s3.IBucket;
+  readonly loggingBucket: s3.ICfnBucket;
 
   /**
    * Prefix used for logging.
@@ -535,11 +535,12 @@ export class Cluster extends ClusterBase {
 
     let loggingProperties;
     if (props.loggingProperties) {
+      const loggingBucket = s3.Bucket.fromCfnBucket(props.loggingProperties.loggingBucket);
       loggingProperties = {
-        bucketName: props.loggingProperties.loggingBucket.bucketName,
+        bucketName: loggingBucket.attrBucketName,
         s3KeyPrefix: props.loggingProperties.loggingKeyPrefix,
       };
-      props.loggingProperties.loggingBucket.addToResourcePolicy(
+      loggingBucket.addToResourcePolicy(
         new iam.PolicyStatement(
           {
             actions: [
@@ -547,8 +548,8 @@ export class Cluster extends ClusterBase {
               's3:PutObject',
             ],
             resources: [
-              props.loggingProperties.loggingBucket.arnForObjects('*'),
-              props.loggingProperties.loggingBucket.bucketArn,
+              loggingBucket.arnForObjects('*'),
+              loggingBucket.attrArn,
             ],
             principals: [
               new iam.ServicePrincipal('redshift.amazonaws.com'),

@@ -1717,7 +1717,7 @@ export class Bucket extends BucketBase {
   /**
    * Create a mutable `IBucket` based on a low-level `CfnBucket`.
    */
-  public static fromCfnBucket(cfnBucket: IBucket): IBucket {
+  public static fromCfnBucket(cfnBucket: ICfnBucket): IBucket {
     // use a "weird" id that has a higher chance of being unique
     const id = '@FromCfnBucket';
 
@@ -1729,11 +1729,23 @@ export class Bucket extends BucketBase {
       return <IBucket>existing;
     }
 
+    // if cfnBucket is already an IBucket, just return itself.
+    if ((<IBucket>cfnBucket).grantRead !== undefined) {
+      return <IBucket>cfnBucket;
+    }
+
+    // if cfnBucket is not a CfnResource, and thus not a CfnBucket, we are in a scenario where
+    // cfnBucket is an ICfnBucket but NOT a CfnBucket, which shouldn't happen
+    if (!CfnBucket.isCfnResource(cfnBucket)) {
+      throw new Error('Encountered an "ICfnBucket" that is not an "IBucket" or "CfnBucket". If you have a legitimate reason for this, please open an issue at https://github.com/aws/aws-cdk/issues');
+    }
+    const _cfnBucket = cfnBucket as CfnBucket;
+
     // handle the KMS Key if the Bucket references one
     let encryptionKey: kms.IKey | undefined;
 
-    if (cfnBucket.bucketEncryption) {
-      const serverSideEncryptionConfiguration = (cfnBucket.bucketEncryption as any).serverSideEncryptionConfiguration;
+    if (_cfnBucket.bucketEncryption) {
+      const serverSideEncryptionConfiguration = (_cfnBucket.bucketEncryption as any).serverSideEncryptionConfiguration;
       if (Array.isArray(serverSideEncryptionConfiguration) && serverSideEncryptionConfiguration.length === 1) {
         const serverSideEncryptionRuleProperty = serverSideEncryptionConfiguration[0];
         const serverSideEncryptionByDefault = serverSideEncryptionRuleProperty.serverSideEncryptionByDefault;
@@ -1750,27 +1762,27 @@ export class Bucket extends BucketBase {
     }
 
     return new class extends BucketBase {
-      public readonly attrArn = cfnBucket.attrArn;
+      public readonly attrArn = _cfnBucket.attrArn;
       public readonly bucketArn = this.attrArn;
-      public readonly attrBucketName = cfnBucket.ref;
+      public readonly attrBucketName = _cfnBucket.ref;
       public readonly bucketName = this.attrBucketName;
-      public readonly bucketDomainName = cfnBucket.attrDomainName;
-      public readonly bucketDualStackDomainName = cfnBucket.attrDualStackDomainName;
-      public readonly bucketRegionalDomainName = cfnBucket.attrRegionalDomainName;
-      public readonly bucketWebsiteUrl = cfnBucket.attrWebsiteUrl;
-      public readonly bucketWebsiteDomainName = Fn.select(2, Fn.split('/', cfnBucket.attrWebsiteUrl));
+      public readonly bucketDomainName = _cfnBucket.attrDomainName;
+      public readonly bucketDualStackDomainName = _cfnBucket.attrDualStackDomainName;
+      public readonly bucketRegionalDomainName = _cfnBucket.attrRegionalDomainName;
+      public readonly bucketWebsiteUrl = _cfnBucket.attrWebsiteUrl;
+      public readonly bucketWebsiteDomainName = Fn.select(2, Fn.split('/', _cfnBucket.attrWebsiteUrl));
 
       public readonly encryptionKey = encryptionKey;
-      public readonly isWebsite = cfnBucket.websiteConfiguration !== undefined;
+      public readonly isWebsite = _cfnBucket.websiteConfiguration !== undefined;
       public policy = undefined;
       protected autoCreatePolicy = true;
-      protected disallowPublicAccess = cfnBucket.publicAccessBlockConfiguration &&
-        (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
+      protected disallowPublicAccess = _cfnBucket.publicAccessBlockConfiguration &&
+        (_cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
 
       constructor() {
-        super(cfnBucket, id);
+        super(_cfnBucket, id);
 
-        this.node.defaultChild = cfnBucket;
+        this.node.defaultChild = _cfnBucket;
       }
     }();
   }
