@@ -43,6 +43,7 @@ export interface BuildEnvironmentCertificate {
    * The bucket where the certificate is
    */
   readonly bucket: s3.IBucket;
+
   /**
    * The full path and name of the key file
    */
@@ -774,7 +775,6 @@ export interface BindToCodePipelineOptions {
  * A representation of a CodeBuild Project.
  */
 export class Project extends ProjectBase {
-
   public static fromProjectArn(scope: Construct, id: string, projectArn: string): IProject {
     const parsedArn = Stack.of(scope).splitArn(projectArn, ArnFormat.SLASH_RESOURCE_NAME);
 
@@ -1970,7 +1970,7 @@ export enum WindowsImageType {
   /**
    * The WINDOWS_SERVER_2019_CONTAINER environment type
    */
-  SERVER_2019 = 'WINDOWS_SERVER_2019_CONTAINER'
+  SERVER_2019 = 'WINDOWS_SERVER_2019_CONTAINER',
 }
 
 /**
@@ -2002,7 +2002,7 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * Corresponds to the standard CodeBuild image `aws/codebuild/windows-base:1.0`.
    *
-   * @deprecated `WindowsBuildImage.WINDOWS_BASE_2_0` should be used instead.
+   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0` should be used instead.
    */
   public static readonly WIN_SERVER_CORE_2016_BASE: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:1.0',
@@ -2012,6 +2012,8 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * The standard CodeBuild image `aws/codebuild/windows-base:2.0`, which is
    * based off Windows Server Core 2016.
+   *
+   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0` should be used instead.
    */
   public static readonly WINDOWS_BASE_2_0: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:2.0',
@@ -2122,8 +2124,8 @@ export class WindowsBuildImage implements IBuildImage {
       ret.push('Windows images do not support Lambda compute types');
     }
 
-    if (buildEnvironment.computeType === ComputeType.SMALL) {
-      ret.push('Windows images do not support the Small ComputeType');
+    if (buildEnvironment.computeType === ComputeType.SMALL || buildEnvironment.computeType === ComputeType.X2_LARGE) {
+      ret.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
     }
     return ret;
   }
@@ -2187,7 +2189,7 @@ export enum BuildEnvironmentVariableType {
   /**
    * An environment variable stored in AWS Secrets Manager.
    */
-  SECRETS_MANAGER = 'SECRETS_MANAGER'
+  SECRETS_MANAGER = 'SECRETS_MANAGER',
 }
 
 /**
