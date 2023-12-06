@@ -32,18 +32,18 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "^0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-sdk/client-acm": "3.421.0",
-    "@aws-sdk/client-rds": "3.421.0",
-    "@aws-sdk/client-s3": "3.421.0",
+    "@aws-sdk/client-acm": "3.465.0",
+    "@aws-sdk/client-rds": "3.465.0",
+    "@aws-sdk/client-s3": "3.465.0",
     "delay": "5.0.0"
   },
   "dependencies": {
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl-v24": "^2.0.242",
     "aws-cdk-lib": "0.0.0",
-    "aws-sdk": "^2.1492.0",
+    "aws-sdk": "^2.1512.0",
     "aws-sdk-mock": "5.6.0",
-    "cdk8s": "2.64.23",
+    "cdk8s": "2.68.15",
     "cdk8s-plus-24": "2.12.1",
     "constructs": "^10.0.0"
   },
