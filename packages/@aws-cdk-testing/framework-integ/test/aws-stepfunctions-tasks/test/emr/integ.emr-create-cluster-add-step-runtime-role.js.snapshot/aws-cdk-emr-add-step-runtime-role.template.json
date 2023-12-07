@@ -417,11 +417,6 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
-       "Condition": {
-        "StringEquals": {
-         "aws:RequestTag/for-use-with-amazon-emr-managed-policies": "true"
-        }
-       },
        "Effect": "Allow",
        "Principal": {
         "Service": "elasticmapreduce.amazonaws.com"
@@ -715,7 +710,14 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::elasticmapreduce:addStep.sync\",\"Parameters\":{\"ClusterId.$\":\"$.Cluster.Id\",\"Step\":{\"Name\":\"AddStepRuntimeRoleIntTest\",\"ActionOnFailure\":\"TERMINATE_CLUSTER\",\"HadoopJarStep\":{\"Jar\":\"command-runner.jar\",\"Args\":[\"spark-example\",\"SparkPi\",\"1\"]}}}},\"EmrTerminateCluster\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       ":states:::elasticmapreduce:addStep.sync\",\"Parameters\":{\"ClusterId.$\":\"$.Cluster.Id\",\"ExecutionRoleArn\":\"",
+       {
+        "Fn::GetAtt": [
+         "EmrExecutionRoleF584820F",
+         "Arn"
+        ]
+       },
+       "\",\"Step\":{\"Name\":\"AddStepRuntimeRoleIntTest\",\"ActionOnFailure\":\"TERMINATE_CLUSTER\",\"HadoopJarStep\":{\"Jar\":\"command-runner.jar\",\"Args\":[\"spark-example\",\"SparkPi\",\"1\"]}}}},\"EmrTerminateCluster\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
