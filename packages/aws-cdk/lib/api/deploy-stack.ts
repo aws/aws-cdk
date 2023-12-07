@@ -15,7 +15,7 @@ import {
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { addMetadataAssetsToManifest } from '../assets';
 import { Tag } from '../cdk-toolkit';
-import { debug, error, print } from '../logging';
+import { debug, error, print, warning } from '../logging';
 import { toYAML } from '../serialize';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
@@ -399,6 +399,17 @@ class FullCloudFormationDeployment {
         debug('Deleting empty change set %s', changeSetDescription.ChangeSetId);
         await this.cfn.deleteChangeSet({ StackName: this.stackName, ChangeSetName: changeSetName }).promise();
       }
+
+      if (this.options.force) {
+        warning([
+          'You used the --force flag, but CloudFormation reported that the deployment would not make any changes.',
+          'According to CloudFormation, all resources are already up-to-date with the state in your CDK app.',
+          '',
+          'You cannot use the --force flag to get rid of changes you made in the console. Try using',
+          'CloudFormation drift detection instead: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html',
+        ].join('\n'));
+      }
+
       return { noOp: true, outputs: this.cloudFormationStack.outputs, stackArn: changeSetDescription.StackId! };
     }
 

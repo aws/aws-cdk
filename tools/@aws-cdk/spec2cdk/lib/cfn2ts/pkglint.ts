@@ -13,7 +13,7 @@ export function createModuleDefinitionFromCfnNamespace(namespace: string) {
   const javaGroupId = 'software.amazon.awscdk';
   const javaPackage =
     moduleFamily === 'AWS'
-      ? `services.${lowcaseModuleName}`
+      ? `software.amazon.awscdk.services.${lowcaseModuleName}`
       : `${moduleFamily.toLocaleLowerCase()}.${lowcaseModuleName}`;
   const javaArtifactId =
     moduleFamily === 'AWS' ? lowcaseModuleName : `${moduleFamily.toLocaleLowerCase()}-${lowcaseModuleName}`;
