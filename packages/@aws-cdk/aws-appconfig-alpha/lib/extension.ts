@@ -658,9 +658,7 @@ export class ExtensibleBase implements IExtensible {
   }
 
   public addExtension(extension: IExtension) {
-    this.addExtensionAssociation(extension, {
-      parameters: extension.parameters,
-    });
+    this.addExtensionAssociation(extension);
   }
 
   private getExtensionForActionPoint(eventDestination: IEventDestination, actionPoint: ActionPoint, options?: ExtensionOptions) {
@@ -680,17 +678,17 @@ export class ExtensibleBase implements IExtensible {
       ...(options?.latestVersionNumber ? { latestVersionNumber: options.latestVersionNumber } : {}),
       ...(options?.parameters ? { parameters: options.parameters } : {}),
     });
-    this.addExtensionAssociation(extension, options);
+    this.addExtensionAssociation(extension);
   }
 
-  private addExtensionAssociation(extension: IExtension, options?: ExtensionOptions) {
-    const versionNumber = options?.latestVersionNumber ? options?.latestVersionNumber + 1 : 1;
+  private addExtensionAssociation(extension: IExtension) {
+    const versionNumber = extension?.latestVersionNumber ? extension?.latestVersionNumber + 1 : 1;
     const name = extension.name ?? this.getExtensionDefaultName();
     new CfnExtensionAssociation(this.scope, `AssociationResource${this.getExtensionAssociationHash(name, versionNumber)}`, {
       extensionIdentifier: extension.extensionId,
       resourceIdentifier: this.resourceArn,
       extensionVersionNumber: extension.extensionVersionNumber,
-      parameters: options?.parameters?.reduce((acc: {[key: string]: string}, cur: Parameter) => {
+      parameters: extension.parameters?.reduce((acc: {[key: string]: string}, cur: Parameter) => {
         if (cur.value) {
           acc[cur.name] = cur.value;
         }
