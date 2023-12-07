@@ -476,7 +476,7 @@
     ]
    }
   },
-  "Role1ABCC5F0": {
+  "EmrExecutionRoleF584820F": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -715,14 +715,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::elasticmapreduce:addStep.sync\",\"Parameters\":{\"ClusterId.$\":\"$.Cluster.Id\",\"ExecutionRoleArn\":\"",
-       {
-        "Fn::GetAtt": [
-         "Role1ABCC5F0",
-         "Arn"
-        ]
-       },
-       "\",\"Step\":{\"Name\":\"AddStepRuntimeRoleIntTest\",\"ActionOnFailure\":\"TERMINATE_CLUSTER\",\"HadoopJarStep\":{\"Jar\":\"command-runner.jar\",\"Args\":[\"spark-example\",\"SparkPi\",\"1\"]}}}},\"EmrTerminateCluster\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       ":states:::elasticmapreduce:addStep.sync\",\"Parameters\":{\"ClusterId.$\":\"$.Cluster.Id\",\"Step\":{\"Name\":\"AddStepRuntimeRoleIntTest\",\"ActionOnFailure\":\"TERMINATE_CLUSTER\",\"HadoopJarStep\":{\"Jar\":\"command-runner.jar\",\"Args\":[\"spark-example\",\"SparkPi\",\"1\"]}}}},\"EmrTerminateCluster\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },

@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "aws-cdk-emr-add-step-runtime-role.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8de157a5dd03c1169364dbe7f19595c7cbd503a878ead1e759ee4335181c999e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/40364d5e1052cffd66bde7b42f5598e97c91f93ba88650ea9f4b40e2e3a3bfb3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -196,10 +196,10 @@
             "data": "EmrCreateClusterInstanceProfileC1729180"
           }
         ],
-        "/aws-cdk-emr-add-step-runtime-role/Role/Resource": [
+        "/aws-cdk-emr-add-step-runtime-role/EmrExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Role1ABCC5F0"
+            "data": "EmrExecutionRoleF584820F"
           }
         ],
         "/aws-cdk-emr-add-step-runtime-role/SM/Role/Resource": [
@@ -232,10 +232,19 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "EmrCreateClusterAutoScalingRoleFDDAF4E2": [
+        "InstanceRole3CCE2F1D": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EmrCreateClusterAutoScalingRoleFDDAF4E2",
+            "data": "InstanceRole3CCE2F1D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InstanceProfile",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

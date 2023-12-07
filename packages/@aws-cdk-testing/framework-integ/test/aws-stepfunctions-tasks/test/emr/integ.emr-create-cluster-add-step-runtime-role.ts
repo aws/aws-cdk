@@ -7,7 +7,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /*
- * Create a state machine with an EMR cluster and adds a step that uses a runtime role.
+ * Create a state machine with an EMR cluster and add a step that uses a runtime role.
  *
  * Stack verification steps:
  * The generated State Machine can be executed from the CLI (or Step Functions console)
@@ -70,7 +70,7 @@ const createClusterStep = new tasks.EmrCreateCluster(stack, 'EmrCreateCluster', 
   ],
 });
 
-const executionRole = new iam.Role(stack, 'Role', {
+const executionRole = new iam.Role(stack, 'EmrExecutionRole', {
   assumedBy: new iam.ArnPrincipal(createClusterStep.clusterRole.roleArn),
 });
 
