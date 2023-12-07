@@ -178,7 +178,7 @@ enable the`emptyOnDelete` option.
 
 ```ts
 const repository = new ecr.Repository(this, 'MyTempRepo', {
-  emptyOnDelete: true,
+  emptyOnDelete: true
 });
 ```
 
