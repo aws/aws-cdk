@@ -215,9 +215,11 @@ export interface ClusterInstanceOptions {
   readonly performanceInsightEncryptionKey?: kms.IKey;
 
   /**
-   * Indicates whether the DB instance is an internet-facing instance.
+   * Indicates whether the DB instance is an internet-facing instance. If not specified,
+   * the cluster's vpcSubnets will be used to determine if the instance is internet-facing
+   * or not.
    *
-   * @default - true if the instance is placed in a public subnet
+   * @default - `true` if the cluster's `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
    */
   readonly publiclyAccessible?: boolean;
 
@@ -454,7 +456,8 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
     if (isOwnedResource) {
       const ownedCluster = props.cluster as DatabaseCluster;
       internetConnected = ownedCluster.vpc.selectSubnets(ownedCluster.vpcSubnets).internetConnectivityEstablished;
-      publiclyAccessible = ownedCluster.vpcSubnets && ownedCluster.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
+      const isInPublicSubnet = ownedCluster.vpcSubnets && ownedCluster.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
+      publiclyAccessible = props.publiclyAccessible ?? isInPublicSubnet;
     }
 
     // Get the actual subnet objects so we can depend on internet connectivity.
