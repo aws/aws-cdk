@@ -58,6 +58,7 @@ export interface S3TableProps extends TableBaseProps {
   /**
    * Optional Partition Projection for this table.
    * TODO: Add the option for multiple partition projections.
+   * @default - No partition projection.
    */
   readonly partitionProjection?: PartitionProjection;
 

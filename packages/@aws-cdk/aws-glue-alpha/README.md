@@ -290,7 +290,6 @@ new glue.S3Table(this, 'MyTable', {
 
 From the [Athena documentation](https://docs.aws.amazon.com/athena/latest/ug/partition-projection.html):
 > You can use partition projection in Athena to speed up query processing of highly partitioned tables and automate partition management.
-
 > In partition projection, Athena calculates partition values and locations using the table properties that you configure directly on your table in AWS Glue. The table properties allow Athena to 'project', or determine, the necessary partition information instead of having to do a more time-consuming metadata lookup in the AWS Glue Data Catalog. Because in-memory operations are often faster than remote operations, partition projection can reduce the runtime of queries against highly partitioned tables. Depending on the specific characteristics of the query and underlying data, partition projection can significantly reduce query runtime for queries that are constrained on partition metadata retrieval.
 
 ```ts
@@ -586,7 +585,7 @@ new glue.S3Table(this, 'MyTable', {
 |-------------------------------------	|----------	|-------------------------------------------------------------------	|
 | array(itemType: Type)               	| Function 	| An array of some other type                                       	|
 | map(keyType: Type, valueType: Type) 	| Function 	| A map of some primitive key type to any value type                	|
-| struct(collumns: Column[])          	| Function 	| Nested structure containing individually named and typed collumns 	|
+| struct(columns: Column[])          	| Function 	| Nested structure containing individually named and typed columns 	|
 
 ## Data Quality Ruleset
 
