@@ -1,12 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { ExternalModule, Type } from '@cdklabs/typewriter';
 
-class PathModule extends ExternalModule {
-  public constructor() {
-    super('path');
-  }
-}
-
 class ConstructsModule extends ExternalModule {
   public readonly Construct = Type.fromName(this, 'Construct');
   public readonly IConstruct = Type.fromName(this, 'IConstruct');
@@ -44,7 +38,6 @@ class LambdaModule extends ExternalModule {
   }
 }
 
-export const PATH_MODULE = new PathModule();
 export const CONSTRUCTS_MODULE = new ConstructsModule();
 export const CDK_HANDLER_MODULE = new CdkHandlerModule();
 export const CORE_MODULE = new CoreModule();
