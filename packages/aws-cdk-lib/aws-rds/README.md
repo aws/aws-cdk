@@ -518,11 +518,13 @@ new rds.DatabaseInstance(this, 'Instance', {
 
 ## Setting Public Accessibility
 
-You can set public accessibility for the database instance or cluster using the `publiclyAccessible` property.
+You can set public accessibility for the `DatabaseInstance` or the `ClusterInstance` using the `publiclyAccessible` property.
 If you specify `true`, it creates an instance with a publicly resolvable DNS name, which resolves to a public IP address.
 If you specify `false`, it creates an internal instance with a DNS name that resolves to a private IP address.
-The default value depends on `vpcSubnets`.
-It will be `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise.
+
+The default value will be `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise. In the case of a
+cluster, the default value will be determined on the vpc placement of the `DatabaseCluster` otherwise it will be determined
+based on the vpc placement of standalone `DatabaseInstance`.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -538,17 +540,17 @@ new rds.DatabaseInstance(this, 'Instance', {
   publiclyAccessible: true,
 });
 
-// Setting public accessibility for DB cluster
+// Setting public accessibility for DB cluster instance
 new rds.DatabaseCluster(this, 'DatabaseCluster', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
   }),
-  instanceProps: {
-    vpc,
-    vpcSubnets: {
-      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-    },
+  writer: rds.ClusterInstance.serverlessV2('Writer', {
     publiclyAccessible: true,
+  }),
+  vpc,
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
   },
 });
 ```
