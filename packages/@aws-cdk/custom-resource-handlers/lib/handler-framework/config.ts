@@ -19,6 +19,11 @@ export enum ComponentType {
    * `CdkCustomResourceProvider`
    */
   CDK_CUSTOM_RESOURCE_PROVIDER = 'CdkCustomResourceProvider',
+
+  /**
+   * Do not create a framework component. This is used to just move source code for airlifting.
+   */
+  NO_OP = 'NoOp'
 }
 
 /**
@@ -146,6 +151,43 @@ export const config: HandlerFrameworkConfig = {
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'cluster-resource-handler', 'index.ts'),
         compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
         entrypoint: 'index.isComplete',
+      },
+    ],
+    'kubectl-provider': [
+      {
+        type: ComponentType.CDK_FUNCTION,
+        name: 'KubectlFunction',
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'index.py'),
+        compatibleRuntimes: [FrameworkRuntime.PYTHON_3_10],
+        disableBundleAndMinify: true,
+      },
+      {
+        type: ComponentType.NO_OP,
+        name: 'ApplyHandler',
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'apply', '__init__.py'),
+        compatibleRuntimes: [FrameworkRuntime.PYTHON_3_10],
+        disableBundleAndMinify: true,
+      },
+      {
+        type: ComponentType.NO_OP,
+        name: 'GetHandler',
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'get', '__init__.py'),
+        compatibleRuntimes: [FrameworkRuntime.PYTHON_3_10],
+        disableBundleAndMinify: true,
+      },
+      {
+        type: ComponentType.NO_OP,
+        name: 'HelmHandler',
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'helm', '__init__.py'),
+        compatibleRuntimes: [FrameworkRuntime.PYTHON_3_10],
+        disableBundleAndMinify: true,
+      },
+      {
+        type: ComponentType.NO_OP,
+        name: 'PatchHandler',
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'patch', '__init__.py'),
+        compatibleRuntimes: [FrameworkRuntime.PYTHON_3_10],
+        disableBundleAndMinify: true,
       },
     ],
   },

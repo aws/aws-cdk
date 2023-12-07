@@ -27,6 +27,11 @@ export enum FrameworkRuntime {
    * The Python 3.9 runtime.
    */
   PYTHON_3_9 = 'lambda.Runtime.PYTHON_3_9',
+
+  /**
+   * The Python 3.10 runtime.
+   */
+  PYTHON_3_10 = 'lambda.Runtime.PYTHON_3_10',
 }
 
 /**
