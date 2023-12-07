@@ -166,6 +166,18 @@ new Table(this, 'Table', {
 });
 ```
 
+Tables greater than v2.114.1 can have their table name changed, for versions <= v2.114.1, this would not be possible.
+Therefore, changing of table names for <= v2.114.1 have been disabled.
+
+```ts fixture=cluster
+new Table(this, 'Table', {
+  tableName: 'oldTableName' // This value can be change for versions greater than v2.114.1
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+```
+
 The table can be configured to have distStyle attribute and a distKey column:
 
 ```ts fixture=cluster
