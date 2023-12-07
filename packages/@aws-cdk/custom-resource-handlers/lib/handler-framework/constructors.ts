@@ -30,7 +30,7 @@ export class CdkHandlerFrameworkConstructor {
   public static forCdkCustomResourceProvider(_class: CdkHandlerFrameworkClass) {
     const superProps = new ObjectLiteral([
       new Splat(expr.ident('props')),
-      ['codeDirectory', expr.lit(_class.codeDirectory)],
+      ['codeDirectory', expr.directCode(`path.join(__dirname, '${_class.codeDirectory}')`)],
       ['runtimeName', expr.directCode('cdkHandler.runtime.name')],
     ]);
     CdkHandlerFrameworkConstructor.forClass(_class, superProps);
@@ -52,20 +52,11 @@ export class CdkHandlerFrameworkConstructor {
       type: _class.constructorPropsType,
     });
 
-    // build CdkHandler instance
-    init.addBody(
-      stmt.constVar(
-        expr.directCode('cdkHandlerProps: handler.CdkHandlerProps'),
-        expr.object({
-          codeDirectory: expr.lit(_class.codeDirectory),
-          compatibleRuntimes: expr.directCode(`[${ _class.compatibleRuntimes }]`),
-        }),
-      ),
-    );
+    // get or create cdk handler
     init.addBody(
       stmt.constVar(
         expr.ident('cdkHandler'),
-        expr.directCode("new handler.CdkHandler(scope, 'Handler', cdkHandlerProps)"),
+        expr.directCode(`${_class.name}.getOrCreateCdkHandler(scope, id)`),
       ),
     );
 

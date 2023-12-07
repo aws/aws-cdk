@@ -1,12 +1,10 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import { Construct } from 'constructs';
 import * as autoscaling from '../../../aws-autoscaling';
 import * as hooks from '../../../aws-autoscaling-hooktargets';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
-import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
+import { DrainHookFunction } from '../../../custom-resource-handlers/dist/aws-ecs/drain-hook-provider.generated';
 import { ICluster } from '../cluster';
 
 // Reference for the source in this package:
@@ -60,10 +58,7 @@ export class InstanceDrainHook extends Construct {
     const drainTime = props.drainTime || cdk.Duration.minutes(5);
 
     // Invoke Lambda via SNS Topic
-    const fn = new lambda.Function(this, 'Function', {
-      code: lambda.Code.fromInline(fs.readFileSync(path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-ecs', 'lambda-source', 'index.py'), { encoding: 'utf-8' })),
-      handler: 'index.lambda_handler',
-      runtime: lambda.Runtime.PYTHON_3_9,
+    const fn = new DrainHookFunction(this, 'Function', {
       // Timeout: some extra margin for additional API calls made by the Lambda,
       // up to a maximum of 15 minutes.
       timeout: cdk.Duration.seconds(Math.min(drainTime.toSeconds() + 10, 900)),

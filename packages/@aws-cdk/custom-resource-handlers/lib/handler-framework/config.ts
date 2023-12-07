@@ -73,6 +73,7 @@ export const config: HandlerFrameworkConfig = {
         name: 'CertificateRequestFunction',
         sourceCode: path.resolve(__dirname, '..', 'aws-certificatemanager', 'dns-validated-certificate-handler', 'index.js'),
         compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+        entrypoint: 'index.certificateRequestHandler',
       },
     ],
   },

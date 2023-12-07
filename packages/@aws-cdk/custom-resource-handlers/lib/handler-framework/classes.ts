@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { ClassType, stmt, expr, Type, ExternalModule, PropertySpec, InterfaceSpec, InterfaceType } from '@cdklabs/typewriter';
+import { ClassType, stmt, expr, Type, MemberVisibility, ExternalModule, PropertySpec, InterfaceSpec, InterfaceType } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkConstructor } from './constructors';
 import { CdkHandlerFrameworkModule } from './framework';
 import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
@@ -73,7 +73,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
       public readonly compatibleRuntimes: FrameworkRuntime[];
       public readonly constructorPropsType = LAMBDA_MODULE.FunctionOptions;
 
-      protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE, CDK_HANDLER_MODULE];
+      protected readonly externalModules = [CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE, CDK_HANDLER_MODULE];
 
       public constructor() {
         super(scope, {
@@ -86,6 +86,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         this.compatibleRuntimes = props.compatibleRuntimes;
 
         this.externalModules.forEach(module => scope.addExternalModule(module));
+        this.buildGetOrCreateCdkHandler();
 
         CdkHandlerFrameworkConstructor.forCdkFunction(this);
       }
@@ -102,7 +103,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
       public readonly compatibleRuntimes: FrameworkRuntime[];
       public readonly constructorPropsType: Type;
 
-      protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE, CDK_HANDLER_MODULE];
+      protected readonly externalModules = [CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE, CDK_HANDLER_MODULE];
 
       public constructor() {
         super(scope, {
@@ -115,6 +116,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         this.compatibleRuntimes = props.compatibleRuntimes;
 
         this.externalModules.forEach(module => scope.addExternalModule(module));
+        this.buildGetOrCreateCdkHandler();
 
         const uuid: PropertySpec = {
           name: 'uuid',
@@ -159,7 +161,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
       public readonly compatibleRuntimes: FrameworkRuntime[];
       public readonly constructorPropsType = CORE_MODULE.CustomResourceProviderOptions;
 
-      protected readonly externalModules = [CONSTRUCTS_MODULE, CORE_MODULE, CDK_HANDLER_MODULE];
+      protected readonly externalModules = [CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE, CDK_HANDLER_MODULE];
 
       public constructor() {
         super(scope, {
@@ -172,6 +174,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         this.compatibleRuntimes = props.compatibleRuntimes;
 
         this.externalModules.forEach(module => scope.addExternalModule(module));
+        this.buildGetOrCreateCdkHandler();
 
         const getOrCreateMethod = this.addMethod({
           name: 'getOrCreate',
@@ -221,7 +224,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`')),
           stmt.constVar(expr.ident('stack'), expr.directCode('cdk.Stack.of(scope)')),
           stmt.constVar(expr.ident('existing'), expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
-          stmt.ret(expr.directCode(`existing ?? new ${this.name}(scope, id, props)`)),
+          stmt.ret(expr.directCode(`existing ?? new ${this.name}(stack, id, props)`)),
         );
 
         CdkHandlerFrameworkConstructor.forCdkCustomResourceProvider(this);
@@ -264,5 +267,47 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
     const _interface = new InterfaceType(scope, { ...spec });
     scope.registerInterface(_interface);
     return _interface;
+  }
+
+  private buildGetOrCreateCdkHandler() {
+    const getOrCreateCdkHandler = this.addMethod({
+      name: 'getOrCreateCdkHandler',
+      returnType: CDK_HANDLER_MODULE.CdkHandler,
+      static: true,
+      visibility: MemberVisibility.Private,
+    });
+
+    getOrCreateCdkHandler.addParameter({
+      name: 'scope',
+      type: CONSTRUCTS_MODULE.Construct,
+    });
+    getOrCreateCdkHandler.addParameter({
+      name: 'uniqueid',
+      type: Type.STRING,
+    });
+
+    getOrCreateCdkHandler.addBody(
+      stmt.constVar(
+        expr.ident('id'),
+        expr.directCode('`${uniqueid}Handler`'),
+      ),
+      stmt.constVar(
+        expr.ident('stack'),
+        expr.directCode('cdk.Stack.of(scope)'),
+      ),
+      stmt.constVar(
+        expr.ident('existing'),
+        expr.directCode('stack.node.tryFindChild(id) as handler.CdkHandler'),
+      ),
+      stmt.if_(expr.ident('existing')).then(stmt.ret(expr.ident('existing'))),
+      stmt.constVar(
+        expr.directCode('cdkHandlerProps: handler.CdkHandlerProps'),
+        expr.object({
+          codeDirectory: expr.directCode(`path.join(__dirname, '${this.codeDirectory}')`),
+          compatibleRuntimes: expr.directCode(`[${this.compatibleRuntimes }]`),
+        }),
+      ),
+      stmt.ret(expr.directCode('new handler.CdkHandler(stack, id, cdkHandlerProps)')),
+    );
   }
 }

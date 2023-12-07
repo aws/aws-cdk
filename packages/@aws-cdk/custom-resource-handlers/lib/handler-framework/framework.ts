@@ -3,7 +3,7 @@ import { ExternalModule, InterfaceType, Module, TypeScriptRenderer } from '@cdkl
 import * as fs from 'fs-extra';
 import { CdkHandlerClassProps, CdkHandlerFrameworkClass } from './classes';
 import { ComponentType, ConfigProps } from './config';
-import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE } from './modules';
+import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE, PATH_MODULE } from './modules';
 
 export class CdkHandlerFrameworkModule extends Module {
   private readonly renderer = new TypeScriptRenderer();
@@ -75,6 +75,7 @@ export class CdkHandlerFrameworkModule extends Module {
   }
 
   private importExternalModules() {
+    PATH_MODULE.import(this, 'path');
     for (const fqn of this.externalModules.keys()) {
       switch (fqn) {
         case CONSTRUCTS_MODULE.fqn: {

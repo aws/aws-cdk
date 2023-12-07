@@ -19,7 +19,7 @@ async function main() {
         await bundleAndMinify(component.sourceCode, outfile);
       }
       const sourceCodeDirectory = path.dirname(outfile).split('/').pop();
-      module.build(component, `./${sourceCodeDirectory}`);
+      module.build(component, `${sourceCodeDirectory}`);
     }
     module.render(renderLocation);
   }
