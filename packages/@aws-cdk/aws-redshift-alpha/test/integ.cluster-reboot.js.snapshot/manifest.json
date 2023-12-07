@@ -21,9 +21,7 @@
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/33fead7277c367aba03ad243df6d1ba2f4c88b3dec6ab57a786b3ea80d5c2ea6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "aws-cdk-redshift-cluster-create.assets"
-        ],
+        "additionalDependencies": ["aws-cdk-redshift-cluster-create.assets"],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
@@ -31,9 +29,7 @@
         },
         "stackName": "aws-cdk-redshift-cluster-reboot-integ"
       },
-      "dependencies": [
-        "aws-cdk-redshift-cluster-create.assets"
-      ],
+      "dependencies": ["aws-cdk-redshift-cluster-create.assets"],
       "metadata": {
         "/aws-cdk-redshift-cluster-create/Vpc/Resource": [
           {
@@ -190,9 +186,7 @@
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/52ece5a0649e01aef5e919f4adf8b17b6caecb7c6531d5c6540b2d63bbaf5d2e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "aws-cdk-redshift-cluster-update.assets"
-        ],
+        "additionalDependencies": ["aws-cdk-redshift-cluster-update.assets"],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
