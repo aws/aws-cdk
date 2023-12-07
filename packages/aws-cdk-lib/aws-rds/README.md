@@ -744,9 +744,9 @@ You can also authenticate to a database instance using AWS Identity and Access M
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html> for more information
 and a list of supported versions and limitations.
 
-**Note**: `grantConnect()` does not currently work - see [this GitHub issue](https://github.com/aws/aws-cdk/issues/11851).
-
 The following example shows enabling IAM authentication for a database instance and granting connection access to an IAM role.
+
+### Instance
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -758,6 +758,8 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
 const role = new iam.Role(this, 'DBRole', { assumedBy: new iam.AccountPrincipal(this.account) });
 instance.grantConnect(role); // Grant the role connection access to the DB.
 ```
+
+### Proxy
 
 The following example shows granting connection access for RDS Proxy to an IAM role.
 
@@ -779,6 +781,26 @@ const proxy = new rds.DatabaseProxy(this, 'Proxy', {
 
 const role = new iam.Role(this, 'DBProxyRole', { assumedBy: new iam.AccountPrincipal(this.account) });
 proxy.grantConnect(role, 'admin'); // Grant the role connection access to the DB Proxy for database user 'admin'.
+```
+
+**Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
+See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html> for setup instructions.
+
+### Cluster
+
+The following example shows granting connection access for an IAM role to an Aurora Cluster.
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
+  writer: rds.ClusterInstance.provisioned('writer'),
+  vpc,
+});
+const role = new iam.Role(this, 'AppRole', { assumedBy: new iam.ServicePrincipal('someservice.amazonaws.com') });
+cluster.grantConnect(role, 'somedbuser');
 ```
 
 **Note**: In addition to the setup above, a database user will need to be created to support IAM auth.

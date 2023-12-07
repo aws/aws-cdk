@@ -60,6 +60,14 @@ describe('event source mapping', () => {
     })).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
   });
 
+  test('does not throw if maxConcurrency is a token', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      maxConcurrency: cdk.Token.asNumber({ Ref: 'abc' }),
+    })).not.toThrow();
+  });
+
   test('maxConcurrency appears in stack', () => {
     new EventSourceMapping(stack, 'test', {
       target: fn,

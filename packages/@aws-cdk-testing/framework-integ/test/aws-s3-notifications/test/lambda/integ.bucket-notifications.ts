@@ -6,7 +6,7 @@ import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'lambda-bucket-notifications');
+const stack = new cdk.Stack(app, 'cdk-integ-lambda-bucket-notifications');
 
 const bucketA = new s3.Bucket(stack, 'MyBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
