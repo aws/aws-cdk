@@ -1,3 +1,4 @@
+import { Template } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
@@ -248,6 +249,7 @@ test('pass param to transform job', () => {
     },
   });
 });
+
 test('create transform job with instance type supplied as JsonPath', () => {
   // WHEN
   const task = new SageMakerCreateTransformJob(stack, 'TransformTask', {
@@ -303,6 +305,218 @@ test('create transform job with instance type supplied as JsonPath', () => {
         'InstanceCount': 1,
         'InstanceType.$': '$.InstanceType',
       },
+    },
+  });
+});
+
+test('required permissions are granted to service role if RUN_JOB is supplied as service integration pattern', () => {
+  // WHEN
+  const task = new SageMakerCreateTransformJob(stack, 'TransformTask', {
+    transformJobName: 'MyTransformJob',
+    modelName: 'MyModelName',
+    transformInput: {
+      transformDataSource: {
+        s3DataSource: {
+          s3Uri: 's3://inputbucket/prefix',
+        },
+      },
+    },
+    transformOutput: {
+      s3OutputPath: 's3://outputbucket/prefix',
+    },
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  });
+
+  new sfn.StateMachine(stack, 'MyStateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'sagemaker:CreateTransformJob',
+            'sagemaker:DescribeTransformJob',
+            'sagemaker:StopTransformJob',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':sagemaker:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':transform-job/*',
+              ],
+            ],
+          },
+        },
+        {
+          Action: 'sagemaker:ListTags',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'iam:PassRole',
+          Condition: {
+            StringEquals: {
+              'iam:PassedToService': 'sagemaker.amazonaws.com',
+            },
+          },
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': [
+              'TransformTaskSagemakerTransformRoleEB12FAC2',
+              'Arn',
+            ],
+          },
+        },
+        {
+          Action: [
+            'events:PutTargets',
+            'events:PutRule',
+            'events:DescribeRule',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':events:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':rule/StepFunctionsGetEventsForSageMakerTransformJobsRule',
+              ],
+            ],
+          },
+        },
+        {
+          Action: 'sagemaker:AddTags',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':sagemaker:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':transform-job/*',
+              ],
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('required permissions are granted to service role if REQUEST_RESPONSE is supplied as service integration pattern', () => {
+  // WHEN
+  const task = new SageMakerCreateTransformJob(stack, 'TransformTask', {
+    transformJobName: 'MyTransformJob',
+    modelName: 'MyModelName',
+    transformInput: {
+      transformDataSource: {
+        s3DataSource: {
+          s3Uri: 's3://inputbucket/prefix',
+        },
+      },
+    },
+    transformOutput: {
+      s3OutputPath: 's3://outputbucket/prefix',
+    },
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  new sfn.StateMachine(stack, 'MyStateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'sagemaker:CreateTransformJob',
+            'sagemaker:DescribeTransformJob',
+            'sagemaker:StopTransformJob',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':sagemaker:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':transform-job/*',
+              ],
+            ],
+          },
+        },
+        {
+          Action: 'sagemaker:ListTags',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: 'iam:PassRole',
+          Condition: {
+            StringEquals: {
+              'iam:PassedToService': 'sagemaker.amazonaws.com',
+            },
+          },
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': [
+              'TransformTaskSagemakerTransformRoleEB12FAC2',
+              'Arn',
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
     },
   });
 });
