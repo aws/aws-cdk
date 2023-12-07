@@ -11,7 +11,7 @@ export class CdkHandlerFrameworkConstructor {
     const superProps = new ObjectLiteral([
       new Splat(expr.ident('props')),
       ['code', expr.directCode('cdkHandler.code')],
-      ['handler', expr.directCode('cdkHandler.entrypoint')],
+      ['handler', expr.lit(_class.entrypoint)],
       ['runtime', expr.directCode('cdkHandler.runtime')],
     ]);
     CdkHandlerFrameworkConstructor.forClass(_class, superProps);
@@ -30,7 +30,7 @@ export class CdkHandlerFrameworkConstructor {
   public static forCdkCustomResourceProvider(_class: CdkHandlerFrameworkClass) {
     const superProps = new ObjectLiteral([
       new Splat(expr.ident('props')),
-      ['codeDirectory', expr.directCode('cdkHandler.codeDirectory')],
+      ['codeDirectory', expr.lit(_class.codeDirectory)],
       ['runtimeName', expr.directCode('cdkHandler.runtime.name')],
     ]);
     CdkHandlerFrameworkConstructor.forClass(_class, superProps);
@@ -59,9 +59,6 @@ export class CdkHandlerFrameworkConstructor {
         expr.object({
           codeDirectory: expr.lit(_class.codeDirectory),
           compatibleRuntimes: expr.directCode(`[${ _class.compatibleRuntimes }]`),
-          entrypoint: _class.entrypoint
-            ? expr.lit(`${_class.entrypoint}`)
-            : expr.lit('index.handler'),
         }),
       ),
     );

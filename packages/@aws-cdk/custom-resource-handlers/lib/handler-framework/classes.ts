@@ -119,6 +119,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         const uuid: PropertySpec = {
           name: 'uuid',
           type: Type.STRING,
+          immutable: true,
           docs: {
             summary: 'A unique identifier to identify this Lambda.\n\nThe identifier should be unique across all custom resource providers.\nWe recommend generating a UUID per provider.',
           },
@@ -126,6 +127,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         const lambdaPurpose: PropertySpec = {
           name: 'lambdaPurpose',
           type: Type.STRING,
+          immutable: true,
           optional: true,
           docs: {
             summary: 'A descriptive name for the purpose of this Lambda.\n\nIf the Lambda does not have a physical name, this string will be\nreflected in its generated name. The combination of lambdaPurpose\nand uuid must be unique.',
