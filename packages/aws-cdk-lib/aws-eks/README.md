@@ -563,8 +563,8 @@ To create a Bottlerocket managed nodegroup with Nvidia-based EC2 instance types 
 
 ```ts
 declare const cluster: eks.Cluster;
-cluster.addAutoScalingGroupCapacity('BottlerocketNodes', {
-  machineImageType: eks.MachineImageType.BOTTLEROCKET_X86_64_NVIDIA,
+cluster.addNodegroupCapacity('BottlerocketNvidiaNG', {
+  amiType: eks.NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA,
   instanceTypes: [new ec2.InstanceType('g4dn.xlarge')],
 });
 ```
