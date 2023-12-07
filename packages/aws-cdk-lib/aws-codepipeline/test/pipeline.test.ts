@@ -64,7 +64,7 @@ describe('', () => {
       const stack = new cdk.Stack(new cdk.App(), 'Stack', {
         env: {
           region: 'eu-west-1',
-          account: '021119951337',
+          account: '123456780211',
         },
       });
 
