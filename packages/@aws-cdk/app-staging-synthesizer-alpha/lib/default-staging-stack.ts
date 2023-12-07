@@ -428,6 +428,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
           maxImageCount: this.props.imageAssetVersionCount ?? 3,
         }],
         ...(this.autoDeleteStagingAssets ? {
+          removalPolicy: RemovalPolicy.DESTROY,
           emptyOnDelete: true,
         } : {
           removalPolicy: RemovalPolicy.RETAIN,

@@ -171,25 +171,20 @@ repository.addLifecycleRule({ maxImageAge: Duration.days(30) });
 
 When a repository is removed from a stack (or the stack is deleted), the ECR
 repository will be removed according to its removal policy (which by default will
-attempt to delete the repository as long as it does not contain any images).
+simply orphan the repository and leave it in your AWS account). If the removal
+policy is set to `RemovalPolicy.DESTROY`, the repository will be deleted as long
+as it does not contain any images.
 
-To override this and force all images to be deleted during repository deletion,
-enable the`emptyOnDelete` option.
-
-```ts
-const repository = new ecr.Repository(this, 'MyTempRepo', {
-  emptyOnDelete: true
-});
-```
-
-To retain a repository (and all it's images) from being deleted during stack deletion, set the removal policy to `RemovalPolicy.RETAIN`.
-This will simply orphan the repository and keep it in your AWS account.
+To override this and force all images to get deleted during repository deletion,
+enable the `emptyOnDelete` option.
 
 ```ts
 const repository = new ecr.Repository(this, 'MyTempRepo', {
-    removalPolicy: RemovalPolicy.RETAIN
+      removalPolicy: RemovalPolicy.DESTROY,
+      emptyOnDelete: true,
 });
-```
+``````
+
 ## Managing the Resource Policy
 
 You can add statements to the resource policy of the repository using the
