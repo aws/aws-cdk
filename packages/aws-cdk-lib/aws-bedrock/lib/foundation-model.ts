@@ -77,8 +77,9 @@ export class FoundationModel implements IModel {
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids-arns.html
    *
-   * @param id The model identifier
-   * @example 'amazon.titan-text-express-v1'
+   * @param scope The parent construct
+   * @param _id The name of the model construct
+   * @param foundationModelId The model identifier such as 'amazon.titan-text-express-v1'
    * @returns A Bedrock base foundation model.
    */
   public static fromFoundationModelId(scope: Construct, _id: string, foundationModelId: FoundationModelIdentifier): FoundationModel {
