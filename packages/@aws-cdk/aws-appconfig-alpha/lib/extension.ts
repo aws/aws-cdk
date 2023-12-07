@@ -506,7 +506,7 @@ export class Extension extends Resource implements IExtension {
     this.parameters = props.parameters;
 
     const resource = new CfnExtension(this, 'Resource', {
-      actions: this.actions.reduce((acc: {[key: string]: {[key: string]: string}[]}, cur: Action, index) => {
+      actions: this.actions.reduce((acc: {[key: string]: {[key: string]: string}[]}, cur: Action, index: number) => {
         const extensionUri = cur.eventDestination.extensionUri;
         const sourceType = cur.eventDestination.type;
         this.executionRole = cur.executionRole;
@@ -664,10 +664,7 @@ export class ExtensibleBase implements IExtensible {
   }
 
   private getExtensionForActionPoint(eventDestination: IEventDestination, actionPoint: ActionPoint, options?: ExtensionOptions) {
-    const name = options?.name || Names.uniqueResourceName(this.scope, {
-      maxLength: 54,
-      separator: '-',
-    }) + '-Extension';
+    const name = options?.name || this.getExtensionDefaultName();
     const versionNumber = options?.latestVersionNumber ? options?.latestVersionNumber + 1 : 1;
     const extension = new Extension(this.scope, `Extension${this.getExtensionHash(name, versionNumber)}`, {
       actions: [
@@ -688,7 +685,8 @@ export class ExtensibleBase implements IExtensible {
 
   private addExtensionAssociation(extension: IExtension, options?: ExtensionOptions) {
     const versionNumber = options?.latestVersionNumber ? options?.latestVersionNumber + 1 : 1;
-    new CfnExtensionAssociation(this.scope, `AssociationResource${this.getExtensionAssociationHash(extension.name!, versionNumber)}`, {
+    const name = extension.name ?? this.getExtensionDefaultName();
+    new CfnExtensionAssociation(this.scope, `AssociationResource${this.getExtensionAssociationHash(name, versionNumber)}`, {
       extensionIdentifier: extension.extensionId,
       resourceIdentifier: this.resourceArn,
       extensionVersionNumber: extension.extensionVersionNumber,
@@ -707,9 +705,16 @@ export class ExtensibleBase implements IExtensible {
   }
 
   private getExtensionAssociationHash(name: string, versionNumber: number) {
-    const resourceIdentifier = this.resourceName ? this.resourceName : this.resourceArn;
+    const resourceIdentifier = this.resourceName ?? this.resourceArn;
     const combinedString = stringifyObjects(resourceIdentifier, name, versionNumber);
     return getHash(combinedString);
+  }
+
+  private getExtensionDefaultName() {
+    return Names.uniqueResourceName(this.scope, {
+      maxLength: 54,
+      separator: '-',
+    }) + '-Extension';
   }
 }
 
