@@ -194,8 +194,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
 
   /**
    * Provides the Bedrock InvokeModel service integration task configuration
-   */
-  /**
+   *
    * @internal
    */
   protected _renderTask(): any {
