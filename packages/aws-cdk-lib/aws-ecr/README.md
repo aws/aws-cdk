@@ -176,14 +176,15 @@ policy is set to `RemovalPolicy.DESTROY`, the repository will be deleted as long
 as it does not contain any images.
 
 To override this and force all images to get deleted during repository deletion,
-enable the `emptyOnDelete` option.
+enable the `emptyOnDelete` option as well as setting the removal policy to 
+`RemovalPolicy.DESTROY`.
 
 ```ts
 const repository = new ecr.Repository(this, 'MyTempRepo', {
       removalPolicy: RemovalPolicy.DESTROY,
       emptyOnDelete: true,
 });
-``````
+```
 
 ## Managing the Resource Policy
 
