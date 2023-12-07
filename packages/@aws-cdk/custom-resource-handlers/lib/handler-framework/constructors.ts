@@ -30,7 +30,7 @@ export class CdkHandlerFrameworkConstructor {
   public static forCdkCustomResourceProvider(_class: CdkHandlerFrameworkClass) {
     const superProps = new ObjectLiteral([
       new Splat(expr.ident('props')),
-      ['codeDirectory', expr.directCode(`path.join(__dirname, '${_class.codeDirectory}')`)],
+      ['codeDirectory', expr.directCode('cdkHandler.codeDirectory')],
       ['runtimeName', expr.directCode('cdkHandler.runtime.name')],
     ]);
     CdkHandlerFrameworkConstructor.forClass(_class, superProps);

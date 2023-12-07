@@ -275,6 +275,9 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
       returnType: CDK_HANDLER_MODULE.CdkHandler,
       static: true,
       visibility: MemberVisibility.Private,
+      docs: {
+        summary: 'Returns a stack-level singleton cdk handler instance.',
+      },
     });
 
     getOrCreateCdkHandler.addParameter({

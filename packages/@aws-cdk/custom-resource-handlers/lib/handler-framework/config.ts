@@ -202,4 +202,52 @@ export const config: HandlerFrameworkConfig = {
       },
     ],
   },
+  'aws-iam': {
+    'oidc-provider': [
+      {
+        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        name: 'OidcProvider',
+        sourceCode: path.resolve(__dirname, '..', 'aws-iam', 'oidc-handler', 'index.ts'),
+        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+      },
+    ],
+  },
+  'aws-route53': {
+    'cross-account-zone-delegation-provider': [
+      {
+        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        name: 'CrossAccountZoneDelegationProvider',
+        sourceCode: path.resolve(__dirname, '..', 'aws-route53', 'cross-account-zone-delegation-handler', 'index.ts'),
+        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+      },
+    ],
+    'delete-existing-record-set-provider': [
+      {
+        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        name: 'DeleteExistingRecordSetProvider',
+        sourceCode: path.resolve(__dirname, '..', 'aws-route53', 'cdelete-existing-record-set-handler', 'index.ts'),
+        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+      },
+    ],
+  },
+  'aws-s3': {
+    'auto-delete-objects-provider': [
+      {
+        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        name: 'AutoDeleteObjectsProvider',
+        sourceCode: path.resolve(__dirname, '..', 'aws-s3', 'auto-delete-objects-handler', 'index.ts'),
+        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+      },
+    ],
+  },
+  'core': {
+    'nodejs-entrypoint': [
+      {
+        type: ComponentType.CDK_NO_OP,
+        name: 'NodejsEntrypointHandler',
+        sourceCode: path.resolve(__dirname, '..', 'core', 'nodejs-entrypoint-handler', 'index.ts'),
+        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+      },
+    ],
+  },
 };
