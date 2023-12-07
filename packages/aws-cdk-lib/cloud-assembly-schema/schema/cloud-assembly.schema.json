@@ -89,14 +89,14 @@
         },
         "ArtifactType": {
             "description": "Type of cloud artifact.",
+            "type": "string",
             "enum": [
+                "none",
                 "aws:cloudformation:stack",
-                "cdk:asset-manifest",
-                "cdk:cloud-assembly",
                 "cdk:tree",
-                "none"
-            ],
-            "type": "string"
+                "cdk:asset-manifest",
+                "cdk:cloud-assembly"
+            ]
         },
         "MetadataEntry": {
             "description": "A metadata entry in a cloud assembly artifact.",
@@ -488,20 +488,20 @@
         },
         "ContextProvider": {
             "description": "Identifier for the context provider",
+            "type": "string",
             "enum": [
                 "ami",
                 "availability-zones",
-                "endpoint-service-availability-zones",
                 "hosted-zone",
-                "key-provider",
+                "ssm",
+                "vpc-provider",
+                "endpoint-service-availability-zones",
                 "load-balancer",
                 "load-balancer-listener",
-                "plugin",
                 "security-group",
-                "ssm",
-                "vpc-provider"
-            ],
-            "type": "string"
+                "key-provider",
+                "plugin"
+            ]
         },
         "ContextQueryProperties": {
             "anyOf": [
@@ -775,11 +775,11 @@
         },
         "LoadBalancerType": {
             "description": "Type of load balancer",
+            "type": "string",
             "enum": [
-                "application",
-                "network"
-            ],
-            "type": "string"
+                "network",
+                "application"
+            ]
         },
         "LoadBalancerListenerContextQuery": {
             "description": "Query input for looking up a load balancer listener",

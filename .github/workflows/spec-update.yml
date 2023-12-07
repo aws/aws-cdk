@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "*"
         env:
@@ -30,11 +30,11 @@ jobs:
       - name: Install ncu tool
         run: npm -g install lerna npm-check-updates
       - name: Run "ncu" for service spec packages
-        run: lerna exec --parallel ncu -- --upgrade --filter='@aws-cdk/aws-service-spec,@aws-cdk/service-spec-types' --target=latest
+        run: lerna exec --parallel ncu -- --upgrade --filter='@aws-cdk/aws-service-spec,@aws-cdk/service-spec-importers,@aws-cdk/service-spec-types' --target=latest
 
       # This will ensure the current lockfile is up-to-date with the dependency specifications
       - name: Install latest version & update lockfile
-        run: yarn upgrade @aws-cdk/aws-service-spec @aws-cdk/service-spec-types
+        run: yarn upgrade @aws-cdk/aws-service-spec @aws-cdk/service-spec-importers @aws-cdk/service-spec-types
 
       # Build @aws-cdk/spec2cdk and run L1 gen script to generate base files for new modules
       - name: Build @aws-cdk/spec2cdk

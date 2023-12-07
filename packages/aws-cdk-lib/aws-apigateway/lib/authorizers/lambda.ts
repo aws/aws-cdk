@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { IdentitySource } from './identity-source';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import { Arn, ArnFormat, Duration, FeatureFlags, Lazy, Names, Stack } from '../../../core';
@@ -32,7 +33,7 @@ export interface LambdaAuthorizerProps {
    * How long APIGateway should cache the results. Max 1 hour.
    * Disable caching by setting this to 0.
    *
-   * @default Duration.minutes(5)
+   * @default - Duration.minutes(5)
    */
   readonly resultsCacheTtl?: Duration;
 
@@ -182,8 +183,9 @@ export interface TokenAuthorizerProps extends LambdaAuthorizerProps {
 
   /**
    * The request header mapping expression for the bearer token. This is typically passed as part of the header, in which case
-   * this should be `method.request.header.Authorizer` where Authorizer is the header containing the bearer token.
-   * @see https://docs.aws.amazon.com/apigateway/api-reference/link-relation/authorizer-create/#identitySource
+   * this should be `method.request.header.Authorizer` where `Authorizer` is the header containing the bearer token.
+   *
+   * @see https://docs.aws.amazon.com/apigateway/latest/api/API_CreateAuthorizer.html#apigw-CreateAuthorizer-request-identitySource
    * @default `IdentitySource.header('Authorization')`
    */
   readonly identitySource?: string;
@@ -215,8 +217,8 @@ export class TokenAuthorizer extends LambdaAuthorizer {
       type: 'TOKEN',
       authorizerUri: lambdaAuthorizerArn(props.handler),
       authorizerCredentials: props.assumeRole?.roleArn,
-      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
-      identitySource: props.identitySource || 'method.request.header.Authorization',
+      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
+      identitySource: props.identitySource || IdentitySource.header('Authorization'),
       identityValidationExpression: props.validationRegex,
     };
 
@@ -242,14 +244,14 @@ export interface RequestAuthorizerProps extends LambdaAuthorizerProps {
   /**
    * An array of request header mapping expressions for identities. Supported parameter types are
    * Header, Query String, Stage Variable, and Context. For instance, extracting an authorization
-   * token from a header would use the identity source `IdentitySource.header('Authorizer')`.
+   * token from a header would use the identity source `IdentitySource.header('Authorization')`.
    *
    * Note: API Gateway uses the specified identity sources as the request authorizer caching key. When caching is
    * enabled, API Gateway calls the authorizer's Lambda function only after successfully verifying that all the
    * specified identity sources are present at runtime. If a specified identify source is missing, null, or empty,
    * API Gateway returns a 401 Unauthorized response without calling the authorizer Lambda function.
    *
-   * @see https://docs.aws.amazon.com/apigateway/api-reference/link-relation/authorizer-create/#identitySource
+   * @see https://docs.aws.amazon.com/apigateway/latest/api/API_CreateAuthorizer.html#apigw-CreateAuthorizer-request-identitySource
    */
   readonly identitySources: string[];
 }
@@ -284,7 +286,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
       type: 'REQUEST',
       authorizerUri: lambdaAuthorizerArn(props.handler),
       authorizerCredentials: props.assumeRole?.roleArn,
-      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
+      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
       identitySource: props.identitySources.map(is => is.toString()).join(','),
     };
 

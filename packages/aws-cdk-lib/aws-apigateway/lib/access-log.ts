@@ -1,4 +1,5 @@
 import { IStage } from './stage';
+import * as firehose from '../../aws-kinesisfirehose';
 import { ILogGroup } from '../../aws-logs';
 
 /**
@@ -34,6 +35,26 @@ export class LogGroupLogDestination implements IAccessLogDestination {
   public bind(_stage: IStage): AccessLogDestinationConfig {
     return {
       destinationArn: this.logGroup.logGroupArn,
+    };
+  }
+}
+
+/**
+ * Use a Firehose delivery stream as a custom access log destination for API Gateway.
+ */
+export class FirehoseLogDestination implements IAccessLogDestination {
+  constructor(private readonly stream: firehose.CfnDeliveryStream) {
+  }
+
+  /**
+   * Binds this destination to the Firehose delivery stream.
+   */
+  public bind(_stage: IStage): AccessLogDestinationConfig {
+    if (!this.stream.deliveryStreamName?.startsWith('amazon-apigateway-')) {
+      throw new Error(`Firehose delivery stream name for access log destination must begin with 'amazon-apigateway-', got '${this.stream.deliveryStreamName}'`);
+    }
+    return {
+      destinationArn: this.stream.attrArn,
     };
   }
 }

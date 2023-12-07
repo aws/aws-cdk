@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as mimeTypes from 'mime-types';
+import * as path from 'path';
 import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy } from 'aws-cdk-lib';
 import { CfnConfigurationProfile, CfnDeployment, CfnHostedConfigurationVersion } from 'aws-cdk-lib/aws-appconfig';
 import * as cp from 'aws-cdk-lib/aws-codepipeline';
@@ -16,6 +17,9 @@ import { IEnvironment } from './environment';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import { getHash } from './private/hash';
 
+/**
+ * Options for the Configuration construct
+ */
 export interface ConfigurationOptions {
   /**
    * The deployment strategy for the configuration.
@@ -71,6 +75,9 @@ export interface ConfigurationOptions {
   readonly deploymentKey?: kms.IKey;
 }
 
+/**
+ * Properties for the Configuration construct.
+ */
 export interface ConfigurationProps extends ConfigurationOptions {
   /**
    * The application associated with the configuration.
@@ -296,6 +303,24 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
     this.extensible.addExtension(extension);
   }
 
+  /**
+   * Deploys the configuration to the specified environment.
+   *
+   * @param environment The environment to deploy the configuration to
+   */
+  public deploy(environment: IEnvironment) {
+    const logicalId = `Deployment${this.getDeploymentHash(environment)}`;
+    new CfnDeployment(this, logicalId, {
+      applicationId: this.application.applicationId,
+      configurationProfileId: this.configurationProfileId,
+      deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
+      environmentId: environment.environmentId,
+      configurationVersion: this.versionNumber!,
+      description: this.description,
+      kmsKeyIdentifier: this.deploymentKey?.keyArn,
+    });
+  }
+
   protected addExistingEnvironmentsToApplication() {
     this.deployTo?.forEach((environment) => {
       if (!this.application.environments.includes(environment)) {
@@ -313,20 +338,14 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
       if ((this.deployTo && !this.deployTo.includes(environment))) {
         return;
       }
-      const logicalId = `Deployment${this.getDeploymentHash(environment)}`;
-      new CfnDeployment(this, logicalId, {
-        applicationId: this.application.applicationId,
-        configurationProfileId: this.configurationProfileId,
-        deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
-        environmentId: environment.environmentId,
-        configurationVersion: this.versionNumber!,
-        description: this.description,
-        kmsKeyIdentifier: this.deploymentKey?.keyArn,
-      });
+      this.deploy(environment);
     });
   }
 }
 
+/**
+ * Options for HostedConfiguration
+ */
 export interface HostedConfigurationOptions extends ConfigurationOptions {
   /**
    * The content of the hosted configuration.
@@ -348,6 +367,9 @@ export interface HostedConfigurationOptions extends ConfigurationOptions {
   readonly versionLabel?: string;
 }
 
+/**
+ * Properties for HostedConfiguration
+ */
 export interface HostedConfigurationProps extends ConfigurationProps {
   /**
    * The content of the hosted configuration.
@@ -369,6 +391,9 @@ export interface HostedConfigurationProps extends ConfigurationProps {
   readonly versionLabel?: string;
 }
 
+/**
+ * A hosted configuration represents configuration stored in the AWS AppConfig hosted configuration store.
+ */
 export class HostedConfiguration extends ConfigurationBase {
   /**
    * The content of the hosted configuration.
@@ -469,6 +494,9 @@ export class HostedConfiguration extends ConfigurationBase {
   }
 }
 
+/**
+ * Options for SourcedConfiguration
+ */
 export interface SourcedConfigurationOptions extends ConfigurationOptions {
   /**
    * The location where the configuration is stored.
@@ -491,6 +519,9 @@ export interface SourcedConfigurationOptions extends ConfigurationOptions {
   readonly retrievalRole?: iam.IRole;
 }
 
+/**
+ * Properties for SourcedConfiguration.
+ */
 export interface SourcedConfigurationProps extends ConfigurationProps {
   /**
    * The location where the configuration is stored.
@@ -513,6 +544,10 @@ export interface SourcedConfigurationProps extends ConfigurationProps {
   readonly retrievalRole?: iam.IRole;
 }
 
+/**
+ * A sourced configuration represents configuration stored in an Amazon S3 bucket, AWS Secrets Manager secret, Systems Manager
+ * (SSM) Parameter Store parameter, SSM document, or AWS CodePipeline.
+ */
 export class SourcedConfiguration extends ConfigurationBase {
   /**
    * The location where the configuration is stored.
@@ -680,7 +715,19 @@ export class SourcedConfiguration extends ConfigurationBase {
  * The configuration type.
  */
 export enum ConfigurationType {
+  /**
+   * Freeform configuration profile. Allows you to store your data in the AWS AppConfig
+   * hosted configuration store or another Systems Manager capability or AWS service that integrates
+   * with AWS AppConfig.
+   *
+   * @see https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-free-form-configurations-creating.html
+   */
   FREEFORM = 'AWS.Freeform',
+
+  /**
+   * Feature flag configuration profile. This configuration stores its data
+   * in the AWS AppConfig hosted configuration store and the URI is simply hosted.
+   */
   FEATURE_FLAGS = 'AWS.AppConfig.FeatureFlags',
 }
 
@@ -688,7 +735,14 @@ export enum ConfigurationType {
  * The validator type.
  */
 export enum ValidatorType {
+  /**
+   * JSON Scema validator.
+   */
   JSON_SCHEMA = 'JSON_SCHEMA',
+
+  /**
+   * Validate using a Lambda function.
+   */
   LAMBDA = 'LAMBDA',
 }
 
@@ -700,7 +754,7 @@ export enum ConfigurationSourceType {
   SECRETS_MANAGER = 'SECRETS_MANAGER',
   SSM_PARAMETER = 'SSM_PARAMETER',
   SSM_DOCUMENT = 'SSM_DOCUMENT',
-  CODE_PIPELINE = 'CODE_PIPELINE'
+  CODE_PIPELINE = 'CODE_PIPELINE',
 }
 
 export interface IValidator {
@@ -722,11 +776,11 @@ export abstract class JsonSchemaValidator implements IValidator {
   /**
    * Defines a JSON Schema validator from a file.
    *
-   * @param path The path to the file that defines the validator
+   * @param inputPath The path to the file that defines the validator
    */
-  public static fromFile(path: string): JsonSchemaValidator {
+  public static fromFile(inputPath: string): JsonSchemaValidator {
     return {
-      content: fs.readFileSync(path).toString(),
+      content: fs.readFileSync(path.resolve(inputPath)).toString(),
       type: ValidatorType.JSON_SCHEMA,
     };
   }
@@ -780,13 +834,13 @@ export abstract class ConfigurationContent {
   /**
    * Defines the hosted configuration content from a file.
    *
-   * @param path The path to the file that defines configuration content
+   * @param inputPath The path to the file that defines configuration content
    * @param contentType The content type of the configuration
    */
-  public static fromFile(path: string, contentType?: string): ConfigurationContent {
+  public static fromFile(inputPath: string, contentType?: string): ConfigurationContent {
     return {
-      content: fs.readFileSync(path).toString(),
-      contentType: contentType || mimeTypes.lookup(path) || 'application/json',
+      content: fs.readFileSync(path.resolve(inputPath)).toString(),
+      contentType: contentType || mimeTypes.lookup(inputPath) || 'application/json',
     };
   }
 
@@ -825,6 +879,18 @@ export abstract class ConfigurationContent {
     return {
       content,
       contentType: 'text/plain',
+    };
+  }
+
+  /**
+   * Defines the hosted configuration content as YAML from inline code.
+   *
+   * @param content The inline code that defines the configuration content
+   */
+  public static fromInlineYaml(content: string): ConfigurationContent {
+    return {
+      content,
+      contentType: 'application/x-yaml',
     };
   }
 

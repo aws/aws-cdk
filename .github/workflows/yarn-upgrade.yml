@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "*"
         env:
@@ -62,13 +62,13 @@ jobs:
           ncu --upgrade --reject=@types/node,@types/prettier,constructs,typescript --target=minor
           # Upgrade all the packages
           lerna exec --parallel ncu -- --upgrade --filter=typescript --target=patch
-          lerna exec --parallel ncu -- --upgrade --reject='@types/conventional-commits-parser,@types/node,@types/prettier,constructs,typescript,aws-sdk-mock,@aws-cdk/aws-service-spec,@aws-cdk/service-spec-types,${{ steps.list-packages.outputs.list }}' --target=minor
+          lerna exec --parallel ncu -- --upgrade --reject='@types/conventional-commits-parser,@types/node,@types/prettier,constructs,typescript,aws-sdk-mock,@aws-sdk/*,@aws-cdk/aws-service-spec,@aws-cdk/service-spec-types,${{ steps.list-packages.outputs.list }}' --target=minor
           # Upgrade package.json files in init templates
           for pj in $(find packages/aws-cdk/lib/init-templates -name package.json); do
             (cd $(dirname $pj) && ncu --upgrade --reject='constructs,${{ steps.list-packages.outputs.list }}')
           done
           # Upgrade dependencies at an aws-eks integ test docker image
-          cd packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/sdk-call-integ-test-docker-app/app/ && ncu --upgrade --reject=',${{ steps.list-packages.outputs.list }}'
+          cd packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/sdk-call-integ-test-docker-app/app/ && ncu --upgrade --reject='@aws-sdk/*,${{ steps.list-packages.outputs.list }}'
 
       # This will ensure the current lockfile is up-to-date with the dependency specifications (necessary for "yarn upgrade" to run)
       - name: Run "yarn install"
