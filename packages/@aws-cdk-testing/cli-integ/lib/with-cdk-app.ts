@@ -338,13 +338,13 @@ export class TestFixture extends ShellHelper {
     ], options);
   }
 
-  public async cdkDestroy(stackNames: string | string[], options: CdkCliOptions = {}) {
+  public async cdkDestroy(stackNames: string | string[], options: CdkCliOptions = {}, skipStackRename?: boolean) {
     stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
 
     return this.cdk(['destroy',
       '-f', // We never want a prompt in an unattended test
       ...(options.options ?? []),
-      ...this.fullStackName(stackNames)], options);
+      ...(skipStackRename ? stackNames : this.fullStackName(stackNames))], options);
   }
 
   public async cdkBootstrapLegacy(options: CdkLegacyBootstrapCommandOptions): Promise<string> {
