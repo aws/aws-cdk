@@ -23,15 +23,17 @@ export async function handler(props: TableAndClusterProps, event: AWSLambda.Clou
     );
     return;
   } else if (event.RequestType === 'Update') {
+    const isTableV2 = event.PhysicalResourceId.includes(event.StackId.substring(event.StackId.length - 12));
     const oldTableName = event.OldResourceProperties.tableName.prefix + getTableNameSuffix(event.OldResourceProperties.tableName.generateSuffix);
     tableName = await updateTable(
-      event.PhysicalResourceId.includes(event.StackId.substring(event.StackId.length - 12)) ? oldTableName : event.PhysicalResourceId,
+      isTableV2 ? oldTableName : event.PhysicalResourceId,
       tableNamePrefix,
       getTableNameSuffix(props.tableName.generateSuffix),
       tableColumns,
       useColumnIds,
       tableAndClusterProps,
       event.OldResourceProperties as TableAndClusterProps,
+      isTableV2,
     );
     return { PhysicalResourceId: event.PhysicalResourceId };
   } else {
@@ -92,6 +94,7 @@ async function updateTable(
   useColumnIds: boolean,
   tableAndClusterProps: TableAndClusterProps,
   oldResourceProperties: TableAndClusterProps,
+  isTableV2: boolean,
 ): Promise<string> {
   const alterationStatements: string[] = [];
   const newTableName = tableNamePrefix + tableNameSuffix;
@@ -209,10 +212,12 @@ async function updateTable(
 
   await Promise.all(alterationStatements.map(statement => executeStatement(statement, tableAndClusterProps)));
 
-  const oldTableNamePrefix = oldResourceProperties.tableName.prefix;
-  if (tableNamePrefix !== oldTableNamePrefix) {
-    await executeStatement(`ALTER TABLE ${tableName} RENAME TO ${newTableName}`, tableAndClusterProps);
-    return tableNamePrefix + tableNameSuffix;
+  if (isTableV2) {
+    const oldTableNamePrefix = oldResourceProperties.tableName.prefix;
+    if (tableNamePrefix !== oldTableNamePrefix) {
+      await executeStatement(`ALTER TABLE ${tableName} RENAME TO ${newTableName}`, tableAndClusterProps);
+      return tableNamePrefix + tableNameSuffix;
+    }
   }
 
   return tableName;
