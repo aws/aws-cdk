@@ -1413,9 +1413,9 @@ var require_abort = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/types/dist-cjs/auth.js
+// ../../../node_modules/@smithy/types/dist-cjs/auth/auth.js
 var require_auth = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/auth.js"(exports) {
+  "../../../node_modules/@smithy/types/dist-cjs/auth/auth.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.HttpAuthLocation = void 0;
@@ -1424,6 +1424,67 @@ var require_auth = __commonJS({
       HttpAuthLocation2["HEADER"] = "header";
       HttpAuthLocation2["QUERY"] = "query";
     })(HttpAuthLocation = exports.HttpAuthLocation || (exports.HttpAuthLocation = {}));
+  }
+});
+
+// ../../../node_modules/@smithy/types/dist-cjs/auth/HttpApiKeyAuth.js
+var require_HttpApiKeyAuth = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/auth/HttpApiKeyAuth.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.HttpApiKeyAuthLocation = void 0;
+    var HttpApiKeyAuthLocation;
+    (function(HttpApiKeyAuthLocation2) {
+      HttpApiKeyAuthLocation2["HEADER"] = "header";
+      HttpApiKeyAuthLocation2["QUERY"] = "query";
+    })(HttpApiKeyAuthLocation = exports.HttpApiKeyAuthLocation || (exports.HttpApiKeyAuthLocation = {}));
+  }
+});
+
+// ../../../node_modules/@smithy/types/dist-cjs/auth/HttpAuthScheme.js
+var require_HttpAuthScheme = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/auth/HttpAuthScheme.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// ../../../node_modules/@smithy/types/dist-cjs/auth/HttpAuthSchemeProvider.js
+var require_HttpAuthSchemeProvider = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/auth/HttpAuthSchemeProvider.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// ../../../node_modules/@smithy/types/dist-cjs/auth/HttpSigner.js
+var require_HttpSigner = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/auth/HttpSigner.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// ../../../node_modules/@smithy/types/dist-cjs/auth/IdentityProviderConfig.js
+var require_IdentityProviderConfig = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/auth/IdentityProviderConfig.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// ../../../node_modules/@smithy/types/dist-cjs/auth/index.js
+var require_auth2 = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/auth/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    tslib_1.__exportStar(require_auth(), exports);
+    tslib_1.__exportStar(require_HttpApiKeyAuth(), exports);
+    tslib_1.__exportStar(require_HttpAuthScheme(), exports);
+    tslib_1.__exportStar(require_HttpAuthSchemeProvider(), exports);
+    tslib_1.__exportStar(require_HttpSigner(), exports);
+    tslib_1.__exportStar(require_IdentityProviderConfig(), exports);
   }
 });
 
@@ -1697,6 +1758,22 @@ var require_http = __commonJS({
   }
 });
 
+// ../../../node_modules/@smithy/types/dist-cjs/http/httpHandlerInitialization.js
+var require_httpHandlerInitialization = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/http/httpHandlerInitialization.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// ../../../node_modules/@smithy/types/dist-cjs/identity/apiKeyIdentity.js
+var require_apiKeyIdentity = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/identity/apiKeyIdentity.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // ../../../node_modules/@smithy/types/dist-cjs/identity/awsCredentialIdentity.js
 var require_awsCredentialIdentity = __commonJS({
   "../../../node_modules/@smithy/types/dist-cjs/identity/awsCredentialIdentity.js"(exports) {
@@ -1713,14 +1790,24 @@ var require_identity = __commonJS({
   }
 });
 
+// ../../../node_modules/@smithy/types/dist-cjs/identity/tokenIdentity.js
+var require_tokenIdentity = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/identity/tokenIdentity.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // ../../../node_modules/@smithy/types/dist-cjs/identity/index.js
 var require_identity2 = __commonJS({
   "../../../node_modules/@smithy/types/dist-cjs/identity/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    tslib_1.__exportStar(require_apiKeyIdentity(), exports);
     tslib_1.__exportStar(require_awsCredentialIdentity(), exports);
     tslib_1.__exportStar(require_identity(), exports);
+    tslib_1.__exportStar(require_tokenIdentity(), exports);
   }
 });
 
@@ -1755,6 +1842,13 @@ var require_profile = __commonJS({
   "../../../node_modules/@smithy/types/dist-cjs/profile.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    exports.IniSectionType = void 0;
+    var IniSectionType;
+    (function(IniSectionType2) {
+      IniSectionType2["PROFILE"] = "profile";
+      IniSectionType2["SSO_SESSION"] = "sso-session";
+      IniSectionType2["SERVICES"] = "services";
+    })(IniSectionType = exports.IniSectionType || (exports.IniSectionType = {}));
   }
 });
 
@@ -1853,6 +1947,14 @@ var require_client_payload_blob_type_narrow = __commonJS({
   }
 });
 
+// ../../../node_modules/@smithy/types/dist-cjs/transform/no-undefined.js
+var require_no_undefined = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/transform/no-undefined.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
 // ../../../node_modules/@smithy/types/dist-cjs/transform/type-transform.js
 var require_type_transform = __commonJS({
   "../../../node_modules/@smithy/types/dist-cjs/transform/type-transform.js"(exports) {
@@ -1892,7 +1994,7 @@ var require_dist_cjs = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_abort(), exports);
-    tslib_1.__exportStar(require_auth(), exports);
+    tslib_1.__exportStar(require_auth2(), exports);
     tslib_1.__exportStar(require_blob_payload_input_types(), exports);
     tslib_1.__exportStar(require_checksum(), exports);
     tslib_1.__exportStar(require_client(), exports);
@@ -1905,6 +2007,7 @@ var require_dist_cjs = __commonJS({
     tslib_1.__exportStar(require_eventStream(), exports);
     tslib_1.__exportStar(require_extensions2(), exports);
     tslib_1.__exportStar(require_http(), exports);
+    tslib_1.__exportStar(require_httpHandlerInitialization(), exports);
     tslib_1.__exportStar(require_identity2(), exports);
     tslib_1.__exportStar(require_logger(), exports);
     tslib_1.__exportStar(require_middleware(), exports);
@@ -1921,6 +2024,7 @@ var require_dist_cjs = __commonJS({
     tslib_1.__exportStar(require_streaming_blob_payload_output_types(), exports);
     tslib_1.__exportStar(require_transfer(), exports);
     tslib_1.__exportStar(require_client_payload_blob_type_narrow(), exports);
+    tslib_1.__exportStar(require_no_undefined(), exports);
     tslib_1.__exportStar(require_type_transform(), exports);
     tslib_1.__exportStar(require_uri(), exports);
     tslib_1.__exportStar(require_util(), exports);
@@ -5377,7 +5481,7 @@ var require_abort2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/auth.js
-var require_auth2 = __commonJS({
+var require_auth3 = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/auth.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -5698,7 +5802,7 @@ var require_dist_cjs17 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_abort2(), exports);
-    tslib_1.__exportStar(require_auth2(), exports);
+    tslib_1.__exportStar(require_auth3(), exports);
     tslib_1.__exportStar(require_blob_types(), exports);
     tslib_1.__exportStar(require_checksum3(), exports);
     tslib_1.__exportStar(require_client2(), exports);
@@ -6912,6 +7016,569 @@ var require_createConfigValueProvider = __commonJS({
   }
 });
 
+// ../../../node_modules/@smithy/node-config-provider/dist-cjs/fromEnv.js
+var require_fromEnv = __commonJS({
+  "../../../node_modules/@smithy/node-config-provider/dist-cjs/fromEnv.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.fromEnv = void 0;
+    var property_provider_1 = require_dist_cjs6();
+    var fromEnv = (envVarSelector) => async () => {
+      try {
+        const config = envVarSelector(process.env);
+        if (config === void 0) {
+          throw new Error();
+        }
+        return config;
+      } catch (e) {
+        throw new property_provider_1.CredentialsProviderError(e.message || `Cannot load config from environment variables with getter: ${envVarSelector}`);
+      }
+    };
+    exports.fromEnv = fromEnv;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js
+var require_getHomeDir = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getHomeDir = void 0;
+    var os_1 = require("os");
+    var path_1 = require("path");
+    var homeDirCache = {};
+    var getHomeDirCacheKey = () => {
+      if (process && process.geteuid) {
+        return `${process.geteuid()}`;
+      }
+      return "DEFAULT";
+    };
+    var getHomeDir = () => {
+      const { HOME, USERPROFILE, HOMEPATH, HOMEDRIVE = `C:${path_1.sep}` } = process.env;
+      if (HOME)
+        return HOME;
+      if (USERPROFILE)
+        return USERPROFILE;
+      if (HOMEPATH)
+        return `${HOMEDRIVE}${HOMEPATH}`;
+      const homeDirCacheKey = getHomeDirCacheKey();
+      if (!homeDirCache[homeDirCacheKey])
+        homeDirCache[homeDirCacheKey] = (0, os_1.homedir)();
+      return homeDirCache[homeDirCacheKey];
+    };
+    exports.getHomeDir = getHomeDir;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getProfileName.js
+var require_getProfileName = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getProfileName.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getProfileName = exports.DEFAULT_PROFILE = exports.ENV_PROFILE = void 0;
+    exports.ENV_PROFILE = "AWS_PROFILE";
+    exports.DEFAULT_PROFILE = "default";
+    var getProfileName = (init) => init.profile || process.env[exports.ENV_PROFILE] || exports.DEFAULT_PROFILE;
+    exports.getProfileName = getProfileName;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js
+var require_getSSOTokenFilepath = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getSSOTokenFilepath = void 0;
+    var crypto_1 = require("crypto");
+    var path_1 = require("path");
+    var getHomeDir_1 = require_getHomeDir();
+    var getSSOTokenFilepath = (id) => {
+      const hasher = (0, crypto_1.createHash)("sha1");
+      const cacheName = hasher.update(id).digest("hex");
+      return (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "sso", "cache", `${cacheName}.json`);
+    };
+    exports.getSSOTokenFilepath = getSSOTokenFilepath;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js
+var require_getSSOTokenFromFile = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getSSOTokenFromFile = void 0;
+    var fs_1 = require("fs");
+    var getSSOTokenFilepath_1 = require_getSSOTokenFilepath();
+    var { readFile } = fs_1.promises;
+    var getSSOTokenFromFile = async (id) => {
+      const ssoTokenFilepath = (0, getSSOTokenFilepath_1.getSSOTokenFilepath)(id);
+      const ssoTokenText = await readFile(ssoTokenFilepath, "utf8");
+      return JSON.parse(ssoTokenText);
+    };
+    exports.getSSOTokenFromFile = getSSOTokenFromFile;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getConfigData.js
+var require_getConfigData = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getConfigData.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getConfigData = void 0;
+    var types_1 = require_dist_cjs();
+    var loadSharedConfigFiles_1 = require_loadSharedConfigFiles();
+    var getConfigData = (data) => Object.entries(data).filter(([key]) => {
+      const indexOfSeparator = key.indexOf(loadSharedConfigFiles_1.CONFIG_PREFIX_SEPARATOR);
+      if (indexOfSeparator === -1) {
+        return false;
+      }
+      return Object.values(types_1.IniSectionType).includes(key.substring(0, indexOfSeparator));
+    }).reduce((acc, [key, value]) => {
+      const indexOfSeparator = key.indexOf(loadSharedConfigFiles_1.CONFIG_PREFIX_SEPARATOR);
+      const updatedKey = key.substring(0, indexOfSeparator) === types_1.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
+      acc[updatedKey] = value;
+      return acc;
+    }, {
+      ...data.default && { default: data.default }
+    });
+    exports.getConfigData = getConfigData;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getConfigFilepath.js
+var require_getConfigFilepath = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getConfigFilepath.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getConfigFilepath = exports.ENV_CONFIG_PATH = void 0;
+    var path_1 = require("path");
+    var getHomeDir_1 = require_getHomeDir();
+    exports.ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
+    var getConfigFilepath = () => process.env[exports.ENV_CONFIG_PATH] || (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "config");
+    exports.getConfigFilepath = getConfigFilepath;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getCredentialsFilepath.js
+var require_getCredentialsFilepath = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getCredentialsFilepath.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getCredentialsFilepath = exports.ENV_CREDENTIALS_PATH = void 0;
+    var path_1 = require("path");
+    var getHomeDir_1 = require_getHomeDir();
+    exports.ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
+    var getCredentialsFilepath = () => process.env[exports.ENV_CREDENTIALS_PATH] || (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "credentials");
+    exports.getCredentialsFilepath = getCredentialsFilepath;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/parseIni.js
+var require_parseIni = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/parseIni.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.parseIni = void 0;
+    var types_1 = require_dist_cjs();
+    var loadSharedConfigFiles_1 = require_loadSharedConfigFiles();
+    var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
+    var profileNameBlockList = ["__proto__", "profile __proto__"];
+    var parseIni = (iniData) => {
+      const map = {};
+      let currentSection;
+      let currentSubSection;
+      for (const iniLine of iniData.split(/\r?\n/)) {
+        const trimmedLine = iniLine.split(/(^|\s)[;#]/)[0].trim();
+        const isSection = trimmedLine[0] === "[" && trimmedLine[trimmedLine.length - 1] === "]";
+        if (isSection) {
+          currentSection = void 0;
+          currentSubSection = void 0;
+          const sectionName = trimmedLine.substring(1, trimmedLine.length - 1);
+          const matches = prefixKeyRegex.exec(sectionName);
+          if (matches) {
+            const [, prefix, , name] = matches;
+            if (Object.values(types_1.IniSectionType).includes(prefix)) {
+              currentSection = [prefix, name].join(loadSharedConfigFiles_1.CONFIG_PREFIX_SEPARATOR);
+            }
+          } else {
+            currentSection = sectionName;
+          }
+          if (profileNameBlockList.includes(sectionName)) {
+            throw new Error(`Found invalid profile name "${sectionName}"`);
+          }
+        } else if (currentSection) {
+          const indexOfEqualsSign = trimmedLine.indexOf("=");
+          if (![0, -1].includes(indexOfEqualsSign)) {
+            const [name, value] = [
+              trimmedLine.substring(0, indexOfEqualsSign).trim(),
+              trimmedLine.substring(indexOfEqualsSign + 1).trim()
+            ];
+            if (value === "") {
+              currentSubSection = name;
+            } else {
+              if (currentSubSection && iniLine.trimStart() === iniLine) {
+                currentSubSection = void 0;
+              }
+              map[currentSection] = map[currentSection] || {};
+              const key = currentSubSection ? [currentSubSection, name].join(loadSharedConfigFiles_1.CONFIG_PREFIX_SEPARATOR) : name;
+              map[currentSection][key] = value;
+            }
+          }
+        }
+      }
+      return map;
+    };
+    exports.parseIni = parseIni;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js
+var require_slurpFile = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.slurpFile = void 0;
+    var fs_1 = require("fs");
+    var { readFile } = fs_1.promises;
+    var filePromisesHash = {};
+    var slurpFile = (path, options) => {
+      if (!filePromisesHash[path] || (options === null || options === void 0 ? void 0 : options.ignoreCache)) {
+        filePromisesHash[path] = readFile(path, "utf8");
+      }
+      return filePromisesHash[path];
+    };
+    exports.slurpFile = slurpFile;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/loadSharedConfigFiles.js
+var require_loadSharedConfigFiles = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/loadSharedConfigFiles.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.loadSharedConfigFiles = exports.CONFIG_PREFIX_SEPARATOR = void 0;
+    var getConfigData_1 = require_getConfigData();
+    var getConfigFilepath_1 = require_getConfigFilepath();
+    var getCredentialsFilepath_1 = require_getCredentialsFilepath();
+    var parseIni_1 = require_parseIni();
+    var slurpFile_1 = require_slurpFile();
+    var swallowError = () => ({});
+    exports.CONFIG_PREFIX_SEPARATOR = ".";
+    var loadSharedConfigFiles = async (init = {}) => {
+      const { filepath = (0, getCredentialsFilepath_1.getCredentialsFilepath)(), configFilepath = (0, getConfigFilepath_1.getConfigFilepath)() } = init;
+      const parsedFiles = await Promise.all([
+        (0, slurpFile_1.slurpFile)(configFilepath, {
+          ignoreCache: init.ignoreCache
+        }).then(parseIni_1.parseIni).then(getConfigData_1.getConfigData).catch(swallowError),
+        (0, slurpFile_1.slurpFile)(filepath, {
+          ignoreCache: init.ignoreCache
+        }).then(parseIni_1.parseIni).catch(swallowError)
+      ]);
+      return {
+        configFile: parsedFiles[0],
+        credentialsFile: parsedFiles[1]
+      };
+    };
+    exports.loadSharedConfigFiles = loadSharedConfigFiles;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSsoSessionData.js
+var require_getSsoSessionData = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSsoSessionData.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getSsoSessionData = void 0;
+    var types_1 = require_dist_cjs();
+    var loadSharedConfigFiles_1 = require_loadSharedConfigFiles();
+    var getSsoSessionData = (data) => Object.entries(data).filter(([key]) => key.startsWith(types_1.IniSectionType.SSO_SESSION + loadSharedConfigFiles_1.CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.split(loadSharedConfigFiles_1.CONFIG_PREFIX_SEPARATOR)[1]]: value }), {});
+    exports.getSsoSessionData = getSsoSessionData;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/loadSsoSessionData.js
+var require_loadSsoSessionData = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/loadSsoSessionData.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.loadSsoSessionData = void 0;
+    var getConfigFilepath_1 = require_getConfigFilepath();
+    var getSsoSessionData_1 = require_getSsoSessionData();
+    var parseIni_1 = require_parseIni();
+    var slurpFile_1 = require_slurpFile();
+    var swallowError = () => ({});
+    var loadSsoSessionData = async (init = {}) => {
+      var _a;
+      return (0, slurpFile_1.slurpFile)((_a = init.configFilepath) !== null && _a !== void 0 ? _a : (0, getConfigFilepath_1.getConfigFilepath)()).then(parseIni_1.parseIni).then(getSsoSessionData_1.getSsoSessionData).catch(swallowError);
+    };
+    exports.loadSsoSessionData = loadSsoSessionData;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/mergeConfigFiles.js
+var require_mergeConfigFiles = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/mergeConfigFiles.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.mergeConfigFiles = void 0;
+    var mergeConfigFiles = (...files) => {
+      const merged = {};
+      for (const file of files) {
+        for (const [key, values] of Object.entries(file)) {
+          if (merged[key] !== void 0) {
+            Object.assign(merged[key], values);
+          } else {
+            merged[key] = values;
+          }
+        }
+      }
+      return merged;
+    };
+    exports.mergeConfigFiles = mergeConfigFiles;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/parseKnownFiles.js
+var require_parseKnownFiles = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/parseKnownFiles.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.parseKnownFiles = void 0;
+    var loadSharedConfigFiles_1 = require_loadSharedConfigFiles();
+    var mergeConfigFiles_1 = require_mergeConfigFiles();
+    var parseKnownFiles = async (init) => {
+      const parsedFiles = await (0, loadSharedConfigFiles_1.loadSharedConfigFiles)(init);
+      return (0, mergeConfigFiles_1.mergeConfigFiles)(parsedFiles.configFile, parsedFiles.credentialsFile);
+    };
+    exports.parseKnownFiles = parseKnownFiles;
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/types.js
+var require_types3 = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/types.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+  }
+});
+
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
+var require_dist_cjs23 = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    tslib_1.__exportStar(require_getHomeDir(), exports);
+    tslib_1.__exportStar(require_getProfileName(), exports);
+    tslib_1.__exportStar(require_getSSOTokenFilepath(), exports);
+    tslib_1.__exportStar(require_getSSOTokenFromFile(), exports);
+    tslib_1.__exportStar(require_loadSharedConfigFiles(), exports);
+    tslib_1.__exportStar(require_loadSsoSessionData(), exports);
+    tslib_1.__exportStar(require_parseKnownFiles(), exports);
+    tslib_1.__exportStar(require_types3(), exports);
+  }
+});
+
+// ../../../node_modules/@smithy/node-config-provider/dist-cjs/fromSharedConfigFiles.js
+var require_fromSharedConfigFiles = __commonJS({
+  "../../../node_modules/@smithy/node-config-provider/dist-cjs/fromSharedConfigFiles.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.fromSharedConfigFiles = void 0;
+    var property_provider_1 = require_dist_cjs6();
+    var shared_ini_file_loader_1 = require_dist_cjs23();
+    var fromSharedConfigFiles = (configSelector, { preferredFile = "config", ...init } = {}) => async () => {
+      const profile = (0, shared_ini_file_loader_1.getProfileName)(init);
+      const { configFile, credentialsFile } = await (0, shared_ini_file_loader_1.loadSharedConfigFiles)(init);
+      const profileFromCredentials = credentialsFile[profile] || {};
+      const profileFromConfig = configFile[profile] || {};
+      const mergedProfile = preferredFile === "config" ? { ...profileFromCredentials, ...profileFromConfig } : { ...profileFromConfig, ...profileFromCredentials };
+      try {
+        const cfgFile = preferredFile === "config" ? configFile : credentialsFile;
+        const configValue = configSelector(mergedProfile, cfgFile);
+        if (configValue === void 0) {
+          throw new Error();
+        }
+        return configValue;
+      } catch (e) {
+        throw new property_provider_1.CredentialsProviderError(e.message || `Cannot load config for profile ${profile} in SDK configuration files with getter: ${configSelector}`);
+      }
+    };
+    exports.fromSharedConfigFiles = fromSharedConfigFiles;
+  }
+});
+
+// ../../../node_modules/@smithy/node-config-provider/dist-cjs/fromStatic.js
+var require_fromStatic2 = __commonJS({
+  "../../../node_modules/@smithy/node-config-provider/dist-cjs/fromStatic.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.fromStatic = void 0;
+    var property_provider_1 = require_dist_cjs6();
+    var isFunction = (func) => typeof func === "function";
+    var fromStatic = (defaultValue) => isFunction(defaultValue) ? async () => await defaultValue() : (0, property_provider_1.fromStatic)(defaultValue);
+    exports.fromStatic = fromStatic;
+  }
+});
+
+// ../../../node_modules/@smithy/node-config-provider/dist-cjs/configLoader.js
+var require_configLoader = __commonJS({
+  "../../../node_modules/@smithy/node-config-provider/dist-cjs/configLoader.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.loadConfig = void 0;
+    var property_provider_1 = require_dist_cjs6();
+    var fromEnv_1 = require_fromEnv();
+    var fromSharedConfigFiles_1 = require_fromSharedConfigFiles();
+    var fromStatic_1 = require_fromStatic2();
+    var loadConfig = ({ environmentVariableSelector, configFileSelector, default: defaultValue }, configuration = {}) => (0, property_provider_1.memoize)((0, property_provider_1.chain)((0, fromEnv_1.fromEnv)(environmentVariableSelector), (0, fromSharedConfigFiles_1.fromSharedConfigFiles)(configFileSelector, configuration), (0, fromStatic_1.fromStatic)(defaultValue)));
+    exports.loadConfig = loadConfig;
+  }
+});
+
+// ../../../node_modules/@smithy/node-config-provider/dist-cjs/index.js
+var require_dist_cjs24 = __commonJS({
+  "../../../node_modules/@smithy/node-config-provider/dist-cjs/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    tslib_1.__exportStar(require_configLoader(), exports);
+  }
+});
+
+// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointUrlConfig.js
+var require_getEndpointUrlConfig = __commonJS({
+  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointUrlConfig.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getEndpointUrlConfig = void 0;
+    var shared_ini_file_loader_1 = require_dist_cjs23();
+    var ENV_ENDPOINT_URL = "AWS_ENDPOINT_URL";
+    var CONFIG_ENDPOINT_URL = "endpoint_url";
+    var getEndpointUrlConfig = (serviceId) => ({
+      environmentVariableSelector: (env) => {
+        const serviceSuffixParts = serviceId.split(" ").map((w) => w.toUpperCase());
+        const serviceEndpointUrl = env[[ENV_ENDPOINT_URL, ...serviceSuffixParts].join("_")];
+        if (serviceEndpointUrl)
+          return serviceEndpointUrl;
+        const endpointUrl = env[ENV_ENDPOINT_URL];
+        if (endpointUrl)
+          return endpointUrl;
+        return void 0;
+      },
+      configFileSelector: (profile, config) => {
+        if (config && profile.services) {
+          const servicesSection = config[["services", profile.services].join(shared_ini_file_loader_1.CONFIG_PREFIX_SEPARATOR)];
+          if (servicesSection) {
+            const servicePrefixParts = serviceId.split(" ").map((w) => w.toLowerCase());
+            const endpointUrl2 = servicesSection[[servicePrefixParts.join("_"), CONFIG_ENDPOINT_URL].join(shared_ini_file_loader_1.CONFIG_PREFIX_SEPARATOR)];
+            if (endpointUrl2)
+              return endpointUrl2;
+          }
+        }
+        const endpointUrl = profile[CONFIG_ENDPOINT_URL];
+        if (endpointUrl)
+          return endpointUrl;
+        return void 0;
+      },
+      default: void 0
+    });
+    exports.getEndpointUrlConfig = getEndpointUrlConfig;
+  }
+});
+
+// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointFromConfig.js
+var require_getEndpointFromConfig = __commonJS({
+  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointFromConfig.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getEndpointFromConfig = void 0;
+    var node_config_provider_1 = require_dist_cjs24();
+    var getEndpointUrlConfig_1 = require_getEndpointUrlConfig();
+    var getEndpointFromConfig = async (serviceId) => (0, node_config_provider_1.loadConfig)((0, getEndpointUrlConfig_1.getEndpointUrlConfig)(serviceId))();
+    exports.getEndpointFromConfig = getEndpointFromConfig;
+  }
+});
+
+// ../../../node_modules/@smithy/querystring-parser/dist-cjs/index.js
+var require_dist_cjs25 = __commonJS({
+  "../../../node_modules/@smithy/querystring-parser/dist-cjs/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.parseQueryString = void 0;
+    function parseQueryString(querystring) {
+      const query = {};
+      querystring = querystring.replace(/^\?/, "");
+      if (querystring) {
+        for (const pair of querystring.split("&")) {
+          let [key, value = null] = pair.split("=");
+          key = decodeURIComponent(key);
+          if (value) {
+            value = decodeURIComponent(value);
+          }
+          if (!(key in query)) {
+            query[key] = value;
+          } else if (Array.isArray(query[key])) {
+            query[key].push(value);
+          } else {
+            query[key] = [query[key], value];
+          }
+        }
+      }
+      return query;
+    }
+    exports.parseQueryString = parseQueryString;
+  }
+});
+
+// ../../../node_modules/@smithy/url-parser/dist-cjs/index.js
+var require_dist_cjs26 = __commonJS({
+  "../../../node_modules/@smithy/url-parser/dist-cjs/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.parseUrl = void 0;
+    var querystring_parser_1 = require_dist_cjs25();
+    var parseUrl = (url2) => {
+      if (typeof url2 === "string") {
+        return (0, exports.parseUrl)(new URL(url2));
+      }
+      const { hostname, pathname, port, protocol, search } = url2;
+      let query;
+      if (search) {
+        query = (0, querystring_parser_1.parseQueryString)(search);
+      }
+      return {
+        hostname,
+        port: port ? parseInt(port) : void 0,
+        protocol,
+        path: pathname,
+        query
+      };
+    };
+    exports.parseUrl = parseUrl;
+  }
+});
+
+// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/toEndpointV1.js
+var require_toEndpointV1 = __commonJS({
+  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/toEndpointV1.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.toEndpointV1 = void 0;
+    var url_parser_1 = require_dist_cjs26();
+    var toEndpointV1 = (endpoint) => {
+      if (typeof endpoint === "object") {
+        if ("url" in endpoint) {
+          return (0, url_parser_1.parseUrl)(endpoint.url);
+        }
+        return endpoint;
+      }
+      return (0, url_parser_1.parseUrl)(endpoint);
+    };
+    exports.toEndpointV1 = toEndpointV1;
+  }
+});
+
 // ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointFromInstructions.js
 var require_getEndpointFromInstructions = __commonJS({
   "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointFromInstructions.js"(exports) {
@@ -6920,7 +7587,15 @@ var require_getEndpointFromInstructions = __commonJS({
     exports.resolveParams = exports.getEndpointFromInstructions = void 0;
     var service_customizations_1 = require_service_customizations();
     var createConfigValueProvider_1 = require_createConfigValueProvider();
+    var getEndpointFromConfig_1 = require_getEndpointFromConfig();
+    var toEndpointV1_1 = require_toEndpointV1();
     var getEndpointFromInstructions = async (commandInput, instructionsSupplier, clientConfig, context) => {
+      if (!clientConfig.endpoint) {
+        const endpointFromConfig = await (0, getEndpointFromConfig_1.getEndpointFromConfig)(clientConfig.serviceId || "");
+        if (endpointFromConfig) {
+          clientConfig.endpoint = () => Promise.resolve((0, toEndpointV1_1.toEndpointV1)(endpointFromConfig));
+        }
+      }
       const endpointParams = await (0, exports.resolveParams)(commandInput, instructionsSupplier, clientConfig);
       if (typeof clientConfig.endpointProvider !== "function") {
         throw new Error("config.endpointProvider is not set.");
@@ -6961,85 +7636,6 @@ var require_getEndpointFromInstructions = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/querystring-parser/dist-cjs/index.js
-var require_dist_cjs23 = __commonJS({
-  "../../../node_modules/@smithy/querystring-parser/dist-cjs/index.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.parseQueryString = void 0;
-    function parseQueryString(querystring) {
-      const query = {};
-      querystring = querystring.replace(/^\?/, "");
-      if (querystring) {
-        for (const pair of querystring.split("&")) {
-          let [key, value = null] = pair.split("=");
-          key = decodeURIComponent(key);
-          if (value) {
-            value = decodeURIComponent(value);
-          }
-          if (!(key in query)) {
-            query[key] = value;
-          } else if (Array.isArray(query[key])) {
-            query[key].push(value);
-          } else {
-            query[key] = [query[key], value];
-          }
-        }
-      }
-      return query;
-    }
-    exports.parseQueryString = parseQueryString;
-  }
-});
-
-// ../../../node_modules/@smithy/url-parser/dist-cjs/index.js
-var require_dist_cjs24 = __commonJS({
-  "../../../node_modules/@smithy/url-parser/dist-cjs/index.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.parseUrl = void 0;
-    var querystring_parser_1 = require_dist_cjs23();
-    var parseUrl = (url2) => {
-      if (typeof url2 === "string") {
-        return (0, exports.parseUrl)(new URL(url2));
-      }
-      const { hostname, pathname, port, protocol, search } = url2;
-      let query;
-      if (search) {
-        query = (0, querystring_parser_1.parseQueryString)(search);
-      }
-      return {
-        hostname,
-        port: port ? parseInt(port) : void 0,
-        protocol,
-        path: pathname,
-        query
-      };
-    };
-    exports.parseUrl = parseUrl;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/toEndpointV1.js
-var require_toEndpointV1 = __commonJS({
-  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/toEndpointV1.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.toEndpointV1 = void 0;
-    var url_parser_1 = require_dist_cjs24();
-    var toEndpointV1 = (endpoint) => {
-      if (typeof endpoint === "object") {
-        if ("url" in endpoint) {
-          return (0, url_parser_1.parseUrl)(endpoint.url);
-        }
-        return endpoint;
-      }
-      return (0, url_parser_1.parseUrl)(endpoint);
-    };
-    exports.toEndpointV1 = toEndpointV1;
-  }
-});
-
 // ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/index.js
 var require_adaptors = __commonJS({
   "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/index.js"(exports) {
@@ -7057,10 +7653,11 @@ var require_endpointMiddleware = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.endpointMiddleware = void 0;
+    var util_middleware_1 = require_dist_cjs10();
     var getEndpointFromInstructions_1 = require_getEndpointFromInstructions();
     var endpointMiddleware = ({ config, instructions }) => {
       return (next, context) => async (args) => {
-        var _a, _b;
+        var _a, _b, _c;
         const endpoint = await (0, getEndpointFromInstructions_1.getEndpointFromInstructions)(args.input, {
           getEndpointParameterInstructions() {
             return instructions;
@@ -7072,6 +7669,17 @@ var require_endpointMiddleware = __commonJS({
         if (authScheme) {
           context["signing_region"] = authScheme.signingRegion;
           context["signing_service"] = authScheme.signingName;
+          const smithyContext = (0, util_middleware_1.getSmithyContext)(context);
+          const httpAuthOption = (_c = smithyContext === null || smithyContext === void 0 ? void 0 : smithyContext.selectedHttpAuthScheme) === null || _c === void 0 ? void 0 : _c.httpAuthOption;
+          if (httpAuthOption) {
+            httpAuthOption.signingProperties = Object.assign(httpAuthOption.signingProperties || {}, {
+              signing_region: authScheme.signingRegion,
+              signingRegion: authScheme.signingRegion,
+              signing_service: authScheme.signingName,
+              signingName: authScheme.signingName,
+              signingRegionSet: authScheme.signingRegionSet
+            }, authScheme.properties);
+          }
         }
         return next({
           ...args
@@ -7166,7 +7774,7 @@ var require_serdePlugin = __commonJS({
 });
 
 // ../../../node_modules/@smithy/middleware-serde/dist-cjs/index.js
-var require_dist_cjs25 = __commonJS({
+var require_dist_cjs27 = __commonJS({
   "../../../node_modules/@smithy/middleware-serde/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -7183,7 +7791,7 @@ var require_getEndpointPlugin = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getEndpointPlugin = exports.endpointMiddlewareOptions = void 0;
-    var middleware_serde_1 = require_dist_cjs25();
+    var middleware_serde_1 = require_dist_cjs27();
     var endpointMiddleware_1 = require_endpointMiddleware();
     exports.endpointMiddlewareOptions = {
       step: "serialize",
@@ -7233,7 +7841,7 @@ var require_resolveEndpointConfig = __commonJS({
 });
 
 // ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/types.js
-var require_types3 = __commonJS({
+var require_types4 = __commonJS({
   "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/types.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -7241,7 +7849,7 @@ var require_types3 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/index.js
-var require_dist_cjs26 = __commonJS({
+var require_dist_cjs28 = __commonJS({
   "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -7250,7 +7858,7 @@ var require_dist_cjs26 = __commonJS({
     tslib_1.__exportStar(require_endpointMiddleware(), exports);
     tslib_1.__exportStar(require_getEndpointPlugin(), exports);
     tslib_1.__exportStar(require_resolveEndpointConfig(), exports);
-    tslib_1.__exportStar(require_types3(), exports);
+    tslib_1.__exportStar(require_types4(), exports);
   }
 });
 
@@ -7307,7 +7915,7 @@ var require_constants3 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/service-error-classification/dist-cjs/index.js
-var require_dist_cjs27 = __commonJS({
+var require_dist_cjs29 = __commonJS({
   "../../../node_modules/@smithy/service-error-classification/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -7348,7 +7956,7 @@ var require_DefaultRateLimiter = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DefaultRateLimiter = void 0;
-    var service_error_classification_1 = require_dist_cjs27();
+    var service_error_classification_1 = require_dist_cjs29();
     var DefaultRateLimiter = class {
       constructor(options) {
         var _a, _b, _c, _d, _e;
@@ -7647,7 +8255,7 @@ var require_ConfiguredRetryStrategy = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-retry/dist-cjs/types.js
-var require_types4 = __commonJS({
+var require_types5 = __commonJS({
   "../../../node_modules/@smithy/util-retry/dist-cjs/types.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -7655,7 +8263,7 @@ var require_types4 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-retry/dist-cjs/index.js
-var require_dist_cjs28 = __commonJS({
+var require_dist_cjs30 = __commonJS({
   "../../../node_modules/@smithy/util-retry/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -7666,7 +8274,7 @@ var require_dist_cjs28 = __commonJS({
     tslib_1.__exportStar(require_StandardRetryStrategy(), exports);
     tslib_1.__exportStar(require_config3(), exports);
     tslib_1.__exportStar(require_constants4(), exports);
-    tslib_1.__exportStar(require_types4(), exports);
+    tslib_1.__exportStar(require_types5(), exports);
   }
 });
 
@@ -8009,7 +8617,7 @@ var require_defaultRetryQuota = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getDefaultRetryQuota = void 0;
-    var util_retry_1 = require_dist_cjs28();
+    var util_retry_1 = require_dist_cjs30();
     var getDefaultRetryQuota = (initialRetryTokens, options) => {
       var _a, _b, _c;
       const MAX_CAPACITY = initialRetryTokens;
@@ -8047,7 +8655,7 @@ var require_delayDecider = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.defaultDelayDecider = void 0;
-    var util_retry_1 = require_dist_cjs28();
+    var util_retry_1 = require_dist_cjs30();
     var defaultDelayDecider = (delayBase, attempts) => Math.floor(Math.min(util_retry_1.MAXIMUM_RETRY_DELAY, Math.random() * 2 ** attempts * delayBase));
     exports.defaultDelayDecider = defaultDelayDecider;
   }
@@ -8059,7 +8667,7 @@ var require_retryDecider = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.defaultRetryDecider = void 0;
-    var service_error_classification_1 = require_dist_cjs27();
+    var service_error_classification_1 = require_dist_cjs29();
     var defaultRetryDecider = (error) => {
       if (!error) {
         return false;
@@ -8096,8 +8704,8 @@ var require_StandardRetryStrategy2 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.StandardRetryStrategy = void 0;
     var protocol_http_1 = require_dist_cjs2();
-    var service_error_classification_1 = require_dist_cjs27();
-    var util_retry_1 = require_dist_cjs28();
+    var service_error_classification_1 = require_dist_cjs29();
+    var util_retry_1 = require_dist_cjs30();
     var uuid_1 = (init_esm_node(), __toCommonJS(esm_node_exports));
     var defaultRetryQuota_1 = require_defaultRetryQuota();
     var delayDecider_1 = require_delayDecider();
@@ -8194,7 +8802,7 @@ var require_AdaptiveRetryStrategy2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AdaptiveRetryStrategy = void 0;
-    var util_retry_1 = require_dist_cjs28();
+    var util_retry_1 = require_dist_cjs30();
     var StandardRetryStrategy_1 = require_StandardRetryStrategy2();
     var AdaptiveRetryStrategy = class extends StandardRetryStrategy_1.StandardRetryStrategy {
       constructor(maxAttemptsProvider, options) {
@@ -8225,7 +8833,7 @@ var require_configurations2 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.NODE_RETRY_MODE_CONFIG_OPTIONS = exports.CONFIG_RETRY_MODE = exports.ENV_RETRY_MODE = exports.resolveRetryConfig = exports.NODE_MAX_ATTEMPT_CONFIG_OPTIONS = exports.CONFIG_MAX_ATTEMPTS = exports.ENV_MAX_ATTEMPTS = void 0;
     var util_middleware_1 = require_dist_cjs10();
-    var util_retry_1 = require_dist_cjs28();
+    var util_retry_1 = require_dist_cjs30();
     exports.ENV_MAX_ATTEMPTS = "AWS_MAX_ATTEMPTS";
     exports.CONFIG_MAX_ATTEMPTS = "max_attempts";
     exports.NODE_MAX_ATTEMPT_CONFIG_OPTIONS = {
@@ -8288,7 +8896,7 @@ var require_omitRetryHeadersMiddleware = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getOmitRetryHeadersPlugin = exports.omitRetryHeadersMiddlewareOptions = exports.omitRetryHeadersMiddleware = void 0;
     var protocol_http_1 = require_dist_cjs2();
-    var util_retry_1 = require_dist_cjs28();
+    var util_retry_1 = require_dist_cjs30();
     var omitRetryHeadersMiddleware = () => (next) => async (args) => {
       const { request: request2 } = args;
       if (protocol_http_1.HttpRequest.isInstance(request2)) {
@@ -8311,133 +8919,6 @@ var require_omitRetryHeadersMiddleware = __commonJS({
       }
     });
     exports.getOmitRetryHeadersPlugin = getOmitRetryHeadersPlugin;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-retry/dist-cjs/retryMiddleware.js
-var require_retryMiddleware = __commonJS({
-  "../../../node_modules/@smithy/middleware-retry/dist-cjs/retryMiddleware.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getRetryAfterHint = exports.getRetryPlugin = exports.retryMiddlewareOptions = exports.retryMiddleware = void 0;
-    var protocol_http_1 = require_dist_cjs2();
-    var service_error_classification_1 = require_dist_cjs27();
-    var util_retry_1 = require_dist_cjs28();
-    var uuid_1 = (init_esm_node(), __toCommonJS(esm_node_exports));
-    var util_1 = require_util3();
-    var retryMiddleware = (options) => (next, context) => async (args) => {
-      let retryStrategy = await options.retryStrategy();
-      const maxAttempts = await options.maxAttempts();
-      if (isRetryStrategyV2(retryStrategy)) {
-        retryStrategy = retryStrategy;
-        let retryToken = await retryStrategy.acquireInitialRetryToken(context["partition_id"]);
-        let lastError = new Error();
-        let attempts = 0;
-        let totalRetryDelay = 0;
-        const { request: request2 } = args;
-        if (protocol_http_1.HttpRequest.isInstance(request2)) {
-          request2.headers[util_retry_1.INVOCATION_ID_HEADER] = (0, uuid_1.v4)();
-        }
-        while (true) {
-          try {
-            if (protocol_http_1.HttpRequest.isInstance(request2)) {
-              request2.headers[util_retry_1.REQUEST_HEADER] = `attempt=${attempts + 1}; max=${maxAttempts}`;
-            }
-            const { response, output } = await next(args);
-            retryStrategy.recordSuccess(retryToken);
-            output.$metadata.attempts = attempts + 1;
-            output.$metadata.totalRetryDelay = totalRetryDelay;
-            return { response, output };
-          } catch (e) {
-            const retryErrorInfo = getRetryErrorInfo(e);
-            lastError = (0, util_1.asSdkError)(e);
-            try {
-              retryToken = await retryStrategy.refreshRetryTokenForRetry(retryToken, retryErrorInfo);
-            } catch (refreshError) {
-              if (!lastError.$metadata) {
-                lastError.$metadata = {};
-              }
-              lastError.$metadata.attempts = attempts + 1;
-              lastError.$metadata.totalRetryDelay = totalRetryDelay;
-              throw lastError;
-            }
-            attempts = retryToken.getRetryCount();
-            const delay = retryToken.getRetryDelay();
-            totalRetryDelay += delay;
-            await new Promise((resolve) => setTimeout(resolve, delay));
-          }
-        }
-      } else {
-        retryStrategy = retryStrategy;
-        if (retryStrategy === null || retryStrategy === void 0 ? void 0 : retryStrategy.mode)
-          context.userAgent = [...context.userAgent || [], ["cfg/retry-mode", retryStrategy.mode]];
-        return retryStrategy.retry(next, args);
-      }
-    };
-    exports.retryMiddleware = retryMiddleware;
-    var isRetryStrategyV2 = (retryStrategy) => typeof retryStrategy.acquireInitialRetryToken !== "undefined" && typeof retryStrategy.refreshRetryTokenForRetry !== "undefined" && typeof retryStrategy.recordSuccess !== "undefined";
-    var getRetryErrorInfo = (error) => {
-      const errorInfo = {
-        errorType: getRetryErrorType(error)
-      };
-      const retryAfterHint = (0, exports.getRetryAfterHint)(error.$response);
-      if (retryAfterHint) {
-        errorInfo.retryAfterHint = retryAfterHint;
-      }
-      return errorInfo;
-    };
-    var getRetryErrorType = (error) => {
-      if ((0, service_error_classification_1.isThrottlingError)(error))
-        return "THROTTLING";
-      if ((0, service_error_classification_1.isTransientError)(error))
-        return "TRANSIENT";
-      if ((0, service_error_classification_1.isServerError)(error))
-        return "SERVER_ERROR";
-      return "CLIENT_ERROR";
-    };
-    exports.retryMiddlewareOptions = {
-      name: "retryMiddleware",
-      tags: ["RETRY"],
-      step: "finalizeRequest",
-      priority: "high",
-      override: true
-    };
-    var getRetryPlugin = (options) => ({
-      applyToStack: (clientStack) => {
-        clientStack.add((0, exports.retryMiddleware)(options), exports.retryMiddlewareOptions);
-      }
-    });
-    exports.getRetryPlugin = getRetryPlugin;
-    var getRetryAfterHint = (response) => {
-      if (!protocol_http_1.HttpResponse.isInstance(response))
-        return;
-      const retryAfterHeaderName = Object.keys(response.headers).find((key) => key.toLowerCase() === "retry-after");
-      if (!retryAfterHeaderName)
-        return;
-      const retryAfter = response.headers[retryAfterHeaderName];
-      const retryAfterSeconds = Number(retryAfter);
-      if (!Number.isNaN(retryAfterSeconds))
-        return new Date(retryAfterSeconds * 1e3);
-      const retryAfterDate = new Date(retryAfter);
-      return retryAfterDate;
-    };
-    exports.getRetryAfterHint = getRetryAfterHint;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-retry/dist-cjs/index.js
-var require_dist_cjs29 = __commonJS({
-  "../../../node_modules/@smithy/middleware-retry/dist-cjs/index.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_AdaptiveRetryStrategy2(), exports);
-    tslib_1.__exportStar(require_StandardRetryStrategy2(), exports);
-    tslib_1.__exportStar(require_configurations2(), exports);
-    tslib_1.__exportStar(require_delayDecider(), exports);
-    tslib_1.__exportStar(require_omitRetryHeadersMiddleware(), exports);
-    tslib_1.__exportStar(require_retryDecider(), exports);
-    tslib_1.__exportStar(require_retryMiddleware(), exports);
   }
 });
 
@@ -8469,6 +8950,21 @@ var require_MiddlewareStack = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.constructStack = void 0;
+    var getAllAliases = (name, aliases) => {
+      const _aliases = [];
+      if (name) {
+        _aliases.push(name);
+      }
+      if (aliases) {
+        for (const alias of aliases) {
+          _aliases.push(alias);
+        }
+      }
+      return _aliases;
+    };
+    var getMiddlewareNameWithAliases = (name, aliases) => {
+      return `${name || "anonymous"}${aliases && aliases.length > 0 ? ` (a.k.a. ${aliases.join(",")})` : ""}`;
+    };
     var constructStack = () => {
       let absoluteEntries = [];
       let relativeEntries = [];
@@ -8478,9 +8974,12 @@ var require_MiddlewareStack = __commonJS({
       const removeByName = (toRemove) => {
         let isRemoved = false;
         const filterCb = (entry) => {
-          if (entry.name && entry.name === toRemove) {
+          const aliases = getAllAliases(entry.name, entry.aliases);
+          if (aliases.includes(toRemove)) {
             isRemoved = true;
-            entriesNameSet.delete(toRemove);
+            for (const alias of aliases) {
+              entriesNameSet.delete(alias);
+            }
             return false;
           }
           return true;
@@ -8494,8 +8993,9 @@ var require_MiddlewareStack = __commonJS({
         const filterCb = (entry) => {
           if (entry.middleware === toRemove) {
             isRemoved = true;
-            if (entry.name)
-              entriesNameSet.delete(entry.name);
+            for (const alias of getAllAliases(entry.name, entry.aliases)) {
+              entriesNameSet.delete(alias);
+            }
             return false;
           }
           return true;
@@ -8544,8 +9044,9 @@ var require_MiddlewareStack = __commonJS({
             before: [],
             after: []
           };
-          if (normalizedEntry.name)
-            normalizedEntriesNameMap[normalizedEntry.name] = normalizedEntry;
+          for (const alias of getAllAliases(normalizedEntry.name, normalizedEntry.aliases)) {
+            normalizedEntriesNameMap[alias] = normalizedEntry;
+          }
           normalizedAbsoluteEntries.push(normalizedEntry);
         });
         relativeEntries.forEach((entry) => {
@@ -8554,8 +9055,9 @@ var require_MiddlewareStack = __commonJS({
             before: [],
             after: []
           };
-          if (normalizedEntry.name)
-            normalizedEntriesNameMap[normalizedEntry.name] = normalizedEntry;
+          for (const alias of getAllAliases(normalizedEntry.name, normalizedEntry.aliases)) {
+            normalizedEntriesNameMap[alias] = normalizedEntry;
+          }
           normalizedRelativeEntries.push(normalizedEntry);
         });
         normalizedRelativeEntries.forEach((entry) => {
@@ -8565,7 +9067,7 @@ var require_MiddlewareStack = __commonJS({
               if (debug) {
                 return;
               }
-              throw new Error(`${entry.toMiddleware} is not found when adding ${entry.name || "anonymous"} middleware ${entry.relation} ${entry.toMiddleware}`);
+              throw new Error(`${entry.toMiddleware} is not found when adding ${getMiddlewareNameWithAliases(entry.name, entry.aliases)} middleware ${entry.relation} ${entry.toMiddleware}`);
             }
             if (entry.relation === "after") {
               toMiddleware.after.push(entry);
@@ -8583,46 +9085,68 @@ var require_MiddlewareStack = __commonJS({
       };
       const stack = {
         add: (middleware, options = {}) => {
-          const { name, override } = options;
+          const { name, override, aliases: _aliases } = options;
           const entry = {
             step: "initialize",
             priority: "normal",
             middleware,
             ...options
           };
-          if (name) {
-            if (entriesNameSet.has(name)) {
+          const aliases = getAllAliases(name, _aliases);
+          if (aliases.length > 0) {
+            if (aliases.some((alias) => entriesNameSet.has(alias))) {
               if (!override)
-                throw new Error(`Duplicate middleware name '${name}'`);
-              const toOverrideIndex = absoluteEntries.findIndex((entry2) => entry2.name === name);
-              const toOverride = absoluteEntries[toOverrideIndex];
-              if (toOverride.step !== entry.step || toOverride.priority !== entry.priority) {
-                throw new Error(`"${name}" middleware with ${toOverride.priority} priority in ${toOverride.step} step cannot be overridden by same-name middleware with ${entry.priority} priority in ${entry.step} step.`);
+                throw new Error(`Duplicate middleware name '${getMiddlewareNameWithAliases(name, _aliases)}'`);
+              for (const alias of aliases) {
+                const toOverrideIndex = absoluteEntries.findIndex((entry2) => {
+                  var _a;
+                  return entry2.name === alias || ((_a = entry2.aliases) === null || _a === void 0 ? void 0 : _a.some((a) => a === alias));
+                });
+                if (toOverrideIndex === -1) {
+                  continue;
+                }
+                const toOverride = absoluteEntries[toOverrideIndex];
+                if (toOverride.step !== entry.step || entry.priority !== toOverride.priority) {
+                  throw new Error(`"${getMiddlewareNameWithAliases(toOverride.name, toOverride.aliases)}" middleware with ${toOverride.priority} priority in ${toOverride.step} step cannot be overridden by "${getMiddlewareNameWithAliases(name, _aliases)}" middleware with ${entry.priority} priority in ${entry.step} step.`);
+                }
+                absoluteEntries.splice(toOverrideIndex, 1);
               }
-              absoluteEntries.splice(toOverrideIndex, 1);
             }
-            entriesNameSet.add(name);
+            for (const alias of aliases) {
+              entriesNameSet.add(alias);
+            }
           }
           absoluteEntries.push(entry);
         },
         addRelativeTo: (middleware, options) => {
-          const { name, override } = options;
+          const { name, override, aliases: _aliases } = options;
           const entry = {
             middleware,
             ...options
           };
-          if (name) {
-            if (entriesNameSet.has(name)) {
+          const aliases = getAllAliases(name, _aliases);
+          if (aliases.length > 0) {
+            if (aliases.some((alias) => entriesNameSet.has(alias))) {
               if (!override)
-                throw new Error(`Duplicate middleware name '${name}'`);
-              const toOverrideIndex = relativeEntries.findIndex((entry2) => entry2.name === name);
-              const toOverride = relativeEntries[toOverrideIndex];
-              if (toOverride.toMiddleware !== entry.toMiddleware || toOverride.relation !== entry.relation) {
-                throw new Error(`"${name}" middleware ${toOverride.relation} "${toOverride.toMiddleware}" middleware cannot be overridden by same-name middleware ${entry.relation} "${entry.toMiddleware}" middleware.`);
+                throw new Error(`Duplicate middleware name '${getMiddlewareNameWithAliases(name, _aliases)}'`);
+              for (const alias of aliases) {
+                const toOverrideIndex = relativeEntries.findIndex((entry2) => {
+                  var _a;
+                  return entry2.name === alias || ((_a = entry2.aliases) === null || _a === void 0 ? void 0 : _a.some((a) => a === alias));
+                });
+                if (toOverrideIndex === -1) {
+                  continue;
+                }
+                const toOverride = relativeEntries[toOverrideIndex];
+                if (toOverride.toMiddleware !== entry.toMiddleware || toOverride.relation !== entry.relation) {
+                  throw new Error(`"${getMiddlewareNameWithAliases(toOverride.name, toOverride.aliases)}" middleware ${toOverride.relation} "${toOverride.toMiddleware}" middleware cannot be overridden by "${getMiddlewareNameWithAliases(name, _aliases)}" middleware ${entry.relation} "${entry.toMiddleware}" middleware.`);
+                }
+                relativeEntries.splice(toOverrideIndex, 1);
               }
-              relativeEntries.splice(toOverrideIndex, 1);
             }
-            entriesNameSet.add(name);
+            for (const alias of aliases) {
+              entriesNameSet.add(alias);
+            }
           }
           relativeEntries.push(entry);
         },
@@ -8639,10 +9163,12 @@ var require_MiddlewareStack = __commonJS({
         removeByTag: (toRemove) => {
           let isRemoved = false;
           const filterCb = (entry) => {
-            const { tags, name } = entry;
+            const { tags, name, aliases: _aliases } = entry;
             if (tags && tags.includes(toRemove)) {
-              if (name)
-                entriesNameSet.delete(name);
+              const aliases = getAllAliases(name, _aliases);
+              for (const alias of aliases) {
+                entriesNameSet.delete(alias);
+              }
               isRemoved = true;
               return false;
             }
@@ -8664,7 +9190,7 @@ var require_MiddlewareStack = __commonJS({
           return getMiddlewareList(true).map((mw) => {
             var _a;
             const step = (_a = mw.step) !== null && _a !== void 0 ? _a : mw.relation + " " + mw.toMiddleware;
-            return mw.name + " - " + step;
+            return getMiddlewareNameWithAliases(mw.name, mw.aliases) + " - " + step;
           });
         },
         identifyOnResolve(toggle) {
@@ -8701,7 +9227,7 @@ var require_MiddlewareStack = __commonJS({
 });
 
 // ../../../node_modules/@smithy/middleware-stack/dist-cjs/index.js
-var require_dist_cjs30 = __commonJS({
+var require_dist_cjs31 = __commonJS({
   "../../../node_modules/@smithy/middleware-stack/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -8716,7 +9242,7 @@ var require_client3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Client = void 0;
-    var middleware_stack_1 = require_dist_cjs30();
+    var middleware_stack_1 = require_dist_cjs31();
     var Client = class {
       constructor(config) {
         this.middlewareStack = (0, middleware_stack_1.constructStack)();
@@ -8777,7 +9303,7 @@ var require_toBase64 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-base64/dist-cjs/index.js
-var require_dist_cjs31 = __commonJS({
+var require_dist_cjs32 = __commonJS({
   "../../../node_modules/@smithy/util-base64/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -8793,7 +9319,7 @@ var require_transforms = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.transformFromString = exports.transformToString = void 0;
-    var util_base64_1 = require_dist_cjs31();
+    var util_base64_1 = require_dist_cjs32();
     var util_utf8_1 = require_dist_cjs13();
     var Uint8ArrayBlobAdapter_1 = require_Uint8ArrayBlobAdapter();
     function transformToString(payload, encoding = "utf-8") {
@@ -8879,9 +9405,9 @@ var require_getAwsChunkedEncodingStream = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/node-http-handler/node_modules/@smithy/querystring-builder/dist-cjs/index.js
-var require_dist_cjs32 = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/node_modules/@smithy/querystring-builder/dist-cjs/index.js"(exports) {
+// ../../../node_modules/@smithy/querystring-builder/dist-cjs/index.js
+var require_dist_cjs33 = __commonJS({
+  "../../../node_modules/@smithy/querystring-builder/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.buildQueryString = void 0;
@@ -9057,7 +9583,7 @@ var require_node_http_handler = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.NodeHttpHandler = exports.DEFAULT_REQUEST_TIMEOUT = void 0;
     var protocol_http_1 = require_dist_cjs2();
-    var querystring_builder_1 = require_dist_cjs32();
+    var querystring_builder_1 = require_dist_cjs33();
     var http_1 = require("http");
     var https_1 = require("https");
     var constants_1 = require_constants5();
@@ -9067,7 +9593,13 @@ var require_node_http_handler = __commonJS({
     var set_socket_timeout_1 = require_set_socket_timeout();
     var write_request_body_1 = require_write_request_body();
     exports.DEFAULT_REQUEST_TIMEOUT = 0;
-    var NodeHttpHandler = class {
+    var NodeHttpHandler = class _NodeHttpHandler {
+      static create(instanceOrOptions) {
+        if (typeof (instanceOrOptions === null || instanceOrOptions === void 0 ? void 0 : instanceOrOptions.handle) === "function") {
+          return instanceOrOptions;
+        }
+        return new _NodeHttpHandler(instanceOrOptions);
+      }
       constructor(options) {
         this.metadata = { handlerProtocol: "http/1.1" };
         this.configProvider = new Promise((resolve, reject) => {
@@ -9343,12 +9875,18 @@ var require_node_http2_handler = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.NodeHttp2Handler = void 0;
     var protocol_http_1 = require_dist_cjs2();
-    var querystring_builder_1 = require_dist_cjs32();
+    var querystring_builder_1 = require_dist_cjs33();
     var http2_1 = require("http2");
     var get_transformed_headers_1 = require_get_transformed_headers();
     var node_http2_connection_manager_1 = require_node_http2_connection_manager();
     var write_request_body_1 = require_write_request_body();
-    var NodeHttp2Handler = class {
+    var NodeHttp2Handler = class _NodeHttp2Handler {
+      static create(instanceOrOptions) {
+        if (typeof (instanceOrOptions === null || instanceOrOptions === void 0 ? void 0 : instanceOrOptions.handle) === "function") {
+          return instanceOrOptions;
+        }
+        return new _NodeHttp2Handler(instanceOrOptions);
+      }
       constructor(options) {
         this.metadata = { handlerProtocol: "h2" };
         this.connectionManager = new node_http2_connection_manager_1.NodeHttp2ConnectionManager({});
@@ -9544,7 +10082,7 @@ var require_stream_collector = __commonJS({
 });
 
 // ../../../node_modules/@smithy/node-http-handler/dist-cjs/index.js
-var require_dist_cjs33 = __commonJS({
+var require_dist_cjs34 = __commonJS({
   "../../../node_modules/@smithy/node-http-handler/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -9561,7 +10099,7 @@ var require_sdk_stream_mixin = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.sdkStreamMixin = void 0;
-    var node_http_handler_1 = require_dist_cjs33();
+    var node_http_handler_1 = require_dist_cjs34();
     var util_buffer_from_1 = require_dist_cjs12();
     var stream_1 = require("stream");
     var util_1 = require("util");
@@ -9611,7 +10149,7 @@ var require_sdk_stream_mixin = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-stream/dist-cjs/index.js
-var require_dist_cjs34 = __commonJS({
+var require_dist_cjs35 = __commonJS({
   "../../../node_modules/@smithy/util-stream/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -9628,7 +10166,7 @@ var require_collect_stream_body = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.collectBody = void 0;
-    var util_stream_1 = require_dist_cjs34();
+    var util_stream_1 = require_dist_cjs35();
     var collectBody = async (streamBody = new Uint8Array(), context) => {
       if (streamBody instanceof Uint8Array) {
         return util_stream_1.Uint8ArrayBlobAdapter.mutate(streamBody);
@@ -9649,7 +10187,7 @@ var require_command3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.Command = void 0;
-    var middleware_stack_1 = require_dist_cjs30();
+    var middleware_stack_1 = require_dist_cjs31();
     var Command = class {
       constructor() {
         this.middlewareStack = (0, middleware_stack_1.constructStack)();
@@ -10619,7 +11157,7 @@ var require_serde_json = __commonJS({
         return {};
       }
       if (Array.isArray(obj)) {
-        return obj.filter((_) => _ != null);
+        return obj.filter((_) => _ != null).map(exports._json);
       }
       if (typeof obj === "object") {
         const target = {};
@@ -10674,7 +11212,7 @@ var require_split_every = __commonJS({
 });
 
 // ../../../node_modules/@smithy/smithy-client/dist-cjs/index.js
-var require_dist_cjs35 = __commonJS({
+var require_dist_cjs36 = __commonJS({
   "../../../node_modules/@smithy/smithy-client/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -10701,6 +11239,153 @@ var require_dist_cjs35 = __commonJS({
     tslib_1.__exportStar(require_ser_utils(), exports);
     tslib_1.__exportStar(require_serde_json(), exports);
     tslib_1.__exportStar(require_split_every(), exports);
+  }
+});
+
+// ../../../node_modules/@smithy/middleware-retry/dist-cjs/isStreamingPayload/isStreamingPayload.js
+var require_isStreamingPayload = __commonJS({
+  "../../../node_modules/@smithy/middleware-retry/dist-cjs/isStreamingPayload/isStreamingPayload.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.isStreamingPayload = void 0;
+    var stream_1 = require("stream");
+    var isStreamingPayload = (request2) => (request2 === null || request2 === void 0 ? void 0 : request2.body) instanceof stream_1.Readable || typeof ReadableStream !== "undefined" && (request2 === null || request2 === void 0 ? void 0 : request2.body) instanceof ReadableStream;
+    exports.isStreamingPayload = isStreamingPayload;
+  }
+});
+
+// ../../../node_modules/@smithy/middleware-retry/dist-cjs/retryMiddleware.js
+var require_retryMiddleware = __commonJS({
+  "../../../node_modules/@smithy/middleware-retry/dist-cjs/retryMiddleware.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.getRetryAfterHint = exports.getRetryPlugin = exports.retryMiddlewareOptions = exports.retryMiddleware = void 0;
+    var protocol_http_1 = require_dist_cjs2();
+    var service_error_classification_1 = require_dist_cjs29();
+    var smithy_client_1 = require_dist_cjs36();
+    var util_retry_1 = require_dist_cjs30();
+    var uuid_1 = (init_esm_node(), __toCommonJS(esm_node_exports));
+    var isStreamingPayload_1 = require_isStreamingPayload();
+    var util_1 = require_util3();
+    var retryMiddleware = (options) => (next, context) => async (args) => {
+      var _a;
+      let retryStrategy = await options.retryStrategy();
+      const maxAttempts = await options.maxAttempts();
+      if (isRetryStrategyV2(retryStrategy)) {
+        retryStrategy = retryStrategy;
+        let retryToken = await retryStrategy.acquireInitialRetryToken(context["partition_id"]);
+        let lastError = new Error();
+        let attempts = 0;
+        let totalRetryDelay = 0;
+        const { request: request2 } = args;
+        const isRequest = protocol_http_1.HttpRequest.isInstance(request2);
+        if (isRequest) {
+          request2.headers[util_retry_1.INVOCATION_ID_HEADER] = (0, uuid_1.v4)();
+        }
+        while (true) {
+          try {
+            if (isRequest) {
+              request2.headers[util_retry_1.REQUEST_HEADER] = `attempt=${attempts + 1}; max=${maxAttempts}`;
+            }
+            const { response, output } = await next(args);
+            retryStrategy.recordSuccess(retryToken);
+            output.$metadata.attempts = attempts + 1;
+            output.$metadata.totalRetryDelay = totalRetryDelay;
+            return { response, output };
+          } catch (e) {
+            const retryErrorInfo = getRetryErrorInfo(e);
+            lastError = (0, util_1.asSdkError)(e);
+            if (isRequest && (0, isStreamingPayload_1.isStreamingPayload)(request2)) {
+              (_a = context.logger instanceof smithy_client_1.NoOpLogger ? console : context.logger) === null || _a === void 0 ? void 0 : _a.warn("An error was encountered in a non-retryable streaming request.");
+              throw lastError;
+            }
+            try {
+              retryToken = await retryStrategy.refreshRetryTokenForRetry(retryToken, retryErrorInfo);
+            } catch (refreshError) {
+              if (!lastError.$metadata) {
+                lastError.$metadata = {};
+              }
+              lastError.$metadata.attempts = attempts + 1;
+              lastError.$metadata.totalRetryDelay = totalRetryDelay;
+              throw lastError;
+            }
+            attempts = retryToken.getRetryCount();
+            const delay = retryToken.getRetryDelay();
+            totalRetryDelay += delay;
+            await new Promise((resolve) => setTimeout(resolve, delay));
+          }
+        }
+      } else {
+        retryStrategy = retryStrategy;
+        if (retryStrategy === null || retryStrategy === void 0 ? void 0 : retryStrategy.mode)
+          context.userAgent = [...context.userAgent || [], ["cfg/retry-mode", retryStrategy.mode]];
+        return retryStrategy.retry(next, args);
+      }
+    };
+    exports.retryMiddleware = retryMiddleware;
+    var isRetryStrategyV2 = (retryStrategy) => typeof retryStrategy.acquireInitialRetryToken !== "undefined" && typeof retryStrategy.refreshRetryTokenForRetry !== "undefined" && typeof retryStrategy.recordSuccess !== "undefined";
+    var getRetryErrorInfo = (error) => {
+      const errorInfo = {
+        errorType: getRetryErrorType(error)
+      };
+      const retryAfterHint = (0, exports.getRetryAfterHint)(error.$response);
+      if (retryAfterHint) {
+        errorInfo.retryAfterHint = retryAfterHint;
+      }
+      return errorInfo;
+    };
+    var getRetryErrorType = (error) => {
+      if ((0, service_error_classification_1.isThrottlingError)(error))
+        return "THROTTLING";
+      if ((0, service_error_classification_1.isTransientError)(error))
+        return "TRANSIENT";
+      if ((0, service_error_classification_1.isServerError)(error))
+        return "SERVER_ERROR";
+      return "CLIENT_ERROR";
+    };
+    exports.retryMiddlewareOptions = {
+      name: "retryMiddleware",
+      tags: ["RETRY"],
+      step: "finalizeRequest",
+      priority: "high",
+      override: true
+    };
+    var getRetryPlugin = (options) => ({
+      applyToStack: (clientStack) => {
+        clientStack.add((0, exports.retryMiddleware)(options), exports.retryMiddlewareOptions);
+      }
+    });
+    exports.getRetryPlugin = getRetryPlugin;
+    var getRetryAfterHint = (response) => {
+      if (!protocol_http_1.HttpResponse.isInstance(response))
+        return;
+      const retryAfterHeaderName = Object.keys(response.headers).find((key) => key.toLowerCase() === "retry-after");
+      if (!retryAfterHeaderName)
+        return;
+      const retryAfter = response.headers[retryAfterHeaderName];
+      const retryAfterSeconds = Number(retryAfter);
+      if (!Number.isNaN(retryAfterSeconds))
+        return new Date(retryAfterSeconds * 1e3);
+      const retryAfterDate = new Date(retryAfter);
+      return retryAfterDate;
+    };
+    exports.getRetryAfterHint = getRetryAfterHint;
+  }
+});
+
+// ../../../node_modules/@smithy/middleware-retry/dist-cjs/index.js
+var require_dist_cjs37 = __commonJS({
+  "../../../node_modules/@smithy/middleware-retry/dist-cjs/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
+    tslib_1.__exportStar(require_AdaptiveRetryStrategy2(), exports);
+    tslib_1.__exportStar(require_StandardRetryStrategy2(), exports);
+    tslib_1.__exportStar(require_configurations2(), exports);
+    tslib_1.__exportStar(require_delayDecider(), exports);
+    tslib_1.__exportStar(require_omitRetryHeadersMiddleware(), exports);
+    tslib_1.__exportStar(require_retryDecider(), exports);
+    tslib_1.__exportStar(require_retryMiddleware(), exports);
   }
 });
 
@@ -10828,9 +11513,9 @@ var require_package = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/client-sts/node_modules/@aws-sdk/middleware-sdk-sts/dist-cjs/index.js
-var require_dist_cjs36 = __commonJS({
-  "../../../node_modules/@aws-sdk/client-sts/node_modules/@aws-sdk/middleware-sdk-sts/dist-cjs/index.js"(exports) {
+// ../../../node_modules/@aws-sdk/middleware-sdk-sts/dist-cjs/index.js
+var require_dist_cjs38 = __commonJS({
+  "../../../node_modules/@aws-sdk/middleware-sdk-sts/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveStsAuthConfig = void 0;
@@ -10977,7 +11662,7 @@ var require_STSServiceException = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.STSServiceException = exports.__ServiceException = void 0;
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "__ServiceException", { enumerable: true, get: function() {
       return smithy_client_1.ServiceException;
     } });
@@ -10997,7 +11682,7 @@ var require_models_0 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GetSessionTokenResponseFilterSensitiveLog = exports.GetFederationTokenResponseFilterSensitiveLog = exports.AssumeRoleWithWebIdentityResponseFilterSensitiveLog = exports.AssumeRoleWithWebIdentityRequestFilterSensitiveLog = exports.AssumeRoleWithSAMLResponseFilterSensitiveLog = exports.AssumeRoleWithSAMLRequestFilterSensitiveLog = exports.AssumeRoleResponseFilterSensitiveLog = exports.CredentialsFilterSensitiveLog = exports.InvalidAuthorizationMessageException = exports.IDPCommunicationErrorException = exports.InvalidIdentityTokenException = exports.IDPRejectedClaimException = exports.RegionDisabledException = exports.PackedPolicyTooLargeException = exports.MalformedPolicyDocumentException = exports.ExpiredTokenException = void 0;
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
     var STSServiceException_1 = require_STSServiceException();
     var ExpiredTokenException = class _ExpiredTokenException extends STSServiceException_1.STSServiceException {
       constructor(opts) {
@@ -12832,7 +13517,7 @@ var require_Aws_query = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.de_GetSessionTokenCommand = exports.de_GetFederationTokenCommand = exports.de_GetCallerIdentityCommand = exports.de_GetAccessKeyInfoCommand = exports.de_DecodeAuthorizationMessageCommand = exports.de_AssumeRoleWithWebIdentityCommand = exports.de_AssumeRoleWithSAMLCommand = exports.de_AssumeRoleCommand = exports.se_GetSessionTokenCommand = exports.se_GetFederationTokenCommand = exports.se_GetCallerIdentityCommand = exports.se_GetAccessKeyInfoCommand = exports.se_DecodeAuthorizationMessageCommand = exports.se_AssumeRoleWithWebIdentityCommand = exports.se_AssumeRoleWithSAMLCommand = exports.se_AssumeRoleCommand = void 0;
     var protocol_http_1 = require_dist_cjs2();
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
     var fast_xml_parser_1 = require_fxp();
     var models_0_1 = require_models_0();
     var STSServiceException_1 = require_STSServiceException();
@@ -13864,9 +14549,9 @@ var require_AssumeRoleCommand = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AssumeRoleCommand = exports.$Command = void 0;
     var middleware_signing_1 = require_dist_cjs16();
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -13926,9 +14611,9 @@ var require_AssumeRoleWithWebIdentityCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AssumeRoleWithWebIdentityCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -14062,356 +14747,9 @@ var require_defaultStsRoleAssumers = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-env/dist-cjs/fromEnv.js
-var require_fromEnv = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-env/dist-cjs/fromEnv.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.fromEnv = exports.ENV_EXPIRATION = exports.ENV_SESSION = exports.ENV_SECRET = exports.ENV_KEY = void 0;
-    var property_provider_1 = require_dist_cjs6();
-    exports.ENV_KEY = "AWS_ACCESS_KEY_ID";
-    exports.ENV_SECRET = "AWS_SECRET_ACCESS_KEY";
-    exports.ENV_SESSION = "AWS_SESSION_TOKEN";
-    exports.ENV_EXPIRATION = "AWS_CREDENTIAL_EXPIRATION";
-    var fromEnv = () => async () => {
-      const accessKeyId = process.env[exports.ENV_KEY];
-      const secretAccessKey = process.env[exports.ENV_SECRET];
-      const sessionToken = process.env[exports.ENV_SESSION];
-      const expiry = process.env[exports.ENV_EXPIRATION];
-      if (accessKeyId && secretAccessKey) {
-        return {
-          accessKeyId,
-          secretAccessKey,
-          ...sessionToken && { sessionToken },
-          ...expiry && { expiration: new Date(expiry) }
-        };
-      }
-      throw new property_provider_1.CredentialsProviderError("Unable to find environment variable credentials.");
-    };
-    exports.fromEnv = fromEnv;
-  }
-});
-
-// ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js
-var require_dist_cjs37 = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_fromEnv(), exports);
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js
-var require_getHomeDir = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getHomeDir.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getHomeDir = void 0;
-    var os_1 = require("os");
-    var path_1 = require("path");
-    var homeDirCache = {};
-    var getHomeDirCacheKey = () => {
-      if (process && process.geteuid) {
-        return `${process.geteuid()}`;
-      }
-      return "DEFAULT";
-    };
-    var getHomeDir = () => {
-      const { HOME, USERPROFILE, HOMEPATH, HOMEDRIVE = `C:${path_1.sep}` } = process.env;
-      if (HOME)
-        return HOME;
-      if (USERPROFILE)
-        return USERPROFILE;
-      if (HOMEPATH)
-        return `${HOMEDRIVE}${HOMEPATH}`;
-      const homeDirCacheKey = getHomeDirCacheKey();
-      if (!homeDirCache[homeDirCacheKey])
-        homeDirCache[homeDirCacheKey] = (0, os_1.homedir)();
-      return homeDirCache[homeDirCacheKey];
-    };
-    exports.getHomeDir = getHomeDir;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getProfileName.js
-var require_getProfileName = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getProfileName.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getProfileName = exports.DEFAULT_PROFILE = exports.ENV_PROFILE = void 0;
-    exports.ENV_PROFILE = "AWS_PROFILE";
-    exports.DEFAULT_PROFILE = "default";
-    var getProfileName = (init) => init.profile || process.env[exports.ENV_PROFILE] || exports.DEFAULT_PROFILE;
-    exports.getProfileName = getProfileName;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js
-var require_getSSOTokenFilepath = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFilepath.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getSSOTokenFilepath = void 0;
-    var crypto_1 = require("crypto");
-    var path_1 = require("path");
-    var getHomeDir_1 = require_getHomeDir();
-    var getSSOTokenFilepath = (id) => {
-      const hasher = (0, crypto_1.createHash)("sha1");
-      const cacheName = hasher.update(id).digest("hex");
-      return (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "sso", "cache", `${cacheName}.json`);
-    };
-    exports.getSSOTokenFilepath = getSSOTokenFilepath;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js
-var require_getSSOTokenFromFile = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSSOTokenFromFile.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getSSOTokenFromFile = void 0;
-    var fs_1 = require("fs");
-    var getSSOTokenFilepath_1 = require_getSSOTokenFilepath();
-    var { readFile } = fs_1.promises;
-    var getSSOTokenFromFile = async (id) => {
-      const ssoTokenFilepath = (0, getSSOTokenFilepath_1.getSSOTokenFilepath)(id);
-      const ssoTokenText = await readFile(ssoTokenFilepath, "utf8");
-      return JSON.parse(ssoTokenText);
-    };
-    exports.getSSOTokenFromFile = getSSOTokenFromFile;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getConfigFilepath.js
-var require_getConfigFilepath = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getConfigFilepath.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getConfigFilepath = exports.ENV_CONFIG_PATH = void 0;
-    var path_1 = require("path");
-    var getHomeDir_1 = require_getHomeDir();
-    exports.ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
-    var getConfigFilepath = () => process.env[exports.ENV_CONFIG_PATH] || (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "config");
-    exports.getConfigFilepath = getConfigFilepath;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getCredentialsFilepath.js
-var require_getCredentialsFilepath = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getCredentialsFilepath.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getCredentialsFilepath = exports.ENV_CREDENTIALS_PATH = void 0;
-    var path_1 = require("path");
-    var getHomeDir_1 = require_getHomeDir();
-    exports.ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
-    var getCredentialsFilepath = () => process.env[exports.ENV_CREDENTIALS_PATH] || (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "credentials");
-    exports.getCredentialsFilepath = getCredentialsFilepath;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getProfileData.js
-var require_getProfileData = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getProfileData.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getProfileData = void 0;
-    var profileKeyRegex = /^profile\s(["'])?([^\1]+)\1$/;
-    var getProfileData = (data) => Object.entries(data).filter(([key]) => profileKeyRegex.test(key)).reduce((acc, [key, value]) => ({ ...acc, [profileKeyRegex.exec(key)[2]]: value }), {
-      ...data.default && { default: data.default }
-    });
-    exports.getProfileData = getProfileData;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/parseIni.js
-var require_parseIni = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/parseIni.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.parseIni = void 0;
-    var profileNameBlockList = ["__proto__", "profile __proto__"];
-    var parseIni = (iniData) => {
-      const map = {};
-      let currentSection;
-      for (let line of iniData.split(/\r?\n/)) {
-        line = line.split(/(^|\s)[;#]/)[0].trim();
-        const isSection = line[0] === "[" && line[line.length - 1] === "]";
-        if (isSection) {
-          currentSection = line.substring(1, line.length - 1);
-          if (profileNameBlockList.includes(currentSection)) {
-            throw new Error(`Found invalid profile name "${currentSection}"`);
-          }
-        } else if (currentSection) {
-          const indexOfEqualsSign = line.indexOf("=");
-          const start = 0;
-          const end = line.length - 1;
-          const isAssignment = indexOfEqualsSign !== -1 && indexOfEqualsSign !== start && indexOfEqualsSign !== end;
-          if (isAssignment) {
-            const [name, value] = [
-              line.substring(0, indexOfEqualsSign).trim(),
-              line.substring(indexOfEqualsSign + 1).trim()
-            ];
-            map[currentSection] = map[currentSection] || {};
-            map[currentSection][name] = value;
-          }
-        }
-      }
-      return map;
-    };
-    exports.parseIni = parseIni;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js
-var require_slurpFile = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/slurpFile.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.slurpFile = void 0;
-    var fs_1 = require("fs");
-    var { readFile } = fs_1.promises;
-    var filePromisesHash = {};
-    var slurpFile = (path, options) => {
-      if (!filePromisesHash[path] || (options === null || options === void 0 ? void 0 : options.ignoreCache)) {
-        filePromisesHash[path] = readFile(path, "utf8");
-      }
-      return filePromisesHash[path];
-    };
-    exports.slurpFile = slurpFile;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/loadSharedConfigFiles.js
-var require_loadSharedConfigFiles = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/loadSharedConfigFiles.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.loadSharedConfigFiles = void 0;
-    var getConfigFilepath_1 = require_getConfigFilepath();
-    var getCredentialsFilepath_1 = require_getCredentialsFilepath();
-    var getProfileData_1 = require_getProfileData();
-    var parseIni_1 = require_parseIni();
-    var slurpFile_1 = require_slurpFile();
-    var swallowError = () => ({});
-    var loadSharedConfigFiles = async (init = {}) => {
-      const { filepath = (0, getCredentialsFilepath_1.getCredentialsFilepath)(), configFilepath = (0, getConfigFilepath_1.getConfigFilepath)() } = init;
-      const parsedFiles = await Promise.all([
-        (0, slurpFile_1.slurpFile)(configFilepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni_1.parseIni).then(getProfileData_1.getProfileData).catch(swallowError),
-        (0, slurpFile_1.slurpFile)(filepath, {
-          ignoreCache: init.ignoreCache
-        }).then(parseIni_1.parseIni).catch(swallowError)
-      ]);
-      return {
-        configFile: parsedFiles[0],
-        credentialsFile: parsedFiles[1]
-      };
-    };
-    exports.loadSharedConfigFiles = loadSharedConfigFiles;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSsoSessionData.js
-var require_getSsoSessionData = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSsoSessionData.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getSsoSessionData = void 0;
-    var ssoSessionKeyRegex = /^sso-session\s(["'])?([^\1]+)\1$/;
-    var getSsoSessionData = (data) => Object.entries(data).filter(([key]) => ssoSessionKeyRegex.test(key)).reduce((acc, [key, value]) => ({ ...acc, [ssoSessionKeyRegex.exec(key)[2]]: value }), {});
-    exports.getSsoSessionData = getSsoSessionData;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/loadSsoSessionData.js
-var require_loadSsoSessionData = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/loadSsoSessionData.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.loadSsoSessionData = void 0;
-    var getConfigFilepath_1 = require_getConfigFilepath();
-    var getSsoSessionData_1 = require_getSsoSessionData();
-    var parseIni_1 = require_parseIni();
-    var slurpFile_1 = require_slurpFile();
-    var swallowError = () => ({});
-    var loadSsoSessionData = async (init = {}) => {
-      var _a;
-      return (0, slurpFile_1.slurpFile)((_a = init.configFilepath) !== null && _a !== void 0 ? _a : (0, getConfigFilepath_1.getConfigFilepath)()).then(parseIni_1.parseIni).then(getSsoSessionData_1.getSsoSessionData).catch(swallowError);
-    };
-    exports.loadSsoSessionData = loadSsoSessionData;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/mergeConfigFiles.js
-var require_mergeConfigFiles = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/mergeConfigFiles.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.mergeConfigFiles = void 0;
-    var mergeConfigFiles = (...files) => {
-      const merged = {};
-      for (const file of files) {
-        for (const [key, values] of Object.entries(file)) {
-          if (merged[key] !== void 0) {
-            Object.assign(merged[key], values);
-          } else {
-            merged[key] = values;
-          }
-        }
-      }
-      return merged;
-    };
-    exports.mergeConfigFiles = mergeConfigFiles;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/parseKnownFiles.js
-var require_parseKnownFiles = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/parseKnownFiles.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.parseKnownFiles = void 0;
-    var loadSharedConfigFiles_1 = require_loadSharedConfigFiles();
-    var mergeConfigFiles_1 = require_mergeConfigFiles();
-    var parseKnownFiles = async (init) => {
-      const parsedFiles = await (0, loadSharedConfigFiles_1.loadSharedConfigFiles)(init);
-      return (0, mergeConfigFiles_1.mergeConfigFiles)(parsedFiles.configFile, parsedFiles.credentialsFile);
-    };
-    exports.parseKnownFiles = parseKnownFiles;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/types.js
-var require_types5 = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/types.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-var require_dist_cjs38 = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_getHomeDir(), exports);
-    tslib_1.__exportStar(require_getProfileName(), exports);
-    tslib_1.__exportStar(require_getSSOTokenFilepath(), exports);
-    tslib_1.__exportStar(require_getSSOTokenFromFile(), exports);
-    tslib_1.__exportStar(require_loadSharedConfigFiles(), exports);
-    tslib_1.__exportStar(require_loadSsoSessionData(), exports);
-    tslib_1.__exportStar(require_parseKnownFiles(), exports);
-    tslib_1.__exportStar(require_types5(), exports);
-  }
-});
-
-// ../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-env/dist-cjs/fromEnv.js
+// ../../../node_modules/@aws-sdk/credential-provider-env/dist-cjs/fromEnv.js
 var require_fromEnv2 = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-env/dist-cjs/fromEnv.js"(exports) {
+  "../../../node_modules/@aws-sdk/credential-provider-env/dist-cjs/fromEnv.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fromEnv = exports.ENV_EXPIRATION = exports.ENV_SESSION = exports.ENV_SECRET = exports.ENV_KEY = void 0;
@@ -14439,9 +14777,9 @@ var require_fromEnv2 = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js
+// ../../../node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js
 var require_dist_cjs39 = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js"(exports) {
+  "../../../node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
@@ -14618,91 +14956,22 @@ var require_fromContainerMetadata = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/node-config-provider/dist-cjs/fromEnv.js
-var require_fromEnv3 = __commonJS({
-  "../../../node_modules/@smithy/node-config-provider/dist-cjs/fromEnv.js"(exports) {
+// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/error/InstanceMetadataV1FallbackError.js
+var require_InstanceMetadataV1FallbackError = __commonJS({
+  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/error/InstanceMetadataV1FallbackError.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.fromEnv = void 0;
+    exports.InstanceMetadataV1FallbackError = void 0;
     var property_provider_1 = require_dist_cjs6();
-    var fromEnv = (envVarSelector) => async () => {
-      try {
-        const config = envVarSelector(process.env);
-        if (config === void 0) {
-          throw new Error();
-        }
-        return config;
-      } catch (e) {
-        throw new property_provider_1.CredentialsProviderError(e.message || `Cannot load config from environment variables with getter: ${envVarSelector}`);
+    var InstanceMetadataV1FallbackError = class _InstanceMetadataV1FallbackError extends property_provider_1.CredentialsProviderError {
+      constructor(message, tryNextLink = true) {
+        super(message, tryNextLink);
+        this.tryNextLink = tryNextLink;
+        this.name = "InstanceMetadataV1FallbackError";
+        Object.setPrototypeOf(this, _InstanceMetadataV1FallbackError.prototype);
       }
     };
-    exports.fromEnv = fromEnv;
-  }
-});
-
-// ../../../node_modules/@smithy/node-config-provider/dist-cjs/fromSharedConfigFiles.js
-var require_fromSharedConfigFiles = __commonJS({
-  "../../../node_modules/@smithy/node-config-provider/dist-cjs/fromSharedConfigFiles.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.fromSharedConfigFiles = void 0;
-    var property_provider_1 = require_dist_cjs6();
-    var shared_ini_file_loader_1 = require_dist_cjs38();
-    var fromSharedConfigFiles = (configSelector, { preferredFile = "config", ...init } = {}) => async () => {
-      const profile = (0, shared_ini_file_loader_1.getProfileName)(init);
-      const { configFile, credentialsFile } = await (0, shared_ini_file_loader_1.loadSharedConfigFiles)(init);
-      const profileFromCredentials = credentialsFile[profile] || {};
-      const profileFromConfig = configFile[profile] || {};
-      const mergedProfile = preferredFile === "config" ? { ...profileFromCredentials, ...profileFromConfig } : { ...profileFromConfig, ...profileFromCredentials };
-      try {
-        const configValue = configSelector(mergedProfile);
-        if (configValue === void 0) {
-          throw new Error();
-        }
-        return configValue;
-      } catch (e) {
-        throw new property_provider_1.CredentialsProviderError(e.message || `Cannot load config for profile ${profile} in SDK configuration files with getter: ${configSelector}`);
-      }
-    };
-    exports.fromSharedConfigFiles = fromSharedConfigFiles;
-  }
-});
-
-// ../../../node_modules/@smithy/node-config-provider/dist-cjs/fromStatic.js
-var require_fromStatic2 = __commonJS({
-  "../../../node_modules/@smithy/node-config-provider/dist-cjs/fromStatic.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.fromStatic = void 0;
-    var property_provider_1 = require_dist_cjs6();
-    var isFunction = (func) => typeof func === "function";
-    var fromStatic = (defaultValue) => isFunction(defaultValue) ? async () => await defaultValue() : (0, property_provider_1.fromStatic)(defaultValue);
-    exports.fromStatic = fromStatic;
-  }
-});
-
-// ../../../node_modules/@smithy/node-config-provider/dist-cjs/configLoader.js
-var require_configLoader = __commonJS({
-  "../../../node_modules/@smithy/node-config-provider/dist-cjs/configLoader.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.loadConfig = void 0;
-    var property_provider_1 = require_dist_cjs6();
-    var fromEnv_1 = require_fromEnv3();
-    var fromSharedConfigFiles_1 = require_fromSharedConfigFiles();
-    var fromStatic_1 = require_fromStatic2();
-    var loadConfig = ({ environmentVariableSelector, configFileSelector, default: defaultValue }, configuration = {}) => (0, property_provider_1.memoize)((0, property_provider_1.chain)((0, fromEnv_1.fromEnv)(environmentVariableSelector), (0, fromSharedConfigFiles_1.fromSharedConfigFiles)(configFileSelector, configuration), (0, fromStatic_1.fromStatic)(defaultValue)));
-    exports.loadConfig = loadConfig;
-  }
-});
-
-// ../../../node_modules/@smithy/node-config-provider/dist-cjs/index.js
-var require_dist_cjs40 = __commonJS({
-  "../../../node_modules/@smithy/node-config-provider/dist-cjs/index.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_configLoader(), exports);
+    exports.InstanceMetadataV1FallbackError = InstanceMetadataV1FallbackError;
   }
 });
 
@@ -14773,8 +15042,8 @@ var require_getInstanceMetadataEndpoint = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getInstanceMetadataEndpoint = void 0;
-    var node_config_provider_1 = require_dist_cjs40();
-    var url_parser_1 = require_dist_cjs24();
+    var node_config_provider_1 = require_dist_cjs24();
+    var url_parser_1 = require_dist_cjs26();
     var Endpoint_1 = require_Endpoint();
     var EndpointConfigOptions_1 = require_EndpointConfigOptions();
     var EndpointMode_1 = require_EndpointMode();
@@ -14860,7 +15129,9 @@ var require_fromInstanceMetadata = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fromInstanceMetadata = void 0;
+    var node_config_provider_1 = require_dist_cjs24();
     var property_provider_1 = require_dist_cjs6();
+    var InstanceMetadataV1FallbackError_1 = require_InstanceMetadataV1FallbackError();
     var httpRequest_1 = require_httpRequest2();
     var ImdsCredentials_1 = require_ImdsCredentials();
     var RemoteProviderInit_1 = require_RemoteProviderInit();
@@ -14869,13 +15140,51 @@ var require_fromInstanceMetadata = __commonJS({
     var staticStabilityProvider_1 = require_staticStabilityProvider();
     var IMDS_PATH = "/latest/meta-data/iam/security-credentials/";
     var IMDS_TOKEN_PATH = "/latest/api/token";
+    var AWS_EC2_METADATA_V1_DISABLED = "AWS_EC2_METADATA_V1_DISABLED";
+    var PROFILE_AWS_EC2_METADATA_V1_DISABLED = "ec2_metadata_v1_disabled";
+    var X_AWS_EC2_METADATA_TOKEN = "x-aws-ec2-metadata-token";
     var fromInstanceMetadata = (init = {}) => (0, staticStabilityProvider_1.staticStabilityProvider)(getInstanceImdsProvider(init), { logger: init.logger });
     exports.fromInstanceMetadata = fromInstanceMetadata;
     var getInstanceImdsProvider = (init) => {
       let disableFetchToken = false;
+      const { logger, profile } = init;
       const { timeout, maxRetries } = (0, RemoteProviderInit_1.providerConfigFromInit)(init);
       const getCredentials = async (maxRetries2, options) => {
-        const profile = (await (0, retry_1.retry)(async () => {
+        var _a;
+        const isImdsV1Fallback = disableFetchToken || ((_a = options.headers) === null || _a === void 0 ? void 0 : _a[X_AWS_EC2_METADATA_TOKEN]) == null;
+        if (isImdsV1Fallback) {
+          let fallbackBlockedFromProfile = false;
+          let fallbackBlockedFromProcessEnv = false;
+          const configValue = await (0, node_config_provider_1.loadConfig)({
+            environmentVariableSelector: (env) => {
+              const envValue = env[AWS_EC2_METADATA_V1_DISABLED];
+              fallbackBlockedFromProcessEnv = !!envValue && envValue !== "false";
+              if (envValue === void 0) {
+                throw new property_provider_1.CredentialsProviderError(`${AWS_EC2_METADATA_V1_DISABLED} not set in env, checking config file next.`);
+              }
+              return fallbackBlockedFromProcessEnv;
+            },
+            configFileSelector: (profile2) => {
+              const profileValue = profile2[PROFILE_AWS_EC2_METADATA_V1_DISABLED];
+              fallbackBlockedFromProfile = !!profileValue && profileValue !== "false";
+              return fallbackBlockedFromProfile;
+            },
+            default: false
+          }, {
+            profile
+          })();
+          if (init.ec2MetadataV1Disabled || configValue) {
+            const causes = [];
+            if (init.ec2MetadataV1Disabled)
+              causes.push("credential provider initialization (runtime option ec2MetadataV1Disabled)");
+            if (fallbackBlockedFromProfile)
+              causes.push(`config file profile (${PROFILE_AWS_EC2_METADATA_V1_DISABLED})`);
+            if (fallbackBlockedFromProcessEnv)
+              causes.push(`process environment variable (${AWS_EC2_METADATA_V1_DISABLED})`);
+            throw new InstanceMetadataV1FallbackError_1.InstanceMetadataV1FallbackError(`AWS EC2 Metadata v1 fallback has been blocked by AWS SDK configuration in the following: [${causes.join(", ")}].`);
+          }
+        }
+        const imdsProfile = (await (0, retry_1.retry)(async () => {
           let profile2;
           try {
             profile2 = await getProfile(options);
@@ -14890,7 +15199,7 @@ var require_fromInstanceMetadata = __commonJS({
         return (0, retry_1.retry)(async () => {
           let creds;
           try {
-            creds = await getCredentialsFromProfile(profile, options);
+            creds = await getCredentialsFromProfile(imdsProfile, options);
           } catch (err) {
             if (err.statusCode === 401) {
               disableFetchToken = false;
@@ -14903,6 +15212,7 @@ var require_fromInstanceMetadata = __commonJS({
       return async () => {
         const endpoint = await (0, getInstanceMetadataEndpoint_1.getInstanceMetadataEndpoint)();
         if (disableFetchToken) {
+          logger === null || logger === void 0 ? void 0 : logger.debug("AWS SDK Instance Metadata", "using v1 fallback (no token fetch)");
           return getCredentials(maxRetries, { ...endpoint, timeout });
         } else {
           let token;
@@ -14916,12 +15226,13 @@ var require_fromInstanceMetadata = __commonJS({
             } else if (error.message === "TimeoutError" || [403, 404, 405].includes(error.statusCode)) {
               disableFetchToken = true;
             }
+            logger === null || logger === void 0 ? void 0 : logger.debug("AWS SDK Instance Metadata", "using v1 fallback (initial)");
             return getCredentials(maxRetries, { ...endpoint, timeout });
           }
           return getCredentials(maxRetries, {
             ...endpoint,
             headers: {
-              "x-aws-ec2-metadata-token": token
+              [X_AWS_EC2_METADATA_TOKEN]: token
             },
             timeout
           });
@@ -14959,7 +15270,7 @@ var require_types6 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/index.js
-var require_dist_cjs41 = __commonJS({
+var require_dist_cjs40 = __commonJS({
   "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -14987,7 +15298,7 @@ var require_resolveCredentialSource = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveCredentialSource = void 0;
     var credential_provider_env_1 = require_dist_cjs39();
-    var credential_provider_imds_1 = require_dist_cjs41();
+    var credential_provider_imds_1 = require_dist_cjs40();
     var property_provider_1 = require_dist_cjs6();
     var resolveCredentialSource = (credentialSource, profileName) => {
       const sourceProvidersMap = {
@@ -15012,7 +15323,7 @@ var require_resolveAssumeRoleCredentials = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveAssumeRoleCredentials = exports.isAssumeRoleProfile = void 0;
     var property_provider_1 = require_dist_cjs6();
-    var shared_ini_file_loader_1 = require_dist_cjs38();
+    var shared_ini_file_loader_1 = require_dist_cjs23();
     var resolveCredentialSource_1 = require_resolveCredentialSource();
     var resolveProfileData_1 = require_resolveProfileData();
     var isAssumeRoleProfile = (arg) => Boolean(arg) && typeof arg === "object" && typeof arg.role_arn === "string" && ["undefined", "string"].indexOf(typeof arg.role_session_name) > -1 && ["undefined", "string"].indexOf(typeof arg.external_id) > -1 && ["undefined", "string"].indexOf(typeof arg.mfa_serial) > -1 && (isAssumeRoleWithSourceProfile(arg) || isAssumeRoleWithProviderProfile(arg));
@@ -15053,9 +15364,9 @@ var require_resolveAssumeRoleCredentials = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-process/dist-cjs/getValidatedProcessCredentials.js
+// ../../../node_modules/@aws-sdk/credential-provider-process/dist-cjs/getValidatedProcessCredentials.js
 var require_getValidatedProcessCredentials = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-process/dist-cjs/getValidatedProcessCredentials.js"(exports) {
+  "../../../node_modules/@aws-sdk/credential-provider-process/dist-cjs/getValidatedProcessCredentials.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getValidatedProcessCredentials = void 0;
@@ -15084,9 +15395,9 @@ var require_getValidatedProcessCredentials = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-process/dist-cjs/resolveProcessCredentials.js
+// ../../../node_modules/@aws-sdk/credential-provider-process/dist-cjs/resolveProcessCredentials.js
 var require_resolveProcessCredentials = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-process/dist-cjs/resolveProcessCredentials.js"(exports) {
+  "../../../node_modules/@aws-sdk/credential-provider-process/dist-cjs/resolveProcessCredentials.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveProcessCredentials = void 0;
@@ -15123,13 +15434,13 @@ var require_resolveProcessCredentials = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-process/dist-cjs/fromProcess.js
+// ../../../node_modules/@aws-sdk/credential-provider-process/dist-cjs/fromProcess.js
 var require_fromProcess = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-process/dist-cjs/fromProcess.js"(exports) {
+  "../../../node_modules/@aws-sdk/credential-provider-process/dist-cjs/fromProcess.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fromProcess = void 0;
-    var shared_ini_file_loader_1 = require_dist_cjs38();
+    var shared_ini_file_loader_1 = require_dist_cjs23();
     var resolveProcessCredentials_1 = require_resolveProcessCredentials();
     var fromProcess = (init = {}) => async () => {
       const profiles = await (0, shared_ini_file_loader_1.parseKnownFiles)(init);
@@ -15139,9 +15450,9 @@ var require_fromProcess = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js
-var require_dist_cjs42 = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js"(exports) {
+// ../../../node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js
+var require_dist_cjs41 = __commonJS({
+  "../../../node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
@@ -15155,7 +15466,7 @@ var require_resolveProcessCredentials2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveProcessCredentials = exports.isProcessProfile = void 0;
-    var credential_provider_process_1 = require_dist_cjs42();
+    var credential_provider_process_1 = require_dist_cjs41();
     var isProcessProfile = (arg) => Boolean(arg) && typeof arg === "object" && typeof arg.credential_process === "string";
     exports.isProcessProfile = isProcessProfile;
     var resolveProcessCredentials = async (options, profile) => (0, credential_provider_process_1.fromProcess)({
@@ -15319,12 +15630,12 @@ var require_is_crt_available = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/util-user-agent-node/dist-cjs/index.js
-var require_dist_cjs43 = __commonJS({
+var require_dist_cjs42 = __commonJS({
   "../../../node_modules/@aws-sdk/util-user-agent-node/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.defaultUserAgent = exports.UA_APP_ID_INI_NAME = exports.UA_APP_ID_ENV_NAME = void 0;
-    var node_config_provider_1 = require_dist_cjs40();
+    var node_config_provider_1 = require_dist_cjs24();
     var os_1 = require("os");
     var process_1 = require("process");
     var is_crt_available_1 = require_is_crt_available();
@@ -15367,7 +15678,7 @@ var require_dist_cjs43 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/hash-node/dist-cjs/index.js
-var require_dist_cjs44 = __commonJS({
+var require_dist_cjs43 = __commonJS({
   "../../../node_modules/@smithy/hash-node/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -15439,7 +15750,7 @@ var require_calculateBodyLength = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-body-length-node/dist-cjs/index.js
-var require_dist_cjs45 = __commonJS({
+var require_dist_cjs44 = __commonJS({
   "../../../node_modules/@smithy/util-body-length-node/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -15503,9 +15814,9 @@ var require_runtimeConfig_shared = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getRuntimeConfig = void 0;
-    var smithy_client_1 = require_dist_cjs35();
-    var url_parser_1 = require_dist_cjs24();
-    var util_base64_1 = require_dist_cjs31();
+    var smithy_client_1 = require_dist_cjs36();
+    var url_parser_1 = require_dist_cjs26();
+    var util_base64_1 = require_dist_cjs32();
     var util_utf8_1 = require_dist_cjs13();
     var endpointResolver_1 = require_endpointResolver();
     var getRuntimeConfig = (config) => ({
@@ -15567,8 +15878,8 @@ var require_resolveDefaultsModeConfig = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveDefaultsModeConfig = void 0;
     var config_resolver_1 = require_dist_cjs21();
-    var credential_provider_imds_1 = require_dist_cjs41();
-    var node_config_provider_1 = require_dist_cjs40();
+    var credential_provider_imds_1 = require_dist_cjs40();
+    var node_config_provider_1 = require_dist_cjs24();
     var property_provider_1 = require_dist_cjs6();
     var constants_1 = require_constants7();
     var defaultsModeConfig_1 = require_defaultsModeConfig();
@@ -15622,7 +15933,7 @@ var require_resolveDefaultsModeConfig = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js
-var require_dist_cjs46 = __commonJS({
+var require_dist_cjs45 = __commonJS({
   "../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -15639,18 +15950,18 @@ var require_runtimeConfig = __commonJS({
     exports.getRuntimeConfig = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package3());
-    var util_user_agent_node_1 = require_dist_cjs43();
+    var util_user_agent_node_1 = require_dist_cjs42();
     var config_resolver_1 = require_dist_cjs21();
-    var hash_node_1 = require_dist_cjs44();
-    var middleware_retry_1 = require_dist_cjs29();
-    var node_config_provider_1 = require_dist_cjs40();
-    var node_http_handler_1 = require_dist_cjs33();
-    var util_body_length_node_1 = require_dist_cjs45();
-    var util_retry_1 = require_dist_cjs28();
+    var hash_node_1 = require_dist_cjs43();
+    var middleware_retry_1 = require_dist_cjs37();
+    var node_config_provider_1 = require_dist_cjs24();
+    var node_http_handler_1 = require_dist_cjs34();
+    var util_body_length_node_1 = require_dist_cjs44();
+    var util_retry_1 = require_dist_cjs30();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared();
-    var smithy_client_1 = require_dist_cjs35();
-    var util_defaults_mode_node_1 = require_dist_cjs46();
-    var smithy_client_2 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
+    var util_defaults_mode_node_1 = require_dist_cjs45();
+    var smithy_client_2 = require_dist_cjs36();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -15807,7 +16118,7 @@ var require_regionConfig2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js
-var require_dist_cjs47 = __commonJS({
+var require_dist_cjs46 = __commonJS({
   "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -15823,9 +16134,9 @@ var require_runtimeExtensions = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveRuntimeExtensions = void 0;
-    var region_config_resolver_1 = require_dist_cjs47();
+    var region_config_resolver_1 = require_dist_cjs46();
     var protocol_http_1 = require_dist_cjs2();
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
     var asPartial = (t) => t;
     var resolveRuntimeExtensions = (runtimeConfig, extensions) => {
       const extensionConfiguration = {
@@ -15857,9 +16168,9 @@ var require_SSOClient = __commonJS({
     var middleware_user_agent_1 = require_dist_cjs19();
     var config_resolver_1 = require_dist_cjs21();
     var middleware_content_length_1 = require_dist_cjs22();
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_retry_1 = require_dist_cjs29();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_retry_1 = require_dist_cjs37();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "__Client", { enumerable: true, get: function() {
       return smithy_client_1.Client;
     } });
@@ -15899,7 +16210,7 @@ var require_SSOServiceException = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SSOServiceException = exports.__ServiceException = void 0;
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "__ServiceException", { enumerable: true, get: function() {
       return smithy_client_1.ServiceException;
     } });
@@ -15919,7 +16230,7 @@ var require_models_02 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.LogoutRequestFilterSensitiveLog = exports.ListAccountsRequestFilterSensitiveLog = exports.ListAccountRolesRequestFilterSensitiveLog = exports.GetRoleCredentialsResponseFilterSensitiveLog = exports.RoleCredentialsFilterSensitiveLog = exports.GetRoleCredentialsRequestFilterSensitiveLog = exports.UnauthorizedException = exports.TooManyRequestsException = exports.ResourceNotFoundException = exports.InvalidRequestException = void 0;
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
     var SSOServiceException_1 = require_SSOServiceException();
     var InvalidRequestException = class _InvalidRequestException extends SSOServiceException_1.SSOServiceException {
       constructor(opts) {
@@ -16014,7 +16325,7 @@ var require_Aws_restJson1 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.de_LogoutCommand = exports.de_ListAccountsCommand = exports.de_ListAccountRolesCommand = exports.de_GetRoleCredentialsCommand = exports.se_LogoutCommand = exports.se_ListAccountsCommand = exports.se_ListAccountRolesCommand = exports.se_GetRoleCredentialsCommand = void 0;
     var protocol_http_1 = require_dist_cjs2();
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
     var models_0_1 = require_models_02();
     var SSOServiceException_1 = require_SSOServiceException();
     var se_GetRoleCredentialsCommand = async (input, context) => {
@@ -16382,9 +16693,9 @@ var require_GetRoleCredentialsCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GetRoleCredentialsCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -16442,9 +16753,9 @@ var require_ListAccountRolesCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ListAccountRolesCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -16502,9 +16813,9 @@ var require_ListAccountsCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ListAccountsCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -16562,9 +16873,9 @@ var require_LogoutCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.LogoutCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -16622,7 +16933,7 @@ var require_SSO = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SSO = void 0;
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
     var GetRoleCredentialsCommand_1 = require_GetRoleCredentialsCommand();
     var ListAccountRolesCommand_1 = require_ListAccountRolesCommand();
     var ListAccountsCommand_1 = require_ListAccountsCommand();
@@ -16753,7 +17064,7 @@ var require_models = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sso/dist-cjs/index.js
-var require_dist_cjs48 = __commonJS({
+var require_dist_cjs47 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sso/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -16771,9 +17082,9 @@ var require_dist_cjs48 = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/bundle/client-sso-oidc-node.js
+// ../../../node_modules/@aws-sdk/token-providers/dist-cjs/bundle/client-sso-oidc-node.js
 var require_client_sso_oidc_node = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/bundle/client-sso-oidc-node.js"(exports) {
+  "../../../node_modules/@aws-sdk/token-providers/dist-cjs/bundle/client-sso-oidc-node.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UnsupportedGrantTypeException = exports.UnauthorizedClientException = exports.SlowDownException = exports.SSOOIDCClient = exports.InvalidScopeException = exports.InvalidRequestException = exports.InvalidClientException = exports.InternalServerException = exports.ExpiredTokenException = exports.CreateTokenCommand = exports.AuthorizationPendingException = exports.AccessDeniedException = void 0;
@@ -16783,9 +17094,9 @@ var require_client_sso_oidc_node = __commonJS({
     var middleware_user_agent_1 = require_dist_cjs19();
     var config_resolver_1 = require_dist_cjs21();
     var middleware_content_length_1 = require_dist_cjs22();
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_retry_1 = require_dist_cjs29();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_retry_1 = require_dist_cjs37();
+    var smithy_client_1 = require_dist_cjs36();
     var resolveClientEndpointParameters = (options) => {
       var _a, _b;
       return {
@@ -16796,17 +17107,17 @@ var require_client_sso_oidc_node = __commonJS({
       };
     };
     var package_default = { version: "3.387.0" };
-    var util_user_agent_node_1 = require_dist_cjs43();
+    var util_user_agent_node_1 = require_dist_cjs42();
     var config_resolver_2 = require_dist_cjs21();
-    var hash_node_1 = require_dist_cjs44();
-    var middleware_retry_2 = require_dist_cjs29();
-    var node_config_provider_1 = require_dist_cjs40();
-    var node_http_handler_1 = require_dist_cjs33();
-    var util_body_length_node_1 = require_dist_cjs45();
-    var util_retry_1 = require_dist_cjs28();
-    var smithy_client_2 = require_dist_cjs35();
-    var url_parser_1 = require_dist_cjs24();
-    var util_base64_1 = require_dist_cjs31();
+    var hash_node_1 = require_dist_cjs43();
+    var middleware_retry_2 = require_dist_cjs37();
+    var node_config_provider_1 = require_dist_cjs24();
+    var node_http_handler_1 = require_dist_cjs34();
+    var util_body_length_node_1 = require_dist_cjs44();
+    var util_retry_1 = require_dist_cjs30();
+    var smithy_client_2 = require_dist_cjs36();
+    var url_parser_1 = require_dist_cjs26();
+    var util_base64_1 = require_dist_cjs32();
     var util_utf8_1 = require_dist_cjs13();
     var util_endpoints_1 = require_dist_cjs18();
     var p = "required";
@@ -16851,9 +17162,9 @@ var require_client_sso_oidc_node = __commonJS({
         utf8Encoder: (_j = config === null || config === void 0 ? void 0 : config.utf8Encoder) !== null && _j !== void 0 ? _j : util_utf8_1.toUtf8
       };
     };
-    var smithy_client_3 = require_dist_cjs35();
-    var util_defaults_mode_node_1 = require_dist_cjs46();
-    var smithy_client_4 = require_dist_cjs35();
+    var smithy_client_3 = require_dist_cjs36();
+    var util_defaults_mode_node_1 = require_dist_cjs45();
+    var smithy_client_4 = require_dist_cjs36();
     var getRuntimeConfig2 = (config) => {
       var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
       (0, smithy_client_4.emitWarningIfUnsupportedVersion)(process.version);
@@ -16903,13 +17214,13 @@ var require_client_sso_oidc_node = __commonJS({
       }
     };
     exports.SSOOIDCClient = SSOOIDCClient;
-    var smithy_client_5 = require_dist_cjs35();
-    var middleware_endpoint_2 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_6 = require_dist_cjs35();
+    var smithy_client_5 = require_dist_cjs36();
+    var middleware_endpoint_2 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_6 = require_dist_cjs36();
     var protocol_http_1 = require_dist_cjs2();
-    var smithy_client_7 = require_dist_cjs35();
-    var smithy_client_8 = require_dist_cjs35();
+    var smithy_client_7 = require_dist_cjs36();
+    var smithy_client_8 = require_dist_cjs36();
     var SSOOIDCServiceException = class _SSOOIDCServiceException extends smithy_client_8.ServiceException {
       constructor(options) {
         super(options);
@@ -17587,9 +17898,9 @@ var require_client_sso_oidc_node = __commonJS({
       }
     };
     exports.CreateTokenCommand = CreateTokenCommand;
-    var middleware_endpoint_3 = require_dist_cjs26();
-    var middleware_serde_2 = require_dist_cjs25();
-    var smithy_client_9 = require_dist_cjs35();
+    var middleware_endpoint_3 = require_dist_cjs28();
+    var middleware_serde_2 = require_dist_cjs27();
+    var smithy_client_9 = require_dist_cjs36();
     var RegisterClientCommand = class _RegisterClientCommand extends smithy_client_9.Command {
       constructor(input) {
         super();
@@ -17627,9 +17938,9 @@ var require_client_sso_oidc_node = __commonJS({
         return de_RegisterClientCommand(output, context);
       }
     };
-    var middleware_endpoint_4 = require_dist_cjs26();
-    var middleware_serde_3 = require_dist_cjs25();
-    var smithy_client_10 = require_dist_cjs35();
+    var middleware_endpoint_4 = require_dist_cjs28();
+    var middleware_serde_3 = require_dist_cjs27();
+    var smithy_client_10 = require_dist_cjs36();
     var StartDeviceAuthorizationCommand = class _StartDeviceAuthorizationCommand extends smithy_client_10.Command {
       constructor(input) {
         super();
@@ -17678,9 +17989,9 @@ var require_client_sso_oidc_node = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/constants.js
+// ../../../node_modules/@aws-sdk/token-providers/dist-cjs/constants.js
 var require_constants8 = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/constants.js"(exports) {
+  "../../../node_modules/@aws-sdk/token-providers/dist-cjs/constants.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.REFRESH_MESSAGE = exports.EXPIRE_WINDOW_MS = void 0;
@@ -17689,9 +18000,9 @@ var require_constants8 = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/getSsoOidcClient.js
+// ../../../node_modules/@aws-sdk/token-providers/dist-cjs/getSsoOidcClient.js
 var require_getSsoOidcClient = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/getSsoOidcClient.js"(exports) {
+  "../../../node_modules/@aws-sdk/token-providers/dist-cjs/getSsoOidcClient.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getSsoOidcClient = void 0;
@@ -17709,9 +18020,9 @@ var require_getSsoOidcClient = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/getNewSsoOidcToken.js
+// ../../../node_modules/@aws-sdk/token-providers/dist-cjs/getNewSsoOidcToken.js
 var require_getNewSsoOidcToken = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/getNewSsoOidcToken.js"(exports) {
+  "../../../node_modules/@aws-sdk/token-providers/dist-cjs/getNewSsoOidcToken.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getNewSsoOidcToken = void 0;
@@ -17730,9 +18041,9 @@ var require_getNewSsoOidcToken = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/validateTokenExpiry.js
+// ../../../node_modules/@aws-sdk/token-providers/dist-cjs/validateTokenExpiry.js
 var require_validateTokenExpiry = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/validateTokenExpiry.js"(exports) {
+  "../../../node_modules/@aws-sdk/token-providers/dist-cjs/validateTokenExpiry.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateTokenExpiry = void 0;
@@ -17747,9 +18058,9 @@ var require_validateTokenExpiry = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/validateTokenKey.js
+// ../../../node_modules/@aws-sdk/token-providers/dist-cjs/validateTokenKey.js
 var require_validateTokenKey = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/validateTokenKey.js"(exports) {
+  "../../../node_modules/@aws-sdk/token-providers/dist-cjs/validateTokenKey.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.validateTokenKey = void 0;
@@ -17764,13 +18075,13 @@ var require_validateTokenKey = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/writeSSOTokenToFile.js
+// ../../../node_modules/@aws-sdk/token-providers/dist-cjs/writeSSOTokenToFile.js
 var require_writeSSOTokenToFile = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/writeSSOTokenToFile.js"(exports) {
+  "../../../node_modules/@aws-sdk/token-providers/dist-cjs/writeSSOTokenToFile.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.writeSSOTokenToFile = void 0;
-    var shared_ini_file_loader_1 = require_dist_cjs38();
+    var shared_ini_file_loader_1 = require_dist_cjs23();
     var fs_1 = require("fs");
     var { writeFile } = fs_1.promises;
     var writeSSOTokenToFile = (id, ssoToken) => {
@@ -17782,14 +18093,14 @@ var require_writeSSOTokenToFile = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/fromSso.js
+// ../../../node_modules/@aws-sdk/token-providers/dist-cjs/fromSso.js
 var require_fromSso = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/fromSso.js"(exports) {
+  "../../../node_modules/@aws-sdk/token-providers/dist-cjs/fromSso.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fromSso = void 0;
     var property_provider_1 = require_dist_cjs6();
-    var shared_ini_file_loader_1 = require_dist_cjs38();
+    var shared_ini_file_loader_1 = require_dist_cjs23();
     var constants_1 = require_constants8();
     var getNewSsoOidcToken_1 = require_getNewSsoOidcToken();
     var validateTokenExpiry_1 = require_validateTokenExpiry();
@@ -17866,9 +18177,9 @@ var require_fromSso = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/fromStatic.js
+// ../../../node_modules/@aws-sdk/token-providers/dist-cjs/fromStatic.js
 var require_fromStatic3 = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/fromStatic.js"(exports) {
+  "../../../node_modules/@aws-sdk/token-providers/dist-cjs/fromStatic.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fromStatic = void 0;
@@ -17883,9 +18194,9 @@ var require_fromStatic3 = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/nodeProvider.js
+// ../../../node_modules/@aws-sdk/token-providers/dist-cjs/nodeProvider.js
 var require_nodeProvider = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/nodeProvider.js"(exports) {
+  "../../../node_modules/@aws-sdk/token-providers/dist-cjs/nodeProvider.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.nodeProvider = void 0;
@@ -17898,9 +18209,9 @@ var require_nodeProvider = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/index.js
-var require_dist_cjs49 = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers/dist-cjs/index.js"(exports) {
+// ../../../node_modules/@aws-sdk/token-providers/dist-cjs/index.js
+var require_dist_cjs48 = __commonJS({
+  "../../../node_modules/@aws-sdk/token-providers/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
@@ -17917,10 +18228,10 @@ var require_resolveSSOCredentials = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveSSOCredentials = void 0;
-    var client_sso_1 = require_dist_cjs48();
-    var token_providers_1 = require_dist_cjs49();
+    var client_sso_1 = require_dist_cjs47();
+    var token_providers_1 = require_dist_cjs48();
     var property_provider_1 = require_dist_cjs6();
-    var shared_ini_file_loader_1 = require_dist_cjs38();
+    var shared_ini_file_loader_1 = require_dist_cjs23();
     var SHOULD_FAIL_CREDENTIAL_CHAIN = false;
     var resolveSSOCredentials = async ({ ssoStartUrl, ssoSession, ssoAccountId, ssoRegion, ssoRoleName, ssoClient, profile }) => {
       let token;
@@ -17993,7 +18304,7 @@ var require_fromSSO = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fromSSO = void 0;
     var property_provider_1 = require_dist_cjs6();
-    var shared_ini_file_loader_1 = require_dist_cjs38();
+    var shared_ini_file_loader_1 = require_dist_cjs23();
     var isSsoProfile_1 = require_isSsoProfile();
     var resolveSSOCredentials_1 = require_resolveSSOCredentials();
     var validateSsoProfile_1 = require_validateSsoProfile();
@@ -18059,7 +18370,7 @@ var require_types7 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-sso/dist-cjs/index.js
-var require_dist_cjs50 = __commonJS({
+var require_dist_cjs49 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-sso/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -18077,8 +18388,8 @@ var require_resolveSsoCredentials = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveSsoCredentials = exports.isSsoProfile = void 0;
-    var credential_provider_sso_1 = require_dist_cjs50();
-    var credential_provider_sso_2 = require_dist_cjs50();
+    var credential_provider_sso_1 = require_dist_cjs49();
+    var credential_provider_sso_2 = require_dist_cjs49();
     Object.defineProperty(exports, "isSsoProfile", { enumerable: true, get: function() {
       return credential_provider_sso_2.isSsoProfile;
     } });
@@ -18113,9 +18424,9 @@ var require_resolveStaticCredentials = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromWebToken.js
+// ../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromWebToken.js
 var require_fromWebToken = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromWebToken.js"(exports) {
+  "../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromWebToken.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fromWebToken = void 0;
@@ -18139,9 +18450,9 @@ var require_fromWebToken = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromTokenFile.js
+// ../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromTokenFile.js
 var require_fromTokenFile = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromTokenFile.js"(exports) {
+  "../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromTokenFile.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fromTokenFile = void 0;
@@ -18170,9 +18481,9 @@ var require_fromTokenFile = __commonJS({
   }
 });
 
-// ../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js
-var require_dist_cjs51 = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js"(exports) {
+// ../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js
+var require_dist_cjs50 = __commonJS({
+  "../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
@@ -18187,7 +18498,7 @@ var require_resolveWebIdentityCredentials = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveWebIdentityCredentials = exports.isWebIdentityProfile = void 0;
-    var credential_provider_web_identity_1 = require_dist_cjs51();
+    var credential_provider_web_identity_1 = require_dist_cjs50();
     var isWebIdentityProfile = (arg) => Boolean(arg) && typeof arg === "object" && typeof arg.web_identity_token_file === "string" && typeof arg.role_arn === "string" && ["undefined", "string"].indexOf(typeof arg.role_session_name) > -1;
     exports.isWebIdentityProfile = isWebIdentityProfile;
     var resolveWebIdentityCredentials = async (profile, options) => (0, credential_provider_web_identity_1.fromTokenFile)({
@@ -18244,7 +18555,7 @@ var require_fromIni = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.fromIni = void 0;
-    var shared_ini_file_loader_1 = require_dist_cjs38();
+    var shared_ini_file_loader_1 = require_dist_cjs23();
     var resolveProfileData_1 = require_resolveProfileData();
     var fromIni = (init = {}) => async () => {
       const profiles = await (0, shared_ini_file_loader_1.parseKnownFiles)(init);
@@ -18255,176 +18566,12 @@ var require_fromIni = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-ini/dist-cjs/index.js
-var require_dist_cjs52 = __commonJS({
+var require_dist_cjs51 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-ini/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_fromIni(), exports);
-  }
-});
-
-// ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-process/dist-cjs/getValidatedProcessCredentials.js
-var require_getValidatedProcessCredentials2 = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-process/dist-cjs/getValidatedProcessCredentials.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getValidatedProcessCredentials = void 0;
-    var getValidatedProcessCredentials = (profileName, data) => {
-      if (data.Version !== 1) {
-        throw Error(`Profile ${profileName} credential_process did not return Version 1.`);
-      }
-      if (data.AccessKeyId === void 0 || data.SecretAccessKey === void 0) {
-        throw Error(`Profile ${profileName} credential_process returned invalid credentials.`);
-      }
-      if (data.Expiration) {
-        const currentTime = /* @__PURE__ */ new Date();
-        const expireTime = new Date(data.Expiration);
-        if (expireTime < currentTime) {
-          throw Error(`Profile ${profileName} credential_process returned expired credentials.`);
-        }
-      }
-      return {
-        accessKeyId: data.AccessKeyId,
-        secretAccessKey: data.SecretAccessKey,
-        ...data.SessionToken && { sessionToken: data.SessionToken },
-        ...data.Expiration && { expiration: new Date(data.Expiration) }
-      };
-    };
-    exports.getValidatedProcessCredentials = getValidatedProcessCredentials;
-  }
-});
-
-// ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-process/dist-cjs/resolveProcessCredentials.js
-var require_resolveProcessCredentials3 = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-process/dist-cjs/resolveProcessCredentials.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.resolveProcessCredentials = void 0;
-    var property_provider_1 = require_dist_cjs6();
-    var child_process_1 = require("child_process");
-    var util_1 = require("util");
-    var getValidatedProcessCredentials_1 = require_getValidatedProcessCredentials2();
-    var resolveProcessCredentials = async (profileName, profiles) => {
-      const profile = profiles[profileName];
-      if (profiles[profileName]) {
-        const credentialProcess = profile["credential_process"];
-        if (credentialProcess !== void 0) {
-          const execPromise = (0, util_1.promisify)(child_process_1.exec);
-          try {
-            const { stdout } = await execPromise(credentialProcess);
-            let data;
-            try {
-              data = JSON.parse(stdout.trim());
-            } catch (_a) {
-              throw Error(`Profile ${profileName} credential_process returned invalid JSON.`);
-            }
-            return (0, getValidatedProcessCredentials_1.getValidatedProcessCredentials)(profileName, data);
-          } catch (error) {
-            throw new property_provider_1.CredentialsProviderError(error.message);
-          }
-        } else {
-          throw new property_provider_1.CredentialsProviderError(`Profile ${profileName} did not contain credential_process.`);
-        }
-      } else {
-        throw new property_provider_1.CredentialsProviderError(`Profile ${profileName} could not be found in shared credentials file.`);
-      }
-    };
-    exports.resolveProcessCredentials = resolveProcessCredentials;
-  }
-});
-
-// ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-process/dist-cjs/fromProcess.js
-var require_fromProcess2 = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-process/dist-cjs/fromProcess.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.fromProcess = void 0;
-    var shared_ini_file_loader_1 = require_dist_cjs38();
-    var resolveProcessCredentials_1 = require_resolveProcessCredentials3();
-    var fromProcess = (init = {}) => async () => {
-      const profiles = await (0, shared_ini_file_loader_1.parseKnownFiles)(init);
-      return (0, resolveProcessCredentials_1.resolveProcessCredentials)((0, shared_ini_file_loader_1.getProfileName)(init), profiles);
-    };
-    exports.fromProcess = fromProcess;
-  }
-});
-
-// ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js
-var require_dist_cjs53 = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_fromProcess2(), exports);
-  }
-});
-
-// ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromWebToken.js
-var require_fromWebToken2 = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromWebToken.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.fromWebToken = void 0;
-    var property_provider_1 = require_dist_cjs6();
-    var fromWebToken = (init) => () => {
-      const { roleArn, roleSessionName, webIdentityToken, providerId, policyArns, policy, durationSeconds, roleAssumerWithWebIdentity } = init;
-      if (!roleAssumerWithWebIdentity) {
-        throw new property_provider_1.CredentialsProviderError(`Role Arn '${roleArn}' needs to be assumed with web identity, but no role assumption callback was provided.`, false);
-      }
-      return roleAssumerWithWebIdentity({
-        RoleArn: roleArn,
-        RoleSessionName: roleSessionName !== null && roleSessionName !== void 0 ? roleSessionName : `aws-sdk-js-session-${Date.now()}`,
-        WebIdentityToken: webIdentityToken,
-        ProviderId: providerId,
-        PolicyArns: policyArns,
-        Policy: policy,
-        DurationSeconds: durationSeconds
-      });
-    };
-    exports.fromWebToken = fromWebToken;
-  }
-});
-
-// ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromTokenFile.js
-var require_fromTokenFile2 = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromTokenFile.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.fromTokenFile = void 0;
-    var property_provider_1 = require_dist_cjs6();
-    var fs_1 = require("fs");
-    var fromWebToken_1 = require_fromWebToken2();
-    var ENV_TOKEN_FILE = "AWS_WEB_IDENTITY_TOKEN_FILE";
-    var ENV_ROLE_ARN = "AWS_ROLE_ARN";
-    var ENV_ROLE_SESSION_NAME = "AWS_ROLE_SESSION_NAME";
-    var fromTokenFile = (init = {}) => async () => {
-      var _a, _b, _c;
-      const webIdentityTokenFile = (_a = init === null || init === void 0 ? void 0 : init.webIdentityTokenFile) !== null && _a !== void 0 ? _a : process.env[ENV_TOKEN_FILE];
-      const roleArn = (_b = init === null || init === void 0 ? void 0 : init.roleArn) !== null && _b !== void 0 ? _b : process.env[ENV_ROLE_ARN];
-      const roleSessionName = (_c = init === null || init === void 0 ? void 0 : init.roleSessionName) !== null && _c !== void 0 ? _c : process.env[ENV_ROLE_SESSION_NAME];
-      if (!webIdentityTokenFile || !roleArn) {
-        throw new property_provider_1.CredentialsProviderError("Web identity configuration not specified");
-      }
-      return (0, fromWebToken_1.fromWebToken)({
-        ...init,
-        webIdentityToken: (0, fs_1.readFileSync)(webIdentityTokenFile, { encoding: "ascii" }),
-        roleArn,
-        roleSessionName
-      })();
-    };
-    exports.fromTokenFile = fromTokenFile;
-  }
-});
-
-// ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js
-var require_dist_cjs54 = __commonJS({
-  "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_fromTokenFile2(), exports);
-    tslib_1.__exportStar(require_fromWebToken2(), exports);
   }
 });
 
@@ -18434,7 +18581,7 @@ var require_remoteProvider = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.remoteProvider = exports.ENV_IMDS_DISABLED = void 0;
-    var credential_provider_imds_1 = require_dist_cjs41();
+    var credential_provider_imds_1 = require_dist_cjs40();
     var property_provider_1 = require_dist_cjs6();
     exports.ENV_IMDS_DISABLED = "AWS_EC2_METADATA_DISABLED";
     var remoteProvider = (init) => {
@@ -18458,13 +18605,13 @@ var require_defaultProvider = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.defaultProvider = void 0;
-    var credential_provider_env_1 = require_dist_cjs37();
-    var credential_provider_ini_1 = require_dist_cjs52();
-    var credential_provider_process_1 = require_dist_cjs53();
-    var credential_provider_sso_1 = require_dist_cjs50();
-    var credential_provider_web_identity_1 = require_dist_cjs54();
+    var credential_provider_env_1 = require_dist_cjs39();
+    var credential_provider_ini_1 = require_dist_cjs51();
+    var credential_provider_process_1 = require_dist_cjs41();
+    var credential_provider_sso_1 = require_dist_cjs49();
+    var credential_provider_web_identity_1 = require_dist_cjs50();
     var property_provider_1 = require_dist_cjs6();
-    var shared_ini_file_loader_1 = require_dist_cjs38();
+    var shared_ini_file_loader_1 = require_dist_cjs23();
     var remoteProvider_1 = require_remoteProvider();
     var defaultProvider = (init = {}) => (0, property_provider_1.memoize)((0, property_provider_1.chain)(...init.profile || process.env[shared_ini_file_loader_1.ENV_PROFILE] ? [] : [(0, credential_provider_env_1.fromEnv)()], (0, credential_provider_sso_1.fromSSO)(init), (0, credential_provider_ini_1.fromIni)(init), (0, credential_provider_process_1.fromProcess)(init), (0, credential_provider_web_identity_1.fromTokenFile)(init), (0, remoteProvider_1.remoteProvider)(init), async () => {
       throw new property_provider_1.CredentialsProviderError("Could not load credentials from any providers", false);
@@ -18474,7 +18621,7 @@ var require_defaultProvider = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js
-var require_dist_cjs55 = __commonJS({
+var require_dist_cjs52 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -18554,9 +18701,9 @@ var require_runtimeConfig_shared2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getRuntimeConfig = void 0;
-    var smithy_client_1 = require_dist_cjs35();
-    var url_parser_1 = require_dist_cjs24();
-    var util_base64_1 = require_dist_cjs31();
+    var smithy_client_1 = require_dist_cjs36();
+    var url_parser_1 = require_dist_cjs26();
+    var util_base64_1 = require_dist_cjs32();
     var util_utf8_1 = require_dist_cjs13();
     var endpointResolver_1 = require_endpointResolver2();
     var getRuntimeConfig = (config) => ({
@@ -18585,19 +18732,19 @@ var require_runtimeConfig2 = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package2());
     var defaultStsRoleAssumers_1 = require_defaultStsRoleAssumers();
-    var credential_provider_node_1 = require_dist_cjs55();
-    var util_user_agent_node_1 = require_dist_cjs43();
+    var credential_provider_node_1 = require_dist_cjs52();
+    var util_user_agent_node_1 = require_dist_cjs42();
     var config_resolver_1 = require_dist_cjs21();
-    var hash_node_1 = require_dist_cjs44();
-    var middleware_retry_1 = require_dist_cjs29();
-    var node_config_provider_1 = require_dist_cjs40();
-    var node_http_handler_1 = require_dist_cjs33();
-    var util_body_length_node_1 = require_dist_cjs45();
-    var util_retry_1 = require_dist_cjs28();
+    var hash_node_1 = require_dist_cjs43();
+    var middleware_retry_1 = require_dist_cjs37();
+    var node_config_provider_1 = require_dist_cjs24();
+    var node_http_handler_1 = require_dist_cjs34();
+    var util_body_length_node_1 = require_dist_cjs44();
+    var util_retry_1 = require_dist_cjs30();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared2();
-    var smithy_client_1 = require_dist_cjs35();
-    var util_defaults_mode_node_1 = require_dist_cjs46();
-    var smithy_client_2 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
+    var util_defaults_mode_node_1 = require_dist_cjs45();
+    var smithy_client_2 = require_dist_cjs36();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -18634,9 +18781,9 @@ var require_runtimeExtensions2 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveRuntimeExtensions = void 0;
-    var region_config_resolver_1 = require_dist_cjs47();
+    var region_config_resolver_1 = require_dist_cjs46();
     var protocol_http_1 = require_dist_cjs2();
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
     var asPartial = (t) => t;
     var resolveRuntimeExtensions = (runtimeConfig, extensions) => {
       const extensionConfiguration = {
@@ -18665,13 +18812,13 @@ var require_STSClient = __commonJS({
     var middleware_host_header_1 = require_dist_cjs3();
     var middleware_logger_1 = require_dist_cjs4();
     var middleware_recursion_detection_1 = require_dist_cjs5();
-    var middleware_sdk_sts_1 = require_dist_cjs36();
+    var middleware_sdk_sts_1 = require_dist_cjs38();
     var middleware_user_agent_1 = require_dist_cjs19();
     var config_resolver_1 = require_dist_cjs21();
     var middleware_content_length_1 = require_dist_cjs22();
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_retry_1 = require_dist_cjs29();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_retry_1 = require_dist_cjs37();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "__Client", { enumerable: true, get: function() {
       return smithy_client_1.Client;
     } });
@@ -18712,9 +18859,9 @@ var require_AssumeRoleWithSAMLCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.AssumeRoleWithSAMLCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -18774,9 +18921,9 @@ var require_DecodeAuthorizationMessageCommand = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DecodeAuthorizationMessageCommand = exports.$Command = void 0;
     var middleware_signing_1 = require_dist_cjs16();
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -18836,9 +18983,9 @@ var require_GetAccessKeyInfoCommand = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GetAccessKeyInfoCommand = exports.$Command = void 0;
     var middleware_signing_1 = require_dist_cjs16();
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -18898,9 +19045,9 @@ var require_GetCallerIdentityCommand = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GetCallerIdentityCommand = exports.$Command = void 0;
     var middleware_signing_1 = require_dist_cjs16();
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -18960,9 +19107,9 @@ var require_GetFederationTokenCommand = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GetFederationTokenCommand = exports.$Command = void 0;
     var middleware_signing_1 = require_dist_cjs16();
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -19023,9 +19170,9 @@ var require_GetSessionTokenCommand = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GetSessionTokenCommand = exports.$Command = void 0;
     var middleware_signing_1 = require_dist_cjs16();
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -19085,7 +19232,7 @@ var require_STS = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.STS = void 0;
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
     var AssumeRoleCommand_1 = require_AssumeRoleCommand();
     var AssumeRoleWithSAMLCommand_1 = require_AssumeRoleWithSAMLCommand();
     var AssumeRoleWithWebIdentityCommand_1 = require_AssumeRoleWithWebIdentityCommand();
@@ -19174,7 +19321,7 @@ var require_defaultRoleAssumers = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sts/dist-cjs/index.js
-var require_dist_cjs56 = __commonJS({
+var require_dist_cjs53 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sts/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -19248,9 +19395,9 @@ var require_runtimeConfig_shared3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.getRuntimeConfig = void 0;
-    var smithy_client_1 = require_dist_cjs35();
-    var url_parser_1 = require_dist_cjs24();
-    var util_base64_1 = require_dist_cjs31();
+    var smithy_client_1 = require_dist_cjs36();
+    var url_parser_1 = require_dist_cjs26();
+    var util_base64_1 = require_dist_cjs32();
     var util_utf8_1 = require_dist_cjs13();
     var endpointResolver_1 = require_endpointResolver3();
     var getRuntimeConfig = (config) => ({
@@ -19278,20 +19425,20 @@ var require_runtimeConfig3 = __commonJS({
     exports.getRuntimeConfig = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package());
-    var client_sts_1 = require_dist_cjs56();
-    var credential_provider_node_1 = require_dist_cjs55();
-    var util_user_agent_node_1 = require_dist_cjs43();
+    var client_sts_1 = require_dist_cjs53();
+    var credential_provider_node_1 = require_dist_cjs52();
+    var util_user_agent_node_1 = require_dist_cjs42();
     var config_resolver_1 = require_dist_cjs21();
-    var hash_node_1 = require_dist_cjs44();
-    var middleware_retry_1 = require_dist_cjs29();
-    var node_config_provider_1 = require_dist_cjs40();
-    var node_http_handler_1 = require_dist_cjs33();
-    var util_body_length_node_1 = require_dist_cjs45();
-    var util_retry_1 = require_dist_cjs28();
+    var hash_node_1 = require_dist_cjs43();
+    var middleware_retry_1 = require_dist_cjs37();
+    var node_config_provider_1 = require_dist_cjs24();
+    var node_http_handler_1 = require_dist_cjs34();
+    var util_body_length_node_1 = require_dist_cjs44();
+    var util_retry_1 = require_dist_cjs30();
     var runtimeConfig_shared_1 = require_runtimeConfig_shared3();
-    var smithy_client_1 = require_dist_cjs35();
-    var util_defaults_mode_node_1 = require_dist_cjs46();
-    var smithy_client_2 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
+    var util_defaults_mode_node_1 = require_dist_cjs45();
+    var smithy_client_2 = require_dist_cjs36();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
       const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
@@ -19328,9 +19475,9 @@ var require_runtimeExtensions3 = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.resolveRuntimeExtensions = void 0;
-    var region_config_resolver_1 = require_dist_cjs47();
+    var region_config_resolver_1 = require_dist_cjs46();
     var protocol_http_1 = require_dist_cjs2();
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
     var asPartial = (t) => t;
     var resolveRuntimeExtensions = (runtimeConfig, extensions) => {
       const extensionConfiguration = {
@@ -19363,9 +19510,9 @@ var require_SFNClient = __commonJS({
     var middleware_user_agent_1 = require_dist_cjs19();
     var config_resolver_1 = require_dist_cjs21();
     var middleware_content_length_1 = require_dist_cjs22();
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_retry_1 = require_dist_cjs29();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_retry_1 = require_dist_cjs37();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "__Client", { enumerable: true, get: function() {
       return smithy_client_1.Client;
     } });
@@ -19407,7 +19554,7 @@ var require_SFNServiceException = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SFNServiceException = exports.__ServiceException = void 0;
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "__ServiceException", { enumerable: true, get: function() {
       return smithy_client_1.ServiceException;
     } });
@@ -19428,7 +19575,7 @@ var require_models_03 = __commonJS({
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ExecutionStartedEventDetailsFilterSensitiveLog = exports.ExecutionFailedEventDetailsFilterSensitiveLog = exports.ExecutionAbortedEventDetailsFilterSensitiveLog = exports.GetActivityTaskOutputFilterSensitiveLog = exports.DescribeStateMachineForExecutionOutputFilterSensitiveLog = exports.DescribeStateMachineAliasOutputFilterSensitiveLog = exports.DescribeStateMachineOutputFilterSensitiveLog = exports.DescribeExecutionOutputFilterSensitiveLog = exports.CreateStateMachineAliasInputFilterSensitiveLog = exports.CreateStateMachineInputFilterSensitiveLog = exports.ActivityTimedOutEventDetailsFilterSensitiveLog = exports.ActivitySucceededEventDetailsFilterSensitiveLog = exports.ActivityScheduleFailedEventDetailsFilterSensitiveLog = exports.ActivityScheduledEventDetailsFilterSensitiveLog = exports.ActivityFailedEventDetailsFilterSensitiveLog = exports.MissingRequiredParameter = exports.SyncExecutionStatus = exports.InvalidExecutionInput = exports.ExecutionLimitExceeded = exports.ExecutionAlreadyExists = exports.InvalidOutput = exports.TaskTimedOut = exports.TaskDoesNotExist = exports.InvalidToken = exports.HistoryEventType = exports.StateMachineDoesNotExist = exports.StateMachineStatus = exports.MapRunStatus = exports.ExecutionDoesNotExist = exports.ExecutionStatus = exports.ServiceQuotaExceededException = exports.ResourceNotFound = exports.ValidationException = exports.ValidationExceptionReason = exports.StateMachineTypeNotSupported = exports.StateMachineLimitExceeded = exports.StateMachineDeleting = exports.StateMachineAlreadyExists = exports.InvalidTracingConfiguration = exports.InvalidLoggingConfiguration = exports.InvalidDefinition = exports.InvalidArn = exports.StateMachineType = exports.LogLevel = exports.ConflictException = exports.TooManyTags = exports.InvalidName = exports.ActivityWorkerLimitExceeded = exports.ActivityLimitExceeded = exports.ActivityDoesNotExist = void 0;
     exports.UpdateStateMachineAliasInputFilterSensitiveLog = exports.UpdateStateMachineInputFilterSensitiveLog = exports.StopExecutionInputFilterSensitiveLog = exports.StartSyncExecutionOutputFilterSensitiveLog = exports.StartSyncExecutionInputFilterSensitiveLog = exports.StartExecutionInputFilterSensitiveLog = exports.SendTaskSuccessInputFilterSensitiveLog = exports.SendTaskFailureInputFilterSensitiveLog = exports.PublishStateMachineVersionInputFilterSensitiveLog = exports.GetExecutionHistoryOutputFilterSensitiveLog = exports.HistoryEventFilterSensitiveLog = exports.TaskTimedOutEventDetailsFilterSensitiveLog = exports.TaskSucceededEventDetailsFilterSensitiveLog = exports.TaskSubmittedEventDetailsFilterSensitiveLog = exports.TaskSubmitFailedEventDetailsFilterSensitiveLog = exports.TaskStartFailedEventDetailsFilterSensitiveLog = exports.TaskScheduledEventDetailsFilterSensitiveLog = exports.TaskFailedEventDetailsFilterSensitiveLog = exports.StateExitedEventDetailsFilterSensitiveLog = exports.StateEnteredEventDetailsFilterSensitiveLog = exports.MapRunFailedEventDetailsFilterSensitiveLog = exports.LambdaFunctionTimedOutEventDetailsFilterSensitiveLog = exports.LambdaFunctionSucceededEventDetailsFilterSensitiveLog = exports.LambdaFunctionStartFailedEventDetailsFilterSensitiveLog = exports.LambdaFunctionScheduleFailedEventDetailsFilterSensitiveLog = exports.LambdaFunctionScheduledEventDetailsFilterSensitiveLog = exports.LambdaFunctionFailedEventDetailsFilterSensitiveLog = exports.ExecutionTimedOutEventDetailsFilterSensitiveLog = exports.ExecutionSucceededEventDetailsFilterSensitiveLog = void 0;
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
     var SFNServiceException_1 = require_SFNServiceException();
     var ActivityDoesNotExist = class _ActivityDoesNotExist extends SFNServiceException_1.SFNServiceException {
       constructor(opts) {
@@ -20217,7 +20364,7 @@ var require_Aws_json1_0 = __commonJS({
     exports.de_ListActivitiesCommand = exports.de_GetExecutionHistoryCommand = exports.de_GetActivityTaskCommand = exports.de_DescribeStateMachineForExecutionCommand = exports.de_DescribeStateMachineAliasCommand = exports.de_DescribeStateMachineCommand = exports.de_DescribeMapRunCommand = exports.de_DescribeExecutionCommand = exports.de_DescribeActivityCommand = exports.de_DeleteStateMachineVersionCommand = exports.de_DeleteStateMachineAliasCommand = exports.de_DeleteStateMachineCommand = exports.de_DeleteActivityCommand = exports.de_CreateStateMachineAliasCommand = exports.de_CreateStateMachineCommand = exports.de_CreateActivityCommand = exports.se_UpdateStateMachineAliasCommand = exports.se_UpdateStateMachineCommand = exports.se_UpdateMapRunCommand = exports.se_UntagResourceCommand = exports.se_TagResourceCommand = exports.se_StopExecutionCommand = exports.se_StartSyncExecutionCommand = exports.se_StartExecutionCommand = exports.se_SendTaskSuccessCommand = exports.se_SendTaskHeartbeatCommand = exports.se_SendTaskFailureCommand = exports.se_PublishStateMachineVersionCommand = exports.se_ListTagsForResourceCommand = exports.se_ListStateMachineVersionsCommand = exports.se_ListStateMachinesCommand = exports.se_ListStateMachineAliasesCommand = exports.se_ListMapRunsCommand = exports.se_ListExecutionsCommand = exports.se_ListActivitiesCommand = exports.se_GetExecutionHistoryCommand = exports.se_GetActivityTaskCommand = exports.se_DescribeStateMachineForExecutionCommand = exports.se_DescribeStateMachineAliasCommand = exports.se_DescribeStateMachineCommand = exports.se_DescribeMapRunCommand = exports.se_DescribeExecutionCommand = exports.se_DescribeActivityCommand = exports.se_DeleteStateMachineVersionCommand = exports.se_DeleteStateMachineAliasCommand = exports.se_DeleteStateMachineCommand = exports.se_DeleteActivityCommand = exports.se_CreateStateMachineAliasCommand = exports.se_CreateStateMachineCommand = exports.se_CreateActivityCommand = void 0;
     exports.de_UpdateStateMachineAliasCommand = exports.de_UpdateStateMachineCommand = exports.de_UpdateMapRunCommand = exports.de_UntagResourceCommand = exports.de_TagResourceCommand = exports.de_StopExecutionCommand = exports.de_StartSyncExecutionCommand = exports.de_StartExecutionCommand = exports.de_SendTaskSuccessCommand = exports.de_SendTaskHeartbeatCommand = exports.de_SendTaskFailureCommand = exports.de_PublishStateMachineVersionCommand = exports.de_ListTagsForResourceCommand = exports.de_ListStateMachineVersionsCommand = exports.de_ListStateMachinesCommand = exports.de_ListStateMachineAliasesCommand = exports.de_ListMapRunsCommand = exports.de_ListExecutionsCommand = void 0;
     var protocol_http_1 = require_dist_cjs2();
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
     var models_0_1 = require_models_03();
     var SFNServiceException_1 = require_SFNServiceException();
     var se_CreateActivityCommand = async (input, context) => {
@@ -22521,9 +22668,9 @@ var require_CreateActivityCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CreateActivityCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -22580,9 +22727,9 @@ var require_CreateStateMachineAliasCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CreateStateMachineAliasCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -22640,9 +22787,9 @@ var require_CreateStateMachineCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.CreateStateMachineCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -22700,9 +22847,9 @@ var require_DeleteActivityCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DeleteActivityCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -22759,9 +22906,9 @@ var require_DeleteStateMachineAliasCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DeleteStateMachineAliasCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -22818,9 +22965,9 @@ var require_DeleteStateMachineCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DeleteStateMachineCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -22877,9 +23024,9 @@ var require_DeleteStateMachineVersionCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DeleteStateMachineVersionCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -22936,9 +23083,9 @@ var require_DescribeActivityCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DescribeActivityCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -22995,9 +23142,9 @@ var require_DescribeExecutionCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DescribeExecutionCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23055,9 +23202,9 @@ var require_DescribeMapRunCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DescribeMapRunCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23114,9 +23261,9 @@ var require_DescribeStateMachineAliasCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DescribeStateMachineAliasCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23174,9 +23321,9 @@ var require_DescribeStateMachineCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DescribeStateMachineCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23234,9 +23381,9 @@ var require_DescribeStateMachineForExecutionCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.DescribeStateMachineForExecutionCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23294,9 +23441,9 @@ var require_GetActivityTaskCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GetActivityTaskCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23354,9 +23501,9 @@ var require_GetExecutionHistoryCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.GetExecutionHistoryCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23414,9 +23561,9 @@ var require_ListActivitiesCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ListActivitiesCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23473,9 +23620,9 @@ var require_ListExecutionsCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ListExecutionsCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23532,9 +23679,9 @@ var require_ListMapRunsCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ListMapRunsCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23591,9 +23738,9 @@ var require_ListStateMachineAliasesCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ListStateMachineAliasesCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23650,9 +23797,9 @@ var require_ListStateMachinesCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ListStateMachinesCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23709,9 +23856,9 @@ var require_ListStateMachineVersionsCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ListStateMachineVersionsCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23768,9 +23915,9 @@ var require_ListTagsForResourceCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.ListTagsForResourceCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23827,9 +23974,9 @@ var require_PublishStateMachineVersionCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.PublishStateMachineVersionCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23887,9 +24034,9 @@ var require_SendTaskFailureCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SendTaskFailureCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -23947,9 +24094,9 @@ var require_SendTaskHeartbeatCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SendTaskHeartbeatCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -24006,9 +24153,9 @@ var require_SendTaskSuccessCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SendTaskSuccessCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -24066,9 +24213,9 @@ var require_StartExecutionCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.StartExecutionCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -24126,9 +24273,9 @@ var require_StartSyncExecutionCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.StartSyncExecutionCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -24186,9 +24333,9 @@ var require_StopExecutionCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.StopExecutionCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -24246,9 +24393,9 @@ var require_TagResourceCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.TagResourceCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -24305,9 +24452,9 @@ var require_UntagResourceCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UntagResourceCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -24364,9 +24511,9 @@ var require_UpdateMapRunCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UpdateMapRunCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -24423,9 +24570,9 @@ var require_UpdateStateMachineAliasCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UpdateStateMachineAliasCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -24483,9 +24630,9 @@ var require_UpdateStateMachineCommand = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.UpdateStateMachineCommand = exports.$Command = void 0;
-    var middleware_endpoint_1 = require_dist_cjs26();
-    var middleware_serde_1 = require_dist_cjs25();
-    var smithy_client_1 = require_dist_cjs35();
+    var middleware_endpoint_1 = require_dist_cjs28();
+    var middleware_serde_1 = require_dist_cjs27();
+    var smithy_client_1 = require_dist_cjs36();
     Object.defineProperty(exports, "$Command", { enumerable: true, get: function() {
       return smithy_client_1.Command;
     } });
@@ -24543,7 +24690,7 @@ var require_SFN = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.SFN = void 0;
-    var smithy_client_1 = require_dist_cjs35();
+    var smithy_client_1 = require_dist_cjs36();
     var CreateActivityCommand_1 = require_CreateActivityCommand();
     var CreateStateMachineAliasCommand_1 = require_CreateStateMachineAliasCommand();
     var CreateStateMachineCommand_1 = require_CreateStateMachineCommand();
@@ -24869,7 +25016,7 @@ var require_models3 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sfn/dist-cjs/index.js
-var require_dist_cjs57 = __commonJS({
+var require_dist_cjs54 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sfn/dist-cjs/index.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -33184,7 +33331,7 @@ var import_helpers_internal = __toESM(require_helpers_internal());
 // lib/assertions/providers/lambda-handler/base.ts
 var https = __toESM(require("https"));
 var url = __toESM(require("url"));
-var import_client_sfn = __toESM(require_dist_cjs57());
+var import_client_sfn = __toESM(require_dist_cjs54());
 var CustomResourceHandler = class {
   constructor(event, context) {
     this.event = event;

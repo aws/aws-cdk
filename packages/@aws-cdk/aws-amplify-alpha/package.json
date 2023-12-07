@@ -89,7 +89,7 @@
     "@aws-sdk/client-amplify": "3.451.0",
     "@aws-sdk/client-s3": "3.451.0",
     "@aws-sdk/s3-request-presigner": "3.451.0",
-    "@types/jest": "^29.5.8",
+    "@types/jest": "^29.5.11",
     "aws-cdk-lib": "0.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "constructs": "^10.0.0"
