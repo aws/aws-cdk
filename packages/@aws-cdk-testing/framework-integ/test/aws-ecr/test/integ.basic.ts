@@ -18,6 +18,7 @@ repo.grantRead(user);
 repo.grantPullPush(user);
 
 new ecr.Repository(stack, 'RepoWithEmptyOnDelete', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
   emptyOnDelete: true,
 });
 
