@@ -3925,6 +3925,52 @@ describe('cluster', () => {
       EngineVersion: Match.absent(),
     });
   });
+
+  test('grantConnect', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_3 }),
+      instanceProps: { vpc },
+    });
+    cluster.grantConnect(role, 'someUser');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      Roles: [{ Ref: 'Role1ABCC5F0' }],
+      PolicyDocument: {
+        Statement: [{
+          Action: 'rds-db:connect',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':rds-db:us-test-1:12345:dbuser:',
+                {
+                  'Fn::GetAtt': [
+                    'DatabaseB269D8BB',
+                    'DBClusterResourceId',
+                  ],
+                },
+                '/someUser',
+              ],
+            ],
+          },
+        }],
+      },
+    });
+  });
 });
 
 test.each([

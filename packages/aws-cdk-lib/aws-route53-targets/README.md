@@ -21,7 +21,7 @@ This library contains Route53 Alias Record targets for:
 * API Gateway V2 custom domains
 
   ```ts
-  import * as apigwv2 from '@aws-cdk/aws-apigatewayv2-alpha';
+  import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
 
   declare const zone: route53.HostedZone;
   declare const domainName: apigwv2.DomainName;
