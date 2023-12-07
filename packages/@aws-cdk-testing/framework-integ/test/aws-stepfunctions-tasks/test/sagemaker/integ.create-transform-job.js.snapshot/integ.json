@@ -1,14 +1,12 @@
 {
-  "version": "34.0.0",
+  "version": "35.0.0",
   "testCases": {
-    "integ.create-transform-job": {
+    "SqsTest/DefaultTest": {
       "stacks": [
         "aws-cdk-step-functions-task-create-transform-job-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "SqsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SqsTestDefaultTestDeployAssert659366A6"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
