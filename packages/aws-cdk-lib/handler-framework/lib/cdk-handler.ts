@@ -28,6 +28,11 @@ export class CdkHandler extends Construct {
   private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
 
   /**
+   * The local file system directory with the provider's code.
+   */
+  public readonly codeDirectory: string;
+
+  /**
    * The source code of your Lambda function.
    */
   public readonly code: Code;
@@ -39,6 +44,7 @@ export class CdkHandler extends Construct {
 
   public constructor(scope: Construct, id: string, props: CdkHandlerProps) {
     super(scope, id);
+    this.codeDirectory = props.codeDirectory;
     this.code = Code.fromAsset(props.codeDirectory);
     this.runtime = RuntimeDeterminer.determineLatestRuntime(CdkHandler.DEFAULT_RUNTIME, props.compatibleRuntimes);
   }
