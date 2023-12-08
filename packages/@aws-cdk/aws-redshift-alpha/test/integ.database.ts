@@ -47,7 +47,7 @@ const databaseOptions = {
 const user = new redshift.User(stack, 'User', databaseOptions);
 const table = new redshift.Table(stack, 'Table', {
   ...databaseOptions,
-  tableName: 'my_table',
+  tableName: 'IntegTable',
   tableColumns: [
     { name: 'col1', dataType: 'varchar(4)', distKey: true, comment: 'A test column', encoding: redshift.ColumnEncoding.LZO },
     { name: 'col2', dataType: 'float', sortKey: true, comment: 'A test column' },
