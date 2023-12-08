@@ -652,6 +652,55 @@ test('rotation schedule should have a dependency on lambda permissions', () => {
   });
 });
 
+test('automaticallyAfter set scheduleExpression with hours duration', () => {
+  // GIVEN
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+  const rotationLambda = new lambda.Function(stack, 'Lambda', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    code: lambda.Code.fromInline('export.handler = event => event;'),
+    handler: 'index.handler',
+  });
+
+  // WHEN
+  new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
+    secret,
+    rotationLambda,
+    automaticallyAfter: Duration.hours(6),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', Match.objectEquals({
+    SecretId: { Ref: 'SecretA720EF05' },
+    RotationLambdaARN: {
+      'Fn::GetAtt': [
+        'LambdaD247545B',
+        'Arn',
+      ],
+    },
+    RotationRules: {
+      ScheduleExpression: 'rate(6 hours)',
+    },
+  }));
+});
+
+test('automaticallyAfter must not be smaller than 4 hours', () => {
+  // GIVEN
+  const secret = new secretsmanager.Secret(stack, 'Secret');
+  const rotationLambda = new lambda.Function(stack, 'Lambda', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    code: lambda.Code.fromInline('export.handler = event => event;'),
+    handler: 'index.handler',
+  });
+
+  // WHEN
+  // THEN
+  expect(() => new secretsmanager.RotationSchedule(stack, 'RotationSchedule', {
+    secret,
+    rotationLambda,
+    automaticallyAfter: Duration.hours(2),
+  })).toThrow(/automaticallyAfter must not be smaller than 4 hours, got 2 hours/);
+});
+
 test('automaticallyAfter must not be greater than 1000 days', () => {
   // GIVEN
   const secret = new secretsmanager.Secret(stack, 'Secret');
