@@ -117,7 +117,7 @@ export interface ScheduleProps {
 
   /**
    * The date, in UTC, after which the schedule can begin invoking its target.
-   * EventBridge Scheduler ignores StartDate for one-time schedules.
+   * EventBridge Scheduler ignores startDate for one-time schedules.
    *
    * Specify an absolute time in the ISO 8601 format. For example, 2020-12-01T00:00:00.000Z.
    *
