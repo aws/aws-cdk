@@ -87,36 +87,32 @@ The AWS CDK team values feedback and guidance from its community of users, altho
 ## FAQs
 
 
-Q: Why did you build an open roadmap?
+**Q: Why did you build an open roadmap?**
 A: Your feedback and suggestions would help in ensuring that we are working on the most important and impactful issues. And if you are making decisions and plans based on what we are developing, this will provide insights on what is coming down the road for the CDK.
 
 
 
-Q: Why are there no dates on your roadmap?
+**Q: Why are there no dates on your roadmap?**
 A: Because security and operational stability are our highest priorities, the above new features cannot be provided specific target dates. The roadmap is subject to change at any time, and roadmap issues in this repository do not guarantee a feature will be launched as proposed.
 
 
 
-Q: Is everything on the roadmap?
-
+**Q: Is everything on the roadmap?**
 A: We will publish high-level direction that is within the scope of the CDK. Minor features and performance improvement tasks are not on the roadmap currently, but we are constantly trying to improve the roadmap so please leave your suggestions [here](https://github.com/aws/aws-sam-cli/issues/3267).
 
 
 
-Q: How can I provide feedback or ask for more information?
-
+**Q: How can I provide feedback or ask for more information?**
 A: When in doubt, please create an issue! Issues will be reviewed and/or forwarded appropriately. A great time to provide feedback is when the project is in Exploration, RFC stage, or when the feature is in beta release. As always, we listen to your feedback and adapt our plans if needed.
 
 
 
-Q: Can I 👍🏽 existing issues?
-
+**Q: Can I 👍🏽 existing issues?**
 A: We strongly encourage you to do so, as it helps us understand which issues will have the widest impact. You can navigate to the issue details page and add a reaction (👍🏽).
 
 
 
-Q: How can I request a feature be added to the roadmap?
-
+Q: **How can I request a feature be added to the roadmap?**
 A: We encourage you to open an issue, even if you’ve requested it before via other channels. Issues submitted will be reviewed by the roadmap maintainers. If you find an issue already created for the feature, please upvote it (👍🏽) and leave comments specific to your use case. To report a bug or create a small feature request, please [create an issue here](https://github.com/aws/aws-cdk/issues/new/choose). If you are seeking to request a change in the CDK’s strategic direction or make a CDK core framework change, please [create a Request for Comments (RFC) ticket here](https://github.com/aws/aws-cdk-rfcs/issues/new/choose).
 
 Please do not be discouraged if your ticket is closed—that may happen if it is not a priority during the quarter it was submitted. The CDK team closes tickets in an effort to display what is prioritized at a given moment. If this happens, we invite you to try submitting it again later in the year.
