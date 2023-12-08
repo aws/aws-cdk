@@ -23,18 +23,18 @@ export class RuntimeDeterminer {
     const nodeJsRuntimes = runtimes.filter(runtime => runtime.family === RuntimeFamily.NODEJS);
     const latestNodeJsRuntime = RuntimeDeterminer.latestNodeJsRuntime(nodeJsRuntimes, defaultRuntime);
     if (latestNodeJsRuntime !== undefined) {
-      // if (latestNodeJsRuntime.isDeprecated) {
-      //   throw new Error(`Latest nodejs runtime ${latestNodeJsRuntime} is deprecated. You must upgrade to the latest code compatible nodejs runtime`);
-      // }
+      if (latestNodeJsRuntime.isDeprecated) {
+        throw new Error(`Latest nodejs runtime ${latestNodeJsRuntime} is deprecated. You must upgrade to the latest code compatible nodejs runtime`);
+      }
       return latestNodeJsRuntime;
     }
 
     const pythonRuntimes = runtimes.filter(runtime => runtime.family === RuntimeFamily.PYTHON);
     const latestPythonRuntime = RuntimeDeterminer.latestPythonRuntime(pythonRuntimes);
     if (latestPythonRuntime !== undefined) {
-      // if (latestPythonRuntime.isDeprecated) {
-      //   throw new Error(`Latest python runtime ${latestPythonRuntime} is deprecated. You must upgrade to the latest code compatible python runtime`);
-      // }
+      if (latestPythonRuntime.isDeprecated) {
+        throw new Error(`Latest python runtime ${latestPythonRuntime} is deprecated. You must upgrade to the latest code compatible python runtime`);
+      }
       return latestPythonRuntime;
     }
 

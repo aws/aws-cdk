@@ -32,22 +32,25 @@ export class CdkHandlerFrameworkModule extends Module {
    * Build a framework component inside of this module.
    */
   public build(component: ConfigProps, sourceCodeDirectory: string) {
-    const name = this.buildComponentName();
+    if (component.type === ComponentType.CDK_NO_OP) {
+      return;
+    }
+
+    this.hasComponents = true;
+
+    const entrypoint = component.entrypoint ?? 'index.handler';
+    const name = this.buildComponentName(entrypoint);
     /* eslint-disable no-console */
     console.log(name);
     const props: CdkHandlerClassProps = {
       codeDirectory: sourceCodeDirectory,
-      name: component.name,
+      name: this.buildComponentName(entrypoint),
       runtime: RuntimeDeterminer.determineLatestRuntime(
         component.compatibleRuntimes,
         CdkHandlerFrameworkModule.DEFAULT_RUNTIME,
       ),
-      entrypoint: component.entrypoint,
+      entrypoint,
     };
-
-    if (!this.hasComponents && component.type !== ComponentType.CDK_NO_OP) {
-      this.hasComponents = true;
-    }
 
     switch (component.type) {
       case ComponentType.CDK_FUNCTION: {
@@ -98,12 +101,13 @@ export class CdkHandlerFrameworkModule extends Module {
     return this._interfaces.get(name);
   }
 
-  private buildComponentName() {
-    const id = this.fqn.split('/').at(-1);
-    const name = id?.replace(
+  private buildComponentName(entrypoint: string) {
+    const id = this.fqn.split('/').at(-1)?.replace('-provider', '') ?? '';
+    const handler = entrypoint.split('.').at(-1)?.replace(/[_Hh]andler/g, '') ?? '';
+    const name = (id.replace(
       /-([a-z])/g, (s) => { return s[1].toUpperCase(); },
-    ) ?? 'provider';
-    return name.charAt(0).toUpperCase() + name.slice(1);
+    )) + (handler.charAt(0).toUpperCase() + handler.slice(1));
+    return name.charAt(0).toUpperCase() + name.slice(1) + 'Provider';
   }
 
   private importExternalModules() {

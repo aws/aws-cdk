@@ -76,10 +76,8 @@ export interface CdkHandlerClassProps {
 
   /**
    * The name of the method within your code that Lambda calls to execute your function.
-   *
-   * @default 'index.handler'
    */
-  readonly entrypoint?: string;
+  readonly entrypoint: string;
 }
 
 export abstract class CdkHandlerFrameworkClass extends ClassType {
@@ -102,7 +100,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
-          ['handler', expr.lit(props.entrypoint ?? 'index.handler')],
+          ['handler', expr.lit(props.entrypoint)],
           ['runtime', expr.directCode(toLambdaRuntime(props.runtime))],
         ]);
         this.buildConstructor({
@@ -161,7 +159,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
-          ['handler', expr.lit(props.entrypoint ?? 'index.handler')],
+          ['handler', expr.lit(props.entrypoint)],
           ['runtime', expr.directCode(toLambdaRuntime(props.runtime))],
         ]);
         this.buildConstructor({
