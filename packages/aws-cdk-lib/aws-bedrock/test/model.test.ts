@@ -27,4 +27,15 @@ describe('FoundationModel', () => {
     // THEN
     expect(stack.resolve(model.modelArn)).toEqual({ 'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' }, ':bedrock:', { 'Ref': 'AWS::Region' }, '::foundation-model/anthropic.claude-v2']] });
   });
+
+  test('fromFoundationModelId with newer model ID', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const model = bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', new bedrock.FoundationModelIdentifier('new-base-model'));
+
+    // THEN
+    expect(stack.resolve(model.modelArn)).toEqual({ 'Fn::Join': ['', ['arn:', { 'Ref': 'AWS::Partition' }, ':bedrock:', { 'Ref': 'AWS::Region' }, '::foundation-model/new-base-model']] });
+  });
 });

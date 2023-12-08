@@ -7,54 +7,56 @@ import { ArnFormat, Stack } from '../../core';
  *
  * @see https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids-arns.html
  */
-export enum FoundationModelIdentifier {
+export class FoundationModelIdentifier {
   /** Base model "ai21.j2-mid-v1". */
-  AI21_LABS_JURASSIC_2_MID_V1 = 'ai21.j2-mid-v1',
+  public static AI21_LABS_JURASSIC_2_MID_V1 = new FoundationModelIdentifier('ai21.j2-mid-v1');
 
   /** Base model "ai21.j2-ultra-v1". */
-  AI21_LABS_JURASSIC_2_ULTRA_V1 = 'ai21.j2-ultra-v1',
+  public static AI21_LABS_JURASSIC_2_ULTRA_V1 = new FoundationModelIdentifier('ai21.j2-ultra-v1');
 
   /** Base model "amazon.titan-embed-text-v1". */
-  AMAZON_TITAN_EMBEDDINGS_G1_TEXT_V1 = 'amazon.titan-embed-text-v1',
+  public static AMAZON_TITAN_EMBEDDINGS_G1_TEXT_V1 = new FoundationModelIdentifier('amazon.titan-embed-text-v1');
 
   /** Base model "amazon.titan-text-express-v1". */
-  AMAZON_TITAN_TEXT_G1_EXPRESS_V1 = 'amazon.titan-text-express-v1',
+  public static AMAZON_TITAN_TEXT_G1_EXPRESS_V1 = new FoundationModelIdentifier('amazon.titan-text-express-v1');
 
   /** Base model "amazon.titan-embed-image-v1". */
-  AMAZON_TITAN_MULTIMODAL_EMBEDDINGS_G1_V1 = 'amazon.titan-embed-image-v1',
+  public static AMAZON_TITAN_MULTIMODAL_EMBEDDINGS_G1_V1 = new FoundationModelIdentifier('amazon.titan-embed-image-v1');
 
   /** Base model "amazon.titan-image-generator-v1". */
-  AMAZON_TITAN_IMAGE_GENERATOR_G1_V1 = 'amazon.titan-image-generator-v1',
+  public static AMAZON_TITAN_IMAGE_GENERATOR_G1_V1 = new FoundationModelIdentifier('amazon.titan-image-generator-v1');
 
   /** Base model "anthropic.claude-v1". */
-  ANTHROPIC_CLAUDE_V1 = 'anthropic.claude-v1',
+  public static ANTHROPIC_CLAUDE_V1 = new FoundationModelIdentifier('anthropic.claude-v1');
 
   /** Base model "anthropic.claude-v2". */
-  ANTHROPIC_CLAUDE_V2 = 'anthropic.claude-v2',
+  public static ANTHROPIC_CLAUDE_V2 = new FoundationModelIdentifier('anthropic.claude-v2');
 
   /** Base model "anthropic.claude-v2:1". */
-  ANTHROPIC_CLAUDE_V2_1 = 'anthropic.claude-v2:1',
+  public static ANTHROPIC_CLAUDE_V2_1 = new FoundationModelIdentifier('anthropic.claude-v2:1');
 
   /** Base model "anthropic.claude-instant-v1". */
-  ANTHROPIC_CLAUDE_INSTANT_V1 = 'anthropic.claude-instant-v1',
+  public static ANTHROPIC_CLAUDE_INSTANT_V1 = new FoundationModelIdentifier('anthropic.claude-instant-v1');
 
   /** Base model "cohere.command-text-v14". */
-  COHERE_COMMAND_V14 = 'cohere.command-text-v14',
+  public static COHERE_COMMAND_V14 = new FoundationModelIdentifier('cohere.command-text-v14');
 
   /** Base model "cohere.command-light-text-v14". */
-  COHERE_COMMAND_LIGHT_V14 = 'cohere.command-light-text-v14',
+  public static COHERE_COMMAND_LIGHT_V14 = new FoundationModelIdentifier('cohere.command-light-text-v14');
 
   /** Base model "cohere.embed-english-v3". */
-  COHERE_EMBED_ENGLISH_V3 = 'cohere.embed-english-v3',
+  public static COHERE_EMBED_ENGLISH_V3 = new FoundationModelIdentifier('cohere.embed-english-v3');
 
   /** Base model "cohere.embed-multilingual-v3". */
-  COHERE_EMBED_MULTILINGUAL_V3 = 'cohere.embed-multilingual-v3',
+  public static COHERE_EMBED_MULTILINGUAL_V3 = new FoundationModelIdentifier('cohere.embed-multilingual-v3');
 
   /** Base model "meta.llama2-13b-chat-v1". */
-  META_LLAMA_2_CHAT_13B_V1 = 'meta.llama2-13b-chat-v1',
+  public static META_LLAMA_2_CHAT_13B_V1 = new FoundationModelIdentifier('meta.llama2-13b-chat-v1');
 
   /** Base model "meta.llama2-70b-chat-v1". */
-  META_LLAMA_2_CHAT_70B_V1 = 'meta.llama2-70b-chat-v1',
+  public static META_LLAMA_2_CHAT_70B_V1 = new FoundationModelIdentifier('meta.llama2-70b-chat-v1');
+
+  public constructor(public readonly modelId: string) { }
 }
 
 /**
@@ -84,12 +86,12 @@ export class FoundationModel implements IModel {
    */
   public static fromFoundationModelId(scope: Construct, _id: string, foundationModelId: FoundationModelIdentifier): FoundationModel {
     return new FoundationModel({
-      modelId: foundationModelId,
+      modelId: foundationModelId.modelId,
       modelArn: Stack.of(scope).formatArn({
         service: 'bedrock',
         account: '',
         resource: 'foundation-model',
-        resourceName: foundationModelId,
+        resourceName: foundationModelId.modelId,
         arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       }),
     });
