@@ -56,6 +56,10 @@ export class FoundationModelIdentifier {
   /** Base model "meta.llama2-70b-chat-v1". */
   public static readonly META_LLAMA_2_CHAT_70B_V1 = new FoundationModelIdentifier('meta.llama2-70b-chat-v1');
 
+  /**
+   * Constructor for foundation model identifier
+   * @param modelId the model identifier
+   */
   public constructor(public readonly modelId: string) { }
 }
 
