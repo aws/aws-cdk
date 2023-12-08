@@ -3,7 +3,7 @@ import { ExternalModule, InterfaceType, Module, TypeScriptRenderer } from '@cdkl
 import * as fs from 'fs-extra';
 import { CdkHandlerClassProps, CdkHandlerFrameworkClass } from './classes';
 import { ComponentType, ConfigProps } from './config';
-import { CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE, PATH_MODULE } from './modules';
+import { CONSTRUCTS_MODULE, CORE_MODULE, CUSTOM_RESOURCE_PROVIDER_BASE, CUSTOM_RESOURCE_PROVIDER_OPTIONS, LAMBDA_MODULE, PATH_MODULE, STACK } from './modules';
 import { Runtime } from './runtime';
 import { RuntimeDeterminer } from './runtime-determiner';
 
@@ -16,10 +16,12 @@ export class CdkHandlerFrameworkModule extends Module {
   private readonly renderer = new TypeScriptRenderer();
   private readonly externalModules = new Map<string, boolean>();
   private readonly _interfaces = new Map<string, InterfaceType>();
+  public readonly coreInternal: boolean;
   private hasComponents = false;
 
   public constructor(fqn: string) {
     super(fqn);
+    this.coreInternal = fqn.includes('core');
   }
 
   /**
@@ -103,6 +105,18 @@ export class CdkHandlerFrameworkModule extends Module {
             'CustomResourceProviderBase',
             'CustomResourceProviderOptions',
           ]);
+          break;
+        }
+        case STACK.fqn: {
+          STACK.importSelective(this, ['Stack']);
+          break;
+        }
+        case CUSTOM_RESOURCE_PROVIDER_BASE.fqn: {
+          CUSTOM_RESOURCE_PROVIDER_BASE.importSelective(this, ['CustomResourceProviderBase']);
+          break;
+        }
+        case CUSTOM_RESOURCE_PROVIDER_OPTIONS.fqn: {
+          CUSTOM_RESOURCE_PROVIDER_OPTIONS.importSelective(this, ['CustomResourceProviderOptions']);
           break;
         }
         case LAMBDA_MODULE.fqn: {

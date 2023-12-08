@@ -15,7 +15,14 @@ import {
   Expression,
 } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkModule } from './framework';
-import { CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
+import {
+  CONSTRUCTS_MODULE,
+  LAMBDA_MODULE,
+  CORE_MODULE,
+  STACK,
+  CUSTOM_RESOURCE_PROVIDER_BASE,
+  CUSTOM_RESOURCE_PROVIDER_OPTIONS,
+} from './modules';
 import { Runtime } from './runtime';
 
 /**
@@ -171,14 +178,22 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
    */
   public static buildCdkCustomResourceProvider(scope: CdkHandlerFrameworkModule, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
     return new (class CdkCustomResourceProvider extends CdkHandlerFrameworkClass {
-      protected readonly externalModules = [CONSTRUCTS_MODULE, CORE_MODULE];
+      protected readonly externalModules: ExternalModule[] = [CONSTRUCTS_MODULE];
 
       public constructor() {
         super(scope, {
           name: props.name,
-          extends: CORE_MODULE.CustomResourceProviderBase,
+          extends: scope.coreInternal
+            ? CUSTOM_RESOURCE_PROVIDER_BASE.CustomResourceProviderBase
+            : CORE_MODULE.CustomResourceProviderBase,
           export: true,
         });
+
+        if (scope.coreInternal) {
+          this.externalModules.push(...[STACK, CUSTOM_RESOURCE_PROVIDER_BASE, CUSTOM_RESOURCE_PROVIDER_OPTIONS]);
+        } else {
+          this.externalModules.push(CORE_MODULE);
+        }
 
         this.externalModules.forEach(module => scope.addExternalModule(module));
 
@@ -200,7 +215,9 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         });
         getOrCreateMethod.addParameter({
           name: 'props',
-          type: CORE_MODULE.CustomResourceProviderOptions,
+          type: scope.coreInternal
+            ? CUSTOM_RESOURCE_PROVIDER_OPTIONS.CustomResourceProviderOptions
+            : CORE_MODULE.CustomResourceProviderOptions,
           optional: true,
         });
         getOrCreateMethod.addBody(
@@ -225,7 +242,9 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         });
         getOrCreateProviderMethod.addParameter({
           name: 'props',
-          type: CORE_MODULE.CustomResourceProviderOptions,
+          type: scope.coreInternal
+            ? CUSTOM_RESOURCE_PROVIDER_OPTIONS.CustomResourceProviderOptions
+            : CORE_MODULE.CustomResourceProviderOptions,
           optional: true,
         });
         getOrCreateProviderMethod.addBody(
@@ -241,7 +260,9 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           ['runtimeName', expr.lit(props.runtime.name)],
         ]);
         this.buildConstructor({
-          constructorPropsType: CORE_MODULE.CustomResourceProviderOptions,
+          constructorPropsType: scope.coreInternal
+            ? CUSTOM_RESOURCE_PROVIDER_OPTIONS.CustomResourceProviderOptions
+            : CORE_MODULE.CustomResourceProviderOptions,
           superProps,
           constructorVisbility: MemberVisibility.Private,
           optionalConstructorProps: true,

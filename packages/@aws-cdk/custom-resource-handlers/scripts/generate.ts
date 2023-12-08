@@ -16,7 +16,7 @@ async function main() {
         fs.mkdirSync(path.dirname(outfile), { recursive: true });
         fs.copyFileSync(component.sourceCode, outfile);
       } else {
-        await bundleAndMinify(component.sourceCode, outfile);
+        await minifyAndBundle(component.sourceCode, outfile);
       }
       const sourceCodeDirectory = path.dirname(outfile).split('/').pop();
       module.build(component, `${sourceCodeDirectory}`);
@@ -43,7 +43,7 @@ async function main() {
   }
 }
 
-async function bundleAndMinify(infile: string, outfile: string) {
+async function minifyAndBundle(infile: string, outfile: string) {
   const result = await esbuild.build({
     entryPoints: [infile],
     outfile,
