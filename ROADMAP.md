@@ -32,7 +32,7 @@ Security and stability of the CDK is a top priority. If you think you’ve found
 
 ### User Experience 
 * 🚀 [App Staging Synthesizer for Resource Isolation](https://aws.amazon.com/blogs/devops/enhancing-resource-isolation-in-aws-cdk-with-the-app-staging-synthesizer/) - This feature enhances resource isolation and cleanup control by creating separate staging resources for each application
-* 👂🏽[CDK Refactoring](https://github.com/aws/aws-cdk-rfcs/issues/162) - We’re looking into providing built-in support for builder refactoring work.
+* 👂🏽 [CDK Refactoring](https://github.com/aws/aws-cdk-rfcs/issues/162) - We’re looking into providing built-in support for builder refactoring work.
 * 🛠️ [Understand deployment progress within CloudFormation](https://github.com/aws/aws-cdk-rfcs/issues/586) - This will help builders understand what CloudFormation is doing as deployments are in progress.
 
 ### Speed up development and testing 
