@@ -102,7 +102,7 @@ export interface CloudFormationStackNotificationCheckProps extends RuleProps {
    *
    * @default - No topics.
    */
-  readonly topics?: sns.ITopic[];
+  readonly topics?: sns.ICfnTopic[];
 }
 
 /**
@@ -123,7 +123,7 @@ export class CloudFormationStackNotificationCheck extends ManagedRule {
       ...props,
       identifier: ManagedRuleIdentifiers.CLOUDFORMATION_STACK_NOTIFICATION_CHECK,
       inputParameters: props.topics && props.topics.reduce(
-        (params, topic, idx) => ({ ...params, [`snsTopic${idx + 1}`]: topic.topicArn }),
+        (params, topic, idx) => ({ ...params, [`snsTopic${idx + 1}`]: topic.attrTopicArn }),
         {},
       ),
       ruleScope: RuleScope.fromResources([ResourceType.CLOUDFORMATION_STACK]),

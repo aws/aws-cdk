@@ -95,7 +95,7 @@ export interface TrailProps {
    *
    * @default - No notifications.
    */
-  readonly snsTopic?: sns.ITopic;
+  readonly snsTopic?: sns.ICfnTopic;
 
   /**
    * The name of the trail. We recommend customers do not set an explicit name.
@@ -262,7 +262,7 @@ export class Trail extends Resource {
       },
     }));
 
-    this.topic = props.snsTopic;
+    this.topic = props.snsTopic ? sns.Topic.fromCfnTopic(props.snsTopic) : undefined;
     if (this.topic) {
       this.topic.grantPublish(cloudTrailPrincipal);
     }

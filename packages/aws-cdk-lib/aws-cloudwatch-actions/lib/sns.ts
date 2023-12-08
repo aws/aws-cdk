@@ -6,13 +6,16 @@ import * as sns from '../../aws-sns';
  * Use an SNS topic as an alarm action
  */
 export class SnsAction implements cloudwatch.IAlarmAction {
-  constructor(private readonly topic: sns.ITopic) {
+  private readonly _topic: sns.ITopic;
+
+  constructor(topic: sns.ICfnTopic) {
+    this._topic = sns.Topic.fromCfnTopic(topic);
   }
 
   /**
    * Returns an alarm action configuration to use an SNS topic as an alarm action
    */
   public bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
-    return { alarmActionArn: this.topic.topicArn };
+    return { alarmActionArn: this._topic.attrTopicArn };
   }
 }

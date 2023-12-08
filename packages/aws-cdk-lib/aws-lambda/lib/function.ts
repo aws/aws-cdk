@@ -287,7 +287,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - no SNS topic
    */
-  readonly deadLetterTopic?: sns.ITopic;
+  readonly deadLetterTopic?: sns.ICfnTopic;
 
   /**
    * Enable AWS X-Ray Tracing for Lambda Function.
@@ -875,13 +875,13 @@ export class Function extends FunctionBase {
       this.addEnvironment(key, value);
     }
 
-    // DLQ can be either sns.ITopic or sqs.IQueue
+    // DLQ can be either sns.ICfnTopic or sqs.IQueue
     const dlqTopicOrQueue = this.buildDeadLetterQueue(props);
     if (dlqTopicOrQueue !== undefined) {
       if (this.isQueue(dlqTopicOrQueue)) {
         this.deadLetterQueue = dlqTopicOrQueue;
       } else {
-        this.deadLetterTopic = dlqTopicOrQueue;
+        this.deadLetterTopic = sns.Topic.fromCfnTopic(dlqTopicOrQueue);
       }
     }
 
@@ -1467,11 +1467,11 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     return props.snapStart._render();
   }
 
-  private isQueue(deadLetterQueue: sqs.IQueue | sns.ITopic): deadLetterQueue is sqs.IQueue {
+  private isQueue(deadLetterQueue: sqs.IQueue | sns.ICfnTopic): deadLetterQueue is sqs.IQueue {
     return (<sqs.IQueue>deadLetterQueue).queueArn !== undefined;
   }
 
-  private buildDeadLetterQueue(props: FunctionProps): sqs.IQueue | sns.ITopic | undefined {
+  private buildDeadLetterQueue(props: FunctionProps): sqs.IQueue | sns.ICfnTopic | undefined {
     if (!props.deadLetterQueue && !props.deadLetterQueueEnabled && !props.deadLetterTopic) {
       return undefined;
     }
@@ -1484,10 +1484,10 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
 
     let deadLetterQueue: sqs.IQueue | sns.ITopic;
     if (props.deadLetterTopic) {
-      deadLetterQueue = props.deadLetterTopic;
+      deadLetterQueue = sns.Topic.fromCfnTopic(props.deadLetterTopic);
       this.addToRolePolicy(new iam.PolicyStatement({
         actions: ['sns:Publish'],
-        resources: [deadLetterQueue.topicArn],
+        resources: [deadLetterQueue.attrTopicArn],
       }));
     } else {
       deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
@@ -1502,10 +1502,10 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     return deadLetterQueue;
   }
 
-  private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue | sns.ITopic) {
+  private buildDeadLetterConfig(deadLetterQueue?: sqs.IQueue | sns.ICfnTopic) {
     if (deadLetterQueue) {
       return {
-        targetArn: this.isQueue(deadLetterQueue) ? deadLetterQueue.queueArn : deadLetterQueue.topicArn,
+        targetArn: this.isQueue(deadLetterQueue) ? deadLetterQueue.queueArn : deadLetterQueue.attrTopicArn,
       };
     } else {
       return undefined;

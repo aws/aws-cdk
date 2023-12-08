@@ -1746,7 +1746,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     return this.notifications.map(notification => ({
-      topicArn: notification.topic.topicArn,
+      topicArn: notification.topic.attrTopicArn,
       notificationTypes: notification.scalingEvents ? notification.scalingEvents._types : ScalingEvents.ALL._types,
     }));
   }
@@ -1874,7 +1874,7 @@ export interface NotificationConfiguration {
   /**
    * SNS topic to send notifications about fleet scaling events
    */
-  readonly topic: sns.ITopic;
+  readonly topic: sns.ICfnTopic;
 
   /**
    * Which fleet scaling events triggers a notification

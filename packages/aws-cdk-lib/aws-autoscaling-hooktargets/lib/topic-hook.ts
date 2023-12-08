@@ -7,7 +7,10 @@ import * as sns from '../../aws-sns';
  * Use an SNS topic as a hook target
  */
 export class TopicHook implements autoscaling.ILifecycleHookTarget {
-  constructor(private readonly topic: sns.ITopic) {
+  private readonly _topic: sns.ITopic;
+
+  constructor(topic: sns.ICfnTopic) {
+    this._topic = sns.Topic.fromCfnTopic(topic);
   }
 
   /**
@@ -18,10 +21,10 @@ export class TopicHook implements autoscaling.ILifecycleHookTarget {
    */
   public bind(_scope: Construct, options: autoscaling.BindHookTargetOptions): autoscaling.LifecycleHookTargetConfig {
     const role = createRole(_scope, options.role);
-    this.topic.grantPublish(role);
+    this._topic.grantPublish(role);
 
     return {
-      notificationTargetArn: this.topic.topicArn,
+      notificationTargetArn: this._topic.attrTopicArn,
       createdRole: role,
     };
   }

@@ -26,7 +26,7 @@ export class EmailSubscription implements sns.ITopicSubscription {
   /**
    * Returns a configuration for an email address to subscribe to an SNS topic
    */
-  public bind(_topic: sns.ITopic): sns.TopicSubscriptionConfig {
+  public bind(_topic: sns.ICfnTopic): sns.TopicSubscriptionConfig {
     return {
       subscriberId: this.emailAddress,
       endpoint: this.emailAddress,

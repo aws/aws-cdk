@@ -6,7 +6,10 @@ import * as sns from '../../aws-sns';
  * Use a SNS topic as a Lambda destination
  */
 export class SnsDestination implements lambda.IDestination {
-  constructor(private readonly topic: sns.ITopic) {
+  private readonly _topic: sns.ITopic;
+
+  constructor(topic: sns.ICfnTopic) {
+    this._topic = sns.Topic.fromCfnTopic(topic);
   }
 
   /**
@@ -14,10 +17,10 @@ export class SnsDestination implements lambda.IDestination {
    */
   public bind(_scope: Construct, fn: lambda.IFunction, _options?: lambda.DestinationOptions): lambda.DestinationConfig {
     // deduplicated automatically
-    this.topic.grantPublish(fn);
+    this._topic.grantPublish(fn);
 
     return {
-      destination: this.topic.topicArn,
+      destination: this._topic.attrTopicArn,
     };
   }
 }

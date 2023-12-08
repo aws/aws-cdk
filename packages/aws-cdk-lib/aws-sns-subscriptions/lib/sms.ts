@@ -14,7 +14,7 @@ export class SmsSubscription implements sns.ITopicSubscription {
   constructor(private readonly phoneNumber: string, private readonly props: SmsSubscriptionProps = {}) {
   }
 
-  public bind(_topic: sns.ITopic): sns.TopicSubscriptionConfig {
+  public bind(_topic: sns.ICfnTopic): sns.TopicSubscriptionConfig {
     return {
       subscriberId: this.phoneNumber,
       endpoint: this.phoneNumber,

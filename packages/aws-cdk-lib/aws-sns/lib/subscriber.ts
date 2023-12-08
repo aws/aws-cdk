@@ -1,6 +1,6 @@
 import { Construct, IDependable } from 'constructs';
 import { SubscriptionOptions } from './subscription';
-import { ITopic } from './topic-base';
+import { ICfnTopic } from './sns.generated';
 
 /**
  * Subscription configuration
@@ -44,5 +44,5 @@ export interface ITopicSubscription {
    *
    * @param topic topic for which subscription will be configured
    */
-  bind(topic: ITopic): TopicSubscriptionConfig;
+  bind(topic: ICfnTopic): TopicSubscriptionConfig;
 }

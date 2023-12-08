@@ -8,7 +8,7 @@ export interface StopProps {
   /**
    * The SNS topic to notify when the stop action is taken.
    */
-  readonly topic?: sns.ITopic;
+  readonly topic?: sns.ICfnTopic;
 }
 
 /**
@@ -23,7 +23,7 @@ export class Stop implements ses.IReceiptRuleAction {
     return {
       stopAction: {
         scope: 'RuleSet',
-        topicArn: this.props.topic?.topicArn,
+        topicArn: this.props.topic?.attrTopicArn,
       },
     };
   }

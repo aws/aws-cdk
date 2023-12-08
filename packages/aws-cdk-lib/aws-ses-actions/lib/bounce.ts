@@ -83,7 +83,7 @@ export interface BounceProps {
    *
    * @default no notification
    */
-  readonly topic?: sns.ITopic;
+  readonly topic?: sns.ICfnTopic;
 }
 
 /**
@@ -100,7 +100,7 @@ export class Bounce implements ses.IReceiptRuleAction {
         sender: this.props.sender,
         smtpReplyCode: this.props.template.props.smtpReplyCode,
         message: this.props.template.props.message,
-        topicArn: this.props.topic?.topicArn,
+        topicArn: this.props.topic?.attrTopicArn,
         statusCode: this.props.template.props.statusCode,
       },
     };

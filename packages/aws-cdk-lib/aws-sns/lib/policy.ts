@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnTopicPolicy } from './sns.generated';
-import { ITopic } from './topic-base';
+import { ICfnTopic } from './sns.generated';
 import { PolicyDocument } from '../../aws-iam';
 import { Resource } from '../../core';
 
@@ -11,7 +11,7 @@ export interface TopicPolicyProps {
   /**
    * The set of topics this policy applies to.
    */
-  readonly topics: ITopic[];
+  readonly topics: ICfnTopic[];
   /**
    * IAM policy document to apply to topic(s).
    * @default empty policy document
@@ -53,7 +53,7 @@ export class TopicPolicy extends Resource {
 
     new CfnTopicPolicy(this, 'Resource', {
       policyDocument: this.document,
-      topics: props.topics.map(t => t.topicArn),
+      topics: props.topics.map(t => t.attrTopicArn),
     });
   }
 }

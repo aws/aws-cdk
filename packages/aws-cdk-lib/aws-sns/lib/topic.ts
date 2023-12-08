@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { CfnTopic } from './sns.generated';
+import { CfnTopic, ICfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 import { IKey } from '../../aws-kms';
 import { ArnFormat, Names, Stack } from '../../core';
@@ -72,6 +72,48 @@ export class Topic extends TopicBase {
     return new Import(scope, id, {
       environmentFromArn: topicArn,
     });
+  }
+
+  /**
+   * Create a mutable `ITopic` out of a `ICfnTopic`.
+   */
+  public static fromCfnTopic(cfnTopic: ICfnTopic): ITopic {
+    function isITopic(x: any): x is ITopic {
+      return (<ITopic>x).grantPublish !== undefined;
+    }
+
+    // if cfnTopic is already an ITopic, just return itself
+    if (isITopic(cfnTopic)) { return cfnTopic; }
+
+    // use a "weird" id that has a higher chance of being unique
+    const id = '@FromCfnTopic';
+
+    // if fromCfnTopic() was already called on this cfnTopic, return the same L2
+    const existing = cfnTopic.node.tryFindChild(id);
+    if (existing) { return <ITopic>existing; }
+
+    // if cfnTopic is not a CfnResource, and thus not a CfnTopic, then we are in a scenario
+    // where cfnTopic is an ICfnTopic but NOT a CfnTopic, which is likely an error.
+    if (!CfnTopic.isCfnResource(cfnTopic)) {
+      throw new Error('Encountered an "ICfnTopic" that is not an "ITopic" or "CfnTopic". If you have a legitimate reason for this, please open an issue at https://github.com/aws/aws-cdk/issues');
+    }
+
+    const _cfnTopic = cfnTopic as CfnTopic;
+
+    return new class extends TopicBase {
+      public readonly attrTopicArn = cfnTopic.attrTopicArn;
+      public readonly topicArn = this.attrTopicArn;
+      public readonly topicName = Stack.of(cfnTopic).splitArn(this.attrTopicArn, ArnFormat.NO_RESOURCE_NAME).resource;
+      public readonly fifo = this.topicName.endsWith('.fifo');
+      public readonly contentBasedDeduplication = false;
+      protected autoCreatePolicy: boolean = false;
+
+      constructor() {
+        super(_cfnTopic, id);
+
+        this.node.defaultChild = _cfnTopic;
+      }
+    }();
   }
 
   public readonly topicArn: string;
