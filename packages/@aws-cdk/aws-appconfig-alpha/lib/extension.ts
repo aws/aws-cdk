@@ -444,7 +444,7 @@ export class Extension extends Resource implements IExtension {
   /**
    * The name of the extension.
    */
-  public readonly name: string;
+  public readonly name?: string;
 
   /**
    * The description of the extension.
@@ -565,7 +565,7 @@ export interface IExtension extends IResource {
   /**
    * The name of the extension.
    */
-  readonly name: string;
+  readonly name?: string;
 
   /**
    * The description of the extension.
