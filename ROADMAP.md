@@ -95,8 +95,6 @@ A: Your feedback and suggestions would help in ensuring that we are working on t
 **Q: Why are there no dates on your roadmap?**
 A: Because security and operational stability are our highest priorities, the above new features cannot be provided specific target dates. The roadmap is subject to change at any time, and roadmap issues in this repository do not guarantee a feature will be launched as proposed.
 
-
-
 **Q: Is everything on the roadmap?**
 A: We will publish high-level direction that is within the scope of the CDK. Minor features and performance improvement tasks are not on the roadmap currently, but we are constantly trying to improve the roadmap so please leave your suggestions [here](https://github.com/aws/aws-sam-cli/issues/3267).
 
