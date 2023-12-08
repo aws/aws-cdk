@@ -685,11 +685,11 @@ export abstract class BaseService extends Resource
     // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
     } else if ((!props.deploymentController ||
       props.deploymentController?.type === DeploymentControllerType.ECS) && this.deploymentAlarmsAvailableInRegion()) {
-      this.deploymentAlarms = {
-        alarmNames: [],
-        enable: false,
-        rollback: false,
-      };
+      // this.deploymentAlarms = {
+      //   alarmNames: [],
+      //   enable: false,
+      //   rollback: false,
+      // };
     }
 
     this.node.defaultChild = this.resource;
