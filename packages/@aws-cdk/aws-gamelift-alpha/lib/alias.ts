@@ -8,12 +8,11 @@ import { CfnAlias } from 'aws-cdk-lib/aws-gamelift';
  * Represents a Gamelift Alias for a Gamelift fleet destination.
  */
 export interface IAlias extends cdk.IResource, IGameSessionQueueDestination {
-
   /**
-     * The Identifier of the alias.
-     *
-     * @attribute
-     */
+   * The Identifier of the alias.
+   *
+   * @attribute
+   */
   readonly aliasId: string;
 
   /**
@@ -29,10 +28,10 @@ export interface IAlias extends cdk.IResource, IGameSessionQueueDestination {
  */
 export interface AliasOptions {
   /**
-     * Description for the alias
-     *
-     * @default No description
-     */
+   * Description for the alias
+   *
+   * @default No description
+   */
   readonly description?: string;
 }
 
@@ -41,21 +40,21 @@ export interface AliasOptions {
  */
 export interface AliasAttributes {
   /**
-       * The ARN of the alias
-       *
-       * At least one of `aliasArn` and `aliasId` must be provided.
-       *
-       * @default derived from `aliasId`.
-       */
+   * The ARN of the alias
+   *
+   * At least one of `aliasArn` and `aliasId` must be provided.
+   *
+   * @default derived from `aliasId`.
+   */
   readonly aliasArn?: string;
 
   /**
-     * The identifier of the alias
-     *
-     * At least one of `aliasId` and `aliasArn`  must be provided.
-     *
-     * @default derived from `aliasArn`.
-     */
+   * The identifier of the alias
+   *
+   * At least one of `aliasId` and `aliasArn`  must be provided.
+   *
+   * @default derived from `aliasArn`.
+   */
   readonly aliasId?: string;
 }
 
@@ -64,15 +63,15 @@ export interface AliasAttributes {
  */
 export interface AliasProps {
   /**
-     * Name of this alias
-     */
+   * Name of this alias
+   */
   readonly aliasName: string;
 
   /**
-     * A human-readable description of the alias
-     *
-     * @default no description
-     */
+   * A human-readable description of the alias
+   *
+   * @default no description
+   */
   readonly description?: string;
 
   /**
@@ -100,13 +99,15 @@ export interface AliasProps {
  */
 export abstract class AliasBase extends cdk.Resource implements IAlias {
   /**
- * The Identifier of the alias.
- */
+   * The Identifier of the alias.
+   */
   public abstract readonly aliasId: string;
+
   /**
    * The ARN of the alias
    */
   public abstract readonly aliasArn: string;
+
   /**
    * The ARN to put into the destination field of a game session queue
    */
@@ -132,7 +133,6 @@ export abstract class AliasBase extends cdk.Resource implements IAlias {
  * @resource AWS::GameLift::Alias
  */
 export class Alias extends AliasBase {
-
   /**
    * Import an existing alias from its identifier.
    */
@@ -248,4 +248,3 @@ export class Alias extends AliasBase {
     };
   }
 }
-
