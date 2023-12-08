@@ -6,7 +6,6 @@ Follow [CDK Live!](https://www.youtube.com/@CDK-Live) and [cdk.dev](https://cdk.
 
 Security and stability of the CDK is a top priority. If you think you’ve found a potential security issue, please do not post it as an issue or a discussion thread in this repository. Instead, please follow the instructions [here](https://aws.amazon.com/security/vulnerability-reporting/) or directly email [AWS security](mailto:aws-security@amazon.com).
 
-
 [aws-cdk]: https://github.com/aws/aws-cdk
 [aws-cdk-rfcs]: https://github.com/aws/aws-cdk-rfcs
 [jsii]: https://github.com/aws/jsii
@@ -57,7 +56,6 @@ We would love to hear from you on how the CDK operates today and how it should g
 
 ![image](https://github.com/aws/aws-cdk/assets/142322013/ea006330-caa7-4c00-8eba-8e8fe379ef6b)
 
-
 Listening and working with the open source community is really important to us. If you would like to give us your feedback on how we are doing, feel free to reach out to our team via cdk.dev slack.
 
 ## Educational Content
@@ -86,11 +84,8 @@ The AWS CDK team values feedback and guidance from its community of users, altho
 
 ## FAQs
 
-
 **Q: Why did you build an open roadmap?**
 A: Your feedback and suggestions would help in ensuring that we are working on the most important and impactful issues. And if you are making decisions and plans based on what we are developing, this will provide insights on what is coming down the road for the CDK.
-
-
 
 **Q: Why are there no dates on your roadmap?**
 A: Because security and operational stability are our highest priorities, the above new features cannot be provided specific target dates. The roadmap is subject to change at any time, and roadmap issues in this repository do not guarantee a feature will be launched as proposed.
@@ -98,12 +93,8 @@ A: Because security and operational stability are our highest priorities, the ab
 **Q: Is everything on the roadmap?**
 A: We will publish high-level direction that is within the scope of the CDK. Minor features and performance improvement tasks are not on the roadmap currently, but we are constantly trying to improve the roadmap so please leave your suggestions [here](https://github.com/aws/aws-sam-cli/issues/3267).
 
-
-
 **Q: How can I provide feedback or ask for more information?**
 A: When in doubt, please create an issue! Issues will be reviewed and/or forwarded appropriately. A great time to provide feedback is when the project is in Exploration, RFC stage, or when the feature is in beta release. As always, we listen to your feedback and adapt our plans if needed.
-
-
 
 **Q: Can I 👍🏽 existing issues?**
 A: We strongly encourage you to do so, as it helps us understand which issues will have the widest impact. You can navigate to the issue details page and add a reaction (👍🏽).
