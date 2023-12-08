@@ -303,6 +303,24 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
     this.extensible.addExtension(extension);
   }
 
+  /**
+   * Deploys the configuration to the specified environment.
+   *
+   * @param environment The environment to deploy the configuration to
+   */
+  public deploy(environment: IEnvironment) {
+    const logicalId = `Deployment${this.getDeploymentHash(environment)}`;
+    new CfnDeployment(this, logicalId, {
+      applicationId: this.application.applicationId,
+      configurationProfileId: this.configurationProfileId,
+      deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
+      environmentId: environment.environmentId,
+      configurationVersion: this.versionNumber!,
+      description: this.description,
+      kmsKeyIdentifier: this.deploymentKey?.keyArn,
+    });
+  }
+
   protected addExistingEnvironmentsToApplication() {
     this.deployTo?.forEach((environment) => {
       if (!this.application.environments.includes(environment)) {
@@ -320,16 +338,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
       if ((this.deployTo && !this.deployTo.includes(environment))) {
         return;
       }
-      const logicalId = `Deployment${this.getDeploymentHash(environment)}`;
-      new CfnDeployment(this, logicalId, {
-        applicationId: this.application.applicationId,
-        configurationProfileId: this.configurationProfileId,
-        deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
-        environmentId: environment.environmentId,
-        configurationVersion: this.versionNumber!,
-        description: this.description,
-        kmsKeyIdentifier: this.deploymentKey?.keyArn,
-      });
+      this.deploy(environment);
     });
   }
 }
