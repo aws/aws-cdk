@@ -16,8 +16,12 @@ export class CdkHandlerFrameworkModule extends Module {
   private readonly renderer = new TypeScriptRenderer();
   private readonly externalModules = new Map<string, boolean>();
   private readonly _interfaces = new Map<string, InterfaceType>();
-  public readonly coreInternal: boolean;
   private hasComponents = false;
+
+  /**
+   * Whether the module being generated will live inside of aws-cdk-lib/core
+   */
+  public readonly coreInternal: boolean;
 
   public constructor(fqn: string) {
     super(fqn);
