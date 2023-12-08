@@ -706,7 +706,7 @@
        {
         "Ref": "EmrCreateClusterServiceRole5251910D"
        },
-       "\",\"Applications\":[{\"Name\":\"Spark\"}],\"ReleaseLabel\":\"emr-6.13.0\",\"SecurityConfiguration\":\"AddStepRuntimeRoleSecConfig\",\"Tags\":[{\"Key\":\"Key\",\"Value\":\"Value\"}],\"VisibleToAllUsers\":true}},\"EmrAddStep\":{\"Next\":\"EmrTerminateCluster\",\"Type\":\"Task\",\"ResultPath\":null,\"Resource\":\"arn:",
+       "\",\"Applications\":[{\"Name\":\"Spark\"}],\"ReleaseLabel\":\"emr-6.13.0\",\"SecurityConfiguration\":\"AddStepRuntimeRoleSecConfig\",\"Tags\":[{\"Key\":\"Key\",\"Value\":\"Value\"},{\"Key\":\"for-use-with-amazon-emr-managed-policies\",\"Value\":\"true\"}],\"VisibleToAllUsers\":true}},\"EmrAddStep\":{\"Next\":\"EmrTerminateCluster\",\"Type\":\"Task\",\"ResultPath\":null,\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },

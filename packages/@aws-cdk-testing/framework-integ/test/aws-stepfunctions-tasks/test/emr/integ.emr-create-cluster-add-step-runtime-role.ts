@@ -60,7 +60,8 @@ const createClusterStep = new tasks.EmrCreateCluster(stack, 'EmrCreateCluster', 
   releaseLabel: 'emr-6.13.0',
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
   tags: {
-    Key: 'Value',
+    'Key': 'Value',
+    'for-use-with-amazon-emr-managed-policies': 'true',
   },
   securityConfiguration: cfnSecurityConfiguration.name,
   applications: [
