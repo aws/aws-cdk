@@ -254,10 +254,49 @@ export const config: HandlerFrameworkConfig = {
     'bucket-deployment-provider': [
       {
         type: ComponentType.CDK_SINGLETON_FUNCTION,
-        name: 'BucketDeploymentProvider',
+        name: 'BucketDeploymentFunction',
         sourceCode: path.resolve(__dirname, '..', 'aws-s3-deployment', 'bucket-deployment-handler', 'index.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_9],
         disableBundleAndMinify: true,
+      },
+    ],
+  },
+  'aws-ses': {
+    'drop-spam-provider': [
+      {
+        type: ComponentType.CDK_SINGLETON_FUNCTION,
+        name: 'DropSpamFunction',
+        sourceCode: path.resolve(__dirname, '..', 'aws-ses', 'drop-spam-handler', 'index.ts'),
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
+      },
+    ],
+  },
+  'aws-stepfunctions-tasks': {
+    'eval-nodejs-provider': [
+      {
+        type: ComponentType.CDK_SINGLETON_FUNCTION,
+        name: 'EvalNodeJsFunction',
+        sourceCode: path.resolve(__dirname, '..', 'aws-stepfunctions-tasks', 'eval-nodejs-handler', 'index.ts'),
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
+      },
+    ],
+    'role-policy-provider': [
+      {
+        type: ComponentType.CDK_SINGLETON_FUNCTION,
+        name: 'RolePolicyFunction',
+        sourceCode: path.resolve(__dirname, '..', 'aws-stepfunctions-tasks', 'role-policy-handler', 'index.py'),
+        compatibleRuntimes: [Runtime.PYTHON_3_9],
+        disableBundleAndMinify: true,
+      },
+    ],
+  },
+  'aws-synthetics': {
+    'auto-delete-underlying-resources-provider': [
+      {
+        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        name: 'AutoDeleteUnderlyingResourcesProvider',
+        sourceCode: path.resolve(__dirname, '..', 'aws-synthetics', 'auto-delete-underlying-resources-handler', 'index.ts'),
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
   },
@@ -286,6 +325,26 @@ export const config: HandlerFrameworkConfig = {
         type: ComponentType.CDK_SINGLETON_FUNCTION,
         name: 'AwsCustomResourceFunction',
         sourceCode: path.resolve(__dirname, '..', 'custom-resources', 'aws-custom-resource-handler', 'index.ts'),
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
+      },
+    ],
+  },
+  'pipelines': {
+    'approve-lambda': [
+      {
+        type: ComponentType.CDK_FUNCTION,
+        name: 'ApproveLambdaFunction',
+        sourceCode: path.resolve(__dirname, '..', 'pipelines', 'approve-lambda', 'index.ts'),
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
+      },
+    ],
+  },
+  'triggers': {
+    'trigger-provider': [
+      {
+        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        name: 'TriggerProvider',
+        sourceCode: path.resolve(__dirname, '..', 'triggers', 'lambda', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
