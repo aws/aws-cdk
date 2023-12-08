@@ -1,9 +1,51 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { ClassType, stmt, expr, Type, ExternalModule, PropertySpec, InterfaceSpec, InterfaceType } from '@cdklabs/typewriter';
-import { CdkHandlerFrameworkConstructor } from './constructors';
+import {
+  ClassType,
+  stmt,
+  expr,
+  Type,
+  Splat,
+  ExternalModule,
+  PropertySpec,
+  InterfaceSpec,
+  InterfaceType,
+  ObjectLiteral,
+  MemberVisibility,
+  SuperInitializer,
+  Expression,
+} from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkModule } from './framework';
 import { CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
 import { Runtime } from './runtime';
+
+/**
+ * Initialization properties for a class constructor.
+ */
+interface ConstructorBuildProps {
+  /**
+   * The props type used to create an instance of this class.
+   */
+  readonly constructorPropsType: Type;
+
+  /**
+   * Properties to pass up to the parent class.
+   */
+  readonly superProps: ObjectLiteral;
+
+  /**
+   * Whether the class constructor props are optional.
+   *
+   * @default false
+   */
+  readonly optionalConstructorProps?: boolean;
+
+  /**
+   * Visbility for the constructor.
+   *
+   * @default MemberVisbility.Public
+   */
+  readonly constructorVisbility?: MemberVisibility;
+}
 
 /**
  * Initialization properties used to build a `CdkHandlerFrameworkClass` instance.
@@ -39,11 +81,6 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
    */
   public static buildCdkFunction(scope: CdkHandlerFrameworkModule, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
     return new (class CdkFunction extends CdkHandlerFrameworkClass {
-      public readonly codeDirectory: string;
-      public readonly entrypoint: string;
-      public readonly runtime: Runtime;
-      public readonly constructorPropsType = LAMBDA_MODULE.FunctionOptions;
-
       protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE];
 
       public constructor() {
@@ -52,13 +89,21 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           extends: LAMBDA_MODULE.Function,
           export: true,
         });
-        this.codeDirectory = props.codeDirectory;
-        this.entrypoint = props.entrypoint ?? 'index.handler';
-        this.runtime = props.runtime;
 
         this.externalModules.forEach(module => scope.addExternalModule(module));
 
-        CdkHandlerFrameworkConstructor.forCdkFunction(this);
+        const superProps = new ObjectLiteral([
+          new Splat(expr.ident('props')),
+          ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
+          ['handler', expr.lit(props.entrypoint ?? 'index.handler')],
+          ['runtime', expr.directCode(props.runtime.toLambdaRuntime())],
+        ]);
+        this.buildConstructor({
+          constructorPropsType: LAMBDA_MODULE.FunctionOptions,
+          superProps,
+          optionalConstructorProps: true,
+          constructorVisbility: MemberVisibility.Public,
+        });
       }
     })();
   }
@@ -68,11 +113,6 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
    */
   public static buildCdkSingletonFunction(scope: CdkHandlerFrameworkModule, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
     return new (class CdkSingletonFunction extends CdkHandlerFrameworkClass {
-      public readonly codeDirectory: string;
-      public readonly entrypoint: string;
-      public readonly runtime: Runtime;
-      public readonly constructorPropsType: Type;
-
       protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE];
 
       public constructor() {
@@ -81,9 +121,6 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           extends: LAMBDA_MODULE.SingletonFunction,
           export: true,
         });
-        this.codeDirectory = props.codeDirectory;
-        this.entrypoint = props.entrypoint ?? 'index.handler';
-        this.runtime = props.runtime;
 
         this.externalModules.forEach(module => scope.addExternalModule(module));
 
@@ -113,9 +150,18 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           extends: [LAMBDA_MODULE.FunctionOptions],
           properties: [uuid, lambdaPurpose],
         });
-        this.constructorPropsType = _interface.type;
 
-        CdkHandlerFrameworkConstructor.forCdkFunction(this);
+        const superProps = new ObjectLiteral([
+          new Splat(expr.ident('props')),
+          ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
+          ['handler', expr.lit(props.entrypoint ?? 'index.handler')],
+          ['runtime', expr.directCode(props.runtime.toLambdaRuntime())],
+        ]);
+        this.buildConstructor({
+          constructorPropsType: _interface.type,
+          superProps,
+          constructorVisbility: MemberVisibility.Public,
+        });
       }
     })();
   }
@@ -125,11 +171,6 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
    */
   public static buildCdkCustomResourceProvider(scope: CdkHandlerFrameworkModule, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
     return new (class CdkCustomResourceProvider extends CdkHandlerFrameworkClass {
-      public readonly codeDirectory: string;
-      public readonly entrypoint: string;
-      public readonly runtime: Runtime;
-      public readonly constructorPropsType = CORE_MODULE.CustomResourceProviderOptions;
-
       protected readonly externalModules = [CONSTRUCTS_MODULE, CORE_MODULE];
 
       public constructor() {
@@ -138,9 +179,6 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           extends: CORE_MODULE.CustomResourceProviderBase,
           export: true,
         });
-        this.codeDirectory = props.codeDirectory;
-        this.entrypoint = props.entrypoint ?? 'index.handler';
-        this.runtime = props.runtime;
 
         this.externalModules.forEach(module => scope.addExternalModule(module));
 
@@ -163,6 +201,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         getOrCreateMethod.addParameter({
           name: 'props',
           type: CORE_MODULE.CustomResourceProviderOptions,
+          optional: true,
         });
         getOrCreateMethod.addBody(
           stmt.ret(expr.directCode('this.getOrCreateProvider(scope, uniqueid, props).serviceToken')),
@@ -187,6 +226,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         getOrCreateProviderMethod.addParameter({
           name: 'props',
           type: CORE_MODULE.CustomResourceProviderOptions,
+          optional: true,
         });
         getOrCreateProviderMethod.addBody(
           stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`')),
@@ -195,31 +235,20 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           stmt.ret(expr.directCode(`existing ?? new ${this.name}(stack, id, props)`)),
         );
 
-        CdkHandlerFrameworkConstructor.forCdkCustomResourceProvider(this);
+        const superProps = new ObjectLiteral([
+          new Splat(expr.ident('props')),
+          ['codeDirectory', expr.directCode(`path.join(__dirname, '${props.codeDirectory}')`)],
+          ['runtimeName', expr.lit(props.runtime.name)],
+        ]);
+        this.buildConstructor({
+          constructorPropsType: CORE_MODULE.CustomResourceProviderOptions,
+          superProps,
+          constructorVisbility: MemberVisibility.Private,
+          optionalConstructorProps: true,
+        });
       }
     })();
   }
-
-  /**
-   * A local file system directory with the provider's code. The code will be
-   * bundled into a zip asset and wired to the provider's AWS Lambda function.
-   */
-  public abstract readonly codeDirectory: string;
-
-  /**
-   * The name of the method within your code that Lambda calls to execute your function.
-   */
-  public abstract readonly entrypoint: string;
-
-  /**
-   * The runtime environment for the Lambda function.
-   */
-  public abstract readonly runtime: Runtime;
-
-  /**
-   * Properties used to initialize this class.
-   */
-  public abstract readonly constructorPropsType: Type;
 
   /**
    * External modules that this class depends on.
@@ -235,5 +264,27 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
     const _interface = new InterfaceType(scope, { ...spec });
     scope.registerInterface(_interface);
     return _interface;
+  }
+
+  private buildConstructor(props: ConstructorBuildProps) {
+    const init = this.addInitializer({
+      visibility: props.constructorVisbility,
+    });
+    const scope = init.addParameter({
+      name: 'scope',
+      type: CONSTRUCTS_MODULE.Construct,
+    });
+    const id = init.addParameter({
+      name: 'id',
+      type: Type.STRING,
+    });
+    init.addParameter({
+      name: 'props',
+      type: props.constructorPropsType,
+      optional: props.optionalConstructorProps,
+    });
+
+    const superInitializerArgs: Expression[] = [scope, id, props.superProps];
+    init.addBody(new SuperInitializer(...superInitializerArgs));
   }
 }
