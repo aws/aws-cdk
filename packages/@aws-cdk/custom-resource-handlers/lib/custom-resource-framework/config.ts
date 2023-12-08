@@ -58,9 +58,12 @@ export interface ConfigProps {
   readonly entrypoint?: string;
 
   /**
+   * Prevents the source code from being minified and bundled. This is needed for python
+   * files or for source code with a `require` import.
+   *
    * @default false
    */
-  readonly disableBundleAndMinify?: boolean;
+  readonly preventMinifyAndBundle?: boolean;
 }
 
 type HandlerFrameworkConfig = { [module: string]: { [identifier: string]: ConfigProps[] } };
@@ -133,7 +136,7 @@ export const config: HandlerFrameworkConfig = {
         sourceCode: path.resolve(__dirname, '..', 'aws-ecs', 'lambda-source', 'index.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_9],
         entrypoint: 'index.lambda_handler',
-        disableBundleAndMinify: true,
+        preventMinifyAndBundle: true,
       },
     ],
   },
@@ -160,35 +163,35 @@ export const config: HandlerFrameworkConfig = {
         name: 'KubectlFunction',
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'index.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_10],
-        disableBundleAndMinify: true,
+        preventMinifyAndBundle: true,
       },
       {
         type: ComponentType.CDK_NO_OP,
         name: 'ApplyHandler',
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'apply', '__init__.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_10],
-        disableBundleAndMinify: true,
+        preventMinifyAndBundle: true,
       },
       {
         type: ComponentType.CDK_NO_OP,
         name: 'GetHandler',
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'get', '__init__.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_10],
-        disableBundleAndMinify: true,
+        preventMinifyAndBundle: true,
       },
       {
         type: ComponentType.CDK_NO_OP,
         name: 'HelmHandler',
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'helm', '__init__.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_10],
-        disableBundleAndMinify: true,
+        preventMinifyAndBundle: true,
       },
       {
         type: ComponentType.CDK_NO_OP,
         name: 'PatchHandler',
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'patch', '__init__.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_10],
-        disableBundleAndMinify: true,
+        preventMinifyAndBundle: true,
       },
     ],
   },
@@ -249,6 +252,15 @@ export const config: HandlerFrameworkConfig = {
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
+    'notifications-resource-handler': [
+      {
+        type: ComponentType.CDK_NO_OP,
+        name: 'NotificationsResourceHandler',
+        sourceCode: path.resolve(__dirname, '..', 'aws-s3', 'notifications-resource-handler', 'index.py'),
+        compatibleRuntimes: [Runtime.PYTHON_3_9],
+        preventMinifyAndBundle: true,
+      },
+    ],
   },
   'aws-s3-deployment': {
     'bucket-deployment-provider': [
@@ -257,7 +269,7 @@ export const config: HandlerFrameworkConfig = {
         name: 'BucketDeploymentFunction',
         sourceCode: path.resolve(__dirname, '..', 'aws-s3-deployment', 'bucket-deployment-handler', 'index.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_9],
-        disableBundleAndMinify: true,
+        preventMinifyAndBundle: true,
       },
     ],
   },
@@ -286,7 +298,7 @@ export const config: HandlerFrameworkConfig = {
         name: 'RolePolicyFunction',
         sourceCode: path.resolve(__dirname, '..', 'aws-stepfunctions-tasks', 'role-policy-handler', 'index.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_9],
-        disableBundleAndMinify: true,
+        preventMinifyAndBundle: true,
       },
     ],
   },
@@ -309,13 +321,29 @@ export const config: HandlerFrameworkConfig = {
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
+    'cross-region-ssm-writer-provider': [
+      {
+        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        name: 'CrossRegionWriterProvider',
+        sourceCode: path.resolve(__dirname, '..', 'core', 'cross-region-ssm-writer-handler', 'index.ts'),
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
+      },
+    ],
+    'cross-region-ssm-reader-provider': [
+      {
+        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        name: 'CrossRegionReaderProvider',
+        sourceCode: path.resolve(__dirname, '..', 'core', 'cross-region-ssm-reader-handler', 'index.ts'),
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
+      },
+    ],
     'nodejs-entrypoint': [
       {
         type: ComponentType.CDK_NO_OP,
         name: 'NodejsEntrypointHandler',
         sourceCode: path.resolve(__dirname, '..', 'core', 'nodejs-entrypoint-handler', 'index.js'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
-        disableBundleAndMinify: true,
+        preventMinifyAndBundle: true,
       },
     ],
   },

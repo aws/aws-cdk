@@ -12,7 +12,7 @@ async function main() {
     const module = new CdkHandlerFrameworkModule(fqn);
     for (const component of components) {
       const outfile = calculateOutfile(component.sourceCode);
-      if (component.disableBundleAndMinify) {
+      if (component.preventMinifyAndBundle) {
         fs.mkdirSync(path.dirname(outfile), { recursive: true });
         fs.copyFileSync(component.sourceCode, outfile);
       } else {
