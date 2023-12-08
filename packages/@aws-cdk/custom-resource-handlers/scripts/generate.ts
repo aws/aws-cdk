@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
-import { config, ConfigProps } from '../lib/handler-framework/config';
-import { CdkHandlerFrameworkModule } from '../lib/handler-framework/framework';
+import { config, ConfigProps } from '../lib/custom-resource-framework/config';
+import { CdkHandlerFrameworkModule } from '../lib/custom-resource-framework/framework';
 
 const framework: { [renderLocation: string]: ConfigProps[] } = {};
 

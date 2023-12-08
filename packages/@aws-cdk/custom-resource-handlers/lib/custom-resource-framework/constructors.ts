@@ -31,7 +31,7 @@ export class CdkHandlerFrameworkConstructor {
     const superProps = new ObjectLiteral([
       new Splat(expr.ident('props')),
       ['codeDirectory', expr.directCode(`path.join(__dirname, '${_class.codeDirectory}')`)],
-      ['runtimeName', expr.directCode(_class.runtime.name)],
+      ['runtimeName', expr.lit(_class.runtime.name)],
     ]);
     CdkHandlerFrameworkConstructor.forClass(_class, superProps, MemberVisibility.Private);
   }

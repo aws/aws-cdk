@@ -3,7 +3,7 @@ import { ExternalModule, InterfaceType, Module, TypeScriptRenderer } from '@cdkl
 import * as fs from 'fs-extra';
 import { CdkHandlerClassProps, CdkHandlerFrameworkClass } from './classes';
 import { ComponentType, ConfigProps } from './config';
-import { HANDLER_FRAMEWORK_MODULE, CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE, PATH_MODULE } from './modules';
+import { CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE, PATH_MODULE } from './modules';
 import { Runtime } from './runtime';
 import { RuntimeDeterminer } from './runtime-determiner';
 
@@ -107,10 +107,6 @@ export class CdkHandlerFrameworkModule extends Module {
         }
         case LAMBDA_MODULE.fqn: {
           LAMBDA_MODULE.import(this, 'lambda');
-          break;
-        }
-        case HANDLER_FRAMEWORK_MODULE.fqn: {
-          HANDLER_FRAMEWORK_MODULE.importSelective(this, ['RuntimeDeterminer']);
           break;
         }
       }

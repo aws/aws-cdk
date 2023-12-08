@@ -2,7 +2,7 @@
 import { ClassType, stmt, expr, Type, ExternalModule, PropertySpec, InterfaceSpec, InterfaceType } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkConstructor } from './constructors';
 import { CdkHandlerFrameworkModule } from './framework';
-import { HANDLER_FRAMEWORK_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
+import { CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
 import { Runtime } from './runtime';
 
 /**
@@ -44,7 +44,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
       public readonly runtime: Runtime;
       public readonly constructorPropsType = LAMBDA_MODULE.FunctionOptions;
 
-      protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE, HANDLER_FRAMEWORK_MODULE];
+      protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE];
 
       public constructor() {
         super(scope, {
@@ -73,7 +73,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
       public readonly runtime: Runtime;
       public readonly constructorPropsType: Type;
 
-      protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE, HANDLER_FRAMEWORK_MODULE];
+      protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE];
 
       public constructor() {
         super(scope, {
@@ -130,7 +130,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
       public readonly runtime: Runtime;
       public readonly constructorPropsType = CORE_MODULE.CustomResourceProviderOptions;
 
-      protected readonly externalModules = [CONSTRUCTS_MODULE, CORE_MODULE, HANDLER_FRAMEWORK_MODULE];
+      protected readonly externalModules = [CONSTRUCTS_MODULE, CORE_MODULE];
 
       public constructor() {
         super(scope, {

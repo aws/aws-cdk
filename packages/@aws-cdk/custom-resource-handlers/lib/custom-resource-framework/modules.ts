@@ -15,14 +15,6 @@ class ConstructsModule extends ExternalModule {
   }
 }
 
-class HandlerFrameworkModule extends ExternalModule {
-  public readonly RuntimeDeterminer = Type.fromName(this, 'RuntimeDeterminer');
-
-  public constructor() {
-    super('../../../handler-framework/lib/runtime-determiner');
-  }
-}
-
 class CoreModule extends ExternalModule {
   public readonly CustomResourceProviderBase = Type.fromName(this, 'CustomResourceProviderBase');
   public readonly CustomResourceProviderOptions = Type.fromName(this, 'CustomResourceProviderOptions');
@@ -44,6 +36,5 @@ class LambdaModule extends ExternalModule {
 
 export const PATH_MODULE = new PathModule();
 export const CONSTRUCTS_MODULE = new ConstructsModule();
-export const HANDLER_FRAMEWORK_MODULE = new HandlerFrameworkModule();
 export const CORE_MODULE = new CoreModule();
 export const LAMBDA_MODULE = new LambdaModule();
