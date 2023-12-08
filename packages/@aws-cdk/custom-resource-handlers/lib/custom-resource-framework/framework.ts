@@ -59,10 +59,10 @@ export class CdkHandlerFrameworkModule extends Module {
   /**
    * Render built framework into an output file.
    */
-  public render(outputFileLocation: string) {
+  public render() {
     if (this.hasComponents) {
       this.importExternalModules();
-      fs.outputFileSync(`dist/${outputFileLocation}.generated.ts`, this.renderer.render(this));
+      fs.outputFileSync(`dist/${this.fqn}.generated.ts`, this.renderer.render(this));
     }
   }
 

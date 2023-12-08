@@ -4,12 +4,12 @@ import * as esbuild from 'esbuild';
 import { config, ConfigProps } from '../lib/custom-resource-framework/config';
 import { CdkHandlerFrameworkModule } from '../lib/custom-resource-framework/framework';
 
-const framework: { [renderLocation: string]: ConfigProps[] } = {};
+const framework: { [fqn: string]: ConfigProps[] } = {};
 
 async function main() {
   recurse(config, []);
-  for (const [renderLocation, components] of Object.entries(framework)) {
-    const module = new CdkHandlerFrameworkModule('cdk-handler-framework');
+  for (const [fqn, components] of Object.entries(framework)) {
+    const module = new CdkHandlerFrameworkModule(fqn);
     for (const component of components) {
       const outfile = calculateOutfile(component.sourceCode);
       if (component.disableBundleAndMinify) {
@@ -21,15 +21,15 @@ async function main() {
       const sourceCodeDirectory = path.dirname(outfile).split('/').pop();
       module.build(component, `${sourceCodeDirectory}`);
     }
-    module.render(renderLocation);
+    module.render();
   }
 
   function recurse(_config: any, _path: string[]) {
     // base case - this is a framework component array and we will build a module with
     // all defined components
     if (_config instanceof Array) {
-      const outputFileLocation = _path.join('/');
-      framework[outputFileLocation] = _config;
+      const fqn = _path.join('/');
+      framework[fqn] = _config;
       return;
     }
 

@@ -5,8 +5,16 @@ awscdklibdir=${scriptdir}/..
 customresourcedir=$(node -p "path.dirname(require.resolve('@aws-cdk/custom-resource-handlers/package.json'))")
 
 function airlift() {
-  mkdir -p $awscdklibdir/custom-resource-handlers/$1
-  cp $customresourcedir/$2 $awscdklibdir/custom-resource-handlers/$1
+  echo $1
+  # core needs to be airlifted directly to core to prevent circular dependencies
+  if [[ $1 = dist/core/* || $1 = dist/core ]];
+    then
+      mkdir -p $awscdklibdir/core/$1
+      cp $customresourcedir/$2 $awscdklibdir/core/$1
+    else
+      mkdir -p $awscdklibdir/custom-resource-handlers/$1
+      cp $customresourcedir/$2 $awscdklibdir/custom-resource-handlers/$1
+  fi
 }
 
 function recurse() {
