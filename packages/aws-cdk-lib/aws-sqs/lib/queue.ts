@@ -293,10 +293,11 @@ export class Queue extends QueueBase {
    * Create a mutable `IQueue` out of a `ICfnQueue`.
    */
   public static fromCfnQueue(cfnQueue: ICfnQueue): IQueue {
-    // if cfnQueue is already an IQueue, just return itself
-    if ((<IQueue>cfnQueue).grant !== undefined) {
-      return <IQueue>cfnQueue;
+    function isIQueue(x: any): x is IQueue {
+      return (<IQueue>x).grant !== undefined;
     }
+    // if cfnQueue is already an IQueue, just return itself
+    if (isIQueue(cfnQueue)) { return cfnQueue; }
 
     // use a "weird" id that has a higher chance of being unique
     const id = '@FromCfnQueue';
