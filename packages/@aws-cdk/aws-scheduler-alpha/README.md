@@ -147,7 +147,7 @@ These values must follow the format `yyyy-MM-ddTHH:mm:ss.SSSZ`.
 declare const target: targets.LambdaInvoke;
 
 new Schedule(this, 'Schedule', {
-    schedule: ScheduleExpression.rate(Duration.minutes(10)),
+    schedule: ScheduleExpression.rate(cdk.Duration.hours(12)),
     target: target,
     startDate: '2023-01-01T00:00:00.000Z',
     endDate: '2023-02-01T00:00:00.000Z',
