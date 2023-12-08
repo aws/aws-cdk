@@ -61,21 +61,19 @@ export interface ScheduleTargetProps {
 
 /**
  * A time window during which EventBridge Scheduler invokes the schedule.
- *
- * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-flexible-time-windows.html
  */
 export class FlexibleTimeWindowMode {
   /**
    * FlexibleTimeWindow is disabled.
    */
-  public static off(): FlexibleTimeWindowMode {
+  public static Off(): FlexibleTimeWindowMode {
     return new FlexibleTimeWindowMode('OFF');
   }
 
   /**
    * FlexibleTimeWindow is enabled.
    */
-  public static flexible(maximumWindowInMinutes: Duration): FlexibleTimeWindowMode {
+  public static Flexible(maximumWindowInMinutes: Duration): FlexibleTimeWindowMode {
     if (maximumWindowInMinutes.toMinutes() < 1 || maximumWindowInMinutes.toMinutes() > 1440) {
       throw new Error(`maximumWindowInMinutes must be between 1 and 1440, got ${maximumWindowInMinutes.toMinutes()}`);
     }
@@ -164,7 +162,7 @@ export interface ScheduleProps {
    *
    * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-flexible-time-windows.html
    *
-   * @default FlexibleTimeWindowMode.OFF()
+   * @default FlexibleTimeWindowMode.Off()
    */
   readonly flexibleTimeWindow?: FlexibleTimeWindowMode;
 }
@@ -307,7 +305,7 @@ export class Schedule extends Resource implements ISchedule {
 
     this.retryPolicy = targetConfig.retryPolicy;
 
-    const flexibleTimeWindow = props.flexibleTimeWindow ?? FlexibleTimeWindowMode.off();
+    const flexibleTimeWindow = props.flexibleTimeWindow ?? FlexibleTimeWindowMode.Off();
 
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,
