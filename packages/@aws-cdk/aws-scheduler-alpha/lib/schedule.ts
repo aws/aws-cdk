@@ -60,18 +60,46 @@ export interface ScheduleTargetProps {
 }
 
 /**
- * FlexibleTimeWindow mode for the schedule.
+ * A time window during which EventBridge Scheduler invokes the schedule.
+ *
+ * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-flexible-time-windows.html
  */
-export enum FlexibleTimeWindowMode {
+export class FlexibleTimeWindowMode {
   /**
    * FlexibleTimeWindow is disabled.
    */
-  OFF = 'OFF',
+  public static OFF(): FlexibleTimeWindowMode {
+    return new FlexibleTimeWindowMode('OFF');
+  }
 
   /**
    * FlexibleTimeWindow is enabled.
    */
-  FLEXIBLE = 'FLEXIBLE'
+  public static FLEXIBLE(maximumWindowInMinutes: Duration): FlexibleTimeWindowMode {
+    if (maximumWindowInMinutes.toMinutes() < 1 || maximumWindowInMinutes.toMinutes() > 1440) {
+      throw new Error(`maximumWindowInMinutes must be between 1 and 1440, got ${maximumWindowInMinutes.toMinutes()}`);
+    }
+    return new FlexibleTimeWindowMode('FLEXIBLE', maximumWindowInMinutes);
+  }
+
+  /**
+   * Determines whether the schedule is invoked within a flexible time window.
+   */
+  public readonly mode: string;
+
+  /**
+   * The maximum time window during which the schedule can be invoked.
+   *
+   * Must be between 1 to 1440 minutes.
+   *
+   * @default - Required if mode is FLEXIBLE.
+   */
+  public readonly maximumWindowInMinutes?: Duration;
+
+  private constructor(mode: string, maximumWindowInMinutes?: Duration) {
+    this.mode = mode;
+    this.maximumWindowInMinutes = maximumWindowInMinutes;
+  }
 }
 
 /**
@@ -132,22 +160,13 @@ export interface ScheduleProps {
   readonly key?: kms.IKey;
 
   /**
-   * Determines whether the schedule is invoked within a flexible time window.
+   * A time window during which EventBridge Scheduler invokes the schedule.
    *
    * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-flexible-time-windows.html
    *
-   * @default - FlexibleTimeWindowMode.OFF
+   * @default FlexibleTimeWindowMode.OFF()
    */
-  readonly flexibleTimeWindowMode?: FlexibleTimeWindowMode;
-
-  /**
-   * The maximum time window during which the schedule can be invoked.
-   *
-   * Must be between 1 to 1440 minutes.
-   *
-   * @default - Required if flexibleTimeWindowMode is FLEXIBLE.
-   */
-  readonly maximumWindowInMinutes?: Duration;
+  readonly flexibleTimeWindow?: FlexibleTimeWindowMode;
 }
 
 /**
@@ -288,9 +307,14 @@ export class Schedule extends Resource implements ISchedule {
 
     this.retryPolicy = targetConfig.retryPolicy;
 
+    const flexibleTimeWindow = props.flexibleTimeWindow ?? FlexibleTimeWindowMode.OFF();
+
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,
-      flexibleTimeWindow: this.renderFlexibleTimeWindow(props.flexibleTimeWindowMode, props.maximumWindowInMinutes),
+      flexibleTimeWindow: {
+        mode: flexibleTimeWindow.mode,
+        maximumWindowInMinutes: flexibleTimeWindow.maximumWindowInMinutes?.toMinutes(),
+      },
       scheduleExpression: props.schedule.expressionString,
       scheduleExpressionTimezone: props.schedule.timeZone?.timezoneName,
       groupName: this.group?.groupName,
@@ -339,28 +363,5 @@ export class Schedule extends Resource implements ISchedule {
 
     const isEmptyPolicy = Object.values(policy).every(value => value === undefined);
     return !isEmptyPolicy ? policy : undefined;
-  }
-
-  private renderFlexibleTimeWindow(
-    flexibleTimeWindowMode?: FlexibleTimeWindowMode, maximumWindowInMinutes?: Duration,
-  ): CfnSchedule.FlexibleTimeWindowProperty {
-    const mode = flexibleTimeWindowMode ?? FlexibleTimeWindowMode.OFF;
-
-    if (mode === FlexibleTimeWindowMode.OFF) {
-      return {
-        mode,
-      };
-    }
-
-    if (!maximumWindowInMinutes) {
-      throw new Error('maximumWindowInMinutes must be provided when flexibleTimeWindowMode is set to FLEXIBLE');
-    }
-    if (maximumWindowInMinutes.toMinutes() < 1 || maximumWindowInMinutes.toMinutes() > 1440) {
-      throw new Error(`maximumWindowInMinutes must be between 1 and 1440, got ${maximumWindowInMinutes.toMinutes()}`);
-    }
-    return {
-      mode,
-      maximumWindowInMinutes: maximumWindowInMinutes.toMinutes(),
-    };
   }
 }

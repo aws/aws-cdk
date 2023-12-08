@@ -150,8 +150,7 @@ describe('Schedule', () => {
       new Schedule(stack, 'TestSchedule', {
         schedule: expr,
         target: new SomeLambdaTarget(func, role),
-        flexibleTimeWindowMode: FlexibleTimeWindowMode.FLEXIBLE,
-        maximumWindowInMinutes: Duration.minutes(1440),
+        flexibleTimeWindow: FlexibleTimeWindowMode.FLEXIBLE(Duration.minutes(1440)),
       });
 
       // THEN
@@ -163,23 +162,12 @@ describe('Schedule', () => {
       });
     });
 
-    test('throw error when FlexibleTimeWindowMode is FLEXIBLE and maximumWindowInMinutes not provided', () => {
-      expect(() => {
-        new Schedule(stack, 'TestSchedule', {
-          schedule: expr,
-          target: new SomeLambdaTarget(func, role),
-          flexibleTimeWindowMode: FlexibleTimeWindowMode.FLEXIBLE,
-        });
-      }).toThrow('maximumWindowInMinutes must be provided when flexibleTimeWindowMode is set to FLEXIBLE');
-    });
-
     test('throw error when maximumWindowInMinutes is greater than 1440', () => {
       expect(() => {
         new Schedule(stack, 'TestSchedule', {
           schedule: expr,
           target: new SomeLambdaTarget(func, role),
-          flexibleTimeWindowMode: FlexibleTimeWindowMode.FLEXIBLE,
-          maximumWindowInMinutes: Duration.minutes(1441),
+          flexibleTimeWindow: FlexibleTimeWindowMode.FLEXIBLE(Duration.minutes(1441)),
         });
       }).toThrow('maximumWindowInMinutes must be between 1 and 1440, got 1441');
     });
@@ -189,8 +177,7 @@ describe('Schedule', () => {
         new Schedule(stack, 'TestSchedule', {
           schedule: expr,
           target: new SomeLambdaTarget(func, role),
-          flexibleTimeWindowMode: FlexibleTimeWindowMode.FLEXIBLE,
-          maximumWindowInMinutes: Duration.minutes(0),
+          flexibleTimeWindow: FlexibleTimeWindowMode.FLEXIBLE(Duration.minutes(0)),
         });
       }).toThrow('maximumWindowInMinutes must be between 1 and 1440, got 0');
     });

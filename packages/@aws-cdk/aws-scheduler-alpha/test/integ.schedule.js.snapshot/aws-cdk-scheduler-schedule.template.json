@@ -349,15 +349,16 @@
     }
    }
   },
-  "UseFlexibleTimeWindowBF55D3ED": {
+  "ScheduleWithTimeFrameC1C8BDCC": {
    "Type": "AWS::Scheduler::Schedule",
    "Properties": {
+    "EndDate": "2025-10-01T00:00:00.000Z",
     "FlexibleTimeWindow": {
-     "MaximumWindowInMinutes": 10,
-     "Mode": "FLEXIBLE"
+     "Mode": "OFF"
     },
     "ScheduleExpression": "rate(12 hours)",
     "ScheduleExpressionTimezone": "Etc/UTC",
+    "StartDate": "2024-04-15T06:30:00.000Z",
     "State": "ENABLED",
     "Target": {
      "Arn": {

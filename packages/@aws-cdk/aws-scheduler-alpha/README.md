@@ -229,8 +229,8 @@ const schedule = new Schedule(this, 'Schedule', {
 
 ## Configuring flexible time window
 
-You can configure flexible time windows by specifying the `flexibleTimeWindowMode` and `maximumWindowInMinutes` properties.
-By default, the `flexibleTimeWindowMode` is set to `OFF` and this feature is disabled.
+You can configure flexible time windows by specifying the `flexibleTimeWindow` property.
+By default, the mode of `flexibleTimeWindow` is set to `OFF` and this feature is disabled.
 
 ```ts
 declare const target: targets.LambdaInvoke;
@@ -238,8 +238,7 @@ declare const target: targets.LambdaInvoke;
 const schedule = new Schedule(this, 'Schedule', {
     schedule: ScheduleExpression.rate(Duration.hours(12)),
     target,
-    flexibleTimeWindowMode: FlexibleTimeWindowMode.FLEXIBLE,
-    maximumWindowInMinutes: Duration.minutes(10),
+    flexibleTimeWindow: FlexibleTimeWindowMode.FLEXIBLE(Duration.hours(10)),
 });
 ```
 

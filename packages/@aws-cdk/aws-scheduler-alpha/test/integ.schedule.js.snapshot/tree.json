@@ -616,22 +616,23 @@
               "version": "0.0.0"
             }
           },
-          "UseFlexibleTimeWindow": {
-            "id": "UseFlexibleTimeWindow",
-            "path": "aws-cdk-scheduler-schedule/UseFlexibleTimeWindow",
+          "ScheduleWithTimeFrame": {
+            "id": "ScheduleWithTimeFrame",
+            "path": "aws-cdk-scheduler-schedule/ScheduleWithTimeFrame",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-scheduler-schedule/UseFlexibleTimeWindow/Resource",
+                "path": "aws-cdk-scheduler-schedule/ScheduleWithTimeFrame/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
                   "aws:cdk:cloudformation:props": {
+                    "endDate": "2025-10-01T00:00:00.000Z",
                     "flexibleTimeWindow": {
-                      "mode": "FLEXIBLE",
-                      "maximumWindowInMinutes": 10
+                      "mode": "OFF"
                     },
                     "scheduleExpression": "rate(12 hours)",
                     "scheduleExpressionTimezone": "Etc/UTC",
+                    "startDate": "2024-04-15T06:30:00.000Z",
                     "state": "ENABLED",
                     "target": {
                       "arn": {
