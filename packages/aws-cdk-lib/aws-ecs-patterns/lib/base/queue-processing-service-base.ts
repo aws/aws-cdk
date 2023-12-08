@@ -38,8 +38,9 @@ export interface QueueProcessingServiceBaseProps {
 
   /**
    * The image used to start a container.
+   * Image or taskDefinition must be specified, but not both.
    */
-  readonly image: ContainerImage;
+  readonly image?: ContainerImage;
 
   /**
    * The command that is passed to the container.

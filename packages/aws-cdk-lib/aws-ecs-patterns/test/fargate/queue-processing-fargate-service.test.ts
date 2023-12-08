@@ -762,37 +762,19 @@ test('test Fargate queue worker service construct - with task definition', () =>
     cpu: 512,
     ephemeralStorageGiB: 30,
   });
+  taskDefinition.addContainer('QueueProcessingContainer', {
+    image: ecs.ContainerImage.fromRegistry('test'),
+  });
 
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
     vpc,
     taskDefinition,
-    image: ecs.ContainerImage.fromRegistry('test'),
   });
 
   // THEN - The separately created TaskDefinition is used. Memory is 1024, cpu is 512, and ephemeralStorage is 30
   Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       Match.objectLike({
-        Environment: [
-          {
-            Name: 'QUEUE_NAME',
-            Value: {
-              'Fn::GetAtt': ['ServiceEcsProcessingQueueC266885C', 'QueueName'],
-            },
-          },
-        ],
-        LogConfiguration: {
-          LogDriver: 'awslogs',
-          Options: {
-            'awslogs-group': {
-              Ref: 'TaskDefQueueProcessingContainerLogGroupBC6BD4C2',
-            },
-            'awslogs-stream-prefix': 'Service',
-            'awslogs-region': {
-              Ref: 'AWS::Region',
-            },
-          },
-        },
         Image: 'test',
       }),
     ],
