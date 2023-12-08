@@ -68,14 +68,14 @@ export class FlexibleTimeWindowMode {
   /**
    * FlexibleTimeWindow is disabled.
    */
-  public static OFF(): FlexibleTimeWindowMode {
+  public static off(): FlexibleTimeWindowMode {
     return new FlexibleTimeWindowMode('OFF');
   }
 
   /**
    * FlexibleTimeWindow is enabled.
    */
-  public static FLEXIBLE(maximumWindowInMinutes: Duration): FlexibleTimeWindowMode {
+  public static flexible(maximumWindowInMinutes: Duration): FlexibleTimeWindowMode {
     if (maximumWindowInMinutes.toMinutes() < 1 || maximumWindowInMinutes.toMinutes() > 1440) {
       throw new Error(`maximumWindowInMinutes must be between 1 and 1440, got ${maximumWindowInMinutes.toMinutes()}`);
     }
@@ -307,7 +307,7 @@ export class Schedule extends Resource implements ISchedule {
 
     this.retryPolicy = targetConfig.retryPolicy;
 
-    const flexibleTimeWindow = props.flexibleTimeWindow ?? FlexibleTimeWindowMode.OFF();
+    const flexibleTimeWindow = props.flexibleTimeWindow ?? FlexibleTimeWindowMode.off();
 
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,
