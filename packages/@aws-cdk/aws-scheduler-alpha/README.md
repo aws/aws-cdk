@@ -227,10 +227,10 @@ const schedule = new Schedule(this, 'Schedule', {
 
 > Visit [Data protection in Amazon EventBridge Scheduler](https://docs.aws.amazon.com/scheduler/latest/UserGuide/data-protection.html) for more details.
 
-## Configuring flexible time window
+## Configuring flexible time windows
 
 You can configure flexible time windows by specifying the `flexibleTimeWindow` property.
-By default, the mode of `flexibleTimeWindow` is set to `OFF` and this feature is disabled.
+Flexible time windows is disabled by default.
 
 ```ts
 declare const target: targets.LambdaInvoke;
@@ -238,7 +238,7 @@ declare const target: targets.LambdaInvoke;
 const schedule = new Schedule(this, 'Schedule', {
     schedule: ScheduleExpression.rate(Duration.hours(12)),
     target,
-    flexibleTimeWindow: FlexibleTimeWindowMode.Flexible(Duration.hours(10)),
+    flexibleTimeWindow: FlexibleTimeWindowMode.flexible(Duration.hours(10)),
 });
 ```
 

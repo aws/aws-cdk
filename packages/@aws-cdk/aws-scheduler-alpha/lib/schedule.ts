@@ -66,14 +66,14 @@ export class FlexibleTimeWindowMode {
   /**
    * FlexibleTimeWindow is disabled.
    */
-  public static Off(): FlexibleTimeWindowMode {
+  public static off(): FlexibleTimeWindowMode {
     return new FlexibleTimeWindowMode('OFF');
   }
 
   /**
    * FlexibleTimeWindow is enabled.
    */
-  public static Flexible(maximumWindowInMinutes: Duration): FlexibleTimeWindowMode {
+  public static flexible(maximumWindowInMinutes: Duration): FlexibleTimeWindowMode {
     if (maximumWindowInMinutes.toMinutes() < 1 || maximumWindowInMinutes.toMinutes() > 1440) {
       throw new Error(`maximumWindowInMinutes must be between 1 and 1440, got ${maximumWindowInMinutes.toMinutes()}`);
     }
@@ -162,7 +162,7 @@ export interface ScheduleProps {
    *
    * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-flexible-time-windows.html
    *
-   * @default FlexibleTimeWindowMode.Off()
+   * @default FlexibleTimeWindowMode.off()
    */
   readonly flexibleTimeWindow?: FlexibleTimeWindowMode;
 }
@@ -305,7 +305,7 @@ export class Schedule extends Resource implements ISchedule {
 
     this.retryPolicy = targetConfig.retryPolicy;
 
-    const flexibleTimeWindow = props.flexibleTimeWindow ?? FlexibleTimeWindowMode.Off();
+    const flexibleTimeWindow = props.flexibleTimeWindow ?? FlexibleTimeWindowMode.off();
 
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,
