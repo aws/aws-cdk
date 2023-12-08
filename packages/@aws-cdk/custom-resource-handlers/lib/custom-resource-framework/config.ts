@@ -1,5 +1,6 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as path from 'path';
-import { Runtime } from './runtime';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 
 /**
  * Handler framework component types.

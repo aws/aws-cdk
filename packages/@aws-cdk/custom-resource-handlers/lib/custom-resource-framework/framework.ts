@@ -1,17 +1,17 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { ExternalModule, InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as fs from 'fs-extra';
 import { CdkHandlerClassProps, CdkHandlerFrameworkClass } from './classes';
 import { ComponentType, ConfigProps } from './config';
 import { CONSTRUCTS_MODULE, CORE_MODULE, CUSTOM_RESOURCE_PROVIDER_BASE, CUSTOM_RESOURCE_PROVIDER_OPTIONS, LAMBDA_MODULE, PATH_MODULE, STACK } from './modules';
-import { Runtime } from './runtime';
-import { RuntimeDeterminer } from './runtime-determiner';
+import { RuntimeDeterminer } from './utils/runtime-determiner';
 
 export class CdkHandlerFrameworkModule extends Module {
   /**
    * The latest nodejs runtime version available across all AWS regions
    */
-  private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_18_X;
+  private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
 
   private readonly renderer = new TypeScriptRenderer();
   private readonly externalModules = new Map<string, boolean>();
@@ -32,6 +32,9 @@ export class CdkHandlerFrameworkModule extends Module {
    * Build a framework component inside of this module.
    */
   public build(component: ConfigProps, sourceCodeDirectory: string) {
+    const name = this.buildComponentName();
+    /* eslint-disable no-console */
+    console.log(name);
     const props: CdkHandlerClassProps = {
       codeDirectory: sourceCodeDirectory,
       name: component.name,
@@ -93,6 +96,14 @@ export class CdkHandlerFrameworkModule extends Module {
    */
   public getInterface(name: string) {
     return this._interfaces.get(name);
+  }
+
+  private buildComponentName() {
+    const id = this.fqn.split('/').at(-1);
+    const name = id?.replace(
+      /-([a-z])/g, (s) => { return s[1].toUpperCase(); },
+    ) ?? 'provider';
+    return name.charAt(0).toUpperCase() + name.slice(1);
   }
 
   private importExternalModules() {
