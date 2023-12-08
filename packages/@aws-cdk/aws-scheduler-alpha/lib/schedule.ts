@@ -209,7 +209,7 @@ export class Schedule extends Resource implements ISchedule {
    *
    * @default - sum over 5 minutes
    */
-  public static metricAllSentToDLQTrunacted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public static metricAllSentToDLQTruncated(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('InvocationsSentToDeadLetterCount_Truncated_MessageSizeExceeded', props);
   }
 
