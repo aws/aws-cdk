@@ -82,7 +82,7 @@ describe('For alarm-based rollbacks', () => {
     stack = new cdk.Stack();
   });
 
-  test('deploymentAlarms is set by default for ECS deployment controller', () => {
+  test('deploymentAlarms is NOT set by default for ECS deployment controller', () => {
     // GIVEN
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -105,16 +105,12 @@ describe('For alarm-based rollbacks', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DeploymentConfiguration: {
-        Alarms: {
-          AlarmNames: [],
-          Enable: false,
-          Rollback: false,
-        },
+        Alarms: Match.absent(),
       },
     });
   });
 
-  test('deploymentAlarms is set by default when deployment controller is not specified', () => {
+  test('deploymentAlarms is NOT set by default when deployment controller is not specified', () => {
     // GIVEN
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -134,11 +130,7 @@ describe('For alarm-based rollbacks', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DeploymentConfiguration: {
-        Alarms: {
-          AlarmNames: [],
-          Enable: false,
-          Rollback: false,
-        },
+        Alarms: Match.absent(),
       },
     });
   });
