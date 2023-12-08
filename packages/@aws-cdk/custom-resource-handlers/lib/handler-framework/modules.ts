@@ -9,19 +9,17 @@ class PathModule extends ExternalModule {
 
 class ConstructsModule extends ExternalModule {
   public readonly Construct = Type.fromName(this, 'Construct');
-  public readonly IConstruct = Type.fromName(this, 'IConstruct');
 
   public constructor() {
     super('constructs');
   }
 }
 
-class CdkHandlerModule extends ExternalModule {
-  public readonly CdkHandler = Type.fromName(this, 'CdkHandler');
-  public readonly CdkHandlerProps = Type.fromName(this, 'CdkHandlerProps');
+class HandlerFrameworkModule extends ExternalModule {
+  public readonly RuntimeDeterminer = Type.fromName(this, 'RuntimeDeterminer');
 
   public constructor() {
-    super('../../../handler-framework/lib/cdk-handler');
+    super('../../../handler-framework/lib/runtime-determiner');
   }
 }
 
@@ -46,6 +44,6 @@ class LambdaModule extends ExternalModule {
 
 export const PATH_MODULE = new PathModule();
 export const CONSTRUCTS_MODULE = new ConstructsModule();
-export const CDK_HANDLER_MODULE = new CdkHandlerModule();
+export const HANDLER_FRAMEWORK_MODULE = new HandlerFrameworkModule();
 export const CORE_MODULE = new CoreModule();
 export const LAMBDA_MODULE = new LambdaModule();

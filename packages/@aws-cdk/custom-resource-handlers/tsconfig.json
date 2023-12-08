@@ -23,6 +23,7 @@
     ],
     "exclude": [
         "**/test/**/*.ts",
-        "dist"
+        "dist",
+        "runtime-determiner",
     ],
 }

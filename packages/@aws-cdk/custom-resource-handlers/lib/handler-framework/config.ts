@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { FrameworkRuntime } from './classes';
+import { Runtime } from './runtime';
 
 /**
  * Handler framework component types.
@@ -48,7 +48,7 @@ export interface ConfigProps {
   /**
    * Runtimes that are compatible with the source code.
    */
-  readonly compatibleRuntimes: FrameworkRuntime[];
+  readonly compatibleRuntimes: Runtime[];
 
   /**
    * The name of the method within your code that Lambda calls to execute your function.
@@ -72,7 +72,7 @@ export const config: HandlerFrameworkConfig = {
         type: ComponentType.CDK_FUNCTION,
         name: 'CertificateRequestFunction',
         sourceCode: path.resolve(__dirname, '..', 'aws-certificatemanager', 'dns-validated-certificate-handler', 'index.js'),
-        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
         entrypoint: 'index.certificateRequestHandler',
       },
     ],
@@ -83,7 +83,7 @@ export const config: HandlerFrameworkConfig = {
         type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
         name: 'CrossRegionStringParamReaderProvider',
         sourceCode: path.resolve(__dirname, '..', 'aws-cloudfront', 'edge-function', 'index.js'),
-        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
   },
@@ -93,14 +93,14 @@ export const config: HandlerFrameworkConfig = {
         type: ComponentType.CDK_FUNCTION,
         name: 'OnEventFunction',
         sourceCode: path.resolve(__dirname, '..', 'aws-dynamodb', 'replica-handler', 'index.ts'),
-        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
         entrypoint: 'index.onEventHandler',
       },
       {
         type: ComponentType.CDK_FUNCTION,
         name: 'IsCompleteFunction',
         sourceCode: path.resolve(__dirname, '..', 'aws-dynamodb', 'replica-handler', 'index.ts'),
-        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
         entrypoint: 'index.isCompleteHandler',
       },
     ],
@@ -111,7 +111,7 @@ export const config: HandlerFrameworkConfig = {
         type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
         name: 'RestrictDefaultSgProvider',
         sourceCode: path.resolve(__dirname, '..', 'aws-ec2', 'restrict-default-security-group-handler', 'index.ts'),
-        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
   },
@@ -121,7 +121,7 @@ export const config: HandlerFrameworkConfig = {
         type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
         name: 'AutoDeleteImagesProvider',
         sourceCode: path.resolve(__dirname, '..', 'aws-ecr', 'auto-delete-images-handler', 'index.ts'),
-        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
   },
@@ -131,7 +131,7 @@ export const config: HandlerFrameworkConfig = {
         type: ComponentType.CDK_FUNCTION,
         name: 'DrainHookFunction',
         sourceCode: path.resolve(__dirname, '..', 'aws-ecs', 'lambda-source', 'index.py'),
-        compatibleRuntimes: [FrameworkRuntime.PYTHON_3_9],
+        compatibleRuntimes: [Runtime.PYTHON_3_9],
         entrypoint: 'index.lambda_handler',
         disableBundleAndMinify: true,
       },
@@ -143,14 +143,14 @@ export const config: HandlerFrameworkConfig = {
         type: ComponentType.CDK_FUNCTION,
         name: 'OnEventFunction',
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'cluster-resource-handler', 'index.ts'),
-        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
         entrypoint: 'index.onEvent',
       },
       {
         type: ComponentType.CDK_FUNCTION,
         name: 'IsCompleteFunction',
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'cluster-resource-handler', 'index.ts'),
-        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
         entrypoint: 'index.isComplete',
       },
     ],
@@ -159,35 +159,35 @@ export const config: HandlerFrameworkConfig = {
         type: ComponentType.CDK_FUNCTION,
         name: 'KubectlFunction',
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'index.py'),
-        compatibleRuntimes: [FrameworkRuntime.PYTHON_3_10],
+        compatibleRuntimes: [Runtime.PYTHON_3_10],
         disableBundleAndMinify: true,
       },
       {
         type: ComponentType.CDK_NO_OP,
         name: 'ApplyHandler',
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'apply', '__init__.py'),
-        compatibleRuntimes: [FrameworkRuntime.PYTHON_3_10],
+        compatibleRuntimes: [Runtime.PYTHON_3_10],
         disableBundleAndMinify: true,
       },
       {
         type: ComponentType.CDK_NO_OP,
         name: 'GetHandler',
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'get', '__init__.py'),
-        compatibleRuntimes: [FrameworkRuntime.PYTHON_3_10],
+        compatibleRuntimes: [Runtime.PYTHON_3_10],
         disableBundleAndMinify: true,
       },
       {
         type: ComponentType.CDK_NO_OP,
         name: 'HelmHandler',
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'helm', '__init__.py'),
-        compatibleRuntimes: [FrameworkRuntime.PYTHON_3_10],
+        compatibleRuntimes: [Runtime.PYTHON_3_10],
         disableBundleAndMinify: true,
       },
       {
         type: ComponentType.CDK_NO_OP,
         name: 'PatchHandler',
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'patch', '__init__.py'),
-        compatibleRuntimes: [FrameworkRuntime.PYTHON_3_10],
+        compatibleRuntimes: [Runtime.PYTHON_3_10],
         disableBundleAndMinify: true,
       },
     ],
@@ -198,7 +198,7 @@ export const config: HandlerFrameworkConfig = {
         type: ComponentType.CDK_SINGLETON_FUNCTION,
         name: 'AwsApiFunction',
         sourceCode: path.resolve(__dirname, '..', 'aws-events-targets', 'aws-api-handler', 'index.ts'),
-        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
   },
@@ -208,7 +208,17 @@ export const config: HandlerFrameworkConfig = {
         type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
         name: 'OidcProvider',
         sourceCode: path.resolve(__dirname, '..', 'aws-iam', 'oidc-handler', 'index.ts'),
-        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
+      },
+    ],
+  },
+  'aws-logs': {
+    'log-retention': [
+      {
+        type: ComponentType.CDK_NO_OP,
+        name: 'LogRetentionHandler',
+        sourceCode: path.resolve(__dirname, '..', 'aws-logs', 'log-retention-handler', 'index.ts'),
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
   },
@@ -218,15 +228,15 @@ export const config: HandlerFrameworkConfig = {
         type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
         name: 'CrossAccountZoneDelegationProvider',
         sourceCode: path.resolve(__dirname, '..', 'aws-route53', 'cross-account-zone-delegation-handler', 'index.ts'),
-        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
     'delete-existing-record-set-provider': [
       {
         type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
         name: 'DeleteExistingRecordSetProvider',
-        sourceCode: path.resolve(__dirname, '..', 'aws-route53', 'cdelete-existing-record-set-handler', 'index.ts'),
-        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+        sourceCode: path.resolve(__dirname, '..', 'aws-route53', 'delete-existing-record-set-handler', 'index.ts'),
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
   },
@@ -236,17 +246,47 @@ export const config: HandlerFrameworkConfig = {
         type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
         name: 'AutoDeleteObjectsProvider',
         sourceCode: path.resolve(__dirname, '..', 'aws-s3', 'auto-delete-objects-handler', 'index.ts'),
-        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
+      },
+    ],
+  },
+  'aws-s3-deployment': {
+    'bucket-deployment-provider': [
+      {
+        type: ComponentType.CDK_SINGLETON_FUNCTION,
+        name: 'BucketDeploymentProvider',
+        sourceCode: path.resolve(__dirname, '..', 'aws-s3-deployment', 'bucket-deployment-handler', 'index.py'),
+        compatibleRuntimes: [Runtime.PYTHON_3_9],
+        disableBundleAndMinify: true,
       },
     ],
   },
   'core': {
+    'cfn-utils-provider': [
+      {
+        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        name: 'CdkCfnUtilsProvider',
+        sourceCode: path.resolve(__dirname, '..', 'core', 'cfn-utils-provider', 'index.ts'),
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
+      },
+    ],
     'nodejs-entrypoint': [
       {
         type: ComponentType.CDK_NO_OP,
         name: 'NodejsEntrypointHandler',
-        sourceCode: path.resolve(__dirname, '..', 'core', 'nodejs-entrypoint-handler', 'index.ts'),
-        compatibleRuntimes: [FrameworkRuntime.NODEJS_18_X],
+        sourceCode: path.resolve(__dirname, '..', 'core', 'nodejs-entrypoint-handler', 'index.js'),
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
+        disableBundleAndMinify: true,
+      },
+    ],
+  },
+  'custom-resources': {
+    'aws-custom-resource-provider': [
+      {
+        type: ComponentType.CDK_SINGLETON_FUNCTION,
+        name: 'AwsCustomResourceFunction',
+        sourceCode: path.resolve(__dirname, '..', 'custom-resources', 'aws-custom-resource-handler', 'index.ts'),
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
   },

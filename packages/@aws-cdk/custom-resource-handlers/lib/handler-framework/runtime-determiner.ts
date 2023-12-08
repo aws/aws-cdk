@@ -1,4 +1,4 @@
-import { Runtime, RuntimeFamily } from '../../../aws-lambda';
+import { Runtime, RuntimeFamily } from './runtime';
 
 /**
  * A utility class used to determine the latest runtime for a specific runtime family
@@ -14,13 +14,13 @@ export class RuntimeDeterminer {
    * @returns the latest nodejs or python runtime found, otherwise undefined if no nodejs or python
    * runtimes are specified
    */
-  public static determineLatestRuntime(defaultRuntime: Runtime, runtimes: Runtime[]) {
+  public static determineLatestRuntime(runtimes: Runtime[], defaultRuntime: Runtime) {
     if (runtimes.length === 0) {
       throw new Error('You must specify at least one compatible runtime');
     }
 
     const nodeJsRuntimes = runtimes.filter(runtime => runtime.family === RuntimeFamily.NODEJS);
-    const latestNodeJsRuntime = RuntimeDeterminer.latestNodeJsRuntime(defaultRuntime, nodeJsRuntimes);
+    const latestNodeJsRuntime = RuntimeDeterminer.latestNodeJsRuntime(nodeJsRuntimes, defaultRuntime);
     if (latestNodeJsRuntime !== undefined) {
       if (latestNodeJsRuntime.isDeprecated) {
         throw new Error(`Latest nodejs runtime ${latestNodeJsRuntime} is deprecated. You must upgrade to the latest code compatible nodejs runtime`);
@@ -40,7 +40,7 @@ export class RuntimeDeterminer {
     throw new Error('Compatible runtimes must contain only nodejs or python runtimes');
   }
 
-  private static latestNodeJsRuntime(defaultRuntime: Runtime, nodeJsRuntimes: Runtime[]) {
+  private static latestNodeJsRuntime(nodeJsRuntimes: Runtime[], defaultRuntime: Runtime) {
     if (nodeJsRuntimes.length === 0) {
       return undefined;
     }

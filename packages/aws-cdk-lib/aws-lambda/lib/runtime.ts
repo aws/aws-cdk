@@ -30,12 +30,6 @@ export interface LambdaRuntimeProps {
    * @default false
    */
   readonly supportsSnapStart?: boolean;
-
-  /**
-   * Whether this runtime is deprecated.
-   * @default false
-   */
-  readonly isDeprecated?: boolean;
 }
 
 export enum RuntimeFamily {
@@ -62,64 +56,43 @@ export class Runtime {
    * The NodeJS runtime (nodejs)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
-  public static readonly NODEJS = new Runtime('nodejs', RuntimeFamily.NODEJS, {
-    supportsInlineCode: true,
-    isDeprecated: true,
-  });
+  public static readonly NODEJS = new Runtime('nodejs', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 4.3 runtime (nodejs4.3)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
-  public static readonly NODEJS_4_3 = new Runtime('nodejs4.3', RuntimeFamily.NODEJS, {
-    supportsInlineCode: true,
-    isDeprecated: true,
-  });
+  public static readonly NODEJS_4_3 = new Runtime('nodejs4.3', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 6.10 runtime (nodejs6.10)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
-  public static readonly NODEJS_6_10 = new Runtime('nodejs6.10', RuntimeFamily.NODEJS, {
-    supportsInlineCode: true,
-    isDeprecated: true,
-  });
+  public static readonly NODEJS_6_10 = new Runtime('nodejs6.10', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 8.10 runtime (nodejs8.10)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
-  public static readonly NODEJS_8_10 = new Runtime('nodejs8.10', RuntimeFamily.NODEJS, {
-    supportsInlineCode: true,
-    isDeprecated: true,
-  });
+  public static readonly NODEJS_8_10 = new Runtime('nodejs8.10', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 10.x runtime (nodejs10.x)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
-  public static readonly NODEJS_10_X = new Runtime('nodejs10.x', RuntimeFamily.NODEJS, {
-    supportsInlineCode: true,
-    isDeprecated: true,
-  });
+  public static readonly NODEJS_10_X = new Runtime('nodejs10.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 12.x runtime (nodejs12.x)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
-  public static readonly NODEJS_12_X = new Runtime('nodejs12.x', RuntimeFamily.NODEJS, {
-    supportsInlineCode: true,
-    isDeprecated: true,
-  });
+  public static readonly NODEJS_12_X = new Runtime('nodejs12.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 14.x runtime (nodejs14.x)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
-  public static readonly NODEJS_14_X = new Runtime('nodejs14.x', RuntimeFamily.NODEJS, {
-    supportsInlineCode: true,
-    isDeprecated: true,
-  });
+  public static readonly NODEJS_14_X = new Runtime('nodejs14.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The NodeJS 16.x runtime (nodejs16.x)
@@ -146,10 +119,7 @@ export class Runtime {
    * The Python 2.7 runtime (python2.7)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
-  public static readonly PYTHON_2_7 = new Runtime('python2.7', RuntimeFamily.PYTHON, {
-    supportsInlineCode: true,
-    isDeprecated: true,
-  });
+  public static readonly PYTHON_2_7 = new Runtime('python2.7', RuntimeFamily.PYTHON, { supportsInlineCode: true });
 
   /**
    * The Python 3.6 runtime (python3.6) (not recommended)
@@ -161,7 +131,6 @@ export class Runtime {
   public static readonly PYTHON_3_6 = new Runtime('python3.6', RuntimeFamily.PYTHON, {
     supportsInlineCode: true,
     supportsCodeGuruProfiling: true,
-    isDeprecated: true,
   });
 
   /**
@@ -259,49 +228,37 @@ export class Runtime {
    * The .NET Core 1.0 runtime (dotnetcore1.0)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
-  public static readonly DOTNET_CORE_1 = new Runtime('dotnetcore1.0', RuntimeFamily.DOTNET_CORE, {
-    isDeprecated: true,
-  });
+  public static readonly DOTNET_CORE_1 = new Runtime('dotnetcore1.0', RuntimeFamily.DOTNET_CORE);
 
   /**
    * The .NET Core 2.0 runtime (dotnetcore2.0)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
-  public static readonly DOTNET_CORE_2 = new Runtime('dotnetcore2.0', RuntimeFamily.DOTNET_CORE, {
-    isDeprecated: true,
-  });
+  public static readonly DOTNET_CORE_2 = new Runtime('dotnetcore2.0', RuntimeFamily.DOTNET_CORE);
 
   /**
    * The .NET Core 2.1 runtime (dotnetcore2.1)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
-  public static readonly DOTNET_CORE_2_1 = new Runtime('dotnetcore2.1', RuntimeFamily.DOTNET_CORE, {
-    isDeprecated: true,
-  });
+  public static readonly DOTNET_CORE_2_1 = new Runtime('dotnetcore2.1', RuntimeFamily.DOTNET_CORE);
 
   /**
    * The .NET Core 3.1 runtime (dotnetcore3.1)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
-  public static readonly DOTNET_CORE_3_1 = new Runtime('dotnetcore3.1', RuntimeFamily.DOTNET_CORE, {
-    isDeprecated: true,
-  });
+  public static readonly DOTNET_CORE_3_1 = new Runtime('dotnetcore3.1', RuntimeFamily.DOTNET_CORE);
 
   /**
    * The Go 1.x runtime (go1.x)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the PROVIDED_AL2023 runtime.
    */
-  public static readonly GO_1_X = new Runtime('go1.x', RuntimeFamily.GO, {
-    isDeprecated: true,
-  });
+  public static readonly GO_1_X = new Runtime('go1.x', RuntimeFamily.GO);
 
   /**
    * The Ruby 2.5 runtime (ruby2.5)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Ruby runtime.
    */
-  public static readonly RUBY_2_5 = new Runtime('ruby2.5', RuntimeFamily.RUBY, {
-    isDeprecated: true,
-  });
+  public static readonly RUBY_2_5 = new Runtime('ruby2.5', RuntimeFamily.RUBY);
 
   /**
    * The Ruby 2.7 runtime (ruby2.7)
@@ -317,9 +274,7 @@ export class Runtime {
    * The custom provided runtime (provided)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest provided.al2023 runtime.
    */
-  public static readonly PROVIDED = new Runtime('provided', RuntimeFamily.OTHER, {
-    isDeprecated: true,
-  });
+  public static readonly PROVIDED = new Runtime('provided', RuntimeFamily.OTHER);
 
   /**
    * The custom provided runtime with Amazon Linux 2 (provided.al2)
@@ -378,17 +333,11 @@ export class Runtime {
    */
   public readonly isVariable: boolean;
 
-  /**
-   * Whether the runtime is deprecated.
-   */
-  public readonly isDeprecated: boolean;
-
   constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = {}) {
     this.name = name;
     this.supportsInlineCode = !!props.supportsInlineCode;
     this.family = family;
     this.isVariable = !!props.isVariable;
-    this.isDeprecated = props.isDeprecated ?? false;
 
     const imageName = props.bundlingDockerImage ?? `public.ecr.aws/sam/build-${name}`;
     this.bundlingDockerImage = DockerImage.fromRegistry(imageName);

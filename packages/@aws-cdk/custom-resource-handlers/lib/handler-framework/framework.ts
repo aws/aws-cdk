@@ -3,29 +3,42 @@ import { ExternalModule, InterfaceType, Module, TypeScriptRenderer } from '@cdkl
 import * as fs from 'fs-extra';
 import { CdkHandlerClassProps, CdkHandlerFrameworkClass } from './classes';
 import { ComponentType, ConfigProps } from './config';
-import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE, PATH_MODULE } from './modules';
+import { HANDLER_FRAMEWORK_MODULE, CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE, PATH_MODULE } from './modules';
+import { Runtime } from './runtime';
+import { RuntimeDeterminer } from './runtime-determiner';
 
 export class CdkHandlerFrameworkModule extends Module {
+  /**
+   * The latest nodejs runtime version available across all AWS regions
+   */
+  private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_18_X;
+
   private readonly renderer = new TypeScriptRenderer();
   private readonly externalModules = new Map<string, boolean>();
   private readonly _interfaces = new Map<string, InterfaceType>();
+  private hasComponents = false;
 
   public constructor(fqn: string) {
     super(fqn);
   }
 
   /**
-   *
-   * @param component
-   * @param sourceCodeDirectory
+   * Build a framework component inside of this module.
    */
   public build(component: ConfigProps, sourceCodeDirectory: string) {
     const props: CdkHandlerClassProps = {
       codeDirectory: sourceCodeDirectory,
       name: component.name,
-      compatibleRuntimes: component.compatibleRuntimes,
+      runtime: RuntimeDeterminer.determineLatestRuntime(
+        component.compatibleRuntimes,
+        CdkHandlerFrameworkModule.DEFAULT_RUNTIME,
+      ),
       entrypoint: component.entrypoint,
     };
+
+    if (!this.hasComponents && component.type !== ComponentType.CDK_NO_OP) {
+      this.hasComponents = true;
+    }
 
     switch (component.type) {
       case ComponentType.CDK_FUNCTION: {
@@ -47,8 +60,10 @@ export class CdkHandlerFrameworkModule extends Module {
    * Render built framework into an output file.
    */
   public render(outputFileLocation: string) {
-    this.importExternalModules();
-    fs.outputFileSync(`dist/${outputFileLocation}.generated.ts`, this.renderer.render(this));
+    if (this.hasComponents) {
+      this.importExternalModules();
+      fs.outputFileSync(`dist/${outputFileLocation}.generated.ts`, this.renderer.render(this));
+    }
   }
 
   /**
@@ -79,19 +94,23 @@ export class CdkHandlerFrameworkModule extends Module {
     for (const fqn of this.externalModules.keys()) {
       switch (fqn) {
         case CONSTRUCTS_MODULE.fqn: {
-          CONSTRUCTS_MODULE.import(this, 'constructs');
+          CONSTRUCTS_MODULE.importSelective(this, ['Construct']);
           break;
         }
         case CORE_MODULE.fqn: {
-          CORE_MODULE.import(this, 'cdk');
+          CORE_MODULE.importSelective(this, [
+            'Stack',
+            'CustomResourceProviderBase',
+            'CustomResourceProviderOptions',
+          ]);
           break;
         }
         case LAMBDA_MODULE.fqn: {
           LAMBDA_MODULE.import(this, 'lambda');
           break;
         }
-        case CDK_HANDLER_MODULE.fqn: {
-          CDK_HANDLER_MODULE.import(this, 'handler');
+        case HANDLER_FRAMEWORK_MODULE.fqn: {
+          HANDLER_FRAMEWORK_MODULE.importSelective(this, ['RuntimeDeterminer']);
           break;
         }
       }

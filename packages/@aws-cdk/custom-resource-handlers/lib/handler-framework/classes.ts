@@ -1,38 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { ClassType, stmt, expr, Type, MemberVisibility, ExternalModule, PropertySpec, InterfaceSpec, InterfaceType } from '@cdklabs/typewriter';
+import { ClassType, stmt, expr, Type, ExternalModule, PropertySpec, InterfaceSpec, InterfaceType } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkConstructor } from './constructors';
 import { CdkHandlerFrameworkModule } from './framework';
-import { CDK_HANDLER_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
-
-/**
- * Runtimes that map to a Lambda runtime during codegen.
- */
-export enum FrameworkRuntime {
-  /**
-   * The NodeJS 16.x runtime.
-   */
-  NODEJS_16_X = 'lambda.Runtime.NODEJS_16_X',
-
-  /**
-   * The NodeJS 18.x runtime.
-   */
-  NODEJS_18_X = 'lambda.Runtime.NODEJS_18_X',
-
-  /**
-   * The NodeJS 20.x runtime.
-   */
-  NODEJS_20_X = 'lambda.Runtime.NODEJS_20_X',
-
-  /**
-   * The Python 3.9 runtime.
-   */
-  PYTHON_3_9 = 'lambda.Runtime.PYTHON_3_9',
-
-  /**
-   * The Python 3.10 runtime.
-   */
-  PYTHON_3_10 = 'lambda.Runtime.PYTHON_3_10',
-}
+import { HANDLER_FRAMEWORK_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, CORE_MODULE } from './modules';
+import { Runtime } from './runtime';
 
 /**
  * Initialization properties used to build a `CdkHandlerFrameworkClass` instance.
@@ -50,9 +21,9 @@ export interface CdkHandlerClassProps {
   readonly codeDirectory: string;
 
   /**
-   * Runtimes that are compatible with the source code.
+   * The runtime environment for the Lambda function.
    */
-  readonly compatibleRuntimes: FrameworkRuntime[];
+  readonly runtime: Runtime;
 
   /**
    * The name of the method within your code that Lambda calls to execute your function.
@@ -70,10 +41,10 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
     return new (class CdkFunction extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
-      public readonly compatibleRuntimes: FrameworkRuntime[];
+      public readonly runtime: Runtime;
       public readonly constructorPropsType = LAMBDA_MODULE.FunctionOptions;
 
-      protected readonly externalModules = [CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE, CDK_HANDLER_MODULE];
+      protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE, HANDLER_FRAMEWORK_MODULE];
 
       public constructor() {
         super(scope, {
@@ -83,10 +54,9 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         });
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
-        this.compatibleRuntimes = props.compatibleRuntimes;
+        this.runtime = props.runtime;
 
         this.externalModules.forEach(module => scope.addExternalModule(module));
-        this.buildGetOrCreateCdkHandler();
 
         CdkHandlerFrameworkConstructor.forCdkFunction(this);
       }
@@ -100,10 +70,10 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
     return new (class CdkSingletonFunction extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
-      public readonly compatibleRuntimes: FrameworkRuntime[];
+      public readonly runtime: Runtime;
       public readonly constructorPropsType: Type;
 
-      protected readonly externalModules = [CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE, CDK_HANDLER_MODULE];
+      protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE, HANDLER_FRAMEWORK_MODULE];
 
       public constructor() {
         super(scope, {
@@ -113,10 +83,9 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         });
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
-        this.compatibleRuntimes = props.compatibleRuntimes;
+        this.runtime = props.runtime;
 
         this.externalModules.forEach(module => scope.addExternalModule(module));
-        this.buildGetOrCreateCdkHandler();
 
         const uuid: PropertySpec = {
           name: 'uuid',
@@ -158,10 +127,10 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
     return new (class CdkCustomResourceProvider extends CdkHandlerFrameworkClass {
       public readonly codeDirectory: string;
       public readonly entrypoint: string;
-      public readonly compatibleRuntimes: FrameworkRuntime[];
+      public readonly runtime: Runtime;
       public readonly constructorPropsType = CORE_MODULE.CustomResourceProviderOptions;
 
-      protected readonly externalModules = [CONSTRUCTS_MODULE, CORE_MODULE, LAMBDA_MODULE, CDK_HANDLER_MODULE];
+      protected readonly externalModules = [CONSTRUCTS_MODULE, CORE_MODULE, HANDLER_FRAMEWORK_MODULE];
 
       public constructor() {
         super(scope, {
@@ -171,10 +140,9 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         });
         this.codeDirectory = props.codeDirectory;
         this.entrypoint = props.entrypoint ?? 'index.handler';
-        this.compatibleRuntimes = props.compatibleRuntimes;
+        this.runtime = props.runtime;
 
         this.externalModules.forEach(module => scope.addExternalModule(module));
-        this.buildGetOrCreateCdkHandler();
 
         const getOrCreateMethod = this.addMethod({
           name: 'getOrCreate',
@@ -222,7 +190,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
         });
         getOrCreateProviderMethod.addBody(
           stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`')),
-          stmt.constVar(expr.ident('stack'), expr.directCode('cdk.Stack.of(scope)')),
+          stmt.constVar(expr.ident('stack'), expr.directCode('Stack.of(scope)')),
           stmt.constVar(expr.ident('existing'), expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
           stmt.ret(expr.directCode(`existing ?? new ${this.name}(stack, id, props)`)),
         );
@@ -244,9 +212,9 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   public abstract readonly entrypoint: string;
 
   /**
-   * Runtimes that are compatible with the code that this class will execute.
+   * The runtime environment for the Lambda function.
    */
-  public abstract readonly compatibleRuntimes: FrameworkRuntime[];
+  public abstract readonly runtime: Runtime;
 
   /**
    * Properties used to initialize this class.
@@ -267,50 +235,5 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
     const _interface = new InterfaceType(scope, { ...spec });
     scope.registerInterface(_interface);
     return _interface;
-  }
-
-  private buildGetOrCreateCdkHandler() {
-    const getOrCreateCdkHandler = this.addMethod({
-      name: 'getOrCreateCdkHandler',
-      returnType: CDK_HANDLER_MODULE.CdkHandler,
-      static: true,
-      visibility: MemberVisibility.Private,
-      docs: {
-        summary: 'Returns a stack-level singleton cdk handler instance.',
-      },
-    });
-
-    getOrCreateCdkHandler.addParameter({
-      name: 'scope',
-      type: CONSTRUCTS_MODULE.Construct,
-    });
-    getOrCreateCdkHandler.addParameter({
-      name: 'uniqueid',
-      type: Type.STRING,
-    });
-
-    getOrCreateCdkHandler.addBody(
-      stmt.constVar(
-        expr.ident('id'),
-        expr.directCode('`${uniqueid}Handler`'),
-      ),
-      stmt.constVar(
-        expr.ident('stack'),
-        expr.directCode('cdk.Stack.of(scope)'),
-      ),
-      stmt.constVar(
-        expr.ident('existing'),
-        expr.directCode('stack.node.tryFindChild(id) as handler.CdkHandler'),
-      ),
-      stmt.if_(expr.ident('existing')).then(stmt.ret(expr.ident('existing'))),
-      stmt.constVar(
-        expr.directCode('cdkHandlerProps: handler.CdkHandlerProps'),
-        expr.object({
-          codeDirectory: expr.directCode(`path.join(__dirname, '${this.codeDirectory}')`),
-          compatibleRuntimes: expr.directCode(`[${this.compatibleRuntimes }]`),
-        }),
-      ),
-      stmt.ret(expr.directCode('new handler.CdkHandler(stack, id, cdkHandlerProps)')),
-    );
   }
 }

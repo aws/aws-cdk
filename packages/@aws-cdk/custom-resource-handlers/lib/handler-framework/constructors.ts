@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { Expression, Type, stmt, expr, SuperInitializer, ObjectLiteral, Splat } from '@cdklabs/typewriter';
+import { Expression, Type, expr, SuperInitializer, ObjectLiteral, Splat, MemberVisibility } from '@cdklabs/typewriter';
 import { CdkHandlerFrameworkClass } from './classes';
 import { CONSTRUCTS_MODULE } from './modules';
 
@@ -10,11 +10,11 @@ export class CdkHandlerFrameworkConstructor {
   public static forCdkFunction(_class: CdkHandlerFrameworkClass) {
     const superProps = new ObjectLiteral([
       new Splat(expr.ident('props')),
-      ['code', expr.directCode('cdkHandler.code')],
+      ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${_class.codeDirectory}'))`)],
       ['handler', expr.lit(_class.entrypoint)],
-      ['runtime', expr.directCode('cdkHandler.runtime')],
+      ['runtime', expr.directCode(_class.runtime.toLambdaRuntime())],
     ]);
-    CdkHandlerFrameworkConstructor.forClass(_class, superProps);
+    CdkHandlerFrameworkConstructor.forClass(_class, superProps, MemberVisibility.Public);
   }
 
   /**
@@ -30,15 +30,14 @@ export class CdkHandlerFrameworkConstructor {
   public static forCdkCustomResourceProvider(_class: CdkHandlerFrameworkClass) {
     const superProps = new ObjectLiteral([
       new Splat(expr.ident('props')),
-      ['codeDirectory', expr.directCode('cdkHandler.codeDirectory')],
-      ['runtimeName', expr.directCode('cdkHandler.runtime.name')],
+      ['codeDirectory', expr.directCode(`path.join(__dirname, '${_class.codeDirectory}')`)],
+      ['runtimeName', expr.directCode(_class.runtime.name)],
     ]);
-    CdkHandlerFrameworkConstructor.forClass(_class, superProps);
+    CdkHandlerFrameworkConstructor.forClass(_class, superProps, MemberVisibility.Private);
   }
 
-  private static forClass(_class: CdkHandlerFrameworkClass, superProps: Expression) {
-    // constructor
-    const init = _class.addInitializer({});
+  private static forClass(_class: CdkHandlerFrameworkClass, superProps: Expression, visibility: MemberVisibility) {
+    const init = _class.addInitializer({ visibility });
     const scope = init.addParameter({
       name: 'scope',
       type: CONSTRUCTS_MODULE.Construct,
@@ -52,15 +51,6 @@ export class CdkHandlerFrameworkConstructor {
       type: _class.constructorPropsType,
     });
 
-    // get or create cdk handler
-    init.addBody(
-      stmt.constVar(
-        expr.ident('cdkHandler'),
-        expr.directCode(`${_class.name}.getOrCreateCdkHandler(scope, id)`),
-      ),
-    );
-
-    // build super call
     const superInitializerArgs: Expression[] = [scope, id, superProps];
     init.addBody(new SuperInitializer(...superInitializerArgs));
   }
