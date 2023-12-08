@@ -7,7 +7,6 @@ Follow <a href="https://www.youtube.com/@CDK-Live">CDK Live!</a> and <a href="ht
 Security and stability of the CDK is a top priority. If you think you’ve found a potential security issue, please do not post it in the issues. Instead, please follow the instructions <a href="https://aws.amazon.com/security/vulnerability-reporting/">here</a> or directly email <a href="mailto:aws-security@amazon.com">AWS security</a>.
 
 
-[AWS CDK Roadmap]: https://github.com/orgs/aws/projects/88
 [aws-cdk]: https://github.com/aws/aws-cdk
 [aws-cdk-rfcs]: https://github.com/aws/aws-cdk-rfcs
 [jsii]: https://github.com/aws/jsii
