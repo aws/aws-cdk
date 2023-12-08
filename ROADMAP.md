@@ -4,7 +4,7 @@ The roadmap priorities for the AWS CDK (Cloud Development Kit) are informed by w
 
 Follow <a href="https://www.youtube.com/@CDK-Live">CDK Live!</a> and <a href="https://cdk.dev/">cdk.dev</a> to learn what's new in AWS CDK.
 
-Security and stability of the CDK is a top priority. If you think you’ve found a potential security issue, please do not post it in the issues. Instead, please follow the instructions <a href="https://aws.amazon.com/security/vulnerability-reporting/">here</a> or directly email <a href="mailto:aws-security@amazon.com">AWS security</a>.
+Security and stability of the CDK is a top priority. If you think you’ve found a potential security issue, please do not post it as an issue or a discussion thread in this repository. Instead, please follow the instructions <a href="https://aws.amazon.com/security/vulnerability-reporting/">here</a> or directly email <a href="mailto:aws-security@amazon.com">AWS security</a>.
 
 
 [aws-cdk]: https://github.com/aws/aws-cdk
