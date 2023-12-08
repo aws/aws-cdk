@@ -19,13 +19,13 @@ Security and stability of the CDK is a top priority. If you think you’ve found
 
 ## List of Annotations
 
-| Symbol      | Description | 
-| :---        |    :----:   | 
-| 🔍     | Exploration    | 
-| 👂🏽      | Waiting for feedback     | 
-| 🚦   | Work ready to begin      |
-| 🛠️   | Work in progress        |
-| 🚀   | Released        |
+| Symbol      | Description            | 
+| :---        |    :----:              | 
+| 🔍          | Exploration            | 
+| 👂🏽          | Waiting for feedback   | 
+| 🚦          | Work ready to begin    |
+| 🛠️          | Work in progress       |
+| 🚀          | Released               |
 
 ## Themes
 
