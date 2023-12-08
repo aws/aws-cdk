@@ -151,7 +151,7 @@ describe('Schedule', () => {
       '2023-01-01',
       '2023-10-01T00:00:00.000+09:00',
       '2023-10-01T00:00:00Z',
-    ])('throw error when startDate is invalid format', (startDate: string) => {
+    ])('throw error when startDate is invalid format', (startDate) => {
       expect(() => {
         new Schedule(stack, 'TestSchedule', {
           schedule: expr,
@@ -165,7 +165,7 @@ describe('Schedule', () => {
       '2023-01-01',
       '2023-10-01T00:00:00.000+09:00',
       '2023-10-01T00:00:00Z',
-    ])('throw error when endDate is invalid format', (endDate: string) => {
+    ])('throw error when endDate is invalid format', (endDate) => {
       expect(() => {
         new Schedule(stack, 'TestSchedule', {
           schedule: expr,
@@ -178,7 +178,7 @@ describe('Schedule', () => {
     test.each([
       { startDate: '2023-10-01T00:00:00.000Z', endDate: '2023-10-01T00:00:00.000Z' },
       { startDate: '2023-10-01T00:00:00.000Z', endDate: '2023-09-01T00:00:00.000Z' },
-    ])('throw error when endDate come before startDate', ({ startDate, endDate }) => {
+    ])('throw error when startDate does not come before endDate', ({ startDate, endDate }) => {
       expect(() => {
         new Schedule(stack, 'TestSchedule', {
           schedule: expr,
