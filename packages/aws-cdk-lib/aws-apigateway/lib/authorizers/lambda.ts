@@ -32,7 +32,7 @@ export interface LambdaAuthorizerProps {
    * How long APIGateway should cache the results. Max 1 hour.
    * Disable caching by setting this to 0.
    *
-   * @default Duration.minutes(5)
+   * @default - Duration.minutes(5)
    */
   readonly resultsCacheTtl?: Duration;
 
@@ -215,7 +215,7 @@ export class TokenAuthorizer extends LambdaAuthorizer {
       type: 'TOKEN',
       authorizerUri: lambdaAuthorizerArn(props.handler),
       authorizerCredentials: props.assumeRole?.roleArn,
-      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
+      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
       identitySource: props.identitySource || 'method.request.header.Authorization',
       identityValidationExpression: props.validationRegex,
     };
@@ -284,7 +284,7 @@ export class RequestAuthorizer extends LambdaAuthorizer {
       type: 'REQUEST',
       authorizerUri: lambdaAuthorizerArn(props.handler),
       authorizerCredentials: props.assumeRole?.roleArn,
-      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
+      authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds() ?? Duration.minutes(5).toSeconds(),
       identitySource: props.identitySources.map(is => is.toString()).join(','),
     };
 

@@ -1250,6 +1250,7 @@ export interface Inventory {
   readonly enabled?: boolean;
   /**
    * The inventory configuration ID.
+   * Should be limited to 64 characters and can only contain letters, numbers, periods, dashes, and underscores.
    *
    * @default - generated ID.
    */
@@ -2420,11 +2421,15 @@ export class Bucket extends BucketBase {
     if (!this.inventories || this.inventories.length === 0) {
       return undefined;
     }
+    const inventoryIdValidationRegex = /[^\w\.\-]/g;
 
     return this.inventories.map((inventory, index) => {
       const format = inventory.format ?? InventoryFormat.CSV;
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
-      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`;
+      if (inventory.inventoryId !== undefined && (inventory.inventoryId.length > 64 || inventoryIdValidationRegex.test(inventory.inventoryId))) {
+        throw new Error(`inventoryId should not exceed 64 characters and should not contain special characters except . and -, got ${inventory.inventoryId}`);
+      }
+      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`.replace(inventoryIdValidationRegex, '').slice(-64);
 
       if (inventory.destination.bucket instanceof Bucket) {
         inventory.destination.bucket.addToResourcePolicy(new iam.PolicyStatement({

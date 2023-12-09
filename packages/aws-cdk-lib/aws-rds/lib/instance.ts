@@ -510,7 +510,7 @@ export interface DatabaseInstanceNewProps {
    * Indicates whether automated backups should be deleted or retained when
    * you delete a DB instance.
    *
-   * @default false
+   * @default true
    */
   readonly deleteAutomatedBackups?: boolean;
 
