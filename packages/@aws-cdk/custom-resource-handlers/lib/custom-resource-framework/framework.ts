@@ -41,9 +41,6 @@ export class CdkHandlerFrameworkModule extends Module {
     const entrypoint = component.entrypoint ?? 'index.handler';
     const name = this.buildComponentName(entrypoint);
 
-    /* eslint-disable */
-    console.log(name);
-
     const props: CdkHandlerClassProps = {
       name,
       entrypoint,
