@@ -131,14 +131,15 @@ export class RotationSchedule extends Resource {
     let automaticallyAfterDays: number | undefined;
     let scheduleExpression: string | undefined;
     if (props.automaticallyAfter) {
-      if (props.automaticallyAfter.toMilliseconds() > 0) {
-        if (props.automaticallyAfter.toMilliseconds() < Duration.hours(4).toMilliseconds()) {
+      const automaticallyAfterMillis = props.automaticallyAfter.toMilliseconds();
+      if (automaticallyAfterMillis > 0) {
+        if (automaticallyAfterMillis < Duration.hours(4).toMilliseconds()) {
           throw new Error(`automaticallyAfter must not be smaller than 4 hours, got ${props.automaticallyAfter.toHours()} hours`);
         }
-        if (props.automaticallyAfter.toMilliseconds() > Duration.days(1000).toMilliseconds()) {
+        if (automaticallyAfterMillis > Duration.days(1000).toMilliseconds()) {
           throw new Error(`automaticallyAfter must not be greater than 1000 days, got ${props.automaticallyAfter.toDays()} days`);
         }
-        if (props.automaticallyAfter.toHours() > 23) {
+        if (props.automaticallyAfter.toHours() >= 24) {
           automaticallyAfterDays = props.automaticallyAfter.toDays();
         } else {
           scheduleExpression = Schedule.rate(props.automaticallyAfter).expressionString;
