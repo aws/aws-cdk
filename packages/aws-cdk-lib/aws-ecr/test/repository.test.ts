@@ -80,12 +80,23 @@ describe('repository', () => {
   test('emptyOnDelete can be set', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    new ecr.Repository(stack, 'Repo', { emptyOnDelete: true });
+    new ecr.Repository(stack, 'Repo', { emptyOnDelete: true, removalPolicy: cdk.RemovalPolicy.DESTROY });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
       EmptyOnDelete: true,
     });
+  });
+
+  test('emptyOnDelete requires \'RemovalPolicy.DESTROY\'', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect( () => {
+      new ecr.Repository(stack, 'Repo', { emptyOnDelete: true });
+    },
+    ).toThrow('Cannot use \'emptyOnDelete\' property on a repository without setting removal policy to \'DESTROY\'.');
   });
 
   test('add day-based lifecycle policy', () => {
