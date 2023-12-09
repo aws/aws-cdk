@@ -45,7 +45,6 @@
     "@aws-sdk/client-eks": "3.421.0",
     "@aws-sdk/client-sts": "3.421.0",
     "@aws-sdk/node-http-handler": "^3.370.0",
-    "aws-cdk-lib": "0.0.0",
     "@smithy/util-stream": "^2.0.20",
     "@types/jest": "^29.5.8",
     "aws-sdk-client-mock": "^3.0.0",

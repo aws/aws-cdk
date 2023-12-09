@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnUtilsResourceType } from './cfn-utils-provider/consts';
-import { CdkCfnUtilsProvider } from '../../dist/core/cfn-utils-provider.generated';
+import { CfnUtilsProvider as _CfnUtilsProvider } from '../../dist/core/cfn-utils-provider.generated';
 import { CustomResource } from '../custom-resource';
 
 /**
@@ -8,7 +8,7 @@ import { CustomResource } from '../custom-resource';
  */
 export class CfnUtilsProvider extends Construct {
   public static getOrCreate(scope: Construct) {
-    return CdkCfnUtilsProvider.getOrCreate(scope, 'AWSCDKCfnUtilsProvider');
+    return _CfnUtilsProvider.getOrCreate(scope, 'AWSCDKCfnUtilsProvider');
   }
 }
 

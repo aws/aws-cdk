@@ -14,7 +14,6 @@ import {
   SuperInitializer,
   Expression,
 } from '@cdklabs/typewriter';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import { CdkHandlerFrameworkModule } from './framework';
 import {
   CONSTRUCTS_MODULE,
@@ -24,6 +23,7 @@ import {
   CUSTOM_RESOURCE_PROVIDER_BASE,
   CUSTOM_RESOURCE_PROVIDER_OPTIONS,
 } from './modules';
+import { Runtime } from './runtime';
 
 /**
  * Initialization properties for a class constructor.
@@ -101,7 +101,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
           ['handler', expr.lit(props.entrypoint)],
-          ['runtime', expr.directCode(toLambdaRuntime(props.runtime))],
+          ['runtime', expr.directCode(props.runtime.toLambdaRuntime())],
         ]);
         this.buildConstructor({
           constructorPropsType: LAMBDA_MODULE.FunctionOptions,
@@ -160,7 +160,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
           ['handler', expr.lit(props.entrypoint)],
-          ['runtime', expr.directCode(toLambdaRuntime(props.runtime))],
+          ['runtime', expr.directCode(props.runtime.toLambdaRuntime())],
         ]);
         this.buildConstructor({
           constructorPropsType: _interface.type,
@@ -308,20 +308,20 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   }
 }
 
-function toLambdaRuntime(runtime: Runtime) {
-  switch (runtime.name) {
-    case Runtime.NODEJS_16_X.name: {
-      return 'lambda.Runtime.NODEJS_16_X';
-    }
-    case Runtime.NODEJS_18_X.name: {
-      return 'lambda.Runtime.NODEJS_18_X';
-    }
-    case Runtime.PYTHON_3_9.name: {
-      return 'lambda.Runtime.PYTHON_3_9';
-    }
-    case Runtime.PYTHON_3_10.name: {
-      return 'lambda.Runtime.PYTHON_3_10';
-    }
-  }
-  throw new Error('Unable to convert runtime to lambda runtime');
-}
+// function toLambdaRuntime(runtime: Runtime) {
+//   switch (runtime.name) {
+//     case Runtime.NODEJS_16_X.name: {
+//       return 'lambda.Runtime.NODEJS_16_X';
+//     }
+//     case Runtime.NODEJS_18_X.name: {
+//       return 'lambda.Runtime.NODEJS_18_X';
+//     }
+//     case Runtime.PYTHON_3_9.name: {
+//       return 'lambda.Runtime.PYTHON_3_9';
+//     }
+//     case Runtime.PYTHON_3_10.name: {
+//       return 'lambda.Runtime.PYTHON_3_10';
+//     }
+//   }
+//   throw new Error('Unable to convert runtime to lambda runtime');
+// }

@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { Runtime, RuntimeFamily } from 'aws-cdk-lib/aws-lambda';
+import { Runtime, RuntimeFamily } from '../runtime';
 
 /**
  * A utility class used to determine the latest runtime for a specific runtime family

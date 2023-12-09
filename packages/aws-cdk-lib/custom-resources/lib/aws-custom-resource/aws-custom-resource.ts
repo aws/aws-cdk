@@ -4,7 +4,7 @@ import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { Annotations } from '../../../core';
-import { AwsCustomResourceFunction } from '../../../custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated';
+import { AwsCustomResourceProvider } from '../../../custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated';
 import * as cxapi from '../../../cx-api';
 import { awsSdkToIamAction } from '../helpers-internal/sdk-info';
 
@@ -445,7 +445,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
     this.props = props;
 
-    const provider = new AwsCustomResourceFunction(this, 'Provider', {
+    const provider = new AwsCustomResourceProvider(this, 'Provider', {
       uuid: AwsCustomResource.PROVIDER_FUNCTION_UUID,
       lambdaPurpose: 'AWS',
       timeout: props.timeout || cdk.Duration.minutes(2),

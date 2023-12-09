@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { ExportReader } from './export-reader-provider';
 import { CrossRegionExports, SSM_EXPORT_PATH_PREFIX, ExportWriterCRProps } from './types';
-import { CrossRegionWriterProvider } from '../../../dist/core/cross-region-ssm-writer-provider.generated';
+import { CrossRegionSsmWriterProvider } from '../../../dist/core/cross-region-ssm-writer-provider.generated';
 import { CfnDynamicReference, CfnDynamicReferenceService } from '../../cfn-dynamic-reference';
 import { CustomResource } from '../../custom-resource';
 import { Lazy } from '../../lazy';
@@ -28,7 +28,7 @@ export interface ExportWriterProps {
  * Create our own CustomResourceProvider so that we can add a single policy
  * with a list of ARNs instead of having to create a separate policy statement per ARN.
  */
-class CRProvider extends CrossRegionWriterProvider {
+class CRProvider extends CrossRegionSsmWriterProvider {
   public static getOrCreateProvider(scope: Construct, uniqueid: string, props?: CustomResourceProviderOptions): CRProvider {
     const id = `${uniqueid}CustomResourceProvider`;
     const stack = Stack.of(scope);

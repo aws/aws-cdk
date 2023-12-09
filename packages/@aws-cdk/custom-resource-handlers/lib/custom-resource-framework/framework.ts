@@ -1,17 +1,17 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { ExternalModule, InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as fs from 'fs-extra';
 import { CdkHandlerClassProps, CdkHandlerFrameworkClass } from './classes';
 import { ComponentType, ConfigProps } from './config';
 import { CONSTRUCTS_MODULE, CORE_MODULE, CUSTOM_RESOURCE_PROVIDER_BASE, CUSTOM_RESOURCE_PROVIDER_OPTIONS, LAMBDA_MODULE, PATH_MODULE, STACK } from './modules';
+import { Runtime } from './runtime';
 import { RuntimeDeterminer } from './utils/runtime-determiner';
 
 export class CdkHandlerFrameworkModule extends Module {
   /**
    * The latest nodejs runtime version available across all AWS regions
    */
-  private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_LATEST;
+  private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_18_X;
 
   private readonly renderer = new TypeScriptRenderer();
   private readonly externalModules = new Map<string, boolean>();
@@ -40,6 +40,9 @@ export class CdkHandlerFrameworkModule extends Module {
 
     const entrypoint = component.entrypoint ?? 'index.handler';
     const name = this.buildComponentName(entrypoint);
+
+    /* eslint-disable */
+    console.log(name);
 
     const props: CdkHandlerClassProps = {
       name,

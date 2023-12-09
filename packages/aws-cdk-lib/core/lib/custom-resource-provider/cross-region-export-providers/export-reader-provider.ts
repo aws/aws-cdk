@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { SSM_EXPORT_PATH_PREFIX, ExportReaderCRProps, CrossRegionExports } from './types';
-import { CrossRegionReaderProvider } from '../../../dist/core/cross-region-ssm-reader-provider.generated';
+import { CrossRegionSsmReaderProvider } from '../../../dist/core/cross-region-ssm-reader-provider.generated';
 import { CfnResource } from '../../cfn-resource';
 import { CustomResource } from '../../custom-resource';
 import { Lazy } from '../../lazy';
@@ -34,7 +34,7 @@ export class ExportReader extends Construct {
     const stack = Stack.of(this);
 
     const resourceType = 'Custom::CrossRegionExportReader';
-    const serviceToken = CrossRegionReaderProvider.getOrCreate(this, resourceType, {
+    const serviceToken = CrossRegionSsmReaderProvider.getOrCreate(this, resourceType, {
       policyStatements: [{
         Effect: 'Allow',
         Resource: stack.formatArn({
