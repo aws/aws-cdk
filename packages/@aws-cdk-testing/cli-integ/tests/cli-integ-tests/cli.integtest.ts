@@ -584,7 +584,7 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
     });
 
     expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
-    await fixture.cdkDestroy(fixture.stackNamePrefix, {}, true);
+    await fixture.cdkDestroy(fixture.stackNamePrefix);
   }));
 });
 
