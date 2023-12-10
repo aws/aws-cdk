@@ -781,6 +781,7 @@ test('test Fargate queue worker service construct - with task definition', () =>
     Family: 'TaskDef',
     Memory: '1024',
     Cpu: '512',
+    Test: {},
     EphemeralStorage: {
       SizeInGiB: 30,
     },

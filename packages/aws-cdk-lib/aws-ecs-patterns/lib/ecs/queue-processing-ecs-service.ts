@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { ContainerImage, Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
+import { Ec2Service, Ec2TaskDefinition, PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
@@ -8,12 +8,6 @@ import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../
  * The properties for the QueueProcessingEc2Service service.
  */
 export interface QueueProcessingEc2ServiceProps extends QueueProcessingServiceBaseProps {
-  /**
-   * The image used to start a container.
-   *
-   */
-  readonly image: ContainerImage;
-
   /**
    * The number of cpu units used by the task.
    *
@@ -109,8 +103,14 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
   /**
    * Constructs a new instance of the QueueProcessingEc2Service class.
    */
-  constructor(scope: Construct, id: string, props: QueueProcessingEc2ServiceProps) {
+  constructor(scope: Construct, id: string, props: QueueProcessingEc2ServiceProps = {}) {
     super(scope, id, props);
+
+    // In the queueProcessingFargateService, props.image is optional, which is why image is optional in the queue-processing-service-base.ts.
+    // However, in the queueProcessingEcsService, image is mandatory, so null checks have been introduced.
+    if (props.image == null) {
+      throw new Error('Cannot create a QueueProcessingEc2Service with props.image is undefined');
+    }
 
     const containerName = props.containerName ?? 'QueueProcessingContainer';
 
