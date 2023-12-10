@@ -81,8 +81,8 @@
      "Version": "2012-10-17"
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "LogGroupF5B46931": {
    "Type": "AWS::Logs::LogGroup",
@@ -95,8 +95,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {

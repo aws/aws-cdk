@@ -1,7 +1,7 @@
 {
   "version": "34.0.0",
   "files": {
-    "4af042c9eb0784e5918f2db1d24ffaa1f02db6e89f49b1d8910845a62c29faf7": {
+    "f0cf2f654be16769af1d824cd9ce55932678d500cc58f25f4f30b11c8aeaa554": {
       "source": {
         "path": "aws-cdk-log-group-encrypted-integ.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4af042c9eb0784e5918f2db1d24ffaa1f02db6e89f49b1d8910845a62c29faf7.json",
+          "objectKey": "f0cf2f654be16769af1d824cd9ce55932678d500cc58f25f4f30b11c8aeaa554.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

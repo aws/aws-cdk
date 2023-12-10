@@ -1,4 +1,4 @@
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import { App, Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -7,9 +7,12 @@ class LogGroupIntegStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const key = new Key(this, 'Key');
+    const key = new Key(this, 'Key', {
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
 
     new LogGroup(this, 'LogGroup', {
+      removalPolicy: RemovalPolicy.DESTROY,
       encryptionKey: key,
     });
   }
