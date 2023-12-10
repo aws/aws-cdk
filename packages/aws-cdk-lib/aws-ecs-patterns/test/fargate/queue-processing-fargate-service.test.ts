@@ -781,9 +781,11 @@ test('test Fargate queue worker service construct - with task definition', () =>
     Family: 'TaskDef',
     Memory: '1024',
     Cpu: '512',
-    Test: {},
     EphemeralStorage: {
       SizeInGiB: 30,
     },
+    NetworkMode: 'awsvpc',
+    RequiresCompatibilities: ['FARGATE'],
+    TaskRoleArn: { 'Fn::GetAtt': ['TaskDefTaskRole1EDB4A67', 'Arn'] },
   });
 });
