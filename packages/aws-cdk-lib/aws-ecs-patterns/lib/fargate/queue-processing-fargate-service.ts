@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
-import { FargateService, FargateTaskDefinition, HealthCheck } from '../../../aws-ecs';
+import { ContainerImage, FargateService, FargateTaskDefinition, HealthCheck } from '../../../aws-ecs';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
@@ -10,6 +10,14 @@ import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../
  * The properties for the QueueProcessingFargateService service.
  */
 export interface QueueProcessingFargateServiceProps extends QueueProcessingServiceBaseProps, FargateServiceBaseProps {
+  /**
+   * The image used to start a container.
+   * Image or taskDefinition must be specified, but not both.
+   *
+   * @default - none
+   */
+  readonly image?: ContainerImage;
+
   /**
    * Optional name for the container added.
    * This name is not used when `taskDefinition` is provided.
@@ -65,7 +73,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
   /**
    * Constructs a new instance of the QueueProcessingFargateService class.
    */
-  constructor(scope: Construct, id: string, props: QueueProcessingFargateServiceProps) {
+  constructor(scope: Construct, id: string, props: QueueProcessingFargateServiceProps = {}) {
     super(scope, id, props);
 
     if (props.taskDefinition != null && props.image != null) {

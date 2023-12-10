@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ScalingInterval } from '../../../aws-applicationautoscaling';
 import { IVpc } from '../../../aws-ec2';
 import {
-  AwsLogDriver, BaseService, CapacityProviderStrategy, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+  AwsLogDriver, BaseService, CapacityProviderStrategy, Cluster, DeploymentController, DeploymentCircuitBreaker,
   ICluster, LogDriver, PropagatedTagSource, Secret,
 } from '../../../aws-ecs';
 import { IQueue, Queue } from '../../../aws-sqs';
@@ -35,12 +35,6 @@ export interface QueueProcessingServiceBaseProps {
    * @default - uses the VPC defined in the cluster or creates a new VPC.
    */
   readonly vpc?: IVpc;
-
-  /**
-   * The image used to start a container.
-   * Image or taskDefinition must be specified, but not both.
-   */
-  readonly image?: ContainerImage;
 
   /**
    * The command that is passed to the container.
