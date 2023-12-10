@@ -11,14 +11,6 @@ import { QueueProcessingServiceBase, QueueProcessingServiceBaseProps } from '../
  */
 export interface QueueProcessingFargateServiceProps extends QueueProcessingServiceBaseProps, FargateServiceBaseProps {
   /**
-   * The image used to start a container.
-   * Image or taskDefinition must be specified, but not both.
-   *
-   * @default - none
-   */
-  readonly image?: ContainerImage;
-
-  /**
    * Optional name for the container added.
    * This name is not used when `taskDefinition` is provided.
    *
