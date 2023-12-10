@@ -7,7 +7,7 @@ import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
 import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern } from '../lib';
 
 describe('log group', () => {
-  test('set kms key when provided', () => {
+  test('set kms key when provided with key policy', () => {
     // GIVEN
     const stack = new Stack();
     const encryptionKey = new kms.Key(stack, 'Key');
@@ -20,6 +20,82 @@ describe('log group', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
       KmsKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([{
+          Action: 'kms:*',
+          Effect: 'Allow',
+          Resource: '*',
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
+          },
+        }, {
+          Action: [
+            'kms:Encrypt*',
+            'kms:Decrypt*',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+            'kms:Describe*',
+          ],
+          Effect: 'Allow',
+          Resource: '*',
+          Principal: {
+            Service: {
+              'Fn::Join': [
+                '',
+                [
+                  'logs.',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  '.amazonaws.com',
+                ],
+              ],
+            },
+          },
+          Condition: {
+            ArnLike: {
+              'kms:EncryptionContext:aws:logs:arn': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':logs:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':*',
+                  ],
+                ],
+              },
+            },
+          },
+        }]),
+      },
     });
   });
 

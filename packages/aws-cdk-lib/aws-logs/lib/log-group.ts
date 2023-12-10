@@ -534,6 +534,25 @@ export class LogGroup extends LogGroupBase {
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
     this.logGroupName = this.getResourceNameAttribute(resource.ref);
+
+    if (props.encryptionKey) {
+      props.encryptionKey.addToResourcePolicy(new iam.PolicyStatement({
+        principals: [new iam.ServicePrincipal(`logs.${this.env.region}.amazonaws.com`)],
+        actions: [
+          'kms:Encrypt*',
+          'kms:Decrypt*',
+          'kms:ReEncrypt*',
+          'kms:GenerateDataKey*',
+          'kms:Describe*',
+        ],
+        resources: ['*'],
+        conditions: {
+          ArnLike: {
+            'kms:EncryptionContext:aws:logs:arn': `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:*`,
+          },
+        },
+      }));
+    }
   }
 }
 

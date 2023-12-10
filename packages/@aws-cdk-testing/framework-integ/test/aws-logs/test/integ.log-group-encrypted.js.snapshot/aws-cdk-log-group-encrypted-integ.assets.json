@@ -1,0 +1,19 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "4af042c9eb0784e5918f2db1d24ffaa1f02db6e89f49b1d8910845a62c29faf7": {
+      "source": {
+        "path": "aws-cdk-log-group-encrypted-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4af042c9eb0784e5918f2db1d24ffaa1f02db6e89f49b1d8910845a62c29faf7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
