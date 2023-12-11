@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as mimeTypes from 'mime-types';
+import * as path from 'path';
 import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy } from 'aws-cdk-lib';
 import { CfnConfigurationProfile, CfnDeployment, CfnHostedConfigurationVersion } from 'aws-cdk-lib/aws-appconfig';
 import * as cp from 'aws-cdk-lib/aws-codepipeline';
@@ -302,6 +303,24 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
     this.extensible.addExtension(extension);
   }
 
+  /**
+   * Deploys the configuration to the specified environment.
+   *
+   * @param environment The environment to deploy the configuration to
+   */
+  public deploy(environment: IEnvironment) {
+    const logicalId = `Deployment${this.getDeploymentHash(environment)}`;
+    new CfnDeployment(this, logicalId, {
+      applicationId: this.application.applicationId,
+      configurationProfileId: this.configurationProfileId,
+      deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
+      environmentId: environment.environmentId,
+      configurationVersion: this.versionNumber!,
+      description: this.description,
+      kmsKeyIdentifier: this.deploymentKey?.keyArn,
+    });
+  }
+
   protected addExistingEnvironmentsToApplication() {
     this.deployTo?.forEach((environment) => {
       if (!this.application.environments.includes(environment)) {
@@ -319,16 +338,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
       if ((this.deployTo && !this.deployTo.includes(environment))) {
         return;
       }
-      const logicalId = `Deployment${this.getDeploymentHash(environment)}`;
-      new CfnDeployment(this, logicalId, {
-        applicationId: this.application.applicationId,
-        configurationProfileId: this.configurationProfileId,
-        deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
-        environmentId: environment.environmentId,
-        configurationVersion: this.versionNumber!,
-        description: this.description,
-        kmsKeyIdentifier: this.deploymentKey?.keyArn,
-      });
+      this.deploy(environment);
     });
   }
 }
@@ -445,7 +455,7 @@ export class HostedConfiguration extends ConfigurationBase {
       resource: 'application',
       resourceName: `${this.applicationId}/configurationprofile/${this.configurationProfileId}`,
     });
-    this.extensible = new ExtensibleBase(scope, this.configurationProfileArn, this.name);
+    this.extensible = new ExtensibleBase(this, this.configurationProfileArn, this.name);
 
     this.content = props.content.content;
     this.contentType = props.content.contentType;
@@ -607,7 +617,7 @@ export class SourcedConfiguration extends ConfigurationBase {
       resource: 'application',
       resourceName: `${this.applicationId}/configurationprofile/${this.configurationProfileId}`,
     });
-    this.extensible = new ExtensibleBase(scope, this.configurationProfileArn, this.name);
+    this.extensible = new ExtensibleBase(this, this.configurationProfileArn, this.name);
 
     this.addExistingEnvironmentsToApplication();
     this.deployConfigToEnvironments();
@@ -766,11 +776,11 @@ export abstract class JsonSchemaValidator implements IValidator {
   /**
    * Defines a JSON Schema validator from a file.
    *
-   * @param path The path to the file that defines the validator
+   * @param inputPath The path to the file that defines the validator
    */
-  public static fromFile(path: string): JsonSchemaValidator {
+  public static fromFile(inputPath: string): JsonSchemaValidator {
     return {
-      content: fs.readFileSync(path).toString(),
+      content: fs.readFileSync(path.resolve(inputPath)).toString(),
       type: ValidatorType.JSON_SCHEMA,
     };
   }
@@ -824,13 +834,13 @@ export abstract class ConfigurationContent {
   /**
    * Defines the hosted configuration content from a file.
    *
-   * @param path The path to the file that defines configuration content
+   * @param inputPath The path to the file that defines configuration content
    * @param contentType The content type of the configuration
    */
-  public static fromFile(path: string, contentType?: string): ConfigurationContent {
+  public static fromFile(inputPath: string, contentType?: string): ConfigurationContent {
     return {
-      content: fs.readFileSync(path).toString(),
-      contentType: contentType || mimeTypes.lookup(path) || 'application/json',
+      content: fs.readFileSync(path.resolve(inputPath)).toString(),
+      contentType: contentType || mimeTypes.lookup(inputPath) || 'application/json',
     };
   }
 

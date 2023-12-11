@@ -20,19 +20,18 @@ export abstract class Content {
   }
 
   /**
-     * Loads the game content from a local disk path.
-     *
-     * @param path Either a directory with the game content bundle or a .zip file
-     */
+   * Loads the game content from a local disk path.
+   *
+   * @param path Either a directory with the game content bundle or a .zip file
+   */
   public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetContent {
     return new AssetContent(path, options);
   }
 
   /**
-     * Called when the Build is initialized to allow this object to bind
-     */
+   * Called when the Build is initialized to allow this object to bind
+   */
   public abstract bind(scope: Construct, role: iam.IRole): ContentConfig;
-
 }
 
 /**
@@ -49,7 +48,6 @@ export interface ContentConfig {
  * Game content from an S3 archive.
  */
 export class S3Content extends Content {
-
   constructor(private readonly bucket: s3.ICfnBucket, private key: string, private objectVersion?: string) {
     super();
     if (!bucket.attrBucketName) {

@@ -1453,6 +1453,7 @@ const link = new apigateway.VpcLink(this, 'link', {
 
 const integration = new apigateway.Integration({
   type: apigateway.IntegrationType.HTTP_PROXY,
+  integrationHttpMethod: 'ANY',
   options: {
     connectionType: apigateway.ConnectionType.VPC_LINK,
     vpcLink: link,
