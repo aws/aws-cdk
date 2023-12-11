@@ -51,7 +51,7 @@ jobs:
       - name: Upload head database
         uses: actions/upload-artifact@v3
         with:
-          name: db.base.json.gz
+          name: db.head.json.gz
           path: node_modules/@aws-cdk/aws-service-spec/db.json.gz
           if-no-files-found: error
 
