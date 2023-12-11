@@ -14,7 +14,7 @@ import {
   SuperInitializer,
   Expression,
 } from '@cdklabs/typewriter';
-import { CdkHandlerFrameworkModule } from './framework';
+import { CdkCustomResourceModule } from './framework';
 import {
   CONSTRUCTS_MODULE,
   LAMBDA_MODULE,
@@ -57,7 +57,7 @@ interface ConstructorBuildProps {
 /**
  * Initialization properties used to build a `CdkHandlerFrameworkClass` instance.
  */
-export interface CdkHandlerClassProps {
+export interface CdkCustomResourceClassProps {
   /**
    * The name of the component class.
    */
@@ -80,12 +80,12 @@ export interface CdkHandlerClassProps {
   readonly entrypoint: string;
 }
 
-export abstract class CdkHandlerFrameworkClass extends ClassType {
+export abstract class CdkCustomResourceClass extends ClassType {
   /**
    * Builds a `CdkFunction` class.
    */
-  public static buildCdkFunction(scope: CdkHandlerFrameworkModule, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
-    return new (class CdkFunction extends CdkHandlerFrameworkClass {
+  public static buildCdkFunction(scope: CdkCustomResourceModule, props: CdkCustomResourceClassProps): CdkCustomResourceClass {
+    return new (class CdkFunction extends CdkCustomResourceClass {
       protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE];
 
       public constructor() {
@@ -116,8 +116,8 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   /**
    * Builds a `CdkSingletonFunction` class.
    */
-  public static buildCdkSingletonFunction(scope: CdkHandlerFrameworkModule, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
-    return new (class CdkSingletonFunction extends CdkHandlerFrameworkClass {
+  public static buildCdkSingletonFunction(scope: CdkCustomResourceModule, props: CdkCustomResourceClassProps): CdkCustomResourceClass {
+    return new (class CdkSingletonFunction extends CdkCustomResourceClass {
       protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE];
 
       public constructor() {
@@ -174,8 +174,8 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
   /**
    * Builds a `CdkCustomResourceProvider` class.
    */
-  public static buildCdkCustomResourceProvider(scope: CdkHandlerFrameworkModule, props: CdkHandlerClassProps): CdkHandlerFrameworkClass {
-    return new (class CdkCustomResourceProvider extends CdkHandlerFrameworkClass {
+  public static buildCdkCustomResourceProvider(scope: CdkCustomResourceModule, props: CdkCustomResourceClassProps): CdkCustomResourceClass {
+    return new (class CdkCustomResourceProvider extends CdkCustomResourceClass {
       protected readonly externalModules: ExternalModule[] = [CONSTRUCTS_MODULE];
 
       public constructor() {
@@ -274,7 +274,7 @@ export abstract class CdkHandlerFrameworkClass extends ClassType {
    */
   protected abstract readonly externalModules: ExternalModule[];
 
-  private getOrCreateInterface(scope: CdkHandlerFrameworkModule, spec: InterfaceSpec) {
+  private getOrCreateInterface(scope: CdkCustomResourceModule, spec: InterfaceSpec) {
     const existing = scope.getInterface(spec.name);
     if (existing) {
       return existing;

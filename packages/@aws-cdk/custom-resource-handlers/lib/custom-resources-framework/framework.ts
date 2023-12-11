@@ -1,13 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { ExternalModule, InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import { CdkHandlerClassProps, CdkHandlerFrameworkClass } from './classes';
+import { CdkCustomResourceClass, CdkCustomResourceClassProps } from './classes';
 import { ComponentType, ConfigProps } from './config';
 import { CONSTRUCTS_MODULE, CORE_MODULE, CUSTOM_RESOURCE_PROVIDER_BASE, CUSTOM_RESOURCE_PROVIDER_OPTIONS, LAMBDA_MODULE, PATH_MODULE, STACK } from './modules';
 import { Runtime } from './runtime';
 import { RuntimeDeterminer } from './utils/runtime-determiner';
 
-export class CdkHandlerFrameworkModule extends Module {
+export class CdkCustomResourceModule extends Module {
   /**
    * The latest nodejs runtime version available across all AWS regions
    */
@@ -48,27 +48,27 @@ export class CdkHandlerFrameworkModule extends Module {
     const entrypoint = component.entrypoint ?? 'index.handler';
     const name = this.buildComponentName(entrypoint);
 
-    const props: CdkHandlerClassProps = {
+    const props: CdkCustomResourceClassProps = {
       name,
       entrypoint,
       codeDirectory,
       runtime: RuntimeDeterminer.determineLatestRuntime(
         component.compatibleRuntimes,
-        CdkHandlerFrameworkModule.DEFAULT_RUNTIME,
+        CdkCustomResourceModule.DEFAULT_RUNTIME,
       ),
     };
 
     switch (component.type) {
       case ComponentType.CDK_FUNCTION: {
-        CdkHandlerFrameworkClass.buildCdkFunction(this, props);
+        CdkCustomResourceClass.buildCdkFunction(this, props);
         break;
       }
       case ComponentType.CDK_SINGLETON_FUNCTION: {
-        CdkHandlerFrameworkClass.buildCdkSingletonFunction(this, props);
+        CdkCustomResourceClass.buildCdkSingletonFunction(this, props);
         break;
       }
       case ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER: {
-        CdkHandlerFrameworkClass.buildCdkCustomResourceProvider(this, props);
+        CdkCustomResourceClass.buildCdkCustomResourceProvider(this, props);
         break;
       }
     }

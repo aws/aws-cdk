@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { ComponentType, ConfigProps } from '../../lib/custom-resources-framework/config';
-import { CdkHandlerFrameworkModule } from '../../lib/custom-resources-framework/framework';
+import { CdkCustomResourceModule } from '../../lib/custom-resources-framework/framework';
 import { Runtime } from '../../lib/custom-resources-framework/runtime';
 import { calculateOutfile } from '../../scripts/generate';
 
@@ -18,7 +18,7 @@ describe('framework', () => {
 
   test('can codegen cdk function', () => {
     // GIVEN
-    const module = new CdkHandlerFrameworkModule('cdk-testing/test-provider');
+    const module = new CdkCustomResourceModule('cdk-testing/test-provider');
     const component: ConfigProps = {
       type: ComponentType.CDK_FUNCTION,
       sourceCode,
@@ -38,7 +38,7 @@ describe('framework', () => {
 
   test('can codegen cdk singleton function', () => {
     // GIVEN
-    const module = new CdkHandlerFrameworkModule('cdk-testing/test-provider');
+    const module = new CdkCustomResourceModule('cdk-testing/test-provider');
     const component: ConfigProps = {
       type: ComponentType.CDK_SINGLETON_FUNCTION,
       sourceCode,
@@ -58,7 +58,7 @@ describe('framework', () => {
 
   test('can codegen cdk custom resource provider for core internal', () => {
     // GIVEN
-    const module = new CdkHandlerFrameworkModule('cdk-testing/test-provider');
+    const module = new CdkCustomResourceModule('cdk-testing/test-provider');
     const component: ConfigProps = {
       type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
       sourceCode,
@@ -78,7 +78,7 @@ describe('framework', () => {
 
   test('can codegen cdk custom resource provider for core internal', () => {
     // GIVEN
-    const module = new CdkHandlerFrameworkModule('core/test-provider');
+    const module = new CdkCustomResourceModule('core/test-provider');
     const component: ConfigProps = {
       type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
       sourceCode,

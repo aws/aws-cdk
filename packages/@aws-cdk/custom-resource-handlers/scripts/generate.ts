@@ -2,14 +2,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
 import { config, ConfigProps } from '../lib/custom-resources-framework/config';
-import { CdkHandlerFrameworkModule } from '../lib/custom-resources-framework/framework';
+import { CdkCustomResourceModule } from '../lib/custom-resources-framework/framework';
 
 const framework: { [fqn: string]: ConfigProps[] } = {};
 
 async function main() {
   recurse(config, []);
   for (const [fqn, components] of Object.entries(framework)) {
-    const module = new CdkHandlerFrameworkModule(fqn);
+    const module = new CdkCustomResourceModule(fqn);
     for (const component of components) {
       const outfile = calculateOutfile(component.sourceCode);
       if (component.preventMinifyAndBundle) {
