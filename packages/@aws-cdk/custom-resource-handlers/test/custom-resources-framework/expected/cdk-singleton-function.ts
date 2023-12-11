@@ -14,6 +14,9 @@ export class TestProvider extends lambda.SingletonFunction {
   }
 }
 
+/**
+ * Initialization properties for TestProvider
+ */
 export interface CdkSingletonFunctionProps extends lambda.FunctionOptions {
   /**
    * A unique identifier to identify this Lambda.
