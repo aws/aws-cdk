@@ -789,3 +789,40 @@ test('test Fargate queue worker service construct - with task definition', () =>
     TaskRoleArn: { 'Fn::GetAtt': ['TaskDefTaskRole1EDB4A67', 'Arn'] },
   });
 });
+
+test('test Fargate queue worker service construct - with task definition and image', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+
+  // WHEN
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
+    memoryLimitMiB: 1024,
+    cpu: 512,
+    ephemeralStorageGiB: 30,
+  });
+  taskDefinition.addContainer('QueueProcessingContainer', {
+    image: ecs.ContainerImage.fromRegistry('test'),
+  });
+
+  expect(() => {
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+      vpc,
+      taskDefinition,
+      image: ecs.ContainerImage.fromRegistry('test'),
+    });
+  }).toThrow(new Error('You must specify only one of taskDefinition or image'));
+});
+
+test('test Fargate queue worker service construct - with no taskDefinition or image', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+
+  expect(() => {
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+      vpc,
+    });
+  }).toThrow(new Error('You must specify one of: taskDefinition or image'));
+});
+
