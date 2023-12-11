@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/802536ab04968d5023a2308ec30af0144698bc97c2795c0f6f49ab7ceadd6fa8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b0ad12ea0ccf78882a5f85949321e82fa339a67df23c0197b2e17d024ad472a4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -184,6 +184,12 @@
             "data": "EmrCreateClusterServiceRole5251910D"
           }
         ],
+        "/aws-cdk-emr-add-step-runtime-role/EmrCreateCluster/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmrCreateClusterServiceRoleDefaultPolicyA8B4FA32"
+          }
+        ],
         "/aws-cdk-emr-add-step-runtime-role/EmrCreateCluster/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -202,22 +208,22 @@
             "data": "EmrExecutionRoleF584820F"
           }
         ],
-        "/aws-cdk-emr-add-step-runtime-role/SM/Role/Resource": [
+        "/aws-cdk-emr-add-step-runtime-role/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SMRole49C19C48"
+            "data": "StateMachineRoleB840431D"
           }
         ],
-        "/aws-cdk-emr-add-step-runtime-role/SM/Role/DefaultPolicy/Resource": [
+        "/aws-cdk-emr-add-step-runtime-role/StateMachine/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SMRoleDefaultPolicy34CA15C7"
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
           }
         ],
-        "/aws-cdk-emr-add-step-runtime-role/SM/Resource": [
+        "/aws-cdk-emr-add-step-runtime-role/StateMachine/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SM934E715A"
+            "data": "StateMachine2E01A3A5"
           }
         ],
         "/aws-cdk-emr-add-step-runtime-role/BootstrapVersion": [

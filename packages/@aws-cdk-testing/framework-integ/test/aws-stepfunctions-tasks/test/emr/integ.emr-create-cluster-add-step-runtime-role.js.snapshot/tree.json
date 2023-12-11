@@ -24,6 +24,10 @@
                     "instanceTenancy": "default",
                     "tags": [
                       {
+                        "key": "for-use-with-amazon-emr-managed-policies",
+                        "value": "true"
+                      },
+                      {
                         "key": "Name",
                         "value": "aws-cdk-emr-add-step-runtime-role/Vpc"
                       }
@@ -65,6 +69,10 @@
                             "value": "Public"
                           },
                           {
+                            "key": "for-use-with-amazon-emr-managed-policies",
+                            "value": "true"
+                          },
+                          {
                             "key": "Name",
                             "value": "aws-cdk-emr-add-step-runtime-role/Vpc/PublicSubnet1"
                           }
@@ -94,6 +102,10 @@
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
+                          {
+                            "key": "for-use-with-amazon-emr-managed-policies",
+                            "value": "true"
+                          },
                           {
                             "key": "Name",
                             "value": "aws-cdk-emr-add-step-runtime-role/Vpc/PublicSubnet1"
@@ -157,6 +169,10 @@
                         "domain": "vpc",
                         "tags": [
                           {
+                            "key": "for-use-with-amazon-emr-managed-policies",
+                            "value": "true"
+                          },
+                          {
                             "key": "Name",
                             "value": "aws-cdk-emr-add-step-runtime-role/Vpc/PublicSubnet1"
                           }
@@ -184,6 +200,10 @@
                           "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
                         },
                         "tags": [
+                          {
+                            "key": "for-use-with-amazon-emr-managed-policies",
+                            "value": "true"
+                          },
                           {
                             "key": "Name",
                             "value": "aws-cdk-emr-add-step-runtime-role/Vpc/PublicSubnet1"
@@ -232,6 +252,10 @@
                             "value": "Public"
                           },
                           {
+                            "key": "for-use-with-amazon-emr-managed-policies",
+                            "value": "true"
+                          },
+                          {
                             "key": "Name",
                             "value": "aws-cdk-emr-add-step-runtime-role/Vpc/PublicSubnet2"
                           }
@@ -261,6 +285,10 @@
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
+                          {
+                            "key": "for-use-with-amazon-emr-managed-policies",
+                            "value": "true"
+                          },
                           {
                             "key": "Name",
                             "value": "aws-cdk-emr-add-step-runtime-role/Vpc/PublicSubnet2"
@@ -324,6 +352,10 @@
                         "domain": "vpc",
                         "tags": [
                           {
+                            "key": "for-use-with-amazon-emr-managed-policies",
+                            "value": "true"
+                          },
+                          {
                             "key": "Name",
                             "value": "aws-cdk-emr-add-step-runtime-role/Vpc/PublicSubnet2"
                           }
@@ -351,6 +383,10 @@
                           "Ref": "VpcPublicSubnet2Subnet691E08A3"
                         },
                         "tags": [
+                          {
+                            "key": "for-use-with-amazon-emr-managed-policies",
+                            "value": "true"
+                          },
                           {
                             "key": "Name",
                             "value": "aws-cdk-emr-add-step-runtime-role/Vpc/PublicSubnet2"
@@ -399,6 +435,10 @@
                             "value": "Private"
                           },
                           {
+                            "key": "for-use-with-amazon-emr-managed-policies",
+                            "value": "true"
+                          },
+                          {
                             "key": "Name",
                             "value": "aws-cdk-emr-add-step-runtime-role/Vpc/PrivateSubnet1"
                           }
@@ -428,6 +468,10 @@
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
+                          {
+                            "key": "for-use-with-amazon-emr-managed-policies",
+                            "value": "true"
+                          },
                           {
                             "key": "Name",
                             "value": "aws-cdk-emr-add-step-runtime-role/Vpc/PrivateSubnet1"
@@ -518,6 +562,10 @@
                             "value": "Private"
                           },
                           {
+                            "key": "for-use-with-amazon-emr-managed-policies",
+                            "value": "true"
+                          },
+                          {
                             "key": "Name",
                             "value": "aws-cdk-emr-add-step-runtime-role/Vpc/PrivateSubnet2"
                           }
@@ -547,6 +595,10 @@
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
+                          {
+                            "key": "for-use-with-amazon-emr-managed-policies",
+                            "value": "true"
+                          },
                           {
                             "key": "Name",
                             "value": "aws-cdk-emr-add-step-runtime-role/Vpc/PrivateSubnet2"
@@ -614,6 +666,10 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
+                      {
+                        "key": "for-use-with-amazon-emr-managed-policies",
+                        "value": "true"
+                      },
                       {
                         "key": "Name",
                         "value": "aws-cdk-emr-add-step-runtime-role/Vpc"
@@ -730,6 +786,50 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-emr-add-step-runtime-role/EmrCreateCluster/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-emr-add-step-runtime-role/EmrCreateCluster/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "iam:PassRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "EmrCreateClusterInstanceRoleC80466F5",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "EmrCreateClusterServiceRoleDefaultPolicyA8B4FA32",
+                            "roles": [
+                              {
+                                "Ref": "EmrCreateClusterServiceRole5251910D"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
@@ -902,17 +1002,17 @@
               "version": "0.0.0"
             }
           },
-          "SM": {
-            "id": "SM",
-            "path": "aws-cdk-emr-add-step-runtime-role/SM",
+          "StateMachine": {
+            "id": "StateMachine",
+            "path": "aws-cdk-emr-add-step-runtime-role/StateMachine",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "aws-cdk-emr-add-step-runtime-role/SM/Role",
+                "path": "aws-cdk-emr-add-step-runtime-role/StateMachine/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "aws-cdk-emr-add-step-runtime-role/SM/Role/ImportRole",
+                    "path": "aws-cdk-emr-add-step-runtime-role/StateMachine/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -920,7 +1020,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-emr-add-step-runtime-role/SM/Role/Resource",
+                    "path": "aws-cdk-emr-add-step-runtime-role/StateMachine/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -945,11 +1045,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-emr-add-step-runtime-role/SM/Role/DefaultPolicy",
+                    "path": "aws-cdk-emr-add-step-runtime-role/StateMachine/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-emr-add-step-runtime-role/SM/Role/DefaultPolicy/Resource",
+                        "path": "aws-cdk-emr-add-step-runtime-role/StateMachine/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -957,6 +1057,7 @@
                               "Statement": [
                                 {
                                   "Action": [
+                                    "elasticmapreduce:AddTags",
                                     "elasticmapreduce:DescribeCluster",
                                     "elasticmapreduce:RunJobFlow",
                                     "elasticmapreduce:TerminateJobFlows"
@@ -1086,10 +1187,10 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "SMRoleDefaultPolicy34CA15C7",
+                            "policyName": "StateMachineRoleDefaultPolicyDF1E6607",
                             "roles": [
                               {
-                                "Ref": "SMRole49C19C48"
+                                "Ref": "StateMachineRoleB840431D"
                               }
                             ]
                           }
@@ -1113,7 +1214,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-emr-add-step-runtime-role/SM/Resource",
+                "path": "aws-cdk-emr-add-step-runtime-role/StateMachine/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
@@ -1158,7 +1259,7 @@
                     },
                     "roleArn": {
                       "Fn::GetAtt": [
-                        "SMRole49C19C48",
+                        "StateMachineRoleB840431D",
                         "Arn"
                       ]
                     }

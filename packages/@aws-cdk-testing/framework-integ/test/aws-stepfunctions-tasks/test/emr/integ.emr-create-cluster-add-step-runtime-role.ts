@@ -3,7 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as emr from 'aws-cdk-lib/aws-emr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Stack, Tags } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /*
@@ -21,6 +21,8 @@ const app = new App();
 const stack = new Stack(app, 'aws-cdk-emr-add-step-runtime-role');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { restrictDefaultSecurityGroup: false });
+// https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html#manually-tagged-resources
+Tags.of(vpc).add('for-use-with-amazon-emr-managed-policies', 'true');
 
 const cfnSecurityConfiguration = new emr.CfnSecurityConfiguration(stack, 'EmrSecurityConfiguration', {
   name: 'AddStepRuntimeRoleSecConfig',
@@ -122,7 +124,7 @@ const terminationStep = new tasks.EmrTerminateCluster(stack, 'EmrTerminateCluste
 
 const definition = createClusterStep.next(addStepStep).next(terminationStep);
 
-new sfn.StateMachine(stack, 'SM', {
+new sfn.StateMachine(stack, 'StateMachine', {
   definition,
 });
 
