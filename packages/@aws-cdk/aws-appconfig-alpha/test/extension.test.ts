@@ -28,9 +28,6 @@ describe('extension', () => {
       code: lambda.Code.fromInline('# dummy func'),
       handler: 'index.handler',
     });
-    Object.defineProperty(func, 'functionArn', {
-      value: 'arn:lambda:us-east-1:123456789012:function:my-function',
-    });
     new Extension(stack, 'MyExtension', {
       actions: [
         new Action({
@@ -48,16 +45,16 @@ describe('extension', () => {
       Actions: {
         ON_DEPLOYMENT_COMPLETE: [
           {
-            Name: 'MyExtension',
-            RoleArn: { 'Fn::GetAtt': ['MyExtensionRoleFD367BEA2AE12', 'Arn'] },
-            Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
+            Name: 'MyExtension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyExtensionRole467D6FCDEEFA5', 'Arn'] },
+            Uri: { 'Fn::GetAtt': ['MyFunction3BAA72D1', 'Arn'] },
           },
         ],
         ON_DEPLOYMENT_ROLLED_BACK: [
           {
-            Name: 'MyExtension',
-            RoleArn: { 'Fn::GetAtt': ['MyExtensionRoleFD367BEA2AE12', 'Arn'] },
-            Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
+            Name: 'MyExtension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyExtensionRole467D6FCDEEFA5', 'Arn'] },
+            Uri: { 'Fn::GetAtt': ['MyFunction3BAA72D1', 'Arn'] },
           },
         ],
       },
@@ -69,7 +66,7 @@ describe('extension', () => {
             Statement: [
               {
                 Effect: Effect.ALLOW,
-                Resource: 'arn:lambda:us-east-1:123456789012:function:my-function',
+                Resource: { 'Fn::GetAtt': ['MyFunction3BAA72D1', 'Arn'] },
                 Action: [
                   'lambda:InvokeFunction',
                   'lambda:InvokeAsync',
@@ -123,15 +120,15 @@ describe('extension', () => {
       Actions: {
         ON_DEPLOYMENT_COMPLETE: [
           {
-            Name: 'MyExtension',
-            RoleArn: { 'Fn::GetAtt': ['MyExtensionRoleFD367BEA2AE12', 'Arn'] },
+            Name: 'MyExtension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyExtensionRole467D6FCDEEFA5', 'Arn'] },
             Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
           },
         ],
         ON_DEPLOYMENT_ROLLED_BACK: [
           {
-            Name: 'MyExtension',
-            RoleArn: { 'Fn::GetAtt': ['MyExtensionRole78071F4E7B10A', 'Arn'] },
+            Name: 'MyExtension-1',
+            RoleArn: { 'Fn::GetAtt': ['MyExtensionRoleBE614F182C70A', 'Arn'] },
             Uri: 'arn:lambda:us-east-1:123456789012:function:my-diff-function',
           },
         ],
@@ -214,8 +211,8 @@ describe('extension', () => {
       Actions: {
         ON_DEPLOYMENT_COMPLETE: [
           {
-            Name: 'MyExtension',
-            RoleArn: { 'Fn::GetAtt': ['MyExtensionRoleFD367BEA2AE12', 'Arn'] },
+            Name: 'TestExtension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyExtensionRoleCA98491716207', 'Arn'] },
             Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
           },
         ],
@@ -300,7 +297,7 @@ describe('extension', () => {
           {
             Description: 'This is my action description',
             Name: 'ActionTestName',
-            RoleArn: { 'Fn::GetAtt': ['MyExtensionRoleC3C234A0DDBAB', 'Arn'] },
+            RoleArn: { 'Fn::GetAtt': ['MyExtensionRole76B022BC4F2BC', 'Arn'] },
             Uri: 'arn:sqs:us-east-1:123456789012:my-queue',
           },
         ],
@@ -346,8 +343,8 @@ describe('extension', () => {
       Actions: {
         ON_DEPLOYMENT_BAKING: [
           {
-            Name: 'MyExtension',
-            RoleArn: { 'Fn::GetAtt': ['MyExtensionRole600FCFE1621BF', 'Arn'] },
+            Name: 'MyExtension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyExtensionRole467D6FCDEEFA5', 'Arn'] },
             Uri: 'arn:sns:us-east-1:123456789012:my-topic',
           },
         ],
@@ -393,7 +390,7 @@ describe('extension', () => {
       Actions: {
         ON_DEPLOYMENT_BAKING: [
           {
-            Name: 'MyExtension',
+            Name: 'MyExtension-0',
             Uri: 'arn:aws:events:us-east-1:123456789012:event-bus/aws.partner/PartnerName/acct1/repo1',
           },
         ],
@@ -431,8 +428,8 @@ describe('extension', () => {
       Actions: {
         ON_DEPLOYMENT_COMPLETE: [
           {
-            Name: 'MyExtension',
-            RoleArn: { 'Fn::GetAtt': ['MyExtensionRoleFD367BEA2AE12', 'Arn'] },
+            Name: 'MyExtension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyExtensionRole467D6FCDEEFA5', 'Arn'] },
             Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
           },
         ],
@@ -516,8 +513,8 @@ describe('extension', () => {
       Actions: {
         ON_DEPLOYMENT_COMPLETE: [
           {
-            Name: 'MyExtension',
-            RoleArn: { 'Fn::GetAtt': ['MyExtensionRoleFD367BEA2AE12', 'Arn'] },
+            Name: 'MyExtension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyExtensionRole467D6FCDEEFA5', 'Arn'] },
             Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
           },
         ],
@@ -582,6 +579,9 @@ describe('extension', () => {
     const role = new Role(stack, 'MyRole', {
       assumedBy: new ServicePrincipal('appconfig.amazonaws.com'),
     });
+    Object.defineProperty(role, 'roleArn', {
+      value: 'arn:iam::123456789012:role/my-role',
+    });
     new Extension(stack, 'MyExtension', {
       actions: [
         new Action({
@@ -599,8 +599,8 @@ describe('extension', () => {
       Actions: {
         ON_DEPLOYMENT_COMPLETE: [
           {
-            Name: 'MyExtension',
-            RoleArn: { 'Fn::GetAtt': ['MyRoleF48FFE04', 'Arn'] },
+            Name: 'MyExtension-0',
+            RoleArn: 'arn:iam::123456789012:role/my-role',
             Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
           },
         ],
