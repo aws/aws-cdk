@@ -106,10 +106,8 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
   constructor(scope: Construct, id: string, props: QueueProcessingEc2ServiceProps = {}) {
     super(scope, id, props);
 
-    // In the queueProcessingFargateService, props.image is optional, which is why image is optional in the queue-processing-service-base.ts.
-    // However, in the queueProcessingEcsService, image is mandatory, so null checks have been introduced.
-    if (props.image == null) {
-      throw new Error('Cannot create a QueueProcessingEc2Service with props.image is undefined');
+    if (!props.image) {
+      throw new Error('image must be specified for EC2 queue processing service');
     }
 
     const containerName = props.containerName ?? 'QueueProcessingContainer';
