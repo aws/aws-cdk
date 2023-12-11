@@ -36,19 +36,7 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
       safeParseFloat(lvalue) === safeParseFloat(rvalue)) {
     return true;
   }
-  // CFN considers [x] and x to be the same thing, sometimes.
-  if (Array.isArray(lvalue) !== Array.isArray(rvalue)) {
-    if (Array.isArray(lvalue)) {
-      if (lvalue.length === 1) {
-        return deepEqual(lvalue[0], rvalue);
-      }
-    } else if (Array.isArray(rvalue)) {
-      if (rvalue.length === 1) {
-        return deepEqual(lvalue, rvalue[0]);
-      }
-    }
-    return false;
-  }
+  if (Array.isArray(lvalue) !== Array.isArray(rvalue)) { return false; }
   if (typeof lvalue !== typeof rvalue) { return false; }
   if (Array.isArray(lvalue) /* && Array.isArray(rvalue) */) {
     if (lvalue.length !== rvalue.length) { return false; }
