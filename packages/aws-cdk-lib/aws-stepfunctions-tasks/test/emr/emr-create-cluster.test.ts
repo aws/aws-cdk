@@ -1346,11 +1346,3 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
     });
   }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
 });
-
-function hasTags(expectedTags: Array<{Key: string, Value: string}>) {
-  return {
-    Properties: {
-      Tags: Match.arrayWith(expectedTags),
-    },
-  };
-}
