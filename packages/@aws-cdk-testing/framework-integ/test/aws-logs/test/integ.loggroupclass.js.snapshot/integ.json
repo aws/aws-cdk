@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "LogGroupClassIntegTest/DefaultTest": {
+      "stacks": [
+        "log-group-class"
+      ],
+      "assertionStack": "LogGroupClassIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LogGroupClassIntegTestDefaultTestDeployAssert18FBD13E"
+    }
+  }
+}

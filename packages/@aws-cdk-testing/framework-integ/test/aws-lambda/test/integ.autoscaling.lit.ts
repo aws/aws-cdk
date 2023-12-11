@@ -42,6 +42,13 @@ class TestStack extends cdk.Stack {
       maxCapacity: 20,
     });
 
+    scalingTarget.scaleOnSchedule('WithStartAndEnd', {
+      schedule: appscaling.Schedule.cron({ hour: '20', minute: '0' }),
+      startTime: new Date('2023-12-25'),
+      endTime: new Date('2023-12-26'),
+      maxCapacity: 20,
+    });
+
     new cdk.CfnOutput(this, 'FunctionName', {
       value: fn.functionName,
     });
