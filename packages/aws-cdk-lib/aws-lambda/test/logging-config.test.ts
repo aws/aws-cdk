@@ -225,4 +225,35 @@ describe('logging Config', () => {
       },
     });
   });
+
+  test('Throws when invalid logFormat is specified', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    expect(() => {
+      new lambda.Function(stack, 'Lambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        logFormat: 'XML',
+      });
+    }).toThrow(/'XML' is not a legal LogFormat type./);
+  });
+
+  test('Throws when invalid logFormat is specified in getLoggingConfig', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    expect(() => {
+      const lambdaFunction = new lambda.Function(stack, 'Lambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+      });
+      (lambdaFunction as any).getLoggingConfig({
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        logFormat: 'XML',
+      });
+    }).toThrow(/'XML' is not a legal LogFormat type./);
+  });
 });
