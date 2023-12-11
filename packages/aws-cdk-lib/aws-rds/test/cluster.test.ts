@@ -3748,6 +3748,76 @@ describe('cluster', () => {
     });
   });
 
+  test('providing a writer to the cluster in a public subnet should by default have publiclyAccessible set to true', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      writer: ClusterInstance.serverlessV2('writer'),
+      vpc,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PUBLIC,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Engine: 'aurora',
+      PubliclyAccessible: true,
+    });
+  });
+
+  test('providing a writer to the cluster in a public subnet should use writer provided publiclyAccessible as true', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      writer: ClusterInstance.serverlessV2('writer', {
+        publiclyAccessible: true,
+      }),
+      vpc,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PUBLIC,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Engine: 'aurora',
+      PubliclyAccessible: true,
+    });
+  });
+
+  test('providing a writer to the cluster in a public subnet should use writer provided publiclyAccessible as false', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      writer: ClusterInstance.serverlessV2('writer', {
+        publiclyAccessible: false,
+      }),
+      vpc,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PUBLIC,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Engine: 'aurora',
+      PubliclyAccessible: false,
+    });
+  });
+
   test('changes the case of the cluster identifier', () => {
     // GIVEN
     const stack = testStack();
@@ -3879,6 +3949,52 @@ describe('cluster', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       EngineVersion: Match.absent(),
+    });
+  });
+
+  test('grantConnect', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_3 }),
+      instanceProps: { vpc },
+    });
+    cluster.grantConnect(role, 'someUser');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      Roles: [{ Ref: 'Role1ABCC5F0' }],
+      PolicyDocument: {
+        Statement: [{
+          Action: 'rds-db:connect',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':rds-db:us-test-1:12345:dbuser:',
+                {
+                  'Fn::GetAtt': [
+                    'DatabaseB269D8BB',
+                    'DBClusterResourceId',
+                  ],
+                },
+                '/someUser',
+              ],
+            ],
+          },
+        }],
+      },
     });
   });
 });
