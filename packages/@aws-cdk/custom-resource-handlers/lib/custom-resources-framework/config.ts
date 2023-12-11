@@ -62,7 +62,7 @@ export interface ConfigProps {
   readonly preventMinifyAndBundle?: boolean;
 }
 
-type HandlerFrameworkConfig = { [module: string]: { [identifier: string]: ConfigProps[] } };
+export type HandlerFrameworkConfig = { [module: string]: { [identifier: string]: ConfigProps[] } };
 
 export const config: HandlerFrameworkConfig = {
   'aws-certificatemanager': {

@@ -16,12 +16,19 @@ export class CdkHandlerFrameworkModule extends Module {
   private readonly renderer = new TypeScriptRenderer();
   private readonly externalModules = new Map<string, boolean>();
   private readonly _interfaces = new Map<string, InterfaceType>();
-  private hasComponents = false;
+  private _hasComponents = false;
 
   /**
    * Whether the module being generated will live inside of aws-cdk-lib/core
    */
   public readonly coreInternal: boolean;
+
+  /**
+   * Whether the module contains framework components
+   */
+  public get hasComponents() {
+    return this._hasComponents;
+  }
 
   public constructor(fqn: string) {
     super(fqn);
@@ -31,12 +38,12 @@ export class CdkHandlerFrameworkModule extends Module {
   /**
    * Build a framework component inside of this module.
    */
-  public build(component: ConfigProps, sourceCodeDirectory: string) {
+  public build(component: ConfigProps, codeDirectory: string) {
     if (component.type === ComponentType.CDK_NO_OP) {
       return;
     }
 
-    this.hasComponents = true;
+    this._hasComponents = true;
 
     const entrypoint = component.entrypoint ?? 'index.handler';
     const name = this.buildComponentName(entrypoint);
@@ -44,7 +51,7 @@ export class CdkHandlerFrameworkModule extends Module {
     const props: CdkHandlerClassProps = {
       name,
       entrypoint,
-      codeDirectory: sourceCodeDirectory,
+      codeDirectory,
       runtime: RuntimeDeterminer.determineLatestRuntime(
         component.compatibleRuntimes,
         CdkHandlerFrameworkModule.DEFAULT_RUNTIME,
@@ -70,11 +77,9 @@ export class CdkHandlerFrameworkModule extends Module {
   /**
    * Render built framework into an output file.
    */
-  public render() {
-    if (this.hasComponents) {
-      this.importExternalModules();
-      fs.outputFileSync(`dist/${this.fqn}.generated.ts`, this.renderer.render(this));
-    }
+  public render(file: string) {
+    this.importExternalModules();
+    fs.outputFileSync(file, this.renderer.render(this));
   }
 
   /**

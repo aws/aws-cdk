@@ -18,10 +18,13 @@ async function main() {
       } else {
         await minifyAndBundle(component.sourceCode, outfile);
       }
-      const sourceCodeDirectory = path.dirname(outfile).split('/').pop();
-      module.build(component, `${sourceCodeDirectory}`);
+      const codeDirectory = path.dirname(outfile).split('/').pop();
+      module.build(component, `${codeDirectory}`);
     }
-    module.render();
+
+    if (module.hasComponents) {
+      module.render(`dist/${fqn}.generated.ts`);
+    }
   }
 
   function recurse(_config: any, _path: string[]) {
@@ -87,7 +90,7 @@ async function minifyAndBundle(infile: string, outfile: string) {
   }
 }
 
-function calculateOutfile(file: string) {
+export function calculateOutfile(file: string) {
   // turn ts extension into js extension
   if (file.includes('index.ts')) {
     file = path.join(path.dirname(file), path.basename(file, path.extname(file)) + '.js');
