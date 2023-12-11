@@ -241,6 +241,7 @@
     "./aws-backup": "./aws-backup/index.js",
     "./aws-backupgateway": "./aws-backupgateway/index.js",
     "./aws-batch": "./aws-batch/index.js",
+    "./aws-bedrock": "./aws-bedrock/index.js",
     "./aws-billingconductor": "./aws-billingconductor/index.js",
     "./aws-budgets": "./aws-budgets/index.js",
     "./aws-cassandra": "./aws-cassandra/index.js",
