@@ -179,6 +179,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
   private _serviceRole: iam.IRole;
   private _clusterRole: iam.IRole;
   private _autoScalingRole?: iam.IRole;
+  private _baseTags?: { [key: string]: string } = undefined;
 
   constructor(scope: Construct, id: string, private readonly props: EmrCreateClusterProps) {
     super(scope, id, props);
@@ -191,6 +192,14 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     // If the Roles are undefined then they weren't provided, so create them
     this._serviceRole = this.props.serviceRole ?? this.createServiceRole();
     this._clusterRole = this.props.clusterRole ?? this.createClusterRole();
+
+    // Service role must be able to iam:PassRole on the cluster role
+    this._clusterRole.grantPassRole(this._serviceRole);
+
+    // https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html#manually-tagged-resources
+    if (cdk.FeatureFlags.of(this).isEnabled(ENABLE_EMR_SERVICE_POLICY_V2)) {
+      this._baseTags = { 'for-use-with-amazon-emr-managed-policies': 'true' };
+    }
 
     // AutoScaling roles are not valid with InstanceFleet clusters.
     // Attempt to create only if .instances.instanceFleets is undefined or empty
@@ -280,7 +289,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         ScaleDownBehavior: cdk.stringToCloudFormation(this.props.scaleDownBehavior?.valueOf()),
         SecurityConfiguration: cdk.stringToCloudFormation(this.props.securityConfiguration),
         StepConcurrencyLevel: cdk.numberToCloudFormation(this.props.stepConcurrencyLevel),
-        ...(this.props.tags ? this.renderTags(this.props.tags) : undefined),
+        ...(this.props.tags ? this.renderTags({ ...this.props.tags, ...this._baseTags }) : this.renderTags(this._baseTags)),
         VisibleToAllUsers: cdk.booleanToCloudFormation(this.visibleToAllUsers),
       }),
     };
@@ -298,7 +307,12 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
     const policyStatements = [
       new iam.PolicyStatement({
-        actions: ['elasticmapreduce:RunJobFlow', 'elasticmapreduce:DescribeCluster', 'elasticmapreduce:TerminateJobFlows'],
+        actions: [
+          'elasticmapreduce:RunJobFlow',
+          'elasticmapreduce:DescribeCluster',
+          'elasticmapreduce:TerminateJobFlows',
+          'elasticmapreduce:AddTags',
+        ],
         resources: ['*'],
       }),
     ];
@@ -359,11 +373,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
   private createServiceRole(): iam.IRole {
     if (cdk.FeatureFlags.of(this).isEnabled(ENABLE_EMR_SERVICE_POLICY_V2)) {
       return new iam.Role(this, 'ServiceRole', {
-        assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com', {
-          conditions: {
-            StringEquals: { 'aws:RequestTag/for-use-with-amazon-emr-managed-policies': 'true' },
-          },
-        }),
+        assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
         managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEMRServicePolicy_v2')],
       });
     }
