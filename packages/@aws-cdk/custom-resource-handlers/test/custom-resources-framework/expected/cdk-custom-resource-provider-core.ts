@@ -1,7 +1,8 @@
 /* eslint-disable prettier/prettier,max-len */
 import * as path from "path";
 import { Construct } from "constructs";
-import { Stack, CustomResourceProviderBase, CustomResourceProviderOptions } from "../../lib";
+import { Stack } from "../../stack";
+import { CustomResourceProviderBase, CustomResourceProviderOptions } from "../../custom-resource-provider";
 
 export class TestProvider extends CustomResourceProviderBase {
   /**
