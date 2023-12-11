@@ -73,7 +73,6 @@ export const VERSION_LOCKED: { [key: string]: boolean } = {
 
   // not locked to the version
   CodeSigningConfigArn: false,
-  Policy: true,
   ReservedConcurrentExecutions: false,
   Tags: false,
 };

@@ -23,8 +23,8 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "@aws-cdk/aws-service-spec": "^0.0.34",
-    "@aws-cdk/service-spec-types": "^0.0.34",
+    "@aws-cdk/aws-service-spec": "^0.0.35",
+    "@aws-cdk/service-spec-types": "^0.0.35",
     "chalk": "^4",
     "diff": "^5.1.0",
     "fast-deep-equal": "^3.1.3",
