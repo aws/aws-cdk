@@ -1,28 +1,28 @@
 {
   "version": "35.0.0",
   "artifacts": {
-    "aws-cdk-emr-create-cluster-tags.assets": {
+    "aws-stepfunctions-tasks-bedrock-invoke-model-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-emr-create-cluster-tags.assets.json",
+        "file": "aws-stepfunctions-tasks-bedrock-invoke-model-integ.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-emr-create-cluster-tags": {
+    "aws-stepfunctions-tasks-bedrock-invoke-model-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-emr-create-cluster-tags.template.json",
+        "templateFile": "aws-stepfunctions-tasks-bedrock-invoke-model-integ.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/af19ab99b573264ca04322f5ddf79ff8a4feb16124915b8a0409fe273723270e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/19db222d8d51351d1127c4b099aa6545a4c1ddd9425a2e0f78c328f39ff74edf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-emr-create-cluster-tags.assets"
+          "aws-stepfunctions-tasks-bedrock-invoke-model-integ.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,85 +31,55 @@
         }
       },
       "dependencies": [
-        "aws-cdk-emr-create-cluster-tags.assets"
+        "aws-stepfunctions-tasks-bedrock-invoke-model-integ.assets"
       ],
       "metadata": {
-        "/aws-cdk-emr-create-cluster-tags/EmrCreateCluster/ServiceRole/Resource": [
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/StateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EmrCreateClusterServiceRole5251910D"
+            "data": "StateMachineRoleB840431D"
           }
         ],
-        "/aws-cdk-emr-create-cluster-tags/EmrCreateCluster/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/StateMachine/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EmrCreateClusterServiceRoleDefaultPolicyA8B4FA32"
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
           }
         ],
-        "/aws-cdk-emr-create-cluster-tags/EmrCreateCluster/InstanceRole/Resource": [
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/StateMachine/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EmrCreateClusterInstanceRoleC80466F5"
+            "data": "StateMachine2E01A3A5"
           }
         ],
-        "/aws-cdk-emr-create-cluster-tags/EmrCreateCluster/InstanceProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EmrCreateClusterInstanceProfileC1729180"
-          }
-        ],
-        "/aws-cdk-emr-create-cluster-tags/EmrCreateCluster/AutoScalingRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EmrCreateClusterAutoScalingRoleFDDAF4E2"
-          }
-        ],
-        "/aws-cdk-emr-create-cluster-tags/SM/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SMRole49C19C48"
-          }
-        ],
-        "/aws-cdk-emr-create-cluster-tags/SM/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SMRoleDefaultPolicy34CA15C7"
-          }
-        ],
-        "/aws-cdk-emr-create-cluster-tags/SM/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SM934E715A"
-          }
-        ],
-        "/aws-cdk-emr-create-cluster-tags/BootstrapVersion": [
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-emr-create-cluster-tags/CheckBootstrapVersion": [
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-emr-create-cluster-tags"
+      "displayName": "aws-stepfunctions-tasks-bedrock-invoke-model-integ"
     },
-    "EmrCreateClusterTestDefaultTestDeployAssert697DC891.assets": {
+    "InvokeModelDefaultTestDeployAssert9C0D2DFC.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "EmrCreateClusterTestDefaultTestDeployAssert697DC891.assets.json",
+        "file": "InvokeModelDefaultTestDeployAssert9C0D2DFC.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "EmrCreateClusterTestDefaultTestDeployAssert697DC891": {
+    "InvokeModelDefaultTestDeployAssert9C0D2DFC": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "EmrCreateClusterTestDefaultTestDeployAssert697DC891.template.json",
+        "templateFile": "InvokeModelDefaultTestDeployAssert9C0D2DFC.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -118,7 +88,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "EmrCreateClusterTestDefaultTestDeployAssert697DC891.assets"
+          "InvokeModelDefaultTestDeployAssert9C0D2DFC.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -127,23 +97,23 @@
         }
       },
       "dependencies": [
-        "EmrCreateClusterTestDefaultTestDeployAssert697DC891.assets"
+        "InvokeModelDefaultTestDeployAssert9C0D2DFC.assets"
       ],
       "metadata": {
-        "/EmrCreateClusterTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/InvokeModel/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/EmrCreateClusterTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/InvokeModel/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "EmrCreateClusterTest/DefaultTest/DeployAssert"
+      "displayName": "InvokeModel/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
