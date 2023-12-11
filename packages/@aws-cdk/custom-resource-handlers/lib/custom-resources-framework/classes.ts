@@ -19,9 +19,8 @@ import {
   CONSTRUCTS_MODULE,
   LAMBDA_MODULE,
   CORE_MODULE,
-  STACK,
-  CUSTOM_RESOURCE_PROVIDER_BASE,
-  CUSTOM_RESOURCE_PROVIDER_OPTIONS,
+  CORE_INTERNAL,
+  PATH_MODULE,
 } from './modules';
 import { Runtime } from './runtime';
 
@@ -86,7 +85,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
    */
   public static buildCdkFunction(scope: CdkCustomResourceModule, props: CdkCustomResourceClassProps): CdkCustomResourceClass {
     return new (class CdkFunction extends CdkCustomResourceClass {
-      protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE];
+      protected readonly externalModules = [PATH_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE];
 
       public constructor() {
         super(scope, {
@@ -95,7 +94,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
           export: true,
         });
 
-        this.externalModules.forEach(module => scope.addExternalModule(module));
+        this.importExternalModulesInto(scope);
 
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
@@ -118,7 +117,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
    */
   public static buildCdkSingletonFunction(scope: CdkCustomResourceModule, props: CdkCustomResourceClassProps): CdkCustomResourceClass {
     return new (class CdkSingletonFunction extends CdkCustomResourceClass {
-      protected readonly externalModules = [CONSTRUCTS_MODULE, LAMBDA_MODULE];
+      protected readonly externalModules = [PATH_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE];
 
       public constructor() {
         super(scope, {
@@ -127,7 +126,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
           export: true,
         });
 
-        this.externalModules.forEach(module => scope.addExternalModule(module));
+        this.importExternalModulesInto(scope);
 
         const uuid: PropertySpec = {
           name: 'uuid',
@@ -176,24 +175,19 @@ export abstract class CdkCustomResourceClass extends ClassType {
    */
   public static buildCdkCustomResourceProvider(scope: CdkCustomResourceModule, props: CdkCustomResourceClassProps): CdkCustomResourceClass {
     return new (class CdkCustomResourceProvider extends CdkCustomResourceClass {
-      protected readonly externalModules: ExternalModule[] = [CONSTRUCTS_MODULE];
+      protected readonly externalModules: ExternalModule[] = [PATH_MODULE, CONSTRUCTS_MODULE];
 
       public constructor() {
         super(scope, {
           name: props.name,
           extends: scope.coreInternal
-            ? CUSTOM_RESOURCE_PROVIDER_BASE.CustomResourceProviderBase
+            ? CORE_INTERNAL.CustomResourceProviderBase
             : CORE_MODULE.CustomResourceProviderBase,
           export: true,
         });
 
-        if (scope.coreInternal) {
-          this.externalModules.push(...[STACK, CUSTOM_RESOURCE_PROVIDER_BASE, CUSTOM_RESOURCE_PROVIDER_OPTIONS]);
-        } else {
-          this.externalModules.push(CORE_MODULE);
-        }
-
-        this.externalModules.forEach(module => scope.addExternalModule(module));
+        this.externalModules.push(scope.coreInternal ? CORE_INTERNAL : CORE_MODULE);
+        this.importExternalModulesInto(scope);
 
         const getOrCreateMethod = this.addMethod({
           name: 'getOrCreate',
@@ -214,7 +208,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
         getOrCreateMethod.addParameter({
           name: 'props',
           type: scope.coreInternal
-            ? CUSTOM_RESOURCE_PROVIDER_OPTIONS.CustomResourceProviderOptions
+            ? CORE_INTERNAL.CustomResourceProviderOptions
             : CORE_MODULE.CustomResourceProviderOptions,
           optional: true,
         });
@@ -241,7 +235,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
         getOrCreateProviderMethod.addParameter({
           name: 'props',
           type: scope.coreInternal
-            ? CUSTOM_RESOURCE_PROVIDER_OPTIONS.CustomResourceProviderOptions
+            ? CORE_INTERNAL.CustomResourceProviderOptions
             : CORE_MODULE.CustomResourceProviderOptions,
           optional: true,
         });
@@ -259,7 +253,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
         ]);
         this.buildConstructor({
           constructorPropsType: scope.coreInternal
-            ? CUSTOM_RESOURCE_PROVIDER_OPTIONS.CustomResourceProviderOptions
+            ? CORE_INTERNAL.CustomResourceProviderOptions
             : CORE_MODULE.CustomResourceProviderOptions,
           superProps,
           constructorVisbility: MemberVisibility.Private,
@@ -273,6 +267,48 @@ export abstract class CdkCustomResourceClass extends ClassType {
    * External modules that this class depends on.
    */
   protected abstract readonly externalModules: ExternalModule[];
+
+  private importExternalModulesInto(scope: CdkCustomResourceModule) {
+    for (const module of this.externalModules) {
+      if (!scope.hasExternalModule(module)) {
+        scope.addExternalModule(module);
+        this.importExternalModuleInto(scope, module);
+      }
+    }
+  }
+
+  private importExternalModuleInto(scope: CdkCustomResourceModule, module: ExternalModule) {
+    switch (module.fqn) {
+      case PATH_MODULE.fqn: {
+        PATH_MODULE.import(scope, 'path');
+        return;
+      }
+      case CONSTRUCTS_MODULE.fqn: {
+        CONSTRUCTS_MODULE.importSelective(scope, ['Construct']);
+        return;
+      }
+      case CORE_MODULE.fqn: {
+        CORE_MODULE.importSelective(scope, [
+          'Stack',
+          'CustomResourceProviderBase',
+          'CustomResourceProviderOptions',
+        ]);
+        return;
+      }
+      case CORE_INTERNAL.fqn: {
+        CORE_INTERNAL.importSelective(scope, [
+          'Stack',
+          'CustomResourceProviderBase',
+          'CustomResourceProviderOptions',
+        ]);
+        return;
+      }
+      case LAMBDA_MODULE.fqn: {
+        LAMBDA_MODULE.import(scope, 'lambda');
+        return;
+      }
+    }
+  }
 
   private getOrCreateInterface(scope: CdkCustomResourceModule, spec: InterfaceSpec) {
     const existing = scope.getInterface(spec.name);

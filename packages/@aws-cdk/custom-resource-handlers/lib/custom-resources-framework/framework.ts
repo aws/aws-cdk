@@ -3,7 +3,6 @@ import { ExternalModule, InterfaceType, Module, TypeScriptRenderer } from '@cdkl
 import * as fs from 'fs-extra';
 import { CdkCustomResourceClass, CdkCustomResourceClassProps } from './classes';
 import { ComponentType, ConfigProps } from './config';
-import { CONSTRUCTS_MODULE, CORE_MODULE, CUSTOM_RESOURCE_PROVIDER_BASE, CUSTOM_RESOURCE_PROVIDER_OPTIONS, LAMBDA_MODULE, PATH_MODULE, STACK } from './modules';
 import { Runtime } from './runtime';
 import { RuntimeDeterminer } from './utils/runtime-determiner';
 
@@ -75,10 +74,9 @@ export class CdkCustomResourceModule extends Module {
   }
 
   /**
-   * Render built framework into an output file.
+   * Render module with components into an output file.
    */
   public render(file: string) {
-    this.importExternalModules();
     fs.outputFileSync(file, this.renderer.render(this));
   }
 
@@ -89,6 +87,13 @@ export class CdkCustomResourceModule extends Module {
     if (!this.externalModules.has(module.fqn)) {
       this.externalModules.set(module.fqn, true);
     }
+  }
+
+  /**
+   * If an external module has been added as an import to this module.
+   */
+  public hasExternalModule(module: ExternalModule) {
+    return this.externalModules.has(module.fqn);
   }
 
   /**
@@ -112,41 +117,5 @@ export class CdkCustomResourceModule extends Module {
       /-([a-z])/g, (s) => { return s[1].toUpperCase(); },
     )) + (handler.charAt(0).toUpperCase() + handler.slice(1));
     return name.charAt(0).toUpperCase() + name.slice(1) + 'Provider';
-  }
-
-  private importExternalModules() {
-    PATH_MODULE.import(this, 'path');
-    for (const fqn of this.externalModules.keys()) {
-      switch (fqn) {
-        case CONSTRUCTS_MODULE.fqn: {
-          CONSTRUCTS_MODULE.importSelective(this, ['Construct']);
-          break;
-        }
-        case CORE_MODULE.fqn: {
-          CORE_MODULE.importSelective(this, [
-            'Stack',
-            'CustomResourceProviderBase',
-            'CustomResourceProviderOptions',
-          ]);
-          break;
-        }
-        case STACK.fqn: {
-          STACK.importSelective(this, ['Stack']);
-          break;
-        }
-        case CUSTOM_RESOURCE_PROVIDER_BASE.fqn: {
-          CUSTOM_RESOURCE_PROVIDER_BASE.importSelective(this, ['CustomResourceProviderBase']);
-          break;
-        }
-        case CUSTOM_RESOURCE_PROVIDER_OPTIONS.fqn: {
-          CUSTOM_RESOURCE_PROVIDER_OPTIONS.importSelective(this, ['CustomResourceProviderOptions']);
-          break;
-        }
-        case LAMBDA_MODULE.fqn: {
-          LAMBDA_MODULE.import(this, 'lambda');
-          break;
-        }
-      }
-    }
   }
 }

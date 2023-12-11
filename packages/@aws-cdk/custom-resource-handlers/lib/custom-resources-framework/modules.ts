@@ -16,6 +16,7 @@ class ConstructsModule extends ExternalModule {
 }
 
 class CoreModule extends ExternalModule {
+  public readonly Stack = Type.fromName(this, 'Stack');
   public readonly CustomResourceProviderBase = Type.fromName(this, 'CustomResourceProviderBase');
   public readonly CustomResourceProviderOptions = Type.fromName(this, 'CustomResourceProviderOptions');
 
@@ -24,25 +25,13 @@ class CoreModule extends ExternalModule {
   }
 }
 
-class Stack extends ExternalModule {
-  public constructor() {
-    super('../../lib/stack');
-  }
-}
-
-class CustomResourceProviderBase extends ExternalModule {
+class CoreInternal extends ExternalModule {
+  public readonly Stack = Type.fromName(this, 'Stack');
   public readonly CustomResourceProviderBase = Type.fromName(this, 'CustomResourceProviderBase');
-
-  public constructor() {
-    super('../../lib/custom-resource-provider/custom-resource-provider-base');
-  }
-}
-
-class CustomResourceProviderOptions extends ExternalModule {
   public readonly CustomResourceProviderOptions = Type.fromName(this, 'CustomResourceProviderOptions');
 
   public constructor() {
-    super('../../lib/custom-resource-provider/shared');
+    super('../../lib');
   }
 }
 
@@ -59,8 +48,5 @@ class LambdaModule extends ExternalModule {
 export const PATH_MODULE = new PathModule();
 export const CONSTRUCTS_MODULE = new ConstructsModule();
 export const CORE_MODULE = new CoreModule();
+export const CORE_INTERNAL = new CoreInternal();
 export const LAMBDA_MODULE = new LambdaModule();
-
-export const STACK = new Stack();
-export const CUSTOM_RESOURCE_PROVIDER_BASE = new CustomResourceProviderBase();
-export const CUSTOM_RESOURCE_PROVIDER_OPTIONS = new CustomResourceProviderOptions();
