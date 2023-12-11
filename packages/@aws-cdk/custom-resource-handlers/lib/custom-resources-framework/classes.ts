@@ -153,6 +153,9 @@ export abstract class CdkCustomResourceClass extends ClassType {
           export: true,
           extends: [LAMBDA_MODULE.FunctionOptions],
           properties: [uuid, lambdaPurpose],
+          docs: {
+            summary: `Initialization properties for ${this.name}`,
+          },
         });
 
         const superProps = new ObjectLiteral([
