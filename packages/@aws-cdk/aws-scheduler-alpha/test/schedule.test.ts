@@ -151,7 +151,7 @@ describe('Schedule', () => {
       '2023-01-01',
       '2023-10-01T00:00:00.000+09:00',
       '2023-10-01T00:00:00Z',
-      '2023-10-01T00:00:00.000'
+      '2023-10-01T00:00:00.000',
     ])('throw error when startDate is invalid format', (startDate) => {
       expect(() => {
         new Schedule(stack, 'TestSchedule', {
