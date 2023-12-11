@@ -68,11 +68,11 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
   constructor(scope: Construct, id: string, props: QueueProcessingFargateServiceProps = {}) {
     super(scope, id, props);
 
-    if (props.taskDefinition != null && props.image != null) {
-      throw new Error('You must specify only one of TaskDefinition or Image');
-    } else if (props.taskDefinition != null) {
+    if (props.taskDefinition && props.image) {
+      throw new Error('You must specify only one of taskDefinition or image');
+    } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
-    } else if (props.image != null) {
+    } else if (props.image) {
       // Create a Task Definition for the container to start
       this.taskDefinition = new FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
         memoryLimitMiB: props.memoryLimitMiB || 512,
