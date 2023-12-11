@@ -65,6 +65,15 @@ export interface ConfigProps {
 export type HandlerFrameworkConfig = { [module: string]: { [identifier: string]: ConfigProps[] } };
 
 export const config: HandlerFrameworkConfig = {
+  'aws-amplify-alpha': {
+    'asset-deployment-handler': [
+      {
+        type: ComponentType.CDK_NO_OP,
+        sourceCode: path.resolve(__dirname, '..', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.ts'),
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
+      },
+    ],
+  },
   'aws-certificatemanager': {
     'certificate-request-provider': [
       {
@@ -200,6 +209,15 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.CDK_NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-logs', 'log-retention-handler', 'index.ts'),
+        compatibleRuntimes: [Runtime.NODEJS_18_X],
+      },
+    ],
+  },
+  'aws-redshift-alpha': {
+    'cluster-reboot-provider': [
+      {
+        type: ComponentType.CDK_SINGLETON_FUNCTION,
+        sourceCode: path.resolve(__dirname, '..', 'aws-redshift-alpha', 'cluster-parameter-change-reboot-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
