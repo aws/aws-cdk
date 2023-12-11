@@ -151,6 +151,7 @@ describe('Schedule', () => {
       '2023-01-01',
       '2023-10-01T00:00:00.000+09:00',
       '2023-10-01T00:00:00Z',
+      '2023-10-01T00:00:00.000'
     ])('throw error when startDate is invalid format', (startDate) => {
       expect(() => {
         new Schedule(stack, 'TestSchedule', {
@@ -158,7 +159,7 @@ describe('Schedule', () => {
           target: new SomeLambdaTarget(func, role),
           startDate,
         });
-      }).toThrow(`startDate needs to follow the format yyyy-MM-ddTHH:mm:ss.SSSZ but got ${startDate}`);
+      }).toThrow(`startDate must be in ISO 8601 format, got ${startDate}`);
     });
 
     test.each([
@@ -172,7 +173,7 @@ describe('Schedule', () => {
           target: new SomeLambdaTarget(func, role),
           endDate,
         });
-      }).toThrow(`endDate needs to follow the format yyyy-MM-ddTHH:mm:ss.SSSZ but got ${endDate}`);
+      }).toThrow(`endDate must be in ISO 8601 format, got ${endDate}`);
     });
 
     test.each([
@@ -186,7 +187,7 @@ describe('Schedule', () => {
           startDate,
           endDate,
         });
-      }).toThrow(`startDate must come before the endDate but got startDate: ${startDate}, endDate: ${endDate}`);
+      }).toThrow(`startDate must precede endDate, got startDate: ${startDate}, endDate: ${endDate}`);
     });
   });
 });

@@ -233,7 +233,7 @@ export class Schedule extends Resource implements ISchedule {
     return this.metricAll('InvocationsSentToDeadLetterCount_Truncated_MessageSizeExceeded', props);
   }
 
-  private static readonly ISO8601_REGEX = /^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])\.[0-9]{3}(Z)?$/;
+  private static readonly ISO8601_REGEX = /^([0-2]\d{3})-(0[0-9]|1[0-2])-([0-2]\d|3[01])T([01]\d|2[0-4]):([0-5]\d):([0-6]\d)(\.\d{3})Z$/;
 
   /**
    * The schedule group associated with this schedule.
@@ -335,19 +335,14 @@ export class Schedule extends Resource implements ISchedule {
 
   private validateTimeFrame(startDate?: string, endDate?: string) {
     if (startDate && !Schedule.ISO8601_REGEX.test(startDate)) {
-      throw new Error(`startDate needs to follow the format yyyy-MM-ddTHH:mm:ss.SSSZ but got ${startDate}`);
+      throw new Error(`startDate must be in ISO 8601 format, got ${startDate}`);
     }
     if (endDate && !Schedule.ISO8601_REGEX.test(endDate)) {
-      throw new Error(`endDate needs to follow the format yyyy-MM-ddTHH:mm:ss.SSSZ but got ${endDate}`);
+      throw new Error(`endDate must be in ISO 8601 format, got ${endDate}`);
     }
 
-    if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-
-      if (end <= start) {
-        throw new Error(`startDate must come before the endDate but got startDate: ${startDate}, endDate: ${endDate}`);
-      }
+    if (startDate && endDate && startDate >= endDate) {
+      throw new Error(`startDate must precede endDate, got startDate: ${startDate}, endDate: ${endDate}`);
     }
   }
 }

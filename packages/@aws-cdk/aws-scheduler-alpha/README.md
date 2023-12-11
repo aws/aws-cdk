@@ -141,7 +141,7 @@ new Schedule(this, 'Schedule', {
 ### Configuring a start and end time of the Schedule
 
 If you choose a recurring schedule, you can set the start and end time of the Schedule by specifying the startDate and endDate.
-These values must follow the format `yyyy-MM-ddTHH:mm:ss.SSSZ`.
+These values must follow the ISO 8601 format (`yyyy-MM-ddTHH:mm:ss.SSSZ`).
 
 ```ts
 declare const target: targets.LambdaInvoke;
