@@ -39,13 +39,10 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * The image used to start a container.
    *
-   * For QueueProcessingFargateService:
-   * Either 'image' or 'taskDefinition' must be specified, but not both.
+   * For `QueueProcessingFargateService`, either `image` or `taskDefinition` must be specified, but not both.
+   * For QueueProcessingEc2Service, `image` is required.
    *
-   * For QueueProcessingEc2Service:
-   * 'image' is required and must be specified.
-   *
-   * @default - none
+   * @default - the image of the task definition is used for Fargate, required otherwise
    */
   readonly image?: ContainerImage;
 
