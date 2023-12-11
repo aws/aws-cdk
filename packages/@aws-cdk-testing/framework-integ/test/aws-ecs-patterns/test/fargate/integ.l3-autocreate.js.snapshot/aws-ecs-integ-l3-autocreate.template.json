@@ -56,13 +56,6 @@
   "ALBFargateServiceLBSecurityGrouptoawsecsintegl3autocreateALBFargateServiceSecurityGroup6F9400B580770A6C60": {
    "Type": "AWS::EC2::SecurityGroupEgress",
    "Properties": {
-    "GroupId": {
-     "Fn::GetAtt": [
-      "ALBFargateServiceLBSecurityGroup5DC3060E",
-      "GroupId"
-     ]
-    },
-    "IpProtocol": "tcp",
     "Description": "Load balancer to target",
     "DestinationSecurityGroupId": {
      "Fn::GetAtt": [
@@ -71,6 +64,13 @@
      ]
     },
     "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "ALBFargateServiceLBSecurityGroup5DC3060E",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
     "ToPort": 80
    }
   },
@@ -233,11 +233,6 @@
      "Ref": "EcsDefaultClusterMnL3mNNYN926A5246"
     },
     "DeploymentConfiguration": {
-     "Alarms": {
-      "AlarmNames": [],
-      "Enable": false,
-      "Rollback": false
-     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -306,7 +301,6 @@
   "ALBFargateServiceSecurityGroupfromawsecsintegl3autocreateALBFargateServiceLBSecurityGroupD565E0BF802E7B8344": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
-    "IpProtocol": "tcp",
     "Description": "Load balancer to target",
     "FromPort": 80,
     "GroupId": {
@@ -315,6 +309,7 @@
       "GroupId"
      ]
     },
+    "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
       "ALBFargateServiceLBSecurityGroup5DC3060E",
@@ -348,9 +343,6 @@
   "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1Subnet3C273B99": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -374,21 +366,24 @@
       "Key": "Name",
       "Value": "aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
+    }
    }
   },
   "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1RouteTableA1FD6ACC": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
+    }
    }
   },
   "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1RouteTableAssociation8B583A17": {
@@ -405,12 +400,12 @@
   "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1DefaultRouteFF4E2178": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1RouteTableA1FD6ACC"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "EcsDefaultClusterMnL3mNNYNVpcIGW9C2C2B8F"
+    },
+    "RouteTableId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1RouteTableA1FD6ACC"
     }
    },
    "DependsOn": [
@@ -432,14 +427,14 @@
   "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1NATGateway5E3732C1": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1Subnet3C273B99"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1EIP8704DB2F",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1Subnet3C273B99"
     },
     "Tags": [
      {
@@ -456,9 +451,6 @@
   "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2Subnet95FF715A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -482,21 +474,24 @@
       "Key": "Name",
       "Value": "aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
+    }
    }
   },
   "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2RouteTable263DEAA5": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
+    }
    }
   },
   "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2RouteTableAssociation43E5803C": {
@@ -513,12 +508,12 @@
   "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2DefaultRouteB1375520": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2RouteTable263DEAA5"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "EcsDefaultClusterMnL3mNNYNVpcIGW9C2C2B8F"
+    },
+    "RouteTableId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2RouteTable263DEAA5"
     }
    },
    "DependsOn": [
@@ -540,14 +535,14 @@
   "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2NATGateway4C855E00": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2Subnet95FF715A"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2EIPF0764873",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2Subnet95FF715A"
     },
     "Tags": [
      {
@@ -564,9 +559,6 @@
   "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet1Subnet075EFF4C": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -590,21 +582,24 @@
       "Key": "Name",
       "Value": "aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
+    }
    }
   },
   "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet1RouteTable4F1D2E36": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
+    }
    }
   },
   "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet1RouteTableAssociation34B92275": {
@@ -621,21 +616,18 @@
   "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet1DefaultRouteA5ADF694": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet1RouteTable4F1D2E36"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet1NATGateway5E3732C1"
+    },
+    "RouteTableId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet1RouteTable4F1D2E36"
     }
    }
   },
   "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet2SubnetE4CEDF73": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -659,21 +651,24 @@
       "Key": "Name",
       "Value": "aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
+    }
    }
   },
   "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet2RouteTableDCE46591": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-ecs-integ-l3-autocreate/EcsDefaultClusterMnL3mNNYN/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
+    }
    }
   },
   "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet2RouteTableAssociation111C622F": {
@@ -690,12 +685,12 @@
   "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet2DefaultRoute20CE2D89": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet2RouteTableDCE46591"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "EcsDefaultClusterMnL3mNNYNVpcPublicSubnet2NATGateway4C855E00"
+    },
+    "RouteTableId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpcPrivateSubnet2RouteTableDCE46591"
     }
    }
   },
@@ -713,11 +708,11 @@
   "EcsDefaultClusterMnL3mNNYNVpcVPCGW2447264E": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
-    },
     "InternetGatewayId": {
      "Ref": "EcsDefaultClusterMnL3mNNYNVpcIGW9C2C2B8F"
+    },
+    "VpcId": {
+     "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"
     }
    }
   },
@@ -901,11 +896,6 @@
      "Ref": "EcsDefaultClusterMnL3mNNYN926A5246"
     },
     "DeploymentConfiguration": {
-     "Alarms": {
-      "AlarmNames": [],
-      "Enable": false,
-      "Rollback": false
-     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },

@@ -1,7 +1,7 @@
 {
-  "version": "32.0.0",
+  "version": "35.0.0",
   "files": {
-    "0c225ac5ea61f423e7019da6b9738c6a202b64a62a2c2ac911dbf142ab481578": {
+    "aea815695deca6fe52208952a0a9deab404ed3d60917de00180b2395c60013f8": {
       "source": {
         "path": "aws-cdk-ecs-integration-test-stack.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0c225ac5ea61f423e7019da6b9738c6a202b64a62a2c2ac911dbf142ab481578.json",
+          "objectKey": "aea815695deca6fe52208952a0a9deab404ed3d60917de00180b2395c60013f8.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
