@@ -317,7 +317,7 @@ export class Runtime {
    * The custom provided runtime (provided)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest provided.al2023 runtime.
    */
-  public static readonly PROVIDED = new Runtime('provided', RuntimeFamily.OTHER);
+  public static readonly PROVIDED = new Runtime('provided', RuntimeFamily.OTHER, { isDeprecated: true });
 
   /**
    * The custom provided runtime with Amazon Linux 2 (provided.al2)
