@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { ExportReader } from './export-reader-provider';
 import { CrossRegionExports, SSM_EXPORT_PATH_PREFIX, ExportWriterCRProps } from './types';
-import { CrossRegionSsmWriterProvider } from '../../../dist/core/cross-region-ssm-writer-provider.generated';
 import { CfnDynamicReference, CfnDynamicReferenceService } from '../../cfn-dynamic-reference';
 import { CustomResource } from '../../custom-resource';
+import { CrossRegionSsmWriterProvider } from '../../dist/core/cross-region-ssm-writer-provider.generated';
 import { Lazy } from '../../lazy';
 import { Intrinsic } from '../../private/intrinsic';
 import { makeUniqueId } from '../../private/uniqueid';

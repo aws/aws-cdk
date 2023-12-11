@@ -19,7 +19,8 @@ import {
   CONSTRUCTS_MODULE,
   LAMBDA_MODULE,
   CORE_MODULE,
-  CORE_INTERNAL,
+  CORE_INTERNAL_STACK,
+  CORE_INTERNAL_CR_PROVIDER,
   PATH_MODULE,
 } from './modules';
 import { Runtime } from './runtime';
@@ -184,12 +185,16 @@ export abstract class CdkCustomResourceClass extends ClassType {
         super(scope, {
           name: props.name,
           extends: scope.coreInternal
-            ? CORE_INTERNAL.CustomResourceProviderBase
+            ? CORE_INTERNAL_CR_PROVIDER.CustomResourceProviderBase
             : CORE_MODULE.CustomResourceProviderBase,
           export: true,
         });
 
-        this.externalModules.push(scope.coreInternal ? CORE_INTERNAL : CORE_MODULE);
+        if (scope.coreInternal) {
+          this.externalModules.push(...[CORE_INTERNAL_STACK, CORE_INTERNAL_CR_PROVIDER]);
+        } else {
+          this.externalModules.push(CORE_MODULE);
+        }
         this.importExternalModulesInto(scope);
 
         const getOrCreateMethod = this.addMethod({
@@ -211,7 +216,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
         getOrCreateMethod.addParameter({
           name: 'props',
           type: scope.coreInternal
-            ? CORE_INTERNAL.CustomResourceProviderOptions
+            ? CORE_INTERNAL_CR_PROVIDER.CustomResourceProviderOptions
             : CORE_MODULE.CustomResourceProviderOptions,
           optional: true,
         });
@@ -238,7 +243,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
         getOrCreateProviderMethod.addParameter({
           name: 'props',
           type: scope.coreInternal
-            ? CORE_INTERNAL.CustomResourceProviderOptions
+            ? CORE_INTERNAL_CR_PROVIDER.CustomResourceProviderOptions
             : CORE_MODULE.CustomResourceProviderOptions,
           optional: true,
         });
@@ -256,7 +261,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
         ]);
         this.buildConstructor({
           constructorPropsType: scope.coreInternal
-            ? CORE_INTERNAL.CustomResourceProviderOptions
+            ? CORE_INTERNAL_CR_PROVIDER.CustomResourceProviderOptions
             : CORE_MODULE.CustomResourceProviderOptions,
           superProps,
           constructorVisbility: MemberVisibility.Private,
@@ -298,9 +303,10 @@ export abstract class CdkCustomResourceClass extends ClassType {
         ]);
         return;
       }
-      case CORE_INTERNAL.fqn: {
-        CORE_INTERNAL.importSelective(scope, [
-          'Stack',
+      case CORE_INTERNAL_CR_PROVIDER.fqn: {
+        const stack = new ExternalModule('../../stack');
+        stack.importSelective(scope, ['Stack']);
+        CORE_INTERNAL_CR_PROVIDER.importSelective(scope, [
           'CustomResourceProviderBase',
           'CustomResourceProviderOptions',
         ]);

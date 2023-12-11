@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
 import { SSM_EXPORT_PATH_PREFIX, ExportReaderCRProps, CrossRegionExports } from './types';
-import { CrossRegionSsmReaderProvider } from '../../../dist/core/cross-region-ssm-reader-provider.generated';
 import { CfnResource } from '../../cfn-resource';
 import { CustomResource } from '../../custom-resource';
+import { CrossRegionSsmReaderProvider } from '../../dist/core/cross-region-ssm-reader-provider.generated';
 import { Lazy } from '../../lazy';
 import { Intrinsic } from '../../private/intrinsic';
 import { Stack } from '../../stack';

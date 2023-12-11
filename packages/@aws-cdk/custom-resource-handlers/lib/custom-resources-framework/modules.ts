@@ -25,13 +25,20 @@ class CoreModule extends ExternalModule {
   }
 }
 
-class CoreInternal extends ExternalModule {
+class CoreInternalStack extends ExternalModule {
   public readonly Stack = Type.fromName(this, 'Stack');
+
+  public constructor() {
+    super('../../stack');
+  }
+}
+
+class CoreInternalCustomResourceProvider extends ExternalModule {
   public readonly CustomResourceProviderBase = Type.fromName(this, 'CustomResourceProviderBase');
   public readonly CustomResourceProviderOptions = Type.fromName(this, 'CustomResourceProviderOptions');
 
   public constructor() {
-    super('../../lib');
+    super('../../custom-resource-provider');
   }
 }
 
@@ -48,5 +55,6 @@ class LambdaModule extends ExternalModule {
 export const PATH_MODULE = new PathModule();
 export const CONSTRUCTS_MODULE = new ConstructsModule();
 export const CORE_MODULE = new CoreModule();
-export const CORE_INTERNAL = new CoreInternal();
+export const CORE_INTERNAL_STACK = new CoreInternalStack();
+export const CORE_INTERNAL_CR_PROVIDER = new CoreInternalCustomResourceProvider();
 export const LAMBDA_MODULE = new LambdaModule();

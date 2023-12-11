@@ -8,8 +8,8 @@ function airlift() {
   # core needs to be airlifted directly to core to prevent circular dependencies
   if [[ ($1 = dist/core/* || $1 = dist/core) && $1 != dist/core/nodejs-entrypoint-handler ]];
     then
-      mkdir -p $awscdklibdir/core/$1
-      cp $customresourcedir/$2 $awscdklibdir/core/$1
+      mkdir -p $awscdklibdir/core/lib/$1
+      cp $customresourcedir/$2 $awscdklibdir/core/lib/$1
     else
       mkdir -p $awscdklibdir/custom-resource-handlers/$1
       cp $customresourcedir/$2 $awscdklibdir/custom-resource-handlers/$1
