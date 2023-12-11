@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.114.1](https://github.com/aws/aws-cdk/compare/v2.114.0...v2.114.1) (2023-12-06)
+
+
+### Bug Fixes
+
+* **route53:** delete old NS records on cross-account delegation renaming ([#21249](https://github.com/aws/aws-cdk/issues/21249)) ([#27523](https://github.com/aws/aws-cdk/issues/27523)) ([8c38a3a](https://github.com/aws/aws-cdk/commit/8c38a3a7f378d8b9917fd1279619a329efe4d02a)), closes [#25285](https://github.com/aws/aws-cdk/issues/25285)
+
+## [2.114.0](https://github.com/aws/aws-cdk/compare/v2.113.0...v2.114.0) (2023-12-05)
+
+
+### Features
+
+* update AWS Service Spec ([#28259](https://github.com/aws/aws-cdk/issues/28259)) ([a11ab23](https://github.com/aws/aws-cdk/commit/a11ab23f43a5d1664cc2f22cf4ee2e696002f09c))
+* **rds:** grantConnect method enables iam auth to rds cluster ([#28118](https://github.com/aws/aws-cdk/issues/28118)) ([766ff8b](https://github.com/aws/aws-cdk/commit/766ff8b3c5ac1b03da98fb6b2f70e96182401f89))
+
+
+### Bug Fixes
+
+* **apigateway:** move url property to RestApiBase ([#27742](https://github.com/aws/aws-cdk/issues/27742)) ([b23ee1b](https://github.com/aws/aws-cdk/commit/b23ee1be9381f0f927e43c4214e91aafcdf03899)), closes [#27501](https://github.com/aws/aws-cdk/issues/27501)
+* **apigatewayv2:** export newly graduated apigatewayv2 modules ([#28250](https://github.com/aws/aws-cdk/issues/28250)) ([c8627ce](https://github.com/aws/aws-cdk/commit/c8627cef3a4f4e05c2e3d088c0903dd1a9c9ef4f)), closes [#28239](https://github.com/aws/aws-cdk/issues/28239)
+* **iam:** attaching a policy is not idempotent with imported resources ([#28129](https://github.com/aws/aws-cdk/issues/28129)) ([0abd0b5](https://github.com/aws/aws-cdk/commit/0abd0b5552602322d224dca57ea119a01056b6f3)), closes [#28101](https://github.com/aws/aws-cdk/issues/28101)
+* **stepfunctions-tasks:** mwaa service generates wrong action in role policy ([#28082](https://github.com/aws/aws-cdk/issues/28082)) ([24cbb51](https://github.com/aws/aws-cdk/commit/24cbb519259e8f056bfc0fe138861478c0c7a6d3)), closes [#27623](https://github.com/aws/aws-cdk/issues/27623) [#28081](https://github.com/aws/aws-cdk/issues/28081)
+
 ## [2.113.0](https://github.com/aws/aws-cdk/compare/v2.112.0...v2.113.0) (2023-12-01)
 
 
