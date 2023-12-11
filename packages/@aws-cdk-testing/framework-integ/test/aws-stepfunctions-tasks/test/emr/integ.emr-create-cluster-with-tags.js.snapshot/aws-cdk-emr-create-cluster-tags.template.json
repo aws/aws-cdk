@@ -7,11 +7,6 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
-       "Condition": {
-        "StringEquals": {
-         "aws:RequestTag/for-use-with-amazon-emr-managed-policies": "true"
-        }
-       },
        "Effect": "Allow",
        "Principal": {
         "Service": "elasticmapreduce.amazonaws.com"
@@ -36,6 +31,32 @@
     ]
    }
   },
+  "EmrCreateClusterServiceRoleDefaultPolicyA8B4FA32": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "iam:PassRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "EmrCreateClusterInstanceRoleC80466F5",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EmrCreateClusterServiceRoleDefaultPolicyA8B4FA32",
+    "Roles": [
+     {
+      "Ref": "EmrCreateClusterServiceRole5251910D"
+     }
+    ]
+   }
+  },
   "EmrCreateClusterInstanceRoleC80466F5": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -56,14 +77,14 @@
   "EmrCreateClusterInstanceProfileC1729180": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
+    "InstanceProfileName": {
+     "Ref": "EmrCreateClusterInstanceRoleC80466F5"
+    },
     "Roles": [
      {
       "Ref": "EmrCreateClusterInstanceRoleC80466F5"
      }
-    ],
-    "InstanceProfileName": {
-     "Ref": "EmrCreateClusterInstanceRoleC80466F5"
-    }
+    ]
    }
   },
   "EmrCreateClusterAutoScalingRoleFDDAF4E2": {
@@ -124,6 +145,7 @@
      "Statement": [
       {
        "Action": [
+        "elasticmapreduce:AddTags",
         "elasticmapreduce:DescribeCluster",
         "elasticmapreduce:RunJobFlow",
         "elasticmapreduce:TerminateJobFlows"
@@ -221,12 +243,6 @@
   "SM934E715A": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "SMRole49C19C48",
-      "Arn"
-     ]
-    },
     "DefinitionString": {
      "Fn::Join": [
       "",
@@ -247,8 +263,14 @@
        {
         "Ref": "EmrCreateClusterAutoScalingRoleFDDAF4E2"
        },
-       "\",\"Tags\":[{\"Key\":\"Key\",\"Value\":\"Value\"}],\"VisibleToAllUsers\":true}}}}"
+       "\",\"Tags\":[{\"Key\":\"Key\",\"Value\":\"Value\"},{\"Key\":\"for-use-with-amazon-emr-managed-policies\",\"Value\":\"true\"}],\"VisibleToAllUsers\":true}}}}"
       ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "SMRole49C19C48",
+      "Arn"
      ]
     }
    },

@@ -5,7 +5,7 @@ import { EmrCreateCluster } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
 const app = new App();
 
-const stack = new Stack(app, 'aws-cdk-emr-create-cluster');
+const stack = new Stack(app, 'aws-cdk-emr-create-cluster-tags');
 
 const step = new EmrCreateCluster(stack, 'EmrCreateCluster', {
   instances: {},
