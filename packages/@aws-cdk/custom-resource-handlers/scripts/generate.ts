@@ -23,7 +23,7 @@ async function main() {
     }
 
     if (module.hasComponents) {
-      module.render(`dist/${fqn}.generated.ts`);
+      module.renderTo(`dist/${fqn}.generated.ts`);
     }
   }
 

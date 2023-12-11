@@ -76,7 +76,7 @@ export class CdkCustomResourceModule extends Module {
   /**
    * Render module with components into an output file.
    */
-  public render(file: string) {
+  public renderTo(file: string) {
     fs.outputFileSync(file, this.renderer.render(this));
   }
 

@@ -28,7 +28,7 @@ describe('framework', () => {
     module.build(component, path.dirname(outfile).split('/').pop() ?? 'dist');
 
     // WHEN
-    module.render(`${tmpDir}/result.ts`);
+    module.renderTo(`${tmpDir}/result.ts`);
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
@@ -48,7 +48,7 @@ describe('framework', () => {
     module.build(component, path.dirname(outfile).split('/').pop() ?? 'dist');
 
     // WHEN
-    module.render(`${tmpDir}/result.ts`);
+    module.renderTo(`${tmpDir}/result.ts`);
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
@@ -68,7 +68,7 @@ describe('framework', () => {
     module.build(component, path.dirname(outfile).split('/').pop() ?? 'dist');
 
     // WHEN
-    module.render(`${tmpDir}/result.ts`);
+    module.renderTo(`${tmpDir}/result.ts`);
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
@@ -88,7 +88,7 @@ describe('framework', () => {
     module.build(component, path.dirname(outfile).split('/').pop() ?? 'dist');
 
     // WHEN
-    module.render(`${tmpDir}/result.ts`);
+    module.renderTo(`${tmpDir}/result.ts`);
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
