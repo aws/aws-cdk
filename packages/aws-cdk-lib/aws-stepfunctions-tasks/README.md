@@ -660,6 +660,78 @@ new tasks.EmrAddStep(this, 'Task', {
 });
 ```
 
+To specify a custom runtime role use the `executionRoleArn` property.
+
+**Note:** The EMR cluster must be created with a security configuration and the runtime role must have a specific trust policy. 
+See this [blog post](https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/) for more details.
+
+```ts
+import * as emr from 'aws-cdk-lib/aws-emr';
+
+const cfnSecurityConfiguration = new emr.CfnSecurityConfiguration(this, 'EmrSecurityConfiguration', {
+  name: 'AddStepRuntimeRoleSecConfig',
+  securityConfiguration: JSON.parse(`
+    {
+      "AuthorizationConfiguration": {
+          "IAMConfiguration": {
+              "EnableApplicationScopedIAMRole": true,
+              "ApplicationScopedIAMRoleConfiguration": 
+                  {
+                      "PropagateSourceIdentity": true
+                  }
+          },
+          "LakeFormationConfiguration": {
+              "AuthorizedSessionTagValue": "Amazon EMR"
+          }
+      }
+    }`),
+});
+
+const task = new tasks.EmrCreateCluster(this, 'Create Cluster', {
+  instances: {},
+  name: sfn.TaskInput.fromJsonPathAt('$.ClusterName').value,
+  securityConfiguration: cfnSecurityConfiguration.name,
+});
+
+const executionRole = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ArnPrincipal(task.clusterRole.roleArn),
+});
+
+executionRole.assumeRolePolicy?.addStatements(
+  new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    principals: [
+      task.clusterRole,
+    ],
+    actions: [
+      'sts:SetSourceIdentity',
+    ],
+  }),
+  new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    principals: [
+      task.clusterRole,
+    ],
+    actions: [
+      'sts:TagSession',
+    ],
+    conditions: {
+      StringEquals: {
+        'aws:RequestTag/LakeFormationAuthorizedCaller': 'Amazon EMR',
+      },
+    },
+  }),
+);
+
+new tasks.EmrAddStep(this, 'Task', {
+  clusterId: 'ClusterId',
+  executionRoleArn: executionRole.roleArn,
+  name: 'StepName',
+  jar: 'Jar',
+  actionOnFailure: tasks.ActionOnFailure.CONTINUE,
+});
+```
+
 ### Cancel Step
 
 Cancels a pending step in a running cluster.
