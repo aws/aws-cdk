@@ -8,6 +8,7 @@ const framework: { [fqn: string]: ConfigProps[] } = {};
 
 async function main() {
   recurse(config, []);
+
   for (const [fqn, components] of Object.entries(framework)) {
     const module = new CdkCustomResourceModule(fqn);
     for (const component of components) {
@@ -18,8 +19,8 @@ async function main() {
       } else {
         await minifyAndBundle(component.sourceCode, outfile);
       }
-      const codeDirectory = path.dirname(outfile).split('/').pop();
-      module.build(component, `${codeDirectory}`);
+      const codeDirectory = path.dirname(outfile).split('/').pop() ?? '';
+      module.build(component, codeDirectory);
     }
 
     if (module.hasComponents) {
