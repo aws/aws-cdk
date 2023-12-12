@@ -40,8 +40,11 @@ const DIFF_HANDLERS: HandlerRegistry = {
  *      a stack which current state is described by +currentTemplate+ is updated with
  *      the template +newTemplate+.
  */
-// eslint-disable-next-line max-len
-export function diffTemplate(currentTemplate: { [key: string]: any }, newTemplate: { [key: string]: any }, changeSet?: CloudFormation.DescribeChangeSetOutput): types.TemplateDiff {
+export function diffTemplate(
+  currentTemplate: { [key: string]: any },
+  newTemplate: { [key: string]: any },
+  changeSet?: CloudFormation.DescribeChangeSetOutput
+): types.TemplateDiff {
   const replacements = changeSet ? findResourceReplacements(changeSet): undefined;
   // Base diff
   const theDiff = calculateTemplateDiff(currentTemplate, newTemplate, replacements);
@@ -97,8 +100,11 @@ function propagatePropertyReplacement(source: types.ResourceDifference, dest: ty
   }
 }
 
-// eslint-disable-next-line max-len
-function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTemplate: { [key: string]: any }, replacements?: ResourceReplacements): types.TemplateDiff {
+function calculateTemplateDiff(
+  currentTemplate: { [key: string]: any },
+  newTemplate: { [key: string]: any },
+  replacements?: ResourceReplacements,
+): types.TemplateDiff {
   const differences: types.ITemplateDiff = {};
   const unknown: { [key: string]: types.Difference<any> } = {};
   for (const key of unionOf(Object.keys(currentTemplate), Object.keys(newTemplate)).sort()) {
@@ -117,14 +123,6 @@ function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTempl
 
   return new types.TemplateDiff(differences);
 }
-
-/**
- * Compare two CloudFormation resources and return semantic differences between them
- */
-/*export function diffResource(oldValue: types.Resource, newValue: types.Resource): types.ResourceDifference {
-  return impl.diffResource(oldValue, newValue);
-}
-*/
 
 /**
  * Replace all references to the given logicalID on the given template, in-place
@@ -213,10 +211,6 @@ function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOut
       propertiesReplaced,
     };
   }
-
-  //console.log('----=----=-=-=-=-=-=');
-  //console.log(JSON.stringify(replacements, undefined, 2));
-  //console.log('----=----=-=-=-=-=-=');
 
   return replacements;
 }

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -77,8 +76,12 @@ export enum RequireApproval {
  *
  * Returns true if the changes are prompt-worthy, false otherwise.
  */
-// eslint-disable-next-line max-len
-export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.CloudFormationStackArtifact, requireApproval: RequireApproval, changeSet?: CloudFormation.DescribeChangeSetOutput): boolean {
+export function printSecurityDiff(
+  oldTemplate: any,
+  newTemplate: cxapi.CloudFormationStackArtifact,
+  requireApproval: RequireApproval,
+  changeSet?: CloudFormation.DescribeChangeSetOutput,
+): boolean {
   const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template, changeSet);
 
   if (difRequiresApproval(diff, requireApproval)) {
