@@ -249,4 +249,26 @@ describe('helm chart', () => {
       Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { SkipCrds: true });
     });
   });
+
+  test('should disable atomic operations by default', () => {
+    // GIVEN
+    const { stack, cluster } = testFixtureCluster();
+
+    // WHEN
+    new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart' });
+
+    // THEN
+    const charts = Template.fromStack(stack).findResources(eks.HelmChart.RESOURCE_TYPE, { Atomic: true });
+    expect(Object.keys(charts).length).toEqual(0);
+  });
+  test('should enable atomic operations when specified', () => {
+    // GIVEN
+    const { stack, cluster } = testFixtureCluster();
+
+    // WHEN
+    new eks.HelmChart(stack, 'MyAtomicChart', { cluster, chart: 'chart', atomic: true });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties(eks.HelmChart.RESOURCE_TYPE, { Atomic: true });
+  });
 });

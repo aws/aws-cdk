@@ -1403,6 +1403,9 @@ new eks.HelmChart(this, 'NginxIngress', {
 });
 ```
 
+Helm can treat operations as atomic, if so, upgrade process rolls back changes made in case of failed upgrade.
+The --wait flag will be set automatically if --atomic is used.
+
 ### OCI Charts
 
 OCI charts are also supported.
