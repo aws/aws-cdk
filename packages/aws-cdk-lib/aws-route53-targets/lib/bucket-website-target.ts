@@ -7,11 +7,11 @@ import { RegionInfo } from '../../region-info';
  * Use a S3 as an alias record target
  */
 export class BucketWebsiteTarget implements route53.IAliasRecordTarget {
-  constructor(private readonly bucket: s3.IBucket) {
+  constructor(private readonly bucket: s3.ICfnBucket) {
   }
 
   public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
-    const { region } = Stack.of(this.bucket.stack);
+    const { region } = Stack.of(this.bucket);
 
     if (Token.isUnresolved(region)) {
       throw new Error([

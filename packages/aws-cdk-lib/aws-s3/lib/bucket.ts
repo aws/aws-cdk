@@ -1211,7 +1211,7 @@ export interface InventoryDestination {
   /**
    * Bucket where all inventories will be saved in.
    */
-  readonly bucket: IBucket;
+  readonly bucket: ICfnBucket;
   /**
    * The prefix to be used when saving the inventory.
    *
@@ -1545,7 +1545,7 @@ export interface BucketProps {
    * Destination bucket for the server access logs.
    * @default - If "serverAccessLogsPrefix" undefined - access logs disabled, otherwise - log to current bucket.
    */
-  readonly serverAccessLogsBucket?: IBucket;
+  readonly serverAccessLogsBucket?: ICfnBucket;
 
   /**
    * Optional log file prefix to use for the bucket's access logs.
@@ -2238,12 +2238,12 @@ export class Bucket extends BucketBase {
     }
 
     // When there is an encryption key exists for the server access logs bucket, grant permission to the S3 logging SP.
-    if (props.serverAccessLogsBucket?.encryptionKey) {
-      props.serverAccessLogsBucket.encryptionKey.grantEncryptDecrypt(new iam.ServicePrincipal('logging.s3.amazonaws.com'));
+    if (props.serverAccessLogsBucket && Bucket.fromCfnBucket(props.serverAccessLogsBucket).encryptionKey) {
+      Bucket.fromCfnBucket(props.serverAccessLogsBucket).encryptionKey!.grantEncryptDecrypt(new iam.ServicePrincipal('logging.s3.amazonaws.com'));
     }
 
     return {
-      destinationBucketName: props.serverAccessLogsBucket?.bucketName,
+      destinationBucketName: props.serverAccessLogsBucket?.attrBucketName,
       logFilePrefix: props.serverAccessLogsPrefix,
     };
   }
@@ -2481,7 +2481,7 @@ export class Bucket extends BucketBase {
       return {
         id,
         destination: {
-          bucketArn: inventory.destination.bucket.bucketArn,
+          bucketArn: inventory.destination.bucket.attrArn,
           bucketAccountId: inventory.destination.bucketOwner,
           prefix: inventory.destination.prefix,
           format,

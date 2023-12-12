@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Bucket, IBucket } from './bucket';
-import { CfnBucket, CfnBucketPolicy } from './s3.generated';
+import { CfnBucket, CfnBucketPolicy, ICfnBucket } from './s3.generated';
 import { PolicyDocument } from '../../aws-iam';
 import { RemovalPolicy, Resource, Token, Tokenization } from '../../core';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
@@ -9,7 +9,7 @@ export interface BucketPolicyProps {
   /**
    * The Amazon S3 bucket that the policy applies to.
    */
-  readonly bucket: IBucket;
+  readonly bucket: ICfnBucket;
 
   /**
    * Policy to apply when the policy is removed from this stack.
@@ -89,7 +89,7 @@ export class BucketPolicy extends Resource {
   constructor(scope: Construct, id: string, props: BucketPolicyProps) {
     super(scope, id);
 
-    this.bucket = props.bucket;
+    this.bucket = Bucket.fromCfnBucket(props.bucket);
 
     this.resource = new CfnBucketPolicy(this, 'Resource', {
       bucket: this.bucket.bucketName,

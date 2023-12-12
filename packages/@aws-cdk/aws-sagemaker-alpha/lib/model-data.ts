@@ -54,10 +54,10 @@ export abstract class ModelData {
 class S3ModelData extends ModelData {
   private readonly bucket: s3.IBucket;
 
-  constructor(_bucket: s3.ICfnBucket, private readonly objectKey: string) {
+  constructor(bucket: s3.ICfnBucket, private readonly objectKey: string) {
     super();
 
-    this.bucket = s3.Bucket.fromCfnBucket(_bucket);
+    this.bucket = s3.Bucket.fromCfnBucket(bucket);
   }
 
   public bind(_scope: Construct, model: IModel): ModelDataConfig {

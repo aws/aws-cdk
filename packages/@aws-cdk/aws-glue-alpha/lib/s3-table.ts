@@ -45,7 +45,7 @@ export interface S3TableProps extends TableBaseProps {
  *
  * @default - one is created for you
  */
-  readonly bucket?: s3.IBucket;
+  readonly bucket?: s3.ICfnBucket;
 
   /**
    * S3 prefix under which table objects are stored.
@@ -250,7 +250,7 @@ const encryptionMappings = {
 
 // create the bucket to store a table's data depending on the `encryption` and `encryptionKey` properties.
 function createBucket(table: S3Table, props: S3TableProps) {
-  let bucket = props.bucket;
+  let bucket = props.bucket ? s3.Bucket.fromCfnBucket(props.bucket) : undefined;
 
   if (bucket && (props.encryption !== undefined && props.encryption !== TableEncryption.CLIENT_SIDE_KMS)) {
     throw new Error('you can not specify encryption settings if you also provide a bucket');

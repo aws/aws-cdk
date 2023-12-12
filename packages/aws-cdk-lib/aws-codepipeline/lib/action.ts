@@ -109,7 +109,7 @@ export interface ActionProperties {
 export interface ActionBindOptions {
   readonly role: iam.IRole;
 
-  readonly bucket: s3.IBucket;
+  readonly bucket: s3.ICfnBucket;
 }
 
 export interface ActionConfig {

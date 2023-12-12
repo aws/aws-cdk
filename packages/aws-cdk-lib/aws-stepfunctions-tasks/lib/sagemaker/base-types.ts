@@ -940,9 +940,9 @@ class StandardS3Location extends S3Location {
   private readonly keyGlob: string;
   private readonly uri: string;
 
-  constructor(opts: { bucket?: s3.IBucket, keyPrefix?: string, uri: string }) {
+  constructor(opts: { bucket?: s3.ICfnBucket, keyPrefix?: string, uri: string }) {
     super();
-    this.bucket = opts.bucket;
+    this.bucket = opts.bucket ? s3.Bucket.fromCfnBucket(opts.bucket) : undefined;
     this.keyGlob = `${opts.keyPrefix || ''}*`;
     this.uri = opts.uri;
   }

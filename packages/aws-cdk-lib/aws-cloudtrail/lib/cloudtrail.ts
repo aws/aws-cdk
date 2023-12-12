@@ -192,7 +192,6 @@ export class InsightType {
  *
  */
 export class Trail extends Resource {
-
   /**
    * Create an event rule for when an event is recorded by any Trail in the account.
    *

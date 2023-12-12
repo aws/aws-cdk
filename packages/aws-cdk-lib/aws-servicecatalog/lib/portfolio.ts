@@ -11,7 +11,7 @@ import { IProduct } from './product';
 import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } from './servicecatalog.generated';
 import { TagOptions } from './tag-options';
 import * as iam from '../../aws-iam';
-import { IBucket } from '../../aws-s3';
+import { Bucket, ICfnBucket } from '../../aws-s3';
 import * as sns from '../../aws-sns';
 import * as cdk from '../../core';
 
@@ -156,7 +156,7 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   public abstract readonly portfolioArn: string;
   public abstract readonly portfolioId: string;
   private readonly associatedPrincipals: Set<string> = new Set();
-  private readonly assetBuckets: Set<IBucket> = new Set<IBucket>();
+  private readonly assetBuckets: Set<ICfnBucket> = new Set<ICfnBucket>();
   private readonly sharedAccounts: string[] = [];
 
   public giveAccessToRole(role: iam.IRole): void {
@@ -252,8 +252,7 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   protected addBucketPermissionsToSharedAccounts() {
     if (this.sharedAccounts.length > 0) {
       for (const bucket of this.assetBuckets) {
-        bucket.grantRead(new iam.CompositePrincipal(...this.sharedAccounts.map(account => new iam.AccountPrincipal(account))),
-        );
+        Bucket.fromCfnBucket(bucket).grantRead(new iam.CompositePrincipal(...this.sharedAccounts.map(account => new iam.AccountPrincipal(account))));
       }
     }
   }
