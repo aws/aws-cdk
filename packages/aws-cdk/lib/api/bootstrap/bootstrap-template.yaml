@@ -537,6 +537,10 @@ Resources:
             Effect: Allow
             Principal:
               Service: cloudformation.amazonaws.com
+            Condition:
+              StringEquals:
+                aws:SourceAccount:
+                  Ref: AWS::AccountId
         Version: '2012-10-17'
       ManagedPolicyArns:
         Fn::If:
