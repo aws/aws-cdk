@@ -35,3 +35,4 @@ tsconfig.json
 !build-info.json
 !NOTICE
 !THIRD_PARTY_LICENSES
+!db.json.gz
