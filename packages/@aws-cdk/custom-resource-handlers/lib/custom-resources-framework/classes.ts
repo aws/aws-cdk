@@ -304,11 +304,14 @@ export abstract class CdkCustomResourceClass extends ClassType {
         return;
       }
       case CORE_INTERNAL_CR_PROVIDER.fqn: {
-        CORE_INTERNAL_STACK.importSelective(scope, ['Stack']);
         CORE_INTERNAL_CR_PROVIDER.importSelective(scope, [
           'CustomResourceProviderBase',
           'CustomResourceProviderOptions',
         ]);
+        return;
+      }
+      case CORE_INTERNAL_STACK.fqn: {
+        CORE_INTERNAL_STACK.importSelective(scope, ['Stack']);
         return;
       }
       case LAMBDA_MODULE.fqn: {
