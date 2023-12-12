@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { CloudFormation } from 'aws-sdk';
 import * as impl from './diff';
 import * as types from './diff/types';
@@ -43,7 +44,7 @@ const DIFF_HANDLERS: HandlerRegistry = {
 export function diffTemplate(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
-  changeSet?: CloudFormation.DescribeChangeSetOutput
+  changeSet?: CloudFormation.DescribeChangeSetOutput,
 ): types.TemplateDiff {
   const replacements = changeSet ? findResourceReplacements(changeSet): undefined;
   // Base diff
