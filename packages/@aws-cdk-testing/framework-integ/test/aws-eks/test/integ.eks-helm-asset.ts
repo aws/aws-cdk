@@ -96,6 +96,16 @@ class EksClusterStack extends Stack {
       namespace: 'ack-system',
       createNamespace: true,
     });
+
+    this.cluster.addHelmChart('test-atomic-flag', {
+      chart: 'grafana-operator',
+      release: 'grafana-operator-release-atomic',
+      repository: 'oci://ghcr.io/grafana-operator/helm-charts/grafana-operator',
+      version: 'v5.0.0-rc1',
+      namespace: 'ack-system',
+      createNamespace: true,
+      atomic: true,
+    });
   }
 }
 
