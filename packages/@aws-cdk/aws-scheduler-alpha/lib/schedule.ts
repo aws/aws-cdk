@@ -117,23 +117,23 @@ export interface ScheduleProps {
 
   /**
    * The date, in UTC, after which the schedule can begin invoking its target.
-   * EventBridge Scheduler ignores startDate for one-time schedules.
+   * EventBridge Scheduler ignores start for one-time schedules.
    *
    * Specify an absolute time in the ISO 8601 format. For example, 2020-12-01T00:00:00.000Z.
    *
    * @default - no value
    */
-  readonly startDate?: string;
+  readonly start?: string;
 
   /**
    * The date, in UTC, before which the schedule can invoke its target.
-   * EventBridge Scheduler ignores endDate for one-time schedules.
+   * EventBridge Scheduler ignores end for one-time schedules.
    *
    * Specify an absolute time in the ISO 8601 format. For example, 2020-12-01T00:00:00.000Z.
    *
    * @default - no value
    */
-  readonly endDate?: string;
+  readonly end?: string;
 }
 
 /**
@@ -276,7 +276,7 @@ export class Schedule extends Resource implements ISchedule {
 
     this.retryPolicy = targetConfig.retryPolicy;
 
-    this.validateTimeFrame(props.startDate, props.endDate);
+    this.validateTimeFrame(props.start, props.end);
 
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,
@@ -300,8 +300,8 @@ export class Schedule extends Resource implements ISchedule {
         sageMakerPipelineParameters: targetConfig.sageMakerPipelineParameters,
         sqsParameters: targetConfig.sqsParameters,
       },
-      startDate: props.startDate,
-      endDate: props.endDate,
+      startDate: props.start,
+      endDate: props.end,
     });
 
     this.scheduleName = this.getResourceNameAttribute(resource.ref);
@@ -333,16 +333,16 @@ export class Schedule extends Resource implements ISchedule {
     return !isEmptyPolicy ? policy : undefined;
   }
 
-  private validateTimeFrame(startDate?: string, endDate?: string) {
-    if (startDate && !Schedule.ISO8601_REGEX.test(startDate)) {
-      throw new Error(`startDate must be in ISO 8601 format, got ${startDate}`);
+  private validateTimeFrame(start?: string, end?: string) {
+    if (start && !Schedule.ISO8601_REGEX.test(start)) {
+      throw new Error(`start must be in ISO 8601 format, got ${start}`);
     }
-    if (endDate && !Schedule.ISO8601_REGEX.test(endDate)) {
-      throw new Error(`endDate must be in ISO 8601 format, got ${endDate}`);
+    if (end && !Schedule.ISO8601_REGEX.test(end)) {
+      throw new Error(`end must be in ISO 8601 format, got ${end}`);
     }
 
-    if (startDate && endDate && startDate >= endDate) {
-      throw new Error(`startDate must precede endDate, got startDate: ${startDate}, endDate: ${endDate}`);
+    if (start && end && start >= end) {
+      throw new Error(`start must precede end, got start: ${start}, end: ${end}`);
     }
   }
 }

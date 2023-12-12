@@ -134,12 +134,12 @@ describe('Schedule', () => {
       { StartDate: '2023-04-15T06:20:00.000Z', EndDate: '2023-10-01T00:00:00.000Z' },
       { StartDate: '2023-04-15T06:25:00.000Z' },
       { EndDate: '2023-10-01T00:00:00.000Z' },
-    ])('schedule can set startDate and endDate', (timeFrame) => {
+    ])('schedule can set start and end', (timeFrame) => {
       new Schedule(stack, 'TestSchedule', {
         schedule: expr,
         target: new SomeLambdaTarget(func, role),
-        startDate: timeFrame.StartDate,
-        endDate: timeFrame.EndDate,
+        start: timeFrame.StartDate,
+        end: timeFrame.EndDate,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
@@ -152,42 +152,42 @@ describe('Schedule', () => {
       '2023-10-01T00:00:00.000+09:00',
       '2023-10-01T00:00:00Z',
       '2023-10-01T00:00:00.000',
-    ])('throw error when startDate is invalid format', (startDate) => {
+    ])('throw error when start is invalid format', (start) => {
       expect(() => {
         new Schedule(stack, 'TestSchedule', {
           schedule: expr,
           target: new SomeLambdaTarget(func, role),
-          startDate,
+          start,
         });
-      }).toThrow(`startDate must be in ISO 8601 format, got ${startDate}`);
+      }).toThrow(`start must be in ISO 8601 format, got ${start}`);
     });
 
     test.each([
       '2023-01-01',
       '2023-10-01T00:00:00.000+09:00',
       '2023-10-01T00:00:00Z',
-    ])('throw error when endDate is invalid format', (endDate) => {
+    ])('throw error when end is invalid format', (end) => {
       expect(() => {
         new Schedule(stack, 'TestSchedule', {
           schedule: expr,
           target: new SomeLambdaTarget(func, role),
-          endDate,
+          end,
         });
-      }).toThrow(`endDate must be in ISO 8601 format, got ${endDate}`);
+      }).toThrow(`end must be in ISO 8601 format, got ${end}`);
     });
 
     test.each([
-      { startDate: '2023-10-01T00:00:00.000Z', endDate: '2023-10-01T00:00:00.000Z' },
-      { startDate: '2023-10-01T00:00:00.000Z', endDate: '2023-09-01T00:00:00.000Z' },
-    ])('throw error when startDate does not come before endDate', ({ startDate, endDate }) => {
+      { start: '2023-10-01T00:00:00.000Z', end: '2023-10-01T00:00:00.000Z' },
+      { start: '2023-10-01T00:00:00.000Z', end: '2023-09-01T00:00:00.000Z' },
+    ])('throw error when start does not come before end', ({ start, end }) => {
       expect(() => {
         new Schedule(stack, 'TestSchedule', {
           schedule: expr,
           target: new SomeLambdaTarget(func, role),
-          startDate,
-          endDate,
+          start,
+          end,
         });
-      }).toThrow(`startDate must precede endDate, got startDate: ${startDate}, endDate: ${endDate}`);
+      }).toThrow(`start must precede end, got start: ${start}, end: ${end}`);
     });
   });
 });

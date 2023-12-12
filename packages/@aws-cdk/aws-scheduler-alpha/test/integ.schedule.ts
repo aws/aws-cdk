@@ -93,8 +93,8 @@ new scheduler.Schedule(stack, 'CustomerKmsSchedule', {
 new scheduler.Schedule(stack, 'ScheduleWithTimeFrame', {
   schedule: expression,
   target: target,
-  startDate: `${new Date().getFullYear() + 1}-04-15T06:30:00.000Z`,
-  endDate: `${new Date().getFullYear() + 2}-10-01T00:00:00.000Z`,
+  start: `${new Date().getFullYear() + 1}-04-15T06:30:00.000Z`,
+  end: `${new Date().getFullYear() + 2}-10-01T00:00:00.000Z`,
 });
 
 new IntegTest(app, 'integtest-schedule', {
