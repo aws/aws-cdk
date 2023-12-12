@@ -198,10 +198,6 @@ export class CdkToolkit {
           bodyParameter,
         });
 
-        stream.write('---------------ChangeSet Found----------------------\n');
-        stream.write(JSON.stringify(changeSet, undefined, 2));
-        stream.write('---------------End ChangeSet----------------------\n');
-
         const stackCount =
         options.securityOnly
           ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)) > 0 ? 1 : 0)
