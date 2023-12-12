@@ -26,14 +26,13 @@ export function printStackDiff(
   changeSet: CloudFormation.DescribeChangeSetOutput,
   stream?: cfnDiff.FormatStream): number {
 
-  const replacements = findResourceReplacements(changeSet);
-  let diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template, replacements);
+  let diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template, changeSet);
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
   if (diff.differenceCount && !strict) {
     const mangledNewTemplate = JSON.parse(cfnDiff.mangleLikeCloudFormation(JSON.stringify(newTemplate.template)));
-    const mangledDiff = cfnDiff.diffTemplate(oldTemplate, mangledNewTemplate, replacements);
+    const mangledDiff = cfnDiff.diffTemplate(oldTemplate, mangledNewTemplate, changeSet);
     filteredChangesCount = Math.max(0, diff.differenceCount - mangledDiff.differenceCount);
     if (filteredChangesCount > 0) {
       diff = mangledDiff;
@@ -80,8 +79,7 @@ export enum RequireApproval {
  */
 // eslint-disable-next-line max-len
 export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.CloudFormationStackArtifact, requireApproval: RequireApproval, changeSet?: CloudFormation.DescribeChangeSetOutput): boolean {
-  const replacements = changeSet ? findResourceReplacements(changeSet) : undefined;
-  const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template, replacements);
+  const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template, changeSet);
 
   if (difRequiresApproval(diff, requireApproval)) {
     // eslint-disable-next-line max-len
@@ -127,35 +125,4 @@ function logicalIdMapFromTemplate(template: any) {
     }
   }
   return ret;
-}
-
-function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOutput): cfnDiff.ResourceReplacements {
-  const replacements: cfnDiff.ResourceReplacements = {};
-  for (const resourceChange of changeSet.Changes ?? []) {
-    const propertiesReplaced: { [propName: string]: cfnDiff.ChangeSetReplacement } = {};
-    for (const propertyChange of resourceChange.ResourceChange?.Details ?? []) {
-      if (propertyChange.Target?.Attribute === 'Properties') {
-        const requiresReplacement = propertyChange.Target.RequiresRecreation === 'Always';
-        if (requiresReplacement && propertyChange.Evaluation === 'Static') {
-          propertiesReplaced[propertyChange.Target.Name!] = 'Always';
-        } else if (requiresReplacement && propertyChange.Evaluation === 'Dynamic') {
-          // If Evaluation is 'Dynamic', then this may cause replacement, or it may not.
-          // see 'Replacement': https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChange.html
-          propertiesReplaced[propertyChange.Target.Name!] = 'Conditionally';
-        } else {
-          propertiesReplaced[propertyChange.Target.Name!] = propertyChange.Target.RequiresRecreation as cfnDiff.ChangeSetReplacement;
-        }
-      }
-    }
-    replacements[resourceChange.ResourceChange?.LogicalResourceId ?? ''] = {
-      resourceReplaced: resourceChange.ResourceChange?.Replacement === 'True',
-      propertiesReplaced,
-    };
-  }
-
-  //console.log('----=----=-=-=-=-=-=');
-  //console.log(JSON.stringify(replacements, undefined, 2));
-  //console.log('----=----=-=-=-=-=-=');
-
-  return replacements;
 }

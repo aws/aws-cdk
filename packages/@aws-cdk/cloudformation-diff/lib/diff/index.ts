@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { Resource } from '@aws-cdk/service-spec-types';
 import * as types from './types';
 import { deepEqual, diffKeyedEntities, loadResourceModel } from './util';
@@ -28,8 +27,12 @@ export function diffParameter(oldValue: types.Parameter, newValue: types.Paramet
   return new types.ParameterDifference(oldValue, newValue);
 }
 
-// eslint-disable-next-line max-len
-export function diffResource(oldValue?: types.Resource, newValue?: types.Resource, _key?: string, replacement?: ResourceReplacement): types.ResourceDifference {
+export function diffResource(
+  oldValue?: types.Resource,
+  newValue?: types.Resource,
+  _key?: string,
+  replacement?: ResourceReplacement,
+): types.ResourceDifference {
   const resourceType = {
     oldType: oldValue && oldValue.Type,
     newType: newValue && newValue.Type,

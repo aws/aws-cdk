@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { loadAwsServiceSpecSync } from '@aws-cdk/aws-service-spec';
 import { Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
 import { ResourceReplacement, ResourceReplacements } from '../format';
@@ -28,7 +27,9 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
   }
 
   if (containsIntrinsic(lvalue) && containsIntrinsic(rvalue)) {
-    return yamlIntrinsicEqual(lvalue, rvalue);
+    if (yamlIntrinsicEqual(lvalue, rvalue)) {
+      return true;
+    }
   }
   // allows a numeric 10 and a literal "10" to be equivalent;
   // this is consistent with CloudFormation.
@@ -36,8 +37,8 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
       safeParseFloat(lvalue) === safeParseFloat(rvalue)) {
     return true;
   }
-  if (Array.isArray(lvalue) !== Array.isArray(rvalue)) { return false; }
   if (typeof lvalue !== typeof rvalue) { return false; }
+  if (Array.isArray(lvalue) !== Array.isArray(rvalue)) { return false; }
   if (Array.isArray(lvalue) /* && Array.isArray(rvalue) */) {
     if (lvalue.length !== rvalue.length) { return false; }
     for (let i = 0 ; i < lvalue.length ; i++) {
@@ -156,12 +157,12 @@ function yamlIntrinsicEqual(lvalue: any, rvalue: any): boolean {
             }
           }
 
-          return deepEqual(rvalue[intrinsic], lvalue[intrinsic]);
+          return deepEqual(lvalue[intrinsic], rvalue[intrinsic]);
       }
     }
   }
 
-  return true;
+  return false;
 }
 
 /**

@@ -1,7 +1,8 @@
+import { CloudFormation } from 'aws-sdk';
 import * as impl from './diff';
 import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
-import { ResourceReplacements } from './format';
+import { ChangeSetReplacement, ResourceReplacements } from './format';
 
 export * from './diff/types';
 
@@ -40,7 +41,8 @@ const DIFF_HANDLERS: HandlerRegistry = {
  *      the template +newTemplate+.
  */
 // eslint-disable-next-line max-len
-export function diffTemplate(currentTemplate: { [key: string]: any }, newTemplate: { [key: string]: any }, replacements?: ResourceReplacements): types.TemplateDiff {
+export function diffTemplate(currentTemplate: { [key: string]: any }, newTemplate: { [key: string]: any }, changeSet?: CloudFormation.DescribeChangeSetOutput): types.TemplateDiff {
+  const replacements = changeSet ? findResourceReplacements(changeSet): undefined;
   // Base diff
   const theDiff = calculateTemplateDiff(currentTemplate, newTemplate, replacements);
 
@@ -186,4 +188,35 @@ function deepCopy(x: any): any {
   }
 
   return x;
+}
+
+function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOutput): ResourceReplacements {
+  const replacements: ResourceReplacements = {};
+  for (const resourceChange of changeSet.Changes ?? []) {
+    const propertiesReplaced: { [propName: string]: ChangeSetReplacement } = {};
+    for (const propertyChange of resourceChange.ResourceChange?.Details ?? []) {
+      if (propertyChange.Target?.Attribute === 'Properties') {
+        const requiresReplacement = propertyChange.Target.RequiresRecreation === 'Always';
+        if (requiresReplacement && propertyChange.Evaluation === 'Static') {
+          propertiesReplaced[propertyChange.Target.Name!] = 'Always';
+        } else if (requiresReplacement && propertyChange.Evaluation === 'Dynamic') {
+          // If Evaluation is 'Dynamic', then this may cause replacement, or it may not.
+          // see 'Replacement': https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChange.html
+          propertiesReplaced[propertyChange.Target.Name!] = 'Conditionally';
+        } else {
+          propertiesReplaced[propertyChange.Target.Name!] = propertyChange.Target.RequiresRecreation as ChangeSetReplacement;
+        }
+      }
+    }
+    replacements[resourceChange.ResourceChange?.LogicalResourceId ?? ''] = {
+      resourceReplaced: resourceChange.ResourceChange?.Replacement === 'True',
+      propertiesReplaced,
+    };
+  }
+
+  //console.log('----=----=-=-=-=-=-=');
+  //console.log(JSON.stringify(replacements, undefined, 2));
+  //console.log('----=----=-=-=-=-=-=');
+
+  return replacements;
 }

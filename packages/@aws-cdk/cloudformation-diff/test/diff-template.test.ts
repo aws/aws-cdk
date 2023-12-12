@@ -701,3 +701,319 @@ test('diffing any two arbitrary templates should not crash', () => {
     // path: '1:0:0:0:3:0:1:1:1:1:1:1:1:1:1:1:1:1:1:2:1:1:1',
   });
 });
+
+describe('changeset', () => {
+  test('changeset overrides spec replacements', () => {
+    // GIVEN
+    const currentTemplate = {
+      Parameters: {
+        BucketName: {
+          Type: 'String',
+        },
+      },
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: { BucketName: 'Name1' }, // Immutable prop
+        },
+      },
+    };
+    const newTemplate = {
+      Parameters: {
+        BucketName: {
+          Type: 'String',
+        },
+      },
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: { BucketName: { Ref: 'BucketName' } }, // No change
+        },
+      },
+    };
+
+    // WHEN
+    const differences = diffTemplate(currentTemplate, newTemplate, {
+      Parameters: [
+        {
+          ParameterKey: 'BucketName',
+          ParameterValue: 'Name1',
+          //ResolvedValue: '20',
+        },
+      ],
+      Changes: [
+        {
+          Type: 'Resource',
+          ResourceChange: {
+            Action: 'Modify',
+            LogicalResourceId: 'Bucket',
+            ResourceType: 'AWS::S3::Bucket',
+            Replacement: 'False',
+            Details: [
+              {
+                Target: {
+                  Attribute: 'Properties',
+                  RequiresRecreation: 'Never',
+                },
+                Evaluation: 'Static',
+                ChangeSource: 'DirectModification',
+              },
+            ],
+          },
+        },
+      ],
+    });
+
+    // THEN
+    expect(differences.differenceCount).toBe(0);
+  });
+
+  test('changeset replacements are respected', () => {
+    // GIVEN
+    const currentTemplate = {
+      Parameters: {
+        BucketName: {
+          Type: 'String',
+        },
+      },
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: { BucketName: 'Name1' }, // Immutable prop
+        },
+      },
+    };
+    const newTemplate = {
+      Parameters: {
+        BucketName: {
+          Type: 'String',
+        },
+      },
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: { BucketName: { Ref: 'BucketName' } }, // 'Name1' -> 'Name2'
+        },
+      },
+    };
+
+    // WHEN
+    const differences = diffTemplate(currentTemplate, newTemplate, {
+      Parameters: [
+        {
+          ParameterKey: 'BucketName',
+          ParameterValue: 'Name2',
+          //ResolvedValue: '20',
+        },
+      ],
+      Changes: [
+        {
+          Type: 'Resource',
+          ResourceChange: {
+            Action: 'Modify',
+            LogicalResourceId: 'Bucket',
+            ResourceType: 'AWS::S3::Bucket',
+            Replacement: 'True',
+            Details: [
+              {
+                Target: {
+                  Attribute: 'Properties',
+                  Name: 'BucketName',
+                  RequiresRecreation: 'Always',
+                },
+                Evaluation: 'Static',
+                ChangeSource: 'DirectModification',
+              },
+            ],
+          },
+        },
+      ],
+    });
+
+    // THEN
+    expect(differences.differenceCount).toBe(1);
+  });
+
+  // This is directly in-line with changeset behavior,
+  // see 'Replacement': https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChange.html
+  test('dynamic changeset replacements are considered conditional replacements', () => {
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        Instance: {
+          Type: 'AWS::EC2::Instance',
+          Properties: {
+            ImageId: 'ami-79fd7eee',
+            KeyName: 'rsa-is-fun',
+          },
+        },
+      },
+    };
+    const newTemplate = {
+      Resources: {
+        Instance: {
+          Type: 'AWS::EC2::Instance',
+          Properties: {
+            ImageId: 'ami-79fd7eee',
+            KeyName: 'but-sha-is-cool',
+          },
+        },
+      },
+    };
+
+    // WHEN
+    const differences = diffTemplate(currentTemplate, newTemplate, {
+      Changes: [
+        {
+          Type: 'Resource',
+          ResourceChange: {
+            Action: 'Modify',
+            LogicalResourceId: 'Instance',
+            ResourceType: 'AWS::EC2::Instance',
+            Replacement: 'Conditional',
+            Details: [
+              {
+                Target: {
+                  Attribute: 'Properties',
+                  Name: 'KeyName',
+                  RequiresRecreation: 'Always',
+                },
+                Evaluation: 'Dynamic',
+                ChangeSource: 'DirectModification',
+              },
+            ],
+          },
+        },
+      ],
+    });
+
+    // THEN
+    expect(differences.differenceCount).toBe(1);
+    expect(differences.resources.changes.Instance.changeImpact).toEqual(ResourceImpact.MAY_REPLACE);
+    expect(differences.resources.changes.Instance.propertyUpdates).toEqual({
+      KeyName: {
+        changeImpact: ResourceImpact.MAY_REPLACE,
+        isDifferent: true,
+        oldValue: 'rsa-is-fun',
+        newValue: 'but-sha-is-cool',
+      },
+    });
+  });
+
+  test('changeset resource replacement is not tracked through references', () => {
+    // GIVEN
+    const currentTemplate = {
+      Parameters: {
+        BucketName: {
+          Type: 'String',
+          Default: 'Name1',
+        },
+      },
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: { BucketName: 'Name1' }, // Immutable prop
+        },
+        Queue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: { QueueName: { Ref: 'Bucket' } }, // Immutable prop
+        },
+        Topic: {
+          Type: 'AWS::SNS::Topic',
+          Properties: { TopicName: { Ref: 'Queue' } }, // Immutable prop
+        },
+      },
+    };
+
+    // WHEN
+    const newTemplate = {
+      Parameters: {
+        BucketName: {
+          Type: 'String',
+          Default: 'Name1',
+        },
+      },
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: { BucketName: { Ref: 'BucketName' } },
+        },
+        Queue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: { QueueName: { Ref: 'Bucket' } },
+        },
+        Topic: {
+          Type: 'AWS::SNS::Topic',
+          Properties: { TopicName: { Ref: 'Queue' } },
+        },
+      },
+    };
+    const differences = diffTemplate(currentTemplate, newTemplate, {
+      Parameters: [
+        {
+          ParameterKey: 'BucketName',
+          ParameterValue: 'Name1',
+          //ResolvedValue: '20',
+        },
+      ],
+      Changes: [
+        {
+          Type: 'Resource',
+          ResourceChange: {
+            Action: 'Modify',
+            LogicalResourceId: 'Bucket',
+            ResourceType: 'AWS::S3::Bucket',
+            Replacement: 'False',
+            Details: [
+              {
+                Target: {
+                  Attribute: 'Properties',
+                  RequiresRecreation: 'Never',
+                },
+                Evaluation: 'Static',
+                ChangeSource: 'DirectModification',
+              },
+            ],
+          },
+        },
+      ],
+    });
+
+    // THEN
+    expect(differences.resources.differenceCount).toBe(0);
+  });
+
+  test('Fn::GetAtt short form and long form are equivalent', () => {
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: { BucketName: 'BucketName' },
+        },
+      },
+      Outputs: {
+        BucketArnOneWay: { 'Fn::GetAtt': ['BucketName', 'Arn'] },
+        BucketArnAnotherWay: { 'Fn::GetAtt': 'BucketName.Arn' },
+      },
+    };
+    const newTemplate = {
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: { BucketName: 'BucketName' },
+        },
+      },
+      Outputs: {
+        BucketArnOneWay: { 'Fn::GetAtt': 'BucketName.Arn' },
+        BucketArnAnotherWay: { 'Fn::GetAtt': ['BucketName', 'Arn'] },
+      },
+    };
+
+    // WHEN
+    const differences = diffTemplate(currentTemplate, newTemplate);
+
+    // THEN
+    expect(differences.differenceCount).toBe(0);
+  });
+});
