@@ -10,11 +10,11 @@ import { Construct } from 'constructs';
  */
 export abstract class Content {
   /**
-     * Game content as an S3 object.
-     * @param bucket The S3 bucket
-     * @param key The object key
-     * @param objectVersion Optional S3 ob ject version
-     */
+   * Game content as an S3 object.
+   * @param bucket The S3 bucket
+   * @param key The object key
+   * @param objectVersion Optional S3 ob ject version
+   */
   public static fromBucket(bucket: s3.ICfnBucket, key: string, objectVersion?: string): S3Content {
     return new S3Content(bucket, key, objectVersion);
   }
