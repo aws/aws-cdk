@@ -50,9 +50,17 @@ export enum ImageId {
    */
   AMAZON_LINUX_2 = 'amazonlinux-2-x86_64',
   /**
+   * Create using Amazon Linux 2023
+   */
+  AMAZON_LINUX_2023 = 'amazonlinux-2023-x86_64',
+  /**
    * Create using Ubunut 18.04
    */
-  UBUNTU_18_04 = 'ubuntu-18.04-x86_64'
+  UBUNTU_18_04 = 'ubuntu-18.04-x86_64',
+  /**
+   * Create using Ubunut 22.04
+   */
+  UBUNTU_22_04 = 'ubuntu-22.04-x86_64',
 }
 /**
  * Properties for Ec2Environment
