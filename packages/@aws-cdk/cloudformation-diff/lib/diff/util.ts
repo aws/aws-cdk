@@ -177,9 +177,8 @@ function yamlIntrinsicEqual(lvalue: any, rvalue: any): boolean {
 export function diffKeyedEntities<T>(
   oldValue: { [key: string]: any } | undefined,
   newValue: { [key: string]: any } | undefined,
-  elementDiff: (oldElement: any, newElement: any, key: string, replacements?: types.ResourceReplacement, keepMetadata?: boolean) => T,
+  elementDiff: (oldElement: any, newElement: any, key: string, replacement?: types.PotentialResourceReplacement) => T,
   replacements?: types.ResourceReplacements,
-  keepMetadata?: boolean,
 ): { [name: string]: T } {
   const result: { [name: string]: T } = {};
   for (const logicalId of unionOf(Object.keys(oldValue || {}), Object.keys(newValue || {}))) {
@@ -191,7 +190,18 @@ export function diffKeyedEntities<T>(
       continue;
     }
 
-    result[logicalId] = elementDiff(oldElement, newElement, logicalId, replacements ? replacements[logicalId]: undefined, keepMetadata);
+    // we're using the changeSet, but the changeSet does not have an entry for this resource
+    let replacement: types.PotentialResourceReplacement;
+    if (replacements && !replacements[logicalId]) {
+      replacement = types.RESOURCE_NOT_IN_CHANGE_SET;
+    } else if (replacements && replacements[logicalId]) {
+      replacement = replacements[logicalId];
+    } else /*if (!replacements)*/ {
+      replacement = undefined;
+    }
+
+    // eslint-disable-next-line max-len
+    result[logicalId] = elementDiff(oldElement, newElement, logicalId, replacement);
   }
   return result;
 }

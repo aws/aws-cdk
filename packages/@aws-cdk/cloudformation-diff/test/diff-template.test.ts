@@ -775,28 +775,7 @@ describe('changeset', () => {
           ParameterValue: 'Name1',
         },
       ],
-      Changes: [
-        {
-          Type: 'Resource',
-          ResourceChange: {
-            Action: 'Modify',
-            LogicalResourceId: 'Bucket',
-            ResourceType: 'AWS::S3::Bucket',
-            Replacement: 'False',
-            Details: [
-              {
-                Target: {
-                  Attribute: 'Properties',
-                  RequiresRecreation: 'Never',
-                  Name: 'BucketName',
-                },
-                Evaluation: 'Static',
-                ChangeSource: 'DirectModification',
-              },
-            ],
-          },
-        },
-      ],
+      Changes: [],
     });
 
     // THEN
@@ -940,7 +919,6 @@ describe('changeset', () => {
       Parameters: {
         BucketName: {
           Type: 'String',
-          Default: 'Name1',
         },
       },
       Resources: {
@@ -964,7 +942,6 @@ describe('changeset', () => {
       Parameters: {
         BucketName: {
           Type: 'String',
-          Default: 'Name1',
         },
       },
       Resources: {
@@ -997,17 +974,7 @@ describe('changeset', () => {
             LogicalResourceId: 'Bucket',
             ResourceType: 'AWS::S3::Bucket',
             Replacement: 'False',
-            Details: [
-              {
-                Target: {
-                  Attribute: 'Properties',
-                  Name: 'BucketName',
-                  RequiresRecreation: 'Never',
-                },
-                Evaluation: 'Static',
-                ChangeSource: 'DirectModification',
-              },
-            ],
+            Details: [],
           },
         },
       ],

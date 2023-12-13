@@ -9,7 +9,7 @@ import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
 export * from './diff/types';
 
 // eslint-disable-next-line max-len
-type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any, replacement?: types.ResourceReplacements, keepMetadata?: boolean) => void;
+type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any, replacement?: types.ResourceReplacements, usingChangeSet?: boolean) => void;
 type HandlerRegistry = { [section: string]: DiffHandler };
 
 const DIFF_HANDLERS: HandlerRegistry = {
@@ -27,8 +27,8 @@ const DIFF_HANDLERS: HandlerRegistry = {
     diff.conditions = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffCondition)),
   Transform: (diff, oldValue, newValue) =>
     diff.transform = impl.diffAttribute(oldValue, newValue),
-  Resources: (diff, oldValue, newValue, replacements?: types.ResourceReplacements, keepMetadata?: boolean) =>
-    diff.resources = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffResource, replacements, keepMetadata)),
+  Resources: (diff, oldValue, newValue, replacements?: types.ResourceReplacements) =>
+    diff.resources = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffResource, replacements)),
   Outputs: (diff, oldValue, newValue) =>
     diff.outputs = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffOutput)),
 };
@@ -50,7 +50,7 @@ export function diffTemplate(
 ): types.TemplateDiff {
   const replacements = changeSet ? findResourceReplacements(changeSet): undefined;
   // Base diff
-  const theDiff = calculateTemplateDiff(currentTemplate, newTemplate, replacements, changeSet ? false : true);
+  const theDiff = calculateTemplateDiff(currentTemplate, newTemplate, replacements, changeSet ? true : false);
 
   // We're going to modify this in-place
   const newTemplateCopy = deepCopy(newTemplate);
@@ -107,7 +107,7 @@ function calculateTemplateDiff(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
   replacements?: types.ResourceReplacements,
-  keepMetadata?: boolean,
+  usingChangeSet?: boolean,
 ): types.TemplateDiff {
   const differences: types.ITemplateDiff = {};
   const unknown: { [key: string]: types.Difference<any> } = {};
@@ -119,7 +119,7 @@ function calculateTemplateDiff(
     }
     const handler: DiffHandler = DIFF_HANDLERS[key]
                   || ((_diff, oldV, newV) => unknown[key] = impl.diffUnknown(oldV, newV));
-    handler(differences, oldValue, newValue, replacements, keepMetadata);
+    handler(differences, oldValue, newValue, replacements, usingChangeSet);
   }
   if (Object.keys(unknown).length > 0) {
     differences.unknown = new types.DifferenceCollection(unknown);

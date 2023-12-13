@@ -30,8 +30,7 @@ export function diffResource(
   oldValue?: types.Resource,
   newValue?: types.Resource,
   _key?: string,
-  replacement?: types.ResourceReplacement,
-  keepMetadata?: boolean,
+  replacement?: types.PotentialResourceReplacement,
 ): types.ResourceDifference {
   const resourceType = {
     oldType: oldValue && oldValue.Type,
@@ -49,7 +48,7 @@ export function diffResource(
 
     otherDiffs = diffKeyedEntities(oldValue, newValue, _diffOther);
     delete otherDiffs.Properties;
-    if (keepMetadata === false) {
+    if (replacement) {
       delete otherDiffs.Metadata;
     }
   }
@@ -58,27 +57,34 @@ export function diffResource(
     resourceType, propertyDiffs, otherDiffs,
   });
 
-  function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: Resource, changeSetReplacement?: types.ResourceReplacement) {
+  function _diffProperty(
+    oldV: any,
+    newV: any,
+    key: string,
+    resourceSpec?: Resource,
+    changeSetReplacement?: types.PotentialResourceReplacement,
+  ) {
     let changeImpact: types.ResourceImpact = types.ResourceImpact.NO_CHANGE;
-    if (changeSetReplacement === undefined) {
+    if (!changeSetReplacement) {
       changeImpact = _resourceSpecImpact(oldV, newV, key, resourceSpec);
-    } else {
-      if (!(key in changeSetReplacement.propertiesReplaced)) {
-        // The changeset does not contain this property, which means it is not going to be updated. Hide this cosmetic template-only change from the diff
-        return new types.PropertyDifference(1, 1, { changeImpact });
-      }
+      return new types.PropertyDifference(oldV, newV, { changeImpact });
+    }
 
-      switch (changeSetReplacement.propertiesReplaced[key]) {
-        case 'Always':
-          changeImpact = types.ResourceImpact.WILL_REPLACE;
-          break;
-        case 'Conditionally':
-          changeImpact = types.ResourceImpact.MAY_REPLACE;
-          break;
-        case 'Never':
-          changeImpact = types.ResourceImpact.WILL_UPDATE;
-          break;
-      }
+    if (changeSetReplacement === types.RESOURCE_NOT_IN_CHANGE_SET || !(key in changeSetReplacement.propertiesReplaced)) {
+      // The changeset does not contain this property, which means it is not going to be updated. Hide this cosmetic template-only change from the diff
+      return new types.PropertyDifference(1, 1, { changeImpact });
+    }
+
+    switch (changeSetReplacement.propertiesReplaced[key]) {
+      case 'Always':
+        changeImpact = types.ResourceImpact.WILL_REPLACE;
+        break;
+      case 'Conditionally':
+        changeImpact = types.ResourceImpact.MAY_REPLACE;
+        break;
+      case 'Never':
+        changeImpact = types.ResourceImpact.WILL_UPDATE;
+        break;
     }
 
     return new types.PropertyDifference(oldV, newV, { changeImpact });
