@@ -667,6 +667,15 @@ export function isPropertyDifference<T>(diff: Difference<T>): diff is PropertyDi
   return (diff as PropertyDifference<T>).changeImpact !== undefined;
 }
 
+export type ResourceReplacements = { [logicalId: string]: ResourceReplacement };
+
+export interface ResourceReplacement {
+  resourceReplaced: boolean,
+  propertiesReplaced: { [propertyName: string]: ChangeSetReplacement };
+}
+
+export type ChangeSetReplacement = 'Always' | 'Never' | 'Conditionally';
+
 /**
  * Filter a map of IDifferences down to only retain the actual changes
  */

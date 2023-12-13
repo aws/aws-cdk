@@ -702,6 +702,41 @@ test('diffing any two arbitrary templates should not crash', () => {
   });
 });
 
+test('metadata changes are rendered in the diff', () => {
+  // GIVEN
+  const currentTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        BucketName: 'magic-bucket',
+        Metadata: {
+          'aws:cdk:path': '/foo/BucketResource',
+        },
+      },
+    },
+  };
+
+  // WHEN
+  const newTemplate = {
+    Resources: {
+      BucketResource: {
+        Type: 'AWS::S3::Bucket',
+        BucketName: 'magic-bucket',
+        Metadata: {
+          'aws:cdk:path': '/bar/BucketResource',
+        },
+      },
+    },
+  };
+
+  // THEN
+  let differences = diffTemplate(currentTemplate, newTemplate);
+  expect(differences.differenceCount).toBe(1);
+
+  differences = diffTemplate(newTemplate, currentTemplate);
+  expect(differences.resources.differenceCount).toBe(1);
+});
+
 describe('changeset', () => {
   test('changeset overrides spec replacements', () => {
     // GIVEN
@@ -1014,6 +1049,38 @@ describe('changeset', () => {
     const differences = diffTemplate(currentTemplate, newTemplate);
 
     // THEN
+    expect(differences.differenceCount).toBe(0);
+  });
+
+  test('metadata changes are obscured from the diff', () => {
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          BucketName: 'magic-bucket',
+          Metadata: {
+            'aws:cdk:path': '/foo/BucketResource',
+          },
+        },
+      },
+    };
+
+    // WHEN
+    const newTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          BucketName: 'magic-bucket',
+          Metadata: {
+            'aws:cdk:path': '/bar/BucketResource',
+          },
+        },
+      },
+    };
+
+    // THEN
+    let differences = diffTemplate(currentTemplate, newTemplate, {});
     expect(differences.differenceCount).toBe(0);
   });
 });

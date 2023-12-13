@@ -1,6 +1,6 @@
 import { loadAwsServiceSpecSync } from '@aws-cdk/aws-service-spec';
 import { Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
-import { ResourceReplacement, ResourceReplacements } from '../format';
+import * as types from './types';
 
 /**
  * Compares two objects for equality, deeply. The function handles arguments that are
@@ -177,8 +177,10 @@ function yamlIntrinsicEqual(lvalue: any, rvalue: any): boolean {
 export function diffKeyedEntities<T>(
   oldValue: { [key: string]: any } | undefined,
   newValue: { [key: string]: any } | undefined,
-  elementDiff: (oldElement: any, newElement: any, key: string, replacements?: ResourceReplacement) => T,
-  replacements?: ResourceReplacements): { [name: string]: T } {
+  elementDiff: (oldElement: any, newElement: any, key: string, replacements?: types.ResourceReplacement, keepMetadata?: boolean) => T,
+  replacements?: types.ResourceReplacements,
+  keepMetadata?: boolean,
+): { [name: string]: T } {
   const result: { [name: string]: T } = {};
   for (const logicalId of unionOf(Object.keys(oldValue || {}), Object.keys(newValue || {}))) {
     const oldElement = oldValue && oldValue[logicalId];
@@ -189,7 +191,7 @@ export function diffKeyedEntities<T>(
       continue;
     }
 
-    result[logicalId] = elementDiff(oldElement, newElement, logicalId, replacements ? replacements[logicalId]: undefined);
+    result[logicalId] = elementDiff(oldElement, newElement, logicalId, replacements ? replacements[logicalId]: undefined, keepMetadata);
   }
   return result;
 }

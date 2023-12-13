@@ -3,11 +3,11 @@ import { CloudFormation } from 'aws-sdk';
 import * as impl from './diff';
 import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
-import { ChangeSetReplacement, ResourceReplacements } from './format';
 
 export * from './diff/types';
 
-type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any, replacement?: ResourceReplacements) => void;
+// eslint-disable-next-line max-len
+type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any, replacement?: types.ResourceReplacements, keepMetadata?: boolean) => void;
 type HandlerRegistry = { [section: string]: DiffHandler };
 
 const DIFF_HANDLERS: HandlerRegistry = {
@@ -25,8 +25,8 @@ const DIFF_HANDLERS: HandlerRegistry = {
     diff.conditions = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffCondition)),
   Transform: (diff, oldValue, newValue) =>
     diff.transform = impl.diffAttribute(oldValue, newValue),
-  Resources: (diff, oldValue, newValue, replacements?: ResourceReplacements) =>
-    diff.resources = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffResource, replacements)),
+  Resources: (diff, oldValue, newValue, replacements?: types.ResourceReplacements, keepMetadata?: boolean) =>
+    diff.resources = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffResource, replacements, keepMetadata)),
   Outputs: (diff, oldValue, newValue) =>
     diff.outputs = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffOutput)),
 };
@@ -48,7 +48,7 @@ export function diffTemplate(
 ): types.TemplateDiff {
   const replacements = changeSet ? findResourceReplacements(changeSet): undefined;
   // Base diff
-  const theDiff = calculateTemplateDiff(currentTemplate, newTemplate, replacements);
+  const theDiff = calculateTemplateDiff(currentTemplate, newTemplate, replacements, changeSet ? false : true);
 
   // We're going to modify this in-place
   const newTemplateCopy = deepCopy(newTemplate);
@@ -104,7 +104,8 @@ function propagatePropertyReplacement(source: types.ResourceDifference, dest: ty
 function calculateTemplateDiff(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
-  replacements?: ResourceReplacements,
+  replacements?: types.ResourceReplacements,
+  keepMetadata?: boolean,
 ): types.TemplateDiff {
   const differences: types.ITemplateDiff = {};
   const unknown: { [key: string]: types.Difference<any> } = {};
@@ -116,7 +117,7 @@ function calculateTemplateDiff(
     }
     const handler: DiffHandler = DIFF_HANDLERS[key]
                   || ((_diff, oldV, newV) => unknown[key] = impl.diffUnknown(oldV, newV));
-    handler(differences, oldValue, newValue, replacements);
+    handler(differences, oldValue, newValue, replacements, keepMetadata);
   }
   if (Object.keys(unknown).length > 0) {
     differences.unknown = new types.DifferenceCollection(unknown);
@@ -189,10 +190,10 @@ function deepCopy(x: any): any {
   return x;
 }
 
-function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOutput): ResourceReplacements {
-  const replacements: ResourceReplacements = {};
+function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOutput): types.ResourceReplacements {
+  const replacements: types.ResourceReplacements = {};
   for (const resourceChange of changeSet.Changes ?? []) {
-    const propertiesReplaced: { [propName: string]: ChangeSetReplacement } = {};
+    const propertiesReplaced: { [propName: string]: types.ChangeSetReplacement } = {};
     for (const propertyChange of resourceChange.ResourceChange?.Details ?? []) {
       if (propertyChange.Target?.Attribute === 'Properties') {
         const requiresReplacement = propertyChange.Target.RequiresRecreation === 'Always';
@@ -203,7 +204,7 @@ function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOut
           // see 'Replacement': https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChange.html
           propertiesReplaced[propertyChange.Target.Name!] = 'Conditionally';
         } else {
-          propertiesReplaced[propertyChange.Target.Name!] = propertyChange.Target.RequiresRecreation as ChangeSetReplacement;
+          propertiesReplaced[propertyChange.Target.Name!] = propertyChange.Target.RequiresRecreation as types.ChangeSetReplacement;
         }
       }
     }

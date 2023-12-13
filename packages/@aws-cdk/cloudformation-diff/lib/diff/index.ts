@@ -1,7 +1,6 @@
 import { Resource } from '@aws-cdk/service-spec-types';
 import * as types from './types';
 import { deepEqual, diffKeyedEntities, loadResourceModel } from './util';
-import { ResourceReplacement } from '../format';
 
 export function diffAttribute(oldValue: any, newValue: any): types.Difference<string> {
   return new types.Difference<string>(_asString(oldValue), _asString(newValue));
@@ -31,7 +30,8 @@ export function diffResource(
   oldValue?: types.Resource,
   newValue?: types.Resource,
   _key?: string,
-  replacement?: ResourceReplacement,
+  replacement?: types.ResourceReplacement,
+  keepMetadata?: boolean,
 ): types.ResourceDifference {
   const resourceType = {
     oldType: oldValue && oldValue.Type,
@@ -49,15 +49,18 @@ export function diffResource(
 
     otherDiffs = diffKeyedEntities(oldValue, newValue, _diffOther);
     delete otherDiffs.Properties;
-    // TODO: should only happen with the right flag set
-    delete otherDiffs.Metadata;
+    // eslint-disable-next-line no-console
+    console.log('keepMetadata??' + keepMetadata);
+    if (keepMetadata === false) {
+      delete otherDiffs.Metadata;
+    }
   }
 
   return new types.ResourceDifference(oldValue, newValue, {
     resourceType, propertyDiffs, otherDiffs,
   });
 
-  function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: Resource, changeSetReplacement?: ResourceReplacement) {
+  function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: Resource, changeSetReplacement?: types.ResourceReplacement) {
     let changeImpact: types.ResourceImpact = types.ResourceImpact.NO_CHANGE;
     if (changeSetReplacement === undefined) {
       changeImpact = _resourceSpecImpact(oldV, newV, key, resourceSpec);
