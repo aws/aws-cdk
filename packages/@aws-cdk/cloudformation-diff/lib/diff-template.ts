@@ -1,3 +1,5 @@
+// The SDK is only used to reference `DescribeChangeSetOutput`, so the SDK is added as a devDependency.
+// The SDK should not make network calls here
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CloudFormation } from 'aws-sdk';
 import * as impl from './diff';
