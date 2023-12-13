@@ -114,6 +114,22 @@ export interface ScheduleProps {
    * @default - All events in Scheduler are encrypted with a key that AWS owns and manages.
    */
   readonly key?: kms.IKey;
+
+  /**
+   * The date, in UTC, after which the schedule can begin invoking its target.
+   * EventBridge Scheduler ignores start for one-time schedules.
+   *
+   * @default - no value
+   */
+  readonly start?: Date;
+
+  /**
+   * The date, in UTC, before which the schedule can invoke its target.
+   * EventBridge Scheduler ignores end for one-time schedules.
+   *
+   * @default - no value
+   */
+  readonly end?: Date;
 }
 
 /**
@@ -209,7 +225,7 @@ export class Schedule extends Resource implements ISchedule {
    *
    * @default - sum over 5 minutes
    */
-  public static metricAllSentToDLQTrunacted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public static metricAllSentToDLQTruncated(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metricAll('InvocationsSentToDeadLetterCount_Truncated_MessageSizeExceeded', props);
   }
 
@@ -254,6 +270,8 @@ export class Schedule extends Resource implements ISchedule {
 
     this.retryPolicy = targetConfig.retryPolicy;
 
+    this.validateTimeFrame(props.start, props.end);
+
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,
       flexibleTimeWindow: { mode: 'OFF' },
@@ -276,6 +294,8 @@ export class Schedule extends Resource implements ISchedule {
         sageMakerPipelineParameters: targetConfig.sageMakerPipelineParameters,
         sqsParameters: targetConfig.sqsParameters,
       },
+      startDate: props.start?.toISOString(),
+      endDate: props.end?.toISOString(),
     });
 
     this.scheduleName = this.getResourceNameAttribute(resource.ref);
@@ -305,5 +325,11 @@ export class Schedule extends Resource implements ISchedule {
 
     const isEmptyPolicy = Object.values(policy).every(value => value === undefined);
     return !isEmptyPolicy ? policy : undefined;
+  }
+
+  private validateTimeFrame(start?: Date, end?: Date) {
+    if (start && end && start >= end) {
+      throw new Error(`start must precede end, got start: ${start.toISOString()}, end: ${end.toISOString()}`);
+    }
   }
 }
