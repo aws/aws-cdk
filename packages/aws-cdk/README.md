@@ -382,6 +382,29 @@ $ cdk deploy --method=prepare-change-set --change-set-name MyChangeSetName
 For more control over when stack changes are deployed, the CDK can generate a
 CloudFormation change set but not execute it.
 
+#### Import existing resources
+You can pass the `--import-existing-resources` flag to the `deploy` command:
+
+```console
+$ cdk deploy --import-existing-resources
+```
+
+This allows you to automatically import the resources in your template that already exist in your AWS account during CloudFormation deployments. With this feature, you can reduce the manual effort of import operations and avoid deployment failures because of naming conflicts.
+
+To review which resources are imported or not before actually executing a change set, use `--method=prepare-change-set` flag. You can inspect the change set created by CDK from the management console or other external tools.
+
+```console
+$ cdk deploy --import-existing-resources --method=prepare-change-set
+```
+
+To enable this feature only for a specific stack, use `--exclusively` flag.
+
+```console
+$ cdk deploy --import-existing-resources --exclusively StackName
+```
+
+This parameter can only import resources that have custom names in templates. For more information, see [name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) in the AWS CloudFormation User Guide. To import resources that do not accept custom names, such as EC2 instances, use the `cdk import` instead. You can find more details [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateChangeSet.html#API_CreateChangeSet_RequestParameters).
+
 #### Hotswap deployments for faster development
 
 You can pass the `--hotswap` flag to the `deploy` command:
@@ -559,7 +582,7 @@ To import an existing resource to a CDK stack, follow the following steps:
 5. When `cdk import` reports success, the resource is managed by CDK. Any subsequent
    changes in the construct configuration will be reflected on the resource.
 
-You can also import existing resources by `--import-existing-resources` option of `cdk deploy` command. This parameter only works for resources that you can set custom physical names, such as S3 bucket, DynamoDB table, etc. For more information, see [`ImportResourceResources` parameter](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateChangeSet.html#API_CreateChangeSet_RequestParameters) in AWS CloudFormation API reference.
+NOTE: You can also import existing resources by `--import-existing-resources` option of `cdk deploy` command. This parameter only works for resources that you can set custom physical names, such as S3 bucket, DynamoDB table, etc. For more information, see [`ImportResourceResources` parameter](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateChangeSet.html#API_CreateChangeSet_RequestParameters) in AWS CloudFormation API reference.
 
 #### Limitations
 
