@@ -10,7 +10,7 @@ import { MatchmakingConfigurationProps, GameProperty, MatchmakingConfigurationBa
  * Properties for a new queued matchmaking configuration
  */
 export interface QueuedMatchmakingConfigurationProps extends MatchmakingConfigurationProps {
-/**
+  /**
    * The number of player slots in a match to keep open for future players.
    * For example, if the configuration's rule set specifies a match for a single 12-person team, and the additional player count is set to 2, only 10 players are selected for the match.
    *
@@ -67,7 +67,6 @@ export interface QueuedMatchmakingConfigurationProps extends MatchmakingConfigur
  * @resource AWS::GameLift::MatchmakingConfiguration
  */
 export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase {
-
   /**
    * Import an existing matchmaking configuration from its name.
    */
@@ -83,13 +82,15 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
   }
 
   /**
-     * The name of the matchmaking configuration.
-     */
+   * The name of the matchmaking configuration.
+   */
   public readonly matchmakingConfigurationName: string;
+
   /**
-     * The ARN of the matchmaking configuration.
-     */
+   * The ARN of the matchmaking configuration.
+   */
   public readonly matchmakingConfigurationArn: string;
+
   /**
    * The notification target for matchmaking events
    */
@@ -216,5 +217,4 @@ export class QueuedMatchmakingConfiguration extends MatchmakingConfigurationBase
       };
     }
   }
-
 }
