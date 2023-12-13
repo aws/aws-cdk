@@ -862,7 +862,7 @@ describe('disable rollback', () => {
 });
 
 describe('import-existing-resources', () => {
-  test('by default, ', async () => {
+  test('by default, import-existing-resources is disabled', async () => {
     // WHEN
     await deployStack({
       ...standardDeployStackArguments(),
@@ -878,7 +878,7 @@ describe('import-existing-resources', () => {
     }));
   });
 
-  test('enabled', async () => {
+  test('import-existing-resources is enabled', async () => {
     // WHEN
     await deployStack({
       ...standardDeployStackArguments(),
