@@ -138,6 +138,20 @@ new Schedule(this, 'Schedule', {
 });
 ```
 
+### Configuring a start and end time of the Schedule
+
+If you choose a recurring schedule, you can set the start and end time of the Schedule by specifying the `start` and `end`.
+
+```ts
+declare const target: targets.LambdaInvoke;
+
+new Schedule(this, 'Schedule', {
+    schedule: ScheduleExpression.rate(cdk.Duration.hours(12)),
+    target: target,
+    start: new Date('2023-01-01T00:00:00.000Z'),
+    end: new Date('2023-02-01T00:00:00.000Z'),
+});
+```
 
 ## Scheduler Targets
 
