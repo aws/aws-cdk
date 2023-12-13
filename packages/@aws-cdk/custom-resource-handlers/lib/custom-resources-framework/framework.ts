@@ -2,31 +2,31 @@
 import { ExternalModule, InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { CdkCustomResourceClass, CdkCustomResourceClassProps } from './classes';
-import { ComponentType, ConfigProps } from './config';
+import { ProviderType, ProviderProps } from './config';
 import { Runtime } from './runtime';
 import { RuntimeDeterminer } from './utils/runtime-determiner';
 
 export class CdkCustomResourceModule extends Module {
   /**
-   * The latest nodejs runtime version available across all AWS regions
+   * The latest nodejs runtime version available across all AWS regions.
    */
   private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_18_X;
 
   private readonly renderer = new TypeScriptRenderer();
   private readonly externalModules = new Map<string, boolean>();
   private readonly _interfaces = new Map<string, InterfaceType>();
-  private _hasComponents = false;
+  private _hasProviders = false;
 
   /**
-   * Whether the module being generated will live inside of aws-cdk-lib/core
+   * Whether the module being generated will live inside of aws-cdk-lib/core.
    */
   public readonly coreInternal: boolean;
 
   /**
-   * Whether the module contains framework components
+   * Whether the module contains custom resource providers.
    */
-  public get hasComponents() {
-    return this._hasComponents;
+  public get hasProviders() {
+    return this._hasProviders;
   }
 
   public constructor(fqn: string) {
@@ -37,36 +37,36 @@ export class CdkCustomResourceModule extends Module {
   /**
    * Build a framework component inside of this module.
    */
-  public build(component: ConfigProps, codeDirectory: string) {
-    if (component.type === ComponentType.CDK_NO_OP) {
+  public build(provider: ProviderProps, codeDirectory: string) {
+    if (provider.type === ProviderType.CDK_NO_OP) {
       return;
     }
 
-    this._hasComponents = true;
+    this._hasProviders = true;
 
-    const entrypoint = component.entrypoint ?? 'index.handler';
-    const name = this.buildComponentName(entrypoint);
+    const handler = provider.handler ?? 'index.handler';
+    const name = this.buildProviderName(handler);
 
     const props: CdkCustomResourceClassProps = {
       name,
-      entrypoint,
+      handler,
       codeDirectory,
       runtime: RuntimeDeterminer.determineLatestRuntime(
-        component.compatibleRuntimes,
+        provider.compatibleRuntimes,
         CdkCustomResourceModule.DEFAULT_RUNTIME,
       ),
     };
 
-    switch (component.type) {
-      case ComponentType.CDK_FUNCTION: {
+    switch (provider.type) {
+      case ProviderType.CDK_FUNCTION: {
         CdkCustomResourceClass.buildCdkFunction(this, props);
         break;
       }
-      case ComponentType.CDK_SINGLETON_FUNCTION: {
+      case ProviderType.CDK_SINGLETON_FUNCTION: {
         CdkCustomResourceClass.buildCdkSingletonFunction(this, props);
         break;
       }
-      case ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER: {
+      case ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER: {
         CdkCustomResourceClass.buildCdkCustomResourceProvider(this, props);
         break;
       }
@@ -110,7 +110,7 @@ export class CdkCustomResourceModule extends Module {
     return this._interfaces.get(name);
   }
 
-  private buildComponentName(entrypoint: string) {
+  private buildProviderName(entrypoint: string) {
     const id = this.fqn.split('/').at(-1)?.replace('-provider', '') ?? '';
     const handler = entrypoint.split('.').at(-1)?.replace(/[_Hh]andler/g, '') ?? '';
     const name = (id.replace(

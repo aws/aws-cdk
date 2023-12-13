@@ -1,29 +1,29 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
-import { config, ConfigProps } from '../lib/custom-resources-framework/config';
+import { config, ProviderProps } from '../lib/custom-resources-framework/config';
 import { CdkCustomResourceModule } from '../lib/custom-resources-framework/framework';
 
-const framework: { [fqn: string]: ConfigProps[] } = {};
+const framework: { [fqn: string]: ProviderProps[] } = {};
 
 async function main() {
   recurse(config, []);
 
-  for (const [fqn, components] of Object.entries(framework)) {
+  for (const [fqn, providers] of Object.entries(framework)) {
     const module = new CdkCustomResourceModule(fqn);
-    for (const component of components) {
-      const outfile = calculateOutfile(component.sourceCode);
-      if (component.preventMinifyAndBundle) {
+    for (const provider of providers) {
+      const outfile = calculateOutfile(provider.sourceCode);
+      if (provider.preventMinifyAndBundle) {
         fs.mkdirSync(path.dirname(outfile), { recursive: true });
-        fs.copyFileSync(component.sourceCode, outfile);
+        fs.copyFileSync(provider.sourceCode, outfile);
       } else {
-        await minifyAndBundle(component.sourceCode, outfile);
+        await minifyAndBundle(provider.sourceCode, outfile);
       }
       const codeDirectory = path.dirname(outfile).split('/').pop() ?? '';
-      module.build(component, codeDirectory);
+      module.build(provider, codeDirectory);
     }
 
-    if (module.hasComponents) {
+    if (module.hasProviders) {
       module.renderTo(`dist/${fqn}.generated.ts`);
     }
   }

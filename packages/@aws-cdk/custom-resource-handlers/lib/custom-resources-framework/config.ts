@@ -5,7 +5,7 @@ import { Runtime } from './runtime';
 /**
  * Custom resource provider types.
  */
-export enum ComponentType {
+export enum ProviderType {
   /**
    * `CdkFunction`
    */
@@ -30,13 +30,13 @@ export enum ComponentType {
 }
 
 /**
- * Properites used to initialize individual handler framework components.
+ * Properites used to generate individual custom resource providers.
  */
-export interface ConfigProps {
+export interface ProviderProps {
   /**
-   * The component type to generate.
+   * The custom resource provider type to generate.
    */
-  readonly type: ComponentType;
+  readonly type: ProviderType;
 
   /**
    * The source code that will be executed by the provider.
@@ -44,16 +44,16 @@ export interface ConfigProps {
   readonly sourceCode: string;
 
   /**
-   * Runtimes that are compatible with the source code.
+   * Runtimes that are compatible with the provider's source code.
    */
   readonly compatibleRuntimes: Runtime[];
 
   /**
-   * The name of the method within your code that Lambda calls to execute your function.
+   * The name of the method within your code that the provider calls to execute your function.
    *
    * @default 'index.handler'
    */
-  readonly entrypoint?: string;
+  readonly handler?: string;
 
   /**
    * Prevents the source code from being minified and bundled. This is needed for python
@@ -64,13 +64,13 @@ export interface ConfigProps {
   readonly preventMinifyAndBundle?: boolean;
 }
 
-export type HandlerFrameworkConfig = { [module: string]: { [identifier: string]: ConfigProps[] } };
+export type CustomResourceFrameworkConfig = { [module: string]: { [identifier: string]: ProviderProps[] } };
 
-export const config: HandlerFrameworkConfig = {
+export const config: CustomResourceFrameworkConfig = {
   'aws-amplify-alpha': {
     'asset-deployment-handler': [
       {
-        type: ComponentType.CDK_NO_OP,
+        type: ProviderType.CDK_NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
@@ -79,17 +79,17 @@ export const config: HandlerFrameworkConfig = {
   'aws-certificatemanager': {
     'certificate-request-provider': [
       {
-        type: ComponentType.CDK_FUNCTION,
+        type: ProviderType.CDK_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-certificatemanager', 'dns-validated-certificate-handler', 'index.js'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
-        entrypoint: 'index.certificateRequestHandler',
+        handler: 'index.certificateRequestHandler',
       },
     ],
   },
   'aws-cloudfront': {
     'cross-region-string-param-reader-provider': [
       {
-        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        type: ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER,
         sourceCode: path.resolve(__dirname, '..', 'aws-cloudfront', 'edge-function', 'index.js'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
@@ -98,23 +98,23 @@ export const config: HandlerFrameworkConfig = {
   'aws-dynamodb': {
     'replica-provider': [
       {
-        type: ComponentType.CDK_FUNCTION,
+        type: ProviderType.CDK_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-dynamodb', 'replica-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
-        entrypoint: 'index.onEventHandler',
+        handler: 'index.onEventHandler',
       },
       {
-        type: ComponentType.CDK_FUNCTION,
+        type: ProviderType.CDK_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-dynamodb', 'replica-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
-        entrypoint: 'index.isCompleteHandler',
+        handler: 'index.isCompleteHandler',
       },
     ],
   },
   'aws-ec2': {
     'restrict-default-sg-provider': [
       {
-        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        type: ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER,
         sourceCode: path.resolve(__dirname, '..', 'aws-ec2', 'restrict-default-security-group-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
@@ -123,7 +123,7 @@ export const config: HandlerFrameworkConfig = {
   'aws-ecr': {
     'auto-delete-images-provider': [
       {
-        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        type: ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER,
         sourceCode: path.resolve(__dirname, '..', 'aws-ecr', 'auto-delete-images-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
@@ -132,10 +132,10 @@ export const config: HandlerFrameworkConfig = {
   'aws-ecs': {
     'drain-hook-provider': [
       {
-        type: ComponentType.CDK_FUNCTION,
+        type: ProviderType.CDK_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-ecs', 'lambda-source', 'index.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_9],
-        entrypoint: 'index.lambda_handler',
+        handler: 'index.lambda_handler',
         preventMinifyAndBundle: true,
       },
     ],
@@ -143,45 +143,45 @@ export const config: HandlerFrameworkConfig = {
   'aws-eks': {
     'cluster-resource-provider': [
       {
-        type: ComponentType.CDK_FUNCTION,
+        type: ProviderType.CDK_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'cluster-resource-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
-        entrypoint: 'index.onEvent',
+        handler: 'index.onEvent',
       },
       {
-        type: ComponentType.CDK_FUNCTION,
+        type: ProviderType.CDK_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'cluster-resource-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
-        entrypoint: 'index.isComplete',
+        handler: 'index.isComplete',
       },
     ],
     'kubectl-provider': [
       {
-        type: ComponentType.CDK_FUNCTION,
+        type: ProviderType.CDK_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'index.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_10],
         preventMinifyAndBundle: true,
       },
       {
-        type: ComponentType.CDK_NO_OP,
+        type: ProviderType.CDK_NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'apply', '__init__.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_10],
         preventMinifyAndBundle: true,
       },
       {
-        type: ComponentType.CDK_NO_OP,
+        type: ProviderType.CDK_NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'get', '__init__.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_10],
         preventMinifyAndBundle: true,
       },
       {
-        type: ComponentType.CDK_NO_OP,
+        type: ProviderType.CDK_NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'helm', '__init__.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_10],
         preventMinifyAndBundle: true,
       },
       {
-        type: ComponentType.CDK_NO_OP,
+        type: ProviderType.CDK_NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'patch', '__init__.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_10],
         preventMinifyAndBundle: true,
@@ -191,7 +191,7 @@ export const config: HandlerFrameworkConfig = {
   'aws-events-targets': {
     'aws-api-provider': [
       {
-        type: ComponentType.CDK_SINGLETON_FUNCTION,
+        type: ProviderType.CDK_SINGLETON_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-events-targets', 'aws-api-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
@@ -200,7 +200,7 @@ export const config: HandlerFrameworkConfig = {
   'aws-iam': {
     'oidc-provider': [
       {
-        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        type: ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER,
         sourceCode: path.resolve(__dirname, '..', 'aws-iam', 'oidc-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
@@ -209,7 +209,7 @@ export const config: HandlerFrameworkConfig = {
   'aws-logs': {
     'log-retention': [
       {
-        type: ComponentType.CDK_NO_OP,
+        type: ProviderType.CDK_NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-logs', 'log-retention-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
@@ -218,7 +218,7 @@ export const config: HandlerFrameworkConfig = {
   'aws-redshift-alpha': {
     'cluster-reboot-provider': [
       {
-        type: ComponentType.CDK_SINGLETON_FUNCTION,
+        type: ProviderType.CDK_SINGLETON_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-redshift-alpha', 'cluster-parameter-change-reboot-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
@@ -227,14 +227,14 @@ export const config: HandlerFrameworkConfig = {
   'aws-route53': {
     'cross-account-zone-delegation-provider': [
       {
-        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        type: ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER,
         sourceCode: path.resolve(__dirname, '..', 'aws-route53', 'cross-account-zone-delegation-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
     'delete-existing-record-set-provider': [
       {
-        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        type: ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER,
         sourceCode: path.resolve(__dirname, '..', 'aws-route53', 'delete-existing-record-set-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
@@ -243,14 +243,14 @@ export const config: HandlerFrameworkConfig = {
   'aws-s3': {
     'auto-delete-objects-provider': [
       {
-        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        type: ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER,
         sourceCode: path.resolve(__dirname, '..', 'aws-s3', 'auto-delete-objects-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
     'notifications-resource-handler': [
       {
-        type: ComponentType.CDK_NO_OP,
+        type: ProviderType.CDK_NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-s3', 'notifications-resource-handler', 'index.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_9],
         preventMinifyAndBundle: true,
@@ -260,7 +260,7 @@ export const config: HandlerFrameworkConfig = {
   'aws-s3-deployment': {
     'bucket-deployment-provider': [
       {
-        type: ComponentType.CDK_SINGLETON_FUNCTION,
+        type: ProviderType.CDK_SINGLETON_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-s3-deployment', 'bucket-deployment-handler', 'index.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_9],
         preventMinifyAndBundle: true,
@@ -270,7 +270,7 @@ export const config: HandlerFrameworkConfig = {
   'aws-ses': {
     'drop-spam-provider': [
       {
-        type: ComponentType.CDK_SINGLETON_FUNCTION,
+        type: ProviderType.CDK_SINGLETON_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-ses', 'drop-spam-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
@@ -279,14 +279,14 @@ export const config: HandlerFrameworkConfig = {
   'aws-stepfunctions-tasks': {
     'eval-nodejs-provider': [
       {
-        type: ComponentType.CDK_SINGLETON_FUNCTION,
+        type: ProviderType.CDK_SINGLETON_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-stepfunctions-tasks', 'eval-nodejs-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
     'role-policy-provider': [
       {
-        type: ComponentType.CDK_SINGLETON_FUNCTION,
+        type: ProviderType.CDK_SINGLETON_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-stepfunctions-tasks', 'role-policy-handler', 'index.py'),
         compatibleRuntimes: [Runtime.PYTHON_3_9],
         preventMinifyAndBundle: true,
@@ -296,7 +296,7 @@ export const config: HandlerFrameworkConfig = {
   'aws-synthetics': {
     'auto-delete-underlying-resources-provider': [
       {
-        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        type: ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER,
         sourceCode: path.resolve(__dirname, '..', 'aws-synthetics', 'auto-delete-underlying-resources-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
@@ -305,28 +305,28 @@ export const config: HandlerFrameworkConfig = {
   'core': {
     'cfn-utils-provider': [
       {
-        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        type: ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER,
         sourceCode: path.resolve(__dirname, '..', 'core', 'cfn-utils-provider', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
     'cross-region-ssm-writer-provider': [
       {
-        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        type: ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER,
         sourceCode: path.resolve(__dirname, '..', 'core', 'cross-region-ssm-writer-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
     'cross-region-ssm-reader-provider': [
       {
-        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        type: ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER,
         sourceCode: path.resolve(__dirname, '..', 'core', 'cross-region-ssm-reader-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
-    'nodejs-entrypoint': [
+    'nodejs-entrypoint-provider': [
       {
-        type: ComponentType.CDK_NO_OP,
+        type: ProviderType.CDK_NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'core', 'nodejs-entrypoint-handler', 'index.js'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
         preventMinifyAndBundle: true,
@@ -336,7 +336,7 @@ export const config: HandlerFrameworkConfig = {
   'custom-resources': {
     'aws-custom-resource-provider': [
       {
-        type: ComponentType.CDK_SINGLETON_FUNCTION,
+        type: ProviderType.CDK_SINGLETON_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'custom-resources', 'aws-custom-resource-handler', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
@@ -345,7 +345,7 @@ export const config: HandlerFrameworkConfig = {
   'pipelines': {
     'approve-lambda': [
       {
-        type: ComponentType.CDK_FUNCTION,
+        type: ProviderType.CDK_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'pipelines', 'approve-lambda', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
@@ -354,7 +354,7 @@ export const config: HandlerFrameworkConfig = {
   'triggers': {
     'trigger-provider': [
       {
-        type: ComponentType.CDK_CUSTOM_RESOURCE_PROVIDER,
+        type: ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER,
         sourceCode: path.resolve(__dirname, '..', 'triggers', 'lambda', 'index.ts'),
         compatibleRuntimes: [Runtime.NODEJS_18_X],
       },

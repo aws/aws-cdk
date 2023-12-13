@@ -55,29 +55,28 @@ interface ConstructorBuildProps {
 }
 
 /**
- * Initialization properties used to build a `CdkHandlerFrameworkClass` instance.
+ * Initialization properties used to build a `CdkCustomResourceClass` instance.
  */
 export interface CdkCustomResourceClassProps {
   /**
-   * The name of the component class.
+   * The name of the provider class.
    */
   readonly name: string;
 
   /**
-   * A local file system directory with the provider's code. The code will be
-   * bundled into a zip asset and wired to the provider's AWS Lambda function.
+   * A local file system directory with the provider's code.
    */
   readonly codeDirectory: string;
 
   /**
-   * The runtime environment for the Lambda function.
+   * The runtime environment for the custom resource provider.
    */
   readonly runtime: Runtime;
 
   /**
-   * The name of the method within your code that Lambda calls to execute your function.
+   * The name of the method within your code that provider calls to execute your function.
    */
-  readonly entrypoint: string;
+  readonly handler: string;
 }
 
 export abstract class CdkCustomResourceClass extends ClassType {
@@ -100,7 +99,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
-          ['handler', expr.lit(props.entrypoint)],
+          ['handler', expr.lit(props.handler)],
           ['runtime', expr.directCode(props.runtime.toLambdaRuntime())],
         ]);
         this.buildConstructor({
@@ -162,7 +161,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
-          ['handler', expr.lit(props.entrypoint)],
+          ['handler', expr.lit(props.handler)],
           ['runtime', expr.directCode(props.runtime.toLambdaRuntime())],
         ]);
         this.buildConstructor({
