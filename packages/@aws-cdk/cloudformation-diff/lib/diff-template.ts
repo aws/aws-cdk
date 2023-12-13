@@ -3,13 +3,14 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { CloudFormation } from 'aws-sdk';
 import * as impl from './diff';
+import { ChangeSetReplacement, ResourceReplacements } from './diff/replacements';
 import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
 
 export * from './diff/types';
 
 // eslint-disable-next-line max-len
-type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any, replacement?: types.ResourceReplacements, usingChangeSet?: boolean) => void;
+type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any, replacement?: ResourceReplacements, usingChangeSet?: boolean) => void;
 type HandlerRegistry = { [section: string]: DiffHandler };
 
 const DIFF_HANDLERS: HandlerRegistry = {
@@ -27,7 +28,7 @@ const DIFF_HANDLERS: HandlerRegistry = {
     diff.conditions = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffCondition)),
   Transform: (diff, oldValue, newValue) =>
     diff.transform = impl.diffAttribute(oldValue, newValue),
-  Resources: (diff, oldValue, newValue, replacements?: types.ResourceReplacements) =>
+  Resources: (diff, oldValue, newValue, replacements?: ResourceReplacements) =>
     diff.resources = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffResource, replacements)),
   Outputs: (diff, oldValue, newValue) =>
     diff.outputs = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffOutput)),
@@ -106,7 +107,7 @@ function propagatePropertyReplacement(source: types.ResourceDifference, dest: ty
 function calculateTemplateDiff(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
-  replacements?: types.ResourceReplacements,
+  replacements?: ResourceReplacements,
   usingChangeSet?: boolean,
 ): types.TemplateDiff {
   const differences: types.ITemplateDiff = {};
@@ -199,10 +200,10 @@ function deepCopy(x: any): any {
   return x;
 }
 
-function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOutput): types.ResourceReplacements {
-  const replacements: types.ResourceReplacements = {};
+function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOutput): ResourceReplacements {
+  const replacements: ResourceReplacements = {};
   for (const resourceChange of changeSet.Changes ?? []) {
-    const propertiesReplaced: { [propName: string]: types.ChangeSetReplacement } = {};
+    const propertiesReplaced: { [propName: string]: ChangeSetReplacement } = {};
     for (const propertyChange of resourceChange.ResourceChange?.Details ?? []) {
       if (propertyChange.Target?.Attribute === 'Properties') {
         const requiresReplacement = propertyChange.Target.RequiresRecreation === 'Always';
@@ -213,7 +214,7 @@ function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOut
           // see 'Replacement': https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChange.html
           propertiesReplaced[propertyChange.Target.Name!] = 'Conditionally';
         } else {
-          propertiesReplaced[propertyChange.Target.Name!] = propertyChange.Target.RequiresRecreation as types.ChangeSetReplacement;
+          propertiesReplaced[propertyChange.Target.Name!] = propertyChange.Target.RequiresRecreation as ChangeSetReplacement;
         }
       }
     }

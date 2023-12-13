@@ -1,6 +1,6 @@
 import { loadAwsServiceSpecSync } from '@aws-cdk/aws-service-spec';
 import { Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
-import * as types from './types';
+import { PotentialResourceReplacement, RESOURCE_NOT_IN_CHANGE_SET, ResourceReplacements } from './replacements';
 
 /**
  * Compares two objects for equality, deeply. The function handles arguments that are
@@ -177,8 +177,8 @@ function yamlIntrinsicEqual(lvalue: any, rvalue: any): boolean {
 export function diffKeyedEntities<T>(
   oldValue: { [key: string]: any } | undefined,
   newValue: { [key: string]: any } | undefined,
-  elementDiff: (oldElement: any, newElement: any, key: string, replacement?: types.PotentialResourceReplacement) => T,
-  replacements?: types.ResourceReplacements,
+  elementDiff: (oldElement: any, newElement: any, key: string, replacement?: PotentialResourceReplacement) => T,
+  replacements?: ResourceReplacements,
 ): { [name: string]: T } {
   const result: { [name: string]: T } = {};
   for (const logicalId of unionOf(Object.keys(oldValue || {}), Object.keys(newValue || {}))) {
@@ -191,9 +191,9 @@ export function diffKeyedEntities<T>(
     }
 
     // we're using the changeSet, but the changeSet does not have an entry for this resource
-    let replacement: types.PotentialResourceReplacement;
+    let replacement: PotentialResourceReplacement;
     if (replacements && !replacements[logicalId]) {
-      replacement = types.RESOURCE_NOT_IN_CHANGE_SET;
+      replacement = RESOURCE_NOT_IN_CHANGE_SET;
     } else if (replacements && replacements[logicalId]) {
       replacement = replacements[logicalId];
     } else /*if (!replacements)*/ {

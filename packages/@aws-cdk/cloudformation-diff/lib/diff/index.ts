@@ -1,4 +1,5 @@
 import { Resource } from '@aws-cdk/service-spec-types';
+import { PotentialResourceReplacement, RESOURCE_NOT_IN_CHANGE_SET } from './replacements';
 import * as types from './types';
 import { deepEqual, diffKeyedEntities, loadResourceModel } from './util';
 
@@ -30,7 +31,7 @@ export function diffResource(
   oldValue?: types.Resource,
   newValue?: types.Resource,
   _key?: string,
-  replacement?: types.PotentialResourceReplacement,
+  replacement?: PotentialResourceReplacement,
 ): types.ResourceDifference {
   const resourceType = {
     oldType: oldValue && oldValue.Type,
@@ -62,7 +63,7 @@ export function diffResource(
     newV: any,
     key: string,
     resourceSpec?: Resource,
-    changeSetReplacement?: types.PotentialResourceReplacement,
+    changeSetReplacement?: PotentialResourceReplacement,
   ) {
     let changeImpact: types.ResourceImpact = types.ResourceImpact.NO_CHANGE;
     if (!changeSetReplacement) {
@@ -70,7 +71,7 @@ export function diffResource(
       return new types.PropertyDifference(oldV, newV, { changeImpact });
     }
 
-    if (changeSetReplacement === types.RESOURCE_NOT_IN_CHANGE_SET || !(key in changeSetReplacement.propertiesReplaced)) {
+    if (changeSetReplacement === RESOURCE_NOT_IN_CHANGE_SET || !(key in changeSetReplacement.propertiesReplaced)) {
       // The changeset does not contain this property, which means it is not going to be updated. Hide this cosmetic template-only change from the diff
       return new types.PropertyDifference(1, 1, { changeImpact });
     }
