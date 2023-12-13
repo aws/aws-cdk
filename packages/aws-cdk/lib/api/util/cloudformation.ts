@@ -2,9 +2,9 @@ import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { StackStatus } from './cloudformation/stack-status';
+import { makeBodyParameterAndUpload, TemplateBodyParameter } from './template-body-parameter';
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
-import { TemplateBodyParameter, makeBodyParameterAndUpload } from '../deploy-stack';
 import { Deployments } from '../deployments';
 
 export type Template = {

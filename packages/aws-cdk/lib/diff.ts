@@ -22,7 +22,7 @@ export function printStackDiff(
   strict: boolean,
   context: number,
   quiet: boolean,
-  changeSet: CloudFormation.DescribeChangeSetOutput,
+  changeSet?: CloudFormation.DescribeChangeSetOutput,
   stream?: cfnDiff.FormatStream): number {
 
   let diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template, changeSet);

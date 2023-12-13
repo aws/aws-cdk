@@ -133,15 +133,13 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
 
-      ///////////////////////////////
-      const changeSet = await prepareAndCreateChangeSet({
+      const changeSet = options.changeSet ? await prepareAndCreateChangeSet({
         resourcesToImport: options.resourcesToImport,
         stack: stacks.firstStack,
         uuid: uuid.v4(),
         willExecute: false,
         deployments: this.props.deployments,
-      });
-      ///////////////////////////////
+      }) : undefined;
 
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
@@ -160,13 +158,13 @@ export class CdkToolkit {
         const currentTemplate = templateWithNames.deployedTemplate;
         const nestedStackCount = templateWithNames.nestedStackCount;
 
-        const changeSet = await prepareAndCreateChangeSet({
+        const changeSet = options.changeSet ? await prepareAndCreateChangeSet({
           resourcesToImport: options.resourcesToImport,
           stack,
           uuid: uuid.v4(),
           deployments: this.props.deployments,
           willExecute: false,
-        });
+        }) : undefined;
 
         const stackCount =
         options.securityOnly
@@ -957,6 +955,13 @@ export interface DiffOptions {
    * @default - no resources to import
    */
   resourcesToImport?: ResourcesToImport;
+
+  /**
+   * Whether or not to create, analyze, and subsequently delete a changeset
+   *
+   * @default true
+   */
+  changeSet?: boolean;
 }
 
 interface CfnDeployOptions {
