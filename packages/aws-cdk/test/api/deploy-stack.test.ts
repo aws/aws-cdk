@@ -861,6 +861,41 @@ describe('disable rollback', () => {
 
 });
 
+describe('import-existing-resources', () => {
+  test('by default, ', async () => {
+    // WHEN
+    await deployStack({
+      ...standardDeployStackArguments(),
+      deploymentMethod: {
+        method: 'change-set',
+      },
+    });
+
+    // THEN
+    expect(cfnMocks.createChangeSet).toHaveBeenCalledTimes(1);
+    expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+      ImportExistingResources: false,
+    }));
+  });
+
+  test('enabled', async () => {
+    // WHEN
+    await deployStack({
+      ...standardDeployStackArguments(),
+      deploymentMethod: {
+        method: 'change-set',
+        importExistingResources: true,
+      },
+    });
+
+    // THEN
+    expect(cfnMocks.createChangeSet).toHaveBeenCalledTimes(1);
+    expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+      ImportExistingResources: true,
+    }));
+  });
+});
+
 /**
  * Set up the mocks so that it looks like the stack exists to start with
  *
