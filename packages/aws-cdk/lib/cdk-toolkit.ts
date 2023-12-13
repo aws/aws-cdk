@@ -6,7 +6,7 @@ import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
-import { DeploymentMethod, makeBodyParameterAndUpload } from './api';
+import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
@@ -15,7 +15,7 @@ import { Deployments } from './api/deployments';
 import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
-import { CloudFormationStack, ResourcesToImport, createChangeSet } from './api/util/cloudformation';
+import { ResourcesToImport, prepareAndCreateChangeSet } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, validateSourceOptions } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
@@ -134,27 +134,12 @@ export class CdkToolkit {
       }
 
       ///////////////////////////////
-      const preparedSdk = (await this.props.deployments.prepareSdkWithDeployRole(stacks.firstStack));
-      const bodyParameter = await makeBodyParameterAndUpload(
-        stacks.firstStack,
-        preparedSdk.resolvedEnvironment,
-        undefined as any,
-        undefined as any,
-        preparedSdk.stackSdk,
-      );
-      const cfn = preparedSdk.stackSdk.cloudFormation();
-      const exists = (await CloudFormationStack.lookup(cfn, stacks.firstStack.stackName, false)).exists;
-      const diffChangeSetUuid = uuid.v4();
-
-      const changeSet = await createChangeSet({
-        cfn,
-        changeSetName: 'some-name',
+      const changeSet = await prepareAndCreateChangeSet({
         resourcesToImport: options.resourcesToImport,
         stack: stacks.firstStack,
-        exists,
-        uuid: diffChangeSetUuid,
+        uuid: uuid.v4(),
         willExecute: false,
-        bodyParameter,
+        deployments: this.props.deployments,
       });
       ///////////////////////////////
 
@@ -175,27 +160,12 @@ export class CdkToolkit {
         const currentTemplate = templateWithNames.deployedTemplate;
         const nestedStackCount = templateWithNames.nestedStackCount;
 
-        const preparedSdk = (await this.props.deployments.prepareSdkWithDeployRole(stack));
-        const bodyParameter = await makeBodyParameterAndUpload(
-          stack,
-          preparedSdk.resolvedEnvironment,
-          undefined as any,
-          undefined as any,
-          preparedSdk.stackSdk,
-        );
-        const cfn = preparedSdk.stackSdk.cloudFormation();
-        const exists = (await CloudFormationStack.lookup(cfn, stack.stackName, false)).exists;
-        const diffChangeSetUuid = uuid.v4();
-
-        const changeSet = await createChangeSet({
-          cfn,
-          changeSetName: 'some-name',
+        const changeSet = await prepareAndCreateChangeSet({
           resourcesToImport: options.resourcesToImport,
           stack,
-          exists,
-          uuid: diffChangeSetUuid,
+          uuid: uuid.v4(),
+          deployments: this.props.deployments,
           willExecute: false,
-          bodyParameter,
         });
 
         const stackCount =

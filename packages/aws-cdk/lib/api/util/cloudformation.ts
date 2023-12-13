@@ -4,7 +4,8 @@ import { CloudFormation } from 'aws-sdk';
 import { StackStatus } from './cloudformation/stack-status';
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
-import { TemplateBodyParameter } from '../deploy-stack';
+import { TemplateBodyParameter, makeBodyParameterAndUpload } from '../deploy-stack';
+import { Deployments } from '../deployments';
 
 export type Template = {
   Parameters?: Record<string, TemplateParameter>;
@@ -282,8 +283,16 @@ export async function waitForChangeSet(
   return ret;
 }
 
+export type PrepareChangeSetOptions = {
+  stack: cxapi.CloudFormationStackArtifact,
+  deployments: Deployments,
+  uuid: string,
+  resourcesToImport?: ResourcesToImport,
+  willExecute: boolean,
+}
+
 export type CreateChangeSetOptions = {
-  cfn: CloudFormation
+  cfn: CloudFormation,
   changeSetName: string,
   resourcesToImport?: ResourcesToImport,
   willExecute: boolean,
@@ -293,7 +302,31 @@ export type CreateChangeSetOptions = {
   bodyParameter: TemplateBodyParameter,
 }
 
-export async function createChangeSet(options: CreateChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput> {
+export async function prepareAndCreateChangeSet(options: PrepareChangeSetOptions) {
+  const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
+  const bodyParameter = await makeBodyParameterAndUpload(
+    options.stack,
+    preparedSdk.resolvedEnvironment,
+    undefined as any,
+    undefined as any,
+    preparedSdk.stackSdk,
+  );
+  const cfn = preparedSdk.stackSdk.cloudFormation();
+  const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
+
+  return createChangeSet({
+    cfn,
+    changeSetName: 'some-name',
+    resourcesToImport: options.resourcesToImport,
+    stack: options.stack,
+    exists,
+    uuid: options.uuid,
+    willExecute: options.willExecute,
+    bodyParameter,
+  });
+}
+
+async function createChangeSet(options: CreateChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput> {
   await cleanupOldChangeset(options.exists, options.changeSetName, options.stack.stackName, options.cfn);
 
   //debug(`Attempting to create ChangeSet with name ${options.changeSetName} to ${verb} stack ${options.stack.stackName}`);
