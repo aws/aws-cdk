@@ -383,6 +383,7 @@ For more control over when stack changes are deployed, the CDK can generate a
 CloudFormation change set but not execute it.
 
 #### Import existing resources
+
 You can pass the `--import-existing-resources` flag to the `deploy` command:
 
 ```console
