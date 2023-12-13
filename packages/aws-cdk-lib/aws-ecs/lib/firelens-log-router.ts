@@ -168,13 +168,19 @@ export function obtainDefaultFluentBitECRImage(task: TaskDefinition, logDriverCo
   const logName = logDriverConfig && logDriverConfig.logDriver === 'awsfirelens'
     && logDriverConfig.options && logDriverConfig.options.Name;
   if (logName === 'cloudwatch') {
+    const policyActions = [
+      'logs:CreateLogGroup',
+      'logs:CreateLogStream',
+      'logs:DescribeLogStreams',
+      'logs:PutLogEvents',
+    ];
+
+    if (logDriverConfig && logDriverConfig.options && 'log_retention_days' in logDriverConfig.options) {
+      policyActions.push('logs:PutRetentionPolicy');
+    }
+
     task.addToTaskRolePolicy(new iam.PolicyStatement({
-      actions: [
-        'logs:CreateLogGroup',
-        'logs:CreateLogStream',
-        'logs:DescribeLogStreams',
-        'logs:PutLogEvents',
-      ],
+      actions: policyActions,
       resources: ['*'],
     }));
   } else if (logName === 'firehose') {

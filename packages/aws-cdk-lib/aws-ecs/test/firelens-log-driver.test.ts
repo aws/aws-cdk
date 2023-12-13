@@ -212,6 +212,67 @@ describe('firelens log driver', () => {
     });
   });
 
+  test('create a firelens log driver to route logs to CloudWatch Logs with log_retention_days option', () => {
+    // WHEN
+    td.addContainer('Container', {
+      image,
+      logging: ecs.LogDrivers.firelens({
+        options: {
+          Name: 'cloudwatch',
+          region: 'us-west-2',
+          log_group_name: 'firelens-fluent-bit',
+          auto_create_group: 'true',
+          log_stream_prefix: 'from-fluent-bit',
+          log_retention_days: '1',
+        },
+      }),
+      memoryLimitMiB: 128,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          LogConfiguration: {
+            LogDriver: 'awsfirelens',
+            Options: {
+              Name: 'cloudwatch',
+              region: 'us-west-2',
+              log_group_name: 'firelens-fluent-bit',
+              auto_create_group: 'true',
+              log_stream_prefix: 'from-fluent-bit',
+            },
+          },
+        }),
+        Match.objectLike({
+          Essential: true,
+          FirelensConfiguration: {
+            Type: 'fluentbit',
+          },
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: [
+              'logs:CreateLogGroup',
+              'logs:CreateLogStream',
+              'logs:DescribeLogStreams',
+              'logs:PutLogEvents',
+              'logs:PutRetentionPolicy',
+            ],
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ]),
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   test('create a firelens log driver to route logs to kinesis firehose Logs with Fluent Bit', () => {
     // WHEN
     td.addContainer('Container', {
