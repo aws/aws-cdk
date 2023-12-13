@@ -788,6 +788,7 @@ describe('changeset', () => {
                 Target: {
                   Attribute: 'Properties',
                   RequiresRecreation: 'Never',
+                  Name: 'BucketName',
                 },
                 Evaluation: 'Static',
                 ChangeSource: 'DirectModification',
@@ -1000,6 +1001,7 @@ describe('changeset', () => {
               {
                 Target: {
                   Attribute: 'Properties',
+                  Name: 'BucketName',
                   RequiresRecreation: 'Never',
                 },
                 Evaluation: 'Static',
