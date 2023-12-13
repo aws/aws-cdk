@@ -49,8 +49,6 @@ export function diffResource(
 
     otherDiffs = diffKeyedEntities(oldValue, newValue, _diffOther);
     delete otherDiffs.Properties;
-    // eslint-disable-next-line no-console
-    console.log('keepMetadata??' + keepMetadata);
     if (keepMetadata === false) {
       delete otherDiffs.Metadata;
     }
