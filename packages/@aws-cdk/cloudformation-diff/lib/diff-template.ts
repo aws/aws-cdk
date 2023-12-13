@@ -217,7 +217,7 @@ function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOut
         }
       }
     }
-    replacements[resourceChange.ResourceChange?.LogicalResourceId ?? ''] = {
+    replacements[resourceChange.ResourceChange?.LogicalResourceId!] = {
       resourceReplaced: resourceChange.ResourceChange?.Replacement === 'True',
       propertiesReplaced,
     };
