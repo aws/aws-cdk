@@ -169,7 +169,7 @@ describe('Schedule', () => {
           target: new SomeLambdaTarget(func, role),
           timeWindow: TimeWindow.flexible(Duration.minutes(1441)),
         });
-      }).toThrow('maximumWindowInMinutes must be between 1 and 1440, got 1441');
+      }).toThrow('The provided duration must be between 1 minute and 1440 minutes, got 1441');
     });
 
     test('throw error when maximumWindowInMinutes is less than 1', () => {
@@ -179,7 +179,7 @@ describe('Schedule', () => {
           target: new SomeLambdaTarget(func, role),
           timeWindow: TimeWindow.flexible(Duration.minutes(0)),
         });
-      }).toThrow('maximumWindowInMinutes must be between 1 and 1440, got 0');
+      }).toThrow('The provided duration must be between 1 minute and 1440 minutes, got 0');
     });
   });
 });
