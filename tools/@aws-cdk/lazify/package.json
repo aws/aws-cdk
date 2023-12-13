@@ -24,7 +24,7 @@
     "cjs-module-lexer": "^1.2.3"
   },
   "dependencies": {
-    "esbuild": "^0.19.8",
+    "esbuild": "^0.19.9",
     "fs-extra": "^10.1.0",
     "yargs": "^17.7.2"
   },

@@ -67,7 +67,7 @@
     "constructs": "^10.0.0",
     "mock-fs": "^4.14.0",
     "jest": "^29.7.0",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.2"
   },
   "dependencies": {
     "chokidar": "^3.5.3",

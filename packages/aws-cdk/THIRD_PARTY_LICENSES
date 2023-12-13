@@ -1,6 +1,6 @@
 The aws-cdk package includes the following third-party software/licensing:
 
-** @jsii/check-node@1.92.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.92.0 | Apache-2.0
+** @jsii/check-node@1.93.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.93.0 | Apache-2.0
 jsii
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -264,7 +264,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 ----------------
 
-** aws-sdk@2.1513.0 - https://www.npmjs.com/package/aws-sdk/v/2.1513.0 | Apache-2.0
+** aws-sdk@2.1517.0 - https://www.npmjs.com/package/aws-sdk/v/2.1517.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -461,7 +461,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ----------------
 
-** cdk-from-cfn@0.85.0 - https://www.npmjs.com/package/cdk-from-cfn/v/0.85.0 | MIT OR Apache-2.0
+** cdk-from-cfn@0.91.0 - https://www.npmjs.com/package/cdk-from-cfn/v/0.91.0 | MIT OR Apache-2.0
 
 ----------------
 

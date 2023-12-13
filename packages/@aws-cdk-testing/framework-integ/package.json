@@ -41,10 +41,10 @@
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl-v24": "^2.0.242",
     "aws-cdk-lib": "0.0.0",
-    "aws-sdk": "^2.1513.0",
+    "aws-sdk": "^2.1517.0",
     "aws-sdk-mock": "5.6.0",
-    "cdk8s": "2.68.15",
-    "cdk8s-plus-27": "2.7.69",
+    "cdk8s": "2.68.18",
+    "cdk8s-plus-27": "2.7.70",
     "constructs": "^10.0.0"
   },
   "repository": {
