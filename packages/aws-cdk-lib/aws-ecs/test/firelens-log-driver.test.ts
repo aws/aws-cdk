@@ -241,6 +241,7 @@ describe('firelens log driver', () => {
               log_group_name: 'firelens-fluent-bit',
               auto_create_group: 'true',
               log_stream_prefix: 'from-fluent-bit',
+              log_retention_days: '1',
             },
           },
         }),
