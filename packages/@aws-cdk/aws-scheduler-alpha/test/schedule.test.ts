@@ -138,42 +138,13 @@ describe('Schedule', () => {
       new Schedule(stack, 'TestSchedule', {
         schedule: expr,
         target: new SomeLambdaTarget(func, role),
-        start: timeFrame.StartDate,
-        end: timeFrame.EndDate,
+        start: timeFrame.StartDate ? new Date(timeFrame.StartDate) : undefined,
+        end: timeFrame.EndDate ? new Date(timeFrame.EndDate) : undefined,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
         ...timeFrame,
       });
-    });
-
-    test.each([
-      '2023-01-01',
-      '2023-10-01T00:00:00.000+09:00',
-      '2023-10-01T00:00:00Z',
-      '2023-10-01T00:00:00.000',
-    ])('throw error when start is invalid format', (start) => {
-      expect(() => {
-        new Schedule(stack, 'TestSchedule', {
-          schedule: expr,
-          target: new SomeLambdaTarget(func, role),
-          start,
-        });
-      }).toThrow(`start must be in ISO 8601 format, got ${start}`);
-    });
-
-    test.each([
-      '2023-01-01',
-      '2023-10-01T00:00:00.000+09:00',
-      '2023-10-01T00:00:00Z',
-    ])('throw error when end is invalid format', (end) => {
-      expect(() => {
-        new Schedule(stack, 'TestSchedule', {
-          schedule: expr,
-          target: new SomeLambdaTarget(func, role),
-          end,
-        });
-      }).toThrow(`end must be in ISO 8601 format, got ${end}`);
     });
 
     test.each([
@@ -184,8 +155,8 @@ describe('Schedule', () => {
         new Schedule(stack, 'TestSchedule', {
           schedule: expr,
           target: new SomeLambdaTarget(func, role),
-          start,
-          end,
+          start: new Date(start),
+          end: new Date(end),
         });
       }).toThrow(`start must precede end, got start: ${start}, end: ${end}`);
     });

@@ -90,11 +90,12 @@ new scheduler.Schedule(stack, 'CustomerKmsSchedule', {
   key,
 });
 
+const currentYear = new Date().getFullYear();
 new scheduler.Schedule(stack, 'ScheduleWithTimeFrame', {
   schedule: expression,
   target: target,
-  start: `${new Date().getFullYear() + 1}-04-15T06:30:00.000Z`,
-  end: `${new Date().getFullYear() + 2}-10-01T00:00:00.000Z`,
+  start: new Date(`${currentYear + 1}-04-15T06:30:00.000Z`),
+  end: new Date(`${currentYear + 2}-10-01T00:00:00.000Z`),
 });
 
 new IntegTest(app, 'integtest-schedule', {

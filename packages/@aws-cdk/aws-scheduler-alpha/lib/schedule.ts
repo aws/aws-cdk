@@ -119,21 +119,17 @@ export interface ScheduleProps {
    * The date, in UTC, after which the schedule can begin invoking its target.
    * EventBridge Scheduler ignores start for one-time schedules.
    *
-   * Specify an absolute time in the ISO 8601 format. For example, 2020-12-01T00:00:00.000Z.
-   *
    * @default - no value
    */
-  readonly start?: string;
+  readonly start?: Date;
 
   /**
    * The date, in UTC, before which the schedule can invoke its target.
    * EventBridge Scheduler ignores end for one-time schedules.
    *
-   * Specify an absolute time in the ISO 8601 format. For example, 2020-12-01T00:00:00.000Z.
-   *
    * @default - no value
    */
-  readonly end?: string;
+  readonly end?: Date;
 }
 
 /**
@@ -233,8 +229,6 @@ export class Schedule extends Resource implements ISchedule {
     return this.metricAll('InvocationsSentToDeadLetterCount_Truncated_MessageSizeExceeded', props);
   }
 
-  private static readonly ISO8601_REGEX = /^([0-2]\d{3})-(0[0-9]|1[0-2])-([0-2]\d|3[01])T([01]\d|2[0-4]):([0-5]\d):([0-6]\d)(\.\d{3})Z$/;
-
   /**
    * The schedule group associated with this schedule.
    */
@@ -300,8 +294,8 @@ export class Schedule extends Resource implements ISchedule {
         sageMakerPipelineParameters: targetConfig.sageMakerPipelineParameters,
         sqsParameters: targetConfig.sqsParameters,
       },
-      startDate: props.start,
-      endDate: props.end,
+      startDate: props.start?.toISOString(),
+      endDate: props.end?.toISOString(),
     });
 
     this.scheduleName = this.getResourceNameAttribute(resource.ref);
@@ -333,16 +327,9 @@ export class Schedule extends Resource implements ISchedule {
     return !isEmptyPolicy ? policy : undefined;
   }
 
-  private validateTimeFrame(start?: string, end?: string) {
-    if (start && !Schedule.ISO8601_REGEX.test(start)) {
-      throw new Error(`start must be in ISO 8601 format, got ${start}`);
-    }
-    if (end && !Schedule.ISO8601_REGEX.test(end)) {
-      throw new Error(`end must be in ISO 8601 format, got ${end}`);
-    }
-
+  private validateTimeFrame(start?: Date, end?: Date) {
     if (start && end && start >= end) {
-      throw new Error(`start must precede end, got start: ${start}, end: ${end}`);
+      throw new Error(`start must precede end, got start: ${start.toISOString()}, end: ${end.toISOString()}`);
     }
   }
 }
