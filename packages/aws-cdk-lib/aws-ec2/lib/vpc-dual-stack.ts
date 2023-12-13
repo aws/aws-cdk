@@ -61,13 +61,13 @@ export interface NetworkLayerProps {
 }
 
 export class VpcDualStackOneIPv6Block extends Construct {
-  public readonly Vpc: Vpc;
+  public readonly vpc: Vpc;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
     // TODO for Production: Set the cidr property of this construct to be a range that doesn't overlap with existing networks
-    this.Vpc = new Vpc(this, 'Vpc', {
+    this.vpc = new Vpc(this, 'Vpc', {
       subnetConfiguration: [
         {
           name: 'Public',
@@ -86,14 +86,14 @@ export class VpcDualStackOneIPv6Block extends Construct {
     });
 
     const ipv6Cidr = new CfnVPCCidrBlock(this, 'ipv6cidr', {
-      vpcId: this.Vpc.vpcId,
+      vpcId: this.vpc.vpcId,
       amazonProvidedIpv6CidrBlock: true,
     });
 
-    const vpc6cidr = Fn.select(0, this.Vpc.vpcIpv6CidrBlocks);
+    const vpc6cidr = Fn.select(0, this.vpc.vpcIpv6CidrBlocks);
     const subnet6cidrs = Fn.cidr(vpc6cidr, 256, (128 - 64).toString());
 
-    const allSubnets = [...this.Vpc.publicSubnets, ...this.Vpc.privateSubnets, ...this.Vpc.isolatedSubnets];
+    const allSubnets = [...this.vpc.publicSubnets, ...this.vpc.privateSubnets, ...this.vpc.isolatedSubnets];
 
     // associate an IPv6 block to each subnets
     allSubnets.forEach((subnet, i) => {
@@ -106,20 +106,20 @@ export class VpcDualStackOneIPv6Block extends Construct {
     });
 
     // for public subnets, ensure there is one IPv6 Internet Gateway
-    if (this.Vpc.publicSubnets) {
-      let igwId = this.Vpc.internetGatewayId;
+    if (this.vpc.publicSubnets) {
+      let igwId = this.vpc.internetGatewayId;
       if (!igwId) {
         const igw = new CfnInternetGateway(this, 'IGW');
         igwId = igw.ref;
 
         new CfnVPCGatewayAttachment(this, 'VPCGW', {
           internetGatewayId: igw.ref,
-          vpcId: this.Vpc.vpcId,
+          vpcId: this.vpc.vpcId,
         });
       }
 
       // and that each subnet has a routing table to the Internet Gateway
-      this.Vpc.publicSubnets.forEach((subnet) => {
+      this.vpc.publicSubnets.forEach((subnet) => {
         const s = subnet as PublicSubnet;
         s.addRoute('DefaultRoute6', {
           routerType: RouterType.GATEWAY,
@@ -131,13 +131,13 @@ export class VpcDualStackOneIPv6Block extends Construct {
     }
 
     // for private subnet, ensure there is an IPv6 egress gateway
-    if (this.Vpc.privateSubnets) {
+    if (this.vpc.privateSubnets) {
       const eigw = new CfnEgressOnlyInternetGateway(this, 'EIGW6', {
-        vpcId: this.Vpc.vpcId,
+        vpcId: this.vpc.vpcId,
       });
 
       // and attach a routing table to the egress gateway
-      this.Vpc.privateSubnets.forEach((subnet) => {
+      this.vpc.privateSubnets.forEach((subnet) => {
         const s = subnet as PrivateSubnet;
         s.addRoute('DefaultRoute6', {
           routerType: RouterType.EGRESS_ONLY_INTERNET_GATEWAY,

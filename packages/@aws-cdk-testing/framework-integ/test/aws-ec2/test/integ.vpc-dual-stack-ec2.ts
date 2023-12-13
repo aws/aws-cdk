@@ -1,0 +1,74 @@
+/* eslint-disable no-console */
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { Construct } from 'constructs';
+import * as path from 'path';
+
+const app = new cdk.App();
+
+class EC2DualStack extends cdk.Stack {
+
+  public readonly instancePublicIp: string;
+
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+    super(scope, id, props);
+
+    const dualStackVpc = new ec2.VpcDualStackOneIPv6Block(this, 'Ip6VpcDualStack');
+    const vpc = dualStackVpc.vpc;
+
+    const role = new iam.Role(this, 'MyInstanceRole', {
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+    });
+
+    role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'));
+
+    const instance = new ec2.Instance(this, 'MyInstance', {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
+      machineImage: ec2.MachineImage.latestAmazonLinux2(),
+      vpc: vpc,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+      allowAllIpv6Outbound: true,
+      init: ec2.CloudFormationInit.fromConfigSets({
+        configSets: {
+          default: ['default'],
+        },
+        configs: {
+          default: new ec2.InitConfig([
+            ec2.InitFile.fromAsset('/app/webserver.zip', path.join(__dirname, 'integ.vpc-dual-stack-ec2.assets')),
+            ec2.InitCommand.shellCommand('unzip webserver.zip', { cwd: '/app' }),
+            ec2.InitService.systemdConfigFile('webserver', {
+              command: '/usr/bin/python3 web-server.py',
+              cwd: '/app',
+            }),
+            ec2.InitService.enable('webserver', {
+              serviceManager: ec2.ServiceManager.SYSTEMD,
+            }),
+            ec2.InitCommand.shellCommand('curl http://www.google.com && curl http://ipv6.google.com'),
+          ]),
+        },
+      }),
+    });
+
+    this.instancePublicIp = instance.instancePublicIp;
+
+    instance.connections.allowFromAnyIpv4(ec2.Port.tcp(22), 'Allow SSH access');
+    instance.connections.allowFromAnyIpv4(ec2.Port.tcp(80), 'HTTP traffic');
+    instance.connections.allowFromAnyIpv4(ec2.Port.icmpPing());
+    instance.connections.allowFrom(ec2.Peer.anyIpv6(), ec2.Port.allIcmpV6(), 'allow ICMP6');
+  }
+}
+
+const testCase = new EC2DualStack(app, 'vpc-dual-stack-ec2');
+
+new IntegTest(app, 'vpc-dual-stack-ec2-test', {
+  testCases: [testCase],
+});
+
+// TODO: Fix 'Invalid Response object: Value of property Data must be an object' error
+// integ.assertions.httpApiCall(`http://${testCase.instancePublicIp}:8000`, {});
+// const ipv4ipv6Invoke = integ.assertions.httpApiCall(`http://${testCase.instancePublicIp}:8000`, {});
+// ipv4ipv6Invoke.expect(ExpectedResult.objectLike({
+//   status: 200,
+// }));

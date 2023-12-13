@@ -102,6 +102,14 @@ export interface InstanceProps {
   readonly allowAllOutbound?: boolean;
 
   /**
+   * Whether the instance could initiate IPv6 connections to anywhere by default.
+   * This property is only used when you do not provide a security group.
+   *
+   * @default false
+   */
+  readonly allowAllIpv6Outbound?: boolean;
+
+  /**
    * The length of time to wait for the resourceSignalCount
    *
    * The maximum value is 43200 (12 hours).
@@ -355,6 +363,7 @@ export class Instance extends Resource implements IInstance {
       this.securityGroup = new SecurityGroup(this, 'InstanceSecurityGroup', {
         vpc: props.vpc,
         allowAllOutbound: props.allowAllOutbound !== false,
+        allowAllIpv6Outbound: props.allowAllIpv6Outbound,
       });
     }
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
