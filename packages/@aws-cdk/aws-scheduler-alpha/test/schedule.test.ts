@@ -4,7 +4,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { IScheduleTarget, Schedule, ScheduleTargetConfig, FlexibleTimeWindowMode } from '../lib';
+import { IScheduleTarget, Schedule, ScheduleTargetConfig, TimeWindow } from '../lib';
 import { ScheduleExpression } from '../lib/schedule-expression';
 
 class SomeLambdaTarget implements IScheduleTarget {
@@ -150,7 +150,7 @@ describe('Schedule', () => {
       new Schedule(stack, 'TestSchedule', {
         schedule: expr,
         target: new SomeLambdaTarget(func, role),
-        flexibleTimeWindow: FlexibleTimeWindowMode.flexible(Duration.minutes(1440)),
+        timeWindow: TimeWindow.flexible(Duration.minutes(1440)),
       });
 
       // THEN
@@ -167,7 +167,7 @@ describe('Schedule', () => {
         new Schedule(stack, 'TestSchedule', {
           schedule: expr,
           target: new SomeLambdaTarget(func, role),
-          flexibleTimeWindow: FlexibleTimeWindowMode.flexible(Duration.minutes(1441)),
+          timeWindow: TimeWindow.flexible(Duration.minutes(1441)),
         });
       }).toThrow('maximumWindowInMinutes must be between 1 and 1440, got 1441');
     });
@@ -177,7 +177,7 @@ describe('Schedule', () => {
         new Schedule(stack, 'TestSchedule', {
           schedule: expr,
           target: new SomeLambdaTarget(func, role),
-          flexibleTimeWindow: FlexibleTimeWindowMode.flexible(Duration.minutes(0)),
+          timeWindow: TimeWindow.flexible(Duration.minutes(0)),
         });
       }).toThrow('maximumWindowInMinutes must be between 1 and 1440, got 0');
     });

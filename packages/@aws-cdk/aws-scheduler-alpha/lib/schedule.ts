@@ -62,41 +62,41 @@ export interface ScheduleTargetProps {
 /**
  * A time window during which EventBridge Scheduler invokes the schedule.
  */
-export class FlexibleTimeWindowMode {
+export class TimeWindow {
   /**
-   * FlexibleTimeWindow is disabled.
+   * TimeWindow is disabled.
    */
-  public static off(): FlexibleTimeWindowMode {
-    return new FlexibleTimeWindowMode('OFF');
+  public static off(): TimeWindow {
+    return new TimeWindow('OFF');
   }
 
   /**
-   * FlexibleTimeWindow is enabled.
+   * TimeWindow is enabled.
    */
-  public static flexible(maximumWindowInMinutes: Duration): FlexibleTimeWindowMode {
-    if (maximumWindowInMinutes.toMinutes() < 1 || maximumWindowInMinutes.toMinutes() > 1440) {
-      throw new Error(`maximumWindowInMinutes must be between 1 and 1440, got ${maximumWindowInMinutes.toMinutes()}`);
+  public static flexible(maxWindow: Duration): TimeWindow {
+    if (maxWindow.toMinutes() < 1 || maxWindow.toMinutes() > 1440) {
+      throw new Error(`The provided duration must be between 1 minute and 1440 minutes, got ${maxWindow.toMinutes()}`);
     }
-    return new FlexibleTimeWindowMode('FLEXIBLE', maximumWindowInMinutes);
+    return new TimeWindow('FLEXIBLE', maxWindow);
   }
 
   /**
    * Determines whether the schedule is invoked within a flexible time window.
    */
-  public readonly mode: string;
+  public readonly mode: 'OFF' | 'FLEXIBLE';
 
   /**
    * The maximum time window during which the schedule can be invoked.
    *
    * Must be between 1 to 1440 minutes.
    *
-   * @default - Required if mode is FLEXIBLE.
+   * @default - no value
    */
-  public readonly maximumWindowInMinutes?: Duration;
+  public readonly maxWindow?: Duration;
 
-  private constructor(mode: string, maximumWindowInMinutes?: Duration) {
+  private constructor(mode: 'OFF' | 'FLEXIBLE', maxWindow?: Duration) {
     this.mode = mode;
-    this.maximumWindowInMinutes = maximumWindowInMinutes;
+    this.maxWindow = maxWindow;
   }
 }
 
@@ -162,9 +162,9 @@ export interface ScheduleProps {
    *
    * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-flexible-time-windows.html
    *
-   * @default FlexibleTimeWindowMode.off()
+   * @default TimeWindow.off()
    */
-  readonly flexibleTimeWindow?: FlexibleTimeWindowMode;
+  readonly timeWindow?: TimeWindow;
 }
 
 /**
@@ -305,13 +305,13 @@ export class Schedule extends Resource implements ISchedule {
 
     this.retryPolicy = targetConfig.retryPolicy;
 
-    const flexibleTimeWindow = props.flexibleTimeWindow ?? FlexibleTimeWindowMode.off();
+    const flexibleTimeWindow = props.timeWindow ?? TimeWindow.off();
 
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,
       flexibleTimeWindow: {
         mode: flexibleTimeWindow.mode,
-        maximumWindowInMinutes: flexibleTimeWindow.maximumWindowInMinutes?.toMinutes(),
+        maximumWindowInMinutes: flexibleTimeWindow.maxWindow?.toMinutes(),
       },
       scheduleExpression: props.schedule.expressionString,
       scheduleExpressionTimezone: props.schedule.timeZone?.timezoneName,

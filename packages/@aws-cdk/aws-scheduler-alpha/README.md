@@ -229,7 +229,7 @@ const schedule = new Schedule(this, 'Schedule', {
 
 ## Configuring flexible time windows
 
-You can configure flexible time windows by specifying the `flexibleTimeWindow` property.
+You can configure flexible time windows by specifying the `timeWindow` property.
 Flexible time windows is disabled by default.
 
 ```ts
@@ -238,7 +238,7 @@ declare const target: targets.LambdaInvoke;
 const schedule = new Schedule(this, 'Schedule', {
     schedule: ScheduleExpression.rate(Duration.hours(12)),
     target,
-    flexibleTimeWindow: FlexibleTimeWindowMode.flexible(Duration.hours(10)),
+    timeWindow: TimeWindow.flexible(Duration.hours(10)),
 });
 ```
 
