@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@octokit/rest": "^18.12.0",
-    "aws-sdk": "^2.1513.0",
+    "aws-sdk": "^2.1517.0",
     "axios": "^1.6.2",
     "fs-extra": "^9.1.0",
     "glob": "^7.2.3",
