@@ -354,21 +354,3 @@ export abstract class CdkCustomResourceClass extends ClassType {
     init.addBody(new SuperInitializer(...superInitializerArgs));
   }
 }
-
-// function toLambdaRuntime(runtime: Runtime) {
-//   switch (runtime.name) {
-//     case Runtime.NODEJS_16_X.name: {
-//       return 'lambda.Runtime.NODEJS_16_X';
-//     }
-//     case Runtime.NODEJS_18_X.name: {
-//       return 'lambda.Runtime.NODEJS_18_X';
-//     }
-//     case Runtime.PYTHON_3_9.name: {
-//       return 'lambda.Runtime.PYTHON_3_9';
-//     }
-//     case Runtime.PYTHON_3_10.name: {
-//       return 'lambda.Runtime.PYTHON_3_10';
-//     }
-//   }
-//   throw new Error('Unable to convert runtime to lambda runtime');
-// }

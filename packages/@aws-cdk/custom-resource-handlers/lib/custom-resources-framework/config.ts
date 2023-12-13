@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Runtime } from './runtime';
 
 /**
- * Handler framework component types.
+ * Custom resource provider types.
  */
 export enum ComponentType {
   /**
@@ -22,7 +22,9 @@ export enum ComponentType {
   CDK_CUSTOM_RESOURCE_PROVIDER = 'CdkCustomResourceProvider',
 
   /**
-   * Do not create a framework component. This is used to just move source code for airlifting.
+   * Do not create a custom resource provider.
+   *
+   * Note: This is used to just move source code for airlifting.
    */
   CDK_NO_OP = 'CdkNoOp',
 }
