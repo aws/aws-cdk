@@ -54,7 +54,7 @@
     "sinon": "^9.2.4",
     "nock": "^13.4.0",
     "fs-extra": "^11.2.0",
-    "esbuild": "^0.19.8"
+    "esbuild": "^0.19.9"
   },
   "dependencies": {
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.0.1",
@@ -62,7 +62,7 @@
     "@aws-sdk/client-synthetics": "3.421.0",
     "@aws-sdk/client-ecr": "3.421.0",
     "@aws-sdk/client-s3": "3.421.0",
-    "aws-sdk": "^2.1513.0"
+    "aws-sdk": "^2.1517.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
