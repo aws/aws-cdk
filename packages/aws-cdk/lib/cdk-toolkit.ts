@@ -144,7 +144,7 @@ export class CdkToolkit {
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
         ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, changeSet))
-        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, {} as any, stream); // TODO
+        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, changeSet, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {

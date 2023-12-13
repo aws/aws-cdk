@@ -329,8 +329,7 @@ export async function prepareAndCreateChangeSet(options: PrepareChangeSetOptions
 async function createChangeSet(options: CreateChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput> {
   await cleanupOldChangeset(options.exists, options.changeSetName, options.stack.stackName, options.cfn);
 
-  //debug(`Attempting to create ChangeSet with name ${options.changeSetName} to ${verb} stack ${options.stack.stackName}`);
-  //print('%s: creating CloudFormation changeset...', chalk.bold(options.stack.stackName));
+  debug(`Attempting to create ChangeSet with name ${options.changeSetName} for stack ${options.stack.stackName}`);
 
   const changeSet = await options.cfn.createChangeSet({
     StackName: options.stack.stackName,
