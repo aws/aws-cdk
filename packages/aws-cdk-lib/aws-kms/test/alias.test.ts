@@ -239,7 +239,7 @@ test('grants generate mac to the alias target key', () => {
   });
 });
 
-test('grants generate mac to the alias target key', () => {
+test('grants verify mac to the alias target key', () => {
   const app = new App();
   const stack = new Stack(app, 'my-stack');
   const key = new Key(stack, 'Key');
