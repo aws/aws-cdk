@@ -773,7 +773,6 @@ describe('changeset', () => {
         {
           ParameterKey: 'BucketName',
           ParameterValue: 'Name1',
-          //ResolvedValue: '20',
         },
       ],
       Changes: [
@@ -838,7 +837,6 @@ describe('changeset', () => {
         {
           ParameterKey: 'BucketName',
           ParameterValue: 'Name2',
-          //ResolvedValue: '20',
         },
       ],
       Changes: [
@@ -988,7 +986,6 @@ describe('changeset', () => {
         {
           ParameterKey: 'BucketName',
           ParameterValue: 'Name1',
-          //ResolvedValue: '20',
         },
       ],
       Changes: [
