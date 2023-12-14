@@ -429,7 +429,7 @@ export abstract class State extends Construct implements IChainable {
   protected renderIterator(): any {
     if (!this.iteration) return undefined;
     return {
-      Iterator: this.iteration?.toGraphJson(),
+      Iterator: this.iteration.toGraphJson(),
     };
   }
 
@@ -460,7 +460,7 @@ export abstract class State extends Construct implements IChainable {
     return {
       ItemProcessor: {
         ...this.renderProcessorConfig(),
-        ...this.processor?.toGraphJson(),
+        ...this.processor.toGraphJson(),
       },
     };
   }
@@ -468,7 +468,7 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Render ProcessorConfig in ASL JSON format
    */
-  private renderProcessorConfig(): any {
+  private renderProcessorConfig() {
     const mode = this.processorConfig?.mode?.toString() ?? ProcessorMode.INLINE;
     if (mode === ProcessorMode.INLINE) {
       return {

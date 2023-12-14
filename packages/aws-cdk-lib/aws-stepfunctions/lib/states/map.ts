@@ -161,7 +161,9 @@ export class Map extends State implements INextable {
   }
 
   /**
-   * Define iterator state machine in Map
+   * Define iterator state machine in Map.
+   *
+   * A Map must either have a non-empty iterator or a non-empty item processor, not both.
    *
    * @deprecated - use `itemProcessor` instead.
    */
@@ -172,7 +174,9 @@ export class Map extends State implements INextable {
   }
 
   /**
-   * Define item processor in Map
+   * Define item processor in Map.
+   *
+   * A Map must either have a non-empty iterator or a non-empty item processor, not both.
    */
   public itemProcessor(processor: IChainable, config: ProcessorConfig = {}): Map {
     const name = `Map ${this.stateId} Item Processor`;
@@ -207,7 +211,7 @@ export class Map extends State implements INextable {
   protected validateState(): string[] {
     const errors: string[] = [];
 
-    if (this.iteration === undefined && this.processor === undefined) {
+    if (!this.iteration && !this.processor) {
       errors.push('Map state must either have a non-empty iterator or a non-empty item processor');
     }
 
@@ -219,7 +223,7 @@ export class Map extends State implements INextable {
       errors.push('You must specify an execution type for the distributed Map workflow');
     }
 
-    if (this.maxConcurrency !== undefined && !Token.isUnresolved(this.maxConcurrency) && !isPositiveInteger(this.maxConcurrency)) {
+    if (this.maxConcurrency && !Token.isUnresolved(this.maxConcurrency) && !isPositiveInteger(this.maxConcurrency)) {
       errors.push('maxConcurrency has to be a positive integer');
     }
 

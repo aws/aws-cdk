@@ -521,7 +521,8 @@ const definition = choice
 map.itemProcessor(definition);
 ```
 
-To define a distributed `Map` state use the configuration parameter.
+To define a distributed `Map` state set `itemProcessors` mode to `ProcessorMode.DISTRIBUTED`.
+An `executionType` must be specified for the distributed `Map` workflow.
 
 ```ts
 const map = new sfn.Map(this, 'Map State', {
