@@ -11,7 +11,7 @@ import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
-import { BucketDeploymentProvider } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated';
+import { BucketDeploymentSingletonFunction } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
 // tag key has a limit of 128 characters
@@ -316,7 +316,7 @@ export class BucketDeployment extends Construct {
     }
 
     const mountPath = `/mnt${accessPointPath}`;
-    const handler = new BucketDeploymentProvider(this, 'CustomResourceHandler', {
+    const handler = new BucketDeploymentSingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
       environment: {

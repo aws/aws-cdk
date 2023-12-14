@@ -5,7 +5,7 @@ import * as cp from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import { Duration, Tags } from '../../../core';
-import { ApproveLambdaProvider } from '../../../custom-resource-handlers/dist/pipelines/approve-lambda.generated';
+import { ApproveLambdaFunction } from '../../../custom-resource-handlers/dist/pipelines/approve-lambda.generated';
 
 /**
  * Properties for an ApplicationSecurityCheck
@@ -57,7 +57,7 @@ export class ApplicationSecurityCheck extends Construct {
       includeResourceTypes: ['AWS::CodePipeline::Pipeline'],
     });
 
-    this.preApproveLambda = new ApproveLambdaProvider(this, 'CDKPipelinesAutoApprove', {
+    this.preApproveLambda = new ApproveLambdaFunction(this, 'CDKPipelinesAutoApprove', {
       timeout: Duration.minutes(5),
     });
 

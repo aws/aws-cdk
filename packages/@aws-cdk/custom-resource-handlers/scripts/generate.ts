@@ -13,7 +13,7 @@ async function main() {
     const module = new HandlerFrameworkModule(fqn);
     for (const component of components) {
       const outfile = calculateOutfile(component.sourceCode);
-      if (component.minifyAndBundle) {
+      if (component.minifyAndBundle ?? true) {
         await minifyAndBundle(component.sourceCode, outfile);
       } else {
         fs.mkdirSync(path.dirname(outfile), { recursive: true });

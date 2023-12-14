@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import * as ec2 from '../../aws-ec2';
 import * as lambda from '../../aws-lambda';
 import { Duration, NestedStack, Stack } from '../../core';
-import { ClusterResourceOnEventProvider, ClusterResourceIsCompleteProvider } from '../../custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated';
+import { ClusterResourceOnEventFunction, ClusterResourceIsCompleteFunction } from '../../custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated';
 import * as cr from '../../custom-resources';
 import { NodeProxyAgentLayer } from '../../lambda-layer-node-proxy-agent';
 
@@ -64,7 +64,7 @@ export class ClusterResourceProvider extends NestedStack {
     // The NPM dependency proxy-agent is required in order to support proxy routing with the AWS JS SDK.
     const nodeProxyAgentLayer = new NodeProxyAgentLayer(this, 'NodeProxyAgentLayer');
 
-    const onEvent = new ClusterResourceOnEventProvider(this, 'OnEventHandler', {
+    const onEvent = new ClusterResourceOnEventFunction(this, 'OnEventHandler', {
       description: 'onEvent handler for EKS cluster resource provider',
       environment: {
         AWS_STS_REGIONAL_ENDPOINTS: 'regional',
@@ -78,7 +78,7 @@ export class ClusterResourceProvider extends NestedStack {
       layers: props.onEventLayer ? [props.onEventLayer] : [nodeProxyAgentLayer],
     });
 
-    const isComplete = new ClusterResourceIsCompleteProvider(this, 'IsCompleteHandler', {
+    const isComplete = new ClusterResourceIsCompleteFunction(this, 'IsCompleteHandler', {
       description: 'isComplete handler for EKS cluster resource provider',
       environment: {
         AWS_STS_REGIONAL_ENDPOINTS: 'regional',

@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { Aws, Duration, NestedStack, Stack } from '../../core';
-import { ReplicaOnEventProvider, ReplicaIsCompleteProvider } from '../../custom-resource-handlers/dist/aws-dynamodb/replica-provider.generated';
+import { ReplicaOnEventFunction, ReplicaIsCompleteFunction } from '../../custom-resource-handlers/dist/aws-dynamodb/replica-provider.generated';
 import * as cr from '../../custom-resources';
 
 /**
@@ -56,12 +56,12 @@ export class ReplicaProvider extends NestedStack {
     super(scope, id);
 
     // Issues UpdateTable API calls
-    this.onEventHandler = new ReplicaOnEventProvider(this, 'OnEventHandler', {
+    this.onEventHandler = new ReplicaOnEventFunction(this, 'OnEventHandler', {
       timeout: Duration.minutes(5),
     });
 
     // Checks if table is back to `ACTIVE` state
-    this.isCompleteHandler = new ReplicaIsCompleteProvider(this, 'IsCompleteHandler', {
+    this.isCompleteHandler = new ReplicaIsCompleteFunction(this, 'IsCompleteHandler', {
       timeout: Duration.seconds(30),
     });
 

@@ -4,7 +4,7 @@ import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { Annotations, Duration } from '../../core';
-import { AwsApiProvider } from '../../custom-resource-handlers/dist/aws-events-targets/aws-api-provider.generated';
+import { AwsApiSingletonFunction } from '../../custom-resource-handlers/dist/aws-events-targets/aws-api-provider.generated';
 
 /**
  * AWS SDK service metadata.
@@ -81,7 +81,7 @@ export class AwsApi implements events.IRuleTarget {
    * result from an EventBridge event.
    */
   public bind(rule: events.IRule, id?: string): events.RuleTargetConfig {
-    const handler = new AwsApiProvider(rule as events.Rule, `${rule.node.id}${id}Handler`, {
+    const handler = new AwsApiSingletonFunction(rule as events.Rule, `${rule.node.id}${id}Handler`, {
       timeout: Duration.seconds(60),
       memorySize: 256,
       uuid: 'b4cf1abd-4e4f-4bc6-9944-1af7ccd9ec37',

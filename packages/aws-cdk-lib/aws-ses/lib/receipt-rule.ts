@@ -4,7 +4,7 @@ import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
 import * as iam from '../../aws-iam';
 import { Aws, IResource, Lazy, Resource } from '../../core';
-import { DropSpamProvider } from '../../custom-resource-handlers/dist/aws-ses/drop-spam-provider.generated';
+import { DropSpamSingletonFunction } from '../../custom-resource-handlers/dist/aws-ses/drop-spam-provider.generated';
 
 /**
  * A receipt rule.
@@ -170,7 +170,7 @@ export class DropSpamReceiptRule extends Construct {
   constructor(scope: Construct, id: string, props: DropSpamReceiptRuleProps) {
     super(scope, id);
 
-    const fn = new DropSpamProvider(this, 'Function', {
+    const fn = new DropSpamSingletonFunction(this, 'Function', {
       uuid: '224e77f9-a32e-4b4d-ac32-983477abba16',
     });
 

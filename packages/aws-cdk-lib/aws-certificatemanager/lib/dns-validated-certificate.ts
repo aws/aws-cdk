@@ -5,7 +5,7 @@ import * as iam from '../../aws-iam';
 import * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { Token } from '../../core';
-import { CertificateRequestCertificateRequestProvider } from '../../custom-resource-handlers/dist/aws-certificatemanager/certificate-request-provider.generated';
+import { CertificateRequestCertificateRequestFunction } from '../../custom-resource-handlers/dist/aws-certificatemanager/certificate-request-provider.generated';
 
 /**
  * Properties to create a DNS validated certificate managed by AWS Certificate Manager
@@ -105,7 +105,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
       certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled ? 'ENABLED' : 'DISABLED';
     }
 
-    const requestorFunction = new CertificateRequestCertificateRequestProvider(this, 'CertificateRequestorFunction', {
+    const requestorFunction = new CertificateRequestCertificateRequestFunction(this, 'CertificateRequestorFunction', {
       timeout: cdk.Duration.minutes(15),
       role: props.customResourceRole,
     });

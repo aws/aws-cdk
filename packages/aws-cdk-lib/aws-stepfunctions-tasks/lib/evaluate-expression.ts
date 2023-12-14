@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
-import { EvalNodejsProvider } from '../../custom-resource-handlers/dist/aws-stepfunctions-tasks/eval-nodejs-provider.generated';
+import { EvalNodejsSingletonFunction } from '../../custom-resource-handlers/dist/aws-stepfunctions-tasks/eval-nodejs-provider.generated';
 
 /**
  * Properties for EvaluateExpression
@@ -116,7 +116,7 @@ function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
     throw new Error(`The runtime ${runtime?.name} is currently not supported.`);
   }
 
-  return new EvalNodejsProvider(scope, 'EvalFunction', {
+  return new EvalNodejsSingletonFunction(scope, 'EvalFunction', {
     uuid,
     lambdaPurpose,
   });

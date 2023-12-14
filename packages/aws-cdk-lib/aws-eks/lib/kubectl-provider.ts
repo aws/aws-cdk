@@ -2,7 +2,7 @@ import { Construct, IConstruct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
 import * as iam from '../../aws-iam';
 import { Duration, Stack, NestedStack, Names, CfnCondition, Fn, Aws } from '../../core';
-import { KubectlProvider as _KubectlProvider } from '../../custom-resource-handlers/dist/aws-eks/kubectl-provider.generated';
+import { KubectlFunction } from '../../custom-resource-handlers/dist/aws-eks/kubectl-provider.generated';
 import * as cr from '../../custom-resources';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 import { KubectlLayer } from '../../lambda-layer-kubectl';
@@ -132,7 +132,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
     const memorySize = cluster.kubectlMemory ? cluster.kubectlMemory.toMebibytes() : 1024;
 
-    const handler = new _KubectlProvider(this, 'Handler', {
+    const handler = new KubectlFunction(this, 'Handler', {
       timeout: Duration.minutes(15),
       description: 'onEvent handler for EKS kubectl resource provider',
       memorySize,
