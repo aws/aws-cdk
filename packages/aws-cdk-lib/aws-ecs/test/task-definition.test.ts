@@ -517,3 +517,23 @@ describe('task definition', () => {
     });
   });
 });
+
+describe('task definition revision', () => {
+  describe('validate revision number', () => {
+    test('should throw if zero', () => {
+      expect(() => {
+        ecs.TaskDefinitionRevision.of(0);
+      }).toThrow(/must be 'latest' or a positive number, got 0/);
+    });
+    test('should throw if negative', () => {
+      expect(() => {
+        ecs.TaskDefinitionRevision.of(-5);
+      }).toThrow(/must be 'latest' or a positive number, got -5/);
+    });
+    test('should succeed if positive', () => {
+      expect(() => {
+        ecs.TaskDefinitionRevision.of(21);
+      }).not.toThrow();
+    });
+  });
+});
