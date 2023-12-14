@@ -1,3 +1,4 @@
+// Represents resource replacements that appear in the changeset
 export type PotentialResourceReplacement = ResourceReplacement | NotInChangeSet | undefined;
 
 export type ResourceReplacements = { [logicalId: string]: ResourceReplacement };

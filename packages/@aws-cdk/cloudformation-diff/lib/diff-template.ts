@@ -10,7 +10,7 @@ import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
 export * from './diff/types';
 
 // eslint-disable-next-line max-len
-type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any, replacement?: ResourceReplacements, usingChangeSet?: boolean) => void;
+type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any, replacement?: ResourceReplacements) => void;
 type HandlerRegistry = { [section: string]: DiffHandler };
 
 const DIFF_HANDLERS: HandlerRegistry = {
@@ -51,7 +51,7 @@ export function diffTemplate(
 ): types.TemplateDiff {
   const replacements = changeSet ? findResourceReplacements(changeSet): undefined;
   // Base diff
-  const theDiff = calculateTemplateDiff(currentTemplate, newTemplate, replacements, changeSet ? true : false);
+  const theDiff = calculateTemplateDiff(currentTemplate, newTemplate, replacements);
 
   // We're going to modify this in-place
   const newTemplateCopy = deepCopy(newTemplate);
@@ -108,7 +108,6 @@ function calculateTemplateDiff(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
   replacements?: ResourceReplacements,
-  usingChangeSet?: boolean,
 ): types.TemplateDiff {
   const differences: types.ITemplateDiff = {};
   const unknown: { [key: string]: types.Difference<any> } = {};
@@ -120,7 +119,7 @@ function calculateTemplateDiff(
     }
     const handler: DiffHandler = DIFF_HANDLERS[key]
                   || ((_diff, oldV, newV) => unknown[key] = impl.diffUnknown(oldV, newV));
-    handler(differences, oldValue, newValue, replacements, usingChangeSet);
+    handler(differences, oldValue, newValue, replacements);
   }
   if (Object.keys(unknown).length > 0) {
     differences.unknown = new types.DifferenceCollection(unknown);
