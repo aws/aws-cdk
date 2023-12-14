@@ -199,7 +199,7 @@ test('imported alias by name - will throw an error when accessing the key', () =
 
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
 
-  expect(() => myAlias.aliasTargetKey).toThrow('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().');
+  expect(() => myAlias.aliasTargetKey).toThrow('No aliasTargetKey was provided when importing the Alias');
 });
 
 test('fails if alias policy is invalid', () => {
@@ -253,6 +253,69 @@ test('grants verify mac to the alias target key', () => {
       Statement: [
         {
           Action: 'kms:VerifyMac',
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('imported alias grants decrypt for the principal using aliasname condition', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  const alias = Alias.fromAliasAttributes(stack, 'Alias', { aliasName: 'alias/foo' });
+  const user = new iam.User(stack, 'User');
+
+  alias.grantDecrypt(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'kms:Decrypt',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':kms:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':key/*',
+              ],
+            ],
+          },
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'kms:ResourceAliases': 'alias/foo',
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('imported alias with aliasTargetKey grants decrypt on the key', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  const key = new Key(stack, 'Key');
+  const alias = Alias.fromAliasAttributes(stack, 'Alias', { aliasName: 'alias/foo', aliasTargetKey: key });
+  const user = new iam.User(stack, 'User');
+
+  alias.grantDecrypt(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'kms:Decrypt',
           Effect: 'Allow',
           Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
         },
@@ -365,6 +428,47 @@ test('aliasArn and keyArn from alias should match', () => {
   const alias = new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
 
   expect(alias.aliasArn).toEqual(alias.keyArn);
+});
+
+test('imported aliasArn should parsed aliasName, account and region', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Test');
+  const key = new Key(stack, 'Key');
+
+  const alias = Alias.fromAliasAttributes(stack, 'Alias', { aliasArn: 'arn:aws:kms:eu-central-1:11111111111:alias/mysecretalias' });
+  expect(alias.env.account).toEqual('11111111111');
+  expect(alias.env.region).toEqual('eu-central-1');
+  expect(alias.aliasName).toEqual('alias/mysecretalias');
+});
+
+test('imported aliasName should be a valid ARN', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Test');
+  const key = new Key(stack, 'Key');
+
+  const alias = Alias.fromAliasAttributes(stack, 'Alias', { aliasName: 'alias/foo' });
+
+  expect(alias.aliasArn).toEqual(Arn.format({
+    service: 'kms',
+    // aliasName already contains the '/'
+    resource: alias.aliasName,
+  }, stack));
+});
+
+test('imported aliasName with account and region should be a valid ARN', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Test');
+  const key = new Key(stack, 'Key');
+
+  const alias = Alias.fromAliasAttributes(stack, 'Alias', { aliasName: 'alias/foo', account: '111111111111', region: 'eu-west-1' });
+
+  expect(alias.aliasArn).toEqual(Arn.format({
+    service: 'kms',
+    account: '111111111111',
+    region: 'eu-west-1',
+    // aliasName already contains the '/'
+    resource: alias.aliasName,
+  }, stack));
 });
 
 test('aliasArn should be a valid ARN', () => {
