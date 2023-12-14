@@ -25,8 +25,19 @@ jobs:
         env:
           NODE_OPTIONS: "--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
 
+      # Install all current dependencies
       - name: Yarn Install
         run: yarn install --frozen-lockfile
+
+      # Upload the current db to be used later
+      - name: Upload base database
+        uses: actions/upload-artifact@v3
+        with:
+          name: db.base.json.gz
+          path: node_modules/@aws-cdk/aws-service-spec/db.json.gz
+          if-no-files-found: error
+
+      # Perform the actual upgrade of the relevant packages
       - name: Install ncu tool
         run: npm -g install lerna npm-check-updates
       - name: Run "ncu" for service spec packages
@@ -35,6 +46,14 @@ jobs:
       # This will ensure the current lockfile is up-to-date with the dependency specifications
       - name: Install latest version & update lockfile
         run: yarn upgrade @aws-cdk/aws-service-spec @aws-cdk/service-spec-importers @aws-cdk/service-spec-types
+
+      # Now that we have updated the database, upload the new candidate db
+      - name: Upload head database
+        uses: actions/upload-artifact@v3
+        with:
+          name: db.head.json.gz
+          path: node_modules/@aws-cdk/aws-service-spec/db.json.gz
+          if-no-files-found: error
 
       # Build @aws-cdk/spec2cdk and run L1 gen script to generate base files for new modules
       - name: Build @aws-cdk/spec2cdk
@@ -55,9 +74,51 @@ jobs:
           name: update-spec.patch
           path: ${{ runner.temp }}/update-spec.patch
 
+  diff-db:
+    needs: update-spec
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: none
+      pull-requests: write
+    env:
+      CI: "true"
+    steps:
+      - name: Download base database
+        uses: actions/download-artifact@v3
+        with:
+          name: db.base.json.gz
+          path: base
+      - name: Download head database
+        uses: actions/download-artifact@v3
+        with:
+          name: db.head.json.gz
+          path: head
+      - name: Diff databases
+        id: diff-db
+        run: npx --yes --package=@aws-cdk/service-spec-importers@latest -c 'diff-db base/db.json.gz head/db.json.gz' > DIFF || echo "diff-result=true" >> $GITHUB_OUTPUT
+        continue-on-error: true
+      - name: Create PR body file
+        run: |-
+          echo 'Update AWS Service Spec packages to latest versions' >> PR.md
+      - name: Add model changelog to PR body file
+        if: steps.diff-db.outputs.diff-result
+        run: |-
+          echo '' >> PR.md
+          echo '**@aws-cdk/aws-service-spec changes:**' >> PR.md
+          echo '```' >> PR.md
+          cat DIFF >> PR.md
+          echo '```' >> PR.md
+      - name: Upload PR body file
+        uses: actions/upload-artifact@v3
+        with:
+          name: PR.md
+          path: PR.md
   pr:
     name: Create Pull Request
-    needs: update-spec
+    needs:
+      - update-spec
+      - diff-db
     permissions:
       contents: write
       pull-requests: write
@@ -75,6 +136,12 @@ jobs:
       - name: Apply patch
         run: '[ -s ${{ runner.temp }}/update-spec.patch ] && git apply ${{ runner.temp }}/update-spec.patch || echo "Empty patch. Skipping."'
 
+      - name: Download PR body file
+        uses: actions/download-artifact@v3
+        with:
+          name: PR.md
+          path: ${{ runner.temp }}
+
       - name: Make Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
@@ -83,11 +150,10 @@ jobs:
           author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
           commit-message: |-
             feat: update AWS Service Spec
-            AWS Service Spec packages to latest versions.
+            Update AWS Service Spec packages to latest versions
           # Pull Request details
           title: "feat: update AWS Service Spec"
-          body: |-
-            AWS Service Spec packages to latest versions.
+          body-path: ${{ runner.temp }}/PR.md
           labels: contribution/core,dependencies,auto-approve,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test
           team-reviewers: aws-cdk-team
           # Github prevents further Github actions to be run if the default Github token is used.
