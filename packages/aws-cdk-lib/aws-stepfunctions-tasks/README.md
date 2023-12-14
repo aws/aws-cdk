@@ -31,6 +31,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [StopQueryExecution](#stopqueryexecution)
   - [Batch](#batch)
     - [SubmitJob](#submitjob)
+  - [Bedrock](#bedrock)
+    - [InvokeModel](#invokemodel)
   - [CodeBuild](#codebuild)
     - [StartBuild](#startbuild)
   - [DynamoDB](#dynamodb)
@@ -308,6 +310,42 @@ const task = new tasks.BatchSubmitJob(this, 'Submit Job', {
   jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
   jobName: 'MyJob',
   jobQueueArn: batchQueue.jobQueueArn,
+});
+```
+
+## Bedrock
+
+Step Functions supports [Bedrock](https://docs.aws.amazon.com/step-functions/latest/dg/connect-bedrock.html) through the service integration pattern.
+
+### InvokeModel
+
+The [InvokeModel](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModel.html) API
+invokes the specified Bedrock model to run inference using the input provided.
+The format of the input body and the response body depend on the model selected.
+
+```ts
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
+  model,
+  body: sfn.TaskInput.fromObject(
+    {
+      inputText: 'Generate a list of five first names.',
+      textGenerationConfig: {
+        maxTokenCount: 100,
+        temperature: 1,
+      },
+    },
+  ),
+  resultSelector: {
+    names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
+  },
 });
 ```
 
@@ -616,6 +654,78 @@ Corresponds to the [`addJobFlowSteps`](https://docs.aws.amazon.com/emr/latest/AP
 ```ts
 new tasks.EmrAddStep(this, 'Task', {
   clusterId: 'ClusterId',
+  name: 'StepName',
+  jar: 'Jar',
+  actionOnFailure: tasks.ActionOnFailure.CONTINUE,
+});
+```
+
+To specify a custom runtime role use the `executionRoleArn` property.
+
+**Note:** The EMR cluster must be created with a security configuration and the runtime role must have a specific trust policy. 
+See this [blog post](https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/) for more details.
+
+```ts
+import * as emr from 'aws-cdk-lib/aws-emr';
+
+const cfnSecurityConfiguration = new emr.CfnSecurityConfiguration(this, 'EmrSecurityConfiguration', {
+  name: 'AddStepRuntimeRoleSecConfig',
+  securityConfiguration: JSON.parse(`
+    {
+      "AuthorizationConfiguration": {
+          "IAMConfiguration": {
+              "EnableApplicationScopedIAMRole": true,
+              "ApplicationScopedIAMRoleConfiguration": 
+                  {
+                      "PropagateSourceIdentity": true
+                  }
+          },
+          "LakeFormationConfiguration": {
+              "AuthorizedSessionTagValue": "Amazon EMR"
+          }
+      }
+    }`),
+});
+
+const task = new tasks.EmrCreateCluster(this, 'Create Cluster', {
+  instances: {},
+  name: sfn.TaskInput.fromJsonPathAt('$.ClusterName').value,
+  securityConfiguration: cfnSecurityConfiguration.name,
+});
+
+const executionRole = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ArnPrincipal(task.clusterRole.roleArn),
+});
+
+executionRole.assumeRolePolicy?.addStatements(
+  new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    principals: [
+      task.clusterRole,
+    ],
+    actions: [
+      'sts:SetSourceIdentity',
+    ],
+  }),
+  new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    principals: [
+      task.clusterRole,
+    ],
+    actions: [
+      'sts:TagSession',
+    ],
+    conditions: {
+      StringEquals: {
+        'aws:RequestTag/LakeFormationAuthorizedCaller': 'Amazon EMR',
+      },
+    },
+  }),
+);
+
+new tasks.EmrAddStep(this, 'Task', {
+  clusterId: 'ClusterId',
+  executionRoleArn: executionRole.roleArn,
   name: 'StepName',
   jar: 'Jar',
   actionOnFailure: tasks.ActionOnFailure.CONTINUE,
