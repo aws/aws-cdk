@@ -261,6 +261,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * Lambda to connect to network targets.
    *
    * Do not specify this property if the `securityGroups` or `securityGroup` property is set.
+   * Instead, configure `allowAllOutbound` directly on the security group.
    *
    * @default true
    */
