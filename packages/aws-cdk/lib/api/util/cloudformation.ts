@@ -316,7 +316,7 @@ export async function prepareAndCreateChangeSet(options: PrepareChangeSetOptions
 
   return createChangeSet({
     cfn,
-    changeSetName: 'some-name',
+    changeSetName: 'cdk-diff-change-set',
     stack: options.stack,
     exists,
     uuid: options.uuid,
@@ -334,8 +334,8 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<CloudFo
     StackName: options.stack.stackName,
     ChangeSetName: options.changeSetName,
     ChangeSetType: options.exists ? 'UPDATE' : 'CREATE',
-    Description: `CDK Changeset for execution ${options.uuid}`,
-    ClientToken: `create${options.uuid}`,
+    Description: `CDK Changeset for diff ${options.uuid}`,
+    ClientToken: `diff${options.uuid}`,
     TemplateURL: options.bodyParameter.TemplateURL,
     TemplateBody: options.bodyParameter.TemplateBody,
     Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
