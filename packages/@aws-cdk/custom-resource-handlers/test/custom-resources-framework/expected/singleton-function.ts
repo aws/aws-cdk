@@ -4,7 +4,7 @@ import { Construct } from "constructs";
 import * as lambda from "../../../aws-lambda";
 
 export class TestSingletonFunction extends lambda.SingletonFunction {
-  public constructor(scope: Construct, id: string, props: CdkSingletonFunctionProps) {
+  public constructor(scope: Construct, id: string, props: TestSingletonFunctionProps) {
     super(scope, id, {
       ...props,
       "code": lambda.Code.fromAsset(path.join(__dirname, 'my-handler')),
