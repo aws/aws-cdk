@@ -1129,8 +1129,8 @@ taskDefinition.addContainer('TheContainer', {
 });
 ```
 
-See the [Fluent Bit CloudWatch Configuration Parameters](https://docs.fluentbit.io/manual/pipeline/outputs/cloudwatch#configuration-parameters)
-for more information about `log_retention_days`.
+> Visit [Fluent Bit CloudWatch Configuration Parameters](https://docs.fluentbit.io/manual/pipeline/outputs/cloudwatch#configuration-parameters)
+for more details.
 
 ### Generic Log Driver
 
