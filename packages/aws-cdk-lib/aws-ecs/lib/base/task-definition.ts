@@ -1234,3 +1234,33 @@ export function isFargateCompatible(compatibility: Compatibility): boolean {
 export function isExternalCompatible(compatibility: Compatibility): boolean {
   return [Compatibility.EXTERNAL].includes(compatibility);
 }
+
+/**
+ * Represents revision of a task definition, either a specific numbered revision or
+ * the `latest` revision
+ */
+export class TaskDefinitionRevision {
+  /**
+   * The most recent revision of a task
+   */
+  public static readonly LATEST = new TaskDefinitionRevision('latest');
+
+  /**
+   * Specific revision of a task
+   */
+  public static of(revision: number) {
+    if (revision < 1) {
+      throw new Error(`A task definition revision must be 'latest' or a positive number, got ${revision}`);
+    }
+    return new TaskDefinitionRevision(revision.toString());
+  }
+
+  /**
+   * The string representation of this revision
+   */
+  public readonly revision: string;
+
+  private constructor(revision: string) {
+    this.revision = revision;
+  }
+}

@@ -22,7 +22,12 @@ import {
 import * as cxapi from '../../../cx-api';
 
 import { RegionInfo } from '../../../region-info';
-import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
+import {
+  LoadBalancerTargetOptions,
+  NetworkMode,
+  TaskDefinition,
+  TaskDefinitionRevision,
+} from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
@@ -345,6 +350,13 @@ export interface BaseServiceOptions {
    * cannot make requests to other services via Service Connect.
    */
   readonly serviceConnectConfiguration?: ServiceConnectProps;
+
+  /**
+   * Revision number for the task definition or `latest` to use the latest active task revision.
+   *
+   * @default - Uses the revision of the passed task definition deployed by CloudFormation
+   */
+  readonly taskDefinitionRevision?: TaskDefinitionRevision;
 }
 
 /**
@@ -635,11 +647,25 @@ export abstract class BaseService extends Resource
       throw new Error('Deployment alarms requires the ECS deployment controller.');
     }
 
+    if (
+      props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY
+      && props.taskDefinitionRevision
+      && props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST
+    ) {
+      throw new Error('CODE_DEPLOY deploymentController can only be used with the `latest` task definition revision');
+    }
+
     if (props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
       // Strip the revision ID from the service's task definition property to
       // prevent new task def revisions in the stack from triggering updates
       // to the stack's ECS service resource
       this.resource.taskDefinition = taskDefinition.family;
+      this.node.addDependency(taskDefinition);
+    } else if (props.taskDefinitionRevision) {
+      this.resource.taskDefinition = taskDefinition.family;
+      if (props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST) {
+        this.resource.taskDefinition += `:${props.taskDefinitionRevision.revision}`;
+      }
       this.node.addDependency(taskDefinition);
     }
 
