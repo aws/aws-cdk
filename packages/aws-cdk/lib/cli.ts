@@ -548,8 +548,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
             if (args.changeSetName) {
               throw new Error('--change-set-name cannot be used with method=direct');
             }
-            if (args.importExistingResources !== undefined) {
-              throw new Error('--import-existing-resources cannot be used with method=direct');
+            if (args.importExistingResources) {
+              throw new Error('--import-existing-resources cannot be enabled with method=direct');
             }
             deploymentMethod = { method: 'direct' };
             break;

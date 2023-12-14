@@ -327,6 +327,18 @@ integTest('deploy without import-existing-resources', withDefaultFixture(async (
   expect(changeSets[0].ImportExistingResources).toEqual(false);
 }));
 
+integTest('deploy with method=direct and import-existing-resources fails', withDefaultFixture(async (fixture) => {
+  const stackName = 'iam-test';
+  await expect(fixture.cdkDeploy(stackName, {
+    options: ['--import-existing-resources', '--method=direct'],
+  })).rejects.toThrow('exited with error');
+
+  // Ensure stack was not deployed
+  await expect(fixture.aws.cloudFormation('describeStacks', {
+    StackName: fixture.fullStackName(stackName),
+  })).rejects.toThrow('does not exist');
+}));
+
 integTest('security related changes without a CLI are expected to fail', withDefaultFixture(async (fixture) => {
   // redirect /dev/null to stdin, which means there will not be tty attached
   // since this stack includes security-related changes, the deployment should
