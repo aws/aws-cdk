@@ -196,6 +196,81 @@ describe('rule', () => {
     });
   });
 
+  test('eventPattern with multi-field $or operator is rendered properly', () => {
+    const stack = new cdk.Stack();
+
+    new Rule(stack, 'MyRule', {
+      eventPattern: {
+        $or: [
+          {
+            account: ['account1'],
+            detail: {
+              $or: [
+                {
+                  rangeMatcher: [{ numeric: ['>=', -1, '<=', 1] }],
+                  stringMatcher: ['I am just a string'],
+                  prefixMatcher: [{ prefix: 'aws.' }],
+                  ipAddress: [{ cidr: '192.0.2.0/24' }],
+                  shouldExist: [{ exists: true }],
+                  shouldNotExist: [{ exists: false }],
+                }, {
+                  foo: [1],
+                  strings: ['foo'],
+                },
+              ],
+            },
+          },
+          {
+            account: ['account2'],
+            detail: {
+              foo: [2],
+              strings: ['bar'],
+            },
+          },
+        ],
+      },
+    });
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'MyRuleA44AB831': {
+          'Type': 'AWS::Events::Rule',
+          'Properties': {
+            'EventPattern': {
+              $or: [
+                {
+                  account: ['account1'],
+                  detail: {
+                    $or: [
+                      {
+                        rangeMatcher: [{ numeric: ['>=', -1, '<=', 1] }],
+                        stringMatcher: ['I am just a string'],
+                        prefixMatcher: [{ prefix: 'aws.' }],
+                        ipAddress: [{ cidr: '192.0.2.0/24' }],
+                        shouldExist: [{ exists: true }],
+                        shouldNotExist: [{ exists: false }],
+                      }, {
+                        foo: [1],
+                        strings: ['foo'],
+                      },
+                    ],
+                  },
+                },
+                {
+                  account: ['account2'],
+                  detail: {
+                    foo: [2],
+                    strings: ['bar'],
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('fails synthesis if neither eventPattern nor scheduleExpression are specified', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');

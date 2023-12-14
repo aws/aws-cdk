@@ -350,4 +350,12 @@ export interface EventPattern {
    * @default - No filtering on detail
    */
   readonly detail?: { [key: string]: any };
+
+  /**
+   * Comparison operator to use on the root and/or leaf level for multiple 
+   * fields OR comparison.
+   * 
+   * @default - No OR operator
+   */
+  readonly $or?: EventPattern[];
 }
