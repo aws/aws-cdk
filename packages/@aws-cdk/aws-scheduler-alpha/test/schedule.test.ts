@@ -129,6 +129,39 @@ describe('Schedule', () => {
     });
   });
 
+  describe('schedule timeFrame', () => {
+    test.each([
+      { StartDate: '2023-04-15T06:20:00.000Z', EndDate: '2023-10-01T00:00:00.000Z' },
+      { StartDate: '2023-04-15T06:25:00.000Z' },
+      { EndDate: '2023-10-01T00:00:00.000Z' },
+    ])('schedule can set start and end', (timeFrame) => {
+      new Schedule(stack, 'TestSchedule', {
+        schedule: expr,
+        target: new SomeLambdaTarget(func, role),
+        start: timeFrame.StartDate ? new Date(timeFrame.StartDate) : undefined,
+        end: timeFrame.EndDate ? new Date(timeFrame.EndDate) : undefined,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
+        ...timeFrame,
+      });
+    });
+
+    test.each([
+      { start: '2023-10-01T00:00:00.000Z', end: '2023-10-01T00:00:00.000Z' },
+      { start: '2023-10-01T00:00:00.000Z', end: '2023-09-01T00:00:00.000Z' },
+    ])('throw error when start does not come before end', ({ start, end }) => {
+      expect(() => {
+        new Schedule(stack, 'TestSchedule', {
+          schedule: expr,
+          target: new SomeLambdaTarget(func, role),
+          start: new Date(start),
+          end: new Date(end),
+        });
+      }).toThrow(`start must precede end, got start: ${start}, end: ${end}`);
+    });
+  });
+
   describe('flexibleTimeWindow', () => {
     test('flexibleTimeWindow mode is set to OFF by default', () => {
       // WHEN
