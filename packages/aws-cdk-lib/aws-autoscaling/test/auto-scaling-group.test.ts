@@ -2302,6 +2302,107 @@ test('ssm permissions adds right managed policy', () => {
   });
 });
 
+test('ssm permissions adds right managed policy with launch template', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const role = new iam.Role(stack, 'role', {
+    assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+  });
+
+  const lt = new LaunchTemplate(stack, 'launch-template', {
+    machineImage: ec2.MachineImage.latestAmazonLinux2(),
+    instanceType: InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
+    role: role,
+  });
+
+  new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+    vpc: mockVpc(stack),
+    launchTemplate: lt,
+    ssmSessionPermissions: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':iam::aws:policy/AmazonSSMManagedInstanceCore',
+        ]],
+      },
+    ],
+  });
+});
+
+test('ssm permissions adds right managed policy with mixed instance policy', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const role = new iam.Role(stack, 'role', {
+    assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+  });
+
+  const lt = new LaunchTemplate(stack, 'launch-template', {
+    machineImage: ec2.MachineImage.latestAmazonLinux2(),
+    instanceType: InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
+    role: role,
+  });
+
+  new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+    vpc: mockVpc(stack),
+    mixedInstancesPolicy: {
+      instancesDistribution: {
+        onDemandPercentageAboveBaseCapacity: 50,
+      },
+      launchTemplate: lt,
+      launchTemplateOverrides: [
+        { instanceType: new ec2.InstanceType('t3.micro') },
+        { instanceType: new ec2.InstanceType('t3a.micro') },
+      ],
+    },
+    ssmSessionPermissions: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': ['', [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':iam::aws:policy/AmazonSSMManagedInstanceCore',
+        ]],
+      },
+    ],
+  });
+});
+
+test('requires imdsv2 when @aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig is set', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, true);
+  const vpc = mockVpc(stack);
+
+  // WHEN
+  new autoscaling.AutoScalingGroup(stack, 'MyFleet', {
+    vpc,
+    instanceType: new ec2.InstanceType('t2.micro'),
+    machineImage: ec2.MachineImage.latestAmazonLinux2(),
+    requireImdsv2: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::LaunchTemplate', {
+    LaunchTemplateData: {
+      MetadataOptions: {
+        HttpTokens: 'required',
+      },
+    },
+  });
+});
+
 function mockSecurityGroup(stack: cdk.Stack) {
   return ec2.SecurityGroup.fromSecurityGroupId(stack, 'MySG', 'most-secure');
 }

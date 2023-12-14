@@ -140,6 +140,17 @@ Invoking the endpoint with any HTTP method (`GET`, `POST`, `PUT`, `DELETE`, ...)
 
 If the execution fails, an HTTP `500` response is returned with the `error` and `cause` from the execution output as the Response Body. If the request is invalid (ex. bad execution input) HTTP code `400` is returned.
 
+To disable default response models generation use the `useDefaultMethodResponses` property:
+
+```ts
+declare const machine: stepfunctions.IStateMachine;
+
+new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
+  stateMachine: machine,
+  useDefaultMethodResponses: false,
+});
+```
+
 The response from the invocation contains only the `output` field from the
 [StartSyncExecution](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartSyncExecution.html#API_StartSyncExecution_ResponseSyntax) API.
 In case of failures, the fields `error` and `cause` are returned as part of the response.
@@ -1207,10 +1218,10 @@ Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-log
 
 ```ts
 // production stage
-const prdLogGroup = new logs.LogGroup(this, "PrdLogs");
+const prodLogGroup = new logs.LogGroup(this, "PrdLogs");
 const api = new apigateway.RestApi(this, 'books', {
   deployOptions: {
-    accessLogDestination: new apigateway.LogGroupLogDestination(prdLogGroup),
+    accessLogDestination: new apigateway.LogGroupLogDestination(prodLogGroup),
     accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields(),
   },
 });
@@ -1296,6 +1307,34 @@ const api = new apigateway.RestApi(this, 'books', {
   }
 });
 ```
+
+To write access log files to a Firehose delivery stream destination use the `FirehoseLogDestination` class:
+
+```ts
+const destinationBucket = new s3.Bucket(this, 'Bucket');
+const deliveryStreamRole = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+});
+
+const stream = new firehose.CfnDeliveryStream(this, 'MyStream', {
+  deliveryStreamName: 'amazon-apigateway-delivery-stream',
+  s3DestinationConfiguration: {
+    bucketArn: destinationBucket.bucketArn,
+    roleArn: deliveryStreamRole.roleArn,
+  },
+});
+
+const api = new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    accessLogDestination: new apigateway.FirehoseLogDestination(stream),
+    accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields(),
+  },
+});
+```
+
+**Note:** The delivery stream name must start with `amazon-apigateway-`.
+
+> Visit [Logging API calls to Kinesis Data Firehose](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-logging-to-kinesis.html) for more details.
 
 ## Cross Origin Resource Sharing (CORS)
 
@@ -1414,6 +1453,7 @@ const link = new apigateway.VpcLink(this, 'link', {
 
 const integration = new apigateway.Integration({
   type: apigateway.IntegrationType.HTTP_PROXY,
+  integrationHttpMethod: 'ANY',
   options: {
     connectionType: apigateway.ConnectionType.VPC_LINK,
     vpcLink: link,

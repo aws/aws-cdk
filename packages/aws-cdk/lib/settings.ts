@@ -336,7 +336,7 @@ export class Settings {
     const tags: Tag[] = [];
 
     for (const assignment of nonEmptyTags) {
-      const parts = assignment.split('=', 2);
+      const parts = assignment.split(/=(.*)/, 2);
       if (parts.length === 2) {
         debug('CLI argument tags: %s=%s', parts[0], parts[1]);
         tags.push({

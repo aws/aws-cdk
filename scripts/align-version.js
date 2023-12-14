@@ -26,7 +26,6 @@ for (const file of files) {
   }
 
   const version = packageVersionMap[pkg.name]
-  console.log(version);
   pkg.version = version;
 
   processSection(pkg.dependencies || { }, file);
@@ -41,13 +40,12 @@ for (const file of files) {
 function processSection(section, file) {
   for (const [ name, version ] of Object.entries(section)) {
     if (version === marker || version === '^' + marker) {
-      const version = packageVersionMap[name];
-
-      if (!version) {
+      const newVersion = packageVersionMap[name];
+      if (!newVersion) {
         throw new Error(`No package found ${name} within repository, which has version 0.0.0`);
       }
 
-      section[name] = version.replace(marker, version);
+      section[name] = version.replace(marker, newVersion);
     }
   }
 }

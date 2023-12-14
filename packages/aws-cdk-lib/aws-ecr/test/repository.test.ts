@@ -898,7 +898,7 @@ describe('repository', () => {
       const expectedErrors = [
         `Invalid ECR repository name (value: ${repositoryName})`,
         'Repository name must be at least 2 and no more than 256 characters',
-        'Repository name must follow the specified pattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*',
+        'Repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes',
       ].join(EOL);
 
       expect(() => new ecr.Repository(stack, 'Repo', {
@@ -923,19 +923,19 @@ describe('repository', () => {
 
       expect(() => new ecr.Repository(stack, 'Repo1', {
         repositoryName: 'aAa',
-      })).toThrow(/must follow the specified pattern/);
+      })).toThrow('Repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes');
 
       expect(() => new ecr.Repository(stack, 'Repo2', {
         repositoryName: 'a--a',
-      })).toThrow(/must follow the specified pattern/);
+      })).toThrow('Repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes');
 
       expect(() => new ecr.Repository(stack, 'Repo3', {
         repositoryName: 'a./a-a',
-      })).toThrow(/must follow the specified pattern/);
+      })).toThrow('Repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes');
 
       expect(() => new ecr.Repository(stack, 'Repo4', {
         repositoryName: 'a//a-a',
-      })).toThrow(/must follow the specified pattern/);
+      })).toThrow('Repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes');
     });
 
     test('return value addToResourcePolicy', () => {

@@ -18,9 +18,6 @@
   "VPCPublicSubnet1SubnetB4246D30": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -44,21 +41,24 @@
       "Key": "Name",
       "Value": "aws-cdk-msk-integ/VPC/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet1RouteTableFEE4B781": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-msk-integ/VPC/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
@@ -75,12 +75,12 @@
   "VPCPublicSubnet1DefaultRoute91CEF279": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
     }
    },
    "DependsOn": [
@@ -102,14 +102,14 @@
   "VPCPublicSubnet1NATGatewayE0556630": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VPCPublicSubnet1SubnetB4246D30"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VPCPublicSubnet1EIP6AD938E8",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
     },
     "Tags": [
      {
@@ -126,9 +126,6 @@
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -152,21 +149,24 @@
       "Key": "Name",
       "Value": "aws-cdk-msk-integ/VPC/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet2RouteTable6F1A15F1": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-msk-integ/VPC/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet2RouteTableAssociation5A808732": {
@@ -183,12 +183,12 @@
   "VPCPublicSubnet2DefaultRouteB7481BBA": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
     }
    },
    "DependsOn": [
@@ -210,14 +210,14 @@
   "VPCPublicSubnet2NATGateway3C070193": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VPCPublicSubnet2Subnet74179F39"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VPCPublicSubnet2EIP4947BC00",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
     },
     "Tags": [
      {
@@ -234,9 +234,6 @@
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -260,21 +257,24 @@
       "Key": "Name",
       "Value": "aws-cdk-msk-integ/VPC/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPrivateSubnet1RouteTableBE8A6027": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-msk-integ/VPC/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPrivateSubnet1RouteTableAssociation347902D1": {
@@ -291,21 +291,18 @@
   "VPCPrivateSubnet1DefaultRouteAE1D6490": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
     }
    }
   },
   "VPCPrivateSubnet2SubnetCFCDAA7A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -329,21 +326,24 @@
       "Key": "Name",
       "Value": "aws-cdk-msk-integ/VPC/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPrivateSubnet2RouteTable0A19E10E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-msk-integ/VPC/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
@@ -360,12 +360,12 @@
   "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VPCPublicSubnet2NATGateway3C070193"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
     }
    }
   },
@@ -383,11 +383,11 @@
   "VPCVPCGW99B986DC": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "InternetGatewayId": {
      "Ref": "VPCIGWB7E252D3"
+    },
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
     }
    }
   },
@@ -416,7 +416,8 @@
        "Action": [
         "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*"
+        "s3:List*",
+        "s3:PutBucketPolicy"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -603,7 +604,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3e6ea85c994cf2198f02e67a9e98e8f23456efa8bd72dd55b3a86454c4db9d5f.zip"
+     "S3Key": "2ec8ad9e91dcd6e7ad6a5c84ffc6c9c05c408aca3b26ceb2816d81043e6c4dc3.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -676,14 +677,13 @@
      }
     },
     "ClusterName": "integ-test",
-    "KafkaVersion": "2.8.1",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.8.1",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -699,7 +699,8 @@
        "Enabled": true
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -806,15 +807,15 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5009f77d2e9161f4799d4facb1cb8859134a40234014484b4911e924c169c9cb.zip"
+     "S3Key": "e5178afc49b7c6a85127a67856ce958e4f0879ce6aad5e974cac2a088bf939db.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs18.x",
     "Timeout": 120
    },
@@ -865,9 +866,6 @@
       }
      }
     },
-    "ClusterName": "integ-test-iam-auth",
-    "KafkaVersion": "2.8.1",
-    "NumberOfBrokerNodes": 2,
     "ClientAuthentication": {
      "Sasl": {
       "Iam": {
@@ -875,12 +873,14 @@
       }
      }
     },
+    "ClusterName": "integ-test-iam-auth",
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.8.1",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -896,7 +896,8 @@
        "Enabled": true
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -969,6 +970,7 @@
    "Type": "AWS::ACMPCA::CertificateAuthority",
    "Properties": {
     "KeyAlgorithm": "RSA_2048",
+    "KeyStorageSecurityStandard": "FIPS_140_2_LEVEL_3_OR_HIGHER",
     "SigningAlgorithm": "SHA256WITHRSA",
     "Subject": {
      "CommonName": "MSK Cluster Root CA",
@@ -978,8 +980,7 @@
      "OrganizationalUnit": "AWS-CDK",
      "State": "Berlin"
     },
-    "Type": "ROOT",
-    "KeyStorageSecurityStandard": "FIPS_140_2_LEVEL_3_OR_HIGHER"
+    "Type": "ROOT"
    }
   },
   "Certificate": {
@@ -998,11 +999,11 @@
      ]
     },
     "SigningAlgorithm": "SHA256WITHRSA",
+    "TemplateArn": "arn:aws:acm-pca:::template/RootCACertificate/V1",
     "Validity": {
      "Type": "YEARS",
      "Value": 1
-    },
-    "TemplateArn": "arn:aws:acm-pca:::template/RootCACertificate/V1"
+    }
    }
   },
   "CertificateActivation": {
@@ -1068,9 +1069,6 @@
       }
      }
     },
-    "ClusterName": "integ-test-iam-tls-auth",
-    "KafkaVersion": "2.8.1",
-    "NumberOfBrokerNodes": 2,
     "ClientAuthentication": {
      "Sasl": {
       "Iam": {
@@ -1088,12 +1086,14 @@
       ]
      }
     },
+    "ClusterName": "integ-test-iam-tls-auth",
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "2.8.1",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -1109,7 +1109,8 @@
        "Enabled": true
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "DependsOn": [
     "CertificateActivation"
@@ -1229,14 +1230,13 @@
      }
     },
     "ClusterName": "integ-test-v3-1-1",
-    "KafkaVersion": "3.1.1",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "3.1.1",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -1252,7 +1252,8 @@
        "Enabled": true
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1365,14 +1366,13 @@
      }
     },
     "ClusterName": "integ-test-v3-2-0",
-    "KafkaVersion": "3.2.0",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "3.2.0",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -1388,7 +1388,8 @@
        "Enabled": true
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1501,14 +1502,13 @@
      }
     },
     "ClusterName": "integ-test-v3-3-1",
-    "KafkaVersion": "3.3.1",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "3.3.1",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -1524,7 +1524,8 @@
        "Enabled": true
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1637,14 +1638,13 @@
      }
     },
     "ClusterName": "integ-test-v3-3-2",
-    "KafkaVersion": "3.3.2",
-    "NumberOfBrokerNodes": 2,
     "EncryptionInfo": {
      "EncryptionInTransit": {
       "ClientBroker": "TLS",
       "InCluster": true
      }
     },
+    "KafkaVersion": "3.3.2",
     "LoggingInfo": {
      "BrokerLogs": {
       "CloudWatchLogs": {
@@ -1660,7 +1660,8 @@
        "Enabled": true
       }
      }
-    }
+    },
+    "NumberOfBrokerNodes": 2
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

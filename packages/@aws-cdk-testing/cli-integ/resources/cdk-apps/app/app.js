@@ -252,8 +252,12 @@ class LambdaHotswapStack extends cdk.Stack {
       handler: 'index.handler',
       description: process.env.DYNAMIC_LAMBDA_PROPERTY_VALUE ?? "description",
       environment: {
-        SomeVariable: process.env.DYNAMIC_LAMBDA_PROPERTY_VALUE ?? "environment",
-      }
+        SomeVariable:
+          process.env.DYNAMIC_LAMBDA_PROPERTY_VALUE ?? "environment",
+        ImportValueVariable: process.env.USE_IMPORT_VALUE_LAMBDA_PROPERTY
+          ? cdk.Fn.importValue(TEST_EXPORT_OUTPUT_NAME)
+          : "no-import",
+      },
     });
 
     new cdk.CfnOutput(this, 'FunctionName', { value: fn.functionName });
@@ -343,6 +347,22 @@ class ConditionalResourceStack extends cdk.Stack {
   }
 }
 
+const TEST_EXPORT_OUTPUT_NAME = 'test-export-output';
+
+class ExportValueStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    // just need any resource to exist within the stack
+    const topic = new sns.Topic(this, 'Topic');
+
+    new cdk.CfnOutput(this, 'ExportValueOutput', {
+      exportName: TEST_EXPORT_OUTPUT_NAME,
+      value: topic.topicArn,
+    });
+  }
+}
+
 class BundlingStage extends cdk.Stage {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -351,7 +371,7 @@ class BundlingStage extends cdk.Stage {
     new lambda.Function(stack, 'Handler', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
   }
 }
@@ -449,6 +469,8 @@ switch (stackSet) {
     new BuiltinLambdaStack(app, `${stackPrefix}-builtin-lambda-function`);
 
     new ImportableStack(app, `${stackPrefix}-importable-stack`);
+
+    new ExportValueStack(app, `${stackPrefix}-export-value-stack`);
 
     new BundlingStage(app, `${stackPrefix}-bundling-stage`);
     break;

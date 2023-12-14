@@ -4,6 +4,7 @@ import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as config from 'aws-cdk-lib/aws-config';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 /**********************************************************************************************************************
  *
@@ -23,7 +24,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-config-custompolicy');
 const fn = new lambda.Function(stack, 'CustomFunction', {
   code: lambda.AssetCode.fromInline('exports.handler = (event) => console.log(event);'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 
 new config.CustomRule(stack, 'Custom', {

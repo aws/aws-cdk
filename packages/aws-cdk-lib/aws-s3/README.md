@@ -168,6 +168,15 @@ const bucket = new s3.Bucket(this, 'Bucket', {
 });
 ```
 
+To require a minimum TLS version for all requests:
+
+```ts
+const bucket = new s3.Bucket(this, 'Bucket', {
+  enforceSSL: true,
+  minimumTLSVersion: 1.2,
+});
+```
+
 ## Sharing buckets between stacks
 
 To use a bucket in a different stack in the same CDK application, pass the object to the other stack:

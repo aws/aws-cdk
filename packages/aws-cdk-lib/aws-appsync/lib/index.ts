@@ -12,3 +12,4 @@ export * from './graphqlapi';
 export * from './graphqlapi-base';
 export * from './code';
 export * from './runtime';
+export * from './source-api-association';

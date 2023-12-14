@@ -36,10 +36,9 @@ test/integ/cli/*.js
 test/integ/cli/*.d.ts
 !test/integ/cli-regression-patches/**/*
 
-lib/vendor/noctilucent/*
-!lib/vendor/noctilucent/.keepdir
-
 .DS_Store
 
 junit.xml
-tmp/
+
+lib/**/*.wasm
+db.json.gz

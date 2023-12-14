@@ -715,7 +715,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
+     "S3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-database/User/Resource/Provider)",
     "Environment": {
@@ -854,7 +854,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
+     "S3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-database/User/TablePrivileges/Resource/Provider)",
     "Environment": {
@@ -909,6 +909,7 @@
     },
     "tablePrivileges": [
      {
+      "tableId": "Table",
       "tableName": {
        "Ref": "Table7ABB320E"
       },
@@ -1004,7 +1005,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "135d36da5a9e712a2792be4734f4cf4b34b551d49646eef9dec0c185fc869c12.zip"
+     "S3Key": "5fa8a88136dc7e690e28026dcb3452a4d2f80f327bb49094dc1e3c39d551c52f.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -1107,7 +1108,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73b60c2cf141bf58c33cfaa33858f5c84103a0232ba7192d696536488f7731c4.zip"
+     "S3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-database/Table/Resource/Provider)",
     "Environment": {
@@ -1155,8 +1156,8 @@
     },
     "databaseName": "my_db",
     "tableName": {
-     "prefix": "awscdkredshiftclusterdatabaseTable24923533",
-     "generateSuffix": "true"
+     "prefix": "IntegTable",
+     "generateSuffix": "false"
     },
     "tableColumns": [
      {

@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "KafkaZookeeperIntegTest/DefaultTest": {
+      "stacks": [
+        "KafkaZookeeperTestStack"
+      ],
+      "assertionStack": "KafkaZookeeperIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "KafkaZookeeperIntegTestDefaultTestDeployAssert731E1402"
+    }
+  }
+}

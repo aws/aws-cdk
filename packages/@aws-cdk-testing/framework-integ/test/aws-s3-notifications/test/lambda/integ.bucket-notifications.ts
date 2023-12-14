@@ -2,17 +2,18 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as s3n from 'aws-cdk-lib/aws-s3-notifications';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'lambda-bucket-notifications');
+const stack = new cdk.Stack(app, 'cdk-integ-lambda-bucket-notifications');
 
 const bucketA = new s3.Bucket(stack, 'MyBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 const fn = new lambda.Function(stack, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
 });

@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { DeployTimeSubstitutedFile } from 'aws-cdk-lib/aws-s3-deployment';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class Test extends cdk.Stack {
   public readonly bucketName: String;
@@ -14,7 +15,7 @@ class Test extends cdk.Stack {
     super(scope, id);
 
     const hello = new lambda.Function(this, 'Hello', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = ${helloCode}`),
     });
@@ -36,7 +37,6 @@ class Test extends cdk.Stack {
 }
 
 const app = new cdk.App();
-new Test(app, 'my-stack');
 
 const testCase = new Test(app, 'test-s3-deploy-substitution');
 const integ = new IntegTest(app, 'deploy-time-substitution-integ-test', {

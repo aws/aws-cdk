@@ -439,7 +439,7 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs16.x"
+                        "runtime": "nodejs18.x"
                       }
                     },
                     "constructInfo": {
@@ -523,7 +523,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/fbade89dd4ef7c8a333d35db33055e93cf9de29aa91c62f9deb0ed89694a6e2e.json"
+                          "/209a4f17c5e4c8a0ffa92cb311261c77407a3a251824880418f7ed26d09f63be.json"
                         ]
                       ]
                     }
@@ -537,7 +537,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "version": "10.2.70"
             }
           },
           "NestedStack2": {
@@ -669,7 +669,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.69"
+              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {
@@ -699,7 +699,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },

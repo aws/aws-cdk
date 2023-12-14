@@ -15,6 +15,7 @@
         "resolveJsonModule": true,
         "composite": true,
         "incremental": true,
+        "skipLibCheck": true,
     },
     "include": [
         "**/*.ts",

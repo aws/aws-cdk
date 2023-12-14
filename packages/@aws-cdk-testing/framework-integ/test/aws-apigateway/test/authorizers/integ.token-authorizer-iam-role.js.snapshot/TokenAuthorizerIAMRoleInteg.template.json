@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MyAuthorizerFunctionServiceRole8A34C19E"
@@ -79,6 +79,7 @@
       "Arn"
      ]
     },
+    "AuthorizerResultTtlInSeconds": 300,
     "AuthorizerUri": {
      "Fn::Join": [
       "",
@@ -233,7 +234,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "MyRestApiDeploymentB555B582694e8eb3fdb7b5f988ba347d35601979": {
+  "MyRestApiDeploymentB555B58259401a546b13c99de2d05e5e255a9ede": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -251,7 +252,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "MyRestApiDeploymentB555B582694e8eb3fdb7b5f988ba347d35601979"
+     "Ref": "MyRestApiDeploymentB555B58259401a546b13c99de2d05e5e255a9ede"
     },
     "RestApiId": {
      "Ref": "MyRestApi2D1F47A9"

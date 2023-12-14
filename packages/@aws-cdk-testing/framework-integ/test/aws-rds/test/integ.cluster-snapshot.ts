@@ -8,6 +8,7 @@ import { Construct } from 'constructs';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { ClusterInstance } from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -16,11 +17,11 @@ class TestStack extends Stack {
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
 
     const instanceProps = {
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
       isFromLegacyInstanceProps: true,
     };
     const cluster = new rds.DatabaseCluster(this, 'Cluster', {
-      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_10_2 }),
+      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_04_0 }),
       writer: ClusterInstance.provisioned('Instance1', {
         ...instanceProps,
       }),
@@ -41,7 +42,7 @@ class TestStack extends Stack {
     const fromSnapshot = new rds.DatabaseClusterFromSnapshot(this, 'FromSnapshot', {
       snapshotIdentifier: snapshoter.snapshotArn,
       snapshotCredentials: rds.SnapshotCredentials.fromGeneratedSecret('admin'),
-      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_10_2 }),
+      engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_04_0 }),
       writer: ClusterInstance.provisioned('Instance1', {
         ...instanceProps,
       }),
@@ -85,7 +86,7 @@ class Snapshoter extends Construct {
     const code = lambda.Code.fromAsset(path.join(__dirname, 'snapshot-handler'));
     const onEventHandler = new lambda.Function(this, 'OnEventHandler', {
       code,
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.onEventHandler',
     });
     onEventHandler.addToRolePolicy(new iam.PolicyStatement({
@@ -95,7 +96,7 @@ class Snapshoter extends Construct {
 
     const isCompleteHandler = new lambda.Function(this, 'IsCompleteHandler', {
       code,
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.isCompleteHandler',
     });
     isCompleteHandler.addToRolePolicy(new iam.PolicyStatement({

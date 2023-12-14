@@ -317,8 +317,11 @@ export abstract class ResourceBase extends ResourceConstruct implements IResourc
 
       const template = new Array<string>();
 
-      template.push('#set($origin = $input.params().header.get("Origin"))');
-      template.push('#if($origin == "") #set($origin = $input.params().header.get("origin")) #end');
+      template.push(
+        '#set($origin = $input.params().header.get("Origin"))',
+        '#if($origin == "")',
+        '  #set($origin = $input.params().header.get("origin"))',
+        '#end');
 
       const condition = origins.map(o => `$origin == "${o}"`).join(' || ');
 
@@ -558,8 +561,8 @@ function validateResourcePathPart(part: string) {
     }
   }
 
-  if (!/^[a-zA-Z0-9:\.\_\-]+$/.test(part)) {
-    throw new Error(`Resource's path part only allow [a-zA-Z0-9:._-], an optional trailing '+'
+  if (!/^[a-zA-Z0-9:\.\_\-\$]+$/.test(part)) {
+    throw new Error(`Resource's path part only allow [a-zA-Z0-9:._-$], an optional trailing '+'
       and curly braces at the beginning and the end: ${part}`);
   }
 }

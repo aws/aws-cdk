@@ -28,7 +28,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-appconfig-alpha.Application",
               "version": "0.0.0"
             }
           },
@@ -62,17 +62,99 @@
               "version": "0.0.0"
             }
           },
+          "MyRole": {
+            "id": "MyRole",
+            "path": "aws-appconfig-environment/MyRole",
+            "children": {
+              "ImportMyRole": {
+                "id": "ImportMyRole",
+                "path": "aws-appconfig-environment/MyRole/ImportMyRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-environment/MyRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "appconfig.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "MyCompositeAlarm": {
+            "id": "MyCompositeAlarm",
+            "path": "aws-appconfig-environment/MyCompositeAlarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-environment/MyCompositeAlarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::CompositeAlarm",
+                  "aws:cdk:cloudformation:props": {
+                    "alarmName": "awsappconfigenvironmentMyCompositeAlarm730A7A48",
+                    "alarmRule": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "ALARM(\"",
+                          {
+                            "Fn::GetAtt": [
+                              "MyAlarm696658B6",
+                              "Arn"
+                            ]
+                          },
+                          "\")"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnCompositeAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.CompositeAlarm",
+              "version": "0.0.0"
+            }
+          },
           "MyEnvironment": {
             "id": "MyEnvironment",
             "path": "aws-appconfig-environment/MyEnvironment",
             "children": {
-              "Role": {
-                "id": "Role",
-                "path": "aws-appconfig-environment/MyEnvironment/Role",
+              "Role0": {
+                "id": "Role0",
+                "path": "aws-appconfig-environment/MyEnvironment/Role0",
                 "children": {
-                  "ImportRole": {
-                    "id": "ImportRole",
-                    "path": "aws-appconfig-environment/MyEnvironment/Role/ImportRole",
+                  "ImportRole0": {
+                    "id": "ImportRole0",
+                    "path": "aws-appconfig-environment/MyEnvironment/Role0/ImportRole0",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -80,7 +162,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-appconfig-environment/MyEnvironment/Role/Resource",
+                    "path": "aws-appconfig-environment/MyEnvironment/Role0/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -129,6 +211,83 @@
                   "version": "0.0.0"
                 }
               },
+              "RoleCompositeAlarm": {
+                "id": "RoleCompositeAlarm",
+                "path": "aws-appconfig-environment/MyEnvironment/RoleCompositeAlarm",
+                "children": {
+                  "ImportRoleCompositeAlarm": {
+                    "id": "ImportRoleCompositeAlarm",
+                    "path": "aws-appconfig-environment/MyEnvironment/RoleCompositeAlarm/ImportRoleCompositeAlarm",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appconfig-environment/MyEnvironment/RoleCompositeAlarm/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "appconfig.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "AllowAppConfigMonitorAlarmPolicy",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "cloudwatch:DescribeAlarms",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":cloudwatch:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":alarm:*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-appconfig-environment/MyEnvironment/Resource",
@@ -149,7 +308,35 @@
                         },
                         "alarmRoleArn": {
                           "Fn::GetAtt": [
-                            "MyEnvironmentRoleC08961D3",
+                            "MyEnvironmentRole01C8C013F",
+                            "Arn"
+                          ]
+                        }
+                      },
+                      {
+                        "alarmArn": {
+                          "Fn::GetAtt": [
+                            "MyAlarm696658B6",
+                            "Arn"
+                          ]
+                        },
+                        "alarmRoleArn": {
+                          "Fn::GetAtt": [
+                            "MyRoleF48FFE04",
+                            "Arn"
+                          ]
+                        }
+                      },
+                      {
+                        "alarmArn": {
+                          "Fn::GetAtt": [
+                            "MyCompositeAlarm0F045229",
+                            "Arn"
+                          ]
+                        },
+                        "alarmRoleArn": {
+                          "Fn::GetAtt": [
+                            "MyEnvironmentRoleCompositeAlarm8C2A0542",
                             "Arn"
                           ]
                         }
@@ -165,7 +352,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-appconfig-alpha.Environment",
               "version": "0.0.0"
             }
           },
@@ -204,7 +391,7 @@
                 "path": "appconfig-environment/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -250,7 +437,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.3.0"
         }
       }
     },

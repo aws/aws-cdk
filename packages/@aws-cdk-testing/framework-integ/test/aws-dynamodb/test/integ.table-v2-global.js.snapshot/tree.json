@@ -56,85 +56,69 @@
           "GlobalTable": {
             "id": "GlobalTable",
             "path": "aws-cdk-global-table/GlobalTable",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.TableV2",
-              "version": "0.0.0"
-            }
-          },
-          "Resource": {
-            "id": "Resource",
-            "path": "aws-cdk-global-table/Resource",
-            "attributes": {
-              "aws:cdk:cloudformation:type": "AWS::DynamoDB::GlobalTable",
-              "aws:cdk:cloudformation:props": {
-                "attributeDefinitions": [
-                  {
-                    "attributeName": "pk",
-                    "attributeType": "S"
-                  },
-                  {
-                    "attributeName": "sk",
-                    "attributeType": "N"
-                  }
-                ],
-                "billingMode": "PROVISIONED",
-                "globalSecondaryIndexes": [
-                  {
-                    "indexName": "gsi1",
-                    "keySchema": [
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-global-table/GlobalTable/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::GlobalTable",
+                  "aws:cdk:cloudformation:props": {
+                    "attributeDefinitions": [
                       {
                         "attributeName": "pk",
-                        "keyType": "HASH"
-                      }
-                    ],
-                    "projection": {
-                      "projectionType": "ALL"
-                    },
-                    "writeProvisionedThroughputSettings": {
-                      "writeCapacityAutoScalingSettings": {
-                        "minCapacity": 1,
-                        "maxCapacity": 20,
-                        "targetTrackingScalingPolicyConfiguration": {
-                          "targetValue": 60
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "indexName": "gsi2",
-                    "keySchema": [
+                        "attributeType": "S"
+                      },
                       {
-                        "attributeName": "pk",
-                        "keyType": "HASH"
+                        "attributeName": "sk",
+                        "attributeType": "N"
                       }
                     ],
-                    "projection": {
-                      "projectionType": "ALL"
-                    },
-                    "writeProvisionedThroughputSettings": {
-                      "writeCapacityAutoScalingSettings": {
-                        "minCapacity": 1,
-                        "maxCapacity": 30,
-                        "targetTrackingScalingPolicyConfiguration": {
-                          "targetValue": 70
+                    "billingMode": "PROVISIONED",
+                    "globalSecondaryIndexes": [
+                      {
+                        "indexName": "gsi1",
+                        "keySchema": [
+                          {
+                            "attributeName": "pk",
+                            "keyType": "HASH"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        },
+                        "writeProvisionedThroughputSettings": {
+                          "writeCapacityAutoScalingSettings": {
+                            "minCapacity": 1,
+                            "maxCapacity": 20,
+                            "seedCapacity": 10,
+                            "targetTrackingScalingPolicyConfiguration": {
+                              "targetValue": 60
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "indexName": "gsi2",
+                        "keySchema": [
+                          {
+                            "attributeName": "pk",
+                            "keyType": "HASH"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        },
+                        "writeProvisionedThroughputSettings": {
+                          "writeCapacityAutoScalingSettings": {
+                            "minCapacity": 1,
+                            "maxCapacity": 30,
+                            "targetTrackingScalingPolicyConfiguration": {
+                              "targetValue": 70
+                            }
+                          }
                         }
                       }
-                    }
-                  }
-                ],
-                "keySchema": [
-                  {
-                    "attributeName": "pk",
-                    "keyType": "HASH"
-                  },
-                  {
-                    "attributeName": "sk",
-                    "keyType": "RANGE"
-                  }
-                ],
-                "localSecondaryIndexes": [
-                  {
-                    "indexName": "lsi",
+                    ],
                     "keySchema": [
                       {
                         "attributeName": "pk",
@@ -145,148 +129,186 @@
                         "keyType": "RANGE"
                       }
                     ],
-                    "projection": {
-                      "projectionType": "ALL"
-                    }
-                  }
-                ],
-                "replicas": [
-                  {
-                    "region": "us-east-2",
-                    "globalSecondaryIndexes": [
+                    "localSecondaryIndexes": [
                       {
-                        "indexName": "gsi1",
-                        "readProvisionedThroughputSettings": {
-                          "readCapacityUnits": 10
-                        },
+                        "indexName": "lsi",
+                        "keySchema": [
+                          {
+                            "attributeName": "pk",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "sk",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        }
+                      }
+                    ],
+                    "replicas": [
+                      {
+                        "region": "us-east-2",
+                        "globalSecondaryIndexes": [
+                          {
+                            "indexName": "gsi1",
+                            "readProvisionedThroughputSettings": {
+                              "readCapacityUnits": 10
+                            },
+                            "contributorInsightsSpecification": {
+                              "enabled": true
+                            }
+                          },
+                          {
+                            "indexName": "gsi2",
+                            "readProvisionedThroughputSettings": {
+                              "readCapacityUnits": 10
+                            },
+                            "contributorInsightsSpecification": {
+                              "enabled": false
+                            }
+                          }
+                        ],
+                        "tableClass": "STANDARD_INFREQUENT_ACCESS",
                         "contributorInsightsSpecification": {
                           "enabled": true
-                        }
+                        },
+                        "pointInTimeRecoverySpecification": {
+                          "pointInTimeRecoveryEnabled": true
+                        },
+                        "readProvisionedThroughputSettings": {
+                          "readCapacityAutoScalingSettings": {
+                            "minCapacity": 5,
+                            "maxCapacity": 25,
+                            "targetTrackingScalingPolicyConfiguration": {
+                              "targetValue": 70
+                            }
+                          }
+                        },
+                        "tags": [
+                          {
+                            "key": "USE2ReplicaTagKey",
+                            "value": "USE2ReplicaTagValue"
+                          }
+                        ]
                       },
                       {
-                        "indexName": "gsi2",
-                        "readProvisionedThroughputSettings": {
-                          "readCapacityUnits": 10
-                        },
+                        "region": "us-west-2",
+                        "globalSecondaryIndexes": [
+                          {
+                            "indexName": "gsi1",
+                            "readProvisionedThroughputSettings": {
+                              "readCapacityUnits": 15
+                            }
+                          },
+                          {
+                            "indexName": "gsi2",
+                            "readProvisionedThroughputSettings": {
+                              "readCapacityUnits": 10
+                            },
+                            "contributorInsightsSpecification": {
+                              "enabled": true
+                            }
+                          }
+                        ],
+                        "tableClass": "STANDARD",
                         "contributorInsightsSpecification": {
                           "enabled": false
-                        }
-                      }
-                    ],
-                    "tableClass": "STANDARD_INFREQUENT_ACCESS",
-                    "contributorInsightsSpecification": {
-                      "enabled": true
-                    },
-                    "pointInTimeRecoverySpecification": {
-                      "pointInTimeRecoveryEnabled": true
-                    },
-                    "readProvisionedThroughputSettings": {
-                      "readCapacityAutoScalingSettings": {
-                        "minCapacity": 5,
-                        "maxCapacity": 25,
-                        "targetTrackingScalingPolicyConfiguration": {
-                          "targetValue": 70
-                        }
-                      }
-                    }
-                  },
-                  {
-                    "region": "us-west-2",
-                    "globalSecondaryIndexes": [
-                      {
-                        "indexName": "gsi1",
+                        },
+                        "pointInTimeRecoverySpecification": {
+                          "pointInTimeRecoveryEnabled": true
+                        },
                         "readProvisionedThroughputSettings": {
-                          "readCapacityUnits": 15
-                        }
+                          "readCapacityUnits": 10
+                        },
+                        "tags": [
+                          {
+                            "key": "USW2ReplicaTagKey",
+                            "value": "USW2ReplicaTagValue"
+                          }
+                        ]
                       },
                       {
-                        "indexName": "gsi2",
-                        "readProvisionedThroughputSettings": {
-                          "readCapacityUnits": 10
+                        "region": "us-east-1",
+                        "globalSecondaryIndexes": [
+                          {
+                            "indexName": "gsi1",
+                            "readProvisionedThroughputSettings": {
+                              "readCapacityUnits": 10
+                            },
+                            "contributorInsightsSpecification": {
+                              "enabled": true
+                            }
+                          },
+                          {
+                            "indexName": "gsi2",
+                            "readProvisionedThroughputSettings": {
+                              "readCapacityUnits": 10
+                            },
+                            "contributorInsightsSpecification": {
+                              "enabled": true
+                            }
+                          }
+                        ],
+                        "tableClass": "STANDARD_INFREQUENT_ACCESS",
+                        "kinesisStreamSpecification": {
+                          "streamArn": {
+                            "Fn::GetAtt": [
+                              "Stream790BDEE4",
+                              "Arn"
+                            ]
+                          }
                         },
                         "contributorInsightsSpecification": {
                           "enabled": true
-                        }
-                      }
-                    ],
-                    "tableClass": "STANDARD",
-                    "contributorInsightsSpecification": {
-                      "enabled": false
-                    },
-                    "pointInTimeRecoverySpecification": {
-                      "pointInTimeRecoveryEnabled": true
-                    },
-                    "readProvisionedThroughputSettings": {
-                      "readCapacityUnits": 10
-                    }
-                  },
-                  {
-                    "region": "us-east-1",
-                    "globalSecondaryIndexes": [
-                      {
-                        "indexName": "gsi1",
+                        },
+                        "pointInTimeRecoverySpecification": {
+                          "pointInTimeRecoveryEnabled": true
+                        },
                         "readProvisionedThroughputSettings": {
                           "readCapacityUnits": 10
                         },
-                        "contributorInsightsSpecification": {
-                          "enabled": true
-                        }
-                      },
-                      {
-                        "indexName": "gsi2",
-                        "readProvisionedThroughputSettings": {
-                          "readCapacityUnits": 10
-                        },
-                        "contributorInsightsSpecification": {
-                          "enabled": true
-                        }
-                      }
-                    ],
-                    "tableClass": "STANDARD_INFREQUENT_ACCESS",
-                    "kinesisStreamSpecification": {
-                      "streamArn": {
-                        "Fn::GetAtt": [
-                          "Stream790BDEE4",
-                          "Arn"
+                        "tags": [
+                          {
+                            "key": "primaryTableTagKey",
+                            "value": "primaryTableTagValue"
+                          }
                         ]
                       }
+                    ],
+                    "sseSpecification": {
+                      "sseEnabled": true,
+                      "sseType": "KMS"
                     },
-                    "contributorInsightsSpecification": {
+                    "streamSpecification": {
+                      "streamViewType": "NEW_AND_OLD_IMAGES"
+                    },
+                    "tableName": "my-global-table",
+                    "timeToLiveSpecification": {
+                      "attributeName": "attr",
                       "enabled": true
                     },
-                    "pointInTimeRecoverySpecification": {
-                      "pointInTimeRecoveryEnabled": true
-                    },
-                    "readProvisionedThroughputSettings": {
-                      "readCapacityUnits": 10
+                    "writeProvisionedThroughputSettings": {
+                      "writeCapacityAutoScalingSettings": {
+                        "minCapacity": 1,
+                        "maxCapacity": 20,
+                        "seedCapacity": 10,
+                        "targetTrackingScalingPolicyConfiguration": {
+                          "targetValue": 60
+                        }
+                      }
                     }
                   }
-                ],
-                "sseSpecification": {
-                  "sseEnabled": true,
-                  "sseType": "KMS"
                 },
-                "streamSpecification": {
-                  "streamViewType": "NEW_AND_OLD_IMAGES"
-                },
-                "tableName": "my-global-table",
-                "timeToLiveSpecification": {
-                  "attributeName": "attr",
-                  "enabled": true
-                },
-                "writeProvisionedThroughputSettings": {
-                  "writeCapacityAutoScalingSettings": {
-                    "minCapacity": 1,
-                    "maxCapacity": 20,
-                    "targetTrackingScalingPolicyConfiguration": {
-                      "targetValue": 60
-                    }
-                  }
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnGlobalTable",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.CfnGlobalTable",
+              "fqn": "aws-cdk-lib.aws_dynamodb.TableV2",
               "version": "0.0.0"
             }
           },

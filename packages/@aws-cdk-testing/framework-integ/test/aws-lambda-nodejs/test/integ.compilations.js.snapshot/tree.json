@@ -105,13 +105,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "8df6c4f7f61921e6f88f328521b8a71aef10b045b77847bd61cfe75cf3a64c32.zip"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "tsdecoratorhandlerServiceRole61E9E52C",
-                        "Arn"
-                      ]
+                      "s3Key": "2344c8450ec3c069ed98fedf1714f33c31b9f3c8e0d295ea361224732e1fef37.zip"
                     },
                     "environment": {
                       "variables": {
@@ -119,7 +113,13 @@
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs16.x"
+                    "role": {
+                      "Fn::GetAtt": [
+                        "tsdecoratorhandlerServiceRole61E9E52C",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -230,13 +230,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "26114660303fbc916c9e0f48b544e4360bb361bf9a2d87cf720983c8028ef314.zip"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "tsdecoratorhandlertsconfigServiceRoleC4AE481E",
-                        "Arn"
-                      ]
+                      "s3Key": "112c693f98d7e411850f8d441167216bdfe392567d99a11e03b6cd921e36398b.zip"
                     },
                     "environment": {
                       "variables": {
@@ -244,7 +238,13 @@
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs16.x"
+                    "role": {
+                      "Fn::GetAtt": [
+                        "tsdecoratorhandlertsconfigServiceRoleC4AE481E",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -285,7 +285,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.17"
+          "version": "10.2.70"
         }
       }
     },

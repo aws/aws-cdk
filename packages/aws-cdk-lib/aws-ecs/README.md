@@ -490,8 +490,7 @@ newContainer.addSecret('API_KEY', ecs.Secret.fromSecretsManager(secret));
 newContainer.addSecret('DB_PASSWORD', ecs.Secret.fromSecretsManager(secret, 'password'));
 ```
 
-The task execution role is automatically granted read permissions on the secrets/parameters. Support for environment
-files is restricted to the EC2 launch type for files hosted on S3. Further details provided in the AWS documentation
+The task execution role is automatically granted read permissions on the secrets/parameters. Further details provided in the AWS documentation
 about [specifying environment variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html).
 
 ### Linux parameters
@@ -1309,6 +1308,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 
 const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
   autoScalingGroup,
+  instanceWarmupPeriod: 300,
 });
 cluster.addAsgCapacityProvider(capacityProvider);
 

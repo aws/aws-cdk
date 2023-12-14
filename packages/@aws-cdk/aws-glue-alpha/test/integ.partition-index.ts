@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as glue from '../lib';
 
 /**
@@ -38,7 +38,7 @@ const partitionKeys = [{
   type: glue.Schema.BIG_INT,
 }];
 
-const csvTable = new glue.Table(stack, 'CSVTable', {
+const csvTable = new glue.S3Table(stack, 'CSVTable', {
   database,
   bucket,
   tableName: 'csv_table',
@@ -56,7 +56,7 @@ csvTable.addPartitionIndex({
   keyNames: ['month', 'year'],
 });
 
-const jsonTable = new glue.Table(stack, 'JSONTable', {
+const jsonTable = new glue.S3Table(stack, 'JSONTable', {
   database,
   bucket,
   tableName: 'json_table',

@@ -38,72 +38,19 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4a61519d8f4df8206cfaff4e519462aa81beab9213c3642a1353cd679c697638.zip"
+     "S3Key": "b8cec122f25692e8b194663d25a2ee5e0b65e55df966120791d6a3ddc08fc136.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027"
-   ]
-  },
-  "Eval2a430b68eb4b40269232ee39b71c1db8ServiceRole2388DF3C": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "Eval2a430b68eb4b40269232ee39b71c1db8D6CA9948": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-     },
-     "S3Key": "4a61519d8f4df8206cfaff4e519462aa81beab9213c3642a1353cd679c697638.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "Eval2a430b68eb4b40269232ee39b71c1db8ServiceRole2388DF3C",
-      "Arn"
-     ]
-    },
-    "Handler": "index.handler",
-    "Runtime": "nodejs16.x"
-   },
-   "DependsOn": [
-    "Eval2a430b68eb4b40269232ee39b71c1db8ServiceRole2388DF3C"
    ]
   },
   "Eval078d40d3fb4e4d5394a79c46fc11fe02ServiceRoleDD279E15": {
@@ -144,15 +91,15 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4a61519d8f4df8206cfaff4e519462aa81beab9213c3642a1353cd679c697638.zip"
+     "S3Key": "b8cec122f25692e8b194663d25a2ee5e0b65e55df966120791d6a3ddc08fc136.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "Eval078d40d3fb4e4d5394a79c46fc11fe02ServiceRoleDD279E15",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
@@ -193,12 +140,6 @@
         },
         {
          "Fn::GetAtt": [
-          "Eval2a430b68eb4b40269232ee39b71c1db8D6CA9948",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
           "Eval41256dc5445742738ed917bc818694e54EB1134F",
           "Arn"
          ]
@@ -210,20 +151,6 @@
            {
             "Fn::GetAtt": [
              "Eval078d40d3fb4e4d5394a79c46fc11fe029D0ED2B4",
-             "Arn"
-            ]
-           },
-           ":*"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "Eval2a430b68eb4b40269232ee39b71c1db8D6CA9948",
              "Arn"
             ]
            },
@@ -261,12 +188,6 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "StateMachineRoleB840431D",
-      "Arn"
-     ]
-    },
     "DefinitionString": {
      "Fn::Join": [
       "",
@@ -281,7 +202,7 @@
        "\",\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}}},\"Multiply\":{\"Next\":\"Wait\",\"Type\":\"Task\",\"ResultPath\":\"$.d\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
-         "Eval2a430b68eb4b40269232ee39b71c1db8D6CA9948",
+         "Eval078d40d3fb4e4d5394a79c46fc11fe029D0ED2B4",
          "Arn"
         ]
        },
@@ -294,6 +215,12 @@
        },
        "\",\"Parameters\":{\"expression\":\"(new Date()).toUTCString()\",\"expressionAttributeValues\":{}}}}}"
       ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
      ]
     }
    },

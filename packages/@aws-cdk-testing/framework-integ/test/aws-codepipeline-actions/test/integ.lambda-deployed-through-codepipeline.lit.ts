@@ -5,6 +5,7 @@ import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App();
 
@@ -14,7 +15,7 @@ const lambdaCode = lambda.Code.fromCfnParameters();
 new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 // other resources that your Lambda needs, added to the lambdaStack...
 

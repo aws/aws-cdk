@@ -5,6 +5,9 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 import { sameEnvDimension } from './util';
 
+/**
+ * Use an AWS Lambda function as a target for AWS EventBridge Scheduler.
+ */
 export class LambdaInvoke extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
     private readonly func: lambda.IFunction,

@@ -50,9 +50,19 @@ export enum ImageId {
    */
   AMAZON_LINUX_2 = 'amazonlinux-2-x86_64',
   /**
-   * Create using Ubunut 18.04
+   * Create using Amazon Linux 2023
    */
-  UBUNTU_18_04 = 'ubuntu-18.04-x86_64'
+  AMAZON_LINUX_2023 = 'amazonlinux-2023-x86_64',
+  /**
+   * Create using Ubuntu 18.04
+   *
+   * @deprecated Since Ubuntu 18.04 has ended standard support as of May 31, 2023, we recommend you choose Ubuntu 22.04.
+   */
+  UBUNTU_18_04 = 'ubuntu-18.04-x86_64',
+  /**
+   * Create using Ubuntu 22.04
+   */
+  UBUNTU_22_04 = 'ubuntu-22.04-x86_64',
 }
 /**
  * Properties for Ec2Environment
@@ -255,6 +265,26 @@ export class Owner {
    */
   public static user(user: IUser): Owner {
     return { ownerArn: user.userArn };
+  }
+
+  /**
+   * Make an IAM assumed role the environment owner
+   *
+   * @param accountId The account id of the target account
+   * @param roleName The name of the assumed role
+   */
+  public static assumedRole(accountId: string, roleName: string): Owner {
+    return { ownerArn: `arn:${cdk.Aws.PARTITION}:sts::${accountId}:assumed-role/${roleName}` };
+  }
+
+  /**
+   * Make an IAM federated user the environment owner
+   *
+   * @param accountId The AccountId of the target account
+   * @param userName The name of the federated user
+   */
+  public static federatedUser(accountId: string, userName: string): Owner {
+    return { ownerArn: `arn:${cdk.Aws.PARTITION}:sts::${accountId}:federated-user/${userName}` };
   }
 
   /**

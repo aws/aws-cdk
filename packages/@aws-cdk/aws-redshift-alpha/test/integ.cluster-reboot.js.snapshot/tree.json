@@ -627,7 +627,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
+                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-create/Cluster/ResourceProvider)",
                             "environment": {
@@ -855,7 +855,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "150d6d543b3449c5f0fdc67c7b539346a3d0b79a88d6c709e5366b4bc9e3071a.zip"
+                      "s3Key": "ee4fd508abceff33b2eb40d478daa3c4050865ba44eadbb24ac42fb53689da48.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -1528,7 +1528,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
+                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-update/Cluster/ResourceProvider)",
                             "environment": {
@@ -1756,7 +1756,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "150d6d543b3449c5f0fdc67c7b539346a3d0b79a88d6c709e5366b4bc9e3071a.zip"
+                      "s3Key": "ee4fd508abceff33b2eb40d478daa3c4050865ba44eadbb24ac42fb53689da48.zip"
                     },
                     "handler": "index.handler",
                     "role": {

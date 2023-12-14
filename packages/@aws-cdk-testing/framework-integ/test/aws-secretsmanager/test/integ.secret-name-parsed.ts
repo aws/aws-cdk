@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import { STANDARD_CUSTOM_RESOURCE_PROVIDER_RUNTIME } from '../../config';
 
 /**
  * Creates several secrets, with varying names and IDs, with the parseOwnedSecretName feature flag set,
@@ -21,7 +22,7 @@ class SecretsManagerStack extends cdk.Stack {
     const resourceType = 'Custom::IntegVerificationSecretNameMatches';
     const serviceToken = cdk.CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: path.join(__dirname, 'integ.secret-name-parsed.handler'),
-      runtime: cdk.CustomResourceProviderRuntime.NODEJS_16_X,
+      runtime: STANDARD_CUSTOM_RESOURCE_PROVIDER_RUNTIME,
       policyStatements: [{
         Effect: 'Allow',
         Resource: secrets.map(s => s.secretArn),

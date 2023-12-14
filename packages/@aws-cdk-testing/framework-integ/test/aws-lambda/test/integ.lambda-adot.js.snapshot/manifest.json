@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "Stack1.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/01afe8da9ea87a08ed5fcd6d1210bdfcbf70eb76bc879920d41504c4dd273cd3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/75e2bf084797f71f99ed5cb6f35bb6f1ee8a42cbbdb4ccd99008c5792941bbed.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -49,12 +50,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFunc11BE70A62"
-          }
-        ],
-        "/Stack1/Adot-lambda-layerMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AdotlambdalayerMap"
           }
         ],
         "/Stack1/MyFunc2/ServiceRole/Resource": [
@@ -157,10 +152,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "Stack2.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e1c2a4ae63b9add2950b0c729d6797444548224838167f8f20396b4852ad246a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0a53257b39135563c9bc8a0266ed700fb15d8858f13e44c476dbfd549668a4c6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -192,12 +188,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyFunc11BE70A62"
-          }
-        ],
-        "/Stack2/Adot-lambda-layerMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AdotlambdalayerMap"
           }
         ],
         "/Stack2/MyFunc2/ServiceRole/Resource": [
@@ -300,6 +290,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "IntegTestDefaultTestDeployAssertE3E7D2A4.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

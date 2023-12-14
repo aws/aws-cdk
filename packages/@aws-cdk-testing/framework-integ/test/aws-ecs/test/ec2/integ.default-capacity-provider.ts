@@ -26,6 +26,7 @@ const cp = new ecs.AsgCapacityProvider(stack, 'EC2CapacityProvider', {
   autoScalingGroup,
   // This is to allow cdk destroy to work; otherwise deletion will hang bc ASG cannot be deleted
   enableManagedTerminationProtection: false,
+  instanceWarmupPeriod: 301,
 });
 
 const cluster = new ecs.Cluster(stack, 'EC2CPCluster', {

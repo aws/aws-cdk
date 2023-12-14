@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/ae0dd0d32332147cd7ad825eef90902d72051b1cb41575b1da051ae1432ceeb3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/1df2a063637431950933d7ccf8615a083531eab4220b10ff7fd125499eef355e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -55,14 +55,14 @@
           {
             "type": "aws:cdk:hasPhysicalName",
             "data": {
-              "Ref": "Resource"
+              "Ref": "GlobalTable89F068B2"
             }
           }
         ],
-        "/BarStack/Resource": [
+        "/BarStack/GlobalTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Resource"
+            "data": "GlobalTable89F068B2"
           }
         ],
         "/BarStack/BootstrapVersion": [
@@ -96,7 +96,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d84b161adac191a3d95e0159eef748887619f5e395685d03abb2e6093b913505.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e679ff0ed7219610286b91fef2fccc9e00c903d344fa3d93358b440940c5a71e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

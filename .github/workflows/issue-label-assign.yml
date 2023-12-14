@@ -58,7 +58,7 @@ jobs:
 env:
  OSDS_DEVS: >
            {
-             "assignees":["NGL321","peterwoodworth"]
+             "assignees":["indrora","khushail","hunhsieh"]
            }
 
  AREA_AFFIXES: >
@@ -239,6 +239,8 @@ env:
             {"area":"@aws-cdk/aws-s3outposts","keywords":["aws-s3outposts","s3outposts"],"labels":["@aws-cdk/aws-s3outposts"]},
             {"area":"@aws-cdk/aws-sagemaker","keywords":["aws-sagemaker","sagemaker"],"labels":["@aws-cdk/aws-sagemaker"]},
             {"area":"@aws-cdk/aws-sam","keywords":["serverless-application-model","aws-sam","sam"],"labels":["@aws-cdk/aws-sam"]},
+            {"area":"@aws-cdk/aws-scheduler","keywords":["aws-scheduler","scheduler"],"labels":["@aws-cdk/aws-scheduler"]},
+            {"area":"@aws-cdk/aws-scheduler-targets","keywords":["aws-scheduler-targets","scheduler-targets"],"labels":["@aws-cdk/aws-scheduler-targets"]},
             {"area":"@aws-cdk/aws-sdb","keywords":["simpledb","aws-sdb","sdb"],"labels":["@aws-cdk/aws-sdb"]},
             {"area":"@aws-cdk/aws-secretsmanager","keywords":["secret","aws-secretsmanager","secrets-manager"],"labels":["@aws-cdk/aws-secretsmanager"]},
             {"area":"@aws-cdk/aws-securityhub","keywords":["aws-securityhub","security-hub"],"labels":["@aws-cdk/aws-securityhub"]},
@@ -263,7 +265,6 @@ env:
             {"area":"@aws-cdk/aws-wafv2","keywords":["wafv2","aws-wafv2"],"labels":["@aws-cdk/aws-wafv2"]},
             {"area":"@aws-cdk/aws-workspaces","keywords":["aws-workspaces","workspaces"],"labels":["@aws-cdk/aws-workspaces"]},
             {"area":"@aws-cdk/aws-xray","keywords":["aws-xray","xray"],"labels":["@aws-cdk/aws-xray"]},
-            {"area":"@aws-cdk/cfnspec","keywords":["cfnspec"],"labels":["@aws-cdk/cfnspec"]},
             {"area":"@aws-cdk/cloud-assembly-schema","keywords":["cloud-assembly-schema","manifest"],"labels":["@aws-cdk/cloud-assembly-schema"]},
             {"area":"@aws-cdk/cloudformation-diff","keywords":["cloudformation-diff","cfn-diff"],"labels":["@aws-cdk/cloudformation-diff"]},
             {"area":"@aws-cdk/cloudformation-include","keywords":["cloudformation-include","cfn-include"],"labels":["@aws-cdk/cloudformation-include"]},

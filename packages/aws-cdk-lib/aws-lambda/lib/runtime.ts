@@ -105,7 +105,13 @@ export class Runtime {
   public static readonly NODEJS_18_X = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
-   * The latest NodeJS version currently available
+   * The NodeJS 20.x runtime (nodejs20.x)
+   */
+  public static readonly NODEJS_20_X = new Runtime('nodejs20.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
+
+  /**
+   * The latest NodeJS version currently available in ALL regions (not necessarily the latest NodeJS version
+   * available in YOUR region).
    */
   public static readonly NODEJS_LATEST = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 
@@ -168,6 +174,14 @@ export class Runtime {
   });
 
   /**
+   * The Python 3.12 runtime (python3.12)
+   */
+  public static readonly PYTHON_3_12 = new Runtime('python3.12', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+    supportsCodeGuruProfiling: true,
+  });
+
+  /**
    * The Java 8 runtime (java8)
    */
   public static readonly JAVA_8 = new Runtime('java8', RuntimeFamily.JAVA, {
@@ -193,6 +207,14 @@ export class Runtime {
    * The Java 17 runtime (java17)
    */
   public static readonly JAVA_17 = new Runtime('java17', RuntimeFamily.JAVA, {
+    supportsCodeGuruProfiling: true,
+    supportsSnapStart: true,
+  });
+
+  /**
+   * The Java 21 runtime (java21)
+   */
+  public static readonly JAVA_21 = new Runtime('java21', RuntimeFamily.JAVA, {
     supportsCodeGuruProfiling: true,
     supportsSnapStart: true,
   });
@@ -228,7 +250,7 @@ export class Runtime {
 
   /**
    * The Go 1.x runtime (go1.x)
-   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the PROVIDED_AL2 runtime.
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the PROVIDED_AL2023 runtime.
    */
   public static readonly GO_1_X = new Runtime('go1.x', RuntimeFamily.GO);
 
@@ -250,14 +272,19 @@ export class Runtime {
 
   /**
    * The custom provided runtime (provided)
-   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest provided.al2 runtime.
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest provided.al2023 runtime.
    */
   public static readonly PROVIDED = new Runtime('provided', RuntimeFamily.OTHER);
 
   /**
-   * The custom provided runtime (provided)
+   * The custom provided runtime with Amazon Linux 2 (provided.al2)
    */
   public static readonly PROVIDED_AL2 = new Runtime('provided.al2', RuntimeFamily.OTHER);
+
+  /**
+   * The custom provided runtime with Amazon Linux 2023 (provided.al2023)
+   */
+  public static readonly PROVIDED_AL2023 = new Runtime('provided.al2023', RuntimeFamily.OTHER);
 
   /**
    * A special runtime entry to be used when function is using a docker image.
@@ -304,7 +331,7 @@ export class Runtime {
   /**
    * Enabled for runtime enums that always target the latest available.
    */
-  public readonly isVariable: Boolean;
+  public readonly isVariable: boolean;
 
   constructor(name: string, family?: RuntimeFamily, props: LambdaRuntimeProps = {}) {
     this.name = name;

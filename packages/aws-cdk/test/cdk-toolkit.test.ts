@@ -54,10 +54,12 @@ jest.mock('../lib/logging', () => ({
 }));
 jest.setTimeout(30_000);
 
+import * as os from 'os';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs-extra';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 import { MockSdkProvider } from './util/mock-sdk';
 import { Bootstrapper } from '../lib/api/bootstrap';
@@ -858,6 +860,132 @@ describe('synth', () => {
     process.env.STACKS_TO_VALIDATE = undefined;
   });
 
+  describe('migrate', () => {
+    const testResourcePath = [__dirname, 'commands', 'test-resources'];
+    const templatePath = [...testResourcePath, 'templates'];
+    const sqsTemplatePath = path.join(...templatePath, 'sqs-template.json');
+    const autoscalingTemplatePath = path.join(...templatePath, 'autoscaling-template.yml');
+    const s3TemplatePath = path.join(...templatePath, 's3-template.json');
+
+    test('migrate fails when neither --from-path or --from-stack are provided', async () => {
+      const toolkit = defaultToolkitSetup();
+      await expect(() => toolkit.migrate({ stackName: 'no-source' })).rejects.toThrowError('Either `--from-path` or `--from-stack` must be used to provide the source of the CloudFormation template.');
+      expect(stderrMock.mock.calls[1][0]).toContain(' ❌  Migrate failed for `no-source`: Either `--from-path` or `--from-stack` must be used to provide the source of the CloudFormation template.');
+    });
+
+    test('migrate fails when both --from-path and --from-stack are provided', async () => {
+      const toolkit = defaultToolkitSetup();
+      await expect(() => toolkit.migrate({
+        stackName: 'no-source',
+        fromPath: './here/template.yml',
+        fromStack: true,
+      })).rejects.toThrowError('Only one of `--from-path` or `--from-stack` may be provided.');
+      expect(stderrMock.mock.calls[1][0]).toContain(' ❌  Migrate failed for `no-source`: Only one of `--from-path` or `--from-stack` may be provided.');
+    });
+
+    test('migrate fails when --from-path is invalid', async () => {
+      const toolkit = defaultToolkitSetup();
+      await expect(() => toolkit.migrate({
+        stackName: 'bad-local-source',
+        fromPath: './here/template.yml',
+      })).rejects.toThrowError('\'./here/template.yml\' is not a valid path.');
+      expect(stderrMock.mock.calls[1][0]).toContain(' ❌  Migrate failed for `bad-local-source`: \'./here/template.yml\' is not a valid path.');
+    });
+
+    test('migrate fails when --from-stack is used and stack does not exist in account', async () => {
+      const mockSdkProvider = new MockSdkProvider();
+      mockSdkProvider.stubCloudFormation({
+        getTemplate(_request) {
+          throw new Error('Stack does not exist in this environment');
+        },
+      });
+
+      const mockCloudExecutable = new MockCloudExecutable({
+        stacks: [],
+      });
+
+      const cdkToolkit = new CdkToolkit({
+        cloudExecutable: mockCloudExecutable,
+        deployments: new Deployments({ sdkProvider: mockSdkProvider }),
+        sdkProvider: mockSdkProvider,
+        configuration: mockCloudExecutable.configuration,
+      });
+
+      await expect(() => cdkToolkit.migrate({
+        stackName: 'bad-cloudformation-source',
+        fromStack: true,
+      })).rejects.toThrowError('Stack does not exist in this environment');
+      expect(stderrMock.mock.calls[1][0]).toContain(' ❌  Migrate failed for `bad-cloudformation-source`: Stack does not exist in this environment');
+    });
+
+    test('migrate fails when stack cannot be generated', async () => {
+      const toolkit = defaultToolkitSetup();
+      await expect(() => toolkit.migrate({
+        stackName: 'cannot-generate-template',
+        fromPath: path.join(__dirname, 'commands', 'test-resources', 'templates', 'sqs-template.json'),
+        language: 'rust',
+      })).rejects.toThrowError('stack generation failed due to error \'unreachable\'');
+      expect(stderrMock.mock.calls[1][0]).toContain(' ❌  Migrate failed for `cannot-generate-template`: stack generation failed due to error \'unreachable\'');
+    });
+
+    cliTest('migrate succeeds for valid template from local path when no lanugage is provided', async (workDir) => {
+      const toolkit = defaultToolkitSetup();
+      await toolkit.migrate({
+        stackName: 'SQSTypeScript',
+        fromPath: sqsTemplatePath,
+        outputPath: workDir,
+      });
+
+      // Packages created for typescript
+      expect(fs.pathExistsSync(path.join(workDir, 'SQSTypeScript', 'package.json'))).toBeTruthy();
+      expect(fs.pathExistsSync(path.join(workDir, 'SQSTypeScript', 'bin', 'sqs_type_script.ts'))).toBeTruthy();
+      expect(fs.pathExistsSync(path.join(workDir, 'SQSTypeScript', 'lib', 'sqs_type_script-stack.ts'))).toBeTruthy();
+    });
+
+    cliTest('migrate succeeds for valid template from local path when lanugage is provided', async (workDir) => {
+      const toolkit = defaultToolkitSetup();
+      await toolkit.migrate({
+        stackName: 'S3Python',
+        fromPath: s3TemplatePath,
+        outputPath: workDir,
+        language: 'python',
+      });
+
+      // Packages created for typescript
+      expect(fs.pathExistsSync(path.join(workDir, 'S3Python', 'requirements.txt'))).toBeTruthy();
+      expect(fs.pathExistsSync(path.join(workDir, 'S3Python', 'app.py'))).toBeTruthy();
+      expect(fs.pathExistsSync(path.join(workDir, 'S3Python', 's3_python', 's3_python_stack.py'))).toBeTruthy();
+    });
+
+    cliTest('migrate call is idempotent', async (workDir) => {
+      const toolkit = defaultToolkitSetup();
+      await toolkit.migrate({
+        stackName: 'AutoscalingCSharp',
+        fromPath: autoscalingTemplatePath,
+        outputPath: workDir,
+        language: 'csharp',
+      });
+
+      // Packages created for typescript
+      expect(fs.pathExistsSync(path.join(workDir, 'AutoscalingCSharp', 'src', 'AutoscalingCSharp.sln'))).toBeTruthy();
+      expect(fs.pathExistsSync(path.join(workDir, 'AutoscalingCSharp', 'src', 'AutoscalingCSharp', 'Program.cs'))).toBeTruthy();
+      expect(fs.pathExistsSync(path.join(workDir, 'AutoscalingCSharp', 'src', 'AutoscalingCSharp', 'AutoscalingCSharpStack.cs'))).toBeTruthy();
+
+      // One more time
+      await toolkit.migrate({
+        stackName: 'AutoscalingCSharp',
+        fromPath: autoscalingTemplatePath,
+        outputPath: workDir,
+        language: 'csharp',
+      });
+
+      // Packages created for typescript
+      expect(fs.pathExistsSync(path.join(workDir, 'AutoscalingCSharp', 'src', 'AutoscalingCSharp.sln'))).toBeTruthy();
+      expect(fs.pathExistsSync(path.join(workDir, 'AutoscalingCSharp', 'src', 'AutoscalingCSharp', 'Program.cs'))).toBeTruthy();
+      expect(fs.pathExistsSync(path.join(workDir, 'AutoscalingCSharp', 'src', 'AutoscalingCSharp', 'AutoscalingCSharpStack.cs'))).toBeTruthy();
+    });
+  });
+
   describe('stack with error and flagged for validation', () => {
     beforeEach(() => {
       cloudExecutable = new MockCloudExecutable({
@@ -1096,5 +1224,18 @@ class FakeCloudFormation extends Deployments {
       default:
         return Promise.reject(`Not an expected mock stack: ${stack.stackName}`);
     }
+  }
+}
+
+function cliTest(name: string, handler: (dir: string) => void | Promise<any>): void {
+  test(name, () => withTempDir(handler));
+}
+
+async function withTempDir(cb: (dir: string) => void | Promise<any>) {
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aws-cdk-test'));
+  try {
+    await cb(tmpDir);
+  } finally {
+    await fs.remove(tmpDir);
   }
 }

@@ -330,19 +330,23 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
 ## Data with deploy-time values
 
 The content passed to `Source.data()`, `Source.jsonData()`, or `Source.yamlData()` can include
-references that will get resolved only during deployment.
+references that will get resolved only during deployment. Only a subset of CloudFormation functions
+are supported however, namely: Ref, Fn::GetAtt, Fn::Join, and Fn::Select (Fn::Split may be nested under Fn::Select).
 
 For example:
 
 ```ts
 import * as sns from 'aws-cdk-lib/aws-sns';
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 declare const destinationBucket: s3.Bucket;
 declare const topic: sns.Topic;
+declare const tg: elbv2.ApplicationTargetGroup;
 
 const appConfig = {
   topic_arn: topic.topicArn,
   base_url: 'https://my-endpoint',
+  lb_name: tg.firstLoadBalancerFullName,
 };
 
 new s3deploy.BucketDeployment(this, 'BucketDeployment', {

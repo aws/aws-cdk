@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-stepfunctions-tasks-eks-call-integ-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/83cab5fc521b04b09223a736a1c0418eccbd1cd117bcec92d8a14a6272296a5c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/17292e2d384bb2ead67dd1b6006181ddc3b72dbb48a0334d47156a6369a0471c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -36,7 +36,7 @@
         "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster": [
           {
             "type": "aws:cdk:warning",
-            "data": "You created a cluster with Kubernetes Version 1.22 without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v22."
+            "data": "You created a cluster with Kubernetes Version 1.22 without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v22. [ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]"
           }
         ],
         "/aws-stepfunctions-tasks-eks-call-integ-test/EksCluster/DefaultVpc/Resource": [

@@ -88,7 +88,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -137,7 +137,7 @@
                 "path": "integ-distribution-lambda/Dist/Origin1",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.2.70"
                 }
               },
               "Resource": {
@@ -166,7 +166,7 @@
                         "lambdaFunctionAssociations": [
                           {
                             "lambdaFunctionArn": {
-                              "Ref": "LambdaCurrentVersionDF706F6A4a4114aafbc0b051484aa55344a7be37"
+                              "Ref": "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05"
                             },
                             "eventType": "origin-request"
                           }
@@ -215,7 +215,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },

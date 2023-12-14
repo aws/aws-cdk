@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: 'Download artifact'
         if: github.event_name == 'workflow_run'
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
             let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
@@ -71,7 +71,7 @@ jobs:
     needs: download-if-workflow-run
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install & Build prlint
         run: yarn install --frozen-lockfile && cd tools/@aws-cdk/prlint && yarn build+test

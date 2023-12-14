@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { CaCertificate } from './ca-certificate';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
@@ -348,54 +349,6 @@ export enum NetworkType {
 }
 
 /**
- * The CA certificate used for this DB instance.
- *
- * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL.html
- */
-export class CaCertificate {
-  /**
-   * rds-ca-2019 certificate authority
-   */
-  public static readonly RDS_CA_2019 = CaCertificate.of('rds-ca-2019');
-
-  /**
-   * rds-ca-ecc384-g1 certificate authority
-   */
-  public static readonly RDS_CA_ECC384_G1 = CaCertificate.of('rds-ca-ecc384-g1');
-
-  /**
-   * rds-ca-rsa2048-g1 certificate authority
-   */
-  public static readonly RDS_CA_RDS2048_G1 = CaCertificate.of('rds-ca-rsa2048-g1');
-
-  /**
-   * rds-ca-rsa4096-g1 certificate authority
-   */
-  public static readonly RDS_CA_RDS4096_G1 = CaCertificate.of('rds-ca-rsa4096-g1');
-
-  /**
-   * Custom CA certificate
-   *
-   * @param identifier - CA certificate identifier
-   */
-  public static of(identifier: string) {
-    return new CaCertificate(identifier);
-  }
-
-  /**
-   * @param identifier - CA certificate identifier
-   */
-  private constructor(private readonly identifier: string) { }
-
-  /**
-   * Returns the CA certificate identifier as a string
-   */
-  public toString(): string {
-    return this.identifier;
-  }
-}
-
-/**
  * Construction properties for a DatabaseInstanceNew
  */
 export interface DatabaseInstanceNewProps {
@@ -557,7 +510,7 @@ export interface DatabaseInstanceNewProps {
    * Indicates whether automated backups should be deleted or retained when
    * you delete a DB instance.
    *
-   * @default false
+   * @default true
    */
   readonly deleteAutomatedBackups?: boolean;
 
@@ -579,7 +532,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * Whether to enable Performance Insights for the DB instance.
    *
-   * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.
+   * @default - false, unless ``performanceInsightRetention`` or ``performanceInsightEncryptionKey`` is set.
    */
   readonly enablePerformanceInsights?: boolean;
 
@@ -749,9 +702,11 @@ export interface DatabaseInstanceNewProps {
   readonly s3ExportBuckets?: s3.IBucket[];
 
   /**
-   * Indicates whether the DB instance is an internet-facing instance.
+   * Indicates whether the DB instance is an internet-facing instance. If not specified,
+   * the instance's vpcSubnets will be used to determine if the instance is internet-facing
+   * or not.
    *
-   * @default - `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
+   * @default - `true` if the instance's `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
    */
   readonly publiclyAccessible?: boolean;
 
@@ -886,6 +841,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       : props.instanceIdentifier;
 
     const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
+    const isInPublicSubnet = this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC;
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
@@ -919,7 +875,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
-      publiclyAccessible: props.publiclyAccessible ?? (this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC),
+      publiclyAccessible: props.publiclyAccessible ?? isInPublicSubnet,
       storageType,
       storageThroughput: props.storageThroughput,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),

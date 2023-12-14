@@ -14,6 +14,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "PipelineSecurityStackPreProductionMyStackDCCBB4EA.template.json",
+        "terminationProtection": false,
         "validateOnSynth": true,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

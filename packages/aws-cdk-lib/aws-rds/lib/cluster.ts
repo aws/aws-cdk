@@ -2,23 +2,23 @@ import { Construct } from 'constructs';
 import { IAuroraClusterInstance, IClusterInstance, InstanceType } from './aurora-cluster-instance';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
-import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { NetworkType } from './instance';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
-import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials } from './private/util';
 import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { Annotations, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Token } from '../../core';
+import { Annotations, ArnFormat, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -458,6 +458,19 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
       targetType: secretsmanager.AttachmentTargetType.RDS_DB_CLUSTER,
     };
   }
+
+  public grantConnect(grantee: iam.IGrantable, dbUser: string): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      actions: ['rds-db:connect'],
+      grantee,
+      resourceArns: [Stack.of(this).formatArn({
+        service: 'rds-db',
+        resource: 'dbuser',
+        resourceName: `${this.clusterResourceIdentifier}/${dbUser}`,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      })],
+    });
+  }
 }
 
 /**
@@ -655,6 +668,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       subnetGroup: this.subnetGroup,
       promotionTier: 0, // override the promotion tier so that writers are always 0
     });
+    instanceIdentifiers.push(writer.instanceIdentifier);
+
     (props.readers ?? []).forEach(instance => {
       const clusterInstance = instance.bind(this, this, {
         monitoringInterval: props.monitoringInterval,
@@ -1147,38 +1162,27 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     if (!props.credentials && !props.snapshotCredentials) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-rds:generatedCredsNotApplied', 'Generated credentials will not be applied to cluster. Use `snapshotCredentials` instead. `addRotationSingleUser()` and `addRotationMultiUser()` cannot be used on this cluster.');
     }
-    const deprecatedCredentials = renderCredentials(this, props.engine, props.credentials);
 
-    let credentials = props.snapshotCredentials;
-    let secret = credentials?.secret;
-    if (!secret && credentials?.generatePassword) {
-      if (!credentials.username) {
-        throw new Error('`snapshotCredentials` `username` must be specified when `generatePassword` is set to true');
-      }
+    const deprecatedCredentials = !FeatureFlags.of(this).isEnabled(cxapi.RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS)
+      ? renderCredentials(this, props.engine, props.credentials)
+      : undefined;
 
-      secret = new DatabaseSecret(this, 'SnapshotSecret', {
-        username: credentials.username,
-        encryptionKey: credentials.encryptionKey,
-        excludeCharacters: credentials.excludeCharacters,
-        replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
-        replicaRegions: credentials.replicaRegions,
-      });
-    }
+    const credentials = renderSnapshotCredentials(this, props.snapshotCredentials);
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       snapshotIdentifier: props.snapshotIdentifier,
-      masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
+      masterUserPassword: credentials?.secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
     this.clusterIdentifier = cluster.ref;
     this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
 
-    if (secret) {
-      this.secret = secret.attach(this);
+    if (credentials?.secret) {
+      this.secret = credentials.secret.attach(this);
     }
 
-    if (deprecatedCredentials.secret) {
+    if (deprecatedCredentials?.secret) {
       const deprecatedSecret = deprecatedCredentials.secret.attach(this);
       if (!this.secret) {
         this.secret = deprecatedSecret;

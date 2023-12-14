@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { CaCertificate } from './ca-certificate';
 import { DatabaseCluster } from './cluster';
 import { IDatabaseCluster } from './cluster-ref';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
@@ -9,7 +10,8 @@ import { ISubnetGroup } from './subnet-group';
 import * as ec2 from '../../aws-ec2';
 import { IRole } from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { IResource, Resource, Duration, RemovalPolicy, ArnFormat } from '../../core';
+import { IResource, Resource, Duration, RemovalPolicy, ArnFormat, FeatureFlags } from '../../core';
+import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from '../../cx-api';
 
 /**
  * Options for binding the instance to the cluster
@@ -194,7 +196,7 @@ export interface ClusterInstanceOptions {
   /**
    * Whether to enable Performance Insights for the DB instance.
    *
-   * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.
+   * @default - false, unless ``performanceInsightRetention`` or ``performanceInsightEncryptionKey`` is set.
    */
   readonly enablePerformanceInsights?: boolean;
 
@@ -213,9 +215,11 @@ export interface ClusterInstanceOptions {
   readonly performanceInsightEncryptionKey?: kms.IKey;
 
   /**
-   * Indicates whether the DB instance is an internet-facing instance.
+   * Indicates whether the DB instance is an internet-facing instance. If not specified,
+   * the cluster's vpcSubnets will be used to determine if the instance is internet-facing
+   * or not.
    *
-   * @default - true if the instance is placed in a public subnet
+   * @default - `true` if the cluster's `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
    */
   readonly publiclyAccessible?: boolean;
 
@@ -292,6 +296,20 @@ export interface ClusterInstanceOptions {
    * @default false
    */
   readonly isFromLegacyInstanceProps?: boolean;
+
+  /**
+   * The identifier of the CA certificate for this DB cluster's instances.
+   *
+   * Specifying or updating this property triggers a reboot.
+   *
+   * For RDS DB engines:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html
+   * For Aurora DB engines:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html
+   *
+   * @default - RDS will choose a certificate authority
+   */
+  readonly caCertificate?: CaCertificate;
 }
 
 /**
@@ -438,7 +456,8 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
     if (isOwnedResource) {
       const ownedCluster = props.cluster as DatabaseCluster;
       internetConnected = ownedCluster.vpc.selectSubnets(ownedCluster.vpcSubnets).internetConnectivityEstablished;
-      publiclyAccessible = ownedCluster.vpcSubnets && ownedCluster.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
+      const isInPublicSubnet = ownedCluster.vpcSubnets && ownedCluster.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC;
+      publiclyAccessible = props.publiclyAccessible ?? isInPublicSubnet;
     }
 
     // Get the actual subnet objects so we can depend on internet connectivity.
@@ -456,10 +475,15 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
 
     const instanceParameterGroup = props.parameterGroup ?? (
       props.parameters
-        ? new ParameterGroup(props.cluster, 'InstanceParameterGroup', {
-          engine: engine,
-          parameters: props.parameters,
-        })
+        ? FeatureFlags.of(this).isEnabled(AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS)
+          ? new ParameterGroup(this, 'InstanceParameterGroup', {
+            engine: engine,
+            parameters: props.parameters,
+          })
+          : new ParameterGroup(props.cluster, 'InstanceParameterGroup', {
+            engine: engine,
+            parameters: props.parameters,
+          })
         : undefined
     );
     const instanceParameterGroupConfig = instanceParameterGroup?.bindToInstance({});
@@ -489,6 +513,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         monitoringRoleArn: props.monitoringRole && props.monitoringRole.roleArn,
         autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
         allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
+        caCertificateIdentifier: props.caCertificate && props.caCertificate.toString(),
       });
     // For instances that are part of a cluster:
     //

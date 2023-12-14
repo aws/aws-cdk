@@ -4,7 +4,7 @@ import { CfnCondition } from './cfn-condition';
 /* eslint-disable import/order */
 import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
-import { Construct, IConstruct, Node } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { addDependency, obtainDependencies, removeDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
 import { Reference } from './reference';
@@ -34,10 +34,10 @@ export interface CfnResourceProps {
  */
 export class CfnResource extends CfnRefElement {
   /**
-   * Check whether the given construct is a CfnResource
+   * Check whether the given object is a CfnResource
    */
-  public static isCfnResource(construct: IConstruct): construct is CfnResource {
-    return (construct as any).cfnResourceType !== undefined;
+  public static isCfnResource(x: any): x is CfnResource {
+    return x !== null && typeof(x) === 'object' && x.cfnResourceType !== undefined;
   }
 
   // MAINTAINERS NOTE: this class serves as the base class for the generated L1
@@ -651,6 +651,10 @@ function deepMerge(target: any, ...sources: any[]) {
     }
 
     for (const key of Object.keys(source)) {
+      if (key === '__proto__' || key === 'constructor') {
+        continue;
+      }
+
       const value = source[key];
       if (typeof(value) === 'object' && value != null && !Array.isArray(value)) {
         // if the value at the target is not an object, override it with an

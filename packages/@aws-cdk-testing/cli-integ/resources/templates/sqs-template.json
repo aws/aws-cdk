@@ -1,0 +1,36 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "AWS CloudFormation Sample Template SQS_With_CloudWatch_Alarms: Sample template showing how to create an SQS queue with AWS CloudWatch alarms on queue depth.",
+  "Resources": {
+    "MyQueue": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {}
+    }
+  },
+  "Outputs": {
+    "QueueURL": {
+      "Description": "URL of newly created SQS Queue",
+      "Value": {
+        "Ref": "MyQueue"
+      }
+    },
+    "QueueARN": {
+      "Description": "ARN of newly created SQS Queue",
+      "Value": {
+        "Fn::GetAtt": [
+          "MyQueue",
+          "Arn"
+        ]
+      }
+    },
+    "QueueName": {
+      "Description": "Name newly created SQS Queue",
+      "Value": {
+        "Fn::GetAtt": [
+          "MyQueue",
+          "QueueName"
+        ]
+      }
+    }
+  }
+}

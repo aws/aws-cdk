@@ -146,7 +146,7 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
       if (typeof(resolvedTemplate) === 'string') {
         // need to add the quotes back to the string so that we can parse the json
         // '{"timestamp": <time>}' -> '{"timestamp": "<time>"}'
-        const quotedTemplate = resolvedTemplate.replace(new RegExp('(\<.*?\>)', 'g'), '"$1"');
+        const quotedTemplate = resolvedTemplate.replace(new RegExp('(<[^<>]*?>)', 'g'), '"$1"');
         try {
           const inputTemplate = JSON.parse(quotedTemplate);
           const inputTemplateKeys = Object.keys(inputTemplate);

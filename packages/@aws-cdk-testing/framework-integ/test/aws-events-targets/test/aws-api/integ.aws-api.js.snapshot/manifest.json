@@ -17,17 +17,21 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0aa39a2215da743f8b755eac76d55706c97c54008e0d316a8031873cbc137eab.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/076d2960ddc5e50c824089b5c7115b57f0535042dbfd2431072ca5565abd4e0e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": ["aws-cdk-aws-api-target-integ.assets"],
+        "additionalDependencies": [
+          "aws-cdk-aws-api-target-integ.assets"
+        ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
-      "dependencies": ["aws-cdk-aws-api-target-integ.assets"],
+      "dependencies": [
+        "aws-cdk-aws-api-target-integ.assets"
+      ],
       "metadata": {
         "/aws-cdk-aws-api-target-integ/ScheduleRule/Resource": [
           {
@@ -65,18 +69,6 @@
             "data": "AWSb4cf1abd4e4f4bc699441af7ccd9ec371511E620"
           }
         ],
-        "/aws-cdk-aws-api-target-integ/PatternRule/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PatternRule4AF6D328"
-          }
-        ],
-        "/aws-cdk-aws-api-target-integ/PatternRule/AllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PatternRuleAllowEventRuleawscdkawsapitargetintegPatternRulePatternRuleTarget0HandlerA0821464BB49C5D3"
-          }
-        ],
         "/aws-cdk-aws-api-target-integ/TestParameter/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -95,10 +87,34 @@
             "data": "UpdateSSMRuleAllowEventRuleawscdkawsapitargetintegUpdateSSMRuleUpdateSSMRuleTarget0Handler573B788B9ACEE6B4"
           }
         ],
+        "/aws-cdk-aws-api-target-integ/EncryptionKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EncryptionKey1B843E66"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/EncryptDataRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EncryptDataRule79774425"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/EncryptDataRule/AllowEventRuleawscdkawsapitargetintegEncryptDataRuleEncryptDataRuleTarget0HandlerC3017ED8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EncryptDataRuleAllowEventRuleawscdkawsapitargetintegEncryptDataRuleEncryptDataRuleTarget0HandlerC3017ED86520046E"
+          }
+        ],
         "/aws-cdk-aws-api-target-integ/Exports/Output{\"Ref\":\"TestParameter95DD6E25\"}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefTestParameter95DD6E25D868FBA1"
+          }
+        ],
+        "/aws-cdk-aws-api-target-integ/Exports/Output{\"Ref\":\"EncryptionKey1B843E66\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefEncryptionKey1B843E66D737BCFC"
           }
         ],
         "/aws-cdk-aws-api-target-integ/BootstrapVersion": [
@@ -132,7 +148,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/064cd42f1756c4eb6b0ca19ca585a010458d08dbbd483b3e4a0ae43754b5fc71.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5bc2d8dc18aea9cb45dfece5e3def8a8a7b694cc50ede31bbbba4bf5505a3f79.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -149,10 +165,10 @@
         "awsapiintegDefaultTestDeployAssertBB35B14E.assets"
       ],
       "metadata": {
-        "/aws-api-integ/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents930f27f5cac3888f90228bdb49e27c64/Default/Default": [
+        "/aws-api-integ/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents13ba168ed67d6e97ff2c94cc14e4d276/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallEventBridgeputEvents930f27f5cac3888f90228bdb49e27c64"
+            "data": "AwsApiCallEventBridgeputEvents13ba168ed67d6e97ff2c94cc14e4d276"
           }
         ],
         "/aws-api-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [

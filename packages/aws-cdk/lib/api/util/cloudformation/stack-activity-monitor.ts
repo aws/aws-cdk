@@ -221,14 +221,15 @@ export class StackActivityMonitor {
    * see a next page and the last event in the page is new to us (and within the time window).
    * haven't seen the final event
    */
-  private async readNewEvents(): Promise<void> {
+  private async readNewEvents(stackName?: string): Promise<void> {
+    const stackToPollForEvents = stackName ?? this.stackName;
     const events: StackActivity[] = [];
-
+    const CFN_SUCCESS_STATUS = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'DELETE_COMPLETE', 'DELETE_SKIPPED'];
     try {
       let nextToken: string | undefined;
       let finished = false;
       while (!finished) {
-        const response = await this.cfn.describeStackEvents({ StackName: this.stackName, NextToken: nextToken }).promise();
+        const response = await this.cfn.describeStackEvents({ StackName: stackToPollForEvents, NextToken: nextToken }).promise();
         const eventPage = response?.StackEvents ?? [];
 
         for (const event of eventPage) {
@@ -249,6 +250,13 @@ export class StackActivityMonitor {
             event: event,
             metadata: this.findMetadataFor(event.LogicalResourceId),
           });
+
+          if (event.ResourceType === 'AWS::CloudFormation::Stack' && !CFN_SUCCESS_STATUS.includes(event.ResourceStatus ?? '')) {
+            // If the event is not for `this` stack and has a physical resource Id, recursively call for events in the nested stack
+            if (event.PhysicalResourceId && event.PhysicalResourceId !== stackToPollForEvents) {
+              await this.readNewEvents(event.PhysicalResourceId);
+            }
+          }
         }
 
         // We're also done if there's nothing left to read
@@ -258,7 +266,7 @@ export class StackActivityMonitor {
         }
       }
     } catch (e: any) {
-      if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
+      if (e.code === 'ValidationError' && e.message === `Stack [${stackToPollForEvents}] does not exist`) {
         return;
       }
       throw e;
@@ -475,7 +483,7 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
       this.resourcesPrevCompleteState[activity.event.LogicalResourceId] = status;
     }
 
-    if (hookStatus!== undefined && hookStatus.endsWith('_COMPLETE_FAILED') && activity.event.LogicalResourceId !== undefined && hookType !== undefined) {
+    if (hookStatus !== undefined && hookStatus.endsWith('_COMPLETE_FAILED') && activity.event.LogicalResourceId !== undefined && hookType !== undefined) {
 
       if (this.hookFailureMap.has(activity.event.LogicalResourceId)) {
         this.hookFailureMap.get(activity.event.LogicalResourceId)?.set(hookType, activity.event.HookStatusReason ?? '');
@@ -803,4 +811,3 @@ function shorten(maxWidth: number, p: string) {
 
 const TIMESTAMP_WIDTH = 12;
 const STATUS_WIDTH = 20;
-

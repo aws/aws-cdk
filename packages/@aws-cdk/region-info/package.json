@@ -84,7 +84,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "aws-cdk-lib": "0.0.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^29.5.4",
+    "@types/jest": "^29.5.11",
     "fs-extra": "^9.1.0"
   },
   "repository": {
@@ -102,13 +102,6 @@
   },
   "stability": "stable",
   "maturity": "stable",
-  "awslint": {
-    "exclude": [
-      "docs-public-apis:@aws-cdk/region-info.Fact.regions",
-      "docs-public-apis:@aws-cdk/region-info.RegionInfo.regions",
-      "docs-public-apis:@aws-cdk/region-info.RegionInfo.name"
-    ]
-  },
   "nozem": {
     "ostools": [
       "bash"

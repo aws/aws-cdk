@@ -124,7 +124,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -179,7 +179,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaAliasPCECurrentVersion072335D34a3f83f8218b6b94346920ff28a940e4",
+                        "MyLambdaAliasPCECurrentVersion072335D3abd7022526e1eae404a6f2a50ba64569",
                         "Version"
                       ]
                     },
@@ -342,7 +342,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -400,7 +400,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaVersionPCECurrentVersion27FC39322c322873dbc351359405806a77875357",
+                        "MyLambdaVersionPCECurrentVersion27FC3932e3372865403c1e027068d9691afe3f3f",
                         "Version"
                       ]
                     },
@@ -471,7 +471,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },

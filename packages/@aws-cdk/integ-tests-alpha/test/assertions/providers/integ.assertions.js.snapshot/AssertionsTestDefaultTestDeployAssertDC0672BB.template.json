@@ -28,7 +28,7 @@
      "WithDecryption": "true"
     },
     "flattenResponse": "false",
-    "salt": "1689703949818"
+    "salt": "1696292331033"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -67,6 +67,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "ssm:GetParameter"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -82,7 +91,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "855b18ac2a744f847c78764c4effd335c5b424915174596732358882002a9b6e.zip"
+     "S3Key": "725b0df96c2f47516947f7471b1187d8db70a7b45e4ae44c5e9430cdf9e75767.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -93,6 +102,42 @@
      ]
     }
    }
+  },
+  "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f21": {
+   "Type": "Custom::DeployAssert@SdkCallSSMgetParameter",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SSM",
+    "api": "getParameter",
+    "expected": "{\"$ObjectLike\":{\"Parameter\":{\"Type\":\"String\",\"Value\":\"ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ!\\\"#¤%&/()=?`´^*+~_-.,:;<>|\"}}}",
+    "parameters": {
+     "Name": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "Assertions:ExportsOutputRefUtf8Parameter528A4835"
+        },
+        "\""
+       ]
+      ]
+     },
+     "WithDecryption": "true"
+    },
+    "flattenResponse": "false",
+    "salt": "1696292331034"
+   },
+   "DependsOn": [
+    "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
@@ -100,6 +145,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f21": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f21",
      "assertion"
     ]
    }

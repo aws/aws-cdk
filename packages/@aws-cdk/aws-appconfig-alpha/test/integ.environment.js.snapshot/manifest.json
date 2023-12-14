@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "aws-appconfig-environment.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-appconfig-environment.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5a83c94c795349286c703ba61add79efe69c74c7adb8de98527fcf034b9683af.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6452c0ef7699cda5c609159e92012f180afda9cac21a0cba23acff97b8734de7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -45,10 +46,28 @@
             "data": "MyAlarm696658B6"
           }
         ],
-        "/aws-appconfig-environment/MyEnvironment/Role/Resource": [
+        "/aws-appconfig-environment/MyRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyEnvironmentRoleC08961D3"
+            "data": "MyRoleF48FFE04"
+          }
+        ],
+        "/aws-appconfig-environment/MyCompositeAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCompositeAlarm0F045229"
+          }
+        ],
+        "/aws-appconfig-environment/MyEnvironment/Role0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyEnvironmentRole01C8C013F"
+          }
+        ],
+        "/aws-appconfig-environment/MyEnvironment/RoleCompositeAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyEnvironmentRoleCompositeAlarm8C2A0542"
           }
         ],
         "/aws-appconfig-environment/MyEnvironment/Resource": [
@@ -85,6 +104,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "appconfigenvironmentDefaultTestDeployAssert75BD28E7.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

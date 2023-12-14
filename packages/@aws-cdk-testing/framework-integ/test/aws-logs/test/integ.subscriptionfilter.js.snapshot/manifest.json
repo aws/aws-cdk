@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-subscriptionfilter-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -11,20 +11,21 @@
     },
     "aws-cdk-subscriptionfilter-integ": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://355939527584/us-east-1",
+      "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-subscriptionfilter-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::355939527584:role/cdk-hnb659fds-deploy-role-355939527584-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::355939527584:role/cdk-hnb659fds-cfn-exec-role-355939527584-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-355939527584-us-east-1/7db545e495a738edfcd36389d734d374090aa78c8532312439ddb90cfffdc1ef.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7db545e495a738edfcd36389d734d374090aa78c8532312439ddb90cfffdc1ef.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "aws-cdk-subscriptionfilter-integ.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::355939527584:role/cdk-hnb659fds-lookup-role-355939527584-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -91,6 +92,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integtestDefaultTestDeployAssert24D5C536.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

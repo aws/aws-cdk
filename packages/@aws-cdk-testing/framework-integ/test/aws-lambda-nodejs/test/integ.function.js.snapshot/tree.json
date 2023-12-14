@@ -20,8 +20,8 @@
                     "id": "ImportServiceRole",
                     "path": "cdk-integ-lambda-nodejs/ts-handler/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "Resource": {
@@ -59,14 +59,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "Code": {
@@ -77,22 +77,22 @@
                     "id": "Stage",
                     "path": "cdk-integ-lambda-nodejs/ts-handler/Code/Stage",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
                     "path": "cdk-integ-lambda-nodejs/ts-handler/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "Resource": {
@@ -119,18 +119,143 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "ts-handler-log-level": {
+            "id": "ts-handler-log-level",
+            "path": "cdk-integ-lambda-nodejs/ts-handler-log-level",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "cdk-integ-lambda-nodejs/ts-handler-log-level/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "cdk-integ-lambda-nodejs/ts-handler-log-level/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-integ-lambda-nodejs/ts-handler-log-level/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "cdk-integ-lambda-nodejs/ts-handler-log-level/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "cdk-integ-lambda-nodejs/ts-handler-log-level/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "cdk-integ-lambda-nodejs/ts-handler-log-level/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-lambda-nodejs/ts-handler-log-level/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "5017e4b2e278e32bc634202d075b7ed8961b0d784f75450f7918a6a4f6f7df4a.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+                      }
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "tshandlerloglevelServiceRole8512BC45",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           },
           "js-handler": {
@@ -145,8 +270,8 @@
                     "id": "ImportServiceRole",
                     "path": "cdk-integ-lambda-nodejs/js-handler/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "Resource": {
@@ -184,14 +309,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "Code": {
@@ -202,22 +327,22 @@
                     "id": "Stage",
                     "path": "cdk-integ-lambda-nodejs/js-handler/Code/Stage",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
                     "path": "cdk-integ-lambda-nodejs/js-handler/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "Resource": {
@@ -244,18 +369,18 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           },
           "Vpc": {
@@ -281,8 +406,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "PublicSubnet1": {
@@ -325,16 +450,16 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "RouteTable": {
@@ -355,8 +480,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "RouteTableAssociation": {
@@ -374,8 +499,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "DefaultRoute": {
@@ -394,8 +519,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "EIP": {
@@ -414,8 +539,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "NATGateway": {
@@ -442,14 +567,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "PublicSubnet2": {
@@ -492,16 +617,16 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "RouteTable": {
@@ -522,8 +647,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "RouteTableAssociation": {
@@ -541,8 +666,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "DefaultRoute": {
@@ -561,8 +686,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "EIP": {
@@ -581,8 +706,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "NATGateway": {
@@ -609,14 +734,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "PrivateSubnet1": {
@@ -659,16 +784,16 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "RouteTable": {
@@ -689,8 +814,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "RouteTableAssociation": {
@@ -708,8 +833,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "DefaultRoute": {
@@ -728,14 +853,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "PrivateSubnet2": {
@@ -778,16 +903,16 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "RouteTable": {
@@ -808,8 +933,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "RouteTableAssociation": {
@@ -827,8 +952,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "DefaultRoute": {
@@ -847,14 +972,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "IGW": {
@@ -872,8 +997,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "VPCGW": {
@@ -891,14 +1016,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           },
           "ts-handler-vpc": {
@@ -913,8 +1038,8 @@
                     "id": "ImportServiceRole",
                     "path": "cdk-integ-lambda-nodejs/ts-handler-vpc/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "Resource": {
@@ -964,14 +1089,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "Code": {
@@ -982,22 +1107,22 @@
                     "id": "Stage",
                     "path": "cdk-integ-lambda-nodejs/ts-handler-vpc/Code/Stage",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
                     "path": "cdk-integ-lambda-nodejs/ts-handler-vpc/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "SecurityGroup": {
@@ -1024,14 +1149,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "Resource": {
@@ -1058,7 +1183,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x",
+                    "runtime": "nodejs18.x",
                     "vpcConfig": {
                       "subnetIds": [
                         {
@@ -1080,14 +1205,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           },
           "ts-handler-custom-handler-no-dots": {
@@ -1102,8 +1227,8 @@
                     "id": "ImportServiceRole",
                     "path": "cdk-integ-lambda-nodejs/ts-handler-custom-handler-no-dots/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "Resource": {
@@ -1141,14 +1266,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "Code": {
@@ -1159,22 +1284,22 @@
                     "id": "Stage",
                     "path": "cdk-integ-lambda-nodejs/ts-handler-custom-handler-no-dots/Code/Stage",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
                     "path": "cdk-integ-lambda-nodejs/ts-handler-custom-handler-no-dots/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "Resource": {
@@ -1201,26 +1326,26 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           },
           "lambda-adapter-layer": {
             "id": "lambda-adapter-layer",
             "path": "cdk-integ-lambda-nodejs/lambda-adapter-layer",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           },
           "ts-handler-custom-handler-dots": {
@@ -1235,8 +1360,8 @@
                     "id": "ImportServiceRole",
                     "path": "cdk-integ-lambda-nodejs/ts-handler-custom-handler-dots/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "Resource": {
@@ -1274,14 +1399,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "Code": {
@@ -1292,22 +1417,22 @@
                     "id": "Stage",
                     "path": "cdk-integ-lambda-nodejs/ts-handler-custom-handler-dots/Code/Stage",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
                     "path": "cdk-integ-lambda-nodejs/ts-handler-custom-handler-dots/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "Resource": {
@@ -1348,40 +1473,40 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "cdk-integ-lambda-nodejs/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "cdk-integ-lambda-nodejs/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
         }
       },
       "Tree": {
@@ -1389,13 +1514,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.2.70"
     }
   }
 }

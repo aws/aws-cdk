@@ -19,7 +19,7 @@
     }
    }
   },
-  "Resource": {
+  "GlobalTable89F068B2": {
    "Type": "AWS::DynamoDB::GlobalTable",
    "Properties": {
     "AttributeDefinitions": [
@@ -49,6 +49,7 @@
        "WriteCapacityAutoScalingSettings": {
         "MaxCapacity": 20,
         "MinCapacity": 1,
+        "SeedCapacity": 10,
         "TargetTrackingScalingPolicyConfiguration": {
          "TargetValue": 60
         }
@@ -143,7 +144,13 @@
        }
       },
       "Region": "us-east-2",
-      "TableClass": "STANDARD_INFREQUENT_ACCESS"
+      "TableClass": "STANDARD_INFREQUENT_ACCESS",
+      "Tags": [
+       {
+        "Key": "USE2ReplicaTagKey",
+        "Value": "USE2ReplicaTagValue"
+       }
+      ]
      },
      {
       "ContributorInsightsSpecification": {
@@ -173,7 +180,13 @@
        "ReadCapacityUnits": 10
       },
       "Region": "us-west-2",
-      "TableClass": "STANDARD"
+      "TableClass": "STANDARD",
+      "Tags": [
+       {
+        "Key": "USW2ReplicaTagKey",
+        "Value": "USW2ReplicaTagValue"
+       }
+      ]
      },
      {
       "ContributorInsightsSpecification": {
@@ -214,7 +227,13 @@
        "ReadCapacityUnits": 10
       },
       "Region": "us-east-1",
-      "TableClass": "STANDARD_INFREQUENT_ACCESS"
+      "TableClass": "STANDARD_INFREQUENT_ACCESS",
+      "Tags": [
+       {
+        "Key": "primaryTableTagKey",
+        "Value": "primaryTableTagValue"
+       }
+      ]
      }
     ],
     "SSESpecification": {
@@ -233,6 +252,7 @@
      "WriteCapacityAutoScalingSettings": {
       "MaxCapacity": 20,
       "MinCapacity": 1,
+      "SeedCapacity": 10,
       "TargetTrackingScalingPolicyConfiguration": {
        "TargetValue": 60
       }

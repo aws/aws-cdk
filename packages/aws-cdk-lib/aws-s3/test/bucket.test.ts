@@ -439,6 +439,103 @@ describe('bucket', () => {
     });
   });
 
+  test('with minimumTLSVersion', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      enforceSSL: true,
+      minimumTLSVersion: 1.2,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': 's3:*',
+            'Condition': {
+              'Bool': {
+                'aws:SecureTransport': 'false',
+              },
+            },
+            'Effect': 'Deny',
+            'Principal': { AWS: '*' },
+            'Resource': [
+              {
+                'Fn::GetAtt': [
+                  'MyBucketF68F3FF0',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyBucketF68F3FF0',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            'Action': 's3:*',
+            'Condition': {
+              'NumericLessThan': {
+                's3:TlsVersion': 1.2,
+              },
+            },
+            'Effect': 'Deny',
+            'Principal': { AWS: '*' },
+            'Resource': [
+              {
+                'Fn::GetAtt': [
+                  'MyBucketF68F3FF0',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyBucketF68F3FF0',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+    });
+  });
+
+  test('enforceSSL must be enabled for minimumTLSVersion to work', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket1', {
+        enforceSSL: false,
+        minimumTLSVersion: 1.2,
+      });
+    }).toThrow(/'enforceSSL' must be enabled for 'minimumTLSVersion' to be applied/);
+
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket2', {
+        minimumTLSVersion: 1.2,
+      });
+    }).toThrow(/'enforceSSL' must be enabled for 'minimumTLSVersion' to be applied/);
+  });
+
   test.each([s3.BucketEncryption.KMS, s3.BucketEncryption.KMS_MANAGED])('bucketKeyEnabled can be enabled with %p encryption', (encryption) => {
     const stack = new cdk.Stack();
 
@@ -3037,6 +3134,49 @@ describe('bucket', () => {
     });
   });
 
+  test('Inventory Ids are shortened to 64 characters', () => {
+    // Given
+    const stack = new cdk.Stack();
+
+    const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket');
+    new s3.Bucket(stack, 'AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVery@#$+:;?!&LongNodeIdName', {
+      inventories: [
+        {
+          destination: {
+            bucket: inventoryBucket,
+          },
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      InventoryConfigurations: Match.arrayWith([
+        Match.objectLike({
+          Id: 'VeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongNodeIdNameInventory0',
+        }),
+      ]),
+    });
+  });
+
+  test('throws when inventoryid is invalid', () => {
+    // Given
+    const stack = new cdk.Stack();
+
+    const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket');
+    new s3.Bucket(stack, 'MyBucket2', {
+      inventories: [
+        {
+          destination: {
+            bucket: inventoryBucket,
+          },
+          inventoryId: 'InvalidId&123',
+        },
+      ],
+    });
+
+    expect(() => Template.fromStack(stack)).toThrow(/inventoryId should not exceed 64 characters and should not contain special characters except . and -, got InvalidId&123/);
+  });
+
   test('Bucket with objectOwnership set to BUCKET_OWNER_ENFORCED', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
@@ -3149,6 +3289,7 @@ describe('bucket', () => {
         'Statement': [
           {
             'Action': [
+              's3:PutBucketPolicy',
               's3:GetBucket*',
               's3:List*',
               's3:DeleteObject*',
@@ -3546,3 +3687,4 @@ describe('bucket', () => {
     });
   });
 });
+

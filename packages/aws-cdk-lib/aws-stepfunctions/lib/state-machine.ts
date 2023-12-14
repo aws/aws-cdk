@@ -101,7 +101,7 @@ export interface StateMachineProps {
   readonly definitionBody?: DefinitionBody;
 
   /**
-   * substitutions for the definition body aas a key-value map
+   * substitutions for the definition body as a key-value map
    */
   readonly definitionSubstitutions?: { [key: string]: string };
 

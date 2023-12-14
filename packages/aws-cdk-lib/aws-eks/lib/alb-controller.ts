@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Construct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import { Cluster } from './cluster';
 import { HelmChart } from './helm-chart';
 import { ServiceAccount } from './service-account';
@@ -8,7 +8,7 @@ import * as iam from '../../aws-iam';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { Duration, Names, Stack } from '../../core';
+import { Aws, Duration, Names, Stack } from '../../core';
 
 /**
  * Controller version.
@@ -126,6 +126,36 @@ export class AlbControllerVersion {
    * v2.5.1
    */
   public static readonly V2_5_1 = new AlbControllerVersion('v2.5.1', '1.5.2', false);
+
+  /**
+   * v2.5.2
+   */
+  public static readonly V2_5_2 = new AlbControllerVersion('v2.5.2', '1.5.3', false);
+
+  /**
+   * v2.5.3
+   */
+  public static readonly V2_5_3 = new AlbControllerVersion('v2.5.3', '1.5.4', false);
+
+  /**
+   * v2.5.4
+   */
+  public static readonly V2_5_4 = new AlbControllerVersion('v2.5.4', '1.5.5', false);
+
+  /**
+   * v2.6.0
+   */
+  public static readonly V2_6_0 = new AlbControllerVersion('v2.6.0', '1.6.0', false);
+
+  /**
+   * v2.6.1
+   */
+  public static readonly V2_6_1 = new AlbControllerVersion('v2.6.1', '1.6.1', false);
+
+  /**
+   * v2.6.2
+   */
+  public static readonly V2_6_2 = new AlbControllerVersion('v2.6.2', '1.6.2', false);
 
   /**
    * Specify a custom version and an associated helm chart version.
@@ -263,7 +293,11 @@ export class AlbController extends Construct {
     const policy: any = props.policy ?? JSON.parse(fs.readFileSync(path.join(__dirname, 'addons', `alb-iam_policy-${props.version.version}.json`), 'utf8'));
 
     for (const statement of policy.Statement) {
-      serviceAccount.addToPrincipalPolicy(iam.PolicyStatement.fromJson(statement));
+      const rewrittenStatement = {
+        ...statement,
+        Resource: this.rewritePolicyResources(statement.Resource),
+      };
+      serviceAccount.addToPrincipalPolicy(iam.PolicyStatement.fromJson(rewrittenStatement));
     }
 
     // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#add-controller-to-cluster
@@ -293,8 +327,24 @@ export class AlbController extends Construct {
     });
 
     // the controller relies on permissions deployed using these resources.
-    Node.of(chart).addDependency(serviceAccount);
-    Node.of(chart).addDependency(props.cluster.openIdConnectProvider);
-    Node.of(chart).addDependency(props.cluster.awsAuth);
+    chart.node.addDependency(serviceAccount);
+    chart.node.addDependency(props.cluster.openIdConnectProvider);
+    chart.node.addDependency(props.cluster.awsAuth);
+  }
+
+  private rewritePolicyResources(resources: string | string[] | undefined): string | string[] | undefined {
+    // This is safe to disable because we're actually replacing the literal partition with a reference to
+    // the stack partition (which is hardcoded into the JSON files) to prevent issues such as
+    // aws/aws-cdk#22520.
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    const rewriteResource = (s: string) => s.replace('arn:aws:', `arn:${Aws.PARTITION}:`);
+
+    if (!resources) {
+      return resources;
+    }
+    if (!Array.isArray(resources)) {
+      return rewriteResource(resources);
+    }
+    return resources.map(rewriteResource);
   }
 }

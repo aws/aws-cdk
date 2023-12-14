@@ -131,12 +131,15 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::FindInMap": [
-                          "AdotlambdalayerMap",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          "JAVASCRIPTxSDKx1x15x0x1xarm64"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:lambda:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":901920570463:layer:aws-otel-nodejs-arm64-ver-1-17-1:1"
+                          ]
                         ]
                       }
                     ],
@@ -146,7 +149,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x",
+                    "runtime": "nodejs18.x",
                     "tracingConfig": {
                       "mode": "Active"
                     }
@@ -168,14 +171,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
-            }
-          },
-          "Adot-lambda-layerMap": {
-            "id": "Adot-lambda-layerMap",
-            "path": "Stack1/Adot-lambda-layerMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -299,12 +294,15 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::FindInMap": [
-                          "AdotlambdalayerMap",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          "PYTHONxSDKx1x19x0x1xx86x64"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:lambda:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":901920570463:layer:aws-otel-python-amd64-ver-1-20-0:3"
+                          ]
                         ]
                       }
                     ],
@@ -459,12 +457,15 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::FindInMap": [
-                          "AdotlambdalayerMap",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          "JAVAxSDKx1x28x1xx86x64"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:lambda:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-31-0:1"
+                          ]
                         ]
                       }
                     ],
@@ -619,12 +620,15 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::FindInMap": [
-                          "AdotlambdalayerMap",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          "JAVAxAUTOxINSTRUMENTATIONx1x28x1xx86x64"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:lambda:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":901920570463:layer:aws-otel-java-agent-amd64-ver-1-31-0:1"
+                          ]
                         ]
                       }
                     ],
@@ -779,12 +783,15 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::FindInMap": [
-                          "AdotlambdalayerMap",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          "GENERICx0x82x0xx86x64"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:lambda:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":901920570463:layer:aws-otel-collector-amd64-ver-0-88-0:1"
+                          ]
                         ]
                       }
                     ],
@@ -968,12 +975,15 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::FindInMap": [
-                          "AdotlambdalayerMap",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          "JAVASCRIPTxSDKx1x15x0x1xx86x64"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:lambda:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":901920570463:layer:aws-otel-nodejs-amd64-ver-1-17-1:1"
+                          ]
                         ]
                       }
                     ],
@@ -983,7 +993,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs16.x",
+                    "runtime": "nodejs18.x",
                     "tracingConfig": {
                       "mode": "Active"
                     }
@@ -1005,14 +1015,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
-            }
-          },
-          "Adot-lambda-layerMap": {
-            "id": "Adot-lambda-layerMap",
-            "path": "Stack2/Adot-lambda-layerMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -1136,12 +1138,15 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::FindInMap": [
-                          "AdotlambdalayerMap",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          "PYTHONxSDKx1x19x0x1xx86x64"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:lambda:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":901920570463:layer:aws-otel-python-amd64-ver-1-20-0:3"
+                          ]
                         ]
                       }
                     ],
@@ -1296,12 +1301,15 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::FindInMap": [
-                          "AdotlambdalayerMap",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          "JAVAxSDKx1x28x1xx86x64"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:lambda:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-31-0:1"
+                          ]
                         ]
                       }
                     ],
@@ -1456,12 +1464,15 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::FindInMap": [
-                          "AdotlambdalayerMap",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          "JAVAxAUTOxINSTRUMENTATIONx1x28x1xx86x64"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:lambda:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":901920570463:layer:aws-otel-java-agent-amd64-ver-1-31-0:1"
+                          ]
                         ]
                       }
                     ],
@@ -1616,12 +1627,15 @@
                     "handler": "index.handler",
                     "layers": [
                       {
-                        "Fn::FindInMap": [
-                          "AdotlambdalayerMap",
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          "GENERICx0x82x0xx86x64"
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:aws:lambda:",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            ":901920570463:layer:aws-otel-collector-amd64-ver-0-88-0:1"
+                          ]
                         ]
                       }
                     ],

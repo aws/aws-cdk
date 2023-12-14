@@ -1,0 +1,149 @@
+{
+ "Resources": {
+  "SomeParameterB1EDD45B": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Name": "KNOWN_PARAMETER_NAME",
+    "Type": "String",
+    "Value": "MY_PARAMETER_VALUE"
+   }
+  },
+  "ExportsWriteruseast2828FA26B86FBEFA7": {
+   "Type": "Custom::CrossRegionExportWriter",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A",
+      "Arn"
+     ]
+    },
+    "WriterProps": {
+     "region": "us-east-2",
+     "exports": {
+      "/cdk/exports/CrossRegionRefConsumerInteg/CrossRegionRefProducerInteguseast1FnGetAttSomeParameterB1EDD45BValue399DD9D8": {
+       "Fn::GetAtt": [
+        "SomeParameterB1EDD45B",
+        "Value"
+       ]
+      }
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:aws:ssm:us-east-2:",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":parameter/cdk/exports/*"
+            ]
+           ]
+          }
+         ],
+         "Action": [
+          "ssm:DeleteParameters",
+          "ssm:ListTagsForResource",
+          "ssm:GetParameters",
+          "ssm:PutParameter"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     "S3Key": "ab0afa9abcb773e915bcb47a5b3ddcf008155a3f0b415fb7a1e0dd94dabe4db9.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
