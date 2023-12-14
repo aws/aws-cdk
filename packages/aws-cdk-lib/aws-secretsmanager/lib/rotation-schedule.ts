@@ -128,7 +128,6 @@ export class RotationSchedule extends Resource {
       );
     }
 
-    let automaticallyAfterDays: number | undefined;
     let scheduleExpression: string | undefined;
     if (props.automaticallyAfter) {
       const automaticallyAfterMillis = props.automaticallyAfter.toMilliseconds();
@@ -139,20 +138,15 @@ export class RotationSchedule extends Resource {
         if (automaticallyAfterMillis > Duration.days(1000).toMilliseconds()) {
           throw new Error(`automaticallyAfter must not be greater than 1000 days, got ${props.automaticallyAfter.toDays()} days`);
         }
-        if (props.automaticallyAfter.toHours() >= 24) {
-          automaticallyAfterDays = props.automaticallyAfter.toDays();
-        } else {
-          scheduleExpression = Schedule.rate(props.automaticallyAfter).expressionString;
-        }
+        scheduleExpression = Schedule.rate(props.automaticallyAfter).expressionString;
       }
     } else {
-      automaticallyAfterDays = 30;
+      scheduleExpression = Schedule.rate(Duration.days(30)).expressionString;
     }
 
     let rotationRules: CfnRotationSchedule.RotationRulesProperty | undefined;
-    if (automaticallyAfterDays !== undefined || scheduleExpression !== undefined) {
+    if (scheduleExpression) {
       rotationRules = {
-        automaticallyAfterDays,
         scheduleExpression,
       };
     }
