@@ -200,9 +200,9 @@ export function diffKeyedEntities<T>(
       replacement = undefined;
     }
 
-    // eslint-disable-next-line max-len
     result[logicalId] = elementDiff(oldElement, newElement, logicalId, replacement);
   }
+
   return result;
 }
 
