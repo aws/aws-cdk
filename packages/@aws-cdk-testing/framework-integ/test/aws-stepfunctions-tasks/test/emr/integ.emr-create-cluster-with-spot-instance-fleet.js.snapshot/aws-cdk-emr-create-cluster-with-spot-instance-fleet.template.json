@@ -7,11 +7,6 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
-       "Condition": {
-        "StringEquals": {
-         "aws:RequestTag/for-use-with-amazon-emr-managed-policies": "true"
-        }
-       },
        "Effect": "Allow",
        "Principal": {
         "Service": "elasticmapreduce.amazonaws.com"
@@ -32,6 +27,32 @@
         ":iam::aws:policy/service-role/AmazonEMRServicePolicy_v2"
        ]
       ]
+     }
+    ]
+   }
+  },
+  "EmrCreateClusterServiceRoleDefaultPolicyA8B4FA32": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "iam:PassRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "EmrCreateClusterInstanceRoleC80466F5",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "EmrCreateClusterServiceRoleDefaultPolicyA8B4FA32",
+    "Roles": [
+     {
+      "Ref": "EmrCreateClusterServiceRole5251910D"
      }
     ]
    }
@@ -90,6 +111,7 @@
      "Statement": [
       {
        "Action": [
+        "elasticmapreduce:AddTags",
         "elasticmapreduce:DescribeCluster",
         "elasticmapreduce:RunJobFlow",
         "elasticmapreduce:TerminateJobFlows"
@@ -197,7 +219,7 @@
        {
         "Ref": "EmrCreateClusterServiceRole5251910D"
        },
-       "\",\"ReleaseLabel\":\"emr-5.36.1\",\"Tags\":[{\"Key\":\"Key\",\"Value\":\"Value\"}],\"VisibleToAllUsers\":true}}}}"
+       "\",\"ReleaseLabel\":\"emr-5.36.1\",\"Tags\":[{\"Key\":\"Key\",\"Value\":\"Value\"},{\"Key\":\"for-use-with-amazon-emr-managed-policies\",\"Value\":\"true\"}],\"VisibleToAllUsers\":true}}}}"
       ]
      ]
     },

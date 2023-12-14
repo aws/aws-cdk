@@ -1,9 +1,9 @@
 {
-  "version": "31.0.0",
+  "version": "35.0.0",
   "testCases": {
     "EmrCreateClusterTest/DefaultTest": {
       "stacks": [
-        "aws-cdk-emr-create-cluster"
+        "aws-cdk-emr-create-cluster-tags"
       ],
       "assertionStack": "EmrCreateClusterTest/DefaultTest/DeployAssert",
       "assertionStackName": "EmrCreateClusterTestDefaultTestDeployAssert697DC891"

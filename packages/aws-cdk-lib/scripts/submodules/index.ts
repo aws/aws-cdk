@@ -55,7 +55,7 @@ async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
   if (!fs.existsSync(path.join(modulePath, '.jsiirc.json'))) {
     if (!submodule.definition) {
       throw new Error(
-        `Cannot infer path or namespace for submodule named "${name}". Manually create ${modulePath}/.jsiirc.json file.`,
+        `Cannot infer path or namespace for submodule named "${submodule.name}". Manually create ${modulePath}/.jsiirc.json file.`,
       );
     }
 

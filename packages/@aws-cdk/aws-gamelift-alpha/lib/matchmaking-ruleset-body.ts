@@ -11,8 +11,8 @@ export interface IRuleSetBody {}
  */
 export interface RuleSetBodyConfig {
   /**
-  * Inline ruleSet body.
-  */
+   * Inline ruleSet body.
+   */
   readonly ruleSetBody: string;
 }
 
@@ -20,7 +20,6 @@ export interface RuleSetBodyConfig {
  * Interface to represent a Matchmaking RuleSet content
  */
 export interface IRuleSetContent {
-
   /**
    * RuleSet body content
    *
@@ -29,11 +28,11 @@ export interface IRuleSetContent {
   readonly content: IRuleSetBody;
 
   /**
-    * Called when the matchmaking ruleSet is initialized to allow this object to bind
-    * to the stack and add resources.
-    *
-    * @param _scope The binding scope.
-    */
+   * Called when the matchmaking ruleSet is initialized to allow this object to bind
+   * to the stack and add resources.
+   *
+   * @param _scope The binding scope.
+   */
   bind(_scope: Construct): RuleSetBodyConfig;
 }
 
@@ -41,7 +40,6 @@ export interface IRuleSetContent {
  * Properties for a new matchmaking ruleSet content
  */
 export interface RuleSetContentProps {
-
   /**
    * RuleSet body content
    *
@@ -59,7 +57,6 @@ export interface RuleSetContentProps {
  * - If no match is made after 30 seconds, gradually relax the skill requirements.
  */
 export class RuleSetContent implements IRuleSetContent {
-
   /**
    * Matchmaking ruleSet body from a file
    * @returns `RuleSetContentBase` based on JSON file content.
@@ -106,11 +103,11 @@ export class RuleSetContent implements IRuleSetContent {
   }
 
   /**
-    * Called when the matchmaking ruleSet is initialized to allow this object to bind
-    * to the stack and add resources.
-    *
-    * @param _scope The binding scope.
-    */
+   * Called when the matchmaking ruleSet is initialized to allow this object to bind
+   * to the stack and add resources.
+   *
+   * @param _scope The binding scope.
+   */
   public bind(_scope: Construct): RuleSetBodyConfig {
     return {
       ruleSetBody: JSON.stringify(this.content),

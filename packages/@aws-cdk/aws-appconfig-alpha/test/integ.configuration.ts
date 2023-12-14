@@ -69,7 +69,7 @@ new HostedConfiguration(stack, 'MyHostedConfig', {
 
 // create basic config profile from add config version from file
 const hostedEnvFromJson = appConfigApp.addEnvironment('HostedEnvFromJson');
-new HostedConfiguration(stack, 'MyHostedConfigFromJson', {
+const config = new HostedConfiguration(stack, 'MyHostedConfigFromJson', {
   application: appConfigApp,
   content: ConfigurationContent.fromInlineText('This is the configuration content'),
   deployTo: [hostedEnvFromJson],
@@ -83,6 +83,10 @@ new HostedConfiguration(stack, 'MyHostedConfigFromYaml', {
   deployTo: [hostedEnvFromYaml],
   deploymentStrategy,
 });
+
+// verify a configuration can be deployed through the deploy method
+const envToDeployLater = appConfigApp.addEnvironment('EnvDeployLater');
+config.deploy(envToDeployLater);
 
 // ssm paramter as configuration source
 const func = new Function(stack, 'MyValidatorFunction', {

@@ -5,21 +5,22 @@ import { Construct } from 'constructs';
 import { IMatchmakingRuleSet } from '.';
 
 /**
-   * A set of custom properties for a game session, formatted as key-value pairs.
-   * These properties are passed to a game server process with a request to start a new game session.
-   *
-   * This parameter is not used for Standalone FlexMatch mode.
-   *
-   * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-sdk-server-api.html#gamelift-sdk-server-startsession
-   */
+ * A set of custom properties for a game session, formatted as key-value pairs.
+ * These properties are passed to a game server process with a request to start a new game session.
+ *
+ * This parameter is not used for Standalone FlexMatch mode.
+ *
+ * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-sdk-server-api.html#gamelift-sdk-server-startsession
+ */
 export interface GameProperty {
   /**
-     * The game property identifier.
-     */
+   * The game property identifier.
+   */
   readonly key: string;
+
   /**
-     * The game property value.
-     */
+   * The game property value.
+   */
   readonly value: string;
 }
 
@@ -28,17 +29,17 @@ export interface GameProperty {
  */
 export interface IMatchmakingConfiguration extends cdk.IResource {
   /**
-     * The name of the matchmaking configuration.
-     *
-     * @attribute
-     */
+   * The name of the matchmaking configuration.
+   *
+   * @attribute
+   */
   readonly matchmakingConfigurationName: string;
 
   /**
-     * The ARN of the matchmaking configuration.
-     *
-     * @attribute
-     */
+   * The ARN of the matchmaking configuration.
+   *
+   * @attribute
+   */
   readonly matchmakingConfigurationArn: string;
 
   /**
@@ -49,46 +50,46 @@ export interface IMatchmakingConfiguration extends cdk.IResource {
   readonly notificationTarget?: sns.ITopic;
 
   /**
-     * Return the given named metric for this matchmaking configuration.
-     */
+   * Return the given named metric for this matchmaking configuration.
+   */
   metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-     * Matchmaking requests currently being processed or waiting to be processed.
-     */
+   * Matchmaking requests currently being processed or waiting to be processed.
+   */
   metricCurrentTickets(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-     * For matchmaking configurations that require acceptance, the potential matches that were accepted since the last report.
-     */
+   * For matchmaking configurations that require acceptance, the potential matches that were accepted since the last report.
+   */
   metricMatchesAccepted(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-     * Potential matches that were created since the last report.
-     */
+   * Potential matches that were created since the last report.
+   */
   metricMatchesCreated(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-     * Matches that were successfully placed into a game session since the last report.
-     */
+   * Matches that were successfully placed into a game session since the last report.
+   */
   metricMatchesPlaced(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-     * For matchmaking configurations that require acceptance, the potential matches that were rejected by at least one player since the last report.
-     */
+   * For matchmaking configurations that require acceptance, the potential matches that were rejected by at least one player since the last report.
+   */
   metricMatchesRejected(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-     * Players in matchmaking tickets that were added since the last report.
-     */
+   * Players in matchmaking tickets that were added since the last report.
+   */
   metricPlayersStarted(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
-     * For matchmaking requests that were put into a potential match before the last report,
-     * the amount of time between ticket creation and potential match creation.
-     *
-     * Units: seconds
-     */
+   * For matchmaking requests that were put into a potential match before the last report,
+   * the amount of time between ticket creation and potential match creation.
+   *
+   * Units: seconds
+   */
   metricTimeToMatch(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
@@ -97,21 +98,21 @@ export interface IMatchmakingConfiguration extends cdk.IResource {
  */
 export interface MatchmakingConfigurationAttributes {
   /**
-        * The ARN of the Matchmaking configuration
-        *
-        * At least one of `matchmakingConfigurationArn` and `matchmakingConfigurationName` must be provided.
-        *
-        * @default derived from `matchmakingConfigurationName`.
-        */
+   * The ARN of the Matchmaking configuration
+   *
+   * At least one of `matchmakingConfigurationArn` and `matchmakingConfigurationName` must be provided.
+   *
+   * @default derived from `matchmakingConfigurationName`.
+   */
   readonly matchmakingConfigurationArn?: string;
 
   /**
-      * The identifier of the Matchmaking configuration
-      *
-      * At least one of `matchmakingConfigurationName` and `matchmakingConfigurationArn`  must be provided.
-      *
-      * @default derived from `matchmakingConfigurationArn`.
-      */
+   * The identifier of the Matchmaking configuration
+   *
+   * At least one of `matchmakingConfigurationName` and `matchmakingConfigurationArn`  must be provided.
+   *
+   * @default derived from `matchmakingConfigurationArn`.
+   */
   readonly matchmakingConfigurationName?: string;
 
   /**
@@ -128,11 +129,10 @@ export interface MatchmakingConfigurationAttributes {
  * Properties for a new Gamelift matchmaking configuration
  */
 export interface MatchmakingConfigurationProps {
-
   /**
-     * A unique identifier for the matchmaking configuration.
-     * This name is used to identify the configuration associated with a matchmaking request or ticket.
-     */
+   * A unique identifier for the matchmaking configuration.
+   * This name is used to identify the configuration associated with a matchmaking request or ticket.
+   */
   readonly matchmakingConfigurationName: string;
 
   /**
@@ -143,11 +143,11 @@ export interface MatchmakingConfigurationProps {
   readonly description?: string;
 
   /**
-     * A flag that determines whether a match that was created with this configuration must be accepted by the matched players.
-     * With this option enabled, matchmaking tickets use the status `REQUIRES_ACCEPTANCE` to indicate when a completed potential match is waiting for player acceptance.
-     *
-     * @default Acceptance is not required
-     */
+   * A flag that determines whether a match that was created with this configuration must be accepted by the matched players.
+   * With this option enabled, matchmaking tickets use the status `REQUIRES_ACCEPTANCE` to indicate when a completed potential match is waiting for player acceptance.
+   *
+   * @default Acceptance is not required
+   */
   readonly requireAcceptance?: boolean;
 
   /**
@@ -193,7 +193,6 @@ export interface MatchmakingConfigurationProps {
  * Base class for new and imported GameLift Matchmaking configuration.
  */
 export abstract class MatchmakingConfigurationBase extends cdk.Resource implements IMatchmakingConfiguration {
-
   /**
    * Import an existing matchmaking configuration from its attributes.
    */
@@ -229,12 +228,13 @@ export abstract class MatchmakingConfigurationBase extends cdk.Resource implemen
   }
 
   /**
-     * The Identifier of the matchmaking configuration.
-     */
+   * The Identifier of the matchmaking configuration.
+   */
   public abstract readonly matchmakingConfigurationName: string;
+
   /**
-     * The ARN of the matchmaking configuration.
-     */
+   * The ARN of the matchmaking configuration.
+   */
   public abstract readonly matchmakingConfigurationArn: string;
 
   /**
@@ -280,5 +280,4 @@ export abstract class MatchmakingConfigurationBase extends cdk.Resource implemen
   metricTimeToMatch(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('TimeToMatch', props);
   }
-
 }

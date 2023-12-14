@@ -15,13 +15,12 @@ export interface IBuildFleet extends IFleet {}
  * Properties for a new Gamelift build fleet
  */
 export interface BuildFleetProps extends FleetProps {
-
   /**
-     * A build to be deployed on the fleet.
-     * The build must have been successfully uploaded to Amazon GameLift and be in a `READY` status.
-     *
-     * This fleet setting cannot be changed once the fleet is created.
-     */
+   * A build to be deployed on the fleet.
+   * The build must have been successfully uploaded to Amazon GameLift and be in a `READY` status.
+   *
+   * This fleet setting cannot be changed once the fleet is created.
+   */
   readonly content: IBuild;
 
   /**

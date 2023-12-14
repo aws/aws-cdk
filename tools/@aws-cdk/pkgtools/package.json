@@ -34,7 +34,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/yargs": "^15.0.18"
+    "@types/yargs": "^15.0.19"
   },
   "dependencies": {
     "fs-extra": "^9.1.0",
