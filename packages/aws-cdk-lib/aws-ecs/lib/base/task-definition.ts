@@ -1241,6 +1241,11 @@ export function isExternalCompatible(compatibility: Compatibility): boolean {
  */
 export class TaskDefinitionRevision {
   /**
+   * The string representation of this revision
+   */
+  public readonly revision: string;
+
+  /**
    * The most recent revision of a task
    */
   public static readonly LATEST = new TaskDefinitionRevision('latest');
@@ -1255,5 +1260,7 @@ export class TaskDefinitionRevision {
     return new TaskDefinitionRevision(revision.toString());
   }
 
-  private constructor(public readonly revision: string) {}
+  private constructor(revision: string) {
+    this.revision = revision;
+  }
 }
