@@ -50,7 +50,9 @@ fs.readdirSync(fixturesRoot).filter(f => fs.lstatSync(path.join(fixturesRoot, f)
           return;
         } else if (checkErrors) {
           const actualErrorMessages = await lint(originalFilePath)
-          const expectedErrorMessages = (await fs.readFile(expectedErrorFilepath, { encoding: 'utf8' })).split('\n');
+          // filter out blank messages because editors sometimes save files with newlines at the end
+          const expectedErrorMessages = (await fs.readFile(expectedErrorFilepath, { encoding: 'utf8' })).split('\n')
+            .filter((msg: string) => msg !== '');
           if (expectedErrorMessages.length !== actualErrorMessages?.length) {
             fail(`Number of messages from linter did not match expectations. Linted file: ${originalFilePath}. Expected number of messages: ${expectedErrorMessages.length}. Actual number of messages: ${actualErrorMessages?.length}.`);
           }
