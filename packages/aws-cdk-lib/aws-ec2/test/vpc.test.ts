@@ -29,6 +29,7 @@ import {
   Vpc,
   IpAddresses,
   InterfaceVpcEndpointAwsService,
+  VpcProtocol,
 } from '../lib';
 
 describe('vpc', () => {
@@ -2442,6 +2443,14 @@ describe('vpc', () => {
           },
         },
       });
+    });
+  });
+
+  test('dual-stack', () => {
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const vpc = new Vpc(stack1, 'Vpc', {
+      vpcProtocol: VpcProtocol.DUAL_STACK,
     });
   });
 });
