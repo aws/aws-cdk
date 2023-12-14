@@ -8,7 +8,7 @@ export function buildComponentName(fqn: string, type: ComponentType, entrypoint:
   )) + (handler.charAt(0).toUpperCase() + handler.slice(1));
   return name.charAt(0).toUpperCase()
     + name.slice(1)
-    + type === ComponentType.CUSTOM_RESOURCE_PROVIDER ? 'Provider' : 'Function';
+    + (type === ComponentType.CUSTOM_RESOURCE_PROVIDER ? 'Provider' : type);
 }
 
 export function toLambdaRuntime(runtime: Runtime) {
