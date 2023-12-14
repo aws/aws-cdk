@@ -1572,9 +1572,6 @@ export class Vpc extends VpcBase {
     // subnetConfiguration must be set before calling createSubnets
     this.createSubnets();
 
-    // TODO: put ipv6 addrs in the subnets, or do it in the above function? (will that be a race condition if there is no dependency?)
-    // this.ipv6SubnetConfiguration
-
     const createInternetGateway = props.createInternetGateway ?? true;
     const allowOutbound = this.subnetConfiguration.filter(
       subnet => (subnet.subnetType !== SubnetType.PRIVATE_ISOLATED && subnet.subnetType !== SubnetType.ISOLATED)).length > 0;
