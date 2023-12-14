@@ -67,14 +67,14 @@
     "constructs": "^10.0.0",
     "mock-fs": "^4.14.0",
     "jest": "^29.7.0",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.2"
   },
   "dependencies": {
     "chokidar": "^3.5.3",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/aws-service-spec": "^0.0.34",
+    "@aws-cdk/aws-service-spec": "^0.0.35",
     "cdk-assets": "0.0.0",
     "@aws-cdk/cdk-cli-wrapper": "0.0.0",
     "aws-cdk": "0.0.0",

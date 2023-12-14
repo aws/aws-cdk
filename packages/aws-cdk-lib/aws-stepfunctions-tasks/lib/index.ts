@@ -51,3 +51,4 @@ export * from './eks/call';
 export * from './apigateway';
 export * from './eventbridge/put-events';
 export * from './aws-sdk/call-aws-service';
+export * from './bedrock/invoke-model';
