@@ -15,7 +15,7 @@ import { Deployments } from './api/deployments';
 import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
-import { ResourcesToImport, prepareAndCreateChangeSet } from './api/util/cloudformation';
+import { prepareAndCreateChangeSet } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, validateSourceOptions } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
@@ -134,11 +134,11 @@ export class CdkToolkit {
       }
 
       const changeSet = options.changeSet ? await prepareAndCreateChangeSet({
-        resourcesToImport: options.resourcesToImport,
         stack: stacks.firstStack,
         uuid: uuid.v4(),
         willExecute: false,
         deployments: this.props.deployments,
+        sdkProvider: this.props.sdkProvider,
       }) : undefined;
 
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
@@ -159,11 +159,11 @@ export class CdkToolkit {
         const nestedStackCount = templateWithNames.nestedStackCount;
 
         const changeSet = options.changeSet ? await prepareAndCreateChangeSet({
-          resourcesToImport: options.resourcesToImport,
           stack,
           uuid: uuid.v4(),
           deployments: this.props.deployments,
           willExecute: false,
+          sdkProvider: this.props.sdkProvider,
         }) : undefined;
 
         const stackCount =
@@ -948,13 +948,6 @@ export interface DiffOptions {
   * @default false
   */
   quiet?: boolean;
-
-  /**
-   * resources to import
-   *
-   * @default - no resources to import
-   */
-  resourcesToImport?: ResourcesToImport;
 
   /**
    * Whether or not to create, analyze, and subsequently delete a changeset

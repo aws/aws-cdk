@@ -5,6 +5,7 @@ import { StackStatus } from './cloudformation/stack-status';
 import { makeBodyParameterAndUpload, TemplateBodyParameter } from './template-body-parameter';
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
+import { SdkProvider } from '../aws-auth';
 import { Deployments } from '../deployments';
 
 export type Template = {
@@ -289,6 +290,7 @@ export type PrepareChangeSetOptions = {
   uuid: string,
   resourcesToImport?: ResourcesToImport,
   willExecute: boolean,
+  sdkProvider: SdkProvider,
 }
 
 export type CreateChangeSetOptions = {
@@ -307,8 +309,8 @@ export async function prepareAndCreateChangeSet(options: PrepareChangeSetOptions
   const bodyParameter = await makeBodyParameterAndUpload(
     options.stack,
     preparedSdk.resolvedEnvironment,
-    undefined as any,
-    undefined as any,
+    preparedSdk.envResources,
+    options.sdkProvider,
     preparedSdk.stackSdk,
   );
   const cfn = preparedSdk.stackSdk.cloudFormation();
@@ -317,7 +319,6 @@ export async function prepareAndCreateChangeSet(options: PrepareChangeSetOptions
   return createChangeSet({
     cfn,
     changeSetName: 'some-name',
-    resourcesToImport: options.resourcesToImport,
     stack: options.stack,
     exists,
     uuid: options.uuid,
@@ -341,7 +342,6 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<CloudFo
     TemplateURL: options.bodyParameter.TemplateURL,
     TemplateBody: options.bodyParameter.TemplateBody,
     Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
-    //...this.commonPrepareOptions(),
   }).promise();
 
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
