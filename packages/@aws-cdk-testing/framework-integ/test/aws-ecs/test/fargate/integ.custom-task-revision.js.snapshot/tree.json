@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-cdk-emr-create-cluster-tags": {
-        "id": "aws-cdk-emr-create-cluster-tags",
-        "path": "aws-cdk-emr-create-cluster-tags",
+      "aws-ecs-integ-custom-task-revision": {
+        "id": "aws-ecs-integ-custom-task-revision",
+        "path": "aws-ecs-integ-custom-task-revision",
         "children": {
           "Vpc": {
             "id": "Vpc",
-            "path": "aws-cdk-emr-create-cluster-tags/Vpc",
+            "path": "aws-ecs-integ-custom-task-revision/Vpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-emr-create-cluster-tags/Vpc/Resource",
+                "path": "aws-ecs-integ-custom-task-revision/Vpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -24,12 +24,8 @@
                     "instanceTenancy": "default",
                     "tags": [
                       {
-                        "key": "for-use-with-amazon-emr-managed-policies",
-                        "value": "true"
-                      },
-                      {
                         "key": "Name",
-                        "value": "aws-cdk-emr-create-cluster-tags/Vpc"
+                        "value": "aws-ecs-integ-custom-task-revision/Vpc"
                       }
                     ]
                   }
@@ -41,11 +37,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1",
+                "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1/Subnet",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -69,12 +65,8 @@
                             "value": "Public"
                           },
                           {
-                            "key": "for-use-with-amazon-emr-managed-policies",
-                            "value": "true"
-                          },
-                          {
                             "key": "Name",
-                            "value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1"
+                            "value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -89,7 +81,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1/Acl",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -97,18 +89,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1/RouteTable",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
-                            "key": "for-use-with-amazon-emr-managed-policies",
-                            "value": "true"
-                          },
-                          {
                             "key": "Name",
-                            "value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1"
+                            "value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -123,7 +111,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -142,7 +130,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1/DefaultRoute",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -162,19 +150,15 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1/EIP",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
                         "domain": "vpc",
                         "tags": [
                           {
-                            "key": "for-use-with-amazon-emr-managed-policies",
-                            "value": "true"
-                          },
-                          {
                             "key": "Name",
-                            "value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1"
+                            "value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -186,7 +170,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1/NATGateway",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -201,12 +185,8 @@
                         },
                         "tags": [
                           {
-                            "key": "for-use-with-amazon-emr-managed-policies",
-                            "value": "true"
-                          },
-                          {
                             "key": "Name",
-                            "value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1"
+                            "value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -224,11 +204,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2",
+                "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2/Subnet",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -252,12 +232,8 @@
                             "value": "Public"
                           },
                           {
-                            "key": "for-use-with-amazon-emr-managed-policies",
-                            "value": "true"
-                          },
-                          {
                             "key": "Name",
-                            "value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2"
+                            "value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -272,7 +248,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2/Acl",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -280,18 +256,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2/RouteTable",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
-                            "key": "for-use-with-amazon-emr-managed-policies",
-                            "value": "true"
-                          },
-                          {
                             "key": "Name",
-                            "value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2"
+                            "value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -306,7 +278,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -325,7 +297,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2/DefaultRoute",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -345,19 +317,15 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2/EIP",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
                         "domain": "vpc",
                         "tags": [
                           {
-                            "key": "for-use-with-amazon-emr-managed-policies",
-                            "value": "true"
-                          },
-                          {
                             "key": "Name",
-                            "value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2"
+                            "value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -369,7 +337,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2/NATGateway",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -384,12 +352,8 @@
                         },
                         "tags": [
                           {
-                            "key": "for-use-with-amazon-emr-managed-policies",
-                            "value": "true"
-                          },
-                          {
                             "key": "Name",
-                            "value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2"
+                            "value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -407,11 +371,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet1",
+                "path": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet1/Subnet",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -435,12 +399,8 @@
                             "value": "Private"
                           },
                           {
-                            "key": "for-use-with-amazon-emr-managed-policies",
-                            "value": "true"
-                          },
-                          {
                             "key": "Name",
-                            "value": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet1"
+                            "value": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -455,7 +415,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet1/Acl",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -463,18 +423,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet1/RouteTable",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
-                            "key": "for-use-with-amazon-emr-managed-policies",
-                            "value": "true"
-                          },
-                          {
                             "key": "Name",
-                            "value": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet1"
+                            "value": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -489,7 +445,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet1/RouteTableAssociation",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -508,7 +464,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet1/DefaultRoute",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -534,11 +490,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet2",
+                "path": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet2/Subnet",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -562,12 +518,8 @@
                             "value": "Private"
                           },
                           {
-                            "key": "for-use-with-amazon-emr-managed-policies",
-                            "value": "true"
-                          },
-                          {
                             "key": "Name",
-                            "value": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet2"
+                            "value": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -582,7 +534,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet2/Acl",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -590,18 +542,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet2/RouteTable",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
-                            "key": "for-use-with-amazon-emr-managed-policies",
-                            "value": "true"
-                          },
-                          {
                             "key": "Name",
-                            "value": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet2"
+                            "value": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -616,7 +564,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet2/RouteTableAssociation",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -635,7 +583,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet2/DefaultRoute",
+                    "path": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -661,18 +609,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "aws-cdk-emr-create-cluster-tags/Vpc/IGW",
+                "path": "aws-ecs-integ-custom-task-revision/Vpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
-                        "key": "for-use-with-amazon-emr-managed-policies",
-                        "value": "true"
-                      },
-                      {
                         "key": "Name",
-                        "value": "aws-cdk-emr-create-cluster-tags/Vpc"
+                        "value": "aws-ecs-integ-custom-task-revision/Vpc"
                       }
                     ]
                   }
@@ -684,7 +628,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "aws-cdk-emr-create-cluster-tags/Vpc/VPCGW",
+                "path": "aws-ecs-integ-custom-task-revision/Vpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -707,192 +651,60 @@
               "version": "0.0.0"
             }
           },
-          "EmrCreateCluster": {
-            "id": "EmrCreateCluster",
-            "path": "aws-cdk-emr-create-cluster-tags/EmrCreateCluster",
+          "FargateCPCluster": {
+            "id": "FargateCPCluster",
+            "path": "aws-ecs-integ-custom-task-revision/FargateCPCluster",
             "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "aws-cdk-emr-create-cluster-tags/EmrCreateCluster/ServiceRole",
-                "children": {
-                  "ImportServiceRole": {
-                    "id": "ImportServiceRole",
-                    "path": "aws-cdk-emr-create-cluster-tags/EmrCreateCluster/ServiceRole/ImportServiceRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-emr-create-cluster-tags/EmrCreateCluster/ServiceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "elasticmapreduce.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AmazonEMRServicePolicy_v2"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "aws-cdk-emr-create-cluster-tags/EmrCreateCluster/ServiceRole/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-emr-create-cluster-tags/EmrCreateCluster/ServiceRole/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "iam:PassRole",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "EmrCreateClusterInstanceRoleC80466F5",
-                                      "Arn"
-                                    ]
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "EmrCreateClusterServiceRoleDefaultPolicyA8B4FA32",
-                            "roles": [
-                              {
-                                "Ref": "EmrCreateClusterServiceRole5251910D"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "InstanceRole": {
-                "id": "InstanceRole",
-                "path": "aws-cdk-emr-create-cluster-tags/EmrCreateCluster/InstanceRole",
-                "children": {
-                  "ImportInstanceRole": {
-                    "id": "ImportInstanceRole",
-                    "path": "aws-cdk-emr-create-cluster-tags/EmrCreateCluster/InstanceRole/ImportInstanceRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-emr-create-cluster-tags/EmrCreateCluster/InstanceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "ec2.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "InstanceProfile": {
-                "id": "InstanceProfile",
-                "path": "aws-cdk-emr-create-cluster-tags/EmrCreateCluster/InstanceProfile",
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-integ-custom-task-revision/FargateCPCluster/Resource",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
+                  "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnCluster",
+                  "version": "0.0.0"
+                }
+              },
+              "FargateCPCluster": {
+                "id": "FargateCPCluster",
+                "path": "aws-ecs-integ-custom-task-revision/FargateCPCluster/FargateCPCluster",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::ClusterCapacityProviderAssociations",
                   "aws:cdk:cloudformation:props": {
-                    "instanceProfileName": {
-                      "Ref": "EmrCreateClusterInstanceRoleC80466F5"
+                    "capacityProviders": [
+                      "FARGATE",
+                      "FARGATE_SPOT"
+                    ],
+                    "cluster": {
+                      "Ref": "FargateCPCluster668E71F2"
                     },
-                    "roles": [
-                      {
-                        "Ref": "EmrCreateClusterInstanceRoleC80466F5"
-                      }
-                    ]
+                    "defaultCapacityProviderStrategy": []
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnClusterCapacityProviderAssociations",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions.TaskStateBase",
+              "fqn": "aws-cdk-lib.aws_ecs.Cluster",
               "version": "0.0.0"
             }
           },
-          "SM": {
-            "id": "SM",
-            "path": "aws-cdk-emr-create-cluster-tags/SM",
+          "TaskDef": {
+            "id": "TaskDef",
+            "path": "aws-ecs-integ-custom-task-revision/TaskDef",
             "children": {
-              "Role": {
-                "id": "Role",
-                "path": "aws-cdk-emr-create-cluster-tags/SM/Role",
+              "TaskRole": {
+                "id": "TaskRole",
+                "path": "aws-ecs-integ-custom-task-revision/TaskDef/TaskRole",
                 "children": {
-                  "ImportRole": {
-                    "id": "ImportRole",
-                    "path": "aws-cdk-emr-create-cluster-tags/SM/Role/ImportRole",
+                  "ImportTaskRole": {
+                    "id": "ImportTaskRole",
+                    "path": "aws-ecs-integ-custom-task-revision/TaskDef/TaskRole/ImportTaskRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -900,7 +712,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-emr-create-cluster-tags/SM/Role/Resource",
+                    "path": "aws-ecs-integ-custom-task-revision/TaskDef/TaskRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -910,7 +722,7 @@
                               "Action": "sts:AssumeRole",
                               "Effect": "Allow",
                               "Principal": {
-                                "Service": "states.amazonaws.com"
+                                "Service": "ecs-tasks.amazonaws.com"
                               }
                             }
                           ],
@@ -920,120 +732,6 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "aws-cdk-emr-create-cluster-tags/SM/Role/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-emr-create-cluster-tags/SM/Role/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": [
-                                    "elasticmapreduce:AddTags",
-                                    "elasticmapreduce:DescribeCluster",
-                                    "elasticmapreduce:RunJobFlow",
-                                    "elasticmapreduce:TerminateJobFlows"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": "*"
-                                },
-                                {
-                                  "Action": "iam:PassRole",
-                                  "Effect": "Allow",
-                                  "Resource": [
-                                    {
-                                      "Fn::GetAtt": [
-                                        "EmrCreateClusterInstanceRoleC80466F5",
-                                        "Arn"
-                                      ]
-                                    },
-                                    {
-                                      "Fn::GetAtt": [
-                                        "EmrCreateClusterServiceRole5251910D",
-                                        "Arn"
-                                      ]
-                                    }
-                                  ]
-                                },
-                                {
-                                  "Action": "elasticmapreduce:AddTags",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":elasticmapreduce:",
-                                        {
-                                          "Ref": "AWS::Region"
-                                        },
-                                        ":",
-                                        {
-                                          "Ref": "AWS::AccountId"
-                                        },
-                                        ":cluster/*"
-                                      ]
-                                    ]
-                                  }
-                                },
-                                {
-                                  "Action": [
-                                    "events:DescribeRule",
-                                    "events:PutRule",
-                                    "events:PutTargets"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":events:",
-                                        {
-                                          "Ref": "AWS::Region"
-                                        },
-                                        ":",
-                                        {
-                                          "Ref": "AWS::AccountId"
-                                        },
-                                        ":rule/StepFunctionsGetEventForEMRRunJobFlowRule"
-                                      ]
-                                    ]
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "SMRoleDefaultPolicy34CA15C7",
-                            "roles": [
-                              {
-                                "Ref": "SMRole49C19C48"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
@@ -1045,56 +743,240 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-emr-create-cluster-tags/SM/Resource",
+                "path": "aws-ecs-integ-custom-task-revision/TaskDef/Resource",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
                   "aws:cdk:cloudformation:props": {
-                    "definitionString": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          "{\"StartAt\":\"EmrCreateCluster\",\"States\":{\"EmrCreateCluster\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
-                          {
-                            "Ref": "AWS::Partition"
-                          },
-                          ":states:::elasticmapreduce:createCluster.sync\",\"Parameters\":{\"Instances\":{\"Ec2SubnetId\":\"",
-                          {
-                            "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-                          },
-                          "\",\"InstanceFleets\":[{\"InstanceFleetType\":\"MASTER\",\"InstanceTypeConfigs\":[{\"InstanceType\":\"m5.xlarge\"}],\"TargetOnDemandCapacity\":1}],\"KeepJobFlowAliveWhenNoSteps\":true},\"JobFlowRole\":\"",
-                          {
-                            "Ref": "EmrCreateClusterInstanceRoleC80466F5"
-                          },
-                          "\",\"Name\":\"Cluster\",\"ServiceRole\":\"",
-                          {
-                            "Ref": "EmrCreateClusterServiceRole5251910D"
-                          },
-                          "\",\"ReleaseLabel\":\"emr-6.15.0\",\"Tags\":[{\"Key\":\"Key\",\"Value\":\"Value\"},{\"Key\":\"for-use-with-amazon-emr-managed-policies\",\"Value\":\"true\"}],\"VisibleToAllUsers\":true}}}}"
-                        ]
-                      ]
-                    },
-                    "roleArn": {
+                    "containerDefinitions": [
+                      {
+                        "essential": true,
+                        "image": "amazon/amazon-ecs-sample",
+                        "name": "web"
+                      }
+                    ],
+                    "cpu": "256",
+                    "family": "awsecsintegcustomtaskrevisionTaskDef9F1555EB",
+                    "memory": "512",
+                    "networkMode": "awsvpc",
+                    "requiresCompatibilities": [
+                      "FARGATE"
+                    ],
+                    "taskRoleArn": {
                       "Fn::GetAtt": [
-                        "SMRole49C19C48",
+                        "TaskDefTaskRole1EDB4A67",
                         "Arn"
                       ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnTaskDefinition",
+                  "version": "0.0.0"
+                }
+              },
+              "web": {
+                "id": "web",
+                "path": "aws-ecs-integ-custom-task-revision/TaskDef/web",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
+              "fqn": "aws-cdk-lib.aws_ecs.FargateTaskDefinition",
+              "version": "0.0.0"
+            }
+          },
+          "FargateServiceFirst": {
+            "id": "FargateServiceFirst",
+            "path": "aws-ecs-integ-custom-task-revision/FargateServiceFirst",
+            "children": {
+              "Service": {
+                "id": "Service",
+                "path": "aws-ecs-integ-custom-task-revision/FargateServiceFirst/Service",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::Service",
+                  "aws:cdk:cloudformation:props": {
+                    "cluster": {
+                      "Ref": "FargateCPCluster668E71F2"
+                    },
+                    "deploymentConfiguration": {
+                      "maximumPercent": 200,
+                      "minimumHealthyPercent": 50,
+                      "alarms": {
+                        "alarmNames": [],
+                        "enable": false,
+                        "rollback": false
+                      }
+                    },
+                    "enableEcsManagedTags": false,
+                    "launchType": "FARGATE",
+                    "networkConfiguration": {
+                      "awsvpcConfiguration": {
+                        "assignPublicIp": "DISABLED",
+                        "subnets": [
+                          {
+                            "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                          },
+                          {
+                            "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                          }
+                        ],
+                        "securityGroups": [
+                          {
+                            "Fn::GetAtt": [
+                              "FargateServiceFirstSecurityGroup79D2D2FE",
+                              "GroupId"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "taskDefinition": "awsecsintegcustomtaskrevisionTaskDef9F1555EB:1"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnService",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-ecs-integ-custom-task-revision/FargateServiceFirst/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ-custom-task-revision/FargateServiceFirst/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "aws-ecs-integ-custom-task-revision/FargateServiceFirst/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecs.FargateService",
+              "version": "0.0.0"
+            }
+          },
+          "FargateServiceLatest": {
+            "id": "FargateServiceLatest",
+            "path": "aws-ecs-integ-custom-task-revision/FargateServiceLatest",
+            "children": {
+              "Service": {
+                "id": "Service",
+                "path": "aws-ecs-integ-custom-task-revision/FargateServiceLatest/Service",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::Service",
+                  "aws:cdk:cloudformation:props": {
+                    "cluster": {
+                      "Ref": "FargateCPCluster668E71F2"
+                    },
+                    "deploymentConfiguration": {
+                      "maximumPercent": 200,
+                      "minimumHealthyPercent": 50,
+                      "alarms": {
+                        "alarmNames": [],
+                        "enable": false,
+                        "rollback": false
+                      }
+                    },
+                    "enableEcsManagedTags": false,
+                    "launchType": "FARGATE",
+                    "networkConfiguration": {
+                      "awsvpcConfiguration": {
+                        "assignPublicIp": "DISABLED",
+                        "subnets": [
+                          {
+                            "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                          },
+                          {
+                            "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                          }
+                        ],
+                        "securityGroups": [
+                          {
+                            "Fn::GetAtt": [
+                              "FargateServiceLatestSecurityGroupAAE45690",
+                              "GroupId"
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "taskDefinition": "awsecsintegcustomtaskrevisionTaskDef9F1555EB"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnService",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-ecs-integ-custom-task-revision/FargateServiceLatest/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ-custom-task-revision/FargateServiceLatest/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "aws-ecs-integ-custom-task-revision/FargateServiceLatest/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecs.FargateService",
               "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-cdk-emr-create-cluster-tags/BootstrapVersion",
+            "path": "aws-ecs-integ-custom-task-revision/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -1102,7 +984,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-emr-create-cluster-tags/CheckBootstrapVersion",
+            "path": "aws-ecs-integ-custom-task-revision/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -1114,29 +996,29 @@
           "version": "0.0.0"
         }
       },
-      "EmrCreateClusterTest": {
-        "id": "EmrCreateClusterTest",
-        "path": "EmrCreateClusterTest",
+      "EcsCustomTaskRevision": {
+        "id": "EcsCustomTaskRevision",
+        "path": "EcsCustomTaskRevision",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "EmrCreateClusterTest/DefaultTest",
+            "path": "EcsCustomTaskRevision/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "EmrCreateClusterTest/DefaultTest/Default",
+                "path": "EcsCustomTaskRevision/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "EmrCreateClusterTest/DefaultTest/DeployAssert",
+                "path": "EcsCustomTaskRevision/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "EmrCreateClusterTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "EcsCustomTaskRevision/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -1144,7 +1026,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "EmrCreateClusterTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "EcsCustomTaskRevision/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
@@ -1173,7 +1055,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.2.70"
         }
       }
     },

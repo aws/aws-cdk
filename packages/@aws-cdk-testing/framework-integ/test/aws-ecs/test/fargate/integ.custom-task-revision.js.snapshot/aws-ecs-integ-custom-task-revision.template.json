@@ -9,12 +9,8 @@
     "InstanceTenancy": "default",
     "Tags": [
      {
-      "Key": "for-use-with-amazon-emr-managed-policies",
-      "Value": "true"
-     },
-     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-tags/Vpc"
+      "Value": "aws-ecs-integ-custom-task-revision/Vpc"
      }
     ]
    }
@@ -42,12 +38,8 @@
       "Value": "Public"
      },
      {
-      "Key": "for-use-with-amazon-emr-managed-policies",
-      "Value": "true"
-     },
-     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -60,12 +52,8 @@
    "Properties": {
     "Tags": [
      {
-      "Key": "for-use-with-amazon-emr-managed-policies",
-      "Value": "true"
-     },
-     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -105,12 +93,8 @@
     "Domain": "vpc",
     "Tags": [
      {
-      "Key": "for-use-with-amazon-emr-managed-policies",
-      "Value": "true"
-     },
-     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -129,12 +113,8 @@
     },
     "Tags": [
      {
-      "Key": "for-use-with-amazon-emr-managed-policies",
-      "Value": "true"
-     },
-     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -166,12 +146,8 @@
       "Value": "Public"
      },
      {
-      "Key": "for-use-with-amazon-emr-managed-policies",
-      "Value": "true"
-     },
-     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -184,12 +160,8 @@
    "Properties": {
     "Tags": [
      {
-      "Key": "for-use-with-amazon-emr-managed-policies",
-      "Value": "true"
-     },
-     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -229,12 +201,8 @@
     "Domain": "vpc",
     "Tags": [
      {
-      "Key": "for-use-with-amazon-emr-managed-policies",
-      "Value": "true"
-     },
-     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -253,12 +221,8 @@
     },
     "Tags": [
      {
-      "Key": "for-use-with-amazon-emr-managed-policies",
-      "Value": "true"
-     },
-     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-tags/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-custom-task-revision/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -290,12 +254,8 @@
       "Value": "Private"
      },
      {
-      "Key": "for-use-with-amazon-emr-managed-policies",
-      "Value": "true"
-     },
-     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet1"
+      "Value": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -308,12 +268,8 @@
    "Properties": {
     "Tags": [
      {
-      "Key": "for-use-with-amazon-emr-managed-policies",
-      "Value": "true"
-     },
-     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet1"
+      "Value": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -367,12 +323,8 @@
       "Value": "Private"
      },
      {
-      "Key": "for-use-with-amazon-emr-managed-policies",
-      "Value": "true"
-     },
-     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet2"
+      "Value": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -385,12 +337,8 @@
    "Properties": {
     "Tags": [
      {
-      "Key": "for-use-with-amazon-emr-managed-policies",
-      "Value": "true"
-     },
-     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-tags/Vpc/PrivateSubnet2"
+      "Value": "aws-ecs-integ-custom-task-revision/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -426,12 +374,8 @@
    "Properties": {
     "Tags": [
      {
-      "Key": "for-use-with-amazon-emr-managed-policies",
-      "Value": "true"
-     },
-     {
       "Key": "Name",
-      "Value": "aws-cdk-emr-create-cluster-tags/Vpc"
+      "Value": "aws-ecs-integ-custom-task-revision/Vpc"
      }
     ]
    }
@@ -447,7 +391,23 @@
     }
    }
   },
-  "EmrCreateClusterServiceRole5251910D": {
+  "FargateCPCluster668E71F2": {
+   "Type": "AWS::ECS::Cluster"
+  },
+  "FargateCPClusterBFD66A36": {
+   "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
+   "Properties": {
+    "CapacityProviders": [
+     "FARGATE",
+     "FARGATE_SPOT"
+    ],
+    "Cluster": {
+     "Ref": "FargateCPCluster668E71F2"
+    },
+    "DefaultCapacityProviderStrategy": []
+   }
+  },
+  "TaskDefTaskRole1EDB4A67": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -456,64 +416,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": "elasticmapreduce.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AmazonEMRServicePolicy_v2"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "EmrCreateClusterServiceRoleDefaultPolicyA8B4FA32": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "EmrCreateClusterInstanceRoleC80466F5",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "EmrCreateClusterServiceRoleDefaultPolicyA8B4FA32",
-    "Roles": [
-     {
-      "Ref": "EmrCreateClusterServiceRole5251910D"
-     }
-    ]
-   }
-  },
-  "EmrCreateClusterInstanceRoleC80466F5": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ec2.amazonaws.com"
+        "Service": "ecs-tasks.amazonaws.com"
        }
       }
      ],
@@ -521,172 +424,160 @@
     }
    }
   },
-  "EmrCreateClusterInstanceProfileC1729180": {
-   "Type": "AWS::IAM::InstanceProfile",
+  "TaskDef54694570": {
+   "Type": "AWS::ECS::TaskDefinition",
    "Properties": {
-    "InstanceProfileName": {
-     "Ref": "EmrCreateClusterInstanceRoleC80466F5"
-    },
-    "Roles": [
+    "ContainerDefinitions": [
      {
-      "Ref": "EmrCreateClusterInstanceRoleC80466F5"
+      "Essential": true,
+      "Image": "amazon/amazon-ecs-sample",
+      "Name": "web"
      }
-    ]
-   }
-  },
-  "SMRole49C19C48": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "states.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "SMRoleDefaultPolicy34CA15C7": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "elasticmapreduce:AddTags",
-        "elasticmapreduce:DescribeCluster",
-        "elasticmapreduce:RunJobFlow",
-        "elasticmapreduce:TerminateJobFlows"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": "iam:PassRole",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "EmrCreateClusterInstanceRoleC80466F5",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "EmrCreateClusterServiceRole5251910D",
-          "Arn"
-         ]
-        }
-       ]
-      },
-      {
-       "Action": "elasticmapreduce:AddTags",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":elasticmapreduce:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":cluster/*"
-         ]
-        ]
-       }
-      },
-      {
-       "Action": [
-        "events:DescribeRule",
-        "events:PutRule",
-        "events:PutTargets"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":events:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":rule/StepFunctionsGetEventForEMRRunJobFlowRule"
-         ]
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "SMRoleDefaultPolicy34CA15C7",
-    "Roles": [
-     {
-      "Ref": "SMRole49C19C48"
-     }
-    ]
-   }
-  },
-  "SM934E715A": {
-   "Type": "AWS::StepFunctions::StateMachine",
-   "Properties": {
-    "DefinitionString": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"StartAt\":\"EmrCreateCluster\",\"States\":{\"EmrCreateCluster\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":states:::elasticmapreduce:createCluster.sync\",\"Parameters\":{\"Instances\":{\"Ec2SubnetId\":\"",
-       {
-        "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-       },
-       "\",\"InstanceFleets\":[{\"InstanceFleetType\":\"MASTER\",\"InstanceTypeConfigs\":[{\"InstanceType\":\"m5.xlarge\"}],\"TargetOnDemandCapacity\":1}],\"KeepJobFlowAliveWhenNoSteps\":true},\"JobFlowRole\":\"",
-       {
-        "Ref": "EmrCreateClusterInstanceRoleC80466F5"
-       },
-       "\",\"Name\":\"Cluster\",\"ServiceRole\":\"",
-       {
-        "Ref": "EmrCreateClusterServiceRole5251910D"
-       },
-       "\",\"ReleaseLabel\":\"emr-6.15.0\",\"Tags\":[{\"Key\":\"Key\",\"Value\":\"Value\"},{\"Key\":\"for-use-with-amazon-emr-managed-policies\",\"Value\":\"true\"}],\"VisibleToAllUsers\":true}}}}"
-      ]
-     ]
-    },
-    "RoleArn": {
+    ],
+    "Cpu": "256",
+    "Family": "awsecsintegcustomtaskrevisionTaskDef9F1555EB",
+    "Memory": "512",
+    "NetworkMode": "awsvpc",
+    "RequiresCompatibilities": [
+     "FARGATE"
+    ],
+    "TaskRoleArn": {
      "Fn::GetAtt": [
-      "SMRole49C19C48",
+      "TaskDefTaskRole1EDB4A67",
       "Arn"
      ]
     }
+   }
+  },
+  "FargateServiceFirstService0D82F989": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "FargateCPCluster668E71F2"
+    },
+    "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "EnableECSManagedTags": false,
+    "LaunchType": "FARGATE",
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "FargateServiceFirstSecurityGroup79D2D2FE",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "VpcPrivateSubnet1Subnet536B997A"
+       },
+       {
+        "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+       }
+      ]
+     }
+    },
+    "TaskDefinition": "awsecsintegcustomtaskrevisionTaskDef9F1555EB:1"
    },
    "DependsOn": [
-    "SMRoleDefaultPolicy34CA15C7",
-    "SMRole49C19C48"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+    "TaskDef54694570",
+    "TaskDefTaskRole1EDB4A67"
+   ]
+  },
+  "FargateServiceFirstSecurityGroup79D2D2FE": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-ecs-integ-custom-task-revision/FargateServiceFirst/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "DependsOn": [
+    "TaskDef54694570",
+    "TaskDefTaskRole1EDB4A67"
+   ]
+  },
+  "FargateServiceLatestService58B1BC30": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "FargateCPCluster668E71F2"
+    },
+    "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "EnableECSManagedTags": false,
+    "LaunchType": "FARGATE",
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "FargateServiceLatestSecurityGroupAAE45690",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "VpcPrivateSubnet1Subnet536B997A"
+       },
+       {
+        "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+       }
+      ]
+     }
+    },
+    "TaskDefinition": "awsecsintegcustomtaskrevisionTaskDef9F1555EB"
+   },
+   "DependsOn": [
+    "TaskDef54694570",
+    "TaskDefTaskRole1EDB4A67"
+   ]
+  },
+  "FargateServiceLatestSecurityGroupAAE45690": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-ecs-integ-custom-task-revision/FargateServiceLatest/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "DependsOn": [
+    "TaskDef54694570",
+    "TaskDefTaskRole1EDB4A67"
+   ]
   }
  },
  "Parameters": {
