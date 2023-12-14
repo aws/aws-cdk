@@ -14,7 +14,8 @@ import {
   SuperInitializer,
   Expression,
 } from '@cdklabs/typewriter';
-import { CdkCustomResourceModule } from './framework';
+import { Runtime } from './config';
+import { HandlerFrameworkModule } from './framework';
 import {
   CONSTRUCTS_MODULE,
   LAMBDA_MODULE,
@@ -23,7 +24,7 @@ import {
   CORE_INTERNAL_CR_PROVIDER,
   PATH_MODULE,
 } from './modules';
-import { Runtime } from './runtime';
+import { toLambdaRuntime } from './utils/framework-utils';
 
 /**
  * Initialization properties for a class constructor.
@@ -55,36 +56,36 @@ interface ConstructorBuildProps {
 }
 
 /**
- * Initialization properties used to build a `CdkCustomResourceClass` instance.
+ * Initialization properties used to build a `HandlerFrameworkClass` instance.
  */
-export interface CdkCustomResourceClassProps {
+export interface HandlerFrameworkClassProps {
   /**
-   * The name of the provider class.
+   * The name of the framework component class.
    */
   readonly name: string;
 
   /**
-   * A local file system directory with the provider's code.
+   * A local file system directory with the framework component's code.
    */
   readonly codeDirectory: string;
 
   /**
-   * The runtime environment for the custom resource provider.
+   * The runtime environment for the framework component.
    */
   readonly runtime: Runtime;
 
   /**
-   * The name of the method within your code that provider calls to execute your function.
+   * The name of the method within your code that framework component calls.
    */
   readonly handler: string;
 }
 
-export abstract class CdkCustomResourceClass extends ClassType {
+export abstract class HandlerFrameworkClass extends ClassType {
   /**
-   * Builds a `CdkFunction` class.
+   * Builds a code generated Lambda function class.
    */
-  public static buildCdkFunction(scope: CdkCustomResourceModule, props: CdkCustomResourceClassProps): CdkCustomResourceClass {
-    return new (class CdkFunction extends CdkCustomResourceClass {
+  public static buildFunction(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
+    return new (class Function extends HandlerFrameworkClass {
       protected readonly externalModules = [PATH_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE];
 
       public constructor() {
@@ -100,7 +101,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
           ['handler', expr.lit(props.handler)],
-          ['runtime', expr.directCode(props.runtime.toLambdaRuntime())],
+          ['runtime', expr.directCode(toLambdaRuntime(props.runtime))],
         ]);
         this.buildConstructor({
           constructorPropsType: LAMBDA_MODULE.FunctionOptions,
@@ -113,10 +114,10 @@ export abstract class CdkCustomResourceClass extends ClassType {
   }
 
   /**
-   * Builds a `CdkSingletonFunction` class.
+   * Builds a code generated Lambda singleton function class.
    */
-  public static buildCdkSingletonFunction(scope: CdkCustomResourceModule, props: CdkCustomResourceClassProps): CdkCustomResourceClass {
-    return new (class CdkSingletonFunction extends CdkCustomResourceClass {
+  public static buildSingletonFunction(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
+    return new (class SingletonFunction extends HandlerFrameworkClass {
       protected readonly externalModules = [PATH_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE];
 
       public constructor() {
@@ -162,7 +163,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
           ['handler', expr.lit(props.handler)],
-          ['runtime', expr.directCode(props.runtime.toLambdaRuntime())],
+          ['runtime', expr.directCode(toLambdaRuntime(props.runtime))],
         ]);
         this.buildConstructor({
           constructorPropsType: _interface.type,
@@ -174,10 +175,10 @@ export abstract class CdkCustomResourceClass extends ClassType {
   }
 
   /**
-   * Builds a `CdkCustomResourceProvider` class.
+   * Builds a code generated custom resource provider class.
    */
-  public static buildCdkCustomResourceProvider(scope: CdkCustomResourceModule, props: CdkCustomResourceClassProps): CdkCustomResourceClass {
-    return new (class CdkCustomResourceProvider extends CdkCustomResourceClass {
+  public static buildCustomResourceProvider(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
+    return new (class CustomResourceProvider extends HandlerFrameworkClass {
       protected readonly externalModules: ExternalModule[] = [PATH_MODULE, CONSTRUCTS_MODULE];
 
       public constructor() {
@@ -256,7 +257,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['codeDirectory', expr.directCode(`path.join(__dirname, '${props.codeDirectory}')`)],
-          ['runtimeName', expr.lit(props.runtime.name)],
+          ['runtimeName', expr.lit(props.runtime)],
         ]);
         this.buildConstructor({
           constructorPropsType: scope.coreInternal
@@ -275,7 +276,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
    */
   protected abstract readonly externalModules: ExternalModule[];
 
-  private importExternalModulesInto(scope: CdkCustomResourceModule) {
+  private importExternalModulesInto(scope: HandlerFrameworkModule) {
     for (const module of this.externalModules) {
       if (!scope.hasExternalModule(module)) {
         scope.addExternalModule(module);
@@ -284,7 +285,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
     }
   }
 
-  private importExternalModuleInto(scope: CdkCustomResourceModule, module: ExternalModule) {
+  private importExternalModuleInto(scope: HandlerFrameworkModule, module: ExternalModule) {
     switch (module.fqn) {
       case PATH_MODULE.fqn: {
         PATH_MODULE.import(scope, 'path');
@@ -320,7 +321,7 @@ export abstract class CdkCustomResourceClass extends ClassType {
     }
   }
 
-  private getOrCreateInterface(scope: CdkCustomResourceModule, spec: InterfaceSpec) {
+  private getOrCreateInterface(scope: HandlerFrameworkModule, spec: InterfaceSpec) {
     const existing = scope.getInterface(spec.name);
     if (existing) {
       return existing;

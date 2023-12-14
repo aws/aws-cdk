@@ -1,29 +1,29 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
-import { config, ProviderProps } from '../lib/custom-resources-framework/config';
-import { CdkCustomResourceModule } from '../lib/custom-resources-framework/framework';
+import { config, ComponentProps } from '../lib/custom-resources-framework/config';
+import { HandlerFrameworkModule } from '../lib/custom-resources-framework/framework';
 
-const framework: { [fqn: string]: ProviderProps[] } = {};
+const framework: { [fqn: string]: ComponentProps[] } = {};
 
 async function main() {
   recurse(config, []);
 
-  for (const [fqn, providers] of Object.entries(framework)) {
-    const module = new CdkCustomResourceModule(fqn);
-    for (const provider of providers) {
-      const outfile = calculateOutfile(provider.sourceCode);
-      if (provider.preventMinifyAndBundle) {
-        fs.mkdirSync(path.dirname(outfile), { recursive: true });
-        fs.copyFileSync(provider.sourceCode, outfile);
+  for (const [fqn, components] of Object.entries(framework)) {
+    const module = new HandlerFrameworkModule(fqn);
+    for (const component of components) {
+      const outfile = calculateOutfile(component.sourceCode);
+      if (component.minifyAndBundle) {
+        await minifyAndBundle(component.sourceCode, outfile);
       } else {
-        await minifyAndBundle(provider.sourceCode, outfile);
+        fs.mkdirSync(path.dirname(outfile), { recursive: true });
+        fs.copyFileSync(component.sourceCode, outfile);
       }
       const codeDirectory = path.dirname(outfile).split('/').pop() ?? '';
-      module.build(provider, codeDirectory);
+      module.build(component, codeDirectory);
     }
 
-    if (module.hasProviders) {
+    if (module.hasComponents) {
       module.renderTo(`dist/${fqn}.generated.ts`);
     }
   }

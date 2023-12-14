@@ -1,9 +1,8 @@
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { ProviderProps, ProviderType } from '../../lib/custom-resources-framework/config';
-import { CdkCustomResourceModule } from '../../lib/custom-resources-framework/framework';
-import { Runtime } from '../../lib/custom-resources-framework/runtime';
+import { ComponentProps, ComponentType, Runtime } from '../../lib/custom-resources-framework/config';
+import { HandlerFrameworkModule } from '../../lib/custom-resources-framework/framework';
 import { calculateOutfile } from '../../scripts/generate';
 
 /* eslint-disable no-console */
@@ -18,11 +17,10 @@ describe('framework', () => {
 
   test('can codegen cdk function', () => {
     // GIVEN
-    const module = new CdkCustomResourceModule('cdk-testing/test-provider');
-    const component: ProviderProps = {
-      type: ProviderType.CDK_FUNCTION,
+    const module = new HandlerFrameworkModule('cdk-testing/test-provider');
+    const component: ComponentProps = {
+      type: ComponentType.FUNCTION,
       sourceCode,
-      compatibleRuntimes: [Runtime.NODEJS_18_X],
     };
     const outfile = calculateOutfile(sourceCode);
     module.build(component, path.dirname(outfile).split('/').pop() ?? 'dist');
@@ -38,11 +36,10 @@ describe('framework', () => {
 
   test('can codegen cdk singleton function', () => {
     // GIVEN
-    const module = new CdkCustomResourceModule('cdk-testing/test-provider');
-    const component: ProviderProps = {
-      type: ProviderType.CDK_SINGLETON_FUNCTION,
+    const module = new HandlerFrameworkModule('cdk-testing/test-provider');
+    const component: ComponentProps = {
+      type: ComponentType.SINGLETON_FUNCTION,
       sourceCode,
-      compatibleRuntimes: [Runtime.NODEJS_18_X],
     };
     const outfile = calculateOutfile(sourceCode);
     module.build(component, path.dirname(outfile).split('/').pop() ?? 'dist');
@@ -58,11 +55,10 @@ describe('framework', () => {
 
   test('can codegen cdk custom resource provider for core internal', () => {
     // GIVEN
-    const module = new CdkCustomResourceModule('cdk-testing/test-provider');
-    const component: ProviderProps = {
-      type: ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER,
+    const module = new HandlerFrameworkModule('cdk-testing/test-provider');
+    const component: ComponentProps = {
+      type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
       sourceCode,
-      compatibleRuntimes: [Runtime.NODEJS_18_X],
     };
     const outfile = calculateOutfile(sourceCode);
     module.build(component, path.dirname(outfile).split('/').pop() ?? 'dist');
@@ -78,11 +74,10 @@ describe('framework', () => {
 
   test('can codegen cdk custom resource provider for core internal', () => {
     // GIVEN
-    const module = new CdkCustomResourceModule('core/test-provider');
-    const component: ProviderProps = {
-      type: ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER,
+    const module = new HandlerFrameworkModule('core/test-provider');
+    const component: ComponentProps = {
+      type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
       sourceCode,
-      compatibleRuntimes: [Runtime.NODEJS_18_X],
     };
     const outfile = calculateOutfile(sourceCode);
     module.build(component, path.dirname(outfile).split('/').pop() ?? 'dist');

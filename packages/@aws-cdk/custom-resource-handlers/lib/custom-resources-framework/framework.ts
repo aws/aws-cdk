@@ -1,12 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { ExternalModule, InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import { CdkCustomResourceClass, CdkCustomResourceClassProps } from './classes';
-import { ProviderType, ProviderProps } from './config';
-import { Runtime } from './runtime';
-import { RuntimeDeterminer } from './utils/runtime-determiner';
+import { HandlerFrameworkClass, HandlerFrameworkClassProps } from './classes';
+import { ComponentType, ComponentProps, Runtime } from './config';
+import { buildComponentName } from './utils/framework-utils';
 
-export class CdkCustomResourceModule extends Module {
+export class HandlerFrameworkModule extends Module {
   /**
    * The latest nodejs runtime version available across all AWS regions.
    */
@@ -15,7 +14,7 @@ export class CdkCustomResourceModule extends Module {
   private readonly renderer = new TypeScriptRenderer();
   private readonly externalModules = new Map<string, boolean>();
   private readonly _interfaces = new Map<string, InterfaceType>();
-  private _hasProviders = false;
+  private _hasComponents = false;
 
   /**
    * Whether the module being generated will live inside of aws-cdk-lib/core.
@@ -23,10 +22,10 @@ export class CdkCustomResourceModule extends Module {
   public readonly coreInternal: boolean;
 
   /**
-   * Whether the module contains custom resource providers.
+   * Whether the module contains handler framework components.
    */
-  public get hasProviders() {
-    return this._hasProviders;
+  public get hasComponents() {
+    return this._hasComponents;
   }
 
   public constructor(fqn: string) {
@@ -37,37 +36,34 @@ export class CdkCustomResourceModule extends Module {
   /**
    * Build a framework component inside of this module.
    */
-  public build(provider: ProviderProps, codeDirectory: string) {
-    if (provider.type === ProviderType.CDK_NO_OP) {
+  public build(component: ComponentProps, codeDirectory: string) {
+    if (component.type === ComponentType.NO_OP) {
       return;
     }
 
-    this._hasProviders = true;
+    this._hasComponents = true;
 
-    const handler = provider.handler ?? 'index.handler';
-    const name = this.buildProviderName(handler);
+    const handler = component.handler ?? 'index.handler';
+    const name = buildComponentName(this.fqn, component.type, handler);
 
-    const props: CdkCustomResourceClassProps = {
+    const props: HandlerFrameworkClassProps = {
       name,
       handler,
       codeDirectory,
-      runtime: RuntimeDeterminer.determineLatestRuntime(
-        provider.compatibleRuntimes,
-        CdkCustomResourceModule.DEFAULT_RUNTIME,
-      ),
+      runtime: component.runtime ?? HandlerFrameworkModule.DEFAULT_RUNTIME,
     };
 
-    switch (provider.type) {
-      case ProviderType.CDK_FUNCTION: {
-        CdkCustomResourceClass.buildCdkFunction(this, props);
+    switch (component.type) {
+      case ComponentType.FUNCTION: {
+        HandlerFrameworkClass.buildFunction(this, props);
         break;
       }
-      case ProviderType.CDK_SINGLETON_FUNCTION: {
-        CdkCustomResourceClass.buildCdkSingletonFunction(this, props);
+      case ComponentType.SINGLETON_FUNCTION: {
+        HandlerFrameworkClass.buildSingletonFunction(this, props);
         break;
       }
-      case ProviderType.CDK_CUSTOM_RESOURCE_PROVIDER: {
-        CdkCustomResourceClass.buildCdkCustomResourceProvider(this, props);
+      case ComponentType.CUSTOM_RESOURCE_PROVIDER: {
+        HandlerFrameworkClass.buildCustomResourceProvider(this, props);
         break;
       }
     }
@@ -84,9 +80,7 @@ export class CdkCustomResourceModule extends Module {
    * Add an external module to be imported.
    */
   public addExternalModule(module: ExternalModule) {
-    if (!this.externalModules.has(module.fqn)) {
-      this.externalModules.set(module.fqn, true);
-    }
+    this.externalModules.set(module.fqn, true);
   }
 
   /**
@@ -108,14 +102,5 @@ export class CdkCustomResourceModule extends Module {
    */
   public getInterface(name: string) {
     return this._interfaces.get(name);
-  }
-
-  private buildProviderName(entrypoint: string) {
-    const id = this.fqn.split('/').at(-1)?.replace('-provider', '') ?? '';
-    const handler = entrypoint.split('.').at(-1)?.replace(/[_Hh]andler/g, '') ?? '';
-    const name = (id.replace(
-      /-([a-z])/g, (s) => { return s[1].toUpperCase(); },
-    )) + (handler.charAt(0).toUpperCase() + handler.slice(1));
-    return name.charAt(0).toUpperCase() + name.slice(1) + 'Provider';
   }
 }
