@@ -59,18 +59,23 @@ export class LinuxLambdaBuildImage implements IBuildImage {
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
-    const ret = [];
+    const errors = [];
 
     if (buildEnvironment.privileged) {
-      ret.push('Lambda compute type does not support privileged mode');
+      errors.push('Lambda compute type does not support privileged mode');
     }
 
     if (buildEnvironment.computeType && !isLambdaComputeType(buildEnvironment.computeType)) {
-      ret.push(`Lambda images only support ComputeTypes between ${ComputeType.LAMBDA_1GB} and ${ComputeType.LAMBDA_10GB} - ` +
-               `${buildEnvironment.computeType} was given`);
+      errors.push([
+        'Lambda images only support ComputeTypes between',
+        `'${ComputeType.LAMBDA_1GB}'`,
+        'and',
+        `'${ComputeType.LAMBDA_10GB}',`,
+        `got '${buildEnvironment.computeType}'`,
+      ].join(' '));
     }
 
-    return ret;
+    return errors;
   }
 
   public runScriptBuildspec(entrypoint: string): BuildSpec {

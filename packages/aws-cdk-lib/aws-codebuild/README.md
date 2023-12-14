@@ -403,7 +403,7 @@ Alternatively, you can reference an image available in an ECR repository using t
 
 ### Lambda images
 
-The `LambdaBuildImage` (or `LinuxArmLambdaBuildImage`) class contains constants for working with
+The `LinuxLambdaBuildImage` (or `LinuxArmLambdaBuildImage`) class contains constants for working with
 Lambda compute:
 
 ```ts

@@ -1557,20 +1557,20 @@ export class Project extends ProjectBase {
    */
   private validateLambdaBuildImage(buildImage: IBuildImage, props: ProjectProps): string[] {
     if (!this.isLambdaBuildImage(buildImage)) return [];
-    const ret = [];
+    const errors = [];
     if (props.timeout) {
-      ret.push('Cannot specify timeout for Lambda compute');
+      errors.push('Cannot specify timeout for Lambda compute');
     }
     if (props.queuedTimeout) {
-      ret.push('Cannot specify queuedTimeout for Lambda compute');
+      errors.push('Cannot specify queuedTimeout for Lambda compute');
     }
     if (props.cache) {
-      ret.push('Cannot specify cache for Lambda compute');
+      errors.push('Cannot specify cache for Lambda compute');
     }
     if (props.badge) {
-      ret.push('Cannot enable badge for Lambda compute');
+      errors.push('Cannot enable badge for Lambda compute');
     }
-    return ret;
+    return errors;
   }
 }
 
@@ -1750,14 +1750,14 @@ interface LinuxBuildImageProps {
 }
 
 // Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
-// eslint-disable-next-line no-duplicate-imports, import/order
+// eslint-disable-next-line import/order
 import { LinuxArmBuildImage } from './linux-arm-build-image';
 
 // LinuxArmLambdaBuildImage and LinuxLambdaBuildImage reference ComputeType, so these imports should be placed below ComputeType.
-/* eslint-disable no-duplicate-imports, import/order */
+/* eslint-disable import/order */
 import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
 import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
-/* eslint-enable no-duplicate-imports, import/order */
+/* eslint-enable import/order */
 
 /**
  * A CodeBuild image running x86-64 Linux.
@@ -1944,13 +1944,13 @@ export class LinuxBuildImage implements IBuildImage {
   }
 
   public validate(env: BuildEnvironment): string[] {
-    const ret = [];
+    const errors = [];
 
     if (env.computeType && isLambdaComputeType(env.computeType)) {
-      ret.push('x86-64 images do not support Lambda compute types');
+      errors.push('x86-64 images do not support Lambda compute types');
     }
 
-    return ret;
+    return errors;
   }
 
   public runScriptBuildspec(entrypoint: string): BuildSpec {
@@ -2114,20 +2114,20 @@ export class WindowsBuildImage implements IBuildImage {
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
-    const ret: string[] = [];
+    const errors: string[] = [];
 
     if (buildEnvironment.privileged) {
-      ret.push('Windows images do not support privileged mode');
+      errors.push('Windows images do not support privileged mode');
     }
 
     if (buildEnvironment.computeType && isLambdaComputeType(buildEnvironment.computeType)) {
-      ret.push('Windows images do not support Lambda compute types');
+      errors.push('Windows images do not support Lambda compute types');
     }
 
     if (buildEnvironment.computeType === ComputeType.SMALL || buildEnvironment.computeType === ComputeType.X2_LARGE) {
-      ret.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
+      errors.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
     }
-    return ret;
+    return errors;
   }
 
   public runScriptBuildspec(entrypoint: string): BuildSpec {

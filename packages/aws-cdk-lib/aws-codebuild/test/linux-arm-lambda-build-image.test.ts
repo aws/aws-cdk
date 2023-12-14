@@ -98,7 +98,7 @@ describe('Linux ARM Lambda build image', () => {
           buildImage: codebuild.LinuxArmLambdaBuildImage.AMAZON_LINUX_2_NODE_18,
         },
       });
-    }).toThrow(/Invalid CodeBuild environment: Lambda images only support ComputeTypes between 'BUILD_LAMBDA_1GB' and 'BUILD_LAMBDA_10GB' - 'BUILD_GENERAL1_SMALL' was given/);
+    }).toThrow(/Invalid CodeBuild environment: Lambda images only support ComputeTypes between 'BUILD_LAMBDA_1GB' and 'BUILD_LAMBDA_10GB', got 'BUILD_GENERAL1_SMALL'/);
   });
 
   test('cannot be used in conjunction with timeoutInMinutes property', () => {
