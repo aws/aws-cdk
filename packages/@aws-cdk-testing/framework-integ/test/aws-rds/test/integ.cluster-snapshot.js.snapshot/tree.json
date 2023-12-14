@@ -2285,7 +2285,7 @@
                                   ]
                                 },
                                 "rotationRules": {
-                                  "automaticallyAfterDays": 30
+                                  "scheduleExpression": "rate(30 days)"
                                 },
                                 "secretId": {
                                   "Ref": "FromSnapshotSnapshotSecretAttachmentA3F619B8"

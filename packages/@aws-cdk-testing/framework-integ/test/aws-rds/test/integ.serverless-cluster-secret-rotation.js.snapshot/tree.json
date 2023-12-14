@@ -141,7 +141,7 @@
                           "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
                         },
                         "rotationRules": {
-                          "automaticallyAfterDays": 30
+                          "scheduleExpression": "rate(30 days)"
                         }
                       }
                     },

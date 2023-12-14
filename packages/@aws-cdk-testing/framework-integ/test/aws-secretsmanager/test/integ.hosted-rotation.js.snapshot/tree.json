@@ -44,7 +44,7 @@
                           "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
                         },
                         "rotationRules": {
-                          "automaticallyAfterDays": 30
+                          "scheduleExpression": "rate(30 days)"
                         }
                       }
                     },
@@ -158,7 +158,7 @@
                         },
                         "rotateImmediatelyOnUpdate": false,
                         "rotationRules": {
-                          "automaticallyAfterDays": 30
+                          "scheduleExpression": "rate(30 days)"
                         }
                       }
                     },

@@ -21,6 +21,7 @@ class TestStack extends cdk.Stack {
         handler: 'index.handler',
         code: lambda.Code.fromInline('NOOP'),
       }),
+      automaticallyAfter: cdk.Duration.hours(4),
     });
   }
 }

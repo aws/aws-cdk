@@ -1040,7 +1040,7 @@
                                   ]
                                 },
                                 "rotationRules": {
-                                  "automaticallyAfterDays": 30
+                                  "scheduleExpression": "rate(30 days)"
                                 },
                                 "secretId": {
                                   "Ref": "InstanceSecretAttachment83BEE581"

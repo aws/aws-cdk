@@ -785,7 +785,7 @@ describe('DatabaseCluster', () => {
         'Fn::GetAtt': ['DatabaseRotationSingleUser65F55654', 'Outputs.RotationLambdaARN'],
       },
       RotationRules: {
-        AutomaticallyAfterDays: 5,
+        ScheduleExpression: 'rate(5 days)',
       },
     });
   });
@@ -899,7 +899,7 @@ describe('DatabaseCluster', () => {
         'Fn::GetAtt': ['DatabaseRotation6B6E1D86', 'Outputs.RotationLambdaARN'],
       },
       RotationRules: {
-        AutomaticallyAfterDays: 5,
+        ScheduleExpression: 'rate(5 days)',
       },
     });
   });
