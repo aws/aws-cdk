@@ -30,7 +30,7 @@ describe('framework', () => {
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
-    const expected = fs.readFileSync(path.resolve(__dirname, 'expected', 'cdk-function.ts'), 'utf-8');
+    const expected = fs.readFileSync(path.resolve(__dirname, 'expected', 'function.ts'), 'utf-8');
     expect(result).toContain(expected);
   });
 
@@ -49,7 +49,7 @@ describe('framework', () => {
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
-    const expected = fs.readFileSync(path.resolve(__dirname, 'expected', 'cdk-singleton-function.ts'), 'utf-8');
+    const expected = fs.readFileSync(path.resolve(__dirname, 'expected', 'singleton-function.ts'), 'utf-8');
     expect(result).toContain(expected);
   });
 
@@ -68,7 +68,7 @@ describe('framework', () => {
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
-    const expected = fs.readFileSync(path.resolve(__dirname, 'expected', 'cdk-custom-resource-provider.ts'), 'utf-8');
+    const expected = fs.readFileSync(path.resolve(__dirname, 'expected', 'custom-resource-provider.ts'), 'utf-8');
     expect(result).toContain(expected);
   });
 
@@ -87,7 +87,7 @@ describe('framework', () => {
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
-    const expected = fs.readFileSync(path.resolve(__dirname, 'expected', 'cdk-custom-resource-provider-core.ts'), 'utf-8');
+    const expected = fs.readFileSync(path.resolve(__dirname, 'expected', 'custom-resource-provider-core.ts'), 'utf-8');
     expect(result).toContain(expected);
   });
 });

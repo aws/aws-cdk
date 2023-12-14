@@ -3,7 +3,7 @@ import * as path from "path";
 import { Construct } from "constructs";
 import * as lambda from "../../../aws-lambda";
 
-export class TestProvider extends lambda.SingletonFunction {
+export class TestSingletonFunction extends lambda.SingletonFunction {
   public constructor(scope: Construct, id: string, props: CdkSingletonFunctionProps) {
     super(scope, id, {
       ...props,
@@ -15,9 +15,9 @@ export class TestProvider extends lambda.SingletonFunction {
 }
 
 /**
- * Initialization properties for TestProvider
+ * Initialization properties for TestSingletonFunction
  */
-export interface CdkSingletonFunctionProps extends lambda.FunctionOptions {
+export interface TestSingletonFunctionProps extends lambda.FunctionOptions {
   /**
    * A unique identifier to identify this Lambda.
    *

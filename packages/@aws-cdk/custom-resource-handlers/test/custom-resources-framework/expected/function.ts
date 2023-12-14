@@ -3,7 +3,7 @@ import * as path from "path";
 import { Construct } from "constructs";
 import * as lambda from "../../../aws-lambda";
 
-export class TestProvider extends lambda.Function {
+export class TestFunction extends lambda.Function {
   public constructor(scope: Construct, id: string, props?: lambda.FunctionOptions) {
     super(scope, id, {
       ...props,

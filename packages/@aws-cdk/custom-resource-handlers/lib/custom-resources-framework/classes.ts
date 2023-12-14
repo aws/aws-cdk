@@ -150,7 +150,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
           },
         };
         const _interface = this.getOrCreateInterface(scope, {
-          name: 'CdkSingletonFunctionProps',
+          name: `${this.name}Props`,
           export: true,
           extends: [LAMBDA_MODULE.FunctionOptions],
           properties: [uuid, lambdaPurpose],
