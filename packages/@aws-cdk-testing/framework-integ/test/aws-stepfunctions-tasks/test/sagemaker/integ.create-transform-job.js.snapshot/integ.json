@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "SqsTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-step-functions-task-create-transform-job-integ"
+      ],
+      "assertionStack": "SqsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SqsTestDefaultTestDeployAssert659366A6"
+    }
+  }
+}
