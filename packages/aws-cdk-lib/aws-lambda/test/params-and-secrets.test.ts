@@ -433,6 +433,32 @@ describe('params and secrets', () => {
               Ref: 'SecretA720EF05',
             },
           },
+          {
+            Action: 'kms:Decrypt',
+            Condition: {
+              StringEquals: {
+                'kms:ViaService': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'secretsmanager.',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      '.amazonaws.com',
+                    ],
+                  ],
+                },
+              },
+            },
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+          },
         ],
         Version: '2012-10-17',
       },
@@ -550,35 +576,6 @@ describe('params and secrets', () => {
                     },
                     ':root',
                   ],
-                ],
-              },
-            },
-            Resource: '*',
-          },
-          {
-            Action: 'kms:Decrypt',
-            Condition: {
-              StringEquals: {
-                'kms:ViaService': {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'secretsmanager.',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      '.amazonaws.com',
-                    ],
-                  ],
-                },
-              },
-            },
-            Effect: 'Allow',
-            Principal: {
-              AWS: {
-                'Fn::GetAtt': [
-                  'FunctionServiceRole675BB04A',
-                  'Arn',
                 ],
               },
             },

@@ -138,6 +138,53 @@ test('secret with kms', () => {
   });
 });
 
+test('imported cross-account secret with kms key', () => {
+  // GIVEN
+  const key = kms.Key.fromKeyArn(stack, 'kms', 'arn:aws:kms:eu-west-1:111111111111:key/1234abcd-12ab-34cd-56ef-1234567890ab');
+  const user = new iam.User(stack, 'User');
+
+  // WHEN
+  const secret = secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+    secretCompleteArn: 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9',
+    encryptionKey: key,
+  });
+
+  secret.grantRead(user);
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([{
+        Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+        Effect: 'Allow',
+        Resource: 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9',
+      },
+      {
+        Action: 'kms:Decrypt',
+        Effect: 'Allow',
+        Resource: 'arn:aws:kms:eu-west-1:111111111111:key/1234abcd-12ab-34cd-56ef-1234567890ab',
+        Condition: {
+          StringEquals: {
+            'kms:ViaService': {
+              'Fn::Join': [
+                '',
+                [
+                  'secretsmanager.',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  '.amazonaws.com',
+                ],
+              ],
+            },
+          },
+        },
+      }]),
+      Version: '2012-10-17',
+    },
+  });
+});
+
 test('secret with generate secret string options', () => {
   // WHEN
   new secretsmanager.Secret(stack, 'Secret', {
@@ -337,6 +384,32 @@ test('grantRead with KMS Key', () => {
         ],
         Effect: 'Allow',
         Resource: { Ref: 'SecretA720EF05' },
+      },
+      {
+        Action: 'kms:Decrypt',
+        Condition: {
+          StringEquals: {
+            'kms:ViaService': {
+              'Fn::Join': [
+                '',
+                [
+                  'secretsmanager.',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  '.amazonaws.com',
+                ],
+              ],
+            },
+          },
+        },
+        Effect: 'Allow',
+        Resource: {
+          'Fn::GetAtt': [
+            'KMS6B14D45A',
+            'Arn',
+          ],
+        },
       }],
     },
   });
@@ -344,7 +417,32 @@ test('grantRead with KMS Key', () => {
     KeyPolicy: {
       Statement: Match.arrayWith([
         {
-          Action: 'kms:Decrypt',
+          Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            'kms:Decrypt',
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
+          },
           Condition: {
             StringEquals: {
               'kms:ViaService': {
@@ -361,16 +459,48 @@ test('grantRead with KMS Key', () => {
               },
             },
           },
+        },
+        {
           Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            'kms:CreateGrant',
+            'kms:DescribeKey',
+          ],
           Principal: {
             AWS: {
-              'Fn::GetAtt': [
-                'Role1ABCC5F0',
-                'Arn',
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
               ],
             },
           },
-          Resource: '*',
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
         },
       ]),
       Version: '2012-10-17',
@@ -498,12 +628,8 @@ test('grantRead with version label constraint', () => {
             'secretsmanager:VersionStage': ['FOO', 'bar'],
           },
         },
-      }],
-    },
-  });
-  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
-    KeyPolicy: {
-      Statement: Match.arrayWith([{
+      },
+      {
         Action: 'kms:Decrypt',
         Condition: {
           StringEquals: {
@@ -522,16 +648,100 @@ test('grantRead with version label constraint', () => {
           },
         },
         Effect: 'Allow',
-        Principal: {
-          AWS: {
-            'Fn::GetAtt': [
-              'Role1ABCC5F0',
-              'Arn',
-            ],
+        Resource: { 'Fn::GetAtt': ['KMS6B14D45A', 'Arn'] },
+      }],
+    },
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: Match.arrayWith([
+        {
+          Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            'kms:Decrypt',
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
+          },
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
           },
         },
-        Resource: '*',
-      }]),
+        {
+          Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            'kms:CreateGrant',
+            'kms:DescribeKey',
+          ],
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
+          },
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
+        },
+      ]),
       Version: '2012-10-17',
     },
   });
@@ -581,12 +791,8 @@ test('grantWrite with kms', () => {
         ],
         Effect: 'Allow',
         Resource: { Ref: 'SecretA720EF05' },
-      }],
-    },
-  });
-  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
-    KeyPolicy: {
-      Statement: Match.arrayWith([{
+      },
+      {
         Action: [
           'kms:Encrypt',
           'kms:ReEncrypt*',
@@ -609,16 +815,100 @@ test('grantWrite with kms', () => {
           },
         },
         Effect: 'Allow',
-        Principal: {
-          AWS: {
-            'Fn::GetAtt': [
-              'Role1ABCC5F0',
-              'Arn',
-            ],
+        Resource: { 'Fn::GetAtt': ['KMS6B14D45A', 'Arn'] },
+      }],
+    },
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: Match.arrayWith([
+        {
+          Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            'kms:Decrypt',
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
+          },
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
           },
         },
-        Resource: '*',
-      }]),
+        {
+          Effect: 'Allow',
+          Resource: '*',
+          Action: [
+            'kms:CreateGrant',
+            'kms:DescribeKey',
+          ],
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':root',
+                ],
+              ],
+            },
+          },
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
+        },
+      ]),
     },
   });
 });
