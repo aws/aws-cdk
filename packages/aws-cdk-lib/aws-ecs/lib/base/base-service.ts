@@ -652,7 +652,7 @@ export abstract class BaseService extends Resource
       && props.taskDefinitionRevision
       && props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST
     ) {
-      throw new Error('CODE_DEPLOY deploymentController cannot be used with a non-latest task definition revision');
+      throw new Error('CODE_DEPLOY deploymentController can only be used with the `latest` task definition revision');
     }
 
     if (props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {

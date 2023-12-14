@@ -1237,7 +1237,7 @@ export function isExternalCompatible(compatibility: Compatibility): boolean {
 
 /**
  * Represents revision of a task definition, either a specific numbered revision or
- * the specia "latest" revision
+ * the `latest` revision
  */
 export class TaskDefinitionRevision {
   /**
