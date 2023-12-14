@@ -288,7 +288,6 @@ export type PrepareChangeSetOptions = {
   stack: cxapi.CloudFormationStackArtifact,
   deployments: Deployments,
   uuid: string,
-  resourcesToImport?: ResourcesToImport,
   willExecute: boolean,
   sdkProvider: SdkProvider,
 }
@@ -296,7 +295,6 @@ export type PrepareChangeSetOptions = {
 export type CreateChangeSetOptions = {
   cfn: CloudFormation,
   changeSetName: string,
-  resourcesToImport?: ResourcesToImport,
   willExecute: boolean,
   exists: boolean,
   uuid: string,
@@ -335,8 +333,7 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<CloudFo
   const changeSet = await options.cfn.createChangeSet({
     StackName: options.stack.stackName,
     ChangeSetName: options.changeSetName,
-    ChangeSetType: options.resourcesToImport ? 'IMPORT' : options.exists ? 'UPDATE' : 'CREATE',
-    ResourcesToImport: options.resourcesToImport,
+    ChangeSetType: options.exists ? 'UPDATE' : 'CREATE',
     Description: `CDK Changeset for execution ${options.uuid}`,
     ClientToken: `create${options.uuid}`,
     TemplateURL: options.bodyParameter.TemplateURL,
