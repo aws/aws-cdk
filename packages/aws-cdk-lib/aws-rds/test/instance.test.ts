@@ -782,7 +782,7 @@ describe('instance', () => {
         ],
       },
       RotationRules: {
-        AutomaticallyAfterDays: 30,
+        ScheduleExpression: 'rate(30 days)',
       },
     });
   });
@@ -810,7 +810,7 @@ describe('instance', () => {
         ],
       },
       RotationRules: {
-        AutomaticallyAfterDays: 30,
+        ScheduleExpression: 'rate(30 days)',
       },
     });
 
@@ -858,7 +858,7 @@ describe('instance', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       RotationRules: {
-        AutomaticallyAfterDays: 15,
+        ScheduleExpression: 'rate(15 days)',
       },
     });
 
@@ -921,7 +921,7 @@ describe('instance', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       RotationRules: {
-        AutomaticallyAfterDays: 15,
+        ScheduleExpression: 'rate(15 days)',
       },
     });
 
