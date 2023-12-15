@@ -227,14 +227,14 @@ export interface QueueProcessingServiceBaseProps {
    *
    * @default - false
    */
-  readonly disableCpuBasedScaling?: boolean
+  readonly disableCpuBasedScaling?: boolean;
 
   /**
    * The target CPU utilization percentage for CPU based scaling strategy when enabled.
    *
    * @default - 50
    */
-  readonly targetUtilizationPercent?: number
+  readonly cpuTargetUtilizationPercent?: number;
 }
 
 /**
@@ -298,13 +298,13 @@ export abstract class QueueProcessingServiceBase extends Construct {
    *
    * @default - false
    */
-  public readonly disableCpuBasedScaling: boolean = false
+  public readonly disableCpuBasedScaling?: boolean;
   /**
    * The target CPU utilization percentage for CPU based scaling strategy when enabled.
    *
    * @default - 50
    */
-  public readonly targetUtilizationPercent: number = 50
+  public readonly cpuTargetUtilizationPercent?: number;
 
   /**
    * Constructs a new instance of the QueueProcessingServiceBase class.
@@ -352,7 +352,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
     this.secrets = props.secrets;
     this.disableCpuBasedScaling = props.disableCpuBasedScaling ?? false;
-    this.targetUtilizationPercent = props.targetUtilizationPercent ?? 50;
+    this.cpuTargetUtilizationPercent = props.cpuTargetUtilizationPercent ?? 50;
 
     this.desiredCount = props.desiredTaskCount ?? 1;
 
@@ -388,7 +388,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
 
     if (!this.disableCpuBasedScaling) {
       scalingTarget.scaleOnCpuUtilization('CpuScaling', {
-        targetUtilizationPercent: this.targetUtilizationPercent,
+        targetUtilizationPercent: this.cpuTargetUtilizationPercent ?? 50,
       });
     }
     scalingTarget.scaleOnMetric('QueueMessagesVisibleScaling', {
