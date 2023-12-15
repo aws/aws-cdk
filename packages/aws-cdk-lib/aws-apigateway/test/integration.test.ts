@@ -14,6 +14,7 @@ describe('integration', () => {
     // THEN
     expect(() => new apigw.Integration({
       type: apigw.IntegrationType.AWS_PROXY,
+      integrationHttpMethod: 'ANY',
       options: {
         credentialsPassthrough: true,
         credentialsRole: role,
@@ -229,4 +230,21 @@ describe('integration', () => {
 
   });
 
+  test('validates integrationHttpMethod is required for non-MOCK integration types', () => {
+    expect(() => new apigw.Integration({
+      type: apigw.IntegrationType.HTTP_PROXY,
+      options: {
+        timeout: cdk.Duration.seconds(15),
+      },
+    })).toThrow(/integrationHttpMethod is required for non-mock integration types/);
+  });
+
+  test('integrationHttpMethod can be omitted for MOCK integration type', () => {
+    expect(() => new apigw.Integration({
+      type: apigw.IntegrationType.MOCK,
+      options: {
+        timeout: cdk.Duration.seconds(15),
+      },
+    })).not.toThrow();
+  });
 });
