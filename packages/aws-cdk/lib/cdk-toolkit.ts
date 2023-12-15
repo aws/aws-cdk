@@ -14,6 +14,7 @@ import { Deployments } from './api/deployments';
 import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
+import { ResourcesToImport } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, validateSourceOptions } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
@@ -283,6 +284,8 @@ export class CdkToolkit {
         tags = tagsForStack(stack);
       }
 
+      const resourcesToImport = this.tryGetMigrateResourcesToImport(stack.environment);
+
       let elapsedDeployTime = 0;
       try {
         const result = await this.props.deployments.deployStack({
@@ -305,6 +308,7 @@ export class CdkToolkit {
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
           assetParallelism: options.assetParallelism,
+          resourcesToImport,
         });
 
         const message = result.noOp
@@ -329,6 +333,11 @@ export class CdkToolkit {
         print('Stack ARN:');
 
         data(result.stackArn);
+
+        if (resourcesToImport) {
+          fs.rmSync('migrate.json');
+        }
+
       } catch (e) {
         error('\n ❌  %s failed: %s', chalk.bold(stack.displayName), e);
         throw e;
@@ -857,6 +866,30 @@ export class CdkToolkit {
       toolkitStackName: options.toolkitStackName,
       stackName: assetNode.parentStack.stackName,
     }));
+  }
+
+  /**
+   * Checks to see if a migrate.json file exists. If it does and the source is either `filepath` or
+   * is in the same environment as the stack deployment and returns the cdk migrate resources to be
+   * imported into the new stack.
+   * @param env The environment to which the stack is being deployed
+   * @returns The resources to import into the stack
+   */
+  private tryGetMigrateResourcesToImport(env: cxapi.Environment): ResourcesToImport | undefined {
+    try {
+      const migrateFile = fs.readJsonSync('migrate.json', { encoding: 'utf-8' });
+      if (migrateFile.Source === 'localfile') {
+        return migrateFile.Resources;
+      }
+      const sourceEnv = (migrateFile.Source as string).split(':');
+      if (sourceEnv[4] === env.account && sourceEnv[3] === env.region) {
+        return migrateFile.Resources;
+      }
+      return undefined;
+    } catch (e) {
+      // No migrate file is present, resume deployment as usual
+      return undefined;
+    }
   }
 }
 
