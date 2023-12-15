@@ -15,6 +15,8 @@ import {
   InterfaceVpcEndpoint,
   InterfaceVpcEndpointService,
   NatProvider,
+  NatGatewayProvider,
+  NatInstanceProvider,
   NatTrafficDirection,
   NetworkAcl,
   NetworkAclEntry,
@@ -1181,6 +1183,14 @@ describe('vpc', () => {
       expect(natGatewayProvider.configuredGateways.length).toBeGreaterThan(0);
     });
 
+    test('Default NAT gateway provider instantiated directly with new', () => {
+      const stack = new Stack();
+      const natGatewayProvider = new NatGatewayProvider();
+      new Vpc(stack, 'VpcNetwork', { natGatewayProvider });
+
+      expect(natGatewayProvider.configuredGateways.length).toBeGreaterThan(0);
+    });
+
     test('NAT gateway provider with EIP allocations', () => {
       const stack = new Stack();
       const natGatewayProvider = NatProvider.gateway({
@@ -1478,6 +1488,25 @@ describe('vpc', () => {
       // WHEN
       new Vpc(stack, 'TheVPC', {
         natGatewayProvider: NatProvider.instance({
+          instanceType: new InstanceType('q86.mega'),
+          machineImage: new GenericLinuxImage({
+            'us-east-1': 'ami-1',
+          }),
+        }),
+        natGateways: 1,
+      });
+
+      // THEN
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Instance', 1);
+    });
+
+    test('Can instantiate NatGatewayProvider directly with new', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      new Vpc(stack, 'TheVPC', {
+        natGatewayProvider: new NatInstanceProvider({
           instanceType: new InstanceType('q86.mega'),
           machineImage: new GenericLinuxImage({
             'us-east-1': 'ami-1',

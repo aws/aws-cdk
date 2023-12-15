@@ -214,7 +214,7 @@ export interface NatInstanceProps {
 /**
  * Provider for NAT Gateways
  */
-class NatGatewayProvider extends NatProvider {
+export class NatGatewayProvider extends NatProvider {
   private gateways: PrefSet<string> = new PrefSet<string>();
 
   constructor(private readonly props: NatGatewayProps = {}) {
