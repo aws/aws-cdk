@@ -21,8 +21,7 @@ class TestStack extends cdk.Stack {
     });
 
     const mySecret = new secretsmanager.Secret(this, 'MySecret');
-    const masterSecret = new secretsmanager.Secret(this, 'MasterSecret');
-    const importedSecret = secretsmanager.Secret.fromSecretNameV2(this, 'MasterSecretImported', masterSecret.secretName);
+    const importedSecret = secretsmanager.Secret.fromSecretNameV2(this, 'MasterSecretImported', 'MasterSecret');
     mySecret.addRotationSchedule('RotationSchedule', {
       hostedRotation: secretsmanager.HostedRotation.postgreSqlMultiUser({
         masterSecret: importedSecret,
