@@ -1,6 +1,6 @@
 import { CfnProject } from './codebuild.generated';
 import { IProject } from './project';
-import { IBucket } from '../../aws-s3';
+import { Bucket, ICfnBucket } from '../../aws-s3';
 import { Aws, Fn } from '../../core';
 
 export interface BucketCacheOptions {
@@ -65,14 +65,15 @@ export abstract class Cache {
    * @param bucket the S3 bucket to use for caching
    * @param options additional options to pass to the S3 caching
    */
-  public static bucket(bucket: IBucket, options?: BucketCacheOptions): Cache {
+  public static bucket(bucket: ICfnBucket, options?: BucketCacheOptions): Cache {
+    const s3Bucket = Bucket.fromCfnBucket(bucket);
     return {
       _toCloudFormation: () => ({
         type: 'S3',
-        location: Fn.join('/', [bucket.bucketName, options && options.prefix || Aws.NO_VALUE]),
+        location: Fn.join('/', [s3Bucket.attrBucketName, options && options.prefix || Aws.NO_VALUE]),
       }),
       _bind: (project) => {
-        bucket.grantReadWrite(project);
+        s3Bucket.grantReadWrite(project);
       },
     };
   }

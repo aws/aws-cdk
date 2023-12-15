@@ -71,15 +71,16 @@ export class Source {
    * @param bucket The S3 Bucket
    * @param zipObjectKey The S3 object key of the zip file with contents
    */
-  public static bucket(bucket: s3.IBucket, zipObjectKey: string): ISource {
+  public static bucket(bucket: s3.ICfnBucket, zipObjectKey: string): ISource {
     return {
       bind: (_: Construct, context?: DeploymentSourceContext) => {
         if (!context) {
           throw new Error('To use a Source.bucket(), context must be provided');
         }
 
-        bucket.grantRead(context.handlerRole);
-        return { bucket, zipObjectKey };
+        const s3Bucket = s3.Bucket.fromCfnBucket(bucket);
+        s3Bucket.grantRead(context.handlerRole);
+        return { bucket: s3Bucket, zipObjectKey };
       },
     };
   }

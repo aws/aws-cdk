@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { ILogGroup } from './log-group';
-import { IBucket } from '../../aws-s3';
+import { ICfnBucket } from '../../aws-s3';
 import { Stack } from '../../core';
 /**
  * Creates a data protection policy for CloudWatch Logs log groups.
@@ -33,7 +33,7 @@ export class DataProtectionPolicy {
 
     if (this.dataProtectionPolicyProps.s3BucketAuditDestination) {
       findingsDestination.s3 = {
-        bucket: this.dataProtectionPolicyProps.s3BucketAuditDestination.bucketName,
+        bucket: this.dataProtectionPolicyProps.s3BucketAuditDestination.attrBucketName,
       };
     }
 
@@ -161,7 +161,7 @@ export interface DataProtectionPolicyProps {
    *
    * @default - no S3 bucket audit destination
    */
-  readonly s3BucketAuditDestination?: IBucket;
+  readonly s3BucketAuditDestination?: ICfnBucket;
 
   /**
    * Amazon Kinesis Data Firehose delivery stream to send audit findings to. The delivery stream must already exist.

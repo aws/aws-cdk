@@ -291,8 +291,9 @@ export abstract class S3Location {
    * @param bucket    is the bucket where the objects are to be stored.
    * @param keyPrefix is the key prefix used by the location.
    */
-  public static fromBucket(bucket: s3.IBucket, keyPrefix: string): S3Location {
-    return new StandardS3Location({ bucket, keyPrefix, uri: bucket.urlForObject(keyPrefix) });
+  public static fromBucket(bucket: s3.ICfnBucket, keyPrefix: string): S3Location {
+    const s3Bucket = s3.Bucket.fromCfnBucket(bucket);
+    return new StandardS3Location({ bucket: s3Bucket, keyPrefix, uri: s3Bucket.urlForObject(keyPrefix) });
   }
 
   /**
@@ -939,9 +940,9 @@ class StandardS3Location extends S3Location {
   private readonly keyGlob: string;
   private readonly uri: string;
 
-  constructor(opts: { bucket?: s3.IBucket, keyPrefix?: string, uri: string }) {
+  constructor(opts: { bucket?: s3.ICfnBucket, keyPrefix?: string, uri: string }) {
     super();
-    this.bucket = opts.bucket;
+    this.bucket = opts.bucket ? s3.Bucket.fromCfnBucket(opts.bucket) : undefined;
     this.keyGlob = `${opts.keyPrefix || ''}*`;
     this.uri = opts.uri;
   }

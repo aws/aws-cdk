@@ -185,7 +185,7 @@ export class Build extends BuildBase {
   /**
    * Create a new Build from s3 content
    */
-  static fromBucket(scope: Construct, id: string, bucket: s3.IBucket, key: string, objectVersion?: string) {
+  static fromBucket(scope: Construct, id: string, bucket: s3.ICfnBucket, key: string, objectVersion?: string) {
     return new Build(scope, id, {
       content: Content.fromBucket(bucket, key, objectVersion),
     });

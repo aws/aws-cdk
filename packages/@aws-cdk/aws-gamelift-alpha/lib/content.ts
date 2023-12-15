@@ -15,7 +15,7 @@ export abstract class Content {
    * @param key The object key
    * @param objectVersion Optional S3 ob ject version
    */
-  public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Content {
+  public static fromBucket(bucket: s3.ICfnBucket, key: string, objectVersion?: string): S3Content {
     return new S3Content(bucket, key, objectVersion);
   }
 
@@ -48,9 +48,9 @@ export interface ContentConfig {
  * Game content from an S3 archive.
  */
 export class S3Content extends Content {
-  constructor(private readonly bucket: s3.IBucket, private key: string, private objectVersion?: string) {
+  constructor(private readonly bucket: s3.ICfnBucket, private key: string, private objectVersion?: string) {
     super();
-    if (!bucket.bucketName) {
+    if (!bucket.attrBucketName) {
       throw new Error('bucketName is undefined for the provided bucket');
     }
   }
@@ -59,13 +59,13 @@ export class S3Content extends Content {
     // Adding permission to access specific content
     role.addToPrincipalPolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
-      resources: [this.bucket.arnForObjects(this.key)],
+      resources: [s3.Bucket.fromCfnBucket(this.bucket).arnForObjects(this.key)],
       actions: ['s3:GetObject', 's3:GetObjectVersion'],
     }));
 
     return {
       s3Location: {
-        bucketName: this.bucket.bucketName,
+        bucketName: this.bucket.attrBucketName,
         objectKey: this.key,
         objectVersion: this.objectVersion,
       },

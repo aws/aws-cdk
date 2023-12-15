@@ -8,7 +8,7 @@ import * as cp_actions from '../../../aws-codepipeline-actions';
 import { Action, CodeCommitTrigger, GitHubTrigger, S3Trigger } from '../../../aws-codepipeline-actions';
 import { IRepository } from '../../../aws-ecr';
 import * as iam from '../../../aws-iam';
-import { IBucket } from '../../../aws-s3';
+import { Bucket, ICfnBucket, IBucket } from '../../../aws-s3';
 import { Fn, SecretValue, Token } from '../../../core';
 import { FileSet, Step } from '../blueprint';
 
@@ -60,8 +60,8 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * declare const bucket: s3.Bucket;
    * pipelines.CodePipelineSource.s3(bucket, 'path/to/file.zip');
    */
-  public static s3(bucket: IBucket, objectKey: string, props: S3SourceOptions = {}): CodePipelineSource {
-    return new S3Source(bucket, objectKey, props);
+  public static s3(bucket: ICfnBucket, objectKey: string, props: S3SourceOptions = {}): CodePipelineSource {
+    return new S3Source(Bucket.fromCfnBucket(bucket), objectKey, props);
   }
 
   /**

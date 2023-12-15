@@ -2,14 +2,15 @@ import { Construct } from 'constructs';
 import { NotificationsResourceHandler } from './notifications-resource-handler';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
-import { Bucket, IBucket, EventType, NotificationKeyFilter } from '../bucket';
+import { Bucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
+import { ICfnBucket } from '../s3.generated';
 
 interface NotificationsProps {
   /**
    * The bucket to manage notifications for.
    */
-  bucket: IBucket;
+  bucket: ICfnBucket;
 
   /**
    * The role to be used by the lambda handler
@@ -38,7 +39,7 @@ export class BucketNotifications extends Construct {
   private readonly queueNotifications = new Array<QueueConfiguration>();
   private readonly topicNotifications = new Array<TopicConfiguration>();
   private resource?: cdk.CfnResource;
-  private readonly bucket: IBucket;
+  private readonly bucket: ICfnBucket;
   private readonly handlerRole?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: NotificationsProps) {
@@ -130,7 +131,7 @@ export class BucketNotifications extends Construct {
         type: 'Custom::S3BucketNotifications',
         properties: {
           ServiceToken: handler.functionArn,
-          BucketName: this.bucket.bucketName,
+          BucketName: this.bucket.attrBucketName,
           NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
           Managed: managed,
         },

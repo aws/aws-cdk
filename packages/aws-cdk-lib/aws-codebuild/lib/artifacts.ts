@@ -81,7 +81,7 @@ export interface S3ArtifactsProps extends ArtifactsProps {
   /**
    * The name of the output bucket.
    */
-  readonly bucket: s3.IBucket;
+  readonly bucket: s3.ICfnBucket;
 
   /**
    * The path inside of the bucket for the build output .zip file or folder.
@@ -141,12 +141,12 @@ class S3Artifacts extends Artifacts {
   }
 
   public bind(_scope: Construct, project: IProject): ArtifactsConfig {
-    this.props.bucket.grantReadWrite(project);
+    s3.Bucket.fromCfnBucket(this.props.bucket).grantReadWrite(project);
     const superConfig = super.bind(_scope, project);
     return {
       artifactsProperty: {
         ...superConfig.artifactsProperty,
-        location: this.props.bucket.bucketName,
+        location: this.props.bucket.attrBucketName,
         path: this.props.path,
         namespaceType: this.props.includeBuildId === false ? 'NONE' : 'BUILD_ID',
         name: this.props.name == null ? undefined : this.props.name,

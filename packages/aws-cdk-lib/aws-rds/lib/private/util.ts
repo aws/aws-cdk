@@ -20,9 +20,9 @@ export const DEFAULT_PASSWORD_EXCLUDE_CHARS = " %+~`#$&*()|[]{}:;<>?!'/@\"\\";
 /** Common base of `DatabaseInstanceProps` and `DatabaseClusterBaseProps` that has only the S3 props */
 export interface DatabaseS3ImportExportProps {
   readonly s3ImportRole?: iam.IRole;
-  readonly s3ImportBuckets?: s3.IBucket[];
+  readonly s3ImportBuckets?: s3.ICfnBucket[];
   readonly s3ExportRole?: iam.IRole;
-  readonly s3ExportBuckets?: s3.IBucket[];
+  readonly s3ExportBuckets?: s3.ICfnBucket[];
 }
 
 /**
@@ -50,7 +50,7 @@ export function setupS3ImportExport(
       assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
     });
     for (const bucket of props.s3ImportBuckets) {
-      bucket.grantRead(s3ImportRole);
+      s3.Bucket.fromCfnBucket(bucket).grantRead(s3ImportRole);
     }
   }
 
@@ -63,7 +63,7 @@ export function setupS3ImportExport(
       assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
     });
     for (const bucket of props.s3ExportBuckets) {
-      bucket.grantReadWrite(s3ExportRole);
+      s3.Bucket.fromCfnBucket(bucket).grantReadWrite(s3ExportRole);
     }
   }
 

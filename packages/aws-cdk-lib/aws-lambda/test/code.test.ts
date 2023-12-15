@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { Match, Template } from '../../assertions';
 import * as ecr from '../../aws-ecr';
+import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
@@ -12,6 +13,46 @@ describe('code', () => {
     test('fails if used with unsupported runtimes', () => {
       expect(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.GO_1_X)).toThrow(/Inline source not allowed for go1\.x/);
       expect(() => defineFunction(lambda.Code.fromInline('boom'), lambda.Runtime.JAVA_8)).toThrow(/Inline source not allowed for java8/);
+    });
+  });
+
+  describe('lambda.Code.fromBucket', () => {
+    test('compatible with IBucket', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+      const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'mybucket');
+      new lambda.Function(stack, 'Func', {
+        code: lambda.Code.fromBucket(bucket, 'key'),
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        handler: 'foom',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        Code: {
+          S3Bucket: 'mybucket',
+          S3Key: 'key',
+        },
+      });
+    });
+
+    test('compatible with ICfnBucket', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+      const cfnBucket: s3.ICfnBucket = new s3.CfnBucket(stack, 'CfnBucket', { bucketName: 'cfnbucket' });
+      new lambda.Function(stack, 'Func', {
+        code: lambda.Code.fromBucket(cfnBucket, 'key'),
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        handler: 'foom',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        Code: {
+          S3Bucket: {
+            Ref: 'CfnBucket',
+          },
+          S3Key: 'key',
+        },
+      });
     });
   });
 

@@ -99,7 +99,7 @@ export interface LoggingConfiguration {
    *
    * @default - A logging bucket is automatically created.
    */
-  readonly bucket?: s3.IBucket,
+  readonly bucket?: s3.ICfnBucket,
 
   /**
    * Whether to include the cookies in the logs
@@ -222,42 +222,42 @@ export interface CustomOriginConfig {
   /**
    * The domain name of the custom origin. Should not include the path - that should be in the parent SourceConfiguration
    */
-  readonly domainName: string,
+  readonly domainName: string;
 
   /**
    * The origin HTTP port
    *
    * @default 80
    */
-  readonly httpPort?: number,
+  readonly httpPort?: number;
 
   /**
    * The origin HTTPS port
    *
    * @default 443
    */
-  readonly httpsPort?: number,
+  readonly httpsPort?: number;
 
   /**
    * The keep alive timeout when making calls in seconds.
    *
    * @default Duration.seconds(5)
    */
-  readonly originKeepaliveTimeout?: cdk.Duration,
+  readonly originKeepaliveTimeout?: cdk.Duration;
 
   /**
    * The protocol (http or https) policy to use when interacting with the origin.
    *
    * @default OriginProtocolPolicy.HttpsOnly
    */
-  readonly originProtocolPolicy?: OriginProtocolPolicy,
+  readonly originProtocolPolicy?: OriginProtocolPolicy;
 
   /**
    * The read timeout when calling the origin in seconds
    *
    * @default Duration.seconds(30)
    */
-  readonly originReadTimeout?: cdk.Duration
+  readonly originReadTimeout?: cdk.Duration;
 
   /**
    * The SSL versions to use when interacting with the origin.
@@ -302,12 +302,12 @@ export interface S3OriginConfig {
   /**
    * The source bucket to serve content from
    */
-  readonly s3BucketSource: s3.IBucket;
+  readonly s3BucketSource: s3.ICfnBucket;
 
   /**
    * The optional Origin Access Identity of the origin identity cloudfront will use when calling your s3 bucket.
    *
-   * @default No Origin Access Identity which requires the S3 bucket to be public accessible
+   * @default - No Origin Access Identity which requires the S3 bucket to be public accessible
    */
   readonly originAccessIdentity?: IOriginAccessIdentity;
 
@@ -743,7 +743,6 @@ export interface CloudFrontWebDistributionAttributes {
  * @resource AWS::CloudFront::Distribution
  */
 export class CloudFrontWebDistribution extends cdk.Resource implements IDistribution {
-
   /**
    * Creates a construct that represents an external (imported) distribution.
    */
@@ -959,9 +958,11 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     }
 
     if (props.loggingConfig) {
-      this.loggingBucket = props.loggingConfig.bucket || new s3.Bucket(this, 'LoggingBucket', {
-        encryption: s3.BucketEncryption.S3_MANAGED,
-      });
+      this.loggingBucket = props.loggingConfig.bucket ?
+        s3.Bucket.fromCfnBucket(props.loggingConfig.bucket) :
+        new s3.Bucket(this, 'LoggingBucket', {
+          encryption: s3.BucketEncryption.S3_MANAGED,
+        });
       distributionConfig = {
         ...distributionConfig,
         logging: {
@@ -1118,6 +1119,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
 
     let s3OriginConfig: CfnDistribution.S3OriginConfigProperty | undefined;
     if (originConfig.s3OriginSource) {
+      const s3BucketSource = s3.Bucket.fromCfnBucket(originConfig.s3OriginSource.s3BucketSource);
       // first case for backwards compatibility
       if (originConfig.s3OriginSource.originAccessIdentity) {
         // grant CloudFront OriginAccessIdentity read access to S3 bucket
@@ -1125,8 +1127,8 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
         // Only GetObject is needed to retrieve objects for the distribution.
         // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.
         // Source: https://aws.amazon.com/blogs/networking-and-content-delivery/serving-sse-kms-encrypted-content-from-s3-using-cloudfront/
-        originConfig.s3OriginSource.s3BucketSource.addToResourcePolicy(new iam.PolicyStatement({
-          resources: [originConfig.s3OriginSource.s3BucketSource.arnForObjects('*')],
+        s3BucketSource.addToResourcePolicy(new iam.PolicyStatement({
+          resources: [s3BucketSource.arnForObjects('*')],
           actions: ['s3:GetObject'],
           principals: [originConfig.s3OriginSource.originAccessIdentity.grantPrincipal],
         }));
@@ -1152,7 +1154,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     const originProperty: CfnDistribution.OriginProperty = {
       id: originId,
       domainName: originConfig.s3OriginSource
-        ? originConfig.s3OriginSource.s3BucketSource.bucketRegionalDomainName
+        ? s3.Bucket.fromCfnBucket(originConfig.s3OriginSource.s3BucketSource).bucketRegionalDomainName
         : originConfig.customOriginSource!.domainName,
       originPath: originConfig.originPath ?? originConfig.customOriginSource?.originPath ?? originConfig.s3OriginSource?.originPath,
       originCustomHeaders:

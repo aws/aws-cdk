@@ -10,13 +10,12 @@ import * as constructs from 'constructs';
  * Represents a Glue Job's Code assets (an asset can be a scripts, a jar, a python file or any other file).
  */
 export abstract class Code {
-
   /**
    * Job code as an S3 object.
    * @param bucket The S3 bucket
    * @param key The object key
    */
-  public static fromBucket(bucket: s3.IBucket, key: string): S3Code {
+  public static fromBucket(bucket: s3.ICfnBucket, key: string): S3Code {
     return new S3Code(bucket, key);
   }
 
@@ -39,15 +38,18 @@ export abstract class Code {
  * Glue job Code from an S3 bucket.
  */
 export class S3Code extends Code {
-  constructor(private readonly bucket: s3.IBucket, private readonly key: string) {
+  private readonly bucket: s3.IBucket;
+  constructor(bucket: s3.ICfnBucket, private readonly key: string) {
     super();
+
+    this.bucket = s3.Bucket.fromCfnBucket(bucket);
   }
 
   public bind(_scope: constructs.Construct, grantable: iam.IGrantable): CodeConfig {
     this.bucket.grantRead(grantable, this.key);
     return {
       s3Location: {
-        bucketName: this.bucket.bucketName,
+        bucketName: this.bucket.attrBucketName,
         objectKey: this.key,
       },
     };

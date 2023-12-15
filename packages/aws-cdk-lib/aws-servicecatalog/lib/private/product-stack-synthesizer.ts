@@ -1,4 +1,4 @@
-import { CfnBucket, IBucket, Bucket } from '../../../aws-s3';
+import { CfnBucket, IBucket, Bucket, ICfnBucket } from '../../../aws-s3';
 import { BucketDeployment, ServerSideEncryption, Source } from '../../../aws-s3-deployment';
 import * as cdk from '../../../core';
 
@@ -16,7 +16,7 @@ export interface ProductStackSynthesizerProps {
    *
    * @default - No bucket provided and assets will not be supported
    */
-  readonly assetBucket?: IBucket;
+  readonly assetBucket?: ICfnBucket;
 
   /**
    * A ServerSideEncryption can be enabled to encrypt assets that are put into assetBucket.
@@ -48,7 +48,7 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
   constructor(props: ProductStackSynthesizerProps) {
     super();
     this.parentStack = props.parentStack;
-    this.assetBucket = props.assetBucket;
+    this.assetBucket = props.assetBucket ? Bucket.fromCfnBucket(props.assetBucket) : undefined;
     this.serverSideEncryption = props.serverSideEncryption;
     this.serverSideEncryptionAwsKmsKeyId = props.serverSideEncryptionAwsKmsKeyId;
 
