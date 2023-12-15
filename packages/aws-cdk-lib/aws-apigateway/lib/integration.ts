@@ -167,6 +167,8 @@ export interface IntegrationConfig {
 
   /**
    * The integration's HTTP method type.
+   * Required unless you use a MOCK integration.
+   *
    * @default - no integration method specified.
    */
   readonly integrationHttpMethod?: string;
@@ -204,6 +206,10 @@ export class Integration {
 
     if (options.timeout && !options.timeout.isUnresolved() && (options.timeout.toMilliseconds() < 50 || options.timeout.toMilliseconds() > 29000)) {
       throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');
+    }
+
+    if (props.type !== IntegrationType.MOCK && !props.integrationHttpMethod) {
+      throw new Error('integrationHttpMethod is required for non-mock integration types.');
     }
   }
 
