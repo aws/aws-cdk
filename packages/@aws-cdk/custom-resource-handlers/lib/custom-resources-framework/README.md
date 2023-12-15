@@ -1,66 +1,62 @@
-# AWS CDK Custom Resource Framework
+# CDK Handler Framework
 
-The CDK custom resource framework is an internal framework developed to establish best practices, runtime enforcement, and consistency for custom resource providers and their associated source code. 
+The CDK handler framework is an internal framework used to code generate constructs that extend a lambda `Function`, lambda `SingletonFunction`, or core `CustomResourceProvider` construct and prohibit the user from directly configuring the `handler`, `runtime`, `code`, and `codeDirectory` properties.  In doing this, we are able to establish best practices, runtime enforcement, and consistency across all handlers we build and vend within the aws-cdk.
 
-## Custom Resource Framework Concepts
+## CDK Handler Framework Concepts
 
-Custom resource providers can be created in one of three forms - `CdkFunction`, `CdkSingletonFunction`, or `CdkCustomResourceProvider`. These three custom resource provider formats are a code generated wrapper around the lambda `Function`, lambda `SingletonFunction`, and `CustomResourceProvider` constructs, respectively. These new CDK prefixed constructs will offer the same behavior and initialization options as their parent minus the ability to configure the following properties during construction:
-- `handler` - the name of the method within your code that the provider calls to execute your function
-- `code` - the source code of your provider
-- `codeDirectory` - a local file system directory with the provider's code
-- `runtime` - the runtime environment for the provider that you are uploading
+This framework allows for the creation of three component types:
+1. `ComponentType.FUNCTION` - This is a wrapper around the lambda `Function` construct. It offers the same behavior and performance as a lambda `Function`, but it restricts the consumer from configuring the `handler`, `runtime`, and `code` properties.
+2. `ComponentType.SINGLETON_FUNCTION` - This is a wrapper around the lambda `SingletonFunction` construct. It offers the same behavior and performance as a lambda `SingletonFunction`, but it restricts the consumer from configuring the `handler`, `runtime`, and `code` properties.
+3. `ComponentType.CUSTOM_RESOURCE_PROVIDER` - This is a wrapper around the core `CustomResourceProvider` construct. It offers the same behavior and performance as a `CustomResourceProvider` and can be instantiated via the `getOrCreate` or `getOrCreateProvider` methods. This component restricts the consumer from configuring the `runtime` and `codeDirectory` properties.
 
-Instead, these properties will be automatically generated using the `ProviderProps` configured in the [config](./config.ts) file:
-- `type`: the custom resource provider type to generate
-- `sourceCode`: the source code that will be executed by the provider
-- `compatibleRuntimes`: runtimes that are compatible with the provider's source code
-- `handler`: the name of the method within your code that the provider calls to execute your function
+Code generating one of these three component types requires adding the component properties to the [config](./config.ts) file by providing `ComponentProps`. The `ComponentProps` are responsible for code generating the specified `ComponentType` with the `handler`, `runtime`, `code`, and `codeDirectory` properties set internally. `ComponentProps` includes the following properties:
+- `type` - the framework component type to generate.
+- `sourceCode` - the source code that will be excuted by the framework component.
+- `runtime` - the runtime that is compatible with the framework component's source code. This is an optional property with a default node runtime maintained by the framework.
+- `handler` - the name of the method with the source code that the framework component will call. This is an optional property and the default is `index.handler`.
+- `minifyAndBundle` - whether the source code should be minified and bundled. This an optional property and the default is `true`. This should only be set to `false` for python files or for typescript/javascript files with a require import.
 
-The [config](./config.ts) file is structured with the top most level mapping to a `aws-cdk-lib` module, i.e., `aws-s3`, `aws-dynamodb`, etc. Each service can contain one or more provider modules. Provider modules are containers for custom resource providers and will be rendered as a code generated file. Each provider module can contain one or more `ProviderProps` objects. Each `ProviderProps` object contains all the necessary information required to generate a single custom resource provider. The following example shows a more structural breakdown of how the [config](./config.ts) file is configured:
+The [config](./config.ts) file is structured with the top level mapping to an aws-cdk module, i.e., aws-s3, aws-dynamodb, etc. Each service can contain one or more component modules. Component modules are containers for handler framework components and will be rendered as a code generated file. Each component module can contain one or more `ComponentProps` objects. The following example shows a more structural breakdown of how the [config](./config.ts) file is configured:
 
 ```ts
 const config = {
   'aws-s3': { // the aws-cdk-lib module
-    'replica-provider': [ // the custom resource provider module
-      // custom resource provider defined as ProviderProps object
+    'replica-provider': [ // the provider module
+      // handler framework component defined as a `ComponentProps` object
       {
-        // the custom resource provider type - `CdkFunction`
-        type: ComponentType.CDK_FUNCTION,
-        // the source code that the provider will execute
+        // the handler framework component type
+        type: ComponentType.FUNCTION,
+        // the source code that the component will use
         sourceCode: path.resolve(__dirname, '..', 'aws-dynamodb', 'replica-handler', 'index.ts'),
-        // runtimes that are compatible with the source code
-        compatibleRuntimes: [Runtime.NODEJS_18_X],
-        // the handler in the source code that the provider will execute
+        // the handler in the source code that the component will execute
         handler: 'index.onEventHandler',
       },
     ],
   },
   'aws-stepfunctions-tasks': {
-    // contains multiple custom resource provider modules
+    // contains multiple provider modules
     'eval-nodejs-provider': [
       {
-        // the custom resource provider type - `CdkSingletonFunction`
-        type: ProviderType.CDK_SINGLETON_FUNCTION,
+        type: ComponentType.SINGLETON_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-stepfunctions-tasks', 'eval-nodejs-handler', 'index.ts'),
-        compatibleRuntimes: [Runtime.NODEJS_18_X],
       },
     ],
     'role-policy-provider': [
       {
-        type: ProviderType.CDK_SINGLETON_FUNCTION,
+        type: ComponentType.SINGLETON_FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-stepfunctions-tasks', 'role-policy-handler', 'index.py'),
-        compatibleRuntimes: [Runtime.PYTHON_3_9],
-        // prevent minify and bundle flag is set since the source code is a python file
-        preventMinifyAndBundle: true,
+        runtime: Runtime.PYTHON_3_9,
+        // prevent minify and bundle since the source code is a python file
+        minifyAndBundle: false,
       },
     ],
   },
 };
 ```
 
-Code generation for the provider modules is triggered when this package - `@aws-cdk/custom-resource-handlers` - is built. Importantly, this framework is also responsible for minifying and bundling the custom resource providers' source code and dependencies. A flag named `preventMinifyAndBundle` can be configured as part of the `ProviderProps` to prevent minifying and bundling the source code for a specific provider. This flag is `false` by default and is only needed for Python files or for JavaScript/TypeScript files containing require imports.
+Code generation for the component modules is triggered when this package - `@aws-cdk/custom-resource-handlers` - is built. Importantly, this framework is also responsible for minifying and bundling the custom resource providers' source code and dependencies. A flag named `minifyAndBundle` can be configured as part of the `ComponentProps` to prevent minifying and bundling the source code for a specific provider. This flag is only needed for python files or for typescript/javascript files containing require imports.
 
-Once built, all generated code and bundled source code will be written to `@aws-cdk/custom-resource-handlers/dist`. The top level field in the [config](./config.ts) file defining individual `aws-cdk-lib` modules will be used to create specific directories within `@aws-cdk/custom-resource-handlers/dist` and each provider module will be a separate code generated file within these directories named as `<provider-module>.generated.ts`. As an example, the sample [config](./config.ts) file above would create the following file structure:
+Once built, all generated code and bundled source code will be written to `@aws-cdk/custom-resource-handlers/dist`. The top level field in the [config](./config.ts) file defining individual aws-cdk modules will be used to create specific directories within `@aws-cdk/custom-resource-handlers/dist` and each component module will be a separate code generated file within these directories named `<component-module>.generated.ts`. As an example, the sample [config](./config.ts) file above would create the following file structure:
 
 |--- @aws-cdk
 |   |--- custom-resource-handlers
@@ -77,11 +73,11 @@ Once built, all generated code and bundled source code will be written to `@aws-
 |   |   |   |   |--- eval-nodejs-provider.generated.ts
 |   |   |   |   |--- role-policy-provider.generated.ts
 
-The code generated custom resource providers are usable in `aws-cdk-lib` once `aws-cdk-lib` is built. The custom resource providers will be consumable from `aws-cdk-lib/custom-resource-handlers/dist` and the file structure therein will match what was generated in `@aws-cdk/custom-resource-handlers/dist` except for providers defined in `core`. To prevent circular dependencies, all custom resource providers defined in `core`and any associated source code will be consumable from `aws-cdk-lib/core/dist/core`.
+The code generated handler framework components are consumable from `aws-cdk-lib/custom-resource-handlers/dist` once `aws-cdk-lib` is built. The file structure of `aws-cdk-lib/custom-resource-handlers/dist` will have the same structure as `@aws-cdk/custom-resource-handlers/dist` with the exception of `core`. To prevent circular dependencies, all handler framework components defined in `core`and any associated source code will be consumable from `aws-cdk-lib/core/dist/core`.
 
-## Creating a Custom Resource Provider
+## Creating a Handler Framework Component
 
-Creating a new custom resource provider involves three steps:
-1. Add the custom resource provider's source code to `@aws-cdk/custom-resource-handlers/lib/<aws-cdk-lib-module>`
-2. Update the [config](./config.ts) file with the custom resource provider to generate by specifying all required `ProviderProps`.
-3. At this point you can directly build `@aws-cdk/custom-resource-handlers` with `yarn build` to view the generated provider in `@aws-cdk/custom-resource-handlers/dist`. Alternatively, you can build `aws-cdk-lib` with `npx lerna run build --scope=aws-cdk-lib --skip-nx-cache` to make the generated provider available for use within `aws-cdk-lib`
+Creating a new handler framework component involves three steps:
+1. Add the source code to `@aws-cdk/custom-resource-handlers/lib/<aws-cdk-lib-module>`
+2. Update the [config](./config.ts) file by specifying all required `ComponentProps`.
+3. At this point you can directly build `@aws-cdk/custom-resource-handlers` with `yarn build` to view the generated component in `@aws-cdk/custom-resource-handlers/dist`. Alternatively, you can build `aws-cdk-lib` with `npx lerna run build --scope=aws-cdk-lib --skip-nx-cache` to make the generated component available for use within `aws-cdk-lib`
