@@ -184,6 +184,57 @@ export interface CatchProps {
 }
 
 /**
+ * Mode of the Map workflow.
+ */
+export enum ProcessorMode {
+  /**
+   * Inline Map mode.
+   */
+  INLINE = 'INLINE',
+
+  /**
+   * Distributed Map mode.
+   */
+  DISTRIBUTED = 'DISTRIBUTED',
+}
+
+/**
+ * Execution type for the Map workflow.
+ */
+export enum ProcessorType {
+  /**
+   * Standard execution type.
+   */
+  STANDARD = 'STANDARD',
+
+  /**
+   * Express execution type.
+   */
+  EXPRESS = 'EXPRESS',
+}
+
+/**
+ * Specifies the configuration for the processor Map state.
+ */
+export interface ProcessorConfig {
+  /**
+   * Specifies the execution mode for the Map workflow.
+   *
+   * @default - ProcessorMode.INLINE
+   */
+  readonly mode?: ProcessorMode;
+
+  /**
+   * Specifies the execution type for the Map workflow.
+   *
+   * You must provide this field if you specified `DISTRIBUTED` for the `mode` sub-field.
+   *
+   * @default - no execution type
+   */
+  readonly executionType?: ProcessorType;
+}
+
+/**
  * Special string value to discard state input, output or result
  * @deprecated use JsonPath.DISCARD
  */

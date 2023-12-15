@@ -1975,7 +1975,7 @@ describe('cluster', () => {
         ],
       },
       RotationRules: {
-        AutomaticallyAfterDays: 30,
+        ScheduleExpression: 'rate(30 days)',
       },
     });
   });
@@ -2006,7 +2006,7 @@ describe('cluster', () => {
         ],
       },
       RotationRules: {
-        AutomaticallyAfterDays: 30,
+        ScheduleExpression: 'rate(30 days)',
       },
     });
 
@@ -2058,7 +2058,7 @@ describe('cluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       RotationRules: {
-        AutomaticallyAfterDays: 15,
+        ScheduleExpression: 'rate(15 days)',
       },
     });
 
@@ -2125,7 +2125,7 @@ describe('cluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       RotationRules: {
-        AutomaticallyAfterDays: 15,
+        ScheduleExpression: 'rate(15 days)',
       },
     });
 
@@ -2231,7 +2231,7 @@ describe('cluster', () => {
         ],
       },
       RotationRules: {
-        AutomaticallyAfterDays: 30,
+        ScheduleExpression: 'rate(30 days)',
       },
       RotateImmediatelyOnUpdate: false,
     });
@@ -2266,7 +2266,7 @@ describe('cluster', () => {
         ],
       },
       RotationRules: {
-        AutomaticallyAfterDays: 30,
+        ScheduleExpression: 'rate(30 days)',
       },
       RotateImmediatelyOnUpdate: false,
     });
@@ -3439,7 +3439,7 @@ describe('cluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       RotationRules: {
-        AutomaticallyAfterDays: 30,
+        ScheduleExpression: 'rate(30 days)',
       },
     });
   });
@@ -3493,7 +3493,7 @@ describe('cluster', () => {
         ],
       },
       RotationRules: {
-        AutomaticallyAfterDays: 30,
+        ScheduleExpression: 'rate(30 days)',
       },
     });
 

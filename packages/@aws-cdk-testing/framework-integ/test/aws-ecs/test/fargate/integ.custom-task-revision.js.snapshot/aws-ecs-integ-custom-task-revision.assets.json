@@ -1,0 +1,19 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "6e753ae2cc8ff1f34743eda0081c947fb52b3793a923122c92538ea1f570bb6f": {
+      "source": {
+        "path": "aws-ecs-integ-custom-task-revision.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6e753ae2cc8ff1f34743eda0081c947fb52b3793a923122c92538ea1f570bb6f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
