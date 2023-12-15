@@ -21,7 +21,7 @@ The [config](./config.ts) file is structured with the top level mapping to an aw
 ```ts
 const config = {
   'aws-s3': { // the aws-cdk-lib module
-    'replica-provider': [ // the provider module
+    'replica-provider': [ // the component module
       // handler framework component defined as a `ComponentProps` object
       {
         // the handler framework component type
@@ -34,7 +34,7 @@ const config = {
     ],
   },
   'aws-stepfunctions-tasks': {
-    // contains multiple provider modules
+    // contains multiple component modules
     'eval-nodejs-provider': [
       {
         type: ComponentType.SINGLETON_FUNCTION,
