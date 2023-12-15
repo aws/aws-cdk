@@ -50,9 +50,19 @@ export enum ImageId {
    */
   AMAZON_LINUX_2 = 'amazonlinux-2-x86_64',
   /**
-   * Create using Ubunut 18.04
+   * Create using Amazon Linux 2023
    */
-  UBUNTU_18_04 = 'ubuntu-18.04-x86_64'
+  AMAZON_LINUX_2023 = 'amazonlinux-2023-x86_64',
+  /**
+   * Create using Ubuntu 18.04
+   *
+   * @deprecated Since Ubuntu 18.04 has ended standard support as of May 31, 2023, we recommend you choose Ubuntu 22.04.
+   */
+  UBUNTU_18_04 = 'ubuntu-18.04-x86_64',
+  /**
+   * Create using Ubuntu 22.04
+   */
+  UBUNTU_22_04 = 'ubuntu-22.04-x86_64',
 }
 /**
  * Properties for Ec2Environment
