@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4": {
+  "AwsApiCallSQSpurgeQueue9dee3c309fd35c8e9de6a283d5a45696": {
    "Type": "Custom::DeployAssert@SdkCallSQSpurgeQueue",
    "Properties": {
     "ServiceToken": {
@@ -18,7 +18,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "sqs-bucket-notifications:ExportsOutputRefMyQueueE6CA623512A57419"
+         "Fn::ImportValue": "integ-sqs-bucket-notifications:ExportsOutputRefIntegQueue16691AAFF77621FF1"
         },
         "\""
        ]
@@ -26,7 +26,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1701114417939"
+    "salt": "1701107110083"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -68,7 +68,34 @@
         },
         {
          "Action": [
+          "sqs:PurgeQueue"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
           "s3:PutObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:PutObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "sqs:ReceiveMessage"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -110,7 +137,41 @@
     }
    }
   },
-  "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f": {
+  "AwsApiCallSQSpurgeQueue3dbc33339559b3b0ad9846209312d812": {
+   "Type": "Custom::DeployAssert@SdkCallSQSpurgeQueue",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SQS",
+    "api": "purgeQueue",
+    "parameters": {
+     "QueueUrl": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-sqs-bucket-notifications:ExportsOutputRefIntegQueue2DA51259CC4A33DFB"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1701107110084"
+   },
+   "DependsOn": [
+    "AwsApiCallSQSpurgeQueue9dee3c309fd35c8e9de6a283d5a45696"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3putObjectba38728e762569a855acb7c5fc7c4adf": {
    "Type": "Custom::DeployAssert@SdkCallS3putObject",
    "Properties": {
     "ServiceToken": {
@@ -128,25 +189,61 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "sqs-bucket-notifications:ExportsOutputRefBucket25524B414E77B0447"
+         "Fn::ImportValue": "integ-sqs-bucket-notifications:ExportsOutputRefBucket12520700A8CDAA090"
         },
         "\""
        ]
       ]
      },
-     "Key": "\"image.png\"",
+     "Key": "\"bucket1/image.png\"",
      "Body": "\"Some content\""
     },
     "flattenResponse": "false",
-    "salt": "1701114417939"
+    "salt": "1701107110084"
    },
    "DependsOn": [
-    "AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4"
+    "AwsApiCallSQSpurgeQueue3dbc33339559b3b0ad9846209312d812"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7": {
+  "AwsApiCallS3putObject6e450f6e95fe6d25da5bf5102c1ebad4": {
+   "Type": "Custom::DeployAssert@SdkCallS3putObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "putObject",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-sqs-bucket-notifications:ExportsOutputRefBucket12520700A8CDAA090"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"bucket2/image.png\"",
+     "Body": "\"Some content\""
+    },
+    "flattenResponse": "false",
+    "salt": "1701107110084"
+   },
+   "DependsOn": [
+    "AwsApiCallS3putObjectba38728e762569a855acb7c5fc7c4adf"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a": {
    "Type": "Custom::DeployAssert@SdkCallSQSreceiveMessage",
    "Properties": {
     "ServiceToken": {
@@ -157,7 +254,7 @@
     },
     "service": "SQS",
     "api": "receiveMessage",
-    "expected": "{\"$StringLike\":\"image\\\\.png\"}",
+    "expected": "{\"$StringLike\":\"bucket1/image\\\\.png\"}",
     "actualPath": "Messages.0.Body.Records.0.s3.object.key",
     "parameters": {
      "QueueUrl": {
@@ -166,7 +263,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "sqs-bucket-notifications:ExportsOutputRefMyQueueE6CA623512A57419"
+         "Fn::ImportValue": "integ-sqs-bucket-notifications:ExportsOutputRefIntegQueue16691AAFF77621FF1"
         },
         "\""
        ]
@@ -178,20 +275,68 @@
     "outputPaths": [
      "Messages.0.Body.Records.0.s3.object.key"
     ],
-    "salt": "1701114417939"
+    "salt": "1701107110084"
    },
    "DependsOn": [
-    "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f"
+    "AwsApiCallS3putObject6e450f6e95fe6d25da5bf5102c1ebad4"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallSQSreceiveMessagea37e53065313eefe09c34224f0e93eb6": {
+   "Type": "Custom::DeployAssert@SdkCallSQSreceiveMessage",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SQS",
+    "api": "receiveMessage",
+    "expected": "{\"$StringLike\":\"bucket2/image\\\\.png\"}",
+    "actualPath": "Messages.0.Body.Records.0.s3.object.key",
+    "parameters": {
+     "QueueUrl": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-sqs-bucket-notifications:ExportsOutputRefIntegQueue2DA51259CC4A33DFB"
+        },
+        "\""
+       ]
+      ]
+     },
+     "WaitTimeSeconds": "20"
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Messages.0.Body.Records.0.s3.object.key"
+    ],
+    "salt": "1701107110084"
+   },
+   "DependsOn": [
+    "AwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7": {
+  "AssertionResultsAwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7",
+     "AwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallSQSreceiveMessagea37e53065313eefe09c34224f0e93eb6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSQSreceiveMessagea37e53065313eefe09c34224f0e93eb6",
      "assertion"
     ]
    }
