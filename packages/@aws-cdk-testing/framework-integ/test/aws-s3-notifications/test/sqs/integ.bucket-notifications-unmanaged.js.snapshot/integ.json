@@ -3,9 +3,16 @@
   "testCases": {
     "SQSBucketNotificationsTest/DefaultTest": {
       "stacks": [
-        "sqs-bucket-notifications"
+        "integ-sqs-bucket-notifications"
       ],
       "diffAssets": true,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": false
+          }
+        }
+      },
       "assertionStack": "SQSBucketNotificationsTest/DefaultTest/DeployAssert",
       "assertionStackName": "SQSBucketNotificationsTestDefaultTestDeployAssert53BCF57E"
     }
