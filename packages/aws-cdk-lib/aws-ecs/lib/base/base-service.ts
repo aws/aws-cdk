@@ -20,8 +20,6 @@ import {
   Token,
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
-
-import { RegionInfo } from '../../../region-info';
 import {
   LoadBalancerTargetOptions,
   NetworkMode,
@@ -709,9 +707,6 @@ export abstract class BaseService extends Resource
         rollback: props.deploymentAlarms.behavior !== AlarmBehavior.FAIL_ON_ALARM,
       };
     // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
-    } else if ((!props.deploymentController ||
-      props.deploymentController?.type === DeploymentControllerType.ECS) && this.deploymentAlarmsAvailableInRegion()) {
-      // do not set default deployment alarm
     }
 
     this.node.defaultChild = this.resource;
@@ -1386,15 +1381,6 @@ export abstract class BaseService extends Resource
       ],
       resources: ['*'],
     }));
-  }
-
-  private deploymentAlarmsAvailableInRegion(): boolean {
-    const unsupportedPartitions = ['aws-cn', 'aws-us-gov', 'aws-iso', 'aws-iso-b'];
-    const currentRegion = RegionInfo.get(this.stack.resolve(this.stack.region));
-    if (currentRegion.partition) {
-      return !unsupportedPartitions.includes(currentRegion.partition);
-    }
-    return true;
   }
 }
 
