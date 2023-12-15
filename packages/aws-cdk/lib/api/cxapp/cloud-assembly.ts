@@ -38,9 +38,16 @@ export interface SelectStacksOptions {
   extend?: ExtendedStackSelection;
 
   /**
-   * The behavior if if no selectors are privided.
+   * The behavior if if no selectors are provided.
    */
   defaultBehavior: DefaultSelection;
+
+  /**
+   * Ignore the error message if the app contains no stacks.
+   *
+   * @default false
+   */
+  ignoreNoStacks?: boolean;
 }
 
 /**
@@ -99,7 +106,7 @@ export class CloudAssembly {
     const allTopLevel = selector.allTopLevel ?? false;
     const patterns = sanitizePatterns(selector.patterns);
 
-    if (stacks.length === 0) {
+    if (stacks.length === 0 && !options.ignoreNoStacks) {
       throw new Error('This app contains no stacks');
     }
 

@@ -182,6 +182,14 @@ async function testCloudAssembly({ env }: { env?: string, versionReporting?: boo
   return cloudExec.synthesize();
 }
 
+async function testCloudAssemblyNoStacks() {
+  const cloudExec = new MockCloudExecutable({
+    stacks: [],
+  });
+
+  return cloudExec.synthesize();
+}
+
 async function testNestedCloudAssembly({ env }: { env?: string, versionReporting?: boolean } = {}) {
   const cloudExec = new MockCloudExecutable({
     stacks: [{
