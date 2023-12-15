@@ -1,0 +1,19 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "9947de492887a96f39e8510bfffd6b8914e1677fe0dab27eb0c043f0c2f6d17a": {
+      "source": {
+        "path": "cdk-stepfunctions-map-distributed-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9947de492887a96f39e8510bfffd6b8914e1677fe0dab27eb0c043f0c2f6d17a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
