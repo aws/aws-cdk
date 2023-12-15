@@ -6,7 +6,9 @@ import * as sqs from '../../aws-sqs';
  * Use a SQS queue as a Lambda destination
  */
 export class SqsDestination implements lambda.IDestination {
-  constructor(private readonly queue: sqs.IQueue) {
+  private readonly _queue: sqs.IQueue;
+  constructor(queue: sqs.ICfnQueue) {
+    this._queue = sqs.Queue.fromCfnQueue(queue);
   }
 
   /**
@@ -14,10 +16,10 @@ export class SqsDestination implements lambda.IDestination {
    */
   public bind(_scope: Construct, fn: lambda.IFunction, _options?: lambda.DestinationOptions): lambda.DestinationConfig {
     // deduplicated automatically
-    this.queue.grantSendMessages(fn);
+    this._queue.grantSendMessages(fn);
 
     return {
-      destination: this.queue.queueArn,
+      destination: this._queue.attrArn,
     };
   }
 }

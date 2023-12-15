@@ -19,7 +19,8 @@ export interface TargetBaseProps {
    *
    * @default - no dead-letter queue
    */
-  readonly deadLetterQueue?: sqs.IQueue;
+  readonly deadLetterQueue?: sqs.ICfnQueue;
+
   /**
    * The maximum age of a request that Lambda sends to a function for
    * processing.
@@ -50,7 +51,7 @@ export function bindBaseTargetConfig(props: TargetBaseProps) {
   let { deadLetterQueue, retryAttempts, maxEventAge } = props;
 
   return {
-    deadLetterConfig: deadLetterQueue ? { arn: deadLetterQueue?.queueArn } : undefined,
+    deadLetterConfig: deadLetterQueue ? { arn: deadLetterQueue?.attrArn } : undefined,
     retryPolicy: (retryAttempts !== undefined && retryAttempts >= 0) || maxEventAge
       ? {
         maximumRetryAttempts: retryAttempts,

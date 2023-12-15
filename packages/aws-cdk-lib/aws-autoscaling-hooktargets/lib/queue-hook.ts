@@ -7,7 +7,9 @@ import * as sqs from '../../aws-sqs';
  * Use an SQS queue as a hook target
  */
 export class QueueHook implements autoscaling.ILifecycleHookTarget {
-  constructor(private readonly queue: sqs.IQueue) {
+  private readonly _queue: sqs.IQueue;
+  constructor(queue: sqs.ICfnQueue) {
+    this._queue = sqs.Queue.fromCfnQueue(queue);
   }
 
   /**
@@ -18,10 +20,10 @@ export class QueueHook implements autoscaling.ILifecycleHookTarget {
    */
   public bind(_scope: Construct, options: autoscaling.BindHookTargetOptions): autoscaling.LifecycleHookTargetConfig {
     const role = createRole(_scope, options.role);
-    this.queue.grantSendMessages(role);
+    this._queue.grantSendMessages(role);
 
     return {
-      notificationTargetArn: this.queue.queueArn,
+      notificationTargetArn: this._queue.attrArn,
       createdRole: role,
     };
   }

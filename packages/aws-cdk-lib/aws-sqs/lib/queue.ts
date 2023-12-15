@@ -1,10 +1,11 @@
 import { Construct } from 'constructs';
 import { IQueue, QueueAttributes, QueueBase, QueueEncryption } from './queue-base';
-import { CfnQueue } from './sqs.generated';
+import { ICfnQueue, CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
+import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations, Tokenization } from '../../core';
+import { CfnReference } from '../../core/lib/private/cfn-reference';
 
 /**
  * Properties for creating a new Queue
@@ -15,7 +16,7 @@ export interface QueueProps {
    *
    * If specified and this is a FIFO queue, must end in the string '.fifo'.
    *
-   * @default CloudFormation-generated name
+   * @default - CloudFormation generated name
    */
   readonly queueName?: string;
 
@@ -78,7 +79,7 @@ export interface QueueProps {
   /**
    * Send messages to this queue if they were unsuccessfully dequeued a number of times.
    *
-   * @default no dead-letter queue
+   * @default - no dead-letter queue
    */
   readonly deadLetterQueue?: DeadLetterQueue;
 
@@ -102,7 +103,7 @@ export interface QueueProps {
    * If the 'encryptionMasterKey' property is set, 'encryption' type will be
    * implicitly set to "KMS".
    *
-   * @default If encryption is set to KMS and not specified, a key will be created.
+   * @default - If encryption is set to KMS and not specified, a key will be created.
    */
   readonly encryptionMasterKey?: kms.IKey;
 
@@ -227,7 +228,6 @@ export enum FifoThroughputLimit {
  * A new Amazon SQS queue
  */
 export class Queue extends QueueBase {
-
   /**
    * Import an existing SQS queue provided an ARN
    *
@@ -249,8 +249,10 @@ export class Queue extends QueueBase {
     const queueUrl = attrs.queueUrl || `https://sqs.${parsedArn.region}.${stack.urlSuffix}/${parsedArn.account}/${queueName}`;
 
     class Import extends QueueBase {
-      public readonly queueArn = attrs.queueArn; // arn:aws:sqs:us-east-1:123456789012:queue1
-      public readonly queueUrl = queueUrl;
+      public readonly attrArn = attrs.queueArn; // arn:aws:sqs:us-east-1:123456789012:queue1
+      public readonly queueArn = this.attrArn;
+      public readonly attrQueueUrl = queueUrl;
+      public readonly queueUrl = this.attrQueueUrl;
       public readonly queueName = queueName;
       public readonly encryptionMasterKey = attrs.keyArn
         ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
@@ -288,7 +290,95 @@ export class Queue extends QueueBase {
   }
 
   /**
+   * Create a mutable `IQueue` out of a `ICfnQueue`.
+   */
+  public static fromCfnQueue(cfnQueue: ICfnQueue): IQueue {
+    function isIQueue(x: any): x is IQueue {
+      return (<IQueue>x).grant !== undefined;
+    }
+    // if cfnQueue is already an IQueue, just return itself
+    if (isIQueue(cfnQueue)) { return cfnQueue; }
+
+    // use a "weird" id that has a higher chance of being unique
+    const id = '@FromCfnQueue';
+
+    // if fromCfnQueue() was already called on this cfnQueue,
+    // return the same L2
+    const existing = cfnQueue.node.tryFindChild(id);
+    if (existing) {
+      return <IQueue>existing;
+    }
+
+    // if cfnQueue is not a CfnResource, and thus not a CfnQueue, we are in a scenario where
+    // cfnQueue is an ICfnQueue but NOT a CfnQueue, which shouldn't happen
+    if (!CfnQueue.isCfnResource(cfnQueue)) {
+      throw new Error('Encountered an "ICfnQueue" that is not an "IQueue" or "CfnQueue". If you have a legitimate reason for this, please open an issue at https://github.com/aws/aws-cdk/issues');
+    }
+    const _cfnQueue = cfnQueue as CfnQueue;
+
+    let encryptionKey: kms.IKey | undefined;
+    if (_cfnQueue.kmsMasterKeyId) {
+      if (Token.isUnresolved(_cfnQueue.kmsMasterKeyId)) {
+        const kmsIResolvable = Tokenization.reverse(_cfnQueue.kmsMasterKeyId);
+        if (kmsIResolvable instanceof CfnReference) {
+          const cfnElement = kmsIResolvable.target;
+          if (cfnElement instanceof kms.CfnKey) {
+            encryptionKey = kms.Key.fromCfnKey(cfnElement);
+          }
+        }
+      }
+    }
+
+    return new class extends QueueBase {
+      public readonly attrArn = _cfnQueue.attrArn;
+      public readonly queueArn = this.attrArn;
+      public readonly queueName = _cfnQueue.attrQueueName;
+      public readonly attrQueueUrl = _cfnQueue.attrQueueUrl;
+      public readonly queueUrl = this.attrQueueUrl;
+      public readonly fifo = this.determineFifo(_cfnQueue.fifoQueue === true);
+      public readonly autoCreatePolicy = false;
+
+      public readonly encryptionMasterKey = encryptionKey;
+      public readonly encryptionType = encryptionKey ? QueueEncryption.KMS : undefined;
+
+      constructor() {
+        super(_cfnQueue, id);
+
+        this.node.defaultChild = _cfnQueue;
+      }
+
+      /**
+       * Determine fifo flag based on queueName and fifo attribute
+       */
+      private determineFifo(fifo: boolean): boolean {
+        if (Token.isUnresolved(this.queueArn)) {
+          return fifo || false;
+        } else {
+          if (typeof fifo !== 'undefined') {
+            if (fifo && !this.queueName.endsWith('.fifo')) {
+              throw new Error("FIFO queue names must end in '.fifo'");
+            }
+            if (!fifo && this.queueName.endsWith('.fifo')) {
+              throw new Error("Non-FIFO queue name may not end in '.fifo'");
+            }
+          }
+          return this.queueName.endsWith('.fifo') ? true : false;
+        }
+      }
+    }();
+  }
+
+  /**
    * The ARN of this queue
+   *
+   * @attribute
+   */
+  public readonly attrArn: string;
+
+  /**
+   * The ARN of this queue
+   *
+   * Deprecated: use attrArn
    */
   public readonly queueArn: string;
 
@@ -299,6 +389,15 @@ export class Queue extends QueueBase {
 
   /**
    * The URL of this queue
+   *
+   * @attribute
+   */
+  public readonly attrQueueUrl: string;
+
+  /**
+   * The URL of this queue
+   *
+   * Deprecated: use attrQueueUrl
    */
   public readonly queueUrl: string;
 
@@ -356,13 +455,15 @@ export class Queue extends QueueBase {
     });
     queue.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.DESTROY);
 
-    this.queueArn = this.getResourceArnAttribute(queue.attrArn, {
+    this.attrArn = this.getResourceArnAttribute(queue.attrArn, {
       service: 'sqs',
       resource: this.physicalName,
     });
+    this.queueArn = this.attrArn;
     this.queueName = this.getResourceNameAttribute(queue.attrQueueName);
     this.encryptionMasterKey = encryptionMasterKey;
-    this.queueUrl = queue.ref;
+    this.attrQueueUrl = queue.ref;
+    this.queueUrl = this.attrQueueUrl;
     this.deadLetterQueue = props.deadLetterQueue;
     this.encryptionType = encryptionType;
 

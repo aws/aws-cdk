@@ -3,11 +3,12 @@ import { QueuePolicy } from './policy';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { IResource, Resource, ResourceProps } from '../../core';
+import { ICfnQueue } from './sqs.generated';
 
 /**
  * Represents an SQS queue
  */
-export interface IQueue extends IResource {
+export interface IQueue extends IResource, ICfnQueue {
   /**
    * The ARN of this queue
    * @attribute
@@ -105,14 +106,31 @@ export interface IQueue extends IResource {
  * Reference to a new or existing Amazon SQS queue
  */
 export abstract class QueueBase extends Resource implements IQueue {
+  /**
+   * The ARN of this queue
+   *
+   * @attribute
+   */
+  public abstract readonly attrArn: string;
 
   /**
    * The ARN of this queue
+   *
+   * Deprecated: use attrArn
    */
   public abstract readonly queueArn: string;
 
   /**
    * The URL of this queue
+   *
+   * @attribute
+   */
+  public abstract readonly attrQueueUrl: string;
+
+  /**
+   * The URL of this queue
+   *
+   * Deprecated: use attrQueueUrl
    */
   public abstract readonly queueUrl: string;
 
@@ -339,5 +357,5 @@ export enum QueueEncryption {
    * To learn more about SSE-SQS on Amazon SQS, please visit the
    * [Amazon SQS documentation](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html).
    */
-  SQS_MANAGED = 'SQS_MANAGED'
+  SQS_MANAGED = 'SQS_MANAGED',
 }

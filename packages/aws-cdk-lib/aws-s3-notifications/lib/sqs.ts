@@ -8,7 +8,10 @@ import { Annotations } from '../../core';
  * Use an SQS queue as a bucket notification destination
  */
 export class SqsDestination implements s3.IBucketNotificationDestination {
-  constructor(private readonly queue: sqs.IQueue) {
+  private readonly _queue: sqs.IQueue;
+
+  constructor(queue: sqs.ICfnQueue) {
+    this._queue = sqs.Queue.fromCfnQueue(queue);
   }
 
   /**

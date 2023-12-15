@@ -85,7 +85,6 @@ export interface SubscriptionProps extends SubscriptionOptions {
  * this class.
  */
 export class Subscription extends Resource {
-
   /**
    * The DLQ associated with this subscription if present.
    */
