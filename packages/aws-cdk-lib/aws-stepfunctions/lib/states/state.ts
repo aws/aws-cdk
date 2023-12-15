@@ -3,7 +3,7 @@ import { Token } from '../../../core';
 import { Condition } from '../condition';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import { CatchProps, Errors, IChainable, INextable, RetryProps } from '../types';
+import { CatchProps, Errors, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
 
 /**
  * Properties shared by all states
@@ -171,6 +171,8 @@ export abstract class State extends Construct implements IChainable {
   protected readonly resultSelector?: object;
   protected readonly branches: StateGraph[] = [];
   protected iteration?: StateGraph;
+  protected processor?: StateGraph;
+  protected processorConfig?: ProcessorConfig;
   protected defaultChoice?: State;
 
   /**
@@ -269,6 +271,9 @@ export abstract class State extends Construct implements IChainable {
     if (!!this.iteration) {
       this.iteration.registerSuperGraph(this.containingGraph);
     }
+    if (!!this.processor) {
+      this.processor.registerSuperGraph(this.containingGraph);
+    }
   }
 
   /**
@@ -356,6 +361,17 @@ export abstract class State extends Construct implements IChainable {
   }
 
   /**
+   * Add a item processor to this state
+   */
+  protected addItemProcessor(processor: StateGraph, config: ProcessorConfig = {}) {
+    this.processor = processor;
+    this.processorConfig = config;
+    if (this.containingGraph) {
+      processor.registerSuperGraph(this.containingGraph);
+    }
+  }
+
+  /**
    * Make the indicated state the default choice transition of this state
    */
   protected makeDefault(def: State) {
@@ -411,9 +427,7 @@ export abstract class State extends Construct implements IChainable {
    * Render map iterator in ASL JSON format
    */
   protected renderIterator(): any {
-    if (!this.iteration) {
-      throw new Error('Iterator must not be undefined !');
-    }
+    if (!this.iteration) return undefined;
     return {
       Iterator: this.iteration.toGraphJson(),
     };
@@ -436,6 +450,40 @@ export abstract class State extends Construct implements IChainable {
     return FieldUtils.renderObject({
       ResultSelector: this.resultSelector,
     });
+  }
+
+  /**
+   * Render ItemProcessor in ASL JSON format
+   */
+  protected renderItemProcessor(): any {
+    if (!this.processor) return undefined;
+    return {
+      ItemProcessor: {
+        ...this.renderProcessorConfig(),
+        ...this.processor.toGraphJson(),
+      },
+    };
+  }
+
+  /**
+   * Render ProcessorConfig in ASL JSON format
+   */
+  private renderProcessorConfig() {
+    const mode = this.processorConfig?.mode?.toString() ?? ProcessorMode.INLINE;
+    if (mode === ProcessorMode.INLINE) {
+      return {
+        ProcessorConfig: {
+          Mode: mode,
+        },
+      };
+    }
+    const executionType = this.processorConfig?.executionType?.toString();
+    return {
+      ProcessorConfig: {
+        Mode: mode,
+        ExecutionType: executionType,
+      },
+    };
   }
 
   /**
