@@ -518,8 +518,29 @@ const definition = choice
     .afterwards()
     .next(finish);
 
-map.iterator(definition);
+map.itemProcessor(definition);
 ```
+
+To define a distributed `Map` state set `itemProcessors` mode to `ProcessorMode.DISTRIBUTED`.
+An `executionType` must be specified for the distributed `Map` workflow.
+
+```ts
+const map = new sfn.Map(this, 'Map State', {
+  maxConcurrency: 1,
+  itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
+  parameters: {
+    item: sfn.JsonPath.stringAt('$$.Map.Item.Value'),
+  },
+  resultPath: '$.mapOutput',
+});
+
+map.itemProcessor(new sfn.Pass(this, 'Pass State'), {
+  mode: sfn.ProcessorMode.DISTRIBUTED,
+  executionType: sfn.ProcessorType.STANDARD,
+});
+```
+
+> Visit [Using Map state in Distributed mode to orchestrate large-scale parallel workloads](https://docs.aws.amazon.com/step-functions/latest/dg/use-dist-map-orchestrate-large-scale-parallel-workloads.html) for more details.
 
 ### Custom State
 
