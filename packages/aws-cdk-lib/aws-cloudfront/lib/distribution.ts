@@ -180,7 +180,7 @@ export interface DistributionProps {
    *
    * @default - A bucket is created if `enableLogging` is true
    */
-  readonly logBucket?: s3.IBucket;
+  readonly logBucket?: s3.ICfnBucket;
 
   /**
    * Specifies whether you want CloudFront to include cookies in access logs
@@ -498,7 +498,7 @@ export class Distribution extends Resource implements IDistribution {
       throw new Error('Explicitly disabled logging but provided a logging bucket.');
     }
 
-    const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket', {
+    const bucket = props.logBucket ? s3.Bucket.fromCfnBucket(props.logBucket) : new s3.Bucket(this, 'LoggingBucket', {
       encryption: s3.BucketEncryption.S3_MANAGED,
       // We need set objectOwnership to OBJECT_WRITER to enable ACL, which is disabled by default.
       objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,

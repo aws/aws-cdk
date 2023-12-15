@@ -243,7 +243,7 @@ export interface CodePipelineProps {
    *
    * @default - A new S3 bucket will be created.
    */
-  readonly artifactBucket?: s3.IBucket;
+  readonly artifactBucket?: s3.ICfnBucket;
 }
 
 /**

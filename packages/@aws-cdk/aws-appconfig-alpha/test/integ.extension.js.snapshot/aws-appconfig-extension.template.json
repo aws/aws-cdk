@@ -50,10 +50,186 @@
     "MyFunctionServiceRole3C357FF2"
    ]
   },
+  "MyFunctionAppConfigPermission673BEA35": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyFunction3BAA72D1",
+      "Arn"
+     ]
+    },
+    "Principal": "appconfig.amazonaws.com"
+   }
+  },
   "MyApplication5C63EC1D": {
    "Type": "AWS::AppConfig::Application",
    "Properties": {
     "Name": "AppForExtensionTest"
+   }
+  },
+  "MyApplicationAssociationResource3FA55E02ED1FB": {
+   "Type": "AWS::AppConfig::ExtensionAssociation",
+   "Properties": {
+    "ExtensionIdentifier": {
+     "Fn::GetAtt": [
+      "MyLambdaExtensionAFA1476A",
+      "Id"
+     ]
+    },
+    "ExtensionVersionNumber": {
+     "Fn::GetAtt": [
+      "MyLambdaExtensionAFA1476A",
+      "VersionNumber"
+     ]
+    },
+    "ResourceIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":appconfig:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":application/",
+       {
+        "Ref": "MyApplication5C63EC1D"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyApplicationAssociationResourceBAC86D18B66DB": {
+   "Type": "AWS::AppConfig::ExtensionAssociation",
+   "Properties": {
+    "ExtensionIdentifier": {
+     "Fn::GetAtt": [
+      "MyQueueExtension872C5D27",
+      "Id"
+     ]
+    },
+    "ExtensionVersionNumber": {
+     "Fn::GetAtt": [
+      "MyQueueExtension872C5D27",
+      "VersionNumber"
+     ]
+    },
+    "ResourceIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":appconfig:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":application/",
+       {
+        "Ref": "MyApplication5C63EC1D"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyApplicationAssociationResource7F3E1F71FC034": {
+   "Type": "AWS::AppConfig::ExtensionAssociation",
+   "Properties": {
+    "ExtensionIdentifier": {
+     "Fn::GetAtt": [
+      "MyTopicExtension9B6DF691",
+      "Id"
+     ]
+    },
+    "ExtensionVersionNumber": {
+     "Fn::GetAtt": [
+      "MyTopicExtension9B6DF691",
+      "VersionNumber"
+     ]
+    },
+    "ResourceIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":appconfig:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":application/",
+       {
+        "Ref": "MyApplication5C63EC1D"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "MyApplicationAssociationResource689DE159F9BFC": {
+   "Type": "AWS::AppConfig::ExtensionAssociation",
+   "Properties": {
+    "ExtensionIdentifier": {
+     "Fn::GetAtt": [
+      "MyEventBusExtensionADFE2273",
+      "Id"
+     ]
+    },
+    "ExtensionVersionNumber": {
+     "Fn::GetAtt": [
+      "MyEventBusExtensionADFE2273",
+      "VersionNumber"
+     ]
+    },
+    "Parameters": {
+     "testParam": "true"
+    },
+    "ResourceIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":appconfig:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":application/",
+       {
+        "Ref": "MyApplication5C63EC1D"
+       }
+      ]
+     ]
+    }
    }
   },
   "MyApplicationMyEnv55DE3293": {
@@ -65,16 +241,62 @@
     "Name": "awsappconfigextension-MyApplication-MyEnv-0FA5092F"
    }
   },
+  "MyLambdaExtensionRoleBC958D3F13B04": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appconfig.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "lambda:InvokeAsync",
+          "lambda:InvokeFunction"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "MyFunction3BAA72D1",
+           "Arn"
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "AllowAppConfigInvokeExtensionEventSourcePolicy"
+     }
+    ]
+   }
+  },
   "MyLambdaExtensionAFA1476A": {
    "Type": "AWS::AppConfig::Extension",
    "Properties": {
     "Actions": {
      "PRE_CREATE_HOSTED_CONFIGURATION_VERSION": [
       {
-       "Name": "awsappconfigextension-MyLambdaExtension-68C15290",
+       "Name": "awsappconfigextension-MyLambdaExtension-68C15290-0",
        "Uri": {
         "Fn::GetAtt": [
          "MyFunction3BAA72D1",
+         "Arn"
+        ]
+       },
+       "RoleArn": {
+        "Fn::GetAtt": [
+         "MyLambdaExtensionRoleBC958D3F13B04",
          "Arn"
         ]
        }
@@ -82,10 +304,16 @@
      ],
      "ON_DEPLOYMENT_START": [
       {
-       "Name": "awsappconfigextension-MyLambdaExtension-68C15290",
+       "Name": "awsappconfigextension-MyLambdaExtension-68C15290-0",
        "Uri": {
         "Fn::GetAtt": [
          "MyFunction3BAA72D1",
+         "Arn"
+        ]
+       },
+       "RoleArn": {
+        "Fn::GetAtt": [
+         "MyLambdaExtensionRoleBC958D3F13B04",
          "Arn"
         ]
        }
@@ -95,50 +323,47 @@
     "Name": "awsappconfigextension-MyLambdaExtension-68C15290"
    }
   },
-  "AssociationResource3FA55": {
-   "Type": "AWS::AppConfig::ExtensionAssociation",
-   "Properties": {
-    "ExtensionIdentifier": {
-     "Fn::GetAtt": [
-      "MyLambdaExtensionAFA1476A",
-      "Id"
-     ]
-    },
-    "ExtensionVersionNumber": {
-     "Fn::GetAtt": [
-      "MyLambdaExtensionAFA1476A",
-      "VersionNumber"
-     ]
-    },
-    "ResourceIdentifier": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":appconfig:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":application/",
-       {
-        "Ref": "MyApplication5C63EC1D"
-       }
-      ]
-     ]
-    }
-   }
-  },
   "MyQueueE6CA6235": {
    "Type": "AWS::SQS::Queue",
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "MyQueueExtensionRole63F1970B4A7A6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appconfig.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "sqs:SendMessage",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "MyQueueE6CA6235",
+           "Arn"
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "AllowAppConfigInvokeExtensionEventSourcePolicy"
+     }
+    ]
+   }
   },
   "MyQueueExtension872C5D27": {
    "Type": "AWS::AppConfig::Extension",
@@ -146,10 +371,16 @@
     "Actions": {
      "ON_DEPLOYMENT_START": [
       {
-       "Name": "awsappconfigextension-MyQueueExtension-EF6112FA",
+       "Name": "awsappconfigextension-MyQueueExtension-EF6112FA-0",
        "Uri": {
         "Fn::GetAtt": [
          "MyQueueE6CA6235",
+         "Arn"
+        ]
+       },
+       "RoleArn": {
+        "Fn::GetAtt": [
+         "MyQueueExtensionRole63F1970B4A7A6",
          "Arn"
         ]
        }
@@ -159,48 +390,42 @@
     "Name": "awsappconfigextension-MyQueueExtension-EF6112FA"
    }
   },
-  "AssociationResourceBAC86": {
-   "Type": "AWS::AppConfig::ExtensionAssociation",
-   "Properties": {
-    "ExtensionIdentifier": {
-     "Fn::GetAtt": [
-      "MyQueueExtension872C5D27",
-      "Id"
-     ]
-    },
-    "ExtensionVersionNumber": {
-     "Fn::GetAtt": [
-      "MyQueueExtension872C5D27",
-      "VersionNumber"
-     ]
-    },
-    "ResourceIdentifier": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":appconfig:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":application/",
-       {
-        "Ref": "MyApplication5C63EC1D"
-       }
-      ]
-     ]
-    }
-   }
-  },
   "MyTopic86869434": {
    "Type": "AWS::SNS::Topic"
+  },
+  "MyTopicExtensionRole39BF2474FECA3": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appconfig.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "sns:Publish",
+         "Effect": "Allow",
+         "Resource": {
+          "Ref": "MyTopic86869434"
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "AllowAppConfigInvokeExtensionEventSourcePolicy"
+     }
+    ]
+   }
   },
   "MyTopicExtension9B6DF691": {
    "Type": "AWS::AppConfig::Extension",
@@ -208,54 +433,20 @@
     "Actions": {
      "ON_DEPLOYMENT_START": [
       {
-       "Name": "awsappconfigextension-MyTopicExtension-37440DA2",
+       "Name": "awsappconfigextension-MyTopicExtension-37440DA2-0",
        "Uri": {
         "Ref": "MyTopic86869434"
+       },
+       "RoleArn": {
+        "Fn::GetAtt": [
+         "MyTopicExtensionRole39BF2474FECA3",
+         "Arn"
+        ]
        }
       }
      ]
     },
     "Name": "awsappconfigextension-MyTopicExtension-37440DA2"
-   }
-  },
-  "AssociationResource7F3E1": {
-   "Type": "AWS::AppConfig::ExtensionAssociation",
-   "Properties": {
-    "ExtensionIdentifier": {
-     "Fn::GetAtt": [
-      "MyTopicExtension9B6DF691",
-      "Id"
-     ]
-    },
-    "ExtensionVersionNumber": {
-     "Fn::GetAtt": [
-      "MyTopicExtension9B6DF691",
-      "VersionNumber"
-     ]
-    },
-    "ResourceIdentifier": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":appconfig:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":application/",
-       {
-        "Ref": "MyApplication5C63EC1D"
-       }
-      ]
-     ]
-    }
    }
   },
   "MyEventBusExtensionADFE2273": {
@@ -300,49 +491,6 @@
     }
    }
   },
-  "AssociationResource689DE": {
-   "Type": "AWS::AppConfig::ExtensionAssociation",
-   "Properties": {
-    "ExtensionIdentifier": {
-     "Fn::GetAtt": [
-      "MyEventBusExtensionADFE2273",
-      "Id"
-     ]
-    },
-    "ExtensionVersionNumber": {
-     "Fn::GetAtt": [
-      "MyEventBusExtensionADFE2273",
-      "VersionNumber"
-     ]
-    },
-    "Parameters": {
-     "testParam": "true"
-    },
-    "ResourceIdentifier": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":appconfig:",
-       {
-        "Ref": "AWS::Region"
-       },
-       ":",
-       {
-        "Ref": "AWS::AccountId"
-       },
-       ":application/",
-       {
-        "Ref": "MyApplication5C63EC1D"
-       }
-      ]
-     ]
-    }
-   }
-  },
   "MyDeployStrategy062CAEA2": {
    "Type": "AWS::AppConfig::DeploymentStrategy",
    "Properties": {
@@ -365,8 +513,11 @@
    "DependsOn": [
     "MyEventBusExtensionADFE2273",
     "MyLambdaExtensionAFA1476A",
+    "MyLambdaExtensionRoleBC958D3F13B04",
     "MyQueueExtension872C5D27",
-    "MyTopicExtension9B6DF691"
+    "MyQueueExtensionRole63F1970B4A7A6",
+    "MyTopicExtension9B6DF691",
+    "MyTopicExtensionRole39BF2474FECA3"
    ]
   },
   "HostedConfiguration257746B4": {
@@ -384,8 +535,11 @@
    "DependsOn": [
     "MyEventBusExtensionADFE2273",
     "MyLambdaExtensionAFA1476A",
+    "MyLambdaExtensionRoleBC958D3F13B04",
     "MyQueueExtension872C5D27",
-    "MyTopicExtension9B6DF691"
+    "MyQueueExtensionRole63F1970B4A7A6",
+    "MyTopicExtension9B6DF691",
+    "MyTopicExtensionRole39BF2474FECA3"
    ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
@@ -412,8 +566,11 @@
    "DependsOn": [
     "MyEventBusExtensionADFE2273",
     "MyLambdaExtensionAFA1476A",
+    "MyLambdaExtensionRoleBC958D3F13B04",
     "MyQueueExtension872C5D27",
-    "MyTopicExtension9B6DF691"
+    "MyQueueExtensionRole63F1970B4A7A6",
+    "MyTopicExtension9B6DF691",
+    "MyTopicExtensionRole39BF2474FECA3"
    ]
   }
  },

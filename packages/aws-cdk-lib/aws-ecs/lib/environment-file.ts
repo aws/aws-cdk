@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { IBucket, Location } from '../../aws-s3';
+import { ICfnBucket, Location } from '../../aws-s3';
 import { Asset, AssetOptions } from '../../aws-s3-assets';
 
 /**
@@ -24,7 +24,7 @@ export abstract class EnvironmentFile {
    * @param key The object key
    * @param objectVersion Optional S3 object version
    */
-  public static fromBucket(bucket: IBucket, key: string, objectVersion?: string): S3EnvironmentFile {
+  public static fromBucket(bucket: ICfnBucket, key: string, objectVersion?: string): S3EnvironmentFile {
     return new S3EnvironmentFile(bucket, key, objectVersion);
   }
 
@@ -80,14 +80,14 @@ export class AssetEnvironmentFile extends EnvironmentFile {
 export class S3EnvironmentFile extends EnvironmentFile {
   private readonly bucketName: string;
 
-  constructor(bucket: IBucket, private key: string, private objectVersion?: string) {
+  constructor(bucket: ICfnBucket, private key: string, private objectVersion?: string) {
     super();
 
-    if (!bucket.bucketName) {
+    if (!bucket.attrBucketName) {
       throw new Error('bucketName is undefined for the provided bucket');
     }
 
-    this.bucketName = bucket.bucketName;
+    this.bucketName = bucket.attrBucketName;
   }
 
   public bind(_scope: Construct): EnvironmentFileConfig {

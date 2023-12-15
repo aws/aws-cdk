@@ -27,9 +27,10 @@ export interface S3OriginProps extends cloudfront.OriginProps {
 export class S3Origin implements cloudfront.IOrigin {
   private readonly origin: cloudfront.IOrigin;
 
-  constructor(bucket: s3.IBucket, props: S3OriginProps = {}) {
-    this.origin = bucket.isWebsite ?
-      new HttpOrigin(bucket.bucketWebsiteDomainName, {
+  constructor(bucket: s3.ICfnBucket, props: S3OriginProps = {}) {
+    const s3Bucket = s3.Bucket.fromCfnBucket(bucket);
+    this.origin = s3Bucket.isWebsite ?
+      new HttpOrigin(s3Bucket.bucketWebsiteDomainName, {
         protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY, // S3 only supports HTTP for website buckets
         ...props,
       }) :
@@ -48,9 +49,11 @@ export class S3Origin implements cloudfront.IOrigin {
  */
 class S3BucketOrigin extends cloudfront.OriginBase {
   private originAccessIdentity!: cloudfront.IOriginAccessIdentity;
+  private readonly bucket: s3.IBucket;
 
-  constructor(private readonly bucket: s3.IBucket, { originAccessIdentity, ...props }: S3OriginProps) {
-    super(bucket.bucketRegionalDomainName, props);
+  constructor(bucket: s3.ICfnBucket, { originAccessIdentity, ...props }: S3OriginProps) {
+    super(s3.Bucket.fromCfnBucket(bucket).bucketRegionalDomainName, props);
+    this.bucket = s3.Bucket.fromCfnBucket(bucket);
     if (originAccessIdentity) {
       this.originAccessIdentity = originAccessIdentity;
     }

@@ -5,7 +5,7 @@ import { AssociationManager } from './private/association-manager';
 import { InputValidator } from './private/validation';
 import { CfnCloudFormationProduct } from './servicecatalog.generated';
 import { TagOptions } from './tag-options';
-import { IBucket } from '../../aws-s3';
+import { IBucket, ICfnBucket } from '../../aws-s3';
 import { ArnFormat, IResource, Resource, Stack } from '../../core';
 
 /**
@@ -28,7 +28,7 @@ export interface IProduct extends IResource {
    * The asset buckets of a product created via product stack.
    * @attribute
    */
-  readonly assetBuckets: IBucket[];
+  readonly assetBuckets: ICfnBucket[];
 
   /**
    * Associate Tag Options.

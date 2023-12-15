@@ -71,7 +71,7 @@ export enum ReportGroupType {
   /**
    * The report group contains code coverage reports.
    */
-  CODE_COVERAGE = 'CODE_COVERAGE'
+  CODE_COVERAGE = 'CODE_COVERAGE',
 }
 
 /**
@@ -90,7 +90,7 @@ export interface ReportGroupProps {
    *
    * @default - the reports will not be exported
    */
-  readonly exportBucket?: s3.IBucket;
+  readonly exportBucket?: s3.ICfnBucket;
 
   /**
    * Whether to output the report files into the export bucket as-is,
@@ -118,14 +118,13 @@ export interface ReportGroupProps {
    *
    * @default TEST
    */
-  readonly type?: ReportGroupType
+  readonly type?: ReportGroupType;
 }
 
 /**
  * The ReportGroup resource class.
  */
 export class ReportGroup extends ReportGroupBase {
-
   /**
    * Reference an existing ReportGroup,
    * defined outside of the CDK code,
@@ -151,16 +150,17 @@ export class ReportGroup extends ReportGroupBase {
     super(scope, id, {
       physicalName: props.reportGroupName,
     });
+    this.exportBucket = props.exportBucket ? s3.Bucket.fromCfnBucket(props.exportBucket) : undefined;
     this.type = props.type ? props.type : ReportGroupType.TEST;
     const resource = new CfnReportGroup(this, 'Resource', {
       type: this.type,
       exportConfig: {
-        exportConfigType: props.exportBucket ? 'S3' : 'NO_EXPORT',
-        s3Destination: props.exportBucket
+        exportConfigType: this.exportBucket ? 'S3' : 'NO_EXPORT',
+        s3Destination: this.exportBucket
           ? {
-            bucket: props.exportBucket.bucketName,
-            encryptionDisabled: props.exportBucket.encryptionKey ? false : undefined,
-            encryptionKey: props.exportBucket.encryptionKey?.keyArn,
+            bucket: this.exportBucket.bucketName,
+            encryptionDisabled: this.exportBucket.encryptionKey ? false : undefined,
+            encryptionKey: this.exportBucket.encryptionKey?.keyArn,
             packaging: props.zipExport ? 'ZIP' : undefined,
           }
           : undefined,
@@ -177,6 +177,5 @@ export class ReportGroup extends ReportGroupBase {
       // so use Fn::Select + Fn::Split to make one
       cdk.Fn.select(1, cdk.Fn.split('/', resource.ref)),
     );
-    this.exportBucket = props.exportBucket;
   }
 }

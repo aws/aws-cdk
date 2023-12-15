@@ -1898,6 +1898,16 @@
     "ref-via-ref-interface:aws-cdk-lib.aws_lambda.FunctionProps.logGroup",
     "ref-via-ref-interface:aws-cdk-lib.aws_lambda.SingletonFunctionProps.logGroup",
     "ref-via-ref-interface:aws-cdk-lib.aws_lambda_nodejs.NodejsFunctionProps.logGroup",
-    "ref-via-ref-interface:aws-cdk-lib.triggers.TriggerFunctionProps.logGroup"
+    "ref-via-ref-interface:aws-cdk-lib.triggers.TriggerFunctionProps.logGroup",
+    "props-default-doc:aws-cdk-lib.aws_appsync.SourceApi.description",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.ApiMappingProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.HttpIntegrationProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.HttpRouteProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.WebSocketIntegrationProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.WebSocketRouteProps",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.WebSocketIntegration",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.WebSocketRoute"
   ]
 }

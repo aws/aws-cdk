@@ -11,7 +11,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect } from '../../core';
+import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token } from '../../core';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -331,7 +331,7 @@ export class Cluster extends Resource implements ICluster {
     return {
       cloudWatchEncryptionEnabled: logConfiguration?.cloudWatchEncryptionEnabled,
       cloudWatchLogGroupName: logConfiguration?.cloudWatchLogGroup?.logGroupName,
-      s3BucketName: logConfiguration?.s3Bucket?.bucketName,
+      s3BucketName: logConfiguration?.s3Bucket?.attrBucketName,
       s3EncryptionEnabled: logConfiguration?.s3EncryptionEnabled,
       s3KeyPrefix: logConfiguration?.s3KeyPrefix,
     };
@@ -1107,7 +1107,7 @@ export interface ExecuteCommandLogConfiguration {
    *
    * @default - none
    */
-  readonly s3Bucket?: s3.IBucket,
+  readonly s3Bucket?: s3.ICfnBucket,
 
   /**
    * Whether or not to enable encryption on the S3 bucket.
@@ -1187,6 +1187,16 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
    * @default 100
    */
   readonly targetCapacityPercent?: number;
+
+  /**
+   * The period of time, in seconds, after a newly launched Amazon EC2 instance
+   * can contribute to CloudWatch metrics for Auto Scaling group.
+   *
+   * Must be between 0 and 10000.
+   *
+   * @default 300
+   */
+  readonly instanceWarmupPeriod?: number;
 }
 
 /**
@@ -1244,6 +1254,13 @@ export class AsgCapacityProvider extends Construct {
         throw new Error(`Invalid Capacity Provider Name: ${props.capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
       }
     }
+
+    if (props.instanceWarmupPeriod && !Token.isUnresolved(props.instanceWarmupPeriod)) {
+      if (props.instanceWarmupPeriod < 0 || props.instanceWarmupPeriod > 10000) {
+        throw new Error(`InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: ${props.instanceWarmupPeriod}.`);
+      }
+    }
+
     const capacityProvider = new CfnCapacityProvider(this, id, {
       name: props.capacityProviderName,
       autoScalingGroupProvider: {
@@ -1253,6 +1270,7 @@ export class AsgCapacityProvider extends Construct {
           targetCapacity: props.targetCapacityPercent || 100,
           maximumScalingStepSize: props.maximumScalingStepSize,
           minimumScalingStepSize: props.minimumScalingStepSize,
+          instanceWarmupPeriod: props.instanceWarmupPeriod,
         },
         managedTerminationProtection: this.enableManagedTerminationProtection ? 'ENABLED' : 'DISABLED',
       },

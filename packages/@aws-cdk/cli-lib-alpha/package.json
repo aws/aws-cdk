@@ -65,6 +65,7 @@
       "yarn attribute",
       "mkdir -p ./lib/api/bootstrap/ && cp ../../aws-cdk/lib/api/bootstrap/bootstrap-template.yaml ./lib/api/bootstrap/",
       "cp ../../../node_modules/cdk-from-cfn/index_bg.wasm ./lib/",
+      "cp ../../../node_modules/@aws-cdk/aws-service-spec/db.json.gz ./",
       "yarn bundle",
       "node ./lib/main.js >/dev/null 2>/dev/null </dev/null"
     ],
@@ -85,7 +86,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "aws-cdk-lib": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^29.5.8",
+    "@types/jest": "^29.5.11",
     "aws-cdk": "0.0.0",
     "constructs": "^10.0.0",
     "jest": "^29.7.0",

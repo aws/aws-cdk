@@ -1,5 +1,5 @@
 import { Construct, IDependable } from 'constructs';
-import { IBucket } from './bucket';
+import { ICfnBucket } from './s3.generated';
 
 /**
  * Implemented by constructs that can be used as bucket notification destinations.
@@ -12,7 +12,7 @@ export interface IBucketNotificationDestination {
    * idempotency in each destination.
    * @param bucket The bucket object to bind to
    */
-  bind(scope: Construct, bucket: IBucket): BucketNotificationDestinationConfig;
+  bind(scope: Construct, bucket: ICfnBucket): BucketNotificationDestinationConfig;
 }
 
 /**
@@ -33,7 +33,7 @@ export interface BucketNotificationDestinationConfig {
    * Any additional dependencies that should be resolved before the bucket notification
    * can be configured (for example, the SNS Topic Policy resource).
    */
-  readonly dependencies?: IDependable[]
+  readonly dependencies?: IDependable[];
 }
 
 /**
@@ -42,5 +42,5 @@ export interface BucketNotificationDestinationConfig {
 export enum BucketNotificationDestinationType {
   LAMBDA,
   QUEUE,
-  TOPIC
+  TOPIC,
 }

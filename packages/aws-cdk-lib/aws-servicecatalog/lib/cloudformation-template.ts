@@ -56,7 +56,6 @@ export interface CloudFormationTemplateConfig {
    * @default - None - no assets are used in this product
    */
   readonly assetBucket?: IBucket;
-
 }
 
 /**
@@ -83,7 +82,7 @@ class CloudFormationAssetTemplate extends CloudFormationTemplate {
   /**
    * @param path The path to the asset file.
    */
-  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
+  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = {}) {
     super();
   }
 

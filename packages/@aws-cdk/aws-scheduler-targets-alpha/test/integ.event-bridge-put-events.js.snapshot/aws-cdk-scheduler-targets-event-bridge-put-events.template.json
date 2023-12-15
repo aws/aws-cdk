@@ -1,0 +1,295 @@
+{
+ "Resources": {
+  "MyParameter18BA547D": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Name": "MyEventBridgePutParameter",
+    "Type": "String",
+    "Value": "🐶"
+   }
+  },
+  "StateMachineRoleB840431D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StateMachineRoleDefaultPolicyDF1E6607": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "ssm:putParameter",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StateMachineRoleDefaultPolicyDF1E6607",
+    "Roles": [
+     {
+      "Ref": "StateMachineRoleB840431D"
+     }
+    ]
+   }
+  },
+  "StateMachine2E01A3A5": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"PutParameter\",\"States\":{\"PutParameter\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::aws-sdk:ssm:putParameter\",\"Parameters\":{\"Name.$\":\"$.Name\",\"Value.$\":\"$.Value\",\"Type\":\"String\",\"Overwrite\":true}}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "StateMachineRoleDefaultPolicyDF1E6607",
+    "StateMachineRoleB840431D"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "StateMachineEventsRoleDBCDECD1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StateMachineEventsRoleDefaultPolicyFB602CA9": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "states:StartExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "StateMachine2E01A3A5"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StateMachineEventsRoleDefaultPolicyFB602CA9",
+    "Roles": [
+     {
+      "Ref": "StateMachineEventsRoleDBCDECD1"
+     }
+    ]
+   }
+  },
+  "EventBus7B8748AA": {
+   "Type": "AWS::Events::EventBus",
+   "Properties": {
+    "Name": "EmojisTransformationEventBus"
+   }
+  },
+  "Rule4C995B7F": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Trigger the step function ",
+       {
+        "Fn::GetAtt": [
+         "StateMachine2E01A3A5",
+         "Name"
+        ]
+       },
+       " every 10 minutes, which transforms the value of the parameter ",
+       {
+        "Ref": "MyParameter18BA547D"
+       },
+       " from 🐶 to 😺"
+      ]
+     ]
+    },
+    "EventBusName": {
+     "Ref": "EventBus7B8748AA"
+    },
+    "EventPattern": {
+     "detail-type": [
+      "🐶➡️😺"
+     ]
+    },
+    "Name": "Transforms_dog_to_cat",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Ref": "StateMachine2E01A3A5"
+      },
+      "Id": "Target0",
+      "Input": "{\"Name\":\"MyEventBridgePutParameter\",\"Value\":\"😺\"}",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "StateMachineEventsRoleDBCDECD1",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "Schedule83A77FD1": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "ScheduleExpression": "rate(10 minutes)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
+    "State": "ENABLED",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "EventBus7B8748AA",
+       "Arn"
+      ]
+     },
+     "EventBridgeParameters": {
+      "DetailType": "🐶➡️😺",
+      "Source": "emoji-transformation"
+     },
+     "Input": "{\"foo\":\"bar\"}",
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 86400,
+      "MaximumRetryAttempts": 185
+     },
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "SchedulerRoleForTarget1441a743A31888",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "Rule4C995B7F"
+   ]
+  },
+  "SchedulerRoleForTarget1441a743A31888": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "scheduler.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "events:PutEvents",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "EventBus7B8748AA",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD",
+    "Roles": [
+     {
+      "Ref": "SchedulerRoleForTarget1441a743A31888"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

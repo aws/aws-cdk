@@ -16,7 +16,6 @@ import { CfnBuild } from 'aws-cdk-lib/aws-gamelift';
  * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-build-cli-uploading.html
  */
 export interface IBuild extends cdk.IResource, iam.IGrantable {
-
   /**
    * The Identifier of the build.
    *
@@ -37,12 +36,13 @@ export interface IBuild extends cdk.IResource, iam.IGrantable {
  */
 export abstract class BuildBase extends cdk.Resource implements IBuild {
   /**
-     * The Identifier of the build.
-     */
+   * The Identifier of the build.
+   */
   public abstract readonly buildId: string;
+
   /**
-     * The ARN of the build.
-     */
+   * The ARN of the build.
+   */
   public abstract readonly buildArn: string;
 
   public abstract readonly grantPrincipal: iam.IPrincipal;
@@ -87,21 +87,21 @@ export enum OperatingSystem {
  */
 export interface BuildAttributes {
   /**
-     * The ARN of the build
-     *
-     * At least one of `buildArn` and `buildId` must be provided.
-     *
-     * @default derived from `buildId`.
-     */
+   * The ARN of the build
+   *
+   * At least one of `buildArn` and `buildId` must be provided.
+   *
+   * @default derived from `buildId`.
+   */
   readonly buildArn?: string;
 
   /**
-    * The identifier of the build
-    *
-    * At least one of `buildId` and `buildArn`  must be provided.
-    *
-    * @default derived from `buildArn`.
-    */
+   * The identifier of the build
+   *
+   * At least one of `buildId` and `buildArn`  must be provided.
+   *
+   * @default derived from `buildArn`.
+   */
   readonly buildId?: string;
   /**
    * The IAM role assumed by GameLift to access server build in S3.
@@ -115,52 +115,52 @@ export interface BuildAttributes {
  */
 export interface BuildProps {
   /**
-     * Name of this build
-     *
-     * @default No name
-     */
+   * Name of this build
+   *
+   * @default No name
+   */
   readonly buildName?: string;
 
   /**
-     * Version of this build
-     *
-     * @default No version
-     */
+    * Version of this build
+    *
+    * @default No version
+    */
   readonly buildVersion?: string;
 
   /**
-     * The operating system that the game server binaries are built to run on.
-     *
-     * @default No version
-     */
+   * The operating system that the game server binaries are built to run on.
+   *
+   * @default No version
+   */
   readonly operatingSystem?: OperatingSystem;
 
   /**
-     * The game build file storage
-     */
+   * The game build file storage
+   */
   readonly content: Content;
 
   /**
-    * The IAM role assumed by GameLift to access server build in S3.
-    * If providing a custom role, it needs to trust the GameLift service principal (gamelift.amazonaws.com) and be granted sufficient permissions
-    * to have Read access to a specific key content into a specific S3 bucket.
-    * Below an example of required permission:
-    * {
-    *  "Version": "2012-10-17",
-    *  "Statement": [{
-    *        "Effect": "Allow",
-    *        "Action": [
-    *            "s3:GetObject",
-    *            "s3:GetObjectVersion"
-    *        ],
-    *        "Resource": "arn:aws:s3:::bucket-name/object-name"
-    *  }]
-    *}
-    *
-    * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-access-storage-loc
-    *
-    * @default - a role will be created with default permissions.
-    */
+   * The IAM role assumed by GameLift to access server build in S3.
+   * If providing a custom role, it needs to trust the GameLift service principal (gamelift.amazonaws.com) and be granted sufficient permissions
+   * to have Read access to a specific key content into a specific S3 bucket.
+   * Below an example of required permission:
+   * {
+   *  "Version": "2012-10-17",
+   *  "Statement": [{
+   *        "Effect": "Allow",
+   *        "Action": [
+   *            "s3:GetObject",
+   *            "s3:GetObjectVersion"
+   *        ],
+   *        "Resource": "arn:aws:s3:::bucket-name/object-name"
+   *  }]
+   * }
+   *
+   * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-access-storage-loc
+   *
+   * @default - a role will be created with default permissions.
+   */
   readonly role?: iam.IRole;
 
   /**
@@ -182,11 +182,10 @@ export interface BuildProps {
  * @resource AWS::GameLift::Build
  */
 export class Build extends BuildBase {
-
   /**
    * Create a new Build from s3 content
    */
-  static fromBucket(scope: Construct, id: string, bucket: s3.IBucket, key: string, objectVersion?: string) {
+  static fromBucket(scope: Construct, id: string, bucket: s3.ICfnBucket, key: string, objectVersion?: string) {
     return new Build(scope, id, {
       content: Content.fromBucket(bucket, key, objectVersion),
     });
@@ -202,15 +201,15 @@ export class Build extends BuildBase {
   }
 
   /**
-     * Import a build into CDK using its identifier
-     */
+   * Import a build into CDK using its identifier
+   */
   static fromBuildId(scope: Construct, id: string, buildId: string): IBuild {
     return this.fromBuildAttributes(scope, id, { buildId });
   }
 
   /**
-     * Import a build into CDK using its ARN
-     */
+   * Import a build into CDK using its ARN
+   */
   static fromBuildArn(scope: Construct, id: string, buildArn: string): IBuild {
     return this.fromBuildAttributes(scope, id, { buildArn });
   }

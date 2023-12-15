@@ -606,7 +606,7 @@ class CodeCommitSource extends GitSource {
  * Construction properties for `S3Source`.
  */
 export interface S3SourceProps extends SourceProps {
-  readonly bucket: s3.IBucket;
+  readonly bucket: s3.ICfnBucket;
   readonly path: string;
 
   /**
@@ -628,7 +628,7 @@ class S3Source extends Source {
 
   constructor(props: S3SourceProps) {
     super(props);
-    this.bucket = props.bucket;
+    this.bucket = s3.Bucket.fromCfnBucket(props.bucket);
     this.path = props.path;
     this.version = props.version;
   }

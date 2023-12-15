@@ -241,7 +241,7 @@ export interface FlowLogDestinationConfig {
    *
    * @default - undefined
    */
-  readonly s3Bucket?: s3.IBucket;
+  readonly s3Bucket?: s3.ICfnBucket;
 
   /**
    * S3 bucket key prefix to publish the flow logs to
@@ -280,7 +280,7 @@ class S3Destination extends FlowLogDestination {
         removalPolicy: RemovalPolicy.RETAIN,
       });
     } else {
-      s3Bucket = this.props.s3Bucket;
+      s3Bucket = s3.Bucket.fromCfnBucket(this.props.s3Bucket);
     }
 
     // https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs-s3.html#flow-logs-s3-permissions
