@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { IBucket } from 'aws-cdk-lib/aws-s3';
+import { Bucket, ICfnBucket } from 'aws-cdk-lib/aws-s3';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { IResource, Resource, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
@@ -84,8 +84,8 @@ export abstract class FirewallDomains {
    * @param bucket S3 bucket
    * @param key S3 key
    */
-  public static fromS3(bucket: IBucket, key: string): FirewallDomains {
-    return this.fromS3Url(bucket.s3UrlForObject(key));
+  public static fromS3(bucket: ICfnBucket, key: string): FirewallDomains {
+    return this.fromS3Url(Bucket.fromCfnBucket(bucket).s3UrlForObject(key));
   }
 
   /**

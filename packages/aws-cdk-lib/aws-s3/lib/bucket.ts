@@ -6,7 +6,7 @@ import { IBucketNotificationDestination } from './destination';
 import { BucketNotifications } from './notifications-resource';
 import * as perms from './perms';
 import { LifecycleRule } from './rule';
-import { CfnBucket } from './s3.generated';
+import { CfnBucket, ICfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -36,7 +36,7 @@ import * as regionInformation from '../../region-info';
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
 const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
 
-export interface IBucket extends IResource {
+export interface IBucket extends IResource, ICfnBucket {
   /**
    * The ARN of the bucket.
    * @attribute
@@ -498,7 +498,15 @@ export interface BucketAttributes {
  *
  */
 export abstract class BucketBase extends Resource implements IBucket {
+  public abstract readonly attrArn: string;
+  public abstract readonly attrBucketName: string;
+  /**
+   * Deprecated: use attrArn
+   */
   public abstract readonly bucketArn: string;
+  /**
+   * Deprecated: use attrBucketName
+   */
   public abstract readonly bucketName: string;
   public abstract readonly bucketDomainName: string;
   public abstract readonly bucketWebsiteUrl: string;
@@ -1203,7 +1211,7 @@ export interface InventoryDestination {
   /**
    * Bucket where all inventories will be saved in.
    */
-  readonly bucket: IBucket;
+  readonly bucket: ICfnBucket;
   /**
    * The prefix to be used when saving the inventory.
    *
@@ -1537,7 +1545,7 @@ export interface BucketProps {
    * Destination bucket for the server access logs.
    * @default - If "serverAccessLogsPrefix" undefined - access logs disabled, otherwise - log to current bucket.
    */
-  readonly serverAccessLogsBucket?: IBucket;
+  readonly serverAccessLogsBucket?: ICfnBucket;
 
   /**
    * Optional log file prefix to use for the bucket's access logs.
@@ -1675,8 +1683,10 @@ export class Bucket extends BucketBase {
     const websiteDomain = `${bucketName}.${staticDomainEndpoint}`;
 
     class Import extends BucketBase {
-      public readonly bucketName = bucketName!;
-      public readonly bucketArn = parseBucketArn(scope, attrs);
+      public readonly attrArn = parseBucketArn(scope, attrs);
+      public readonly attrBucketName = bucketName!;
+      public readonly bucketName = this.attrBucketName;
+      public readonly bucketArn = this.attrArn;
       public readonly bucketDomainName = attrs.bucketDomainName || `${bucketName}.s3.${urlSuffix}`;
       public readonly bucketWebsiteUrl = attrs.bucketWebsiteUrl || `http://${websiteDomain}`;
       public readonly bucketWebsiteDomainName = attrs.bucketWebsiteUrl ? Fn.select(2, Fn.split('/', attrs.bucketWebsiteUrl)) : websiteDomain;
@@ -1707,7 +1717,13 @@ export class Bucket extends BucketBase {
   /**
    * Create a mutable `IBucket` based on a low-level `CfnBucket`.
    */
-  public static fromCfnBucket(cfnBucket: CfnBucket): IBucket {
+  public static fromCfnBucket(cfnBucket: ICfnBucket): IBucket {
+    function isIBucket(x: any): x is IBucket {
+      return (<IBucket>x).grantRead !== undefined;
+    }
+    // if cfnBucket is already an IBucket, just return itself.
+    if (isIBucket(cfnBucket)) { return cfnBucket; }
+
     // use a "weird" id that has a higher chance of being unique
     const id = '@FromCfnBucket';
 
@@ -1719,10 +1735,18 @@ export class Bucket extends BucketBase {
       return <IBucket>existing;
     }
 
+    // if cfnBucket is not a CfnResource, and thus not a CfnBucket, we are in a scenario where
+    // cfnBucket is an ICfnBucket but NOT a CfnBucket, which shouldn't happen
+    if (!CfnBucket.isCfnResource(cfnBucket)) {
+      throw new Error('Encountered an "ICfnBucket" that is not an "IBucket" or "CfnBucket". If you have a legitimate reason for this, please open an issue at https://github.com/aws/aws-cdk/issues');
+    }
+    const _cfnBucket = cfnBucket as CfnBucket;
+
     // handle the KMS Key if the Bucket references one
     let encryptionKey: kms.IKey | undefined;
-    if (cfnBucket.bucketEncryption) {
-      const serverSideEncryptionConfiguration = (cfnBucket.bucketEncryption as any).serverSideEncryptionConfiguration;
+
+    if (_cfnBucket.bucketEncryption) {
+      const serverSideEncryptionConfiguration = (_cfnBucket.bucketEncryption as any).serverSideEncryptionConfiguration;
       if (Array.isArray(serverSideEncryptionConfiguration) && serverSideEncryptionConfiguration.length === 1) {
         const serverSideEncryptionRuleProperty = serverSideEncryptionConfiguration[0];
         const serverSideEncryptionByDefault = serverSideEncryptionRuleProperty.serverSideEncryptionByDefault;
@@ -1739,25 +1763,27 @@ export class Bucket extends BucketBase {
     }
 
     return new class extends BucketBase {
-      public readonly bucketArn = cfnBucket.attrArn;
-      public readonly bucketName = cfnBucket.ref;
-      public readonly bucketDomainName = cfnBucket.attrDomainName;
-      public readonly bucketDualStackDomainName = cfnBucket.attrDualStackDomainName;
-      public readonly bucketRegionalDomainName = cfnBucket.attrRegionalDomainName;
-      public readonly bucketWebsiteUrl = cfnBucket.attrWebsiteUrl;
-      public readonly bucketWebsiteDomainName = Fn.select(2, Fn.split('/', cfnBucket.attrWebsiteUrl));
+      public readonly attrArn = _cfnBucket.attrArn;
+      public readonly bucketArn = this.attrArn;
+      public readonly attrBucketName = _cfnBucket.ref;
+      public readonly bucketName = this.attrBucketName;
+      public readonly bucketDomainName = _cfnBucket.attrDomainName;
+      public readonly bucketDualStackDomainName = _cfnBucket.attrDualStackDomainName;
+      public readonly bucketRegionalDomainName = _cfnBucket.attrRegionalDomainName;
+      public readonly bucketWebsiteUrl = _cfnBucket.attrWebsiteUrl;
+      public readonly bucketWebsiteDomainName = Fn.select(2, Fn.split('/', _cfnBucket.attrWebsiteUrl));
 
       public readonly encryptionKey = encryptionKey;
-      public readonly isWebsite = cfnBucket.websiteConfiguration !== undefined;
+      public readonly isWebsite = _cfnBucket.websiteConfiguration !== undefined;
       public policy = undefined;
       protected autoCreatePolicy = true;
-      protected disallowPublicAccess = cfnBucket.publicAccessBlockConfiguration &&
-        (cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
+      protected disallowPublicAccess = _cfnBucket.publicAccessBlockConfiguration &&
+        (_cfnBucket.publicAccessBlockConfiguration as any).blockPublicPolicy;
 
       constructor() {
-        super(cfnBucket, id);
+        super(_cfnBucket, id);
 
-        this.node.defaultChild = cfnBucket;
+        this.node.defaultChild = _cfnBucket;
       }
     }();
   }
@@ -1808,6 +1834,8 @@ export class Bucket extends BucketBase {
     }
   }
 
+  public readonly attrArn: string;
+  public readonly attrBucketName: string;
   public readonly bucketArn: string;
   public readonly bucketName: string;
   public readonly bucketDomainName: string;
@@ -1871,13 +1899,15 @@ export class Bucket extends BucketBase {
     this.encryptionKey = encryptionKey;
     this.eventBridgeEnabled = props.eventBridgeEnabled;
 
-    this.bucketName = this.getResourceNameAttribute(resource.ref);
-    this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
+    this.attrBucketName = this.getResourceNameAttribute(resource.attrBucketName);
+    this.bucketName = this.attrBucketName;
+    this.attrArn = this.getResourceArnAttribute(resource.attrArn, {
       region: '',
       account: '',
       service: 's3',
       resource: this.physicalName,
     });
+    this.bucketArn = this.attrArn;
 
     this.bucketDomainName = resource.attrDomainName;
     this.bucketWebsiteUrl = resource.attrWebsiteUrl;
@@ -2208,12 +2238,12 @@ export class Bucket extends BucketBase {
     }
 
     // When there is an encryption key exists for the server access logs bucket, grant permission to the S3 logging SP.
-    if (props.serverAccessLogsBucket?.encryptionKey) {
-      props.serverAccessLogsBucket.encryptionKey.grantEncryptDecrypt(new iam.ServicePrincipal('logging.s3.amazonaws.com'));
+    if (props.serverAccessLogsBucket && Bucket.fromCfnBucket(props.serverAccessLogsBucket).encryptionKey) {
+      Bucket.fromCfnBucket(props.serverAccessLogsBucket).encryptionKey!.grantEncryptDecrypt(new iam.ServicePrincipal('logging.s3.amazonaws.com'));
     }
 
     return {
-      destinationBucketName: props.serverAccessLogsBucket?.bucketName,
+      destinationBucketName: props.serverAccessLogsBucket?.attrBucketName,
       logFilePrefix: props.serverAccessLogsPrefix,
     };
   }
@@ -2451,7 +2481,7 @@ export class Bucket extends BucketBase {
       return {
         id,
         destination: {
-          bucketArn: inventory.destination.bucket.bucketArn,
+          bucketArn: inventory.destination.bucket.attrArn,
           bucketAccountId: inventory.destination.bucketOwner,
           prefix: inventory.destination.prefix,
           format,

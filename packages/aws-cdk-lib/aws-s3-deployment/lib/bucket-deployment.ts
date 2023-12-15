@@ -29,7 +29,7 @@ export interface BucketDeploymentProps {
   /**
    * The S3 bucket to sync the contents of the zip file to.
    */
-  readonly destinationBucket: s3.IBucket;
+  readonly destinationBucket: s3.ICfnBucket;
 
   /**
    * Key prefix in the destination bucket.
@@ -284,7 +284,7 @@ export class BucketDeployment extends Construct {
       throw new Error('Vpc must be specified if useEfs is set');
     }
 
-    this.destinationBucket = props.destinationBucket;
+    this.destinationBucket = s3.Bucket.fromCfnBucket(props.destinationBucket);
 
     const accessPointPath = '/lambda';
     let accessPoint;
@@ -591,7 +591,7 @@ export interface DeployTimeSubstitutedFileProps {
   /**
    * The S3 bucket to sync the contents of the zip file to.
    */
-  readonly destinationBucket: s3.IBucket;
+  readonly destinationBucket: s3.ICfnBucket;
 
   /**
    * User-defined substitutions to make in the file.
@@ -615,7 +615,6 @@ export interface DeployTimeSubstitutedFileProps {
  * upload individual files and specify to make substitutions in the file.
  */
 export class DeployTimeSubstitutedFile extends BucketDeployment {
-
   public readonly objectKey: string;
 
   constructor(scope: Construct, id: string, props: DeployTimeSubstitutedFileProps) {

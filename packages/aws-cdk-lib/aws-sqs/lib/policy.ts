@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
-import { IQueue } from './queue-base';
-import { CfnQueuePolicy } from './sqs.generated';
+import { CfnQueuePolicy, ICfnQueue } from './sqs.generated';
 import { PolicyDocument } from '../../aws-iam';
 import { Resource } from '../../core';
 
@@ -11,7 +10,7 @@ export interface QueuePolicyProps {
   /**
    * The set of queues this policy applies to.
    */
-  readonly queues: IQueue[];
+  readonly queues: ICfnQueue[];
 }
 
 /**
@@ -39,7 +38,7 @@ export class QueuePolicy extends Resource {
 
     new CfnQueuePolicy(this, 'Resource', {
       policyDocument: this.document,
-      queues: props.queues.map(q => q.queueUrl),
+      queues: props.queues.map(q => q.attrQueueUrl),
     });
   }
 

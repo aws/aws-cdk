@@ -31,7 +31,7 @@ export abstract class ApplicationCode {
    * @param fileKey - a key pointing to a Flink JAR file
    * @param objectVersion - an optional version string for the provided fileKey
    */
-  public static fromBucket(bucket: s3.IBucket, fileKey: string, objectVersion?: string): ApplicationCode {
+  public static fromBucket(bucket: s3.ICfnBucket, fileKey: string, objectVersion?: string): ApplicationCode {
     return new BucketApplicationCode({
       bucket,
       fileKey,
@@ -56,13 +56,13 @@ export abstract class ApplicationCode {
 }
 
 interface BucketApplicationCodeProps {
-  readonly bucket: s3.IBucket;
+  readonly bucket: s3.ICfnBucket;
   readonly fileKey: string;
   readonly objectVersion?: string;
 }
 
 class BucketApplicationCode extends ApplicationCode {
-  public readonly bucket?: s3.IBucket;
+  public readonly bucket?: s3.ICfnBucket;
   public readonly fileKey: string;
   public readonly objectVersion?: string;
 
@@ -79,7 +79,7 @@ class BucketApplicationCode extends ApplicationCode {
         applicationCodeConfiguration: {
           codeContent: {
             s3ContentLocation: {
-              bucketArn: this.bucket!.bucketArn,
+              bucketArn: this.bucket!.attrArn,
               fileKey: this.fileKey,
               objectVersion: this.objectVersion,
             },
@@ -87,7 +87,7 @@ class BucketApplicationCode extends ApplicationCode {
           codeContentType: 'ZIPFILE',
         },
       },
-      bucket: this.bucket!,
+      bucket: s3.Bucket.fromCfnBucket(this.bucket!),
     };
   }
 }

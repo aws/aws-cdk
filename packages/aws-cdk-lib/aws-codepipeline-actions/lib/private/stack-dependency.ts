@@ -20,7 +20,7 @@ import { Resource, Stack } from '../../../core';
  * the account stack R first, followed by the region stack B. So explicitly establish
  * this dependency in CodePipeline Actions.
  */
-export function forceSupportStackDependency(bucket: s3.IBucket, role: iam.IRole) {
+export function forceSupportStackDependency(bucket: s3.ICfnBucket, role: iam.IRole) {
   if (Resource.isOwnedResource(bucket) && Resource.isOwnedResource(role)) {
     Stack.of(bucket).addDependency(Stack.of(role), `replication bucket {${bucket.node.path}} to action role {${role}}`);
   }

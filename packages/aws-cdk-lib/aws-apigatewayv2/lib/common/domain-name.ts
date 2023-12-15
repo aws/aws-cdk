@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnDomainName, CfnDomainNameProps } from '.././index';
 import { ICertificate } from '../../../aws-certificatemanager';
-import { IBucket } from '../../../aws-s3';
+import { Bucket, ICfnBucket } from '../../../aws-s3';
 import { IResource, Lazy, Resource, Token } from '../../../core';
 
 /**
@@ -133,7 +133,7 @@ export interface MTLSConfig {
   /**
    * The bucket that the trust store is hosted in.
    */
-  readonly bucket: IBucket;
+  readonly bucket: ICfnBucket;
   /**
    * The key in S3 to look at for the trust store
    */
@@ -199,7 +199,7 @@ export class DomainName extends Resource implements IDomainName {
   private configureMTLS(mtlsConfig?: MTLSConfig): CfnDomainName.MutualTlsAuthenticationProperty | undefined {
     if (!mtlsConfig) return undefined;
     return {
-      truststoreUri: mtlsConfig.bucket.s3UrlForObject(mtlsConfig.key),
+      truststoreUri: Bucket.fromCfnBucket(mtlsConfig.bucket).s3UrlForObject(mtlsConfig.key),
       truststoreVersion: mtlsConfig.version,
     };
   }

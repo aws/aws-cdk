@@ -12,12 +12,13 @@ import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated'
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { Annotations, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Token } from '../../core';
+import { Annotations, ArnFormat, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -275,7 +276,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - None
    */
-  readonly s3ImportBuckets?: s3.IBucket[];
+  readonly s3ImportBuckets?: s3.ICfnBucket[];
 
   /**
    * Role that will be associated with this DB cluster to enable S3 export.
@@ -306,7 +307,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - None
    */
-  readonly s3ExportBuckets?: s3.IBucket[];
+  readonly s3ExportBuckets?: s3.ICfnBucket[];
 
   /**
    * Existing subnet group for the cluster.
@@ -456,6 +457,19 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
       targetId: this.clusterIdentifier,
       targetType: secretsmanager.AttachmentTargetType.RDS_DB_CLUSTER,
     };
+  }
+
+  public grantConnect(grantee: iam.IGrantable, dbUser: string): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      actions: ['rds-db:connect'],
+      grantee,
+      resourceArns: [Stack.of(this).formatArn({
+        service: 'rds-db',
+        resource: 'dbuser',
+        resourceName: `${this.clusterResourceIdentifier}/${dbUser}`,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      })],
+    });
   }
 }
 

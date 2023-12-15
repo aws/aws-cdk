@@ -11,6 +11,7 @@ export interface SubscriptionProps {
    * @default - all messages are delivered
    */
   readonly filterPolicy?: { [attribute: string]: sns.SubscriptionFilter };
+
   /**
    * The filter policy that is applied on the message body.
    * To apply a filter policy to the message attributes, use `filterPolicy`. A maximum of one of `filterPolicyWithMessageBody` and `filterPolicy` may be used.
@@ -18,6 +19,7 @@ export interface SubscriptionProps {
    * @default - all messages are delivered
    */
   readonly filterPolicyWithMessageBody?: { [attribute: string]: sns.FilterOrPolicy };
+
   /**
    * Queue to be used as dead letter queue.
    * If not passed no dead letter queue is enabled.

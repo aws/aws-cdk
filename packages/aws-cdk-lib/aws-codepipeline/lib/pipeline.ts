@@ -91,7 +91,7 @@ export interface PipelineProps {
    *
    * @default - A new S3 bucket will be created.
    */
-  readonly artifactBucket?: s3.IBucket;
+  readonly artifactBucket?: s3.ICfnBucket;
 
   /**
    * The IAM role to be assumed by this Pipeline.
@@ -884,7 +884,7 @@ export class Pipeline extends PipelineBase {
 
   private getArtifactBucketFromProps(props: PipelineProps): s3.IBucket | undefined {
     if (props.artifactBucket) {
-      return props.artifactBucket;
+      return s3.Bucket.fromCfnBucket(props.artifactBucket);
     }
     if (props.crossRegionReplicationBuckets) {
       const pipelineRegion = this.requireRegion();

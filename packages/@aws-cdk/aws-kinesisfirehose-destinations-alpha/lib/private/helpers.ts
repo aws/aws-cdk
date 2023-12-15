@@ -148,7 +148,7 @@ export function createBackupConfig(scope: Construct, role: iam.IRole, props?: De
     return undefined;
   }
 
-  const bucket = props.bucket ?? new s3.Bucket(scope, 'BackupBucket');
+  const bucket = props.bucket ? s3.Bucket.fromCfnBucket(props.bucket) : new s3.Bucket(scope, 'BackupBucket');
   const bucketGrant = bucket.grantReadWrite(role);
 
   const { loggingOptions, dependables: loggingDependables } = createLoggingOptions(scope, {

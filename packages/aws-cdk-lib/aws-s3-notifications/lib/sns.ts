@@ -13,13 +13,13 @@ export class SnsDestination implements s3.IBucketNotificationDestination {
     this._topic = sns.Topic.fromCfnTopic(topic);
   }
 
-  public bind(_scope: Construct, bucket: s3.IBucket): s3.BucketNotificationDestinationConfig {
+  public bind(_scope: Construct, bucket: s3.ICfnBucket): s3.BucketNotificationDestinationConfig {
     this._topic.addToResourcePolicy(new iam.PolicyStatement({
       principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
       actions: ['sns:Publish'],
       resources: [this._topic.attrTopicArn],
       conditions: {
-        ArnLike: { 'aws:SourceArn': bucket.bucketArn },
+        ArnLike: { 'aws:SourceArn': bucket.attrArn },
       },
     }));
 

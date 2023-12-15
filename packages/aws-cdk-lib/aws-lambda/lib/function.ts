@@ -278,7 +278,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - SQS queue with 14 day retention period if `deadLetterQueueEnabled` is `true`
    */
-  readonly deadLetterQueue?: sqs.IQueue;
+  readonly deadLetterQueue?: sqs.ICfnQueue;
 
   /**
    * The SNS topic to use as a DLQ.
@@ -1490,12 +1490,14 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
         resources: [deadLetterQueue.attrTopicArn],
       }));
     } else {
-      deadLetterQueue = props.deadLetterQueue || new sqs.Queue(this, 'DeadLetterQueue', {
-        retentionPeriod: Duration.days(14),
-      });
+      deadLetterQueue = props.deadLetterQueue ?
+        sqs.Queue.fromCfnQueue(props.deadLetterQueue) :
+        new sqs.Queue(this, 'DeadLetterQueue', {
+          retentionPeriod: Duration.days(14),
+        });
       this.addToRolePolicy(new iam.PolicyStatement({
         actions: ['sqs:SendMessage'],
-        resources: [deadLetterQueue.queueArn],
+        resources: [deadLetterQueue.attrArn],
       }));
     }
 

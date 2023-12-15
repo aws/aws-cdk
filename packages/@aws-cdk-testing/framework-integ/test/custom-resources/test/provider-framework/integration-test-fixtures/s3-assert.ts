@@ -10,7 +10,7 @@ export interface S3AssertProps {
   /**
    * The s3 bucket to query.
    */
-  readonly bucket: s3.IBucket;
+  readonly bucket: s3.ICfnBucket;
 
   /**
    * The object key.
@@ -31,7 +31,6 @@ export interface S3AssertProps {
  * Code is written in Python because why not.
  */
 export class S3Assert extends Construct {
-
   constructor(scope: Construct, id: string, props: S3AssertProps) {
     super(scope, id);
 
@@ -39,7 +38,7 @@ export class S3Assert extends Construct {
       serviceToken: S3AssertProvider.getOrCreate(this),
       resourceType: 'Custom::S3Assert',
       properties: {
-        BucketName: props.bucket.bucketName,
+        BucketName: props.bucket.attrBucketName,
         ObjectKey: props.objectKey,
         ExpectedContent: props.expectedContent,
       },

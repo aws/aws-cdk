@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
+import { Node } from 'constructs';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable quote-props */
@@ -1351,7 +1352,7 @@ describe('bucket', () => {
     });
   });
 
-  describe('fromCfnBucket()', () => {
+  describe('fromCfnBucket() with s3.CfnBucket', () => {
     let stack: cdk.Stack;
     let cfnBucket: s3.CfnBucket;
     let bucket: s3.IBucket;
@@ -1517,6 +1518,31 @@ describe('bucket', () => {
       }));
 
       Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 2);
+    });
+  });
+
+  describe('fromCfnBucket() with s3.IBucket', () => {
+    test('returns the same IBucket', () => {
+      const stack = new cdk.Stack();
+      const iBucket: s3.IBucket = new s3.Bucket(stack, 'IBucket');
+      const bucket = s3.Bucket.fromCfnBucket(iBucket);
+
+      expect(bucket.node.id).toStrictEqual(iBucket.node.id);
+      expect(bucket.node.id).not.toStrictEqual('@FromCfnBucket');
+    });
+  });
+
+  describe('fronCfnBucket() with s3.ICfnBucket that is not CfnBucket', () => {
+    test('throws error', () => {
+      const stack = new cdk.Stack();
+      // A nonsensical ICfnBucket that is not a CfnBucket
+      const iBucket: s3.ICfnBucket = {
+        attrArn: 'arn',
+        attrBucketName: 'my-bucket-name',
+        node: new Node(stack, stack, 'dummy-node'),
+      };
+      
+      expect(() => s3.Bucket.fromCfnBucket(iBucket)).toThrow('Encountered an "ICfnBucket" that is not an "IBucket" or "CfnBucket". If you have a legitimate reason for this, please open an issue at https://github.com/aws/aws-cdk/issues');
     });
   });
 

@@ -9,11 +9,10 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  * Properties for sending a message to an SQS queue
  */
 export interface SqsSendMessageProps extends sfn.TaskStateBaseProps {
-
   /**
    * The SQS queue that messages will be sent to
    */
-  readonly queue: sqs.IQueue
+  readonly queue: sqs.ICfnQueue;
 
   /**
    * The text message to send to the queue.
@@ -55,7 +54,6 @@ export interface SqsSendMessageProps extends sfn.TaskStateBaseProps {
  *
  */
 export class SqsSendMessage extends sfn.TaskStateBase {
-
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
     sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
@@ -65,6 +63,7 @@ export class SqsSendMessage extends sfn.TaskStateBase {
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
   private readonly integrationPattern: sfn.IntegrationPattern;
+  private readonly queue: sqs.IQueue;
 
   constructor(scope: Construct, id: string, private readonly props: SqsSendMessageProps) {
     super(scope, id, props);
@@ -81,17 +80,18 @@ export class SqsSendMessage extends sfn.TaskStateBase {
     this.taskPolicies = [
       new iam.PolicyStatement({
         actions: ['sqs:SendMessage'],
-        resources: [this.props.queue.queueArn],
+        resources: [this.props.queue.attrArn],
       }),
     ];
+    this.queue = sqs.Queue.fromCfnQueue(props.queue);
 
     // sending to an encrypted queue requires
     // permissions on the associated kms key
-    if (this.props.queue.encryptionMasterKey) {
+    if (this.queue.encryptionMasterKey) {
       this.taskPolicies.push(
         new iam.PolicyStatement({
           actions: ['kms:Decrypt', 'kms:GenerateDataKey*'],
-          resources: [this.props.queue.encryptionMasterKey.keyArn],
+          resources: [this.queue.encryptionMasterKey.keyArn],
         }));
     }
   }
@@ -106,7 +106,7 @@ export class SqsSendMessage extends sfn.TaskStateBase {
     return {
       Resource: integrationResourceArn('sqs', 'sendMessage', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
-        QueueUrl: this.props.queue.queueUrl,
+        QueueUrl: this.queue.attrQueueUrl,
         MessageBody: this.props.messageBody.value,
         DelaySeconds: this.props.delay?.toSeconds(),
         MessageDeduplicationId: this.props.messageDeduplicationId,

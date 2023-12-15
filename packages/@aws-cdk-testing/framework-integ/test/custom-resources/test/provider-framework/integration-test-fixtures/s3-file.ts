@@ -12,7 +12,7 @@ interface S3FileProps {
   /**
    * The bucket in which the file will be created.
    */
-  readonly bucket: s3.IBucket;
+  readonly bucket: s3.ICfnBucket;
 
   /**
    * The object key.
@@ -46,7 +46,7 @@ export class S3File extends Construct {
       serviceToken: S3FileProvider.getOrCreate(this),
       resourceType: 'Custom::S3File',
       properties: {
-        [api.PROP_BUCKET_NAME]: props.bucket.bucketName,
+        [api.PROP_BUCKET_NAME]: props.bucket.attrBucketName,
         [api.PROP_CONTENTS]: props.contents,
         [api.PROP_OBJECT_KEY]: props.objectKey,
         [api.PROP_PUBLIC]: props.public,
