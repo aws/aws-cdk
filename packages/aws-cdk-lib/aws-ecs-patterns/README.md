@@ -295,7 +295,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
 
 when queue not provided by user, CDK will create a primary queue and a dead letter queue with default redrive policy and attach permission to the task to be able to access the primary queue.
 
-NOTE: This construct add a CPU Based scaling strategy by default, if this is not required in any solution please disable this by setting `disableCpuBasedScaling` to `true`.
+NOTE: This construct adds a CPU Based scaling strategy by default, if this is not required in any solution please disable this by setting `disableCpuBasedScaling` to `true`.
 
 ```ts
 declare const cluster: ecs.Cluster;
@@ -313,6 +313,27 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
   maxScalingCapacity: 5,
   containerName: 'test',
   disableCpuBasedScaling: true,
+});
+```
+
+If the CPU based scaling is required, To specify a custom target CPU utilization percentage for the scaling strategy use the  `cpuTrgetUtilizationPercent` property
+
+```ts
+declare const cluster: ecs.Cluster;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  command: ["-c", "4", "amazon.com"],
+  enableLogging: false,
+  desiredTaskCount: 2,
+  environment: {
+    TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+    TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value",
+  },
+  maxScalingCapacity: 5,
+  containerName: 'test',
+  cpuTrgetUtilizationPercent: 90,
 });
 ```
 

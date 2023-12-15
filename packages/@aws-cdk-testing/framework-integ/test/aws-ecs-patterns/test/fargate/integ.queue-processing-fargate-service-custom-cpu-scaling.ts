@@ -6,10 +6,10 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { QueueProcessingFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-patterns-queue-public');
+const stack = new Stack(app, 'aws-ecs-patterns-queue-custom-cpu-scaling');
 const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 
-new QueueProcessingFargateService(stack, 'PublicQueueService', {
+new QueueProcessingFargateService(stack, 'aws-ecs-patterns-queue-custom-cpu-scaling', {
   vpc,
   memoryLimitMiB: 512,
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
@@ -17,7 +17,7 @@ new QueueProcessingFargateService(stack, 'PublicQueueService', {
   cpuTargetUtilizationPercent: 90,
 });
 
-new integ.IntegTest(app, 'publicQueueProcessingFargateServiceTest', {
+new integ.IntegTest(app, 'customCpuScalingQueueProcessingFargateServiceTest', {
   testCases: [stack],
 });
 

@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-ecs-patterns-queue-public": {
-        "id": "aws-ecs-patterns-queue-public",
-        "path": "aws-ecs-patterns-queue-public",
+      "aws-ecs-patterns-queue-custom-cpu-scaling": {
+        "id": "aws-ecs-patterns-queue-custom-cpu-scaling",
+        "path": "aws-ecs-patterns-queue-custom-cpu-scaling",
         "children": {
           "VPC": {
             "id": "VPC",
-            "path": "aws-ecs-patterns-queue-public/VPC",
+            "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-patterns-queue-public/VPC/Resource",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +25,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-ecs-patterns-queue-public/VPC"
+                        "value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC"
                       }
                     ]
                   }
@@ -37,11 +37,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1/Subnet",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -66,7 +66,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1"
+                            "value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -81,7 +81,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1/Acl",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -89,14 +89,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1/RouteTable",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1"
+                            "value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -111,7 +111,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1/RouteTableAssociation",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -130,7 +130,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1/DefaultRoute",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -150,7 +150,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1/EIP",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -158,7 +158,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1"
+                            "value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -170,7 +170,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1/NATGateway",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -186,7 +186,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1"
+                            "value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -204,11 +204,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2/Subnet",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -233,7 +233,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2"
+                            "value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -248,7 +248,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2/Acl",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -256,14 +256,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2/RouteTable",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2"
+                            "value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -278,7 +278,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2/RouteTableAssociation",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -297,7 +297,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2/DefaultRoute",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -317,7 +317,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2/EIP",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -325,7 +325,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2"
+                            "value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -337,7 +337,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2/NATGateway",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -353,7 +353,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2"
+                            "value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -371,11 +371,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet1",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet1/Subnet",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -400,7 +400,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet1"
+                            "value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -415,7 +415,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet1/Acl",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -423,14 +423,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet1/RouteTable",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet1"
+                            "value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -445,7 +445,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet1/RouteTableAssociation",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -464,7 +464,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet1/DefaultRoute",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -490,11 +490,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet2",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet2/Subnet",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -519,7 +519,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet2"
+                            "value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -534,7 +534,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet2/Acl",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -542,14 +542,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet2/RouteTable",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet2"
+                            "value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -564,7 +564,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet2/RouteTableAssociation",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -583,7 +583,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet2/DefaultRoute",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -609,14 +609,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "aws-ecs-patterns-queue-public/VPC/IGW",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-ecs-patterns-queue-public/VPC"
+                        "value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC"
                       }
                     ]
                   }
@@ -628,7 +628,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "aws-ecs-patterns-queue-public/VPC/VPCGW",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -651,17 +651,17 @@
               "version": "0.0.0"
             }
           },
-          "PublicQueueService": {
-            "id": "PublicQueueService",
-            "path": "aws-ecs-patterns-queue-public/PublicQueueService",
+          "aws-ecs-patterns-queue-custom-cpu-scaling": {
+            "id": "aws-ecs-patterns-queue-custom-cpu-scaling",
+            "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling",
             "children": {
               "EcsProcessingDeadLetterQueue": {
                 "id": "EcsProcessingDeadLetterQueue",
-                "path": "aws-ecs-patterns-queue-public/PublicQueueService/EcsProcessingDeadLetterQueue",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/EcsProcessingDeadLetterQueue",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-patterns-queue-public/PublicQueueService/EcsProcessingDeadLetterQueue/Resource",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/EcsProcessingDeadLetterQueue/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
                       "aws:cdk:cloudformation:props": {
@@ -681,18 +681,18 @@
               },
               "EcsProcessingQueue": {
                 "id": "EcsProcessingQueue",
-                "path": "aws-ecs-patterns-queue-public/PublicQueueService/EcsProcessingQueue",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/EcsProcessingQueue",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-patterns-queue-public/PublicQueueService/EcsProcessingQueue/Resource",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/EcsProcessingQueue/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
                       "aws:cdk:cloudformation:props": {
                         "redrivePolicy": {
                           "deadLetterTargetArn": {
                             "Fn::GetAtt": [
-                              "PublicQueueServiceEcsProcessingDeadLetterQueueBC492277",
+                              "awsecspatternsqueuecustomcpuscalingEcsProcessingDeadLetterQueue018F2F89",
                               "Arn"
                             ]
                           },
@@ -713,7 +713,7 @@
               },
               "SQSDeadLetterQueue": {
                 "id": "SQSDeadLetterQueue",
-                "path": "aws-ecs-patterns-queue-public/PublicQueueService/SQSDeadLetterQueue",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/SQSDeadLetterQueue",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -721,7 +721,7 @@
               },
               "SQSDeadLetterQueueArn": {
                 "id": "SQSDeadLetterQueueArn",
-                "path": "aws-ecs-patterns-queue-public/PublicQueueService/SQSDeadLetterQueueArn",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/SQSDeadLetterQueueArn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -729,7 +729,7 @@
               },
               "SQSQueue": {
                 "id": "SQSQueue",
-                "path": "aws-ecs-patterns-queue-public/PublicQueueService/SQSQueue",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/SQSQueue",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -737,7 +737,7 @@
               },
               "SQSQueueArn": {
                 "id": "SQSQueueArn",
-                "path": "aws-ecs-patterns-queue-public/PublicQueueService/SQSQueueArn",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/SQSQueueArn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -745,15 +745,15 @@
               },
               "QueueProcessingTaskDef": {
                 "id": "QueueProcessingTaskDef",
-                "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef",
                 "children": {
                   "TaskRole": {
                     "id": "TaskRole",
-                    "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/TaskRole",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/TaskRole",
                     "children": {
                       "ImportTaskRole": {
                         "id": "ImportTaskRole",
-                        "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/TaskRole/ImportTaskRole",
+                        "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/TaskRole/ImportTaskRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -761,7 +761,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/TaskRole/Resource",
+                        "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/TaskRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -786,11 +786,11 @@
                       },
                       "DefaultPolicy": {
                         "id": "DefaultPolicy",
-                        "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/TaskRole/DefaultPolicy",
+                        "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/TaskRole/DefaultPolicy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/TaskRole/DefaultPolicy/Resource",
+                            "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/TaskRole/DefaultPolicy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                               "aws:cdk:cloudformation:props": {
@@ -807,7 +807,7 @@
                                       "Effect": "Allow",
                                       "Resource": {
                                         "Fn::GetAtt": [
-                                          "PublicQueueServiceEcsProcessingQueue84CD309D",
+                                          "awsecspatternsqueuecustomcpuscalingEcsProcessingQueue2AF4CB2C",
                                           "Arn"
                                         ]
                                       }
@@ -815,10 +815,10 @@
                                   ],
                                   "Version": "2012-10-17"
                                 },
-                                "policyName": "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
+                                "policyName": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRoleDefaultPolicyFF70EC56",
                                 "roles": [
                                   {
-                                    "Ref": "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+                                    "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRole397465C3"
                                   }
                                 ]
                               }
@@ -842,7 +842,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/Resource",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
                       "aws:cdk:cloudformation:props": {
@@ -850,16 +850,16 @@
                           {
                             "essential": true,
                             "image": {
-                              "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:497b192764e66ae2955bba8dff8487b11aaaaf904414455868e2560e31f47211"
+                              "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8be39d348c20f7e58a373abbd1152069e18da130e51bf52c89bd82a38d0e51d7"
                             },
                             "name": "QueueProcessingContainer",
                             "logConfiguration": {
                               "logDriver": "awslogs",
                               "options": {
                                 "awslogs-group": {
-                                  "Ref": "PublicQueueServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupCFF67B64"
+                                  "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefQueueProcessingContainerLogGroup706DABB2"
                                 },
-                                "awslogs-stream-prefix": "PublicQueueService",
+                                "awslogs-stream-prefix": "aws-ecs-patterns-queue-custom-cpu-scaling",
                                 "awslogs-region": {
                                   "Ref": "AWS::Region"
                                 }
@@ -870,7 +870,7 @@
                                 "name": "QUEUE_NAME",
                                 "value": {
                                   "Fn::GetAtt": [
-                                    "PublicQueueServiceEcsProcessingQueue84CD309D",
+                                    "awsecspatternsqueuecustomcpuscalingEcsProcessingQueue2AF4CB2C",
                                     "QueueName"
                                   ]
                                 }
@@ -881,11 +881,11 @@
                         "cpu": "256",
                         "executionRoleArn": {
                           "Fn::GetAtt": [
-                            "PublicQueueServiceQueueProcessingTaskDefExecutionRoleE22721BA",
+                            "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefExecutionRole3F91D316",
                             "Arn"
                           ]
                         },
-                        "family": "awsecspatternsqueuepublicPublicQueueServiceQueueProcessingTaskDefB3738118",
+                        "family": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDef1A053021",
                         "memory": "512",
                         "networkMode": "awsvpc",
                         "requiresCompatibilities": [
@@ -893,7 +893,7 @@
                         ],
                         "taskRoleArn": {
                           "Fn::GetAtt": [
-                            "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F",
+                            "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRole397465C3",
                             "Arn"
                           ]
                         }
@@ -906,15 +906,15 @@
                   },
                   "QueueProcessingContainer": {
                     "id": "QueueProcessingContainer",
-                    "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/QueueProcessingContainer",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/QueueProcessingContainer",
                     "children": {
                       "AssetImage": {
                         "id": "AssetImage",
-                        "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/QueueProcessingContainer/AssetImage",
+                        "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/QueueProcessingContainer/AssetImage",
                         "children": {
                           "Staging": {
                             "id": "Staging",
-                            "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/QueueProcessingContainer/AssetImage/Staging",
+                            "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/QueueProcessingContainer/AssetImage/Staging",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
@@ -922,7 +922,7 @@
                           },
                           "Repository": {
                             "id": "Repository",
-                            "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/QueueProcessingContainer/AssetImage/Repository",
+                            "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/QueueProcessingContainer/AssetImage/Repository",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
                               "version": "0.0.0"
@@ -936,11 +936,11 @@
                       },
                       "LogGroup": {
                         "id": "LogGroup",
-                        "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/QueueProcessingContainer/LogGroup",
+                        "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/QueueProcessingContainer/LogGroup",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/QueueProcessingContainer/LogGroup/Resource",
+                            "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/QueueProcessingContainer/LogGroup/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                               "aws:cdk:cloudformation:props": {}
@@ -964,11 +964,11 @@
                   },
                   "ExecutionRole": {
                     "id": "ExecutionRole",
-                    "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/ExecutionRole",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/ExecutionRole",
                     "children": {
                       "ImportExecutionRole": {
                         "id": "ImportExecutionRole",
-                        "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/ExecutionRole/ImportExecutionRole",
+                        "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/ExecutionRole/ImportExecutionRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -976,7 +976,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/ExecutionRole/Resource",
+                        "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/ExecutionRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -1001,11 +1001,11 @@
                       },
                       "DefaultPolicy": {
                         "id": "DefaultPolicy",
-                        "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/ExecutionRole/DefaultPolicy",
+                        "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/ExecutionRole/DefaultPolicy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingTaskDef/ExecutionRole/DefaultPolicy/Resource",
+                            "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingTaskDef/ExecutionRole/DefaultPolicy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                               "aws:cdk:cloudformation:props": {
@@ -1055,7 +1055,7 @@
                                       "Effect": "Allow",
                                       "Resource": {
                                         "Fn::GetAtt": [
-                                          "PublicQueueServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupCFF67B64",
+                                          "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefQueueProcessingContainerLogGroup706DABB2",
                                           "Arn"
                                         ]
                                       }
@@ -1063,10 +1063,10 @@
                                   ],
                                   "Version": "2012-10-17"
                                 },
-                                "policyName": "PublicQueueServiceQueueProcessingTaskDefExecutionRoleDefaultPolicyD7FF680F",
+                                "policyName": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefExecutionRoleDefaultPolicy25E1F570",
                                 "roles": [
                                   {
-                                    "Ref": "PublicQueueServiceQueueProcessingTaskDefExecutionRoleE22721BA"
+                                    "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefExecutionRole3F91D316"
                                   }
                                 ]
                               }
@@ -1096,11 +1096,11 @@
               },
               "QueueProcessingFargateService": {
                 "id": "QueueProcessingFargateService",
-                "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService",
                 "children": {
                   "Service": {
                     "id": "Service",
-                    "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/Service",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/Service",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ECS::Service",
                       "aws:cdk:cloudformation:props": {
@@ -1132,7 +1132,7 @@
                             "securityGroups": [
                               {
                                 "Fn::GetAtt": [
-                                  "PublicQueueServiceQueueProcessingFargateServiceSecurityGroupFC07A65A",
+                                  "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceSecurityGroup48C94096",
                                   "GroupId"
                                 ]
                               }
@@ -1140,7 +1140,7 @@
                           }
                         },
                         "taskDefinition": {
-                          "Ref": "PublicQueueServiceQueueProcessingTaskDef858327F6"
+                          "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDef7D327EDA"
                         }
                       }
                     },
@@ -1151,15 +1151,15 @@
                   },
                   "SecurityGroup": {
                     "id": "SecurityGroup",
-                    "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/SecurityGroup",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/SecurityGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/SecurityGroup/Resource",
+                        "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/SecurityGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
-                            "groupDescription": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/SecurityGroup",
+                            "groupDescription": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/SecurityGroup",
                             "securityGroupEgress": [
                               {
                                 "cidrIp": "0.0.0.0/0",
@@ -1185,7 +1185,7 @@
                   },
                   "ScalingRole": {
                     "id": "ScalingRole",
-                    "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/ScalingRole",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/ScalingRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -1193,15 +1193,15 @@
                   },
                   "TaskCount": {
                     "id": "TaskCount",
-                    "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount",
+                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount",
                     "children": {
                       "Target": {
                         "id": "Target",
-                        "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target",
+                        "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target/Resource",
+                            "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalableTarget",
                               "aws:cdk:cloudformation:props": {
@@ -1218,7 +1218,7 @@
                                       "/",
                                       {
                                         "Fn::GetAtt": [
-                                          "PublicQueueServiceQueueProcessingFargateService7DE3D65B",
+                                          "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateService88A0B9F9",
                                           "Name"
                                         ]
                                       }
@@ -1252,18 +1252,18 @@
                           },
                           "CpuScaling": {
                             "id": "CpuScaling",
-                            "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target/CpuScaling",
+                            "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/CpuScaling",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target/CpuScaling/Resource",
+                                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/CpuScaling/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
                                   "aws:cdk:cloudformation:props": {
-                                    "policyName": "awsecspatternsqueuepublicPublicQueueServiceQueueProcessingFargateServiceTaskCountTargetCpuScalingF36D44B7",
+                                    "policyName": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetCpuScaling743D6A56",
                                     "policyType": "TargetTrackingScaling",
                                     "scalingTargetId": {
-                                      "Ref": "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetE040C118"
+                                      "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetEA4C3C9A"
                                     },
                                     "targetTrackingScalingPolicyConfiguration": {
                                       "predefinedMetricSpecification": {
@@ -1286,22 +1286,22 @@
                           },
                           "QueueMessagesVisibleScaling": {
                             "id": "QueueMessagesVisibleScaling",
-                            "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling",
+                            "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling",
                             "children": {
                               "LowerPolicy": {
                                 "id": "LowerPolicy",
-                                "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/LowerPolicy",
+                                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/LowerPolicy",
                                 "children": {
                                   "Resource": {
                                     "id": "Resource",
-                                    "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/LowerPolicy/Resource",
+                                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/LowerPolicy/Resource",
                                     "attributes": {
                                       "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
                                       "aws:cdk:cloudformation:props": {
-                                        "policyName": "awsecspatternsqueuepublicPublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy2DB1A503",
+                                        "policyName": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy592B357B",
                                         "policyType": "StepScaling",
                                         "scalingTargetId": {
-                                          "Ref": "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetE040C118"
+                                          "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetEA4C3C9A"
                                         },
                                         "stepScalingPolicyConfiguration": {
                                           "adjustmentType": "ChangeInCapacity",
@@ -1328,17 +1328,17 @@
                               },
                               "LowerAlarm": {
                                 "id": "LowerAlarm",
-                                "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/LowerAlarm",
+                                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/LowerAlarm",
                                 "children": {
                                   "Resource": {
                                     "id": "Resource",
-                                    "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/LowerAlarm/Resource",
+                                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/LowerAlarm/Resource",
                                     "attributes": {
                                       "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
                                       "aws:cdk:cloudformation:props": {
                                         "alarmActions": [
                                           {
-                                            "Ref": "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicyB2B27FF9"
+                                            "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy081DB979"
                                           }
                                         ],
                                         "alarmDescription": "Lower threshold scaling alarm",
@@ -1348,7 +1348,7 @@
                                             "name": "QueueName",
                                             "value": {
                                               "Fn::GetAtt": [
-                                                "PublicQueueServiceEcsProcessingQueue84CD309D",
+                                                "awsecspatternsqueuecustomcpuscalingEcsProcessingQueue2AF4CB2C",
                                                 "QueueName"
                                               ]
                                             }
@@ -1375,18 +1375,18 @@
                               },
                               "UpperPolicy": {
                                 "id": "UpperPolicy",
-                                "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/UpperPolicy",
+                                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/UpperPolicy",
                                 "children": {
                                   "Resource": {
                                     "id": "Resource",
-                                    "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/UpperPolicy/Resource",
+                                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/UpperPolicy/Resource",
                                     "attributes": {
                                       "aws:cdk:cloudformation:type": "AWS::ApplicationAutoScaling::ScalingPolicy",
                                       "aws:cdk:cloudformation:props": {
-                                        "policyName": "awsecspatternsqueuepublicPublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicy89C3D196",
+                                        "policyName": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicyA55AB219",
                                         "policyType": "StepScaling",
                                         "scalingTargetId": {
-                                          "Ref": "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetE040C118"
+                                          "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetEA4C3C9A"
                                         },
                                         "stepScalingPolicyConfiguration": {
                                           "adjustmentType": "ChangeInCapacity",
@@ -1418,17 +1418,17 @@
                               },
                               "UpperAlarm": {
                                 "id": "UpperAlarm",
-                                "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/UpperAlarm",
+                                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/UpperAlarm",
                                 "children": {
                                   "Resource": {
                                     "id": "Resource",
-                                    "path": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/UpperAlarm/Resource",
+                                    "path": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/UpperAlarm/Resource",
                                     "attributes": {
                                       "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
                                       "aws:cdk:cloudformation:props": {
                                         "alarmActions": [
                                           {
-                                            "Ref": "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicyDCB40C8A"
+                                            "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicyF6102775"
                                           }
                                         ],
                                         "alarmDescription": "Upper threshold scaling alarm",
@@ -1438,7 +1438,7 @@
                                             "name": "QueueName",
                                             "value": {
                                               "Fn::GetAtt": [
-                                                "PublicQueueServiceEcsProcessingQueue84CD309D",
+                                                "awsecspatternsqueuecustomcpuscalingEcsProcessingQueue2AF4CB2C",
                                                 "QueueName"
                                               ]
                                             }
@@ -1495,11 +1495,11 @@
           },
           "EcsDefaultClusterMnL3mNNYNVPC": {
             "id": "EcsDefaultClusterMnL3mNNYNVPC",
-            "path": "aws-ecs-patterns-queue-public/EcsDefaultClusterMnL3mNNYNVPC",
+            "path": "aws-ecs-patterns-queue-custom-cpu-scaling/EcsDefaultClusterMnL3mNNYNVPC",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-patterns-queue-public/EcsDefaultClusterMnL3mNNYNVPC/Resource",
+                "path": "aws-ecs-patterns-queue-custom-cpu-scaling/EcsDefaultClusterMnL3mNNYNVPC/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
                   "aws:cdk:cloudformation:props": {}
@@ -1517,7 +1517,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-ecs-patterns-queue-public/BootstrapVersion",
+            "path": "aws-ecs-patterns-queue-custom-cpu-scaling/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -1525,7 +1525,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-ecs-patterns-queue-public/CheckBootstrapVersion",
+            "path": "aws-ecs-patterns-queue-custom-cpu-scaling/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -1537,17 +1537,17 @@
           "version": "0.0.0"
         }
       },
-      "publicQueueProcessingFargateServiceTest": {
-        "id": "publicQueueProcessingFargateServiceTest",
-        "path": "publicQueueProcessingFargateServiceTest",
+      "customCpuScalingQueueProcessingFargateServiceTest": {
+        "id": "customCpuScalingQueueProcessingFargateServiceTest",
+        "path": "customCpuScalingQueueProcessingFargateServiceTest",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "publicQueueProcessingFargateServiceTest/DefaultTest",
+            "path": "customCpuScalingQueueProcessingFargateServiceTest/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "publicQueueProcessingFargateServiceTest/DefaultTest/Default",
+                "path": "customCpuScalingQueueProcessingFargateServiceTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -1555,11 +1555,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert",
+                "path": "customCpuScalingQueueProcessingFargateServiceTest/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "customCpuScalingQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -1567,7 +1567,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "publicQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "customCpuScalingQueueProcessingFargateServiceTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

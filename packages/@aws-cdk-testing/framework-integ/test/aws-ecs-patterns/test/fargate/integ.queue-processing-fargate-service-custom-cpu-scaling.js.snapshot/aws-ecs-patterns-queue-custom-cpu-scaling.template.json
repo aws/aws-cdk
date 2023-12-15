@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-patterns-queue-public/VPC"
+      "Value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1"
+      "Value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1"
+      "Value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1"
+      "Value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet1"
+      "Value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2"
+      "Value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2"
+      "Value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2"
+      "Value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-patterns-queue-public/VPC/PublicSubnet2"
+      "Value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet1"
+      "Value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet1"
+      "Value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet2"
+      "Value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-patterns-queue-public/VPC/PrivateSubnet2"
+      "Value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-patterns-queue-public/VPC"
+      "Value": "aws-ecs-patterns-queue-custom-cpu-scaling/VPC"
      }
     ]
    }
@@ -391,7 +391,7 @@
     }
    }
   },
-  "PublicQueueServiceEcsProcessingDeadLetterQueueBC492277": {
+  "awsecspatternsqueuecustomcpuscalingEcsProcessingDeadLetterQueue018F2F89": {
    "Type": "AWS::SQS::Queue",
    "Properties": {
     "MessageRetentionPeriod": 1209600
@@ -399,13 +399,13 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "PublicQueueServiceEcsProcessingQueue84CD309D": {
+  "awsecspatternsqueuecustomcpuscalingEcsProcessingQueue2AF4CB2C": {
    "Type": "AWS::SQS::Queue",
    "Properties": {
     "RedrivePolicy": {
      "deadLetterTargetArn": {
       "Fn::GetAtt": [
-       "PublicQueueServiceEcsProcessingDeadLetterQueueBC492277",
+       "awsecspatternsqueuecustomcpuscalingEcsProcessingDeadLetterQueue018F2F89",
        "Arn"
       ]
      },
@@ -415,7 +415,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F": {
+  "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRole397465C3": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -432,7 +432,7 @@
     }
    }
   },
-  "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C": {
+  "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRoleDefaultPolicyFF70EC56": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -448,7 +448,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "PublicQueueServiceEcsProcessingQueue84CD309D",
+         "awsecspatternsqueuecustomcpuscalingEcsProcessingQueue2AF4CB2C",
          "Arn"
         ]
        }
@@ -456,15 +456,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
+    "PolicyName": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRoleDefaultPolicyFF70EC56",
     "Roles": [
      {
-      "Ref": "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+      "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRole397465C3"
      }
     ]
    }
   },
-  "PublicQueueServiceQueueProcessingTaskDef858327F6": {
+  "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDef7D327EDA": {
    "Type": "AWS::ECS::TaskDefinition",
    "Properties": {
     "ContainerDefinitions": [
@@ -474,7 +474,7 @@
         "Name": "QUEUE_NAME",
         "Value": {
          "Fn::GetAtt": [
-          "PublicQueueServiceEcsProcessingQueue84CD309D",
+          "awsecspatternsqueuecustomcpuscalingEcsProcessingQueue2AF4CB2C",
           "QueueName"
          ]
         }
@@ -482,15 +482,15 @@
       ],
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:497b192764e66ae2955bba8dff8487b11aaaaf904414455868e2560e31f47211"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8be39d348c20f7e58a373abbd1152069e18da130e51bf52c89bd82a38d0e51d7"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
        "Options": {
         "awslogs-group": {
-         "Ref": "PublicQueueServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupCFF67B64"
+         "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefQueueProcessingContainerLogGroup706DABB2"
         },
-        "awslogs-stream-prefix": "PublicQueueService",
+        "awslogs-stream-prefix": "aws-ecs-patterns-queue-custom-cpu-scaling",
         "awslogs-region": {
          "Ref": "AWS::Region"
         }
@@ -502,11 +502,11 @@
     "Cpu": "256",
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
-      "PublicQueueServiceQueueProcessingTaskDefExecutionRoleE22721BA",
+      "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefExecutionRole3F91D316",
       "Arn"
      ]
     },
-    "Family": "awsecspatternsqueuepublicPublicQueueServiceQueueProcessingTaskDefB3738118",
+    "Family": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDef1A053021",
     "Memory": "512",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
@@ -514,18 +514,18 @@
     ],
     "TaskRoleArn": {
      "Fn::GetAtt": [
-      "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F",
+      "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRole397465C3",
       "Arn"
      ]
     }
    }
   },
-  "PublicQueueServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupCFF67B64": {
+  "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefQueueProcessingContainerLogGroup706DABB2": {
    "Type": "AWS::Logs::LogGroup",
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "PublicQueueServiceQueueProcessingTaskDefExecutionRoleE22721BA": {
+  "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefExecutionRole3F91D316": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -542,7 +542,7 @@
     }
    }
   },
-  "PublicQueueServiceQueueProcessingTaskDefExecutionRoleDefaultPolicyD7FF680F": {
+  "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefExecutionRoleDefaultPolicy25E1F570": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -591,7 +591,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "PublicQueueServiceQueueProcessingTaskDefQueueProcessingContainerLogGroupCFF67B64",
+         "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefQueueProcessingContainerLogGroup706DABB2",
          "Arn"
         ]
        }
@@ -599,15 +599,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "PublicQueueServiceQueueProcessingTaskDefExecutionRoleDefaultPolicyD7FF680F",
+    "PolicyName": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefExecutionRoleDefaultPolicy25E1F570",
     "Roles": [
      {
-      "Ref": "PublicQueueServiceQueueProcessingTaskDefExecutionRoleE22721BA"
+      "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefExecutionRole3F91D316"
      }
     ]
    }
   },
-  "PublicQueueServiceQueueProcessingFargateService7DE3D65B": {
+  "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateService88A0B9F9": {
    "Type": "AWS::ECS::Service",
    "Properties": {
     "Cluster": {
@@ -630,7 +630,7 @@
       "SecurityGroups": [
        {
         "Fn::GetAtt": [
-         "PublicQueueServiceQueueProcessingFargateServiceSecurityGroupFC07A65A",
+         "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceSecurityGroup48C94096",
          "GroupId"
         ]
        }
@@ -646,18 +646,18 @@
      }
     },
     "TaskDefinition": {
-     "Ref": "PublicQueueServiceQueueProcessingTaskDef858327F6"
+     "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDef7D327EDA"
     }
    },
    "DependsOn": [
-    "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
-    "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRoleDefaultPolicyFF70EC56",
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRole397465C3"
    ]
   },
-  "PublicQueueServiceQueueProcessingFargateServiceSecurityGroupFC07A65A": {
+  "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceSecurityGroup48C94096": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-ecs-patterns-queue-public/PublicQueueService/QueueProcessingFargateService/SecurityGroup",
+    "GroupDescription": "aws-ecs-patterns-queue-custom-cpu-scaling/aws-ecs-patterns-queue-custom-cpu-scaling/QueueProcessingFargateService/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -670,11 +670,11 @@
     }
    },
    "DependsOn": [
-    "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
-    "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRoleDefaultPolicyFF70EC56",
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRole397465C3"
    ]
   },
-  "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetE040C118": {
+  "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetEA4C3C9A": {
    "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
    "Properties": {
     "MaxCapacity": 2,
@@ -690,7 +690,7 @@
        "/",
        {
         "Fn::GetAtt": [
-         "PublicQueueServiceQueueProcessingFargateService7DE3D65B",
+         "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateService88A0B9F9",
          "Name"
         ]
        }
@@ -717,17 +717,37 @@
     "ServiceNamespace": "ecs"
    },
    "DependsOn": [
-    "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
-    "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRoleDefaultPolicyFF70EC56",
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRole397465C3"
    ]
   },
-  "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicyB2B27FF9": {
+  "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetCpuScalingF32A6EB0": {
    "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
    "Properties": {
-    "PolicyName": "awsecspatternsqueuepublicPublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy2DB1A503",
+    "PolicyName": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetCpuScaling743D6A56",
+    "PolicyType": "TargetTrackingScaling",
+    "ScalingTargetId": {
+     "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetEA4C3C9A"
+    },
+    "TargetTrackingScalingPolicyConfiguration": {
+     "PredefinedMetricSpecification": {
+      "PredefinedMetricType": "ECSServiceAverageCPUUtilization"
+     },
+     "TargetValue": 50
+    }
+   },
+   "DependsOn": [
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRoleDefaultPolicyFF70EC56",
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRole397465C3"
+   ]
+  },
+  "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy081DB979": {
+   "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
+   "Properties": {
+    "PolicyName": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy592B357B",
     "PolicyType": "StepScaling",
     "ScalingTargetId": {
-     "Ref": "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetE040C118"
+     "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetEA4C3C9A"
     },
     "StepScalingPolicyConfiguration": {
      "AdjustmentType": "ChangeInCapacity",
@@ -741,16 +761,16 @@
     }
    },
    "DependsOn": [
-    "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
-    "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRoleDefaultPolicyFF70EC56",
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRole397465C3"
    ]
   },
-  "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerAlarm5782C233": {
+  "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerAlarm53129CF0": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "AlarmActions": [
      {
-      "Ref": "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicyB2B27FF9"
+      "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy081DB979"
      }
     ],
     "AlarmDescription": "Lower threshold scaling alarm",
@@ -760,7 +780,7 @@
       "Name": "QueueName",
       "Value": {
        "Fn::GetAtt": [
-        "PublicQueueServiceEcsProcessingQueue84CD309D",
+        "awsecspatternsqueuecustomcpuscalingEcsProcessingQueue2AF4CB2C",
         "QueueName"
        ]
       }
@@ -774,17 +794,17 @@
     "Threshold": 0
    },
    "DependsOn": [
-    "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
-    "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRoleDefaultPolicyFF70EC56",
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRole397465C3"
    ]
   },
-  "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicyDCB40C8A": {
+  "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicyF6102775": {
    "Type": "AWS::ApplicationAutoScaling::ScalingPolicy",
    "Properties": {
-    "PolicyName": "awsecspatternsqueuepublicPublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicy89C3D196",
+    "PolicyName": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicyA55AB219",
     "PolicyType": "StepScaling",
     "ScalingTargetId": {
-     "Ref": "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetE040C118"
+     "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetEA4C3C9A"
     },
     "StepScalingPolicyConfiguration": {
      "AdjustmentType": "ChangeInCapacity",
@@ -803,16 +823,16 @@
     }
    },
    "DependsOn": [
-    "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
-    "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRoleDefaultPolicyFF70EC56",
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRole397465C3"
    ]
   },
-  "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperAlarm5D67333D": {
+  "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperAlarm9397ABFA": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "AlarmActions": [
      {
-      "Ref": "PublicQueueServiceQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicyDCB40C8A"
+      "Ref": "awsecspatternsqueuecustomcpuscalingQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicyF6102775"
      }
     ],
     "AlarmDescription": "Upper threshold scaling alarm",
@@ -822,7 +842,7 @@
       "Name": "QueueName",
       "Value": {
        "Fn::GetAtt": [
-        "PublicQueueServiceEcsProcessingQueue84CD309D",
+        "awsecspatternsqueuecustomcpuscalingEcsProcessingQueue2AF4CB2C",
         "QueueName"
        ]
       }
@@ -836,8 +856,8 @@
     "Threshold": 100
    },
    "DependsOn": [
-    "PublicQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicy5417957C",
-    "PublicQueueServiceQueueProcessingTaskDefTaskRole172D980F"
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRoleDefaultPolicyFF70EC56",
+    "awsecspatternsqueuecustomcpuscalingQueueProcessingTaskDefTaskRole397465C3"
    ]
   },
   "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3": {
@@ -845,34 +865,34 @@
   }
  },
  "Outputs": {
-  "PublicQueueServiceSQSDeadLetterQueueBCE86DBC": {
+  "awsecspatternsqueuecustomcpuscalingSQSDeadLetterQueue94103AB7": {
    "Value": {
     "Fn::GetAtt": [
-     "PublicQueueServiceEcsProcessingDeadLetterQueueBC492277",
+     "awsecspatternsqueuecustomcpuscalingEcsProcessingDeadLetterQueue018F2F89",
      "QueueName"
     ]
    }
   },
-  "PublicQueueServiceSQSDeadLetterQueueArn6E134EA4": {
+  "awsecspatternsqueuecustomcpuscalingSQSDeadLetterQueueArn45AA7A61": {
    "Value": {
     "Fn::GetAtt": [
-     "PublicQueueServiceEcsProcessingDeadLetterQueueBC492277",
+     "awsecspatternsqueuecustomcpuscalingEcsProcessingDeadLetterQueue018F2F89",
      "Arn"
     ]
    }
   },
-  "PublicQueueServiceSQSQueue4D3FBD5C": {
+  "awsecspatternsqueuecustomcpuscalingSQSQueue56D4C1AB": {
    "Value": {
     "Fn::GetAtt": [
-     "PublicQueueServiceEcsProcessingQueue84CD309D",
+     "awsecspatternsqueuecustomcpuscalingEcsProcessingQueue2AF4CB2C",
      "QueueName"
     ]
    }
   },
-  "PublicQueueServiceSQSQueueArn38014FDC": {
+  "awsecspatternsqueuecustomcpuscalingSQSQueueArnA165EB72": {
    "Value": {
     "Fn::GetAtt": [
-     "PublicQueueServiceEcsProcessingQueue84CD309D",
+     "awsecspatternsqueuecustomcpuscalingEcsProcessingQueue2AF4CB2C",
      "Arn"
     ]
    }
