@@ -326,9 +326,9 @@ export class HostedRotation implements ec2.IConnectable {
     }
 
     let masterSecretArn: string | undefined;
-    if (this.masterSecret instanceof Secret) {
+    if (this.masterSecret?.secretFullArn) {
       masterSecretArn = this.masterSecret.secretArn;
-    } else if (this.masterSecret) { // ISecret as an imported secret
+    } else if (this.masterSecret) { // ISecret as an imported secret with partial ARN
       masterSecretArn = this.masterSecret.secretArn + '-??????';
     }
 
