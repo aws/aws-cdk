@@ -63,7 +63,7 @@ test('secret rotation single user', () => {
       ],
     },
     RotationRules: {
-      AutomaticallyAfterDays: 30,
+      ScheduleExpression: 'rate(30 days)',
     },
   });
 
