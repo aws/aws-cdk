@@ -22,8 +22,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Schedule": {
@@ -36,27 +36,27 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SecretsManager::RotationSchedule",
                       "aws:cdk:cloudformation:props": {
-                        "secretId": {
-                          "Ref": "SecretA720EF05"
-                        },
                         "hostedRotationLambda": {
                           "rotationType": "MySQLSingleUser",
                           "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
                         },
                         "rotationRules": {
                           "automaticallyAfterDays": 30
+                        },
+                        "secretId": {
+                          "Ref": "SecretA720EF05"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnRotationSchedule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_secretsmanager.RotationSchedule",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Policy": {
@@ -103,20 +103,20 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnResourcePolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_secretsmanager.ResourcePolicy",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "CustomSecret": {
@@ -135,8 +135,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Schedule": {
@@ -149,9 +149,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SecretsManager::RotationSchedule",
                       "aws:cdk:cloudformation:props": {
-                        "secretId": {
-                          "Ref": "CustomSecret5DC95D87"
-                        },
                         "hostedRotationLambda": {
                           "rotationType": "MySQLSingleUser",
                           "excludeCharacters": "&@/"
@@ -159,18 +156,21 @@
                         "rotateImmediatelyOnUpdate": false,
                         "rotationRules": {
                           "automaticallyAfterDays": 30
+                        },
+                        "secretId": {
+                          "Ref": "CustomSecret5DC95D87"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnRotationSchedule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_secretsmanager.RotationSchedule",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Policy": {
@@ -217,42 +217,259 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnResourcePolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_secretsmanager.ResourcePolicy",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "MySecret": {
+            "id": "MySecret",
+            "path": "cdk-integ-secret-hosted-rotation/MySecret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-secret-hosted-rotation/MySecret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "RotationSchedule": {
+                "id": "RotationSchedule",
+                "path": "cdk-integ-secret-hosted-rotation/MySecret/RotationSchedule",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-integ-secret-hosted-rotation/MySecret/RotationSchedule/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::RotationSchedule",
+                      "aws:cdk:cloudformation:props": {
+                        "hostedRotationLambda": {
+                          "rotationType": "PostgreSQLMultiUser",
+                          "masterSecretArn": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":secretsmanager:",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ":",
+                                {
+                                  "Ref": "AWS::AccountId"
+                                },
+                                ":secret:",
+                                {
+                                  "Fn::Join": [
+                                    "-",
+                                    [
+                                      {
+                                        "Fn::Select": [
+                                          0,
+                                          {
+                                            "Fn::Split": [
+                                              "-",
+                                              {
+                                                "Fn::Select": [
+                                                  6,
+                                                  {
+                                                    "Fn::Split": [
+                                                      ":",
+                                                      {
+                                                        "Ref": "MasterSecretA11BF785"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      },
+                                      {
+                                        "Fn::Select": [
+                                          1,
+                                          {
+                                            "Fn::Split": [
+                                              "-",
+                                              {
+                                                "Fn::Select": [
+                                                  6,
+                                                  {
+                                                    "Fn::Split": [
+                                                      ":",
+                                                      {
+                                                        "Ref": "MasterSecretA11BF785"
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  ]
+                                },
+                                "-??????"
+                              ]
+                            ]
+                          },
+                          "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+                        },
+                        "rotationRules": {
+                          "automaticallyAfterDays": 30
+                        },
+                        "secretId": {
+                          "Ref": "MySecret8FE80B51"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "cdk-integ-secret-hosted-rotation/MySecret/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-integ-secret-hosted-rotation/MySecret/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SecretsManager::ResourcePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "resourcePolicy": {
+                          "Statement": [
+                            {
+                              "Action": "secretsmanager:DeleteSecret",
+                              "Effect": "Deny",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::",
+                                      {
+                                        "Ref": "AWS::AccountId"
+                                      },
+                                      ":root"
+                                    ]
+                                  ]
+                                }
+                              },
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "secretId": {
+                          "Ref": "MySecret8FE80B51"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "MasterSecret": {
+            "id": "MasterSecret",
+            "path": "cdk-integ-secret-hosted-rotation/MasterSecret",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-secret-hosted-rotation/MasterSecret/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
+                  "aws:cdk:cloudformation:props": {
+                    "generateSecretString": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "MasterSecretImported": {
+            "id": "MasterSecretImported",
+            "path": "cdk-integ-secret-hosted-rotation/MasterSecretImported",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "cdk-integ-secret-hosted-rotation/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "cdk-integ-secret-hosted-rotation/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
         }
       },
       "Tree": {
@@ -260,13 +477,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
     }
   }
 }

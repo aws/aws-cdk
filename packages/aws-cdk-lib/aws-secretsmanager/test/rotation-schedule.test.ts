@@ -589,6 +589,97 @@ describe('hosted rotation', () => {
       },
     });
   });
+
+  test('generate correct IAM policy for masterSecret with an imported secret', () => {
+    // GIVEN
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const masterSecret = new secretsmanager.Secret(stack, 'MasterSecret');
+    const importedSecret = secretsmanager.Secret.fromSecretNameV2(stack, 'MasterSecretImported', masterSecret.secretName);
+
+    // WHEN
+    secret.addRotationSchedule('RotationSchedule', {
+      hostedRotation: secretsmanager.HostedRotation.postgreSqlMultiUser({
+        masterSecret: importedSecret,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'SecretA720EF05',
+      },
+      HostedRotationLambda: {
+        MasterSecretArn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':secretsmanager:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':secret:',
+              {
+                'Fn::Join': [
+                  '-',
+                  [
+                    {
+                      'Fn::Select': [
+                        0,
+                        {
+                          'Fn::Split': [
+                            '-',
+                            {
+                              'Fn::Select': [
+                                6,
+                                {
+                                  'Fn::Split': [
+                                    ':',
+                                    {
+                                      Ref: 'MasterSecretA11BF785',
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                    {
+                      'Fn::Select': [
+                        1,
+                        {
+                          'Fn::Split': [
+                            '-',
+                            {
+                              'Fn::Select': [
+                                6,
+                                {
+                                  'Fn::Split': [
+                                    ':',
+                                    {
+                                      Ref: 'MasterSecretA11BF785',
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                ],
+              },
+              '-??????',
+            ],
+          ],
+        },
+      },
+    });
+  });
 });
 
 describe('manual rotations', () => {
