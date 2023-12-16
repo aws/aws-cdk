@@ -1,14 +1,12 @@
-import * as path from 'path';
 import { Construct } from 'constructs';
 import {
   Arn,
   CustomResource,
-  CustomResourceProvider,
-  CustomResourceProviderRuntime,
   IResource,
   Resource,
   Token,
 } from '../../core';
+import { OidcProvider } from '../../custom-resource-handlers/dist/aws-iam/oidc-provider.generated';
 
 const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
 
@@ -162,9 +160,7 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
   }
 
   private getOrCreateProvider() {
-    return CustomResourceProvider.getOrCreateProvider(this, RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-iam', 'oidc-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+    return OidcProvider.getOrCreateProvider(this, RESOURCE_TYPE, {
       policyStatements: [
         {
           Effect: 'Allow',
