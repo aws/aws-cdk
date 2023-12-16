@@ -899,6 +899,7 @@
   "myServicelb360A9ADD": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
+    "Name": "lb1",
     "LoadBalancerAttributes": [
      {
       "Key": "deletion_protection.enabled",
@@ -1094,6 +1095,7 @@
   "myServicelb2C84C7BCB": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
+    "Name": "lb2",
     "LoadBalancerAttributes": [
      {
       "Key": "deletion_protection.enabled",
