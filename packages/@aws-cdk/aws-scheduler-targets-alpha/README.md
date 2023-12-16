@@ -31,7 +31,9 @@ The following targets are supported:
 5. `targets.SnsPublish`: [Publish messages to an Amazon SNS topic](#publish-messages-to-an-amazon-sns-topic)
 6. `targets.EventBridgePutEvents`: [Put Events on EventBridge](#send-events-to-an-eventbridge-event-bus)
 7. `targets.InspectorStartAssessmentRun`: [Start an Amazon Inspector assessment run](#start-an-amazon-inspector-assessment-run)
-8. `targets.CodePipelineStartPipelineExecution`: [Start a CodePipeline execution](#start-a-codepipeline-execution)
+8. `targets.KinesisStreamPutRecord`: [Put a record to an Amazon Kinesis Data Streams](#put-a-record-to-an-amazon-kinesis-data-streams)
+9. `targets.KinesisDataFirehosePutRecord`: [Put a record to a Kinesis Data Firehose](#put-a-record-to-a-kinesis-data-firehose)
+10. `targets.CodePipelineStartPipelineExecution`: [Start a CodePipeline execution](#start-a-codepipeline-execution)
 
 ## Invoke a Lambda function
 
@@ -224,6 +226,49 @@ declare const assessmentTemplate: inspector.CfnAssessmentTemplate;
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.minutes(60)),
   target: new targets.InspectorStartAssessmentRun(assessmentTemplate),
+});
+```
+
+## Put a record to an Amazon Kinesis Data Streams
+
+Use the `KinesisStreamPutRecord` target to put a record to an Amazon Kinesis Data Streams.
+
+The code snippet below creates an event rule with a stream as target which is
+called every hour by Event Bridge Scheduler.
+
+```ts
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+
+const stream = new kinesis.Stream(this, 'MyStream');
+
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.KinesisStreamPutRecord(stream, {
+    partitionKey: 'key',
+  }),
+});
+```
+
+## Put a record to a Kinesis Data Firehose
+
+Use the `KinesisDataFirehosePutRecord` target to put a record to a Kinesis Data Firehose delivery stream.
+
+The code snippet below creates an event rule with a delivery stream as a target
+called every hour by Event Bridge Scheduler with a custom payload.
+
+```ts
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+declare const deliveryStream: firehose.CfnDeliveryStream;
+
+const payload = {
+  Data: "record",
+};
+
+new Schedule(this, 'Schedule', {
+  schedule: ScheduleExpression.rate(Duration.minutes(60)),
+  target: new targets.KinesisDataFirehosePutRecord(deliveryStream, {
+    input: ScheduleTargetInput.fromObject(payload),
+  }),
 });
 ```
 
