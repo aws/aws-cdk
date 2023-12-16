@@ -6,7 +6,7 @@ import { IResource, Resource } from '../../core';
  * What kind of scailing mode to use for this IP pool
  * @see https://docs.aws.amazon.com/ja_jp/ses/latest/dg/dedicated-ip.html
  */
-export enum ScailingMode {
+export enum ScalingMode {
   /**
    * The customer controls which IPs are part of the dedicated IP pool.
    */
@@ -42,8 +42,9 @@ export interface DedicatedIpPoolProps {
 
   /**
    * The type of scailing mode to use for this IP pool
+   * @default ScalingMode.STANDARD
    */
-  readonly scailingMode?: ScailingMode;
+  readonly scalingMode?: ScalingMode;
 }
 
 /**
@@ -69,7 +70,7 @@ export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
 
     const pool = new CfnDedicatedIpPool(this, 'Resource', {
       poolName: this.physicalName,
-      scalingMode: props.scailingMode ?? ScailingMode.STANDARD,
+      scalingMode: props.scalingMode ?? ScalingMode.STANDARD,
     });
 
     this.dedicatedIpPoolName = pool.ref;

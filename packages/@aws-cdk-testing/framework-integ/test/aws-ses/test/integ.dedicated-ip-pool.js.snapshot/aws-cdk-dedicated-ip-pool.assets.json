@@ -1,0 +1,19 @@
+{
+  "version": "35.0.0",
+  "files": {
+    "75d747c340f36095a234176333dabe352e68e6f0c74af5c4e8c01fe34989fc2e": {
+      "source": {
+        "path": "aws-cdk-dedicated-ip-pool.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "75d747c340f36095a234176333dabe352e68e6f0c74af5c4e8c01fe34989fc2e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
