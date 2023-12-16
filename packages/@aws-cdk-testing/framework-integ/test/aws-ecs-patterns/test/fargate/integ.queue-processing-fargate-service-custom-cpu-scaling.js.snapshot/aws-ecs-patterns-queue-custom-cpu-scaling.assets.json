@@ -1,7 +1,7 @@
 {
   "version": "35.0.0",
   "files": {
-    "ad92d86b073f46ad1972fdd95afc6e295fcae2d8e486324ce74b33d75836f10c": {
+    "5b5ba7ab28cb4e87b045328a0e57414435e379fb779cfb17c2741f676ed2fd30": {
       "source": {
         "path": "aws-ecs-patterns-queue-custom-cpu-scaling.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ad92d86b073f46ad1972fdd95afc6e295fcae2d8e486324ce74b33d75836f10c.json",
+          "objectKey": "5b5ba7ab28cb4e87b045328a0e57414435e379fb779cfb17c2741f676ed2fd30.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

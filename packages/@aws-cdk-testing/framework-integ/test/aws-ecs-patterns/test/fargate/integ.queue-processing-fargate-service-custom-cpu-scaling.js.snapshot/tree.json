@@ -1269,7 +1269,7 @@
                                       "predefinedMetricSpecification": {
                                         "predefinedMetricType": "ECSServiceAverageCPUUtilization"
                                       },
-                                      "targetValue": 50
+                                      "targetValue": 90
                                     }
                                   }
                                 },
