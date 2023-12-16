@@ -106,8 +106,12 @@ export class CloudAssembly {
     const allTopLevel = selector.allTopLevel ?? false;
     const patterns = sanitizePatterns(selector.patterns);
 
-    if (stacks.length === 0 && !options.ignoreNoStacks) {
-      throw new Error('This app contains no stacks');
+    if (stacks.length === 0) {
+      if (options.ignoreNoStacks) {
+        return new StackCollection(this, []);
+      } else {
+        throw new Error('This app contains no stacks');
+      }
     }
 
     if (allTopLevel) {

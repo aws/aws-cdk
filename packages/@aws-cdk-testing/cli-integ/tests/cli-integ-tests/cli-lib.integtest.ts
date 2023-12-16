@@ -47,6 +47,28 @@ integTest('cli-lib deploy', withCliLibFixture(async (fixture) => {
   }
 }));
 
+integTest('cli-lib deploy no stack', withCliLibFixture(async (fixture) => {
+  const stackName = fixture.fullStackName('no-stack-1');
+
+  try {
+    // deploy the stack
+    await fixture.cdk(['deploy', stackName], {
+      options: ['--ignore-no-stacks'],
+    });
+
+    // verify the number of resources in the stack
+    const expectedStack = await fixture.aws.cloudFormation('describeStackResources', {
+      StackName: stackName,
+    });
+    expect(expectedStack.StackResources?.length).toEqual(0);
+  } finally {
+    // delete the stack
+    await fixture.cdk(['destroy', stackName], {
+      captureStderr: false,
+    });
+  }
+}));
+
 integTest('security related changes without a CLI are expected to fail when approval is required', withCliLibFixture(async (fixture) => {
   const stdErr = await fixture.cdk(['deploy', fixture.fullStackName('simple-1')], {
     onlyStderr: true,

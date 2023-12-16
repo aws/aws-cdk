@@ -156,6 +156,38 @@ test('select behavior with nested assemblies: repeat', async() => {
   expect(x.stackCount).toBe(2);
 });
 
+test('select behavior with no stacks and ignore stacks option', async() => {
+  // GIVEN
+  const cxasm = await testCloudAssemblyNoStacks();
+
+  // WHEN
+  const x = await cxasm.selectStacks({ patterns: [] }, {
+    defaultBehavior: DefaultSelection.AllStacks,
+    ignoreNoStacks: true,
+  });
+
+  // THEN
+  expect(x.stackCount).toBe(0);
+});
+
+test('select behavior with no stacks and no ignore stacks option', async() => {
+  // GIVEN
+  const cxasm = await testCloudAssemblyNoStacks();
+
+  // WHEN & THEN
+  await expect(cxasm.selectStacks({ patterns: [] }, { defaultBehavior: DefaultSelection.AllStacks, ignoreNoStacks: false }))
+    .rejects.toThrow('This app contains no stacks');
+});
+
+test('select behavior with no stacks and default ignore stacks options (false)', async() => {
+  // GIVEN
+  const cxasm = await testCloudAssemblyNoStacks();
+
+  // WHEN & THEN
+  await expect(cxasm.selectStacks({ patterns: [] }, { defaultBehavior: DefaultSelection.AllStacks }))
+    .rejects.toThrow('This app contains no stacks');
+});
+
 async function testCloudAssembly({ env }: { env?: string, versionReporting?: boolean } = {}) {
   const cloudExec = new MockCloudExecutable({
     stacks: [{
