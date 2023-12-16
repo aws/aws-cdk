@@ -590,7 +590,7 @@ describe('hosted rotation', () => {
     });
   });
 
-  test('use the arn as is when specifying masterSecret as an imported secret with full arn', () => {
+  test('the arn is used as it is when specifying masterSecret as an imported secret with full arn', () => {
     // GIVEN
     const secret = new secretsmanager.Secret(stack, 'Secret');
     const importedSecret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'MasterSecretImported', 'arn:aws:secretsmanager:us-east-1:123456789012:secret:MySecret-123456');
@@ -613,7 +613,7 @@ describe('hosted rotation', () => {
     });
   });
 
-  test('use the arn with -?????? when specifying masterSecret as an imported secret with partial arn', () => {
+  test('the arn is used with -?????? when specifying masterSecret as an imported secret with partial arn', () => {
     // GIVEN
     const secret = new secretsmanager.Secret(stack, 'Secret');
     const importedSecret = secretsmanager.Secret.fromSecretNameV2(stack, 'MasterSecretImported', 'MySecret');
