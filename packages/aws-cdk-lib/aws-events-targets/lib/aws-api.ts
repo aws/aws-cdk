@@ -1,10 +1,10 @@
-import * as path from 'path';
 import { metadata } from './sdk-api-metadata.generated';
 import { addLambdaPermission } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { Annotations, Duration } from '../../core';
+import { AwsApiSingletonFunction } from '../../custom-resource-handlers/dist/aws-events-targets/aws-api-provider.generated';
 
 /**
  * AWS SDK service metadata.
@@ -81,12 +81,9 @@ export class AwsApi implements events.IRuleTarget {
    * result from an EventBridge event.
    */
   public bind(rule: events.IRule, id?: string): events.RuleTargetConfig {
-    const handler = new lambda.SingletonFunction(rule as events.Rule, `${rule.node.id}${id}Handler`, {
-      code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-events-targets', 'aws-api-handler')),
-      runtime: lambda.Runtime.NODEJS_18_X,
+    const handler = new AwsApiSingletonFunction(rule as events.Rule, `${rule.node.id}${id}Handler`, {
       timeout: Duration.seconds(60),
       memorySize: 256,
-      handler: 'index.handler',
       uuid: 'b4cf1abd-4e4f-4bc6-9944-1af7ccd9ec37',
       lambdaPurpose: 'AWS',
     });
