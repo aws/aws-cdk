@@ -363,8 +363,6 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
 
   public remove(logicalId: string): void {
     delete this.diffs[logicalId];
-    // eslint-disable-next-line no-console
-    throw new Error(`${this.diffs[logicalId] === undefined}`);
   }
 
   public get logicalIds(): string[] {

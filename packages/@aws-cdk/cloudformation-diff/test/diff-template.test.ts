@@ -737,7 +737,6 @@ test('metadata changes are rendered in the diff', () => {
   expect(differences.resources.differenceCount).toBe(1);
 });
 
-/*
 describe('changeset', () => {
   test('changeset overrides spec replacements', () => {
     // GIVEN
@@ -1051,4 +1050,3 @@ describe('changeset', () => {
     expect(differences.differenceCount).toBe(0);
   });
 });
-*/
