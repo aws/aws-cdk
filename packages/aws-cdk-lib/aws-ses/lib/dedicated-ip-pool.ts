@@ -3,6 +3,21 @@ import { CfnDedicatedIpPool } from './ses.generated';
 import { IResource, Resource } from '../../core';
 
 /**
+ * What kind of scailing mode to use for this IP pool
+ * @see https://docs.aws.amazon.com/ja_jp/ses/latest/dg/dedicated-ip.html
+ */
+export enum ScailingMode {
+  /**
+   * The customer controls which IPs are part of the dedicated IP pool.
+   */
+  STANDARD = 'STANDARD',
+  /**
+   * The reputation and number of IPs are automatically managed by Amazon SES.
+   */
+  MANAGED = 'MANAGED',
+}
+
+/**
  * A dedicated IP pool
  */
 export interface IDedicatedIpPool extends IResource {
@@ -24,6 +39,11 @@ export interface DedicatedIpPoolProps {
    * @default - a CloudFormation generated name
    */
   readonly dedicatedIpPoolName?: string;
+
+  /**
+   * The type of scailing mode to use for this IP pool
+   */
+  readonly scailingMode?: ScailingMode;
 }
 
 /**
@@ -49,6 +69,7 @@ export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
 
     const pool = new CfnDedicatedIpPool(this, 'Resource', {
       poolName: this.physicalName,
+      scalingMode: props.scailingMode ?? ScailingMode.STANDARD,
     });
 
     this.dedicatedIpPoolName = pool.ref;
