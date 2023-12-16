@@ -203,9 +203,8 @@ function deepCopy(x: any): any {
 function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
   const replacements = findResourceReplacements(changeSet);
   diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
-    if (!replacements[logicalId]) {
+    if (!replacements[logicalId] && !diff.resources.get(logicalId).otherChanges.DependsOn) {
       diff.resources.remove(logicalId);
-
       return;
     }
 

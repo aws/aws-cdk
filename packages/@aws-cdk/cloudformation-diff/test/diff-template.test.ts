@@ -404,119 +404,6 @@ test('versions are correctly detected as not numbers', () => {
   const differences = diffTemplate(currentTemplate, newTemplate);
   expect(differences.resources.differenceCount).toBe(1);
 });
-
-test('single element arrays are equivalent to the single element in DependsOn expressions', () => {
-  // GIVEN
-  const currentTemplate = {
-    Resources: {
-      BucketResource: {
-        Type: 'AWS::S3::Bucket',
-        DependsOn: ['SomeResource'],
-      },
-    },
-  };
-
-  // WHEN
-  const newTemplate = {
-    Resources: {
-      BucketResource: {
-        Type: 'AWS::S3::Bucket',
-        DependsOn: 'SomeResource',
-      },
-    },
-  };
-
-  let differences = diffTemplate(currentTemplate, newTemplate);
-  expect(differences.resources.differenceCount).toBe(0);
-
-  differences = diffTemplate(newTemplate, currentTemplate);
-  expect(differences.resources.differenceCount).toBe(0);
-});
-
-test('array equivalence is independent of element order in DependsOn expressions', () => {
-  // GIVEN
-  const currentTemplate = {
-    Resources: {
-      BucketResource: {
-        Type: 'AWS::S3::Bucket',
-        DependsOn: ['SomeResource', 'AnotherResource'],
-      },
-    },
-  };
-
-  // WHEN
-  const newTemplate = {
-    Resources: {
-      BucketResource: {
-        Type: 'AWS::S3::Bucket',
-        DependsOn: ['AnotherResource', 'SomeResource'],
-      },
-    },
-  };
-
-  let differences = diffTemplate(currentTemplate, newTemplate);
-  expect(differences.resources.differenceCount).toBe(0);
-
-  differences = diffTemplate(newTemplate, currentTemplate);
-  expect(differences.resources.differenceCount).toBe(0);
-});
-
-test('arrays of different length are considered unequal in DependsOn expressions', () => {
-  // GIVEN
-  const currentTemplate = {
-    Resources: {
-      BucketResource: {
-        Type: 'AWS::S3::Bucket',
-        DependsOn: ['SomeResource', 'AnotherResource', 'LastResource'],
-      },
-    },
-  };
-
-  // WHEN
-  const newTemplate = {
-    Resources: {
-      BucketResource: {
-        Type: 'AWS::S3::Bucket',
-        DependsOn: ['AnotherResource', 'SomeResource'],
-      },
-    },
-  };
-
-  let differences = diffTemplate(currentTemplate, newTemplate);
-  expect(differences.resources.differenceCount).toBe(1);
-
-  differences = diffTemplate(newTemplate, currentTemplate);
-  expect(differences.resources.differenceCount).toBe(1);
-});
-
-test('arrays that differ only in element order are considered unequal outside of DependsOn expressions', () => {
-  // GIVEN
-  const currentTemplate = {
-    Resources: {
-      BucketResource: {
-        Type: 'AWS::S3::Bucket',
-        BucketName: { 'Fn::Select': [0, ['name1', 'name2']] },
-      },
-    },
-  };
-
-  // WHEN
-  const newTemplate = {
-    Resources: {
-      BucketResource: {
-        Type: 'AWS::S3::Bucket',
-        BucketName: { 'Fn::Select': [0, ['name2', 'name1']] },
-      },
-    },
-  };
-
-  let differences = diffTemplate(currentTemplate, newTemplate);
-  expect(differences.resources.differenceCount).toBe(1);
-
-  differences = diffTemplate(newTemplate, currentTemplate);
-  expect(differences.resources.differenceCount).toBe(1);
-});
-
 test('boolean properties are considered equal with their stringified counterparts', () => {
   // GIVEN
   const currentTemplate = {
@@ -1048,5 +935,135 @@ describe('changeset', () => {
     // THEN
     let differences = diffTemplate(currentTemplate, newTemplate, {});
     expect(differences.differenceCount).toBe(0);
+  });
+
+  test('single element arrays are equivalent to the single element in DependsOn expressions', () => {
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          DependsOn: ['SomeResource'],
+        },
+      },
+    };
+
+    // WHEN
+    const newTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          DependsOn: 'SomeResource',
+        },
+      },
+    };
+
+    let differences = diffTemplate(currentTemplate, newTemplate, {});
+    expect(differences.resources.differenceCount).toBe(0);
+
+    differences = diffTemplate(newTemplate, currentTemplate, {});
+    expect(differences.resources.differenceCount).toBe(0);
+  });
+
+  test('array equivalence is independent of element order in DependsOn expressions', () => {
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          DependsOn: ['SomeResource', 'AnotherResource'],
+        },
+      },
+    };
+
+    // WHEN
+    const newTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          DependsOn: ['AnotherResource', 'SomeResource'],
+        },
+      },
+    };
+
+    let differences = diffTemplate(currentTemplate, newTemplate, {});
+    expect(differences.resources.differenceCount).toBe(0);
+
+    differences = diffTemplate(newTemplate, currentTemplate, {});
+    expect(differences.resources.differenceCount).toBe(0);
+  });
+
+  test('arrays of different length are considered unequal in DependsOn expressions', () => {
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          DependsOn: ['SomeResource', 'AnotherResource', 'LastResource'],
+        },
+      },
+    };
+
+    // WHEN
+    const newTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          DependsOn: ['AnotherResource', 'SomeResource'],
+        },
+      },
+    };
+
+    // dependsOn changes do not appear in the changeset
+    let differences = diffTemplate(currentTemplate, newTemplate, {});
+    expect(differences.resources.differenceCount).toBe(1);
+
+    differences = diffTemplate(newTemplate, currentTemplate, {});
+    expect(differences.resources.differenceCount).toBe(1);
+  });
+
+  test('arrays that differ only in element order are considered unequal outside of DependsOn expressions', () => {
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          BucketName: { 'Fn::Select': [0, ['name1', 'name2']] },
+        },
+      },
+    };
+
+    // WHEN
+    const newTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          BucketName: { 'Fn::Select': [0, ['name2', 'name1']] },
+        },
+      },
+    };
+
+    let differences = diffTemplate(currentTemplate, newTemplate, {
+      Changes: [
+        {
+          Type: 'Resource',
+          ResourceChange: {
+            Action: 'Modify',
+            LogicalResourceId: 'BucketResource',
+            ResourceType: 'AWS::S3::Bucket',
+            Replacement: 'True',
+            Details: [{
+              Evaluation: 'Direct',
+              Target: {
+                Attribute: 'Properties',
+                Name: 'BucketName',
+                RequiresRecreation: 'Always',
+              },
+            }],
+          },
+        },
+      ],
+    });
+    expect(differences.resources.differenceCount).toBe(1);
   });
 });
