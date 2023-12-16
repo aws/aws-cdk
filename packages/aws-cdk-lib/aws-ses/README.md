@@ -115,7 +115,7 @@ Use the `DedicatedIpPool` construct to create a pool of dedicated IP addresses:
 
 ```ts
 new ses.DedicatedIpPool(this, 'Pool', {
-  scailingMode: ses.ScalingMode.STANDARD,
+  scalingMode: ses.ScalingMode.STANDARD,
 });
 ```
 
