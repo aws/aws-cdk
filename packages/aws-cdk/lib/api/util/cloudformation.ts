@@ -302,27 +302,34 @@ export type CreateChangeSetOptions = {
   bodyParameter: TemplateBodyParameter,
 }
 
-export async function prepareAndCreateChangeSet(options: PrepareChangeSetOptions) {
-  const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
-  const bodyParameter = await makeBodyParameterAndUpload(
-    options.stack,
-    preparedSdk.resolvedEnvironment,
-    preparedSdk.envResources,
-    options.sdkProvider,
-    preparedSdk.stackSdk,
-  );
-  const cfn = preparedSdk.stackSdk.cloudFormation();
-  const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
+export async function prepareAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
+  try {
+    const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
+    const bodyParameter = await makeBodyParameterAndUpload(
+      options.stack,
+      preparedSdk.resolvedEnvironment,
+      preparedSdk.envResources,
+      options.sdkProvider,
+      preparedSdk.stackSdk,
+    );
+    const cfn = preparedSdk.stackSdk.cloudFormation();
+    const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
 
-  return createChangeSet({
-    cfn,
-    changeSetName: 'cdk-diff-change-set',
-    stack: options.stack,
-    exists,
-    uuid: options.uuid,
-    willExecute: options.willExecute,
-    bodyParameter,
-  });
+    return await createChangeSet({
+      cfn,
+      changeSetName: 'cdk-diff-change-set',
+      stack: options.stack,
+      exists,
+      uuid: options.uuid,
+      willExecute: options.willExecute,
+      bodyParameter,
+    });
+  } catch (e: any) {
+    // eslint-disable-next-line no-console
+    console.error(`Failed to create change set with error: ${e.message}, falling back to no changeset diff...`);
+
+    return undefined;
+  }
 }
 
 async function createChangeSet(options: CreateChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput> {
