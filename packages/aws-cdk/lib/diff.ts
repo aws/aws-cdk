@@ -25,13 +25,19 @@ export function printStackDiff(
   changeSet?: CloudFormation.DescribeChangeSetOutput,
   stream?: cfnDiff.FormatStream): number {
 
-  let diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template, changeSet);
+  normalize(oldTemplate);
+
+  let diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+
+  if (changeSet) {
+    filterFalsePositivies(diff, changeSet);
+  }
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
   if (diff.differenceCount && !strict) {
     const mangledNewTemplate = JSON.parse(cfnDiff.mangleLikeCloudFormation(JSON.stringify(newTemplate.template)));
-    const mangledDiff = cfnDiff.diffTemplate(oldTemplate, mangledNewTemplate, changeSet);
+    const mangledDiff = cfnDiff.diffTemplate(oldTemplate, mangledNewTemplate);
     filteredChangesCount = Math.max(0, diff.differenceCount - mangledDiff.differenceCount);
     if (filteredChangesCount > 0) {
       diff = mangledDiff;
@@ -82,7 +88,11 @@ export function printSecurityDiff(
   requireApproval: RequireApproval,
   changeSet?: CloudFormation.DescribeChangeSetOutput,
 ): boolean {
-  const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template, changeSet);
+  const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+
+  if (changeSet) {
+    filterFalsePositivies(diff, changeSet);
+  }
 
   if (difRequiresApproval(diff, requireApproval)) {
     // eslint-disable-next-line max-len
@@ -129,3 +139,108 @@ function logicalIdMapFromTemplate(template: any) {
   }
   return ret;
 }
+
+function filterFalsePositivies(diff: cfnDiff.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
+  const replacements = findResourceReplacements(changeSet);
+  diff.resources.forEachDifference((logicalId: string, change: cfnDiff.ResourceDifference) => {
+    if (!replacements[logicalId]) {
+      diff.resources.remove(logicalId);
+
+      return;
+    }
+
+    change.forEachDifference((type: 'Property' | 'Other', name: string, value: cfnDiff.Difference<any> | cfnDiff.PropertyDifference<any>) => {
+      if (type === 'Property') {
+        switch (replacements[logicalId].propertiesReplaced[name]) {
+          case 'Always':
+            (value as cfnDiff.PropertyDifference<any>).changeImpact = cfnDiff.ResourceImpact.WILL_REPLACE;
+            break;
+          case 'Never':
+            (value as cfnDiff.PropertyDifference<any>).changeImpact = cfnDiff.ResourceImpact.WILL_UPDATE;
+            break;
+          case 'Conditionally':
+            (value as cfnDiff.PropertyDifference<any>).changeImpact = cfnDiff.ResourceImpact.MAY_REPLACE;
+            break;
+          case undefined:
+            change.setPropertyChange(name, new cfnDiff.PropertyDifference<any>(1, 1, { changeImpact: cfnDiff.ResourceImpact.NO_CHANGE }));
+            break;
+        }
+      } else if (type === 'Other') {
+        switch (name) {
+          case 'Metadata':
+            change.setOtherChange('Metadata', new cfnDiff.Difference<string>(value.newValue, value.newValue));
+            break;
+          case 'DependsOn':
+            let array = undefined;
+            let str = undefined;
+            if (Array.isArray(value.oldValue) && typeof value.newValue === 'string') {
+              array = value.oldValue;
+              str = value.newValue;
+            } else if (typeof value.oldValue === 'string' && Array.isArray(value.newValue)) {
+              str = value.oldValue;
+              array = value.newValue;
+            }
+            if (array && array.length === 1 && str) {
+              change.setOtherChange('DependsOn', new cfnDiff.Difference<string>(str, array[0]));
+            }
+            break;
+        }
+      }
+    });
+  });
+}
+
+function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOutput): ResourceReplacements {
+  const replacements: ResourceReplacements = {};
+  for (const resourceChange of changeSet.Changes ?? []) {
+    const propertiesReplaced: { [propName: string]: ChangeSetReplacement } = {};
+    for (const propertyChange of resourceChange.ResourceChange?.Details ?? []) {
+      if (propertyChange.Target?.Attribute === 'Properties') {
+        const requiresReplacement = propertyChange.Target.RequiresRecreation === 'Always';
+        if (requiresReplacement && propertyChange.Evaluation === 'Static') {
+          propertiesReplaced[propertyChange.Target.Name!] = 'Always';
+        } else if (requiresReplacement && propertyChange.Evaluation === 'Dynamic') {
+          // If Evaluation is 'Dynamic', then this may cause replacement, or it may not.
+          // see 'Replacement': https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChange.html
+          propertiesReplaced[propertyChange.Target.Name!] = 'Conditionally';
+        } else {
+          propertiesReplaced[propertyChange.Target.Name!] = propertyChange.Target.RequiresRecreation as ChangeSetReplacement;
+        }
+      }
+    }
+    replacements[resourceChange.ResourceChange?.LogicalResourceId!] = {
+      resourceReplaced: resourceChange.ResourceChange?.Replacement === 'True',
+      propertiesReplaced,
+    };
+  }
+
+  return replacements;
+}
+
+function normalize(template: any) {
+  if (typeof template === 'object') {
+    for (const key of (Object.keys(template ?? {}))) {
+      if (key === 'Fn::GetAtt' && typeof template[key] === 'string') {
+        template[key] = template[key].split('.');
+        continue;
+      }
+
+      if (Array.isArray(template[key])) {
+        for (const element of (template[key])) {
+          normalize(element);
+        }
+      } else {
+        normalize(template[key]);
+      }
+    }
+  }
+}
+
+export type ResourceReplacements = { [logicalId: string]: ResourceReplacement };
+
+export interface ResourceReplacement {
+  resourceReplaced: boolean,
+  propertiesReplaced: { [propertyName: string]: ChangeSetReplacement };
+}
+
+export type ChangeSetReplacement = 'Always' | 'Never' | 'Conditionally';

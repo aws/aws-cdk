@@ -6,6 +6,15 @@ import { SecurityGroupChanges } from '../network/security-group-changes';
 
 export type PropertyMap = {[key: string]: any };
 
+export type ResourceReplacements = { [logicalId: string]: ResourceReplacement };
+
+export interface ResourceReplacement {
+  resourceReplaced: boolean,
+  propertiesReplaced: { [propertyName: string]: ChangeSetReplacement };
+}
+
+export type ChangeSetReplacement = 'Always' | 'Never' | 'Conditionally';
+
 /** Semantic differences between two CloudFormation templates. */
 export class TemplateDiff implements ITemplateDiff {
   public awsTemplateFormatVersion?: Difference<string>;
@@ -327,7 +336,7 @@ export class Difference<ValueType> implements IDifference<ValueType> {
 }
 
 export class PropertyDifference<ValueType> extends Difference<ValueType> {
-  public readonly changeImpact?: ResourceImpact;
+  public changeImpact?: ResourceImpact;
 
   constructor(oldValue: ValueType | undefined, newValue: ValueType | undefined, args: { changeImpact?: ResourceImpact }) {
     super(oldValue, newValue);
@@ -350,6 +359,12 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
     const ret = this.diffs[logicalId];
     if (!ret) { throw new Error(`No object with logical ID '${logicalId}'`); }
     return ret;
+  }
+
+  public remove(logicalId: string): void {
+    delete this.diffs[logicalId];
+    // eslint-disable-next-line no-console
+    throw new Error(`${this.diffs[logicalId] === undefined}`);
   }
 
   public get logicalIds(): string[] {
@@ -619,6 +634,18 @@ export class ResourceDifference implements IDifference<Resource> {
    */
   public setPropertyChange(propertyName: string, change: PropertyDifference<any>) {
     this.propertyDiffs[propertyName] = change;
+  }
+
+  /**
+   * Replace a OtherChange in this object
+   *
+   * This affects the property diff as it is summarized to users, but it DOES
+   * NOT affect either the "oldValue" or "newValue" values; those still contain
+   * the actual template values as provided by the user (they might still be
+   * used for downstream processing).
+   */
+  public setOtherChange(otherName: string, change: PropertyDifference<any>) {
+    this.otherDiffs[otherName] = change;
   }
 
   public get changeImpact(): ResourceImpact {

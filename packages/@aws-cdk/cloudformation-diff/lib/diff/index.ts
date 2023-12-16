@@ -1,5 +1,4 @@
 import { Resource } from '@aws-cdk/service-spec-types';
-import { PotentialResourceReplacement, RESOURCE_NOT_IN_CHANGE_SET } from './replacements';
 import * as types from './types';
 import { deepEqual, diffKeyedEntities, loadResourceModel } from './util';
 
@@ -27,12 +26,7 @@ export function diffParameter(oldValue: types.Parameter, newValue: types.Paramet
   return new types.ParameterDifference(oldValue, newValue);
 }
 
-export function diffResource(
-  oldValue?: types.Resource,
-  newValue?: types.Resource,
-  _key?: string,
-  replacement?: PotentialResourceReplacement,
-): types.ResourceDifference {
+export function diffResource(oldValue?: types.Resource, newValue?: types.Resource): types.ResourceDifference {
   const resourceType = {
     oldType: oldValue && oldValue.Type,
     newType: newValue && newValue.Type,
@@ -45,67 +39,35 @@ export function diffResource(
     const impl = loadResourceModel(resourceType.oldType);
     propertyDiffs = diffKeyedEntities(oldValue!.Properties,
       newValue!.Properties,
-      (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl, replacement));
+      (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl));
 
     otherDiffs = diffKeyedEntities(oldValue, newValue, _diffOther);
     delete otherDiffs.Properties;
-    if (replacement) {
-      delete otherDiffs.Metadata;
-    }
   }
 
   return new types.ResourceDifference(oldValue, newValue, {
     resourceType, propertyDiffs, otherDiffs,
   });
 
-  function _diffProperty(
-    oldV: any,
-    newV: any,
-    key: string,
-    resourceSpec?: Resource,
-    changeSetReplacement?: PotentialResourceReplacement,
-  ) {
-    let changeImpact: types.ResourceImpact = types.ResourceImpact.NO_CHANGE;
-    if (!changeSetReplacement) {
-      changeImpact = _resourceSpecImpact(oldV, newV, key, resourceSpec);
-      return new types.PropertyDifference(oldV, newV, { changeImpact });
-    }
+  function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: Resource) {
+    let changeImpact = types.ResourceImpact.NO_CHANGE;
 
-    if (changeSetReplacement === RESOURCE_NOT_IN_CHANGE_SET || !(key in changeSetReplacement.propertiesReplaced)) {
-      // The changeset does not contain this property, which means it is not going to be updated. Hide this cosmetic template-only change from the diff
-      return new types.PropertyDifference(1, 1, { changeImpact });
-    }
-
-    switch (changeSetReplacement.propertiesReplaced[key]) {
-      case 'Always':
-        changeImpact = types.ResourceImpact.WILL_REPLACE;
-        break;
-      case 'Conditionally':
-        changeImpact = types.ResourceImpact.MAY_REPLACE;
-        break;
-      case 'Never':
-        changeImpact = types.ResourceImpact.WILL_UPDATE;
-        break;
-    }
-
-    return new types.PropertyDifference(oldV, newV, { changeImpact });
-  }
-
-  function _resourceSpecImpact(oldV: any, newV: any, key: string, resourceSpec?: Resource) {
     const spec = resourceSpec?.properties?.[key];
     if (spec && !deepEqual(oldV, newV)) {
       switch (spec.causesReplacement) {
         case 'yes':
-          return types.ResourceImpact.WILL_REPLACE;
+          changeImpact = types.ResourceImpact.WILL_REPLACE;
+          break;
         case 'maybe':
-          return types.ResourceImpact.MAY_REPLACE;
+          changeImpact = types.ResourceImpact.MAY_REPLACE;
+          break;
         default:
           // In those cases, whatever is the current value is what we should keep
-          return types.ResourceImpact.WILL_UPDATE;
+          changeImpact = types.ResourceImpact.WILL_UPDATE;
       }
     }
 
-    return types.ResourceImpact.NO_CHANGE;
+    return new types.PropertyDifference(oldV, newV, { changeImpact });
   }
 
   function _diffOther(oldV: any, newV: any) {

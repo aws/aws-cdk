@@ -1,16 +1,10 @@
-// The SDK is only used to reference `DescribeChangeSetOutput`, so the SDK is added as a devDependency.
-// The SDK should not make network calls here
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { CloudFormation } from 'aws-sdk';
 import * as impl from './diff';
-import { ChangeSetReplacement, ResourceReplacements } from './diff/replacements';
 import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
 
 export * from './diff/types';
 
-// eslint-disable-next-line max-len
-type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any, replacement?: ResourceReplacements) => void;
+type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any) => void;
 type HandlerRegistry = { [section: string]: DiffHandler };
 
 const DIFF_HANDLERS: HandlerRegistry = {
@@ -28,8 +22,8 @@ const DIFF_HANDLERS: HandlerRegistry = {
     diff.conditions = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffCondition)),
   Transform: (diff, oldValue, newValue) =>
     diff.transform = impl.diffAttribute(oldValue, newValue),
-  Resources: (diff, oldValue, newValue, replacements?: ResourceReplacements) =>
-    diff.resources = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffResource, replacements)),
+  Resources: (diff, oldValue, newValue) =>
+    diff.resources = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffResource)),
   Outputs: (diff, oldValue, newValue) =>
     diff.outputs = new types.DifferenceCollection(diffKeyedEntities(oldValue, newValue, impl.diffOutput)),
 };
@@ -44,14 +38,9 @@ const DIFF_HANDLERS: HandlerRegistry = {
  *      a stack which current state is described by +currentTemplate+ is updated with
  *      the template +newTemplate+.
  */
-export function diffTemplate(
-  currentTemplate: { [key: string]: any },
-  newTemplate: { [key: string]: any },
-  changeSet?: CloudFormation.DescribeChangeSetOutput,
-): types.TemplateDiff {
-  const replacements = changeSet ? findResourceReplacements(changeSet): undefined;
+export function diffTemplate(currentTemplate: { [key: string]: any }, newTemplate: { [key: string]: any }): types.TemplateDiff {
   // Base diff
-  const theDiff = calculateTemplateDiff(currentTemplate, newTemplate, replacements);
+  const theDiff = calculateTemplateDiff(currentTemplate, newTemplate);
 
   // We're going to modify this in-place
   const newTemplateCopy = deepCopy(newTemplate);
@@ -59,7 +48,7 @@ export function diffTemplate(
   let didPropagateReferenceChanges;
   let diffWithReplacements;
   do {
-    diffWithReplacements = calculateTemplateDiff(currentTemplate, newTemplateCopy, replacements);
+    diffWithReplacements = calculateTemplateDiff(currentTemplate, newTemplateCopy);
 
     // Propagate replacements for replaced resources
     didPropagateReferenceChanges = false;
@@ -104,11 +93,7 @@ function propagatePropertyReplacement(source: types.ResourceDifference, dest: ty
   }
 }
 
-function calculateTemplateDiff(
-  currentTemplate: { [key: string]: any },
-  newTemplate: { [key: string]: any },
-  replacements?: ResourceReplacements,
-): types.TemplateDiff {
+function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTemplate: { [key: string]: any }): types.TemplateDiff {
   const differences: types.ITemplateDiff = {};
   const unknown: { [key: string]: types.Difference<any> } = {};
   for (const key of unionOf(Object.keys(currentTemplate), Object.keys(newTemplate)).sort()) {
@@ -119,7 +104,8 @@ function calculateTemplateDiff(
     }
     const handler: DiffHandler = DIFF_HANDLERS[key]
                   || ((_diff, oldV, newV) => unknown[key] = impl.diffUnknown(oldV, newV));
-    handler(differences, oldValue, newValue, replacements);
+    handler(differences, oldValue, newValue);
+
   }
   if (Object.keys(unknown).length > 0) {
     differences.unknown = new types.DifferenceCollection(unknown);
@@ -197,31 +183,4 @@ function deepCopy(x: any): any {
   }
 
   return x;
-}
-
-function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOutput): ResourceReplacements {
-  const replacements: ResourceReplacements = {};
-  for (const resourceChange of changeSet.Changes ?? []) {
-    const propertiesReplaced: { [propName: string]: ChangeSetReplacement } = {};
-    for (const propertyChange of resourceChange.ResourceChange?.Details ?? []) {
-      if (propertyChange.Target?.Attribute === 'Properties') {
-        const requiresReplacement = propertyChange.Target.RequiresRecreation === 'Always';
-        if (requiresReplacement && propertyChange.Evaluation === 'Static') {
-          propertiesReplaced[propertyChange.Target.Name!] = 'Always';
-        } else if (requiresReplacement && propertyChange.Evaluation === 'Dynamic') {
-          // If Evaluation is 'Dynamic', then this may cause replacement, or it may not.
-          // see 'Replacement': https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChange.html
-          propertiesReplaced[propertyChange.Target.Name!] = 'Conditionally';
-        } else {
-          propertiesReplaced[propertyChange.Target.Name!] = propertyChange.Target.RequiresRecreation as ChangeSetReplacement;
-        }
-      }
-    }
-    replacements[resourceChange.ResourceChange?.LogicalResourceId!] = {
-      resourceReplaced: resourceChange.ResourceChange?.Replacement === 'True',
-      propertiesReplaced,
-    };
-  }
-
-  return replacements;
 }

@@ -1,6 +1,5 @@
 import { loadAwsServiceSpecSync } from '@aws-cdk/aws-service-spec';
 import { Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
-import { PotentialResourceReplacement, RESOURCE_NOT_IN_CHANGE_SET, ResourceReplacements } from './replacements';
 
 /**
  * Compares two objects for equality, deeply. The function handles arguments that are
@@ -24,12 +23,6 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
       (typeof lvalue === 'boolean' && typeof rvalue === 'string')) &&
       lvalue.toString() === rvalue.toString()) {
     return true;
-  }
-
-  if (containsIntrinsic(lvalue) && containsIntrinsic(rvalue)) {
-    if (yamlIntrinsicEqual(lvalue, rvalue)) {
-      return true;
-    }
   }
   // allows a numeric 10 and a literal "10" to be equivalent;
   // this is consistent with CloudFormation.
@@ -106,65 +99,6 @@ function dependsOnEqual(lvalue: any, rvalue: any): boolean {
   return false;
 }
 
-function containsIntrinsic(value: any): boolean {
-  return Object.keys(value ?? {}).filter((key => key ? (key.includes('Fn::') ? true : false) : false)).length > 0;
-}
-
-/**
- * Checks if a value has changed intrinsic form.
- * Only applicable to CDK Migrate.
- * For example, if a user has created a yaml template that uses
- *
- * !Fn::GetAtt 'foo.bar', CDK Migrate converts this to
- * Fn::GetAtt: ['foo', 'bar']
- *
- * Both forms are equivalent
- */
-function yamlIntrinsicEqual(lvalue: any, rvalue: any): boolean {
-  for (const lintrinsic of Object.keys(lvalue)) {
-    for (const rintrinsic of Object.keys(rvalue)) {
-      if (lintrinsic !== rintrinsic) {
-        return false;
-      }
-      const intrinsic = lintrinsic;
-      switch (intrinsic) {
-        // checks for equivalency in both yaml forms of Fn::GetAtt.
-        // !Fn::GetAtt 'foo.bar' is equivalent to
-        // Fn::GetAtt: ['foo', 'bar']
-        case 'Fn::GetAtt':
-          let array = undefined;
-          let str = undefined;
-          if (Array.isArray(lvalue[intrinsic]) && !Array.isArray(rvalue[intrinsic]) && typeof rvalue[intrinsic] === 'string') {
-            array = lvalue[intrinsic];
-            str = rvalue[intrinsic];
-          } else if (!Array.isArray(lvalue[intrinsic]) && Array.isArray(rvalue[intrinsic]) && typeof lvalue[intrinsic] === 'string') {
-            array = rvalue[intrinsic];
-            str = lvalue[intrinsic];
-          }
-
-          // if one value is an array, and the other is a string, check for form equivalency
-          if (array && str) {
-            // check if array is a string[]
-            let strArr: boolean = true;
-            array.forEach((item: any) => {
-              if (typeof item !== 'string') {
-                strArr = false;
-              }
-            });
-
-            if (strArr && array.join('.') === str) {
-              return true;
-            }
-          }
-
-          return deepEqual(lvalue[intrinsic], rvalue[intrinsic]);
-      }
-    }
-  }
-
-  return false;
-}
-
 /**
  * Produce the differences between two maps, as a map, using a specified diff function.
  *
@@ -177,9 +111,7 @@ function yamlIntrinsicEqual(lvalue: any, rvalue: any): boolean {
 export function diffKeyedEntities<T>(
   oldValue: { [key: string]: any } | undefined,
   newValue: { [key: string]: any } | undefined,
-  elementDiff: (oldElement: any, newElement: any, key: string, replacement?: PotentialResourceReplacement) => T,
-  replacements?: ResourceReplacements,
-): { [name: string]: T } {
+  elementDiff: (oldElement: any, newElement: any, key: string) => T): { [name: string]: T } {
   const result: { [name: string]: T } = {};
   for (const logicalId of unionOf(Object.keys(oldValue || {}), Object.keys(newValue || {}))) {
     const oldElement = oldValue && oldValue[logicalId];
@@ -190,19 +122,8 @@ export function diffKeyedEntities<T>(
       continue;
     }
 
-    // we're using the changeSet, but the changeSet does not have an entry for this resource
-    let replacement: PotentialResourceReplacement;
-    if (replacements && !replacements[logicalId]) {
-      replacement = RESOURCE_NOT_IN_CHANGE_SET;
-    } else if (replacements && replacements[logicalId]) {
-      replacement = replacements[logicalId];
-    } else /*if (!replacements)*/ {
-      replacement = undefined;
-    }
-
-    result[logicalId] = elementDiff(oldElement, newElement, logicalId, replacement);
+    result[logicalId] = elementDiff(oldElement, newElement, logicalId);
   }
-
   return result;
 }
 
