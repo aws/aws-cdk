@@ -25,13 +25,13 @@ export function printStackDiff(
   changeSet?: CloudFormation.DescribeChangeSetOutput,
   stream?: cfnDiff.FormatStream): number {
 
-  let diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template, changeSet);
+  let diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet);
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
   if (diff.differenceCount && !strict) {
     const mangledNewTemplate = JSON.parse(cfnDiff.mangleLikeCloudFormation(JSON.stringify(newTemplate.template)));
-    const mangledDiff = cfnDiff.diffTemplate(oldTemplate, mangledNewTemplate, changeSet);
+    const mangledDiff = cfnDiff.fullDiff(oldTemplate, mangledNewTemplate, changeSet);
     filteredChangesCount = Math.max(0, diff.differenceCount - mangledDiff.differenceCount);
     if (filteredChangesCount > 0) {
       diff = mangledDiff;
@@ -82,7 +82,7 @@ export function printSecurityDiff(
   requireApproval: RequireApproval,
   changeSet?: CloudFormation.DescribeChangeSetOutput,
 ): boolean {
-  const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template, changeSet);
+  const diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet);
 
   if (difRequiresApproval(diff, requireApproval)) {
     // eslint-disable-next-line max-len

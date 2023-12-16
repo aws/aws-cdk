@@ -42,7 +42,7 @@ const DIFF_HANDLERS: HandlerRegistry = {
  *      a stack which current state is described by +currentTemplate+ is updated with
  *      the template +newTemplate+.
  */
-export function diffTemplate(
+export function fullDiff(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
   changeSet?: CloudFormation.DescribeChangeSetOutput,
@@ -50,6 +50,18 @@ export function diffTemplate(
 
   normalize(currentTemplate);
   normalize(newTemplate);
+  const theDiff = diffTemplate(currentTemplate, newTemplate);
+  if (changeSet) {
+    filterFalsePositivies(theDiff, changeSet);
+  }
+
+  return theDiff;
+}
+
+function diffTemplate(
+  currentTemplate: { [key: string]: any },
+  newTemplate: { [key: string]: any },
+): types.TemplateDiff {
 
   // Base diff
   const theDiff = calculateTemplateDiff(currentTemplate, newTemplate);
@@ -85,10 +97,6 @@ export function diffTemplate(
         propagatePropertyReplacement(downstreamReplacement, resource);
       }
     });
-
-  if (changeSet) {
-    filterFalsePositivies(theDiff, changeSet);
-  }
 
   return theDiff;
 }
