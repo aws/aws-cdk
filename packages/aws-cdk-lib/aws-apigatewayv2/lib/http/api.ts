@@ -6,7 +6,7 @@ import { IHttpStage, HttpStage, HttpStageOptions } from './stage';
 import { VpcLink, VpcLinkProps } from './vpc-link';
 import { CfnApi, CfnApiProps } from '.././index';
 import { Metric, MetricOptions } from '../../../aws-cloudwatch';
-import { Duration } from '../../../core';
+import { ArnFormat, Duration, Stack, Token } from '../../../core';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 import { DomainMappingOptions } from '../common/stage';
@@ -81,6 +81,12 @@ export interface IHttpApi extends IApi {
    * Add a new VpcLink
    */
   addVpcLink(options: VpcLinkProps): VpcLink
+
+  /**
+   * Get the "execute-api" ARN.
+   * @default - for all methods/resources in this API.
+   */
+  arnForExecuteApi(method?: string, path?: string, stage?: string): string;
 }
 
 /**
@@ -290,6 +296,23 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
     this.vpcLinks[vpcId] = vpcLink;
 
     return vpcLink;
+  }
+
+  public arnForExecuteApi(method?: string, path?: string, stage?: string): string {
+    if (path && !Token.isUnresolved(path) && !path.startsWith('/')) {
+      throw new Error(`Path must start with '/': ${path}`);
+    }
+
+    if (method && method.toUpperCase() === 'ANY') {
+      method = '*';
+    }
+
+    return Stack.of(this).formatArn({
+      service: 'execute-api',
+      resource: this.httpApiId,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+      resourceName: `${stage ?? '*'}/${method ?? '*'}${path ?? '/*'}`,
+    });
   }
 }
 
