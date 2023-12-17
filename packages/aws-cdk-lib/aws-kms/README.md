@@ -85,6 +85,22 @@ Note that calls to `addToResourcePolicy` and `grant*` methods on `myKeyAlias` wi
 no-ops, and `addAlias` and `aliasTargetKey` will fail, as the imported alias does not
 have a reference to the underlying KMS Key.
 
+### Import key by alias ARN
+
+If you want to use a Key by it's alias in place of the key id, for example when you are delegated access to a Key in another account, you can specify the alias by it's arn with `Alias.fromAliasArn()`
+
+```ts
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+const myKeyAlias = kms.Alias.fromAliasArn(this, 'myKey', 'arn:aws:kms:eu-central-1:11111111111:alias/myKeyAlias');
+const secret = secretsmanager.Secret.fromSecretAttributes(this, 'ImportedSecret', {
+  secretArn: 'arn:aws:secretsmanager:<region>:<account-id-number>:secret:<secret-name>-<random-6-characters>',
+  encryptionKey: myKeyAlias,
+});
+```
+
+Note that calls to `addToResourcePolicy` will be no-op. Calling `grant` methods on the `myKeyAlias` will be using the `kms:ResourceAliases` condition. See [Using aliases to control access to KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/alias-authorization.html)
+
 ### Lookup key by alias
 
 If you can't use a KMS key imported by alias (e.g. because you need access to the key id), you can lookup the key with `Key.fromLookup()`.
