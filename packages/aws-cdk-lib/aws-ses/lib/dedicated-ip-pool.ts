@@ -5,7 +5,7 @@ import { IResource, Resource } from '../../core';
 /**
  * What kind of scailing mode to use for this IP pool
  *
- * @see https://docs.aws.amazon.com/ja_jp/ses/latest/dg/dedicated-ip.html
+ * @see https://docs.aws.amazon.com/ses/latest/dg/dedicated-ip.html
  */
 export enum ScalingMode {
   /**
