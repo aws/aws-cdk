@@ -28,6 +28,7 @@
  *
  *   'n' -> this field is a number type
  *   'b' -> this field is a blob type
+ *   'd' -> this field is a Date type
  *   <number> -> move to another state
  *
  * We save a gzipped representation of this state machine to save bytes (the full decoded
