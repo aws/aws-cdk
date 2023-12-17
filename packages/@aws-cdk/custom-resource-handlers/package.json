@@ -63,6 +63,7 @@
     "@aws-sdk/client-synthetics": "3.421.0",
     "@aws-sdk/client-ecr": "3.421.0",
     "@aws-sdk/client-s3": "3.421.0",
+    "@aws-sdk/client-cloudwatch": "3.421.0",
     "aws-sdk": "^2.1517.0"
   },
   "repository": {

@@ -3,6 +3,7 @@ process.env.AWS_REGION = 'us-east-1';
 
 import { EncryptCommand, KMSClient } from '@aws-sdk/client-kms';
 import * as S3 from '@aws-sdk/client-s3';
+import { CloudWatchClient, GetMetricDataCommand } from '@aws-sdk/client-cloudwatch';
 import { mockClient } from 'aws-sdk-client-mock';
 import * as fs from 'fs-extra';
 import * as nock from 'nock';
@@ -743,5 +744,80 @@ test('automatic Uint8Array conversion when necessary', async () => {
       121, 45, 100, 97,
       116, 97,
     ]),
+  });
+});
+
+test('automatic Date conversion when necessary', async () => {
+  const cwMock = mockClient(CloudWatchClient);
+  cwMock.on(GetMetricDataCommand).resolves({
+    Messages: [],
+    MetricDataResults: [
+      {
+        Id: 'id1',
+        StatusCode: 'Complete',
+        Values: [0],
+      },
+    ],
+  });
+
+  await handler({
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: 'CloudWatch',
+        action: 'getMetricData',
+        parameters: {
+          MetricDataQueries: [
+            {
+              Id: 'id1',
+              MetricStat: {
+                Metric: {
+                  Namespace: 'AWS/SQS',
+                  MetricName: 'NumberOfMessagesReceived',
+                  Dimensions: [
+                    {
+                      Name: 'QueueName',
+                      Value: 'my-queue',
+                    },
+                  ],
+                },
+                Period: 60,
+                Stat: 'Sum',
+              },
+              ReturnData: true,
+            },
+          ],
+          StartTime: new Date('2023-01-01').toString(),
+          EndTime: new Date('2023-01-02').toString(),
+        },
+      } satisfies AwsSdkCall),
+    },
+  }, {} as AWSLambda.Context);
+
+  expect(cwMock).toHaveReceivedCommandWith(GetMetricDataCommand, {
+    MetricDataQueries: [
+      {
+        Id: 'id1',
+        MetricStat: {
+          Metric: {
+            Namespace: 'AWS/SQS',
+            MetricName: 'NumberOfMessagesReceived',
+            Dimensions: [
+              {
+                Name: 'QueueName',
+                Value: 'my-queue',
+              },
+            ],
+          },
+          Period: 60,
+          Stat: 'Sum',
+        },
+        ReturnData: true,
+      },
+    ],
+    StartTime: new Date('2023-01-01'),
+    EndTime: new Date('2023-01-02'),
   });
 });
