@@ -3,7 +3,7 @@ import { CfnDedicatedIpPool } from './ses.generated';
 import { IResource, Resource } from '../../core';
 
 /**
- * What kind of scailing mode to use for this IP pool
+ * Scaling mode to use for this IP pool.
  *
  * @see https://docs.aws.amazon.com/ses/latest/dg/dedicated-ip.html
  */
