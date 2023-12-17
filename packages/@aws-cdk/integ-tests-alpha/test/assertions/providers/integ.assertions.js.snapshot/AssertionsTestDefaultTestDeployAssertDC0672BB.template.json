@@ -28,7 +28,7 @@
      "WithDecryption": "true"
     },
     "flattenResponse": "false",
-    "salt": "1696292331033"
+    "salt": "1702805807857"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -76,6 +76,24 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "monitoring:GetMetricData"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "cloudwatch:GetMetricData"
+         ],
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -91,7 +109,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "725b0df96c2f47516947f7471b1187d8db70a7b45e4ae44c5e9430cdf9e75767.zip"
+     "S3Key": "669529d9a4eac6a844122d12abf8bf89dcd728443e27d420814b55ebb409f063.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -131,10 +149,44 @@
      "WithDecryption": "true"
     },
     "flattenResponse": "false",
-    "salt": "1696292331034"
+    "salt": "1702805807858"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallCloudWatchgetMetricDataa13b2d40a49b90c229af8e44e5aa6df9": {
+   "Type": "Custom::DeployAssert@SdkCallCloudWatchgetMetricData",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CloudWatch",
+    "api": "getMetricData",
+    "parameters": {
+     "MetricDataQueries": {
+      "Fn::Join": [
+       "",
+       [
+        "[{\"Id\":\"id1\",\"MetricStat\":{\"Metric\":{\"Namespace\":\"AWS/SQS\",\"MetricName\":\"NumberOfMessagesReceived\",\"Dimensions\":[{\"Name\":\"QueueName\",\"Value\":\"",
+        {
+         "Fn::ImportValue": "Assertions:ExportsOutputFnGetAttQueueQueueNameDE7FBC08"
+        },
+        "\"}]},\"Period\":60,\"Stat\":\"Sum\"},\"ReturnData\":true}]"
+       ]
+      ]
+     },
+     "StartTime": "\"2023-12-16T09:36:47.858Z\"",
+     "EndTime": "\"2023-12-17T09:36:47.858Z\""
+    },
+    "flattenResponse": "false",
+    "salt": "1702805807859"
    },
    "DependsOn": [
-    "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2"
+    "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2",
+    "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f21"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

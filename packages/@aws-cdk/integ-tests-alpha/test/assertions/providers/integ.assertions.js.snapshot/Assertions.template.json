@@ -6,6 +6,9 @@
     "Type": "String",
     "Value": "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ!\"#¤%&/()=?`´^*+~_-.,:;<>|"
    }
+  },
+  "Queue": {
+   "Type": "AWS::SQS::Queue"
   }
  },
  "Outputs": {
@@ -15,6 +18,17 @@
    },
    "Export": {
     "Name": "Assertions:ExportsOutputRefUtf8Parameter528A4835"
+   }
+  },
+  "ExportsOutputFnGetAttQueueQueueNameDE7FBC08": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Queue",
+     "QueueName"
+    ]
+   },
+   "Export": {
+    "Name": "Assertions:ExportsOutputFnGetAttQueueQueueNameDE7FBC08"
    }
   }
  },
