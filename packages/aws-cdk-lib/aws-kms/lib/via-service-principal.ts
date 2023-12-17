@@ -11,6 +11,18 @@ export class ViaServicePrincipal extends iam.PrincipalBase {
     this.basePrincipal = basePrincipal ? basePrincipal : new iam.AnyPrincipal();
   }
 
+  public addToPrincipalPolicy(_statement: iam.PolicyStatement): iam.AddToPrincipalPolicyResult {
+    const conditions = Object.assign({}, _statement.conditions);
+
+    if (conditions.StringEquals) {
+      conditions.StringEquals = Object.assign({ 'kms:ViaService': this.serviceName }, conditions.StringEquals);
+    } else {
+      conditions.StringEquals = { 'kms:ViaService': this.serviceName };
+    }
+
+    return this.basePrincipal.addToPrincipalPolicy(_statement.copy({ conditions }));
+  }
+
   public get policyFragment(): iam.PrincipalPolicyFragment {
     // Make a copy of the base policyFragment to add a condition to it
     const base = this.basePrincipal.policyFragment;
