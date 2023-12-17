@@ -298,13 +298,13 @@ export abstract class QueueProcessingServiceBase extends Construct {
    *
    * @default - false
    */
-  public readonly disableCpuBasedScaling?: boolean;
+  public readonly disableCpuBasedScaling: boolean;
   /**
    * The target CPU utilization percentage for CPU based scaling strategy when enabled.
    *
    * @default - 50
    */
-  public readonly cpuTargetUtilizationPercent?: number;
+  public readonly cpuTargetUtilizationPercent: number;
 
   /**
    * Constructs a new instance of the QueueProcessingServiceBase class.
@@ -388,7 +388,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
 
     if (!this.disableCpuBasedScaling) {
       scalingTarget.scaleOnCpuUtilization('CpuScaling', {
-        targetUtilizationPercent: this.cpuTargetUtilizationPercent ?? 50,
+        targetUtilizationPercent: this.cpuTargetUtilizationPercent,
       });
     }
     scalingTarget.scaleOnMetric('QueueMessagesVisibleScaling', {

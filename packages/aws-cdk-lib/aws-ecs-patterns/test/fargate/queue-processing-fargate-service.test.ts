@@ -525,59 +525,6 @@ test('test Fargate queue worker service construct - with cpu scaling strategy di
     disableCpuBasedScaling: true,
   });
 
-  // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
-  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DeploymentConfiguration: {
-      MinimumHealthyPercent: 60,
-      MaximumPercent: 150,
-      DeploymentCircuitBreaker: {
-        Enable: true,
-        Rollback: true,
-      },
-    },
-    LaunchType: 'FARGATE',
-    ServiceName: 'fargate-test-service',
-    PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-    DeploymentController: {
-      Type: 'ECS',
-    },
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', { QueueName: 'fargate-test-sqs-queue' });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-    ContainerDefinitions: [
-      Match.objectLike({
-        Command: [
-          '-c',
-          '4',
-          'amazon.com',
-        ],
-        Environment: [
-          {
-            Name: 'TEST_ENVIRONMENT_VARIABLE1',
-            Value: 'test environment variable 1 value',
-          },
-          {
-            Name: 'TEST_ENVIRONMENT_VARIABLE2',
-            Value: 'test environment variable 2 value',
-          },
-          {
-            Name: 'QUEUE_NAME',
-            Value: {
-              'Fn::GetAtt': [
-                'fargatetestqueue28B43841',
-                'QueueName',
-              ],
-            },
-          },
-        ],
-        Image: 'test',
-      }),
-    ],
-    Family: 'fargate-task-family',
-  });
-
   // THEN - No CPU target tracking policy is created
   Template.fromStack(stack).resourcePropertiesCountIs('AWS::ApplicationAutoScaling::ScalingPolicy', {
     PolicyType: 'TargetTrackingScaling',
@@ -622,68 +569,21 @@ testDeprecated('test Fargate queue worker service construct - with custom cpu sc
     cpuTargetUtilizationPercent: 80,
   });
 
-  // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
-  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-    DeploymentConfiguration: {
-      MinimumHealthyPercent: 60,
-      MaximumPercent: 150,
-      DeploymentCircuitBreaker: {
-        Enable: true,
-        Rollback: true,
-      },
-    },
-    LaunchType: 'FARGATE',
-    ServiceName: 'fargate-test-service',
-    PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-    DeploymentController: {
-      Type: 'ECS',
-    },
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', { QueueName: 'fargate-test-sqs-queue' });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
-    ContainerDefinitions: [
-      Match.objectLike({
-        Command: [
-          '-c',
-          '4',
-          'amazon.com',
-        ],
-        Environment: [
-          {
-            Name: 'TEST_ENVIRONMENT_VARIABLE1',
-            Value: 'test environment variable 1 value',
-          },
-          {
-            Name: 'TEST_ENVIRONMENT_VARIABLE2',
-            Value: 'test environment variable 2 value',
-          },
-          {
-            Name: 'QUEUE_NAME',
-            Value: {
-              'Fn::GetAtt': [
-                'fargatetestqueue28B43841',
-                'QueueName',
-              ],
-            },
-          },
-        ],
-        Image: 'test',
-      }),
-    ],
-    Family: 'fargate-task-family',
-  });
-
   // THEN - CPU target tracking policy is created
   Template.fromStack(stack).resourcePropertiesCountIs('AWS::ApplicationAutoScaling::ScalingPolicy', {
     PolicyType: 'TargetTrackingScaling',
   }, 1);
 
   // AND - CPU target utilization set
-  Template.fromStack(stack).resourcePropertiesCountIs('AWS::ApplicationAutoScaling::ScalingPolicy', {
-    PolicyType: 'TargetTrackingScaling',
-  }, 1);
+  Template.fromStack(stack). hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    'PolicyType': 'TargetTrackingScaling',
+    'TargetTrackingScalingPolicyConfiguration': {
+     'PredefinedMetricSpecification': {
+      'PredefinedMetricType': 'ECSServiceAverageCPUUtilization'
+     },
+     'TargetValue': 80
+    }
+  });
 });
 
 test('can set custom containerName', () => {
