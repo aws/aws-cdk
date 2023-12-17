@@ -576,15 +576,15 @@ testDeprecated('test Fargate queue worker service construct - with custom cpu sc
 
   // AND - CPU target utilization set
   Template.fromStack(stack). hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
-    'PolicyType': 'TargetTrackingScaling',
-    'TargetTrackingScalingPolicyConfiguration': {
-     'PredefinedMetricSpecification': {
-      'PredefinedMetricType': 'ECSServiceAverageCPUUtilization'
-     },
-     'TargetValue': 80
-    }
+    PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        PredefinedMetricSpecification: {
+          PredefinedMetricType: 'ECSServiceAverageCPUUtilization',
+        },
+        TargetValue: 80,
+      },
+    });
   });
-});
 
 test('can set custom containerName', () => {
   // GIVEN
