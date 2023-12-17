@@ -260,18 +260,18 @@ abstract class KeyBase extends Resource implements IKey {
     if (!iam.principalIsOwnedResource(grantee.grantPrincipal)) {
       return false;
     }
-    const bucketStack = Stack.of(this);
+    const keyStack = Stack.of(this);
     const identityStack = Stack.of(grantee.grantPrincipal);
-    return bucketStack.region !== identityStack.region;
+    return keyStack.region !== identityStack.region;
   }
 
   private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
     if (!iam.principalIsOwnedResource(grantee.grantPrincipal)) {
       return false;
     }
-    const bucketStack = Stack.of(this);
+    const keyStack = Stack.of(this);
     const identityStack = Stack.of(grantee.grantPrincipal);
-    return bucketStack.account !== identityStack.account;
+    return keyStack.account !== identityStack.account;
   }
 }
 
