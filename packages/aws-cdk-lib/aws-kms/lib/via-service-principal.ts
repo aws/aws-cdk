@@ -5,10 +5,12 @@ import * as iam from '../../aws-iam';
  */
 export class ViaServicePrincipal extends iam.PrincipalBase {
   private readonly basePrincipal: iam.IPrincipal;
+  public readonly principalAccount;
 
   constructor(private readonly serviceName: string, basePrincipal?: iam.IPrincipal) {
     super();
     this.basePrincipal = basePrincipal ? basePrincipal : new iam.AnyPrincipal();
+    this.principalAccount = this.basePrincipal.principalAccount;
   }
 
   public addToPrincipalPolicy(_statement: iam.PolicyStatement): iam.AddToPrincipalPolicyResult {
