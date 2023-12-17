@@ -7,4 +7,4 @@ ENV QUEUE_NAME $QUEUE_NAME
 WORKDIR /src
 ADD . /src
 
-CMD python3 index.py
+ENTRYPOINT [ "python3", "index.py"]

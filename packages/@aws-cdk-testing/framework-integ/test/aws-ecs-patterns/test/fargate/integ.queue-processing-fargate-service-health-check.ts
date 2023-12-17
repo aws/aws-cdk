@@ -8,6 +8,7 @@ import { QueueProcessingFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-patterns-queue-public');
 const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
+const CONTAINER_HEALTH_CHECK_KEY = 'CONTAINER_HEALTH_CHECK_KEY';
 
 new QueueProcessingFargateService(stack, 'PublicQueueService', {
   vpc,
@@ -15,10 +16,13 @@ new QueueProcessingFargateService(stack, 'PublicQueueService', {
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
   assignPublicIp: true,
   healthCheck: {
-    command: ['CMD-SHELL', 'curl -f http://localhost/ || exit 1'],
-    interval: Duration.seconds(6),
+    command: ['CMD-SHELL', '%CONTAINER_HEALTH_CHECK_KEY% || exit 1'],
+    interval: Duration.seconds(10),
     retries: 10,
   },
+  environment: {
+    CONTAINER_HEALTH_CHECK_KEY: CONTAINER_HEALTH_CHECK_KEY
+  }
 });
 
 new integ.IntegTest(app, 'publicQueueProcessingFargateServiceTest', {
