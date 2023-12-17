@@ -3,7 +3,8 @@
   "PoolD3F588B8": {
    "Type": "AWS::SES::DedicatedIpPool",
    "Properties": {
-    "ScalingMode": "STANDARD"
+    "PoolName": "my-pool",
+    "ScalingMode": "MANAGED"
    }
   }
  },

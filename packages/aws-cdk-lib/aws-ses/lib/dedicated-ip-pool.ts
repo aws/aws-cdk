@@ -34,7 +34,8 @@ export interface IDedicatedIpPool extends IResource {
  */
 export interface DedicatedIpPoolProps {
   /**
-   * A name for the dedicated IP pool
+   * A name for the dedicated IP pool.
+   * 64 character limit. Only lower case letters, numbers, periods, underscores, and dashes are permitted.
    *
    * @default - a CloudFormation generated name
    */

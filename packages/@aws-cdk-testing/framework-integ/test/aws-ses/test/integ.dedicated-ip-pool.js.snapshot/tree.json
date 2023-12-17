@@ -18,7 +18,8 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SES::DedicatedIpPool",
                   "aws:cdk:cloudformation:props": {
-                    "scalingMode": "STANDARD"
+                    "poolName": "my-pool",
+                    "scalingMode": "MANAGED"
                   }
                 },
                 "constructInfo": {
