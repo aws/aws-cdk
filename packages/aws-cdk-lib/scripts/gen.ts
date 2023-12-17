@@ -68,6 +68,8 @@ async function updateExportsAndEntryPoints(modules: ModuleMap) {
   // sort exports
   pkgJson.exports = Object.fromEntries(Object.entries(pkgJson.exports).sort(([e1], [e2]) => e1.localeCompare(e2)));
 
-  await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
-  await fs.writeFile(topLevelIndexFilePath, indexStatements.sort((l1, l2) => l1.localeCompare(l2)).join('\n') + '\n');
+  await Promise.all([
+    fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 }),
+    fs.writeFile(topLevelIndexFilePath, indexStatements.sort((l1, l2) => l1.localeCompare(l2)).join('\n') + '\n'),
+  ]);
 }

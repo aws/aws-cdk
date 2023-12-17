@@ -30,9 +30,9 @@ async function recurseJs(root: string, fileBlock: (x: string) => Promise<void>, 
       await fileBlock(f);
     }
     if (s.isDirectory() && await dirBlock(f)) {
-      for (const child of await fs.readdir(f)) {
-        await recurse(path.join(f, child));
-      }
+      await Promise.all(await fs.readdir(f).map((child) => {
+        return recurse(path.join(f, child));
+      }));
     }
   }
 }

@@ -24,9 +24,9 @@ export async function writeFile(filename: string, contents: string) {
 }
 
 export async function copyDirectoryContents(dir: string, target: string) {
-  for (const file of await fs.readdir(path.join(dir), { encoding: 'utf-8' })) {
-    await fs.copyFile(path.join(dir, file), path.join(target, file));
-  }
+  await Promise.all(await fs.readdir(path.join(dir), { encoding: 'utf-8' }).map((file) => {
+    return fs.copyFile(path.join(dir, file), path.join(target, file));
+  }));
 }
 
 export function findUp(name: string, directory: string = process.cwd()): string | undefined {
