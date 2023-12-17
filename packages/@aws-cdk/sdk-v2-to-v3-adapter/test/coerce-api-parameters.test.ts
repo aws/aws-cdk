@@ -522,12 +522,201 @@ describe('number', () => {
   });
 });
 
+describe('date', () => {
+  describe('should coerce', () => {
+    test('a nested value', () => {
+      // GIVEN
+      const obj = { a: { b: { c: new Date('2023-01-01').toString() } } };
+
+      // THEN
+      coerce(obj, ['a', 'b', 'c'], 'Date');
+
+      // EXPECT
+      expect(obj).toMatchObject({ a: { b: { c: new Date('2023-01-01') } } });
+    });
+
+    test('values nested in an array', () => {
+      // GIVEN
+      const obj = {
+        a: {
+          b: [
+            { z: new Date('2023-01-01').toString() },
+            { z: new Date('2023-01-02').toString() },
+            { z: new Date('2023-01-03').toString() },
+          ],
+        },
+      };
+
+      // THEN
+      coerce(obj, ['a', 'b', '*', 'z'], 'Date');
+
+      // EXPECT
+      expect(obj).toMatchObject({
+        a: {
+          b: [
+            { z: new Date('2023-01-01') },
+            { z: new Date('2023-01-02') },
+            { z: new Date('2023-01-03') },
+          ],
+        },
+      });
+    });
+
+    test('array elements', () => {
+      // GIVEN
+      const obj = {
+        a: {
+          b: [
+            new Date('2023-01-01').toString(),
+            new Date('2023-01-02').toString(),
+            new Date('2023-01-03').toString(),
+          ],
+        },
+      };
+
+      // THEN
+      coerce(obj, ['a', 'b', '*'], 'Date');
+
+      // EXPECT
+      expect(obj).toMatchObject({
+        a: {
+          b: [
+            new Date('2023-01-01'),
+            new Date('2023-01-02'),
+            new Date('2023-01-03'),
+          ],
+        },
+      });
+    });
+
+    test('values nested in multiple arrays', () => {
+      // GIVEN
+      const obj = {
+        a: {
+          b: [
+            {
+              z: [
+                { y: new Date('2023-01-01').toString() },
+                { y: new Date('2023-01-02').toString() },
+              ],
+            },
+            {
+              z: [
+                { y: new Date('2023-01-03').toString() },
+                { y: new Date('2023-01-04').toString() },
+              ],
+            },
+          ],
+        },
+      };
+
+      // THEN
+      coerce(obj, ['a', 'b', '*', 'z', '*', 'y'], 'Date');
+
+      // EXPECT
+      expect(obj).toMatchObject({
+        a: {
+          b: [
+            { z: [{ y: new Date('2023-01-01') }, { y: new Date('2023-01-02') }] },
+            { z: [{ y: new Date('2023-01-03') }, { y: new Date('2023-01-04') }] },
+          ],
+        },
+      });
+    });
+  });
+
+  describe('should NOT coerce', () => {
+    test('empty string', () => {
+      // GIVEN
+      const obj = { a: { b: { c: '' } } };
+
+      // THEN
+      coerce(obj, ['a', 'b', 'c'], 'Date');
+
+      // EXPECT
+      expect(obj).toMatchObject({ a: { b: { c: '' } } });
+    });
+
+    test('undefined', () => {
+      // GIVEN
+      const obj = { a: { b: { c: undefined } } };
+
+      // THEN
+      coerce(obj, ['a', 'b', 'c'], 'Date');
+
+      // EXPECT
+      expect(obj).toMatchObject({ a: { b: { c: undefined } } });
+    });
+
+    test('null', () => {
+      // GIVEN
+      const obj = { a: { b: { c: null } } };
+
+      // THEN
+      coerce(obj, ['a', 'b', 'c'], 'Date');
+
+      // EXPECT
+      expect(obj).toMatchObject({ a: { b: { c: null } } });
+    });
+
+    test('an path that does not exist in input', () => {
+      // GIVEN
+      const obj = { a: { b: { c: new Date('2023-01-01').toString() } } };
+
+      // THEN
+      coerce(obj, ['a', 'b', 'foobar'], 'Date');
+
+      // EXPECT
+      expect(obj).toMatchObject({ a: { b: { c: new Date('2023-01-01').toString() } } });
+    });
+
+    test('a path that is not a leaf', () => {
+      // GIVEN
+      const obj = { a: { b: { c: new Date('2023-01-01').toString() } } };
+
+      // THEN
+      coerce(obj, ['a', 'b'], 'Date');
+
+      // EXPECT
+      expect(obj).toMatchObject({ a: { b: { c: new Date('2023-01-01').toString() } } });
+    });
+
+    test('do not change anything for empty path', () => {
+      // GIVEN
+      const obj = { a: { b: { c: new Date('2023-01-01').toString() } } };
+
+      // THEN
+      coerce(obj, [], 'Date');
+
+      // EXPECT
+      expect(obj).toMatchObject({ a: { b: { c: new Date('2023-01-01').toString() } } });
+    });
+  });
+
+  describe('given an api call description', () => {
+
+    test('can convert string parameters to number when needed', () => {
+      const params = coerceApiParameters('CloudWatch', 'getMetricData', {
+        MetricDataQueries: [],
+        StartTime: new Date('2023-01-01').toString(),
+        EndTime: new Date('2023-01-02').toString(),
+      });
+
+      expect(params).toMatchObject({
+        MetricDataQueries: [],
+        StartTime: new Date('2023-01-01'),
+        EndTime: new Date('2023-01-02'),
+      });
+    });
+  });
+});
+
 /**
  * A function to convert code testing the old API into code testing the new API
  *
  * Having this function saves manually updating 25 call sites.
  */
-function coerce(value: unknown, path: string[], type: 'Uint8Array' | 'number') {
+function coerce(value: unknown, path: string[], type: 'Uint8Array' | 'number' | 'Date') {
   const sm: TypeCoercionStateMachine = [{}];
   let current = sm[0];
   for (const p of path.slice(0, -1)) {
@@ -535,6 +724,18 @@ function coerce(value: unknown, path: string[], type: 'Uint8Array' | 'number') {
     sm.push({});
     current = sm[sm.length - 1];
   }
-  current[path[path.length - 1]] = type === 'Uint8Array' ? 'b' : 'n';
+  switch (type) {
+    case 'Uint8Array':
+      current[path[path.length - 1]] = 'b';
+      break;
+    case 'number':
+      current[path[path.length - 1]] = 'n';
+      break;
+    case 'Date':
+      current[path[path.length - 1]] = 'd';
+      break;
+    default:
+      throw new Error(`Unexpected type: ${type}`);
+  }
   return new Coercer(sm).testCoerce(value);
 }

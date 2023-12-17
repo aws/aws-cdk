@@ -89,6 +89,9 @@
   "auto-scaling": {
     "iamPrefix": "autoscaling"
   },
+  "b2bi": {
+    "iamPrefix": "b2bi"
+  },
   "backup-gateway": {
     "iamPrefix": "backup-gateway"
   },
@@ -100,6 +103,21 @@
   },
   "batch": {
     "iamPrefix": "batch"
+  },
+  "bcm-data-exports": {
+    "iamPrefix": "bcm-data-exports"
+  },
+  "bedrock-agent-runtime": {
+    "iamPrefix": "bedrock"
+  },
+  "bedrock-agent": {
+    "iamPrefix": "bedrock"
+  },
+  "bedrock-runtime": {
+    "iamPrefix": "bedrock"
+  },
+  "bedrock": {
+    "iamPrefix": "bedrock"
   },
   "billingconductor": {
     "iamPrefix": "billingconductor"
@@ -131,6 +149,9 @@
   "cleanrooms": {
     "iamPrefix": "cleanrooms"
   },
+  "cleanroomsml": {
+    "iamPrefix": "cleanrooms-ml"
+  },
   "cloud9": {
     "iamPrefix": "cloud9"
   },
@@ -142,6 +163,9 @@
   },
   "cloudformation": {
     "iamPrefix": "cloudformation"
+  },
+  "cloudfront-keyvaluestore": {
+    "iamPrefix": "cloudfront-keyvaluestore"
   },
   "cloudfront": {
     "iamPrefix": "cloudfront"
@@ -252,6 +276,9 @@
   "cost-explorer": {
     "iamPrefix": "ce"
   },
+  "cost-optimization-hub": {
+    "iamPrefix": "cost-optimization-hub"
+  },
   "customer-profiles": {
     "iamPrefix": "profile"
   },
@@ -269,6 +296,9 @@
   },
   "datasync": {
     "iamPrefix": "datasync"
+  },
+  "datazone": {
+    "iamPrefix": "datazone"
   },
   "dax": {
     "iamPrefix": "dax"
@@ -329,6 +359,9 @@
   },
   "efs": {
     "iamPrefix": "elasticfilesystem"
+  },
+  "eks-auth": {
+    "iamPrefix": "eks-auth"
   },
   "eks": {
     "iamPrefix": "eks"
@@ -396,14 +429,14 @@
   "frauddetector": {
     "iamPrefix": "frauddetector"
   },
+  "freetier": {
+    "iamPrefix": "freetier"
+  },
   "fsx": {
     "iamPrefix": "fsx"
   },
   "gamelift": {
     "iamPrefix": "gamelift"
-  },
-  "gamesparks": {
-    "iamPrefix": "gamesparks"
   },
   "glacier": {
     "iamPrefix": "glacier"
@@ -446,6 +479,9 @@
   },
   "imagebuilder": {
     "iamPrefix": "imagebuilder"
+  },
+  "inspector-scan": {
+    "iamPrefix": "inspector-scan"
   },
   "inspector": {
     "iamPrefix": "inspector"
@@ -564,6 +600,9 @@
   "lambda": {
     "iamPrefix": "lambda"
   },
+  "launch-wizard": {
+    "iamPrefix": "launchwizard"
+  },
   "lex-model-building-service": {
     "iamPrefix": "lex"
   },
@@ -606,9 +645,6 @@
   "machine-learning": {
     "iamPrefix": "machinelearning"
   },
-  "macie": {
-    "iamPrefix": "macie"
-  },
   "macie2": {
     "iamPrefix": "macie2"
   },
@@ -618,11 +654,17 @@
   "managedblockchain": {
     "iamPrefix": "managedblockchain"
   },
+  "marketplace-agreement": {
+    "iamPrefix": "aws-marketplace"
+  },
   "marketplace-catalog": {
     "iamPrefix": "aws-marketplace"
   },
   "marketplace-commerce-analytics": {
     "iamPrefix": "marketplacecommerceanalytics"
+  },
+  "marketplace-deployment": {
+    "iamPrefix": "aws-marketplace"
   },
   "marketplace-entitlement-service": {
     "iamPrefix": "aws-marketplace"
@@ -692,6 +734,9 @@
   },
   "mwaa": {
     "iamPrefix": "airflow"
+  },
+  "neptune-graph": {
+    "iamPrefix": "neptune-graph"
   },
   "neptune": {
     "iamPrefix": "rds"
@@ -786,6 +831,12 @@
   "proton": {
     "iamPrefix": "proton"
   },
+  "qbusiness": {
+    "iamPrefix": "qbusiness"
+  },
+  "qconnect": {
+    "iamPrefix": "wisdom"
+  },
   "qldb-session": {
     "iamPrefix": "qldb",
     "commands": [
@@ -824,6 +875,9 @@
   },
   "rekognitionstreaming": {
     "iamPrefix": "rekognition"
+  },
+  "repostspace": {
+    "iamPrefix": "repostspace"
   },
   "resiliencehub": {
     "iamPrefix": "resiliencehub"
@@ -980,7 +1034,7 @@
     "iamPrefix": "sso"
   },
   "sso-oidc": {
-    "iamPrefix": "awsssooidc"
+    "iamPrefix": "sso-oauth"
   },
   "sso": {
     "iamPrefix": "awsssoportal"
@@ -1027,6 +1081,9 @@
   "translate": {
     "iamPrefix": "translate"
   },
+  "trustedadvisor": {
+    "iamPrefix": "trustedadvisor"
+  },
   "verifiedpermissions": {
     "iamPrefix": "verifiedpermissions"
   },
@@ -1062,6 +1119,9 @@
   },
   "workmailmessageflow": {
     "iamPrefix": "workmailmessageflow"
+  },
+  "workspaces-thin-client": {
+    "iamPrefix": "thinclient"
   },
   "workspaces-web": {
     "iamPrefix": "workspaces-web"

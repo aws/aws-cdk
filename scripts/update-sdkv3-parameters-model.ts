@@ -163,6 +163,11 @@ async function doFile(v3Name: string, builder: StateMachineBuilder, serviceInfo:
       return;
     }
 
+    if (isDate(shape)) {
+      addCoercion(memberPath, 'd');
+      return;
+    }
+
     if (isShape('structure')(shape) || isShape('union')(shape)) {
       // const allKeys = Object.keys(shape.members ?? {}).sort();
       for (const [field, member] of Object.entries(shape.members ?? {}).sort(sortByKey)) {
@@ -271,7 +276,7 @@ interface PathElement {
 
 type TypeCoercionStateMachine = TypeCoercionState[];
 
-type TypeCoercionTarget = number | 'b' | 'n';
+type TypeCoercionTarget = number | 'b' | 'n' | 'd';
 type TypeCoercionState = Record<string, TypeCoercionTarget>;
 
 interface StateMachineBuilder {
@@ -330,6 +335,10 @@ function isNumber(shape: SmithyShape): boolean {
     isShape('bigInteger')(shape) ||
     isShape('bigDecimal')(shape) ||
     isShape('byte')(shape);
+}
+
+function isDate(shape: SmithyShape): boolean {
+  return isShape('timestamp')(shape)
 }
 
 function sortByKey<A>(e1: [string, A], e2: [string, A]) {
