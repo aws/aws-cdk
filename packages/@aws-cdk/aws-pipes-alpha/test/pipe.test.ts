@@ -15,10 +15,22 @@ describe('Pipe', () => {
     // WHEN
     new Pipe(stack, 'TestPipe', {
       pipeName: 'TestPipe',
-    });
+      source: {
+        grantRead: () => { },
+        sourceArn: 'source-arn',
+        sourceParameters: {},
 
+      },
+      target: {
+        grantPush: () => { },
+        targetArn: 'target-arn',
+        targetParameters: {},
+      },
+    });
+    const template = Template.fromStack(stack);
     // THEN
-    Template.fromStack(stack).resourceCountIs('AWS::Pipes::Pipe', 0);
+    template.resourceCountIs('AWS::Pipes::Pipe', 1);
+    expect(template).toMatchSnapshot();
   });
 
 });
