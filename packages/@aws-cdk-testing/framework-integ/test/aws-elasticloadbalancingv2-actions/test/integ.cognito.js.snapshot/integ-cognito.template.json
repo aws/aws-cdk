@@ -394,11 +394,11 @@
   "Certificate4E7ABB08": {
    "Type": "AWS::CertificateManager::Certificate",
    "Properties": {
-    "DomainName": "*.example.com",
+    "DomainName": "sakurai-ryo.net",
     "DomainValidationOptions": [
      {
-      "DomainName": "*.example.com",
-      "HostedZoneId": "Z23ABC4XYZL05B"
+      "DomainName": "sakurai-ryo.net",
+      "HostedZoneId": "Z00315131HIVC53IKGEOG"
      }
     ],
     "Tags": [
@@ -611,7 +611,7 @@
      "openid"
     ],
     "CallbackURLs": [
-     "https://*.example.com/oauth2/idpresponse"
+     "https://sakurai-ryo.net/oauth2/idpresponse"
     ],
     "ExplicitAuthFlows": [
      "ALLOW_USER_PASSWORD_AUTH",
@@ -630,7 +630,7 @@
   "Domain66AC69E0": {
    "Type": "AWS::Cognito::UserPoolDomain",
    "Properties": {
-    "Domain": "z23abc4xyzl05b",
+    "Domain": "z00315131hivc53ikgeog",
     "UserPoolId": {
      "Ref": "UserPool6BA7E5F2"
     }
@@ -661,8 +661,8 @@
       ]
      }
     },
-    "HostedZoneId": "Z23ABC4XYZL05B",
-    "Name": "example.com.",
+    "HostedZoneId": "Z00315131HIVC53IKGEOG",
+    "Name": "sakurai-ryo.net.",
     "Type": "A"
    }
   },
@@ -687,7 +687,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "UserCustomResourcePolicyC2EB5139"
@@ -749,7 +749,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "UserCustomResourcePolicyC2EB5139",
@@ -827,7 +827,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
+     "S3Key": "0918310da497b2c577f894c8c1b5dbd1efa03ae18dd4cabd1a9fc3e9c61a5703.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -887,7 +887,7 @@
      "Variables": {
       "TEST_USERNAME": "test-user@example.com",
       "TEST_PASSWORD": "TestUser@123",
-      "TEST_URL": "https://*.example.com"
+      "TEST_URL": "https://sakurai-ryo.net"
      }
     },
     "FunctionName": "cdk-integ-alb-cognito-signin-handler",
@@ -909,7 +909,7 @@
  },
  "Outputs": {
   "DNS": {
-   "Value": "*.example.com"
+   "Value": "sakurai-ryo.net"
   },
   "ExportsOutputRefSignin352C80E64BA58F71": {
    "Value": {
