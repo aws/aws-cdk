@@ -84,7 +84,13 @@ export interface IHttpApi extends IApi {
 
   /**
    * Get the "execute-api" ARN.
-   * @default - for all methods/resources in this API.
+   * When 'ANY' is passed to the method, an ARN with the method set to '*' is obtained.
+   *
+   * @default - The default behavior applies when no specific method, path, or stage is provided.
+   * In this case, the ARN will cover all methods, all resources, and all stages of this API.
+   * Specifically, if 'method' is not specified, it defaults to '*', representing all methods.
+   * If 'path' is not specified, it defaults to '/*', representing all paths.
+   * If 'stage' is not specified, it also defaults to '*', representing all stages.
    */
   arnForExecuteApi(method?: string, path?: string, stage?: string): string;
 }
