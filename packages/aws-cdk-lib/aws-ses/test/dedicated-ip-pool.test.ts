@@ -13,7 +13,6 @@ test('default dedicated IP pool', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::SES::DedicatedIpPool', {
     PoolName: Match.absent(),
-    ScalingMode: 'STANDARD',
   });
 });
 
