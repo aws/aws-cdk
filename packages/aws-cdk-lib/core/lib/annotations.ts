@@ -143,7 +143,8 @@ export class Annotations {
   private addMessage(level: string, message: string) {
     const isNew = !this.scope.node.metadata.find((x) => x.data === message);
     if (isNew) {
-      this.scope.node.addMetadata(level, message, { stackTrace: this.stackTraces });
+      let normalizedMessage = typeof message === "string" ? message : JSON.stringify(message);
+      this.scope.node.addMetadata(level, normalizedMessage, { stackTrace: this.stackTraces });
     }
   }
 }
