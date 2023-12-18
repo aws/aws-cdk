@@ -526,7 +526,7 @@ describe('date', () => {
   describe('should coerce', () => {
     test('a nested value', () => {
       // GIVEN
-      const obj = { a: { b: { c: new Date('2023-01-01').toString() } } };
+      const obj = { a: { b: { c: new Date('2023-01-01').toJSON() } } };
 
       // THEN
       coerce(obj, ['a', 'b', 'c'], 'Date');
@@ -540,9 +540,9 @@ describe('date', () => {
       const obj = {
         a: {
           b: [
-            { z: new Date('2023-01-01').toString() },
-            { z: new Date('2023-01-02').toString() },
-            { z: new Date('2023-01-03').toString() },
+            { z: new Date('2023-01-01').toJSON() },
+            { z: new Date('2023-01-02').toJSON() },
+            { z: new Date('2023-01-03').toJSON() },
           ],
         },
       };
@@ -567,9 +567,9 @@ describe('date', () => {
       const obj = {
         a: {
           b: [
-            new Date('2023-01-01').toString(),
-            new Date('2023-01-02').toString(),
-            new Date('2023-01-03').toString(),
+            new Date('2023-01-01').toJSON(),
+            new Date('2023-01-02').toJSON(),
+            new Date('2023-01-03').toJSON(),
           ],
         },
       };
@@ -596,14 +596,14 @@ describe('date', () => {
           b: [
             {
               z: [
-                { y: new Date('2023-01-01').toString() },
-                { y: new Date('2023-01-02').toString() },
+                { y: new Date('2023-01-01').toJSON() },
+                { y: new Date('2023-01-02').toJSON() },
               ],
             },
             {
               z: [
-                { y: new Date('2023-01-03').toString() },
-                { y: new Date('2023-01-04').toString() },
+                { y: new Date('2023-01-03').toJSON() },
+                { y: new Date('2023-01-04').toJSON() },
               ],
             },
           ],
@@ -661,45 +661,44 @@ describe('date', () => {
 
     test('an path that does not exist in input', () => {
       // GIVEN
-      const obj = { a: { b: { c: new Date('2023-01-01').toString() } } };
+      const obj = { a: { b: { c: new Date('2023-01-01').toJSON() } } };
 
       // THEN
       coerce(obj, ['a', 'b', 'foobar'], 'Date');
 
       // EXPECT
-      expect(obj).toMatchObject({ a: { b: { c: new Date('2023-01-01').toString() } } });
+      expect(obj).toMatchObject({ a: { b: { c: new Date('2023-01-01').toJSON() } } });
     });
 
     test('a path that is not a leaf', () => {
       // GIVEN
-      const obj = { a: { b: { c: new Date('2023-01-01').toString() } } };
+      const obj = { a: { b: { c: new Date('2023-01-01').toJSON() } } };
 
       // THEN
       coerce(obj, ['a', 'b'], 'Date');
 
       // EXPECT
-      expect(obj).toMatchObject({ a: { b: { c: new Date('2023-01-01').toString() } } });
+      expect(obj).toMatchObject({ a: { b: { c: new Date('2023-01-01').toJSON() } } });
     });
 
     test('do not change anything for empty path', () => {
       // GIVEN
-      const obj = { a: { b: { c: new Date('2023-01-01').toString() } } };
+      const obj = { a: { b: { c: new Date('2023-01-01').toJSON() } } };
 
       // THEN
       coerce(obj, [], 'Date');
 
       // EXPECT
-      expect(obj).toMatchObject({ a: { b: { c: new Date('2023-01-01').toString() } } });
+      expect(obj).toMatchObject({ a: { b: { c: new Date('2023-01-01').toJSON() } } });
     });
   });
 
   describe('given an api call description', () => {
-
-    test('can convert string parameters to number when needed', () => {
+    test('can convert string parameters to Date when needed', () => {
       const params = coerceApiParameters('CloudWatch', 'getMetricData', {
         MetricDataQueries: [],
-        StartTime: new Date('2023-01-01').toString(),
-        EndTime: new Date('2023-01-02').toString(),
+        StartTime: new Date('2023-01-01').toJSON(),
+        EndTime: new Date('2023-01-02').toJSON(),
       });
 
       expect(params).toMatchObject({
