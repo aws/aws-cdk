@@ -1,4 +1,3 @@
-import { Construct } from 'constructs';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
@@ -29,12 +28,6 @@ import { toPosixPath } from '../private/fs';
 import { actionName, stackVariableNamespace } from '../private/identifiers';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
-import { ArtifactMap } from './artifact-map';
-import { CodeBuildStep } from './codebuild-step';
-import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
-import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
-import { namespaceStepOutputs } from './private/outputs';
-import { StackOutputsMap } from './stack-outputs-map';
 
 /**
  * Properties for a `CodePipeline`
