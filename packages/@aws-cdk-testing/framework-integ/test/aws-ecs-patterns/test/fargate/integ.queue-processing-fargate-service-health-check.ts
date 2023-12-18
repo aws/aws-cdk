@@ -6,26 +6,26 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { QueueProcessingFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-patterns-queue-public');
+const stack = new Stack(app, 'aws-ecs-patterns-queue-health-check');
 const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 const CONTAINER_HEALTH_CHECK_KEY = 'CONTAINER_HEALTH_CHECK_KEY';
 
-new QueueProcessingFargateService(stack, 'PublicQueueService', {
+new QueueProcessingFargateService(stack, 'HealthCheckQueueService', {
   vpc,
   memoryLimitMiB: 512,
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
   assignPublicIp: true,
   healthCheck: {
-    command: ['CMD-SHELL', '%CONTAINER_HEALTH_CHECK_KEY% || exit 1'],
+    command: ['CMD-SHELL', '[\"$CONTAINER_HEALTH_CHECK_KEY\" = \"1\" ] || exit 0'],
     interval: Duration.seconds(10),
     retries: 10,
   },
   environment: {
-    CONTAINER_HEALTH_CHECK_KEY: CONTAINER_HEALTH_CHECK_KEY
-  }
+    CONTAINER_HEALTH_CHECK_KEY: CONTAINER_HEALTH_CHECK_KEY,
+  },
 });
 
-new integ.IntegTest(app, 'publicQueueProcessingFargateServiceTest', {
+new integ.IntegTest(app, 'healthCheckQueueProcessingFargateServiceTest', {
   testCases: [stack],
 });
 

@@ -8,7 +8,7 @@ print('QUEUE_NAME ' + QUEUE_NAME)
 
 if __name__ == '__main__':
     try:
-        client = boto3.client('sqs')
+        client = boto3.client('sqs', region_name='ap-southeast-2')
         queue_url = client.get_queue_url(QueueName=QUEUE_NAME)['QueueUrl']
         print('queue_url ' + queue_url)
         while True:
@@ -21,10 +21,12 @@ if __name__ == '__main__':
                     print(msg['Body'])
                 entries = [{'Id': x['MessageId'], 'ReceiptHandle': x['ReceiptHandle']} for x in response['Messages']]
                 client.delete_message_batch(QueueUrl=queue_url, Entries=entries)
-        os.environ[CONTAINER_HEALTH_CHECK_KEY] = 1
+                
+            os.environ[CONTAINER_HEALTH_CHECK_KEY] = '1'
+            print(os.environ[CONTAINER_HEALTH_CHECK_KEY])
     except Exception as e:
         print(e)
-        os.environ[CONTAINER_HEALTH_CHECK_KEY] = 0
+        os.environ[CONTAINER_HEALTH_CHECK_KEY] = '0'
         raise e
     
 
