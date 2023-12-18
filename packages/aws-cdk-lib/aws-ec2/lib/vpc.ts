@@ -1454,7 +1454,9 @@ export class Vpc extends VpcBase {
    */
   private readonly ipAddresses: IIpAddresses;
 
-  private readonly ipv6Cidr?: string;
+  private readonly ipv6CidrBlock?: CfnVPCCidrBlock;
+
+  private readonly ipv6SelectedCidr?: string;
 
   /**
    * Subnet configurations for this VPC
@@ -1558,15 +1560,14 @@ export class Vpc extends VpcBase {
 
     // TODO: make ipv6 cidr
     if (this.vpcProtocol === VpcProtocol.DUAL_STACK) {
-      new CfnVPCCidrBlock(this, 'ipv6cidr', {
+      this.ipv6CidrBlock = new CfnVPCCidrBlock(this, 'ipv6cidr', {
         vpcId: this.vpcId,
         amazonProvidedIpv6CidrBlock: props.ipv6AmazonProvidedCidrBlock ?? true,
       });
 
-      this.vpcIpv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
-
-      this.ipv6Cidr = Fn.select(0, this.vpcIpv6CidrBlocks);
+      this.ipv6SelectedCidr = Fn.select(0, this.resource.attrIpv6CidrBlocks);
     }
+
     // Add tag here too?
 
     // subnetConfiguration must be set before calling createSubnets
@@ -1610,21 +1611,24 @@ export class Vpc extends VpcBase {
       }
     }
 
+    // need dual stack verification here
     // Create an Egress Only Internet Gateway and attach it if necessary
-    const createEigw = props.ipv6CreateEgressOnlyInternetGateway ?? true;
-    if (createEigw && this.privateSubnets) {
-      const eigw = new CfnEgressOnlyInternetGateway(this, 'EIGW6', {
-        vpcId: this.vpcId,
-      });
-
-      (this.privateSubnets as PrivateSubnet[]).forEach(privateSubnet => {
-        privateSubnet.addRoute('DefaultRoute6', {
-          routerType: RouterType.EGRESS_ONLY_INTERNET_GATEWAY,
-          routerId: eigw.ref,
-          destinationIpv6CidrBlock: '::/0',
-          enablesInternetConnectivity: true,
+    if (this.vpcProtocol === VpcProtocol.DUAL_STACK) {
+      const createEigw = props.ipv6CreateEgressOnlyInternetGateway ?? true;
+      if (createEigw && this.privateSubnets) {
+        const eigw = new CfnEgressOnlyInternetGateway(this, 'EIGW6', {
+          vpcId: this.vpcId,
         });
-      });
+
+        (this.privateSubnets as PrivateSubnet[]).forEach(privateSubnet => {
+          privateSubnet.addRoute('DefaultRoute6', {
+            routerType: RouterType.EGRESS_ONLY_INTERNET_GATEWAY,
+            routerId: eigw.ref,
+            destinationIpv6CidrBlock: '::/0',
+            enablesInternetConnectivity: true,
+          });
+        });
+      }
     }
 
     if (props.vpnGateway && this.publicSubnets.length === 0 && this.privateSubnets.length === 0 && this.isolatedSubnets.length === 0) {
@@ -1670,7 +1674,41 @@ export class Vpc extends VpcBase {
     if ((restrictFlag && props.restrictDefaultSecurityGroup !== false) || props.restrictDefaultSecurityGroup) {
       this.restrictDefaultSecurityGroup();
     }
+
+    /*
+    if (this.vpcProtocol === VpcProtocol.DUAL_STACK) {
+      this.configureDualStackIpv6(props);
+    }
+    */
   }
+
+  /**
+   * Configures IPv6 on subnets
+   */
+  /*
+  private configureDualStackIpv6(props: VpcProps) {
+    const ipv6Cidr = new CfnVPCCidrBlock(this, 'ipv6cidr', {
+      vpcId: this.vpcId,
+      amazonProvidedIpv6CidrBlock: props.ipv6AmazonProvidedCidrBlock ?? true,
+    });
+
+    const allSubnets = [...this.publicSubnets, ...this.privateSubnets, ...this.isolatedSubnets];
+    const numSubnets = allSubnets.length; //assumption that isolated subnets are included here
+    const vpc6cidr = Fn.select(0, this.vpcIpv6CidrBlocks);
+    const subnet6cidrs = Fn.cidr(vpc6cidr, numSubnets, (128 - 64).toString());
+
+    // associate an IPv6 block to each subnets
+    allSubnets.forEach((subnet, i) => {
+      const cidr6 = Fn.select(i, subnet6cidrs);
+
+      const cfnSubnet = subnet.node.defaultChild as CfnSubnet;
+      cfnSubnet.ipv6CidrBlock = cidr6;
+      cfnSubnet.assignIpv6AddressOnCreation = true;
+      cfnSubnet.mapPublicIpOnLaunch = false;
+      subnet.node.addDependency(ipv6Cidr);
+    });
+  }
+  */
 
   /**
    * Adds a new S3 gateway endpoint to this VPC
@@ -1741,10 +1779,9 @@ export class Vpc extends VpcBase {
     }
 
     let subnetIpv6Cidrs: string[] = [];
-    if (this.vpcProtocol === VpcProtocol.DUAL_STACK && this.ipv6Cidr !== undefined) {
-      subnetIpv6Cidrs = Fn.cidr(this.ipv6Cidr, allocatedSubnets.length, (128 - 64).toString());
+    if (this.vpcProtocol === VpcProtocol.DUAL_STACK && this.ipv6SelectedCidr !== undefined) {
+      subnetIpv6Cidrs = Fn.cidr(this.ipv6SelectedCidr, allocatedSubnets.length, (128 - 64).toString());
     }
-
     this.createSubnetResources(requestedSubnets, allocatedSubnets, subnetIpv6Cidrs);
   }
 
@@ -1806,6 +1843,7 @@ export class Vpc extends VpcBase {
             mapPublicIpOnLaunch,
             ipv6CidrBlock: subnetIpv6Cidr,
             assignIpv6AddressOnCreation: subnetConfig.ipv6AssignAddressOnCreation,
+            dependantIpv6CidrBlock: this.ipv6CidrBlock,
           };
         } else {
           throw new Error('IPv6 CIDRs undefined');
@@ -1954,6 +1992,11 @@ export interface SubnetProps {
    * @default false
    */
   readonly assignIpv6AddressOnCreation?: boolean;
+
+  /**
+   * Need to pass the construct to depend on for IPv6 enabled subnets to avoid race conditions.
+   */
+  readonly dependantIpv6CidrBlock?: CfnVPCCidrBlock;
 }
 
 /**
@@ -2053,6 +2096,9 @@ export class Subnet extends Resource implements ISubnet {
       ipv6CidrBlock: props.ipv6CidrBlock,
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation,
     });
+    if (props.dependantIpv6CidrBlock !== undefined) {
+      subnet.node.addDependency(props.dependantIpv6CidrBlock);
+    }
     this.subnetId = subnet.ref;
     this.subnetVpcId = subnet.attrVpcId;
     this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
