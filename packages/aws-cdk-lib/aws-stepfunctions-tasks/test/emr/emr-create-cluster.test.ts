@@ -1,4 +1,4 @@
-import { Template } from '../../../assertions';
+import { Template, Match } from '../../../assertions';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
@@ -730,7 +730,7 @@ test('Create Cluster with AmazonEMRServicePolicy_v2 managed policies', () => {
   const app = new cdk.App({ context: { [ENABLE_EMR_SERVICE_POLICY_V2]: true } });
   const newStack = new cdk.Stack(app, 'NewStack');
 
-  new EmrCreateCluster(newStack, 'Task', {
+  const task = new EmrCreateCluster(newStack, 'Task', {
     instances: {},
     name: 'Cluster',
     integrationPattern: sfn.IntegrationPattern.RUN_JOB,
@@ -745,11 +745,6 @@ test('Create Cluster with AmazonEMRServicePolicy_v2 managed policies', () => {
           Principal: { Service: 'elasticmapreduce.amazonaws.com' },
           Action: 'sts:AssumeRole',
           Effect: 'Allow',
-          Condition: {
-            StringEquals: {
-              'aws:RequestTag/for-use-with-amazon-emr-managed-policies': 'true',
-            },
-          },
         },
       ],
     },
@@ -768,6 +763,43 @@ test('Create Cluster with AmazonEMRServicePolicy_v2 managed policies', () => {
       },
     ],
   });
+
+  expect(stack.resolve(task.toStateJson())).toEqual(expect.objectContaining({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster.sync',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Tags: [{
+        Key: 'for-use-with-amazon-emr-managed-policies',
+        Value: 'true',
+      }],
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'TaskInstanceRoleB72072BF',
+      },
+      ServiceRole: {
+        Ref: 'TaskServiceRoleBF55F61E',
+      },
+      AutoScalingRole: {
+        Ref: 'TaskAutoScalingRoleD06F8423',
+      },
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true,
+      },
+    },
+  }));
 });
 
 test('Create Cluster with Instances configuration', () => {
