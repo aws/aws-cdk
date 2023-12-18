@@ -17,7 +17,7 @@ jobs:
           mkdir -p ./pr
           echo $PR_NUMBER > ./pr/pr_number
           echo $PR_SHA > ./pr/pr_sha
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: pr_info
           path: pr/

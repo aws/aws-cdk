@@ -455,7 +455,7 @@ export class HostedConfiguration extends ConfigurationBase {
       resource: 'application',
       resourceName: `${this.applicationId}/configurationprofile/${this.configurationProfileId}`,
     });
-    this.extensible = new ExtensibleBase(scope, this.configurationProfileArn, this.name);
+    this.extensible = new ExtensibleBase(this, this.configurationProfileArn, this.name);
 
     this.content = props.content.content;
     this.contentType = props.content.contentType;
@@ -617,7 +617,7 @@ export class SourcedConfiguration extends ConfigurationBase {
       resource: 'application',
       resourceName: `${this.applicationId}/configurationprofile/${this.configurationProfileId}`,
     });
-    this.extensible = new ExtensibleBase(scope, this.configurationProfileArn, this.name);
+    this.extensible = new ExtensibleBase(this, this.configurationProfileArn, this.name);
 
     this.addExistingEnvironmentsToApplication();
     this.deployConfigToEnvironments();

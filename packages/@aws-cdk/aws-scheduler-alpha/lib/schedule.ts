@@ -60,6 +60,47 @@ export interface ScheduleTargetProps {
 }
 
 /**
+ * A time window during which EventBridge Scheduler invokes the schedule.
+ */
+export class TimeWindow {
+  /**
+   * TimeWindow is disabled.
+   */
+  public static off(): TimeWindow {
+    return new TimeWindow('OFF');
+  }
+
+  /**
+   * TimeWindow is enabled.
+   */
+  public static flexible(maxWindow: Duration): TimeWindow {
+    if (maxWindow.toMinutes() < 1 || maxWindow.toMinutes() > 1440) {
+      throw new Error(`The provided duration must be between 1 minute and 1440 minutes, got ${maxWindow.toMinutes()}`);
+    }
+    return new TimeWindow('FLEXIBLE', maxWindow);
+  }
+
+  /**
+   * Determines whether the schedule is invoked within a flexible time window.
+   */
+  public readonly mode: 'OFF' | 'FLEXIBLE';
+
+  /**
+   * The maximum time window during which the schedule can be invoked.
+   *
+   * Must be between 1 to 1440 minutes.
+   *
+   * @default - no value
+   */
+  public readonly maxWindow?: Duration;
+
+  private constructor(mode: 'OFF' | 'FLEXIBLE', maxWindow?: Duration) {
+    this.mode = mode;
+    this.maxWindow = maxWindow;
+  }
+}
+
+/**
  * Construction properties for `Schedule`.
  */
 export interface ScheduleProps {
@@ -104,6 +145,7 @@ export interface ScheduleProps {
 
   /**
    * Indicates whether the schedule is enabled.
+   *
    * @default true
    */
   readonly enabled?: boolean;
@@ -114,6 +156,31 @@ export interface ScheduleProps {
    * @default - All events in Scheduler are encrypted with a key that AWS owns and manages.
    */
   readonly key?: kms.IKey;
+
+  /**
+   * A time window during which EventBridge Scheduler invokes the schedule.
+   *
+   * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-schedule-flexible-time-windows.html
+   *
+   * @default TimeWindow.off()
+   */
+  readonly timeWindow?: TimeWindow;
+
+  /**
+   * The date, in UTC, after which the schedule can begin invoking its target.
+   * EventBridge Scheduler ignores start for one-time schedules.
+   *
+   * @default - no value
+   */
+  readonly start?: Date;
+
+  /**
+   * The date, in UTC, before which the schedule can invoke its target.
+   * EventBridge Scheduler ignores end for one-time schedules.
+   *
+   * @default - no value
+   */
+  readonly end?: Date;
 }
 
 /**
@@ -254,9 +321,16 @@ export class Schedule extends Resource implements ISchedule {
 
     this.retryPolicy = targetConfig.retryPolicy;
 
+    const flexibleTimeWindow = props.timeWindow ?? TimeWindow.off();
+
+    this.validateTimeFrame(props.start, props.end);
+
     const resource = new CfnSchedule(this, 'Resource', {
       name: this.physicalName,
-      flexibleTimeWindow: { mode: 'OFF' },
+      flexibleTimeWindow: {
+        mode: flexibleTimeWindow.mode,
+        maximumWindowInMinutes: flexibleTimeWindow.maxWindow?.toMinutes(),
+      },
       scheduleExpression: props.schedule.expressionString,
       scheduleExpressionTimezone: props.schedule.timeZone?.timezoneName,
       groupName: this.group?.groupName,
@@ -276,6 +350,8 @@ export class Schedule extends Resource implements ISchedule {
         sageMakerPipelineParameters: targetConfig.sageMakerPipelineParameters,
         sqsParameters: targetConfig.sqsParameters,
       },
+      startDate: props.start?.toISOString(),
+      endDate: props.end?.toISOString(),
     });
 
     this.scheduleName = this.getResourceNameAttribute(resource.ref);
@@ -305,5 +381,11 @@ export class Schedule extends Resource implements ISchedule {
 
     const isEmptyPolicy = Object.values(policy).every(value => value === undefined);
     return !isEmptyPolicy ? policy : undefined;
+  }
+
+  private validateTimeFrame(start?: Date, end?: Date) {
+    if (start && end && start >= end) {
+      throw new Error(`start must precede end, got start: ${start.toISOString()}, end: ${end.toISOString()}`);
+    }
   }
 }
