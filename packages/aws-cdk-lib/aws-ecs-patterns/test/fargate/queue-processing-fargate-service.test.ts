@@ -569,12 +569,7 @@ testDeprecated('test Fargate queue worker service construct - with custom cpu sc
     cpuTargetUtilizationPercent: 80,
   });
 
-  // THEN - CPU target tracking policy is created
-  Template.fromStack(stack).resourcePropertiesCountIs('AWS::ApplicationAutoScaling::ScalingPolicy', {
-    PolicyType: 'TargetTrackingScaling',
-  }, 1);
-
-  // AND - CPU target utilization set
+  // THEN - CPU target utilization set
   Template.fromStack(stack). hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
     PolicyType: 'TargetTrackingScaling',
     TargetTrackingScalingPolicyConfiguration: {
