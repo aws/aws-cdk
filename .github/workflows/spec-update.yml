@@ -31,7 +31,7 @@ jobs:
 
       # Upload the current db to be used later
       - name: Upload base database
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: db.base.json.gz
           path: node_modules/@aws-cdk/aws-service-spec/db.json.gz
@@ -49,7 +49,7 @@ jobs:
 
       # Now that we have updated the database, upload the new candidate db
       - name: Upload head database
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: db.head.json.gz
           path: node_modules/@aws-cdk/aws-service-spec/db.json.gz
@@ -69,7 +69,7 @@ jobs:
           git add .
           git diff --patch --staged > ${{ runner.temp }}/update-spec.patch
       - name: Upload Patch
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: update-spec.patch
           path: ${{ runner.temp }}/update-spec.patch
@@ -110,7 +110,7 @@ jobs:
           cat DIFF >> PR.md
           echo '```' >> PR.md
       - name: Upload PR body file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: PR.md
           path: PR.md
