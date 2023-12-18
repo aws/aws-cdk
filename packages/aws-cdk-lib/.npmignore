@@ -15,6 +15,7 @@ coverage
 # Build gear
 build-tools
 dist
+!custom-resource-handlers/dist/
 scripts
 .LAST_BUILD
 .LAST_PACKAGE
@@ -40,3 +41,6 @@ junit.xml
 
 # Nested node_modules
 aws-certificatemanager/lambda-packages/dns_validated_certificate_handler/node_modules
+
+# awslint config
+awslint.json

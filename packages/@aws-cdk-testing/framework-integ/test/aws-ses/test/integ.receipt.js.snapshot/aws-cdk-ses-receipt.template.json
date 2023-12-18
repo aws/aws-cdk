@@ -31,6 +31,9 @@
   "RuleSetFirstRule0A27C8CC": {
    "Type": "AWS::SES::ReceiptRule",
    "Properties": {
+    "After": {
+     "Ref": "RuleSetDropSpamRule5809F51B"
+    },
     "Rule": {
      "Enabled": true,
      "Name": "FirstRule",
@@ -42,23 +45,20 @@
     },
     "RuleSetName": {
      "Ref": "RuleSetE30C6C48"
-    },
-    "After": {
-     "Ref": "RuleSetDropSpamRule5809F51B"
     }
    }
   },
   "RuleSetSecondRule03178AD4": {
    "Type": "AWS::SES::ReceiptRule",
    "Properties": {
+    "After": {
+     "Ref": "RuleSetFirstRule0A27C8CC"
+    },
     "Rule": {
      "Enabled": true
     },
     "RuleSetName": {
      "Ref": "RuleSetE30C6C48"
-    },
-    "After": {
-     "Ref": "RuleSetFirstRule0A27C8CC"
     }
    }
   },
@@ -100,16 +100,16 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34.zip"
+     "S3Key": "19044c50ec489a0413f51a8e60d6272e5746e9b5a0356ed15c12de97c3ca93ec.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "SingletonLambda224e77f9a32e4b4dac32983477abba16ServiceRole3037F5B4",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "SingletonLambda224e77f9a32e4b4dac32983477abba16ServiceRole3037F5B4"

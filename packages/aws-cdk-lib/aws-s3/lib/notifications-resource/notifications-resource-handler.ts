@@ -22,7 +22,7 @@ export class NotificationsResourceHandlerProps {
  * For 'Delete' operations, we send an empty NotificationConfiguration as
  * required. We propagate errors and results as-is.
  *
- * Sadly, we can't use @aws-cdk/aws-lambda as it will introduce a dependency
+ * Sadly, we can't use aws-cdk-lib/aws-lambda as it will introduce a dependency
  * cycle, so this uses raw `cdk.Resource`s.
  */
 export class NotificationsResourceHandler extends Construct {
@@ -82,7 +82,7 @@ export class NotificationsResourceHandler extends Construct {
       }
     }
 
-    const handlerSource = fs.readFileSync(path.join(__dirname, 'lambda/index.py'), 'utf8');
+    const handlerSource = fs.readFileSync(path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-s3', 'notifications-resource-handler', 'index.py'), 'utf8');
 
     // Removing lines that starts with '#' (comment lines) in order to fit the 4096 limit
     const handlerSourceWithoutComments = handlerSource.replace(/^ *#.*\n?/gm, '');

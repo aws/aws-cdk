@@ -34,6 +34,7 @@ rule.addTarget(new targets.EcsTask({
   cluster,
   taskDefinition,
   taskCount: 1,
+  enableExecuteCommand: true,
   containerOverrides: [{
     containerName: 'TheContainer',
     environment: [
@@ -49,6 +50,16 @@ rule.addTarget(new targets.EcsTask({
     },
   ],
 }));
+
+// add public EcsTask as the target of the Rule
+rule.addTarget(
+  new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    assignPublicIp: true,
+    subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+  }),
+);
 
 new integ.IntegTest(app, 'EcsFargateTest', {
   testCases: [stack],

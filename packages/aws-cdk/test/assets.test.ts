@@ -1,22 +1,33 @@
 /* eslint-disable import/order */
 import { AssetMetadataEntry } from '@aws-cdk/cloud-assembly-schema';
-import { testStack } from './util';
-import { MockSdk } from './util/mock-sdk';
-import { MockToolkitInfo } from './util/mock-toolkitinfo';
-import { ToolkitInfo } from '../lib/api';
+import { testStack, withMocked } from './util';
 import { addMetadataAssetsToManifest } from '../lib/assets';
 import { AssetManifestBuilder } from '../lib/util/asset-manifest-builder';
+import { EnvironmentResources, EnvironmentResourcesRegistry } from '../lib/api/environment-resources';
+import { MockSdk } from './util/mock-sdk';
+import { MockToolkitInfo } from './util/mock-toolkitinfo';
 
-let toolkit: ToolkitInfo;
 let assets: AssetManifestBuilder;
+let envRegistry: EnvironmentResourcesRegistry;
+let envResources: EnvironmentResources;
+let toolkitMock: ReturnType<typeof MockToolkitInfo.setup>;
 beforeEach(() => {
-  toolkit = new MockToolkitInfo(new MockSdk());
   assets = new AssetManifestBuilder();
+  envRegistry = new EnvironmentResourcesRegistry();
+
+  const sdk = new MockSdk();
+  envResources = envRegistry.for({ account: '11111111', region: 'us-nowhere', name: 'aws://11111111/us-nowhere' }, sdk);
+  toolkitMock = MockToolkitInfo.setup();
+});
+
+afterEach(() => {
+  toolkitMock.dispose();
 });
 
 describe('file assets', () => {
   test('convert to manifest and parameters', async () => {
     // GIVEN
+    const ext = __filename.match(/\.([tj]s)$/)?.[1];
     const stack = stackWithAssets([
       {
         sourceHash: 'source-hash',
@@ -30,12 +41,12 @@ describe('file assets', () => {
     ]);
 
     // WHEN
-    const params = await addMetadataAssetsToManifest(stack, assets, toolkit);
+    const params = await addMetadataAssetsToManifest(stack, assets, envResources);
 
     // THEN
     expect(params).toEqual({
       BucketParameter: 'MockToolkitBucketName',
-      KeyParameter: 'assets/SomeStackSomeResource4567/||source-hash.js',
+      KeyParameter: `assets/SomeStackSomeResource4567/||source-hash.${ext}`,
       ArtifactHashParameter: 'source-hash',
     });
 
@@ -43,7 +54,7 @@ describe('file assets', () => {
       expect.objectContaining({
         destination: {
           bucketName: 'MockToolkitBucketName',
-          objectKey: 'assets/SomeStackSomeResource4567/source-hash.js',
+          objectKey: `assets/SomeStackSomeResource4567/source-hash.${ext}`,
         },
         source: {
           packaging: 'file',
@@ -55,6 +66,7 @@ describe('file assets', () => {
 
   test('hash and ID the same => only one path component', async () => {
     // GIVEN
+    const ext = __filename.match(/\.([tj]s)$/)?.[1];
     const stack = stackWithAssets([
       {
         sourceHash: 'source-hash',
@@ -68,14 +80,14 @@ describe('file assets', () => {
     ]);
 
     // WHEN
-    await addMetadataAssetsToManifest(stack, assets, toolkit);
+    await addMetadataAssetsToManifest(stack, assets, envResources);
 
     // THEN
     expect(assets.toManifest('.').entries).toEqual([
       expect.objectContaining({
         destination: {
           bucketName: 'MockToolkitBucketName',
-          objectKey: 'assets/source-hash.js',
+          objectKey: `assets/source-hash.${ext}`,
         },
       }),
     ]);
@@ -96,7 +108,7 @@ describe('file assets', () => {
     ]);
 
     // WHEN
-    const params = await addMetadataAssetsToManifest(stack, assets, toolkit, ['SomeStackSomeResource4567']);
+    const params = await addMetadataAssetsToManifest(stack, assets, envResources, ['SomeStackSomeResource4567']);
 
     // THEN
     expect(params).toEqual({
@@ -108,38 +120,40 @@ describe('file assets', () => {
 
 describe('docker assets', () => {
   test('parameter and no repository name (old)', async () => {
-    // GIVEN
-    const stack = stackWithAssets([
-      {
-        id: 'Stack:Construct/ABC123',
-        imageNameParameter: 'MyParameter',
-        packaging: 'container-image',
-        path: '/foo',
-        sourceHash: '0123456789abcdef',
-      },
-    ]);
-    mockFn(toolkit.prepareEcrRepository).mockResolvedValue({ repositoryUri: 'docker.uri' });
+    await withMocked(envResources, 'prepareEcrRepository', async () => {
+      // GIVEN
+      const stack = stackWithAssets([
+        {
+          id: 'Stack:Construct/ABC123',
+          imageNameParameter: 'MyParameter',
+          packaging: 'container-image',
+          path: '/foo',
+          sourceHash: '0123456789abcdef',
+        },
+      ]);
+      mockFn(envResources.prepareEcrRepository).mockResolvedValue({ repositoryUri: 'docker.uri' });
 
-    // WHEN
-    const params = await addMetadataAssetsToManifest(stack, assets, toolkit);
+      // WHEN
+      const params = await addMetadataAssetsToManifest(stack, assets, envResources);
 
-    // THEN
-    expect(toolkit.prepareEcrRepository).toHaveBeenCalledWith('cdk/stack-construct-abc123');
-    expect(params).toEqual({
-      MyParameter: 'docker.uri:0123456789abcdef',
+      // THEN
+      expect(envResources.prepareEcrRepository).toHaveBeenCalledWith('cdk/stack-construct-abc123');
+      expect(params).toEqual({
+        MyParameter: 'docker.uri:0123456789abcdef',
+      });
+      expect(assets.toManifest('.').entries).toEqual([
+        expect.objectContaining({
+          type: 'docker-image',
+          destination: {
+            imageTag: '0123456789abcdef',
+            repositoryName: 'cdk/stack-construct-abc123',
+          },
+          source: {
+            directory: '/foo',
+          },
+        }),
+      ]);
     });
-    expect(assets.toManifest('.').entries).toEqual([
-      expect.objectContaining({
-        type: 'docker-image',
-        destination: {
-          imageTag: '0123456789abcdef',
-          repositoryName: 'cdk/stack-construct-abc123',
-        },
-        source: {
-          directory: '/foo',
-        },
-      }),
-    ]);
   });
 
   test('if parameter is left out then repo and tag are required', async () => {
@@ -153,41 +167,43 @@ describe('docker assets', () => {
       },
     ]);
 
-    await expect(addMetadataAssetsToManifest(stack, assets, toolkit)).rejects.toThrow('Invalid Docker image asset');
+    await expect(addMetadataAssetsToManifest(stack, assets, envResources)).rejects.toThrow('Invalid Docker image asset');
   });
 
   test('no parameter and repo/tag name (new)', async () => {
-    // GIVEN
-    const stack = stackWithAssets([
-      {
-        id: 'Stack:Construct/ABC123',
-        repositoryName: 'reponame',
-        imageTag: '12345',
-        packaging: 'container-image',
-        path: '/foo',
-        sourceHash: '0123456789abcdef',
-      },
-    ]);
-    mockFn(toolkit.prepareEcrRepository).mockResolvedValue({ repositoryUri: 'docker.uri' });
-
-    // WHEN
-    const params = await addMetadataAssetsToManifest(stack, assets, toolkit);
-
-    // THEN
-    expect(toolkit.prepareEcrRepository).toHaveBeenCalledWith('reponame');
-    expect(params).toEqual({}); // No parameters!
-    expect(assets.toManifest('.').entries).toEqual([
-      expect.objectContaining({
-        type: 'docker-image',
-        destination: {
-          imageTag: '12345',
+    await withMocked(envResources, 'prepareEcrRepository', async () => {
+      // GIVEN
+      const stack = stackWithAssets([
+        {
+          id: 'Stack:Construct/ABC123',
           repositoryName: 'reponame',
+          imageTag: '12345',
+          packaging: 'container-image',
+          path: '/foo',
+          sourceHash: '0123456789abcdef',
         },
-        source: {
-          directory: '/foo',
-        },
-      }),
-    ]);
+      ]);
+      mockFn(envResources.prepareEcrRepository).mockResolvedValue({ repositoryUri: 'docker.uri' });
+
+      // WHEN
+      const params = await addMetadataAssetsToManifest(stack, assets, envResources);
+
+      // THEN
+      expect(envResources.prepareEcrRepository).toHaveBeenCalledWith('reponame');
+      expect(params).toEqual({}); // No parameters!
+      expect(assets.toManifest('.').entries).toEqual([
+        expect.objectContaining({
+          type: 'docker-image',
+          destination: {
+            imageTag: '12345',
+            repositoryName: 'reponame',
+          },
+          source: {
+            directory: '/foo',
+          },
+        }),
+      ]);
+    });
   });
 
   test('reuse', async () => {
@@ -203,7 +219,7 @@ describe('docker assets', () => {
     ]);
 
     // WHEN
-    const params = await addMetadataAssetsToManifest(stack, assets, toolkit, ['SomeStackSomeResource4567']);
+    const params = await addMetadataAssetsToManifest(stack, assets, envResources, ['SomeStackSomeResource4567']);
 
     // THEN
     expect(params).toEqual({

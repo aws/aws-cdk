@@ -1,0 +1,322 @@
+{
+ "Resources": {
+  "Stream790BDEE4": {
+   "Type": "AWS::Kinesis::Stream",
+   "Properties": {
+    "RetentionPeriodHours": 24,
+    "ShardCount": 1,
+    "StreamEncryption": {
+     "Fn::If": [
+      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+      {
+       "Ref": "AWS::NoValue"
+      },
+      {
+       "EncryptionType": "KMS",
+       "KeyId": "alias/aws/kinesis"
+      }
+     ]
+    }
+   }
+  },
+  "GlobalTable89F068B2": {
+   "Type": "AWS::DynamoDB::GlobalTable",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "sk",
+      "AttributeType": "N"
+     }
+    ],
+    "BillingMode": "PROVISIONED",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "gsi1",
+      "KeySchema": [
+       {
+        "AttributeName": "pk",
+        "KeyType": "HASH"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      },
+      "WriteProvisionedThroughputSettings": {
+       "WriteCapacityAutoScalingSettings": {
+        "MaxCapacity": 20,
+        "MinCapacity": 1,
+        "SeedCapacity": 10,
+        "TargetTrackingScalingPolicyConfiguration": {
+         "TargetValue": 60
+        }
+       }
+      }
+     },
+     {
+      "IndexName": "gsi2",
+      "KeySchema": [
+       {
+        "AttributeName": "pk",
+        "KeyType": "HASH"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      },
+      "WriteProvisionedThroughputSettings": {
+       "WriteCapacityAutoScalingSettings": {
+        "MaxCapacity": 30,
+        "MinCapacity": 1,
+        "TargetTrackingScalingPolicyConfiguration": {
+         "TargetValue": 70
+        }
+       }
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sk",
+      "KeyType": "RANGE"
+     }
+    ],
+    "LocalSecondaryIndexes": [
+     {
+      "IndexName": "lsi",
+      "KeySchema": [
+       {
+        "AttributeName": "pk",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "sk",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "Replicas": [
+     {
+      "ContributorInsightsSpecification": {
+       "Enabled": true
+      },
+      "GlobalSecondaryIndexes": [
+       {
+        "ContributorInsightsSpecification": {
+         "Enabled": true
+        },
+        "IndexName": "gsi1",
+        "ReadProvisionedThroughputSettings": {
+         "ReadCapacityUnits": 10
+        }
+       },
+       {
+        "ContributorInsightsSpecification": {
+         "Enabled": false
+        },
+        "IndexName": "gsi2",
+        "ReadProvisionedThroughputSettings": {
+         "ReadCapacityUnits": 10
+        }
+       }
+      ],
+      "PointInTimeRecoverySpecification": {
+       "PointInTimeRecoveryEnabled": true
+      },
+      "ReadProvisionedThroughputSettings": {
+       "ReadCapacityAutoScalingSettings": {
+        "MaxCapacity": 25,
+        "MinCapacity": 5,
+        "TargetTrackingScalingPolicyConfiguration": {
+         "TargetValue": 70
+        }
+       }
+      },
+      "Region": "us-east-2",
+      "TableClass": "STANDARD_INFREQUENT_ACCESS",
+      "Tags": [
+       {
+        "Key": "USE2ReplicaTagKey",
+        "Value": "USE2ReplicaTagValue"
+       }
+      ]
+     },
+     {
+      "ContributorInsightsSpecification": {
+       "Enabled": false
+      },
+      "GlobalSecondaryIndexes": [
+       {
+        "IndexName": "gsi1",
+        "ReadProvisionedThroughputSettings": {
+         "ReadCapacityUnits": 15
+        }
+       },
+       {
+        "ContributorInsightsSpecification": {
+         "Enabled": true
+        },
+        "IndexName": "gsi2",
+        "ReadProvisionedThroughputSettings": {
+         "ReadCapacityUnits": 10
+        }
+       }
+      ],
+      "PointInTimeRecoverySpecification": {
+       "PointInTimeRecoveryEnabled": true
+      },
+      "ReadProvisionedThroughputSettings": {
+       "ReadCapacityUnits": 10
+      },
+      "Region": "us-west-2",
+      "TableClass": "STANDARD",
+      "Tags": [
+       {
+        "Key": "USW2ReplicaTagKey",
+        "Value": "USW2ReplicaTagValue"
+       }
+      ]
+     },
+     {
+      "ContributorInsightsSpecification": {
+       "Enabled": true
+      },
+      "GlobalSecondaryIndexes": [
+       {
+        "ContributorInsightsSpecification": {
+         "Enabled": true
+        },
+        "IndexName": "gsi1",
+        "ReadProvisionedThroughputSettings": {
+         "ReadCapacityUnits": 10
+        }
+       },
+       {
+        "ContributorInsightsSpecification": {
+         "Enabled": true
+        },
+        "IndexName": "gsi2",
+        "ReadProvisionedThroughputSettings": {
+         "ReadCapacityUnits": 10
+        }
+       }
+      ],
+      "KinesisStreamSpecification": {
+       "StreamArn": {
+        "Fn::GetAtt": [
+         "Stream790BDEE4",
+         "Arn"
+        ]
+       }
+      },
+      "PointInTimeRecoverySpecification": {
+       "PointInTimeRecoveryEnabled": true
+      },
+      "ReadProvisionedThroughputSettings": {
+       "ReadCapacityUnits": 10
+      },
+      "Region": "us-east-1",
+      "TableClass": "STANDARD_INFREQUENT_ACCESS",
+      "Tags": [
+       {
+        "Key": "primaryTableTagKey",
+        "Value": "primaryTableTagValue"
+       }
+      ]
+     }
+    ],
+    "SSESpecification": {
+     "SSEEnabled": true,
+     "SSEType": "KMS"
+    },
+    "StreamSpecification": {
+     "StreamViewType": "NEW_AND_OLD_IMAGES"
+    },
+    "TableName": "my-global-table",
+    "TimeToLiveSpecification": {
+     "AttributeName": "attr",
+     "Enabled": true
+    },
+    "WriteProvisionedThroughputSettings": {
+     "WriteCapacityAutoScalingSettings": {
+      "MaxCapacity": 20,
+      "MinCapacity": 1,
+      "SeedCapacity": 10,
+      "TargetTrackingScalingPolicyConfiguration": {
+       "TargetValue": 60
+      }
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Conditions": {
+  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+   "Fn::Or": [
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-north-1"
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-northwest-1"
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -13,7 +13,7 @@ import { IStage } from './stage';
 import { validateHttpMethod } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
+import { Annotations, ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
 import { APIGATEWAY_REQUEST_VALIDATOR_UNIQUE_ID } from '../../cx-api';
 
 export interface MethodOptions {
@@ -173,7 +173,7 @@ export class Method extends Resource {
    */
   public readonly api: IRestApi;
 
-  private methodResponses: MethodResponse[];
+  private readonly methodResponses: MethodResponse[] = [];
 
   constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
@@ -203,7 +203,9 @@ export class Method extends Resource {
       authorizer._attachToApi(this.api);
     }
 
-    this.methodResponses = options.methodResponses ?? [];
+    for (const mr of options.methodResponses ?? defaultMethodOptions.methodResponses ?? []) {
+      this.addMethodResponse(mr);
+    }
 
     const integration = props.integration ?? this.resource.defaultIntegration ?? new MockIntegration();
     const bindResult = integration.bind(this);
@@ -213,7 +215,7 @@ export class Method extends Resource {
       restApiId: this.api.restApiId,
       httpMethod: this.httpMethod,
       operationName: options.operationName || defaultMethodOptions.operationName,
-      apiKeyRequired: options.apiKeyRequired || defaultMethodOptions.apiKeyRequired,
+      apiKeyRequired: options.apiKeyRequired ?? defaultMethodOptions.apiKeyRequired,
       authorizationType,
       authorizerId,
       requestParameters: options.requestParameters || defaultMethodOptions.requestParameters,
@@ -278,8 +280,16 @@ export class Method extends Resource {
 
   /**
    * Add a method response to this method
+   *
+   * You should only add one method reponse for every status code. The API allows it
+   * for historical reasons, but will add a warning if this happens. If you do, your Method
+   * will nondeterministically use one of the responses, and ignore the rest.
    */
   public addMethodResponse(methodResponse: MethodResponse): void {
+    const mr = this.methodResponses.find((x) => x.statusCode === methodResponse.statusCode);
+    if (mr) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-apigateway:duplicateStatusCodes', `addMethodResponse called multiple times with statusCode=${methodResponse.statusCode}, deployment will be nondeterministic. Use a single addMethodResponse call to configure the entire response.`);
+    }
     this.methodResponses.push(methodResponse);
   }
 
@@ -322,12 +332,8 @@ export class Method extends Resource {
       let responseModels: {[contentType: string]: string} | undefined;
 
       if (mr.responseModels) {
-        responseModels = {};
-        for (const contentType in mr.responseModels) {
-          if (mr.responseModels.hasOwnProperty(contentType)) {
-            responseModels[contentType] = mr.responseModels[contentType].modelId;
-          }
-        }
+        responseModels = Object.fromEntries(Object.entries(mr.responseModels)
+          .map(([contentType, rm]) => [contentType, rm.modelId]));
       }
 
       const methodResponseProp = {

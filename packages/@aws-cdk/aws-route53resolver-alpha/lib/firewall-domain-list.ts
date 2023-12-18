@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { IBucket } from 'aws-cdk-lib/aws-s3';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
-import { IResource, Resource, Token } from 'aws-cdk-lib';
+import { IResource, Resource, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnFirewallDomainList } from 'aws-cdk-lib/aws-route53resolver';
 

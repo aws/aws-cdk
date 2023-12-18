@@ -906,7 +906,7 @@
      },
      {
       "Key": "idle_timeout.timeout_seconds",
-      "Value": "400"
+      "Value": "5"
      }
     ],
     "Scheme": "internet-facing",
@@ -1053,10 +1053,10 @@
       }
      }
     ],
+    "Priority": 10,
     "ListenerArn": {
      "Ref": "myServicelblistener1D7944F2"
-    },
-    "Priority": 10
+    }
    }
   },
   "myServiceDNSlb1E167074": {
@@ -1101,7 +1101,7 @@
      },
      {
       "Key": "idle_timeout.timeout_seconds",
-      "Value": "400"
+      "Value": "500"
      }
     ],
     "Scheme": "internet-facing",
@@ -1248,10 +1248,10 @@
       }
      }
     ],
+    "Priority": 10,
     "ListenerArn": {
      "Ref": "myServicelb2listener2AA6970EB"
-    },
-    "Priority": 10
+    }
    }
   },
   "myServiceDNSlb2811DE909": {
@@ -1450,6 +1450,11 @@
      "Ref": "ClusterEB0386A7"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -1500,7 +1505,9 @@
     "myServicelb2listener2ECSTargetGroupweb443Group8FAB1268",
     "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6",
     "myServicelb2listener2ECSTargetGroupweb80Rule2490715C",
-    "myServicelb2listener2AA6970EB"
+    "myServicelb2listener2AA6970EB",
+    "myServiceTaskDefTaskRoleDefaultPolicyD48473C0",
+    "myServiceTaskDefTaskRole1C1DE6CC"
    ]
   }
  },

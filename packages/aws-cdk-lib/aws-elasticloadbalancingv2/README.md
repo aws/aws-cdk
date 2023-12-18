@@ -2,7 +2,7 @@
 
 
 
-The `@aws-cdk/aws-elasticloadbalancingv2` package provides constructs for
+The `aws-cdk-lib/aws-elasticloadbalancingv2` package provides constructs for
 configuring application and network load balancers.
 
 For more information, see the AWS documentation for
@@ -133,7 +133,7 @@ Balancer that the other two convenience methods don't:
   redirect response (ALB only).
 - **Authentication**: use `ListenerAction.authenticateOidc()` to
   perform OpenID authentication before serving a request (see the
-  `@aws-cdk/aws-elasticloadbalancingv2-actions` package for direct authentication
+  `aws-cdk-lib/aws-elasticloadbalancingv2-actions` package for direct authentication
   integration with Cognito) (ALB only).
 
 Here's an example of serving a fixed response at the `/ok` URL:
@@ -230,12 +230,14 @@ Balancers:
 ```ts
 declare const vpc: ec2.Vpc;
 declare const asg: autoscaling.AutoScalingGroup;
+declare const sg: ec2.ISecurityGroup;
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
 const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   vpc,
-  internetFacing: true
+  internetFacing: true,
+  securityGroups: [sg],
 });
 
 // Add a listener on a particular port.
@@ -338,7 +340,7 @@ const tg = new elbv2.ApplicationTargetGroup(this, 'TG', {
 ## Using Lambda Targets
 
 To use a Lambda Function as a target, use the integration class in the
-`@aws-cdk/aws-elasticloadbalancingv2-targets` package:
+`aws-cdk-lib/aws-elasticloadbalancingv2-targets` package:
 
 ```ts
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -364,7 +366,7 @@ Only a single Lambda function can be added to a single listener rule.
 ## Using Application Load Balancer Targets
 
 To use a single application load balancer as a target for the network load balancer, use the integration class in the
-`@aws-cdk/aws-elasticloadbalancingv2-targets` package:
+`aws-cdk-lib/aws-elasticloadbalancingv2-targets` package:
 
 ```ts
 import * as targets from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';

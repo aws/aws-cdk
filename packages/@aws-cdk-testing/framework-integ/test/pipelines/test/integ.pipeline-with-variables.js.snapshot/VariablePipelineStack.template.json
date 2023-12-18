@@ -25,7 +25,8 @@
        "Action": [
         "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*"
+        "s3:List*",
+        "s3:PutBucketPolicy"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -112,18 +113,18 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "40aa87cdf43c4095cec18bc443965f22ab2f8c1ace47e482a0ba4e35d83b0cc9.zip"
+     "S3Key": "2ec8ad9e91dcd6e7ad6a5c84ffc6c9c05c408aca3b26ceb2816d81043e6c4dc3.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x",
+    "Runtime": "nodejs18.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -301,6 +302,13 @@
   "Pipeline9850B417": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
+    "ArtifactStore": {
+     "Location": {
+      "Ref": "PipelineArtifactsBucketAEA9A052"
+     },
+     "Type": "S3"
+    },
+    "RestartExecutionOnUpdate": true,
     "RoleArn": {
      "Fn::GetAtt": [
       "PipelineRoleB27FAA37",
@@ -437,14 +445,7 @@
       ],
       "Name": "MyWave"
      }
-    ],
-    "ArtifactStore": {
-     "Location": {
-      "Ref": "PipelineArtifactsBucketAEA9A052"
-     },
-     "Type": "S3"
-    },
-    "RestartExecutionOnUpdate": true
+    ]
    },
    "DependsOn": [
     "PipelineRoleDefaultPolicy7BDC1ABB",
@@ -730,9 +731,14 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "Description": "Pipeline step VariablePipelineStack/Pipeline/Build/Synth",
+    "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:6.0",
+     "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -746,12 +752,7 @@
     "Source": {
      "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"mkdir cdk.out\",\n        \"touch cdk.out/dummy\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"base-directory\": \"cdk.out\",\n    \"files\": \"**/*\"\n  }\n}",
      "Type": "CODEPIPELINE"
-    },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "Description": "Pipeline step VariablePipelineStack/Pipeline/Build/Synth",
-    "EncryptionKey": "alias/aws/s3"
+    }
    }
   },
   "PipelineMyWaveProduceRole24E3565D": {
@@ -951,23 +952,6 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
-    "Environment": {
-     "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:6.0",
-     "ImagePullCredentialsType": "CODEBUILD",
-     "PrivilegedMode": false,
-     "Type": "LINUX_CONTAINER"
-    },
-    "ServiceRole": {
-     "Fn::GetAtt": [
-      "PipelineMyWaveProduceRole24E3565D",
-      "Arn"
-     ]
-    },
-    "Source": {
-     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"env\": {\n    \"exported-variables\": [\n      \"MY_VAR\"\n    ]\n  },\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"export MY_VAR=hello\"\n      ]\n    }\n  }\n}",
-     "Type": "CODEPIPELINE"
-    },
     "Cache": {
      "Location": {
       "Fn::Join": [
@@ -985,7 +969,24 @@
      "Type": "S3"
     },
     "Description": "Pipeline step VariablePipelineStack/Pipeline/MyWave/Produce",
-    "EncryptionKey": "alias/aws/s3"
+    "EncryptionKey": "alias/aws/s3",
+    "Environment": {
+     "ComputeType": "BUILD_GENERAL1_SMALL",
+     "Image": "aws/codebuild/standard:7.0",
+     "ImagePullCredentialsType": "CODEBUILD",
+     "PrivilegedMode": false,
+     "Type": "LINUX_CONTAINER"
+    },
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "PipelineMyWaveProduceRole24E3565D",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"env\": {\n    \"exported-variables\": [\n      \"MY_VAR\"\n    ]\n  },\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"export MY_VAR=hello\"\n      ]\n    }\n  }\n}",
+     "Type": "CODEPIPELINE"
+    }
    }
   },
   "PipelineMyWaveConsumeRole2A96FF33": {
@@ -1185,23 +1186,6 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
-    "Environment": {
-     "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:6.0",
-     "ImagePullCredentialsType": "CODEBUILD",
-     "PrivilegedMode": false,
-     "Type": "LINUX_CONTAINER"
-    },
-    "ServiceRole": {
-     "Fn::GetAtt": [
-      "PipelineMyWaveConsumeRole2A96FF33",
-      "Arn"
-     ]
-    },
-    "Source": {
-     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"echo \\\"The variable was: $THE_VAR\\\"\"\n      ]\n    }\n  }\n}",
-     "Type": "CODEPIPELINE"
-    },
     "Cache": {
      "Location": {
       "Fn::Join": [
@@ -1219,7 +1203,24 @@
      "Type": "S3"
     },
     "Description": "Pipeline step VariablePipelineStack/Pipeline/MyWave/Consume",
-    "EncryptionKey": "alias/aws/s3"
+    "EncryptionKey": "alias/aws/s3",
+    "Environment": {
+     "ComputeType": "BUILD_GENERAL1_SMALL",
+     "Image": "aws/codebuild/standard:7.0",
+     "ImagePullCredentialsType": "CODEBUILD",
+     "PrivilegedMode": false,
+     "Type": "LINUX_CONTAINER"
+    },
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "PipelineMyWaveConsumeRole2A96FF33",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"echo \\\"The variable was: $THE_VAR\\\"\"\n      ]\n    }\n  }\n}",
+     "Type": "CODEPIPELINE"
+    }
    }
   },
   "PipelineCodeBuildActionRole226DB0CB": {
@@ -1292,109 +1293,6 @@
    "Type": "AWS::S3::Bucket",
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
-  }
- },
- "Mappings": {
-  "DefaultCrNodeVersionMap": {
-   "af-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs16.x"
-   },
-   "me-central-1": {
-    "value": "nodejs16.x"
-   },
-   "me-south-1": {
-    "value": "nodejs16.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-2": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs14.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-west-2": {
-    "value": "nodejs16.x"
-   }
   }
  },
  "Parameters": {

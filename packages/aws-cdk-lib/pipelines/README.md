@@ -53,18 +53,18 @@ example creates a CodePipeline that deploys an application from GitHub:
   * to this table in its properties.
   */
 class DatabaseStack extends Stack {
-  public readonly table: dynamodb.Table;
+  public readonly table: dynamodb.TableV2;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
-    this.table = new dynamodb.Table(this, 'Table', {
+    this.table = new dynamodb.TableV2(this, 'Table', {
       partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING }
     });
   }
 }
 
 interface ComputeProps {
-  readonly table: dynamodb.Table;
+  readonly table: dynamodb.TableV2;
 }
 
 class ComputeStack extends Stack {
@@ -213,7 +213,7 @@ engine, read the section
 ### Synth and sources
 
 To define a pipeline, instantiate a `CodePipeline` construct from the
-`@aws-cdk/pipelines` module. It takes one argument, a `synth` step, which is
+`aws-cdk-lib/pipelines` module. It takes one argument, a `synth` step, which is
 expected to produce the CDK Cloud Assembly as its single output (the contents of
 the `cdk.out` directory after running `cdk synth`). "Steps" are arbitrary
 actions in the pipeline, typically used to run scripts or commands.
@@ -260,7 +260,7 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
 });
 ```
 
-The underlying `@aws-cdk/aws-codepipeline.Pipeline` construct will be produced
+The underlying `aws-cdk-lib/aws-codepipeline.Pipeline` construct will be produced
 when `app.synth()` is called. You can also force it to be produced
 earlier by calling `pipeline.buildPipeline()`. After you've called
 that method, you can inspect the constructs that were produced by
@@ -998,7 +998,7 @@ Docker can be used in 3 different places in the pipeline:
   images for your CodeBuild projects): Docker will run in the self-mutate project.
 - If you are using Docker to bundle file assets anywhere in your project (for
   example, if you are using such construct libraries as
-  `@aws-cdk/aws-lambda-nodejs`): Docker will run in the
+  `aws-cdk-lib/aws-lambda-nodejs`): Docker will run in the
   *synth* project.
 
 For the first case, you don't need to do anything special. For the other two cases,
@@ -1052,7 +1052,7 @@ pipeline.addWave('MyWave', {
 ### Using bundled file assets
 
 If you are using asset bundling anywhere (such as automatically done for you
-if you add a construct like `@aws-cdk/aws-lambda-nodejs`), you need to pass
+if you add a construct like `aws-cdk-lib/aws-lambda-nodejs`), you need to pass
 `dockerEnabledForSynth: true` to the pipeline. For example:
 
 ```ts
@@ -1577,7 +1577,7 @@ following:
 ```json
 {
   "context": {
-    "@aws-cdk/aws-iam:minimizePolicies": true
+    "aws-cdk-lib/aws-iam:minimizePolicies": true
   }
 }
 ```

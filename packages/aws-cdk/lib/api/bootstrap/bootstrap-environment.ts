@@ -279,7 +279,9 @@ export class Bootstrapper {
 
   private validatePolicyName(permissionsBoundary: string) {
     // https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreatePolicy.html
-    const regexp: RegExp = /[\w+=,.@-]+/;
+    // Added support for policy names with a path
+    // See https://github.com/aws/aws-cdk/issues/26320
+    const regexp: RegExp = /[\w+\/=,.@-]+/;
     const matches = regexp.exec(permissionsBoundary);
     if (!(matches && matches.length === 1 && matches[0] === permissionsBoundary)) {
       throw new Error(`The permissions boundary name ${permissionsBoundary} does not match the IAM conventions.`);

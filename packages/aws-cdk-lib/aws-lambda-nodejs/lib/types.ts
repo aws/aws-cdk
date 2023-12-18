@@ -176,7 +176,8 @@ export interface BundlingOptions extends DockerRunOptions {
    * A list of modules that should be considered as externals (already available
    * in the runtime).
    *
-   * @default - ['aws-sdk'] if the runtime is < Node.js 18.x, ['@aws-sdk/*'] otherwise.
+   * @default - ['aws-sdk'] if the runtime is <= Node.js 16.x, ['@aws-sdk/*'] if Node.js 18.x,
+   * [] if using a variable runtime version such as NODEJS_LATEST.
    */
   readonly externalModules?: string[];
 
@@ -249,10 +250,10 @@ export interface BundlingOptions extends DockerRunOptions {
    * This image should have esbuild installed globally. If you plan to use `nodeModules`
    * it should also have `npm`, `yarn` or `pnpm` depending on the lock file you're using.
    *
-   * See https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile
-   * for the default image provided by @aws-cdk/aws-lambda-nodejs.
+   * See https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-lambda-nodejs/lib/Dockerfile
+   * for the default image provided by aws-cdk-lib/aws-lambda-nodejs.
    *
-   * @default - use the Docker image provided by @aws-cdk/aws-lambda-nodejs
+   * @default - use the Docker image provided by aws-cdk-lib/aws-lambda-nodejs
    */
   readonly dockerImage?: DockerImage;
 
@@ -373,6 +374,10 @@ export interface ICommandHooks {
  */
 export enum LogLevel {
   /** Show everything */
+  VERBOSE = 'verbose',
+  /** Show everything from info and some additional messages for debugging */
+  DEBUG = 'debug',
+  /** Show warnings, errors, and an output file summary */
   INFO = 'info',
   /** Show warnings and errors */
   WARNING = 'warning',

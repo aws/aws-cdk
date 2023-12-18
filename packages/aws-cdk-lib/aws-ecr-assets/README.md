@@ -51,6 +51,8 @@ asset hash.
 Additionally, you can supply `buildSecrets`. Your system must have Buildkit
 enabled, see https://docs.docker.com/build/buildkit/.
 
+SSH agent sockets or keys may be passed to docker build via `buildSsh`.
+
 ```ts
 import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
 

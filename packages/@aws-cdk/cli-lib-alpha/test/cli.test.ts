@@ -1,10 +1,10 @@
 import { join } from 'path';
-import * as core from 'aws-cdk-lib';
+import * as core from 'aws-cdk-lib/core';
 import * as cli from 'aws-cdk/lib';
 import { AwsCdkCli } from '../lib';
 
 // These tests synthesize an actual CDK app and take a bit longer
-jest.setTimeout(20_000);
+jest.setTimeout(60_000);
 
 jest.mock('aws-cdk/lib', () => {
   const original = jest.requireActual('aws-cdk/lib');
@@ -19,6 +19,8 @@ beforeEach(() => {
   stdoutMock.mockClear();
   jest.mocked(cli.exec).mockClear();
 });
+
+afterAll(() => jest.clearAllMocks());
 
 describe('fromCloudAssemblyDirectoryProducer', () => {
   const testEnv = jest.fn();

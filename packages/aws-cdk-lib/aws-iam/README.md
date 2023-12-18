@@ -174,7 +174,7 @@ iam.Role.customizeRoles(stack);
 const fn = new lambda.Function(this, 'MyLambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
 });
 
 const bucket = new s3.Bucket(this, 'Bucket');
@@ -382,28 +382,28 @@ const policyDocument = {
       "Sid": "FirstStatement",
       "Effect": "Allow",
       "Action": ["iam:ChangePassword"],
-      "Resource": "*"
+      "Resource": ["*"],
     },
     {
       "Sid": "SecondStatement",
       "Effect": "Allow",
-      "Action": "s3:ListAllMyBuckets",
-      "Resource": "*"
+      "Action": ["s3:ListAllMyBuckets"],
+      "Resource": ["*"],
     },
     {
       "Sid": "ThirdStatement",
       "Effect": "Allow",
       "Action": [
         "s3:List*",
-        "s3:Get*"
+        "s3:Get*",
       ],
       "Resource": [
         "arn:aws:s3:::confidential-data",
-        "arn:aws:s3:::confidential-data/*"
+        "arn:aws:s3:::confidential-data/*",
       ],
-      "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}}
-    }
-  ]
+      "Condition": {"Bool": {"aws:MultiFactorAuthPresent": "true"}},
+    },
+  ],
 };
 
 const customPolicyDocument = iam.PolicyDocument.fromJson(policyDocument);
@@ -738,11 +738,64 @@ user.addToGroup(group);
 group.addUser(user);
 ```
 
+## Instance Profiles
+
+An IAM instance profile is a container for an IAM role that you can use to pass role information to an EC2 instance when the instance starts. By default, an instance profile must be created with a role:
+
+```ts
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+});
+
+const instanceProfile = new iam.InstanceProfile(this, 'InstanceProfile', {
+  role,
+});
+```
+
+An instance profile can also optionally be created with an instance profile name and/or a [path](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html#identifiers-friendly-names) to the instance profile:
+
+```ts
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+});
+
+const instanceProfile = new iam.InstanceProfile(this, 'InstanceProfile', {
+  role,
+  instanceProfileName: 'MyInstanceProfile',
+  path: '/sample/path/',
+});
+```
+
+To import an existing instance profile by name:
+
+```ts
+const instanceProfile = iam.InstanceProfile.fromInstanceProfileName(this, 'ImportedInstanceProfile', 'MyInstanceProfile');
+```
+
+To import an existing instance profile by ARN:
+
+```ts
+const instanceProfile = iam.InstanceProfile.fromInstanceProfileArn(this, 'ImportedInstanceProfile', 'arn:aws:iam::account-id:instance-profile/MyInstanceProfile');
+```
+
+To import an existing instance profile with an associated role:
+
+```ts
+const role = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+});
+
+const instanceProfile = iam.InstanceProfile.fromInstanceProfileAttributes(this, 'ImportedInstanceProfile', {
+  instanceProfileArn: 'arn:aws:iam::account-id:instance-profile/MyInstanceProfile',
+  role,
+});
+```
+
 ## Features
 
 * Policy name uniqueness is enforced. If two policies by the same name are attached to the same
-    principal, the attachment will fail.
+  principal, the attachment will fail.
 * Policy names are not required - the CDK logical ID will be used and ensured to be unique.
 * Policies are validated during synthesis to ensure that they have actions, and that policies
-    attached to IAM principals specify relevant resources, while policies attached to resources
-    specify which IAM principals they apply to.
+  attached to IAM principals specify relevant resources, while policies attached to resources
+  specify which IAM principals they apply to.

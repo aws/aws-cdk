@@ -3,6 +3,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
 import * as cloudtrail from 'aws-cdk-lib/aws-cloudtrail';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-cloudtrail');
@@ -13,7 +14,7 @@ const bucket = new s3.Bucket(stack, 'Bucket', {
 });
 const topic = new sns.Topic(stack, 'Topic');
 const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'hello.handler',
   code: lambda.Code.fromInline('exports.handler = {}'),
 });

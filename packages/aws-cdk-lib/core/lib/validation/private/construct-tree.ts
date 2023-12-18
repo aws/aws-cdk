@@ -148,13 +148,25 @@ export class ConstructTree {
   }
 
   /**
+   * @param node - the root node of the tree
+   * @returns the terminal node in the tree
+   */
+  private lastChild(node: Node): Node {
+    if (node.children) {
+      return this.lastChild(this.getChild(node.children));
+    }
+    return node;
+  }
+
+  /**
    * Get a ConstructTrace from the cache for a given construct
    *
    * Construct the stack trace of constructs. This will start with the
    * root of the tree and go down to the construct that has the violation
    */
   public getTrace(node: Node, locations?: string[]): ConstructTrace | undefined {
-    const trace = this._traceCache.get(node.path);
+    const lastChild = this.lastChild(node);
+    const trace = this._traceCache.get(lastChild.path);
     if (trace) {
       return trace;
     }
@@ -177,7 +189,9 @@ export class ConstructTree {
       libraryVersion: node.constructInfo?.version,
       location: thisLocation ?? "Run with '--debug' to include location info",
     };
-    this._traceCache.set(constructTrace.path, constructTrace);
+    // set the cache for the last child path. If the last child path is different then
+    // we have a different tree and need to retrieve the trace again
+    this._traceCache.set(lastChild.path, constructTrace);
     return constructTrace;
   }
 

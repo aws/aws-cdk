@@ -107,6 +107,7 @@ const stack = new TestCdkStack(app, 'PipelineSecurityStack', {
 
 new integ.IntegTest(app, 'PipelineSecurityTest', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 app.synth();

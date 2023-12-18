@@ -1,7 +1,7 @@
 # Amazon OpenSearch Service Construct Library
 
 
-See [Migrating to OpenSearch](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-elasticsearch-readme.html#migrating-to-opensearch) for migration instructions from `@aws-cdk/aws-elasticsearch` to this module, `@aws-cdk/aws-opensearchservice`.
+See [Migrating to OpenSearch](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-elasticsearch-readme.html#migrating-to-opensearch) for migration instructions from `aws-cdk-lib/aws-elasticsearch` to this module, `aws-cdk-lib/aws-opensearchservice`.
 
 ## Quick start
 
@@ -21,6 +21,21 @@ const devDomain = new Domain(this, 'Domain', {
   enableVersionUpgrade: true, // defaults to false
 });
 ```
+
+Create a cluster with GP3 volumes:
+
+```ts
+const gp3Domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_2_5,
+  ebs: {
+    volumeSize: 30,
+    volumeType: ec2.EbsDeviceVolumeType.GP3,
+    throughput: 125,
+    iops: 3000,
+  },
+});
+```
+
 
 Create a production grade cluster by also specifying things like capacity and az distribution
 
@@ -195,6 +210,32 @@ const domain = new Domain(this, 'Domain', {
 });
 
 const masterUserPassword = domain.masterUserPassword;
+```
+
+## SAML authentication
+
+You can enable SAML authentication to use your existing identity provider
+to offer single sign-on (SSO) for dashboards on Amazon OpenSearch Service domains
+running OpenSearch or Elasticsearch 6.7 or later.
+To use SAML authentication, fine-grained access control must be enabled.
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
+  enforceHttps: true,
+  nodeToNodeEncryption: true,
+  encryptionAtRest: {
+    enabled: true,
+  },
+  fineGrainedAccessControl: {
+    masterUserName: 'master-user',
+    samlAuthenticationEnabled: true,
+    samlAuthenticationOptions: {
+      idpEntityId: 'entity-id',
+      idpMetadataContent: 'metadata-content-with-quotes-escaped',
+    },
+  },
+});
 ```
 
 ## Using unsigned basic auth
@@ -372,5 +413,64 @@ const domain = new Domain(this, 'Domain', {
     identityPoolId: 'example-identity-pool-id',
     userPoolId: 'example-user-pool-id',
   },
+});
+```
+
+## Enable support for Multi-AZ with Standby deployment
+
+The domain can be configured to use [multi-AZ with standby](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html#managedomains-za-standby).
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_3,
+  ebs: {
+    volumeSize: 10,
+    volumeType: ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3,
+  },
+  zoneAwareness: {
+    enabled: true,
+    availabilityZoneCount: 3,
+  },
+  capacity: {
+    multiAzWithStandbyEnabled: true,
+    masterNodes: 3,
+    dataNodes: 3,
+  },
+});
+```
+
+## Define off-peak windows
+
+The domain can be configured to use a daily 10-hour window considered as off-peak hours.
+
+Off-peak windows were introduced on February 16, 2023. 
+All domains created before this date have the off-peak window disabled by default. 
+You must manually enable and configure the off-peak window for these domains. 
+All domains created after this date will have the off-peak window enabled by default. 
+You can't disable the off-peak window for a domain after it's enabled.
+
+> Visit [Defining off-peak windows for Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/off-peak.html) for more details.
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_3,
+  offPeakWindowEnabled: true, // can be omitted if offPeakWindowStart is set
+  offPeakWindowStart: {
+    hours: 20,
+    minutes: 0,
+  },
+});
+```
+
+## Configuring service software updates
+
+The domain can be configured to use service software updates.
+
+> Visit [Service software updates in Amazon OpenSearch Service](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/service-software.html) for more details.
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_3,
+  enableAutoSoftwareUpdate: true,
 });
 ```

@@ -1,5 +1,5 @@
 import { IntegManifest, Manifest } from 'aws-cdk-lib/cloud-assembly-schema';
-import { ISynthesisSession } from 'aws-cdk-lib';
+import { ISynthesisSession } from 'aws-cdk-lib/core';
 import { IntegManifestWriter } from './manifest-writer';
 import { IntegTestCase } from './test-case';
 

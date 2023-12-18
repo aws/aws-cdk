@@ -16,7 +16,6 @@
 
 <!--END STABILITY BANNER-->
 
-
 ## Overview
 
 This tool has been created to be used initially by this repo (aws/aws-cdk). Long term the goal is
@@ -25,7 +24,7 @@ publishing this tool so that it can be used by the community and we would love t
 on use cases that the tool should support, or issues that prevent the tool from being used in your
 library.
 
-This tool is meant to be used with the [integ-tests](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests) library.
+This tool is meant to be used with the [integ-tests](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests-alpha) library.
 
 ## Usage
 
@@ -38,11 +37,14 @@ integ-runner [ARGS] [TEST...]
 This will look for all files that match the naming convention of `/integ.*.js$/`. Each of these files will be expected
 to be a self contained CDK app. The runner will execute the following for each file (app):
 
-1. Check if a snapshot file exists (i.e. `/*.snapshot$/`)
-2. If the snapshot does not exist
-	2a. Synth the integ app which will produce the `integ.json` file
+1. Check if snapshot files exist (i.e. `*.snapshot/**`)
+2. If the snapshot does not exist\
+   a) Synth the integ app which will produce the `integ.json` file
 3. Read the `integ.json` file which contains instructions on what the runner should do.
 4. Execute instructions
+
+All snapshot files (i.e. `*.snapshot/**`) must be checked-in to version control.
+If not, changes cannot be compared across systems.
 
 ### Options
 
@@ -74,6 +76,10 @@ to be a self contained CDK app. The runner will execute the following for each f
   Use together with `--test-regex` to fully customize how tests are run, or use with a single `--language` preset to change the command used for this language.
 - `--test-regex`
   Detect integration test files matching this JavaScript regex pattern. If used multiple times, all files matching any one of the patterns are detected.
+
+- `--watch`
+  Run a single integration test in watch mode. In watch mode the integ-runner
+  will not save any snapshots.
 
   Use together with `--app` to fully customize how tests are run, or use with a single `--language` preset to change which files are detected for this language.
 - `--language`
@@ -220,6 +226,56 @@ integ-runner --update-on-failed --disable-update-workflow integ.new-test.js
 ```
 
 This is because for a new test we do not need to test the update workflow (there is nothing to update).
+
+### watch
+
+It can be useful to run an integration test in watch mode when you are iterating
+on a specific test.
+
+```console
+integ-runner integ.new-test.js --watch
+```
+
+In watch mode the integ test will run similar to `cdk deploy --watch` with the
+addition of also displaying the assertion results. By default the output will
+only show the assertion results.
+
+- To show the console output from watch run with `-v`
+- To also stream the CloudWatch logs (i.e. `cdk deploy --watch --logs`) run with `-vv`
+
+When running in watch mode most of the integ-runner functionality will be turned
+off.
+
+- Snapshots will not be created
+- Update workflow will not be run
+- Stacks will not be cleaned up (you must manually clean up the stacks)
+- Only a single test can be run
+
+Once you are done iterating using watch and want to create the snapshot you can
+run the integ test like normal to create the snapshot and clean up the test.
+
+#### cdk.context.json
+
+cdk watch depends on a `cdk.context.json` file existing with a `watch` key. The
+integ-runner will create a default `cdk.context.json` file if one does not
+exist.
+
+```json
+{
+  "watch": {}
+}
+```
+
+You can further edit this file after it is created and add additional `watch`
+fields. For example:
+
+```json
+{
+  "watch": {
+    "include": ["**/*.js"]
+  }
+}
+```
 
 ### integ.json schema
 

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as batch from '@aws-cdk/aws-batch-alpha';
+import * as batch from 'aws-cdk-lib/aws-batch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
@@ -56,6 +56,9 @@ class RunBatchStack extends cdk.Stack {
       }),
       attempts: 3,
       taskTimeout: sfn.Timeout.duration(cdk.Duration.seconds(60)),
+      tags: {
+        key: 'value',
+      },
     });
 
     const definition = new sfn.Pass(this, 'Start', {

@@ -7,7 +7,8 @@ import { BundlingOptions } from './types';
 import { callsites, findUpMultiple } from './util';
 import { Architecture } from '../../aws-lambda';
 import * as lambda from '../../aws-lambda';
-import { builtInCustomResourceNodeRuntime } from '../../custom-resources';
+import { FeatureFlags } from '../../core';
+import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
 
 /**
  * Properties for a NodejsFunction
@@ -37,7 +38,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * The runtime environment. Only runtimes of the Node.js family are
    * supported.
    *
-   * @default Runtime.NODEJS_14_X
+   * @default `Runtime.NODEJS_LATEST` if the `@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion` feature flag is enabled, otherwise `Runtime.NODEJS_16_X`
    */
   readonly runtime?: lambda.Runtime;
 
@@ -99,14 +100,15 @@ export class NodejsFunction extends lambda.Function {
     const architecture = props.architecture ?? Architecture.X86_64;
     const depsLockFilePath = findLockFile(props.depsLockFilePath);
     const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
+    const runtime = getRuntime(scope, props);
 
     super(scope, id, {
       ...props,
-      runtime: props.runtime ?? builtInCustomResourceNodeRuntime(scope),
-      code: Bundling.bundle({
+      runtime,
+      code: Bundling.bundle(scope, {
         ...props.bundling ?? {},
         entry,
-        runtime: props.runtime,
+        runtime,
         architecture,
         depsLockFilePath,
         projectRoot,
@@ -119,6 +121,18 @@ export class NodejsFunction extends lambda.Function {
       this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
     }
   }
+
+}
+
+/**
+ * Check if the feature flag is enabled and default to NODEJS_LATEST if so.
+ * Otherwise default to NODEJS_16_X.
+ */
+function getRuntime(scope: Construct, props: NodejsFunctionProps): lambda.Runtime {
+  const defaultRuntime = FeatureFlags.of(scope).isEnabled(LAMBDA_NODEJS_USE_LATEST_RUNTIME)
+    ? lambda.Runtime.NODEJS_LATEST
+    : lambda.Runtime.NODEJS_16_X;
+  return props.runtime ?? defaultRuntime;
 }
 
 /**
@@ -159,10 +173,13 @@ function findLockFile(depsLockFilePath?: string): string {
  * 2. A .ts file named as the defining file with id as suffix (defining-file.id.ts)
  * 3. A .js file name as the defining file with id as suffix (defining-file.id.js)
  * 4. A .mjs file name as the defining file with id as suffix (defining-file.id.mjs)
+ * 5. A .mts file name as the defining file with id as suffix (defining-file.id.mts)
+ * 6. A .cts file name as the defining file with id as suffix (defining-file.id.cts)
+ * 7. A .cjs file name as the defining file with id as suffix (defining-file.id.cjs)
  */
 function findEntry(id: string, entry?: string): string {
   if (entry) {
-    if (!/\.(jsx?|tsx?|mjs)$/.test(entry)) {
+    if (!/\.(jsx?|tsx?|cjs|cts|mjs|mts)$/.test(entry)) {
       throw new Error('Only JavaScript or TypeScript entry files are supported.');
     }
     if (!fs.existsSync(entry)) {
@@ -189,7 +206,22 @@ function findEntry(id: string, entry?: string): string {
     return mjsHandlerFile;
   }
 
-  throw new Error(`Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile} or ${mjsHandlerFile}`);
+  const mtsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.mts`);
+  if (fs.existsSync(mtsHandlerFile)) {
+    return mtsHandlerFile;
+  }
+
+  const ctsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.cts`);
+  if (fs.existsSync(ctsHandlerFile)) {
+    return ctsHandlerFile;
+  }
+
+  const cjsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.cjs`);
+  if (fs.existsSync(cjsHandlerFile)) {
+    return cjsHandlerFile;
+  }
+
+  throw new Error(`Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile}, ${mjsHandlerFile}, ${mtsHandlerFile}, ${ctsHandlerFile} or ${cjsHandlerFile}`);
 }
 
 /**

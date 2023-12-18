@@ -442,3 +442,25 @@ test('with custom headers', () => {
     },
   });
 });
+
+test('create a statically hosted app by default', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {});
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    Platform: amplify.Platform.WEB,
+  });
+});
+
+test('create a dynamically rendered app when the platform is set to WEB_COMPUTE', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    platform: amplify.Platform.WEB_COMPUTE,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    Platform: amplify.Platform.WEB_COMPUTE,
+  });
+});

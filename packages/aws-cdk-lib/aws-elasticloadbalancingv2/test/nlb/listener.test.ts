@@ -376,15 +376,39 @@ describe('tests', () => {
     });
 
     targetGroup.configureHealthCheck({
+      interval: cdk.Duration.seconds(150),
+      protocol: elbv2.Protocol.HTTP,
+      timeout: cdk.Duration.seconds(130),
+    });
+
+    // THEN
+    const validationErrors: string[] = targetGroup.node.validate();
+    const timeoutError = validationErrors.find((err) => /Health check timeout '130' not supported. Must be a number between/.test(err));
+    expect(timeoutError).toBeDefined();
+  });
+
+  test('validation error if Health check timeout is greater than the interval', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('PublicListener', { port: 80 });
+    const targetGroup = listener.addTargets('ECS', {
+      port: 80,
+      healthCheck: {
+        interval: cdk.Duration.seconds(60),
+      },
+    });
+
+    targetGroup.configureHealthCheck({
       interval: cdk.Duration.seconds(30),
       protocol: elbv2.Protocol.HTTP,
-      timeout: cdk.Duration.seconds(10),
+      timeout: cdk.Duration.seconds(40),
     });
 
     // THEN
     const validationErrors: string[] = targetGroup.node.validate();
     expect(validationErrors).toEqual([
-      'Custom health check timeouts are not supported for Network Load Balancer health checks. Expected 6 seconds for HTTP, got 10',
+      "Health check timeout '40' must not be greater than the interval '30'",
     ]);
   });
 

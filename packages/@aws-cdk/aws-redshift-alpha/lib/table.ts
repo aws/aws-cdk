@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { REDSHIFT_COLUMN_ID } from 'aws-cdk-lib/cx-api';
 import { Construct, IConstruct } from 'constructs';
 import { ICluster } from './cluster';

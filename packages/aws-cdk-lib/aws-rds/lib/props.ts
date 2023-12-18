@@ -56,7 +56,7 @@ export interface InstanceProps {
   /**
    * Whether to enable Performance Insights for the DB instance.
    *
-   * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.
+   * @default - false, unless ``performanceInsightRetention`` or ``performanceInsightEncryptionKey`` is set.
    */
   readonly enablePerformanceInsights?: boolean;
 
@@ -499,6 +499,14 @@ export interface CommonRotationUserOptions {
    * @default - a new security group is created
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * Specifies whether to rotate the secret immediately or wait until the next
+   * scheduled rotation window.
+   *
+   * @default true
+   */
+  readonly rotateImmediatelyOnUpdate?: boolean;
 }
 
 /**

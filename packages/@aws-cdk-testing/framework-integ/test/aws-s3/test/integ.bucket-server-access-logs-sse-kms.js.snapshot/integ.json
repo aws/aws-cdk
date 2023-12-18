@@ -1,10 +1,11 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
     "ServerAccessLogsSseKmsTest/DefaultTest": {
       "stacks": [
         "aws-cdk-s3-server-access-logs-sse-kms"
       ],
+      "diffAssets": true,
       "assertionStack": "ServerAccessLogsSseKmsTest/DefaultTest/DeployAssert",
       "assertionStackName": "ServerAccessLogsSseKmsTestDefaultTestDeployAssertB937C102"
     }

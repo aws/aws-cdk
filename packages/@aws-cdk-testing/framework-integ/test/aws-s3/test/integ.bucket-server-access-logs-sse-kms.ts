@@ -21,4 +21,5 @@ new s3.Bucket(stack, 'Bucket', {
 
 new integ.IntegTest(app, 'ServerAccessLogsSseKmsTest', {
   testCases: [stack],
+  diffAssets: true,
 });

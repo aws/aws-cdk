@@ -249,7 +249,7 @@ describe('Portfolio', () => {
           }],
         },
       });
-    }),
+    });
 
     test('portfolio share with share tagOptions', () => {
       const shareAccountId = '012345678901';

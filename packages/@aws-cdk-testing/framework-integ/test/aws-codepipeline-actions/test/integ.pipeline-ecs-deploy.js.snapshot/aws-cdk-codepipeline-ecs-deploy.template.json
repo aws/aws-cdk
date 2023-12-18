@@ -271,6 +271,11 @@
      "Ref": "EcsCluster97242B84"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -297,7 +302,10 @@
     "TaskDefinition": {
      "Ref": "TaskDef54694570"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   },
   "FargateServiceSecurityGroup0A0E79CB": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -313,7 +321,10 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   },
   "MyBucketF68F3FF0": {
    "Type": "AWS::S3::Bucket",

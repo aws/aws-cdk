@@ -26,7 +26,7 @@ afterEach(() => {
 
 function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
   const sdk = new MockSdk();
-  (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.fromStack(mockBootstrapStack(sdk, stackProps), sdk));
+  (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.fromStack(mockBootstrapStack(sdk, stackProps)));
 }
 
 describe('Bootstrapping v2', () => {
@@ -40,7 +40,7 @@ describe('Bootstrapping v2', () => {
   beforeEach(() => {
     sdk = new MockSdkProvider({ realSdk: false });
     // By default, we'll return a non-found toolkit info
-    (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstraplessDeploymentsOnly(sdk.sdk));
+    (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstrapStackNotFoundInfo('BootstrapStack'));
     const value = {
       Policy: {
         PolicyName: 'my-policy',
@@ -203,6 +203,28 @@ describe('Bootstrapping v2', () => {
     expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
       expect.arrayContaining([
         expect.stringMatching(/Removing existing permissions boundary permissions-boundary-name/),
+      ]),
+    ]));
+  });
+
+  test('adding permission boundary with path in policy name', async () => {
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'InputPermissionsBoundary',
+          ParameterValue: '',
+        },
+      ],
+    });
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        customPermissionsBoundary: 'permissions-boundary-name/with/path',
+      },
+    });
+
+    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        expect.stringMatching(/Adding new permissions boundary permissions-boundary-name\/with\/path/),
       ]),
     ]));
   });

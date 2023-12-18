@@ -555,7 +555,7 @@ export class ViewerCertificate {
   }
 
   /**
-   * Generate a viewer certifcate configuration using
+   * Generate a viewer certificate configuration using
    * the CloudFront default certificate (e.g. d111111abcdef8.cloudfront.net)
    * and a `SecurityPolicyProtocol.TLS_V1` security policy.
    *

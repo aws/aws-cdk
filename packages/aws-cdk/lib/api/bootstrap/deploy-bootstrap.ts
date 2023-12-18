@@ -7,6 +7,7 @@ import { BOOTSTRAP_VERSION_OUTPUT, BootstrapEnvironmentOptions, BOOTSTRAP_VERSIO
 import * as logging from '../../logging';
 import { Mode, SdkProvider, ISDK } from '../aws-auth';
 import { deployStack, DeployStackResult } from '../deploy-stack';
+import { NoBootstrapStackEnvironmentResources } from '../environment-resources';
 import { DEFAULT_TOOLKIT_STACK_NAME, ToolkitInfo } from '../toolkit-info';
 
 /**
@@ -121,7 +122,7 @@ export class BootstrapStack {
       parameters,
       usePreviousParameters: options.usePreviousParameters ?? true,
       // Obviously we can't need a bootstrap stack to deploy a bootstrap stack
-      toolkitInfo: ToolkitInfo.bootstraplessDeploymentsOnly(this.sdk),
+      envResources: new NoBootstrapStackEnvironmentResources(this.resolvedEnvironment, this.sdk),
     });
   }
 }

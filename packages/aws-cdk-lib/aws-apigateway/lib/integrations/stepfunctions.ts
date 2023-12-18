@@ -8,11 +8,11 @@ import { Token } from '../../../core';
 import { IntegrationConfig, IntegrationOptions, PassthroughBehavior } from '../integration';
 import { Method } from '../method';
 import { Model } from '../model';
+
 /**
  * Options when configuring Step Functions synchronous integration with Rest API
  */
 export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOptions {
-
   /**
    * Which details of the incoming request must be passed onto the underlying state machine,
    * such as, account id, user identity, request id, etc. The execution input will include a new key `requestContext`:
@@ -83,6 +83,13 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
    * @default false
    */
   readonly authorizer?: boolean;
+
+  /**
+   * Whether to add default response models with 200, 400, and 500 status codes to the method.
+   *
+   * @default true
+   */
+  readonly useDefaultMethodResponses?: boolean;
 }
 
 /**
@@ -111,13 +118,15 @@ export class StepFunctionsIntegration {
 
 class StepFunctionsExecutionIntegration extends AwsIntegration {
   private readonly stateMachine: sfn.IStateMachine;
+  private readonly useDefaultMethodResponses: boolean;
+
   constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions = {}) {
     super({
       service: 'states',
       action: 'StartSyncExecution',
       options: {
         credentialsRole: options.credentialsRole,
-        integrationResponses: integrationResponse(),
+        integrationResponses: options.integrationResponses ?? integrationResponse(),
         passthroughBehavior: PassthroughBehavior.NEVER,
         requestTemplates: requestTemplates(stateMachine, options),
         ...options,
@@ -125,6 +134,7 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
     });
 
     this.stateMachine = stateMachine;
+    this.useDefaultMethodResponses = options.useDefaultMethodResponses ?? true;
   }
 
   public bind(method: Method): IntegrationConfig {
@@ -157,8 +167,10 @@ class StepFunctionsExecutionIntegration extends AwsIntegration {
       deploymentToken = JSON.stringify({ stateMachineName });
     }
 
-    for (const methodResponse of METHOD_RESPONSES) {
-      method.addMethodResponse(methodResponse);
+    if (this.useDefaultMethodResponses) {
+      for (const methodResponse of METHOD_RESPONSES) {
+        method.addMethodResponse(methodResponse);
+      }
     }
 
     return {

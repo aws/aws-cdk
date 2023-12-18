@@ -193,24 +193,16 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "ef671dfd26b6dde1f73a4325587504813605a928622ebc466f4d0de6a0f3b672.zip"
+                          "s3Key": "8dd3f997ac74aa13ef09bc8bed060ecdbe3111898c6bbc0eb4f2130c9c53233b.zip"
                         },
+                        "handler": "index.certificateRequestHandler",
                         "role": {
                           "Fn::GetAtt": [
                             "CertificateCertificateRequestorFunctionServiceRoleC04C13DA",
                             "Arn"
                           ]
                         },
-                        "handler": "index.certificateRequestHandler",
-                        "runtime": {
-                          "Fn::FindInMap": [
-                            "DefaultCrNodeVersionMap",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            "value"
-                          ]
-                        },
+                        "runtime": "nodejs18.x",
                         "timeout": 900
                       }
                     },
@@ -246,14 +238,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_certificatemanager.DnsValidatedCertificate",
-              "version": "0.0.0"
-            }
-          },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "integ-dns-validated-certificate/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -300,7 +284,7 @@
                 "path": "integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -346,7 +330,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },

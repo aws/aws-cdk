@@ -4,14 +4,6 @@
   "description": "The CDK Construct Library for AWS Lambda in Golang",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "typesVersions": {
-    "<=3.9": {
-      "*": [
-        ".types-compat/ts3.9/*",
-        ".types-compat/ts3.9/*/index.d.ts"
-      ]
-    }
-  },
   "jsii": {
     "outdir": "dist",
     "targets": {
@@ -87,8 +79,9 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^29.5.1",
+    "@types/jest": "^29.5.11",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0"
   },
@@ -115,11 +108,6 @@
     "tag": "latest"
   },
   "private": false,
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
-  },
   "pkglint": {
     "exclude": [
       "naming/package-matches-directory",

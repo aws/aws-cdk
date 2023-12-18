@@ -1,8 +1,8 @@
 import { Construct, Node } from 'constructs';
-import { Cluster, ICluster } from './cluster';
+import { Cluster, ICluster, IpFamily } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
-import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
+import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import { IResource, Resource, Annotations, withResolved } from '../../core';
 
 /**
@@ -17,9 +17,13 @@ export interface INodegroup extends IResource {
 }
 
 /**
- * The AMI type for your node group. GPU instance types should use the `AL2_x86_64_GPU` AMI type, which uses the
- * Amazon EKS-optimized Linux AMI with GPU support. Non-GPU instances should use the `AL2_x86_64` AMI type, which
- * uses the Amazon EKS-optimized Linux AMI.
+ * The AMI type for your node group.
+ *
+ * GPU instance types should use the `AL2_x86_64_GPU` AMI type, which uses the
+ * Amazon EKS-optimized Linux AMI with GPU support or the `BOTTLEROCKET_ARM_64_NVIDIA` or `BOTTLEROCKET_X86_64_NVIDIA`
+ * AMI types, which uses the Amazon EKS-optimized Linux AMI with Nvidia-GPU support.
+ *
+ * Non-GPU instances should use the `AL2_x86_64` AMI type, which uses the Amazon EKS-optimized Linux AMI.
  */
 export enum NodegroupAmiType {
   /**
@@ -35,13 +39,21 @@ export enum NodegroupAmiType {
    */
   AL2_ARM_64 = 'AL2_ARM_64',
   /**
-   *  Bottlerocket Linux(ARM-64)
+   *  Bottlerocket Linux (ARM-64)
    */
   BOTTLEROCKET_ARM_64 = 'BOTTLEROCKET_ARM_64',
   /**
-   * Bottlerocket(x86-64)
+   * Bottlerocket (x86-64)
    */
   BOTTLEROCKET_X86_64 = 'BOTTLEROCKET_x86_64',
+  /**
+   *  Bottlerocket Linux with Nvidia-GPU support (ARM-64)
+   */
+  BOTTLEROCKET_ARM_64_NVIDIA = 'BOTTLEROCKET_ARM_64_NVIDIA',
+  /**
+   * Bottlerocket with Nvidia-GPU support (x86-64)
+   */
+  BOTTLEROCKET_X86_64_NVIDIA = 'BOTTLEROCKET_x86_64_NVIDIA',
   /**
    * Windows Core 2019 (x86-64)
    */
@@ -215,7 +227,7 @@ export interface NodegroupOptions {
   /**
    * The instance type to use for your node group. Currently, you can specify a single instance type for a node group.
    * The default value for this parameter is `t3.medium`. If you choose a GPU instance type, be sure to specify the
-   * `AL2_x86_64_GPU` with the amiType parameter.
+   * `AL2_x86_64_GPU`, `BOTTLEROCKET_ARM_64_NVIDIA`, or `BOTTLEROCKET_x86_64_NVIDIA` with the amiType parameter.
    *
    * @default t3.medium
    * @deprecated Use `instanceTypes` instead.
@@ -282,6 +294,28 @@ export interface NodegroupOptions {
    * @default - ON_DEMAND
    */
   readonly capacityType?: CapacityType;
+
+  /**
+   * The maximum number of nodes unavailable at once during a version update.
+   * Nodes will be updated in parallel. The maximum number is 100.
+   *
+   * This value or `maxUnavailablePercentage` is required to have a value for custom update configurations to be applied.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailable
+   * @default 1
+   */
+  readonly maxUnavailable?: number;
+
+  /**
+   * The maximum percentage of nodes unavailable during a version update.
+   * This percentage of nodes will be updated in parallel, up to 100 nodes at once.
+   *
+   * This value or `maxUnavailable` is required to have a value for custom update configurations to be applied.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eks-nodegroup-updateconfig.html#cfn-eks-nodegroup-updateconfig-maxunavailablepercentage
+   * @default undefined - node groups will update instances one at a time
+   */
+  readonly maxUnavailablePercentage?: number;
 }
 
 /**
@@ -370,7 +404,7 @@ export class Nodegroup extends Resource implements INodegroup {
     }
 
     if (props.instanceType) {
-      Annotations.of(this).addWarning('"instanceType" is deprecated and will be removed in the next major version. please use "instanceTypes" instead');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:managedNodeGroupDeprecatedInstanceType', '"instanceType" is deprecated and will be removed in the next major version. please use "instanceTypes" instead');
     }
     const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : undefined);
     let possibleAmiTypes: NodegroupAmiType[] = [];
@@ -387,7 +421,7 @@ export class Nodegroup extends Resource implements INodegroup {
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
-        throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes} or don't specify any`);
+        throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ')} or don't specify any`);
       }
 
       //if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
@@ -407,10 +441,25 @@ export class Nodegroup extends Resource implements INodegroup {
       ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'));
       ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy'));
       ngRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'));
+
+      // Grant additional IPv6 networking permissions if running in IPv6
+      // https://docs.aws.amazon.com/eks/latest/userguide/cni-iam-role.html
+      if (props.cluster.ipFamily == IpFamily.IP_V6) {
+        ngRole.addToPrincipalPolicy(new PolicyStatement({
+          // eslint-disable-next-line @aws-cdk/no-literal-partition
+          resources: ['arn:aws:ec2:*:*:network-interface/*'],
+          actions: [
+            'ec2:AssignIpv6Addresses',
+            'ec2:UnassignIpv6Addresses',
+          ],
+        }));
+      };
       this.role = ngRole;
     } else {
       this.role = props.nodeRole;
     }
+
+    this.validateUpdateConfig(props.maxUnavailable, props.maxUnavailablePercentage);
 
     const resource = new CfnNodegroup(this, 'Resource', {
       clusterName: this.cluster.clusterName,
@@ -450,6 +499,10 @@ export class Nodegroup extends Resource implements INodegroup {
         minSize: this.minSize,
       },
       tags: props.tags,
+      updateConfig: props.maxUnavailable || props.maxUnavailablePercentage ? {
+        maxUnavailable: props.maxUnavailable,
+        maxUnavailablePercentage: props.maxUnavailablePercentage,
+      } : undefined,
     });
 
     // managed nodegroups update the `aws-auth` on creation, but we still need to track
@@ -478,6 +531,24 @@ export class Nodegroup extends Resource implements INodegroup {
     });
     this.nodegroupName = this.getResourceNameAttribute(resource.ref);
   }
+
+  private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {
+    if (!maxUnavailable && !maxUnavailablePercentage) return;
+    if (maxUnavailable && maxUnavailablePercentage) {
+      throw new Error('maxUnavailable and maxUnavailablePercentage are not allowed to be defined together');
+    }
+    if (maxUnavailablePercentage && (maxUnavailablePercentage < 1 || maxUnavailablePercentage > 100)) {
+      throw new Error(`maxUnavailablePercentage must be between 1 and 100, got ${maxUnavailablePercentage}`);
+    }
+    if (maxUnavailable) {
+      if (maxUnavailable > this.maxSize) {
+        throw new Error(`maxUnavailable must be lower than maxSize (${this.maxSize}), got ${maxUnavailable}`);
+      }
+      if (maxUnavailable < 1 || maxUnavailable > 100) {
+        throw new Error(`maxUnavailable must be between 1 and 100, got ${maxUnavailable}`);
+      }
+    }
+  }
 }
 
 /**
@@ -491,7 +562,8 @@ const x8664AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64, Nodegrou
 const windowsAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
   NodegroupAmiType.WINDOWS_CORE_2022_X86_64, NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
   NodegroupAmiType.WINDOWS_FULL_2022_X86_64];
-const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU];
+const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU,
+  NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA, NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA];
 
 /**
  * This function check if the instanceType is GPU instance.
@@ -501,7 +573,7 @@ function isGpuInstanceType(instanceType: InstanceType): boolean {
   //compare instanceType to known GPU InstanceTypes
   const knownGpuInstanceTypes = [InstanceClass.P2, InstanceClass.P3, InstanceClass.P3DN, InstanceClass.P4DE, InstanceClass.P4D,
     InstanceClass.G3S, InstanceClass.G3, InstanceClass.G4DN, InstanceClass.G4AD, InstanceClass.G5, InstanceClass.G5G,
-    InstanceClass.INF1];
+    InstanceClass.INF1, InstanceClass.INF2];
   return knownGpuInstanceTypes.some((c) => instanceType.sameInstanceClassAs(InstanceType.of(c, InstanceSize.LARGE)));
 }
 

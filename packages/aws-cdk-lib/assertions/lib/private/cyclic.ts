@@ -167,7 +167,7 @@ function findCycle(deps: ReadonlyMap<string, ReadonlySet<string>>): string[] {
 
   function recurse(node: string, path: string[]): string[] | undefined {
     for (const dep of deps.get(node) ?? []) {
-      if (dep === path[0]) { return [...path, dep]; }
+      if (path.includes(dep)) { return [...path, dep]; }
 
       const cycle = recurse(dep, [...path, dep]);
       if (cycle) { return cycle; }

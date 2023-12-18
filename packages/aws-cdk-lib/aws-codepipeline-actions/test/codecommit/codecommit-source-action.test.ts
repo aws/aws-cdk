@@ -6,6 +6,7 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import { Stack, Lazy, App } from '../../../core';
+import { CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME } from '../../../cx-api';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
@@ -57,7 +58,11 @@ describe('CodeCommit Source Action', () => {
           {
             stageName: 'Build',
             actions: [
-              new cpactions.CodeBuildAction({ actionName: 'Build', project: new codebuild.PipelineProject(targetStack, 'MyProject'), input: sourceOutput }),
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(targetStack, 'MyProject'),
+                input: sourceOutput,
+              }),
             ],
           },
         ],
@@ -590,6 +595,157 @@ describe('CodeCommit Source Action', () => {
       // while the pipeline's Stack would need the name of the Repository to use as a Source).
       // By moving the Rule to pipeline's Stack, we get rid of the cycle.
       Template.fromStack(pipelineStack).resourceCountIs('AWS::Events::Rule', 1);
+    });
+
+    test('using main as the default branch when feature flag is set', () => {
+      const defaultBranchFeatureFlag = { [CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME]: true };
+      const app = new App({ context: defaultBranchFeatureFlag });
+
+      const repoStack = new Stack(app, 'RepositoryStack');
+      const repo = new codecommit.Repository(repoStack, 'Repository', {
+        repositoryName: 'my-repo',
+      });
+
+      const pipelineStack = new Stack(app, 'PipelineStack');
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'Source',
+                repository: repo,
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: codebuild.Project.fromProjectName(pipelineStack, 'Project', 'my-project'),
+                input: sourceOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      const template = Template.fromStack(pipelineStack);
+      template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        'Stages': [
+          {
+            'Actions': [
+              {
+                'Configuration': {
+                  'BranchName': 'main',
+                },
+              },
+            ],
+          },
+          {},
+        ],
+      });
+      template.hasResourceProperties('AWS::Events::Rule', {
+        'EventPattern': {
+          'source': [
+            'aws.codecommit',
+          ],
+          'resources': [
+            {},
+          ],
+          'detail-type': [
+            'CodeCommit Repository State Change',
+          ],
+          'detail': {
+            'event': [
+              'referenceCreated',
+              'referenceUpdated',
+            ],
+            'referenceName': [
+              'main',
+            ],
+          },
+        },
+      });
+    });
+
+    test('using master as the default branch when feature flag is not set', () => {
+      const app = new App();
+
+      const repoStack = new Stack(app, 'RepositoryStack');
+      const repo = new codecommit.Repository(repoStack, 'Repository', {
+        repositoryName: 'my-repo',
+      });
+
+      const pipelineStack = new Stack(app, 'PipelineStack');
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({
+                actionName: 'Source',
+                repository: repo,
+                output: sourceOutput,
+              }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: codebuild.Project.fromProjectName(pipelineStack, 'Project', 'my-project'),
+                input: sourceOutput,
+              }),
+            ],
+          },
+        ],
+      });
+
+      const template = Template.fromStack(pipelineStack);
+      template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        'Stages': [
+          {
+            'Actions': [
+              {
+                'Configuration': {
+                  'BranchName': 'master',
+                },
+              },
+            ],
+          },
+          {},
+        ],
+      });
+      template.hasResourceProperties('AWS::Events::Rule', {
+        'EventPattern': {
+          'source': [
+            'aws.codecommit',
+          ],
+          'resources': [
+            {},
+          ],
+          'detail-type': [
+            'CodeCommit Repository State Change',
+          ],
+          'detail': {
+            'event': [
+              'referenceCreated',
+              'referenceUpdated',
+            ],
+            'referenceName': [
+              'master',
+            ],
+          },
+        },
+      });
     });
   });
 });

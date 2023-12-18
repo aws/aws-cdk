@@ -93,12 +93,6 @@
     "Code": {
      "ZipFile": "console.error(\"hi\")"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "fnServiceRole5D180AFD",
-      "Arn"
-     ]
-    },
     "Environment": {
      "Variables": {
       "TOPIC_ARN": "",
@@ -108,7 +102,13 @@
      }
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Role": {
+     "Fn::GetAtt": [
+      "fnServiceRole5D180AFD",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "fnServiceRole5D180AFD"

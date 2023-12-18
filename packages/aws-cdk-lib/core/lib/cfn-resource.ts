@@ -4,7 +4,7 @@ import { CfnCondition } from './cfn-condition';
 /* eslint-disable import/order */
 import { CfnRefElement } from './cfn-element';
 import { CfnCreationPolicy, CfnDeletionPolicy, CfnUpdatePolicy } from './cfn-resource-policy';
-import { Construct, IConstruct, Node } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { addDependency, obtainDependencies, removeDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
 import { Reference } from './reference';
@@ -34,10 +34,10 @@ export interface CfnResourceProps {
  */
 export class CfnResource extends CfnRefElement {
   /**
-   * Check whether the given construct is a CfnResource
+   * Check whether the given object is a CfnResource
    */
-  public static isCfnResource(construct: IConstruct): construct is CfnResource {
-    return (construct as any).cfnResourceType !== undefined;
+  public static isCfnResource(x: any): x is CfnResource {
+    return x !== null && typeof(x) === 'object' && x.cfnResourceType !== undefined;
   }
 
   // MAINTAINERS NOTE: this class serves as the base class for the generated L1
@@ -120,14 +120,22 @@ export class CfnResource extends CfnRefElement {
     policy = policy || options.default || RemovalPolicy.RETAIN;
 
     let deletionPolicy;
+    let updateReplacePolicy;
 
     switch (policy) {
       case RemovalPolicy.DESTROY:
         deletionPolicy = CfnDeletionPolicy.DELETE;
+        updateReplacePolicy = CfnDeletionPolicy.DELETE;
         break;
 
       case RemovalPolicy.RETAIN:
         deletionPolicy = CfnDeletionPolicy.RETAIN;
+        updateReplacePolicy = CfnDeletionPolicy.RETAIN;
+        break;
+
+      case RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE:
+        deletionPolicy = CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE;
+        updateReplacePolicy = CfnDeletionPolicy.RETAIN;
         break;
 
       case RemovalPolicy.SNAPSHOT:
@@ -148,11 +156,12 @@ export class CfnResource extends CfnRefElement {
           if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY) ) {
             throw new Error(`${this.cfnResourceType} does not support snapshot removal policy`);
           } else {
-            Annotations.of(this).addWarning(`${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
+            Annotations.of(this).addWarningV2(`@aws-cdk/core:${this.cfnResourceType}SnapshotRemovalPolicyIgnored`, `${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
           }
         }
 
         deletionPolicy = CfnDeletionPolicy.SNAPSHOT;
+        updateReplacePolicy = CfnDeletionPolicy.SNAPSHOT;
         break;
 
       default:
@@ -161,7 +170,7 @@ export class CfnResource extends CfnRefElement {
 
     this.cfnOptions.deletionPolicy = deletionPolicy;
     if (options.applyToUpdateReplacePolicy !== false) {
-      this.cfnOptions.updateReplacePolicy = deletionPolicy;
+      this.cfnOptions.updateReplacePolicy = updateReplacePolicy;
     }
   }
 
@@ -642,6 +651,10 @@ function deepMerge(target: any, ...sources: any[]) {
     }
 
     for (const key of Object.keys(source)) {
+      if (key === '__proto__' || key === 'constructor') {
+        continue;
+      }
+
       const value = source[key];
       if (typeof(value) === 'object' && value != null && !Array.isArray(value)) {
         // if the value at the target is not an object, override it with an

@@ -3,6 +3,104 @@
 
 export const ASSERT_RESOURCE_TYPE = 'Custom::DeployAssert@AssertEquals';
 export const SDK_RESOURCE_TYPE_PREFIX = 'Custom::DeployAssert@SdkCall';
+export const HTTP_RESOURCE_TYPE = 'Custom::DeployAssert@HttpCall';
+
+export interface HttpRequestParameters {
+  /**
+   * The url to fetch
+   */
+  readonly url: string;
+
+  /**
+   * Options for fetch
+   */
+  readonly fetchOptions?: FetchOptions;
+}
+
+/**
+ * Request to the HttpCall resource
+ */
+export interface HttpRequest {
+  /**
+   * Parameters from the custom resource
+   */
+  readonly parameters: HttpRequestParameters;
+}
+
+/**
+ * Options to pass to the JavaScript fetch api
+ */
+export interface FetchOptions {
+  /**
+   * Request body
+   *
+   * @default - no body
+   */
+  readonly body?: string;
+
+  /**
+   * Optional port
+   *
+   * @default default port for protocol
+   */
+  readonly port?: number;
+
+  /**
+   * HTTP method
+   *
+   * @default GET
+   */
+  readonly method?: string;
+
+  /**
+   * Optional request headers
+   *
+   * @default no headers
+   */
+  readonly headers?: { [key: string]: string };
+}
+
+/**
+ * Response from the HttpCall resource
+ */
+export interface HttpResponseWrapper {
+  /**
+   * The Response from the fetch request
+   */
+  readonly apiCallResponse: HttpResponse;
+}
+
+/**
+ * Response from fetch
+ */
+export interface HttpResponse {
+  /**
+   * Indicates whether the response was successful
+   *
+   * status range 200-299
+   */
+  readonly ok?: boolean;
+
+  /**
+   * Status code of the response
+   */
+  readonly status?: number;
+
+  /**
+   * The status message corresponding to the status code
+   */
+  readonly statusText?: string;
+
+  /**
+   * The response, either as parsed JSON or a string literal.
+   */
+  readonly body?: any;
+
+  /**
+   * Headers associated with the response
+   */
+  readonly headers?: { [name: string]: any };
+}
 
 /**
  * A AWS JavaScript SDK V2 request

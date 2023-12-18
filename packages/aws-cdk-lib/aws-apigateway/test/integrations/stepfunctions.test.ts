@@ -304,7 +304,7 @@ describe('StepFunctionsIntegration', () => {
       });
 
       const stateMachine: sfn.IStateMachine = new StateMachine(stack, 'StateMachine', {
-        definition: passTask,
+        definitionBody: sfn.DefinitionBody.fromChainable(passTask),
         stateMachineType: sfn.StateMachineType.EXPRESS,
       });
 
@@ -327,7 +327,7 @@ describe('StepFunctionsIntegration', () => {
       });
 
       const stateMachine: sfn.IStateMachine = new StateMachine(stack, 'StateMachine', {
-        definition: passTask,
+        definitionBody: sfn.DefinitionBody.fromChainable(passTask),
         stateMachineType: sfn.StateMachineType.EXPRESS,
       });
 
@@ -362,7 +362,7 @@ describe('StepFunctionsIntegration', () => {
       const restapi = new apigw.RestApi(stack, 'RestApi');
       const method = restapi.root.addMethod('ANY');
       const stateMachine: sfn.StateMachine = new StateMachine(stack, 'StateMachine', {
-        definition: new sfn.Pass(stack, 'passTask'),
+        definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(stack, 'passTask')),
         stateMachineType: StateMachineType.STANDARD,
       });
       const integration = apigw.StepFunctionsIntegration.startExecution(stateMachine);
@@ -370,6 +370,160 @@ describe('StepFunctionsIntegration', () => {
       //WHEN + THEN
       expect(() => integration.bind(method))
         .toThrow(/State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType/);
+    });
+  });
+
+  test('addMethod is not susceptible to false sharing of arrays', () => {
+    //GIVEN
+    const { stack, api, stateMachine } = givenSetup();
+
+    //WHEN
+    const methodOptions = {
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true,
+          },
+        },
+      ],
+    };
+
+    const integrationOptions = {
+      integrationResponses: [
+        {
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': "'*'",
+          },
+          statusCode: '200',
+        },
+      ],
+    };
+
+    const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, integrationOptions);
+    api.root.addMethod('GET', integ, methodOptions);
+    api.root.addMethod('POST', integ, methodOptions);
+
+    // THEN - the MethodResponses arrays have 4 elements instead of 8
+    // (This is still incorrect because 200 occurs multiple times, but that's a separate
+    // issue with a non-straightforward solution)
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Method', 2);
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      MethodResponses: [
+        {
+          ResponseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true,
+          },
+          StatusCode: '200',
+        },
+        {
+          ResponseModels: {
+            'application/json': 'Empty',
+          },
+          StatusCode: '200',
+        },
+        {
+          ResponseModels: {
+            'application/json': 'Error',
+          },
+          StatusCode: '400',
+        },
+        {
+          ResponseModels: {
+            'application/json': 'Error',
+          },
+          StatusCode: '500',
+        },
+      ],
+      Integration: {
+        IntegrationResponses: [
+          {
+            ResponseParameters: {
+              'method.response.header.Access-Control-Allow-Origin': "'*'",
+            },
+            StatusCode: '200',
+          },
+        ],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'POST',
+      MethodResponses: [
+        {
+          ResponseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true,
+          },
+          StatusCode: '200',
+        },
+        {
+          ResponseModels: {
+            'application/json': 'Empty',
+          },
+          StatusCode: '200',
+        },
+        {
+          ResponseModels: {
+            'application/json': 'Error',
+          },
+          StatusCode: '400',
+        },
+        {
+          ResponseModels: {
+            'application/json': 'Error',
+          },
+          StatusCode: '500',
+        },
+      ],
+      Integration: {
+        IntegrationResponses: [
+          {
+            ResponseParameters: {
+              'method.response.header.Access-Control-Allow-Origin': "'*'",
+            },
+            StatusCode: '200',
+          },
+        ],
+      },
+    });
+  });
+
+  test('default method responses are not created when useDefaultMethodResponses is false', () => {
+    //GIVEN
+    const { stack, api, stateMachine } = givenSetup();
+
+    //WHEN
+    const methodOptions = {
+      methodResponses: [
+        {
+          statusCode: '200',
+          responseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true,
+          },
+        },
+      ],
+    };
+
+    const integrationOptions = {
+      useDefaultMethodResponses: false,
+    };
+
+    const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, integrationOptions);
+    api.root.addMethod('GET', integ, methodOptions);
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGateway::Method', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'GET',
+      MethodResponses: [
+        {
+          ResponseParameters: {
+            'method.response.header.Access-Control-Allow-Origin': true,
+          },
+          StatusCode: '200',
+        },
+      ],
     });
   });
 });
@@ -382,7 +536,7 @@ function givenSetup() {
   });
 
   const stateMachine: sfn.IStateMachine = new StateMachine(stack, 'StateMachine', {
-    definition: passTask,
+    definitionBody: sfn.DefinitionBody.fromChainable(passTask),
     stateMachineType: sfn.StateMachineType.EXPRESS,
   });
 

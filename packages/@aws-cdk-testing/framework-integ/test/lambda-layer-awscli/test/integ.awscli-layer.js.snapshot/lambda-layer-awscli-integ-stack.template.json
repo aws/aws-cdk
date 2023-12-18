@@ -7,7 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "5d8d1d0aacea23824c62f362e1e3c14b7dd14a31c71b53bfae4d14a6373c5510.zip"
+     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -52,12 +52,6 @@
      },
      "S3Key": "5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "Lambdapython37ServiceRoleB5A704D4",
-      "Arn"
-     ]
-    },
     "Handler": "index.handler",
     "Layers": [
      {
@@ -65,6 +59,12 @@
      }
     ],
     "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "Lambdapython37ServiceRoleB5A704D4",
+      "Arn"
+     ]
+    },
     "Runtime": "python3.7",
     "Timeout": 30
    },
@@ -152,13 +152,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "Providerpython37frameworkonEventServiceRole9EA6B2B0",
-      "Arn"
-     ]
+     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerpython3.7)",
     "Environment": {
@@ -172,7 +166,13 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs14.x",
+    "Role": {
+     "Fn::GetAtt": [
+      "Providerpython37frameworkonEventServiceRole9EA6B2B0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -233,12 +233,6 @@
      },
      "S3Key": "5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "Lambdapython39ServiceRoleE2CFED77",
-      "Arn"
-     ]
-    },
     "Handler": "index.handler",
     "Layers": [
      {
@@ -246,6 +240,12 @@
      }
     ],
     "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "Lambdapython39ServiceRoleE2CFED77",
+      "Arn"
+     ]
+    },
     "Runtime": "python3.9",
     "Timeout": 30
    },
@@ -333,13 +333,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a8a62b989c7866e3ad5b24f3eb6228f8ca91ebff5f5c76f1da466f6c805c0585.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "Providerpython39frameworkonEventServiceRoleA299F5C1",
-      "Arn"
-     ]
+     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerpython3.9)",
     "Environment": {
@@ -353,7 +347,13 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs14.x",
+    "Role": {
+     "Fn::GetAtt": [
+      "Providerpython39frameworkonEventServiceRoleA299F5C1",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
     "Timeout": 900
    },
    "DependsOn": [

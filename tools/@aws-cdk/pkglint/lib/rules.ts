@@ -910,6 +910,7 @@ function cdkModuleName(name: string) {
     javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${suffix.replace(/aws-/, 'services-').replace(/-/g, '.')}`}`,
     mavenArtifactId,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
+    dotnetPackageId: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
       module: `aws_cdk.${pythonName.replace(/-/g, '_')}`,
@@ -925,10 +926,6 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }
-
-    // skip the legacy @aws-cdk/cdk because we actually did not rename
-    // the .NET module, so we are not publishing the deprecated one
-    if (pkg.packageName === '@aws-cdk/cdk') { return; }
 
     const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
     const moduleName = cdkModuleName(pkg.json.name);
@@ -949,7 +946,34 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 }
 
 /**
- * JSII .NET namespace is required and must look sane
+ * JSII .NET packageId is required and must look sane
+ */
+export class JSIIDotNetPackageIdIsRequired extends ValidationRule {
+  public readonly name = 'jsii/dotnet';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
+    const moduleName = cdkModuleName(pkg.json.name);
+    expectJSON(this.name, pkg, 'jsii.targets.dotnet.packageId', moduleName.dotnetPackageId, /\./g, /*case insensitive*/ true);
+
+    if (dotnet) {
+      const actualPrefix = dotnet.split('.').slice(0, 2).join('.');
+      const expectedPrefix = moduleName.dotnetPackageId.split('.').slice(0, 2).join('.');
+      if (actualPrefix !== expectedPrefix) {
+        pkg.report({
+          ruleName: this.name,
+          message: `.NET packageId must share the first two segments of the default namespace, '${expectedPrefix}' vs '${actualPrefix}'`,
+          fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'packageId'], moduleName.dotnetPackageId),
+        });
+      }
+    }
+  }
+}
+
+/**
+ * JSII .NET icon url is required and must look sane
  */
 export class JSIIDotNetIconUrlIsRequired extends ValidationRule {
   public readonly name = 'jsii/dotnet/icon-url';
@@ -1019,16 +1043,16 @@ export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRu
   public readonly name = 'dependencies/peer-dependencies-satisfied';
 
   public validate(pkg: PackageJson): void {
-    for (const [depName, peerVersion] of Object.entries(pkg.peerDependencies)) {
-      const depVersion = pkg.dependencies[depName];
-      if (depVersion === undefined) { continue; }
+    for (const [depName, peerRange] of Object.entries(pkg.peerDependencies)) {
+      const depRange = pkg.dependencies[depName];
+      if (depRange === undefined) { continue; }
 
       // Make sure that depVersion satisfies peerVersion.
-      if (!semver.intersects(depVersion, peerVersion)) {
+      if (!semver.intersects(depRange, peerRange, { includePrerelease: true })) {
         pkg.report({
           ruleName: this.name,
-          message: `dependency ${depName}: concrete version ${depVersion} does not match peer version '${peerVersion}'`,
-          fix: () => pkg.addPeerDependency(depName, depVersion),
+          message: `dependency ${depName}: concrete version ${depRange} does not match peer version '${peerRange}'`,
+          fix: () => pkg.addPeerDependency(depName, depRange),
         });
       }
     }
@@ -1050,8 +1074,10 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
     // using scripts/align-version.sh
     const expectedVersion = require(path.join(monoRepoRoot(), 'package.json')).version; // eslint-disable-line @typescript-eslint/no-require-imports
     const ignore = [
+      '@aws-cdk/aws-service-spec',
+      '@aws-cdk/service-spec-importers',
+      '@aws-cdk/service-spec-types',
       '@aws-cdk/cloudformation-diff',
-      '@aws-cdk/cfnspec',
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
       '@aws-cdk/region-info',
@@ -1059,7 +1085,7 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
       ...fs.readdirSync(path.join(monoRepoRoot(), 'tools', '@aws-cdk')).map((name) => `@aws-cdk/${name}`),
       // Packages in the @aws-cdk namespace that are vended outside of the monorepo
       '@aws-cdk/asset-kubectl-v20',
-      '@aws-cdk/asset-node-proxy-agent-v5',
+      '@aws-cdk/asset-node-proxy-agent-v6',
       '@aws-cdk/asset-awscli-v1',
       '@aws-cdk/cdk-cli-wrapper',
     ];
@@ -1277,6 +1303,24 @@ export class NoStarDeps extends ValidationRule {
   }
 }
 
+export class NoMixedDeps extends ValidationRule {
+  public readonly name = 'dependencies/no-mixed-deps';
+
+  public validate(pkg: PackageJson) {
+    const deps = Object.keys(pkg.json.dependencies ?? {});
+    const devDeps = Object.keys(pkg.json.devDependencies ?? {});
+
+    const shared = deps.filter((dep) => devDeps.includes(dep));
+    for (const dep of shared) {
+      pkg.report({
+        ruleName: this.name,
+        message: `dependency may not be both in dependencies and devDependencies: ${dep}`,
+        fix: () => pkg.removeDevDependency(dep),
+      });
+    }
+  }
+}
+
 interface VersionCount {
   version: string;
   count: number;
@@ -1367,18 +1411,6 @@ export class AwsLint extends ValidationRule {
     }
 
     expectJSON(this.name, pkg, 'scripts.awslint', 'cdk-awslint');
-  }
-}
-
-export class Cfn2Ts extends ValidationRule {
-  public readonly name = 'cfn2ts';
-
-  public validate(pkg: PackageJson) {
-    if (!isJSII(pkg) || !isAWS(pkg)) {
-      return expectJSON(this.name, pkg, 'scripts.cfn2ts', undefined);
-    }
-
-    expectJSON(this.name, pkg, 'scripts.cfn2ts', 'cfn2ts');
   }
 }
 
@@ -1510,6 +1542,28 @@ export class ConstructsDependency extends ValidationRule {
 }
 
 /**
+ * Peer dependencies should be a range, not a point version, to maximize compatibility
+ */
+export class PeerDependencyRange extends ValidationRule {
+  public readonly name = 'peerdependency/range';
+
+  public validate(pkg: PackageJson) {
+    const packages = ['aws-cdk-lib'];
+    for (const [name, version] of Object.entries(pkg.peerDependencies)) {
+      if (packages.includes(name) && version.match(/^[0-9]/)) {
+        pkg.report({
+          ruleName: this.name,
+          message: `peerDependency on" ${name}" should be a range, not a point version: "${version}"`,
+          fix: () => {
+            pkg.addPeerDependency(name, '^' + version);
+          },
+        });
+      }
+    }
+  }
+}
+
+/**
  * Do not announce new versions of AWS CDK modules in awscdk.io because it is very very spammy
  * and actually causes the @awscdkio twitter account to be blocked.
  *
@@ -1623,7 +1677,6 @@ export class UbergenPackageVisibility extends ValidationRule {
   // The ONLY (non-alpha) packages that should be published for v2.
   // These include dependencies of the CDK CLI (aws-cdk).
   private readonly v2PublicPackages = [
-    '@aws-cdk/cfnspec',
     '@aws-cdk/cloud-assembly-schema',
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
@@ -1833,7 +1886,7 @@ function isIncludedInMonolith(pkg: PackageJson): boolean {
 }
 
 function beginEndRegex(label: string) {
-  return new RegExp(`(<\!--BEGIN ${label}-->)([\s\S]+)(<\!--END ${label}-->)`, 'm');
+  return new RegExp(`(<\!--BEGIN ${label}-->)([\\s\\S]+)(<\!--END ${label}-->)`, 'm');
 }
 
 function readIfExists(filename: string): string | undefined {

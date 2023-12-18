@@ -38,7 +38,7 @@ const ecsService = new ecs.Ec2Service(this, 'Service', {
 });
 ```
 
-For a set of constructs defining common ECS architectural patterns, see the `@aws-cdk/aws-ecs-patterns` package.
+For a set of constructs defining common ECS architectural patterns, see the `aws-cdk-lib/aws-ecs-patterns` package.
 
 ## Launch Types: AWS Fargate vs Amazon EC2 vs AWS ECS Anywhere
 
@@ -372,6 +372,23 @@ container.addPortMappings({
 });
 ```
 
+Sometimes it is useful to be able to configure port ranges for a container, e.g. to run applications such as game servers
+and real-time streaming which typically require multiple ports to be opened simultaneously. This feature is supported on
+both Linux and Windows operating systems for both the EC2 and AWS Fargate launch types. There is a maximum limit of 100
+port ranges per container, and you cannot specify overlapping port ranges.
+
+Docker recommends that you turn off the `docker-proxy` in the Docker daemon config file when you have a large number of ports.
+For more information, see [Issue #11185](https://github.com/moby/moby/issues/11185) on the GitHub website.
+
+```ts
+declare const container: ecs.ContainerDefinition;
+
+container.addPortMappings({
+    containerPort: ecs.ContainerDefinition.CONTAINER_PORT_USE_RANGE,
+    containerPortRange: '8080-8081',
+});
+```
+
 To add data volumes to a task definition, call `addVolume()`:
 
 ```ts
@@ -435,7 +452,7 @@ obtained from either DockerHub or from ECR repositories, built directly from a l
 - `ecs.ContainerImage.fromAsset('./image')`: build and upload an
   image directly from a `Dockerfile` in your source directory.
 - `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing
-  `@aws-cdk/aws-ecr-assets.DockerImageAsset` as a container image.
+  `aws-cdk-lib/aws-ecr-assets.DockerImageAsset` as a container image.
 - `ecs.ContainerImage.fromTarball(file)`: use an existing tarball.
 - `new ecs.TagParameterContainerImage(repository)`: use the given ECR repository as the image
   but a CloudFormation parameter as the tag.
@@ -473,8 +490,7 @@ newContainer.addSecret('API_KEY', ecs.Secret.fromSecretsManager(secret));
 newContainer.addSecret('DB_PASSWORD', ecs.Secret.fromSecretsManager(secret, 'password'));
 ```
 
-The task execution role is automatically granted read permissions on the secrets/parameters. Support for environment
-files is restricted to the EC2 launch type for files hosted on S3. Further details provided in the AWS documentation
+The task execution role is automatically granted read permissions on the secrets/parameters. Further details provided in the AWS documentation
 about [specifying environment variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html).
 
 ### Linux parameters
@@ -593,6 +609,31 @@ const service = new ecs.ExternalService(this, 'Service', {
 `Services` by default will create a security group if not provided.
 If you'd like to specify which security groups to use you can override the `securityGroups` property.
 
+By default, the service will use the revision of the passed task definition generated when the `TaskDefinition`
+is deployed by CloudFormation. However, this may not be desired if the revision is externally managed,
+for example through CodeDeploy.
+
+To set a specific revision number or the special `latest` revision, use the `taskDefinitionRevision` parameter:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+new ecs.ExternalService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  desiredCount: 5,
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.of(1)
+});
+
+new ecs.ExternalService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  desiredCount: 5,
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.LATEST
+});
+```
+
 ### Deployment circuit breaker and rollback
 
 Amazon ECS [deployment circuit breaker](https://aws.amazon.com/tw/blogs/containers/announcing-amazon-ecs-deployment-circuit-breaker/)
@@ -611,6 +652,148 @@ const service = new ecs.FargateService(this, 'Service', {
 ```
 
 > Note: ECS Anywhere doesn't support deployment circuit breakers and rollback.
+
+### Deployment alarms
+
+Amazon ECS [deployment alarms]
+(https://aws.amazon.com/blogs/containers/automate-rollbacks-for-amazon-ecs-rolling-deployments-with-cloudwatch-alarms/)
+allow monitoring and automatically reacting to changes during a rolling update
+by using Amazon CloudWatch metric alarms.
+
+Amazon ECS starts monitoring the configured deployment alarms as soon as one or
+more tasks of the updated service are in a running state. The deployment process
+continues until the primary deployment is healthy and has reached the desired
+count and the active deployment has been scaled down to 0. Then, the deployment
+remains in the IN_PROGRESS state for an additional "bake time." The length the
+bake time is calculated based on the evaluation periods and period of the alarms.
+After the bake time, if none of the alarms have been activated, then Amazon ECS
+considers this to be a successful update and deletes the active deployment and
+changes the status of the primary deployment to COMPLETED.
+
+```ts
+import * as cw from 'aws-cdk-lib/aws-cloudwatch';
+
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const elbAlarm: cw.Alarm;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  deploymentAlarms: {
+    alarmNames: [elbAlarm.alarmName],
+    behavior: ecs.AlarmBehavior.ROLLBACK_ON_ALARM,
+  },
+});
+
+// Defining a deployment alarm after the service has been created
+const cpuAlarmName =  'MyCpuMetricAlarm';
+new cw.Alarm(this, 'CPUAlarm', {
+  alarmName: cpuAlarmName,
+  metric: service.metricCpuUtilization(),
+  evaluationPeriods: 2,
+  threshold: 80,
+});
+service.enableDeploymentAlarms([cpuAlarmName], {
+  behavior: ecs.AlarmBehavior.FAIL_ON_ALARM,
+});
+```
+
+> Note: Deployment alarms are only available when `deploymentController` is set
+> to `DeploymentControllerType.ECS`, which is the default.
+
+#### Troubleshooting circular dependencies
+
+I saw this info message during synth time. What do I do?
+
+```text
+Deployment alarm ({"Ref":"MyAlarmABC1234"}) enabled on MyEcsService may cause a
+circular dependency error when this stack deploys. The alarm name references the
+alarm's logical id, or another resource. See the 'Deployment alarms' section in
+the module README for more details.
+```
+
+If your app deploys successfully with this message, you can disregard it. But it
+indicates that you could encounter a circular dependency error when you try to
+deploy. If you want to alarm on metrics produced by the service, there will be a
+circular dependency between the service and its deployment alarms. In this case,
+there are two options to avoid the circular dependency.
+
+1. Define the physical name for the alarm. Use a defined physical name that is
+   unique within the deployment environment for the alarm name when creating the
+   alarm, and re-use the defined name. This name could be a hardcoded string, a
+   string generated based on the environment, or could reference another
+   resource that does not depend on the service.
+2. Define the physical name for the service. Then, don't use
+   `metricCpuUtilization()` or similar methods. Create the metric object
+   separately by referencing the service metrics using this name.
+
+Option 1, defining a physical name for the alarm:
+```ts
+import * as cw from 'aws-cdk-lib/aws-cloudwatch';
+
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+});
+
+const cpuAlarmName =  'MyCpuMetricAlarm';
+const myAlarm = new cw.Alarm(this, 'CPUAlarm', {
+  alarmName: cpuAlarmName,
+  metric: service.metricCpuUtilization(),
+  evaluationPeriods: 2,
+  threshold: 80,
+});
+
+// Using `myAlarm.alarmName` here will cause a circular dependency
+service.enableDeploymentAlarms([cpuAlarmName], {
+  behavior: ecs.AlarmBehavior.FAIL_ON_ALARM,
+});
+```
+
+Option 2, defining a physical name for the service:
+
+```ts
+import * as cw from 'aws-cdk-lib/aws-cloudwatch';
+
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+const serviceName = 'MyFargateService';
+const service = new ecs.FargateService(this, 'Service', {
+  serviceName,
+  cluster,
+  taskDefinition,
+});
+
+const cpuMetric = new cw.Metric({
+  metricName: 'CPUUtilization',
+  namespace: 'AWS/ECS',
+  period: Duration.minutes(5),
+  statistic: 'Average',
+  dimensionsMap: {
+    ClusterName: cluster.clusterName,
+    // Using `service.serviceName` here will cause a circular dependency
+    ServiceName: serviceName,
+  },
+});
+const myAlarm = new cw.Alarm(this, 'CPUAlarm', {
+  alarmName: 'cpuAlarmName',
+  metric: cpuMetric,
+  evaluationPeriods: 2,
+  threshold: 80,
+});
+
+service.enableDeploymentAlarms([myAlarm.alarmName], {
+  behavior: ecs.AlarmBehavior.FAIL_ON_ALARM,
+});
+```
+
+This issue only applies if the metrics to alarm on are emitted by the service
+itself. If the metrics are emitted by a different resource, that does not depend
+on the service, there will be no restrictions on the alarm name.
 
 ### Include an application/network load balancer
 
@@ -770,7 +953,7 @@ See that section for details.
 ## Integration with CloudWatch Events
 
 To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
-`@aws-cdk/aws-events-targets.EcsTask` instead of an `Ec2Service`:
+`aws-cdk-lib/aws-events-targets.EcsTask` instead of an `Ec2Service`:
 
 ```ts
 declare const cluster: ecs.Cluster;
@@ -824,7 +1007,11 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'EventDemo' }),
+  logging: ecs.LogDrivers.awsLogs({ 
+    streamPrefix: 'EventDemo',
+    mode: ecs.AwsLogDriverMode.NON_BLOCKING,
+    maxBufferSize: Size.mebibytes(25), 
+  }),
 });
 ```
 
@@ -1121,6 +1308,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 
 const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
   autoScalingGroup,
+  instanceWarmupPeriod: 300,
 });
 cluster.addAsgCapacityProvider(capacityProvider);
 

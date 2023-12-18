@@ -3,6 +3,7 @@
   "myapi4C7BF186": {
    "Type": "AWS::ApiGateway::RestApi",
    "Properties": {
+    "Description": "api description",
     "MinimumCompressionSize": 1024,
     "Name": "my-api"
    }
@@ -56,17 +57,17 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "myapiDeployment92F2CB496a6dee9579dae89ab3a0b094b4d193eb": {
+  "myapiDeployment92F2CB49069d16df09c59427069eb74581a0403d": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "beta stage",
     "RestApiId": {
      "Ref": "myapi4C7BF186"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
-    "myapiv1appliancesallGETC4DF552D",
-    "myapiv1appliancesallCF8C6A16",
+    "myapiv1appliancesallGETB8EB1B77",
+    "myapiv1appliancesallD279897B",
     "myapiv1booksGETC6B996D0",
     "myapiv1booksPOST53E2832E",
     "myapiv1books1D4BE6C1",
@@ -82,13 +83,10 @@
   "myapiDeploymentStagebeta96434BEB": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
     "CacheClusterEnabled": true,
     "CacheClusterSize": "0.5",
     "DeploymentId": {
-     "Ref": "myapiDeployment92F2CB496a6dee9579dae89ab3a0b094b4d193eb"
+     "Ref": "myapiDeployment92F2CB49069d16df09c59427069eb74581a0403d"
     },
     "Description": "beta stage",
     "MethodSettings": [
@@ -105,6 +103,9 @@
       "ResourcePath": "/~1api~1appliances"
      }
     ],
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
     "StageName": "beta"
    },
    "DependsOn": [
@@ -219,15 +220,9 @@
   "myapiv1toysGET7348114D": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "GET",
-    "ResourceId": {
-     "Ref": "myapiv1toysA55FCBC4"
-    },
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
     "ApiKeyRequired": true,
     "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -254,66 +249,72 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "myapiv1toysA55FCBC4"
+    },
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
     }
    }
   },
   "myapiv1toysPOST55128058": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "POST",
+    "Integration": {
+     "Type": "MOCK"
+    },
     "ResourceId": {
      "Ref": "myapiv1toysA55FCBC4"
     },
     "RestApiId": {
      "Ref": "myapi4C7BF186"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "Type": "MOCK"
     }
    }
   },
   "myapiv1toysPUT59AFBBC2": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "PUT",
+    "Integration": {
+     "Type": "MOCK"
+    },
     "ResourceId": {
      "Ref": "myapiv1toysA55FCBC4"
     },
     "RestApiId": {
      "Ref": "myapi4C7BF186"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "Type": "MOCK"
     }
    }
   },
-  "myapiv1appliancesallCF8C6A16": {
+  "myapiv1appliancesallD279897B": {
    "Type": "AWS::ApiGateway::Resource",
    "Properties": {
     "ParentId": {
      "Ref": "myapiv113487378"
     },
-    "PathPart": "appliances:all",
+    "PathPart": "$appliances:all",
     "RestApiId": {
      "Ref": "myapi4C7BF186"
     }
    }
   },
-  "myapiv1appliancesallGETC4DF552D": {
+  "myapiv1appliancesallGETB8EB1B77": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "GET",
+    "Integration": {
+     "Type": "MOCK"
+    },
     "ResourceId": {
-     "Ref": "myapiv1appliancesallCF8C6A16"
+     "Ref": "myapiv1appliancesallD279897B"
     },
     "RestApiId": {
      "Ref": "myapi4C7BF186"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "Type": "MOCK"
     }
    }
   },
@@ -410,14 +411,8 @@
   "myapiv1booksGETC6B996D0": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "GET",
-    "ResourceId": {
-     "Ref": "myapiv1books1D4BE6C1"
-    },
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -444,6 +439,12 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "myapiv1books1D4BE6C1"
+    },
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
     }
    }
   },
@@ -528,14 +529,8 @@
   "myapiv1booksPOST53E2832E": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "POST",
-    "ResourceId": {
-     "Ref": "myapiv1books1D4BE6C1"
-    },
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -562,6 +557,12 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "myapiv1books1D4BE6C1"
+    },
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
     }
    }
   },
@@ -660,20 +661,20 @@
     "Code": {
      "ZipFile": "exports.handler = function handlerCode(event, _, callback) {\n            return callback(undefined, {\n                isBase64Encoded: false,\n                statusCode: 200,\n                headers: { 'content-type': 'application/json' },\n                body: JSON.stringify(event),\n            });\n        }"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "MyHandlerServiceRoleFFA06653",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MyHandlerServiceRoleFFA06653"
    ]
   },
-  "TestDeploymentD77B56860a9c34c1bc306bfbc7d318827eacd1e1": {
+  "TestDeploymentD77B56865531eba1e8fde4b8e6988d5af7b2efd6": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "RestApiId": {
@@ -681,7 +682,7 @@
     }
    },
    "DependsOn": [
-    "myapiv1appliancesallGETC4DF552D",
+    "myapiv1appliancesallGETB8EB1B77",
     "myapiv1booksGETC6B996D0",
     "myapiv1booksPOST53E2832E",
     "myapiv1toysGET7348114D",
@@ -692,11 +693,11 @@
   "TestStage3097EB68": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
+    "DeploymentId": {
+     "Ref": "TestDeploymentD77B56865531eba1e8fde4b8e6988d5af7b2efd6"
+    },
     "RestApiId": {
      "Ref": "myapi4C7BF186"
-    },
-    "DeploymentId": {
-     "Ref": "TestDeploymentD77B56860a9c34c1bc306bfbc7d318827eacd1e1"
     },
     "StageName": "prod"
    },

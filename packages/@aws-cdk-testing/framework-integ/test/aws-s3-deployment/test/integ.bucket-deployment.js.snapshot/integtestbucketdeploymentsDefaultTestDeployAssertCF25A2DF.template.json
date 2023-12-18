@@ -14,11 +14,20 @@
     "expected": "{\"$ObjectLike\":{\"Contents\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Key\":\"403.html\"}},{\"$ObjectLike\":{\"Key\":\"some-key\"}}]}}}",
     "parameters": {
      "Bucket": {
-      "Fn::ImportValue": "test-bucket-deployments-2:ExportsOutputRefDestination52A57FAA3531B2DE2"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "test-bucket-deployments-2:ExportsOutputRefDestination52A57FAA3531B2DE2"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1682954142277"
+    "salt": "1700261850394"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -77,12 +86,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
+     "S3Key": "2039afff5ee58473c609351d85a209bceb4ce0c16644a1baba0a0f8231c3ee17.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

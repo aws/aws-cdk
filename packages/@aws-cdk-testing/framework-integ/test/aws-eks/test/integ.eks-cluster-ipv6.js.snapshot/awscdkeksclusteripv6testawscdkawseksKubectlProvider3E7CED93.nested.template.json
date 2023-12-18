@@ -1,0 +1,220 @@
+{
+ "Resources": {
+  "Handler886CB40B": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     "S3Key": "7ee709fdaf72d4a95dabe6f431ed4176b1dbcb78127986bf956f0ed8cad04779.zip"
+    },
+    "Description": "onEvent handler for EKS kubectl resource provider",
+    "Handler": "index.handler",
+    "Layers": [
+     {
+      "Ref": "AwsCliLayerF44AAF94"
+     },
+     {
+      "Ref": "referencetoawscdkeksclusteripv6testKubectlLayer6BCCECB5Ref"
+     }
+    ],
+    "MemorySize": 1024,
+    "Role": {
+     "Ref": "referencetoawscdkeksclusteripv6testClusterKubectlHandlerRoleCDF70F2CArn"
+    },
+    "Runtime": "python3.10",
+    "Timeout": 900,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Ref": "referencetoawscdkeksclusteripv6testCluster1C21F8EDClusterSecurityGroupId"
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Ref": "referencetoawscdkeksclusteripv6testVpcPrivateSubnet1Subnet8169B811Ref"
+      },
+      {
+       "Ref": "referencetoawscdkeksclusteripv6testVpcPrivateSubnet2Subnet21732C40Ref"
+      }
+     ]
+    }
+   }
+  },
+  "AwsCliLayerF44AAF94": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     "S3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   }
+  },
+  "ProviderframeworkonEventServiceRole9FF04296": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Handler886CB40B",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Handler886CB40B",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133",
+    "Roles": [
+     {
+      "Ref": "ProviderframeworkonEventServiceRole9FF04296"
+     }
+    ]
+   }
+  },
+  "ProviderframeworkonEvent83C1D0A7": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
+     },
+     "S3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-ipv6-test/@aws-cdk--aws-eks.KubectlProvider/Provider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "Handler886CB40B",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "Role": {
+     "Fn::GetAtt": [
+      "ProviderframeworkonEventServiceRole9FF04296",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 900,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Ref": "referencetoawscdkeksclusteripv6testCluster1C21F8EDClusterSecurityGroupId"
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Ref": "referencetoawscdkeksclusteripv6testVpcPrivateSubnet1Subnet8169B811Ref"
+      },
+      {
+       "Ref": "referencetoawscdkeksclusteripv6testVpcPrivateSubnet2Subnet21732C40Ref"
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133",
+    "ProviderframeworkonEventServiceRole9FF04296"
+   ]
+  }
+ },
+ "Outputs": {
+  "awscdkeksclusteripv6testawscdkawseksKubectlProviderframeworkonEvent383976A6Arn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ProviderframeworkonEvent83C1D0A7",
+     "Arn"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "referencetoawscdkeksclusteripv6testKubectlLayer6BCCECB5Ref": {
+   "Type": "String"
+  },
+  "referencetoawscdkeksclusteripv6testClusterKubectlHandlerRoleCDF70F2CArn": {
+   "Type": "String"
+  },
+  "referencetoawscdkeksclusteripv6testVpcPrivateSubnet1Subnet8169B811Ref": {
+   "Type": "String"
+  },
+  "referencetoawscdkeksclusteripv6testVpcPrivateSubnet2Subnet21732C40Ref": {
+   "Type": "String"
+  },
+  "referencetoawscdkeksclusteripv6testCluster1C21F8EDClusterSecurityGroupId": {
+   "Type": "String"
+  }
+ }
+}

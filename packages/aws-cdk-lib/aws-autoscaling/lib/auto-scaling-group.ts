@@ -20,10 +20,11 @@ import {
   Aspects,
   Aws,
   CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy,
-  Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack, Tags,
+  Duration, FeatureFlags, Fn, IResource, Lazy, PhysicalName, Resource, Stack, Tags,
   Token,
   Tokenization, withResolved,
 } from '../../core';
+import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 
 /**
  * Name tag constant
@@ -1238,6 +1239,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     let launchConfig: CfnLaunchConfiguration | undefined = undefined;
+    let launchTemplateFromConfig: ec2.LaunchTemplate | undefined = undefined;
     if (props.launchTemplate || props.mixedInstancesPolicy) {
       this.verifyNoLaunchConfigPropIsGiven(props);
 
@@ -1280,57 +1282,84 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         throw new Error('Setting \'instanceType\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set');
       }
 
+      Tags.of(this).add(NAME_TAG, this.node.path);
+
       this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
         vpc: props.vpc,
         allowAllOutbound: props.allowAllOutbound !== false,
       });
-      this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
-      this.securityGroups = [this.securityGroup];
-      Tags.of(this).add(NAME_TAG, this.node.path);
 
       this._role = props.role || new iam.Role(this, 'InstanceRole', {
         roleName: PhysicalName.GENERATE_IF_NEEDED,
         assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
       });
-
       this.grantPrincipal = this._role;
-
-      if (props.ssmSessionPermissions) {
-        this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
-      }
 
       const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
         roles: [this.role.roleName],
       });
 
-      // use delayed evaluation
-      const imageConfig = props.machineImage.getImage(this);
-      this._userData = props.userData ?? imageConfig.userData;
-      const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData!.render()) });
-      const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups!.map(sg => sg.securityGroupId) });
+      // generate launch template from launch config props when feature flag is set
+      if (FeatureFlags.of(this).isEnabled(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE)) {
+        const instanceProfile = iam.InstanceProfile.fromInstanceProfileAttributes(this, 'ImportedInstanceProfile', {
+          instanceProfileArn: iamProfile.attrArn,
+          role: this.role,
+        });
 
-      launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
-        imageId: imageConfig.imageId,
-        keyName: props.keyName,
-        instanceType: props.instanceType.toString(),
-        instanceMonitoring: (props.instanceMonitoring !== undefined ? (props.instanceMonitoring === Monitoring.DETAILED) : undefined),
-        securityGroups: securityGroupsToken,
-        iamInstanceProfile: iamProfile.ref,
-        userData: userDataToken,
-        associatePublicIpAddress: props.associatePublicIpAddress,
-        spotPrice: props.spotPrice,
-        blockDeviceMappings: (props.blockDevices !== undefined ?
-          synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined),
-      });
+        launchTemplateFromConfig = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
+          machineImage: props.machineImage,
+          keyName: props.keyName,
+          instanceType: props.instanceType,
+          detailedMonitoring: props.instanceMonitoring !== undefined && props.instanceMonitoring === Monitoring.DETAILED,
+          securityGroup: this.securityGroup,
+          userData: props.userData,
+          associatePublicIpAddress: props.associatePublicIpAddress,
+          spotOptions: props.spotPrice !== undefined ? { maxPrice: parseFloat(props.spotPrice) } : undefined,
+          blockDevices: props.blockDevices,
+          instanceProfile,
+        });
 
-      launchConfig.node.addDependency(this.role);
-      this.osType = imageConfig.osType;
+        this.osType = launchTemplateFromConfig.osType!;
+        this.launchTemplate = launchTemplateFromConfig;
+      } else {
+        this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
+        this.securityGroups = [this.securityGroup];
+
+        // use delayed evaluation
+        const imageConfig = props.machineImage.getImage(this);
+        this._userData = props.userData ?? imageConfig.userData;
+        const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData!.render()) });
+        const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups!.map(sg => sg.securityGroupId) });
+
+        launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
+          imageId: imageConfig.imageId,
+          keyName: props.keyName,
+          instanceType: props.instanceType.toString(),
+          instanceMonitoring: (props.instanceMonitoring !== undefined ? (props.instanceMonitoring === Monitoring.DETAILED) : undefined),
+          securityGroups: securityGroupsToken,
+          iamInstanceProfile: iamProfile.ref,
+          userData: userDataToken,
+          associatePublicIpAddress: props.associatePublicIpAddress,
+          spotPrice: props.spotPrice,
+          blockDeviceMappings: (props.blockDevices !== undefined ?
+            synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined),
+        });
+
+        launchConfig.node.addDependency(this.role);
+        this.osType = imageConfig.osType;
+      }
+    }
+
+    if (props.ssmSessionPermissions && this._role) {
+      this._role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
     }
 
     // desiredCapacity just reflects what the user has supplied.
     const desiredCapacity = props.desiredCapacity;
     const minCapacity = props.minCapacity ?? 1;
-    const maxCapacity = props.maxCapacity ?? desiredCapacity ?? Math.max(minCapacity, 1);
+    const maxCapacity = props.maxCapacity ??
+      desiredCapacity ??
+      (Token.isUnresolved(minCapacity) ? minCapacity : Math.max(minCapacity, 1));
 
     withResolved(minCapacity, maxCapacity, (min, max) => {
       if (min > max) {
@@ -1351,7 +1380,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     });
 
     if (desiredCapacity !== undefined) {
-      Annotations.of(this).addWarning('desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-autoscaling:desiredCapacitySet', 'desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215');
     }
 
     this.maxInstanceLifetime = props.maxInstanceLifetime;
@@ -1398,7 +1427,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       terminationPolicies: props.terminationPolicies,
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
-      ...this.getLaunchSettings(launchConfig, props.launchTemplate, props.mixedInstancesPolicy),
+      ...this.getLaunchSettings(launchConfig, props.launchTemplate ?? launchTemplateFromConfig, props.mixedInstancesPolicy),
     };
 
     if (!hasPublic && props.associatePublicIpAddress) {
@@ -1429,17 +1458,20 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   }
 
   /**
-   * Add the security group to all instances via the launch configuration
+   * Add the security group to all instances via the launch template
    * security groups array.
    *
    * @param securityGroup: The security group to add
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup): void {
-    if (!this.securityGroups) {
-      throw new Error('You cannot add security groups when the Auto Scaling Group is created from a Launch Template.');
+    if (FeatureFlags.of(this).isEnabled(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE)) {
+      this.launchTemplate?.addSecurityGroup(securityGroup);
+    } else {
+      if (!this.securityGroups) {
+        throw new Error('You cannot add security groups when the Auto Scaling Group is created from a Launch Template.');
+      }
+      this.securityGroups.push(securityGroup);
     }
-
-    this.securityGroups.push(securityGroup);
   }
 
   /**
@@ -2264,7 +2296,7 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
           throw new Error('iops property is required with volumeType: EbsDeviceVolumeType.IO1');
         }
       } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        Annotations.of(construct).addWarning('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+        Annotations.of(construct).addWarningV2('@aws-cdk/aws-autoscaling:iopsIgnored', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
       }
     }
 

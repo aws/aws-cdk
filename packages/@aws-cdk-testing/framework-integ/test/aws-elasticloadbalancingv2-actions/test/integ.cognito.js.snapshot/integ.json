@@ -1,10 +1,11 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
     "integ-test-cognito/DefaultTest": {
       "stacks": [
         "integ-cognito"
       ],
+      "diffAssets": true,
       "assertionStack": "integ-test-cognito/DefaultTest/DeployAssert",
       "assertionStackName": "integtestcognitoDefaultTestDeployAssert6F2623C9"
     }

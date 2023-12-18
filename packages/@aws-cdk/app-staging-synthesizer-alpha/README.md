@@ -48,106 +48,44 @@ in your account.
 
 ## Bootstrap Model
 
-Our current bootstrap model looks like this, when you run `cdk bootstrap aws://<account>/<region>` :
+In our default bootstrapping process, when you run `cdk bootstrap aws://<account>/<region>`, the following
+resources are created:
 
-```text
-┌───────────────────────────────────┐┌────────────────────────┐┌────────────────────────┐
-│                                   ││                        ││                        │
-│                                   ││                        ││                        │
-│          ┌───────────────┐        ││    ┌──────────────┐    ││    ┌──────────────┐    │
-│          │Bootstrap Stack│        ││    │  CDK App 1   │    ││    │  CDK App 2   │    │
-│          └───────────────┘        ││    └──────────────┘    ││    └──────────────┘    │
-│                                   ││                        ││                        │
-│                                   ││                        ││                        │
-│   ┌───────────────────────────┐   ││     ┌────────────┐     ││                        │
-│   │IAM Role for CFN execution │   ││┌────│  S3 Asset  │     ││                        │
-│   │    IAM Role for lookup    │   │││    └────────────┘     ││                        │
-│   │  IAM Role for deployment  │   │││                       ││                        │
-│   └───────────────────────────┘   │││                       ││     ┌─────────────┐    │
-│                                   │││            ┌──────────┼┼─────│  S3 Asset   │    │
-│                                   │││            │          ││     └─────────────┘    │
-│ ┌───────────────────────────────┐ │││            │          ││                        │
-│ │ IAM Role for File Publishing  │ │││            │          ││                        │
-│ │ IAM Role for Image Publishing │ │││            │          ││                        │
-│ └───────────────────────────────┘ │││            │          ││                        │
-│                                   │││            │          ││                        │
-│  ┌─────────────────────────────┐  │││            │          ││                        │
-│  │S3 Bucket for Staging Assets │  │││            │          ││                        │
-│  │     KMS Key encryption      │◀─┼┼┴────────────┘          ││      ┌────────────┐    │
-│  └─────────────────────────────┘  ││             ┌──────────┼┼───── │ ECR Asset  │    │
-│                                   ││             │          ││      └────────────┘    │
-│                                   ││             │          ││                        │
-│┌─────────────────────────────────┐││             │          ││                        │
-││ECR Repository for Staging Assets◀┼┼─────────────┘          ││                        │
-│└─────────────────────────────────┘││                        ││                        │
-│                                   ││                        ││                        │
-│                                   ││                        ││                        │
-│                                   ││                        ││                        │
-│                                   ││                        ││                        │
-│                                   ││                        ││                        │
-│                                   ││                        ││                        │
-└───────────────────────────────────┘└────────────────────────┘└────────────────────────┘
-```
+- It creates Roles to assume for cross-account deployments and for Pipeline deployments;
+- It creates staging resources: a global S3 bucket and global ECR repository to hold CDK assets;
+- It creates Roles to write to the S3 bucket and ECR repository;
 
-Your CDK Application utilizes these resources when deploying. For example, if you have a file asset,
-it gets uploaded to the S3 Staging Bucket using the File Publishing Role when you run `cdk deploy`.
+Because the bootstrapping resources include regional resources, you need to bootstrap
+every region you plan to deploy to individually. All assets of all CDK apps deploying
+to that account and region will be written to the single S3 Bucket and ECR repository.
 
-This library introduces an alternate model to bootstrapping, by splitting out essential CloudFormation IAM roles
-and staging resources. There will still be a Bootstrap Stack, but this will only contain IAM roles necessary for
-CloudFormation deployment. Each CDK App will instead be in charge of its own staging resources, including the
-S3 Bucket, ECR Repositories, and associated IAM roles. It works like this:
+By using the synthesizer in this library, instead of the
+`DefaultStackSynthesizer`, a different set of staging resources will be created
+for every CDK application, and they will be created automatically as part of a
+regular deployment, in a separate Stack that is deployed before your application
+Stacks. The staging resources will be one S3 bucket, and *one ECR repository per
+image*, and Roles necessary to access those buckets and ECR repositories. The
+Roles from the default bootstrap stack are still used (though their use can be
+turned off).
 
-The Staging Stack will contain, on a per-need basis, 
+This has the following advantages:
 
-- 1 S3 Bucket with KMS encryption for all file assets in the CDK App.
-- An ECR Repository _per_ image (and its revisions).
-- IAM roles with access to the Bucket and Repositories.
-
-```text
-┌─────────────────────────────┐┌───────────────────────────────────────┐┌───────────────────────────────────────┐
-│                             ││                                       ││                                       │
-│      ┌───────────────┐      ││             ┌──────────────┐          ││             ┌──────────────┐          │
-│      │Bootstrap Stack│      ││             │  CDK App 1   │          ││             │  CDK App 2   │          │
-│      └───────────────┘      ││             └──────────────┘          ││             └──────────────┘          │
-│                             ││┌──────────────────┐                   ││┌──────────────────┐                   │
-│                             │││ ┌──────────────┐ │                   │││ ┌──────────────┐ │                   │
-│                             │││ │Staging Stack │ │                   │││ │Staging Stack │ │                   │
-│                             │││ └──────────────┘ │                   │││ └──────────────┘ │                   │
-│                             │││                  │                   │││                  │                   │
-│                             │││                  │                   │││                  │                   │
-│                             │││┌────────────────┐│     ┌────────────┐│││┌────────────────┐│     ┌────────────┐│
-│                             ││││  IAM Role for  ││ ┌───│  S3 Asset  │││││  IAM Role for  ││ ┌───│  S3 Asset  ││
-│                             ││││File Publishing ││ │   └────────────┘││││File Publishing ││ │   └────────────┘│
-│                             │││└────────────────┘│ │                 ││││  IAM Role for  ││ │                 │
-│                             │││                  │ │                 ││││Image Publishing││ │                 │
-│┌───────────────────────────┐│││                  │ │                 │││└────────────────┘│ │                 │
-││IAM Role for CFN execution ││││                  │ │                 │││                  │ │                 │
-││    IAM Role for lookup    ││││                  │ │                 │││                  │ │                 │
-││  IAM Role for deployment  ││││┌────────────────┐│ │                 │││┌────────────────┐│ │                 │
-│└───────────────────────────┘││││ S3 Bucket for  ││ │                 ││││ S3 Bucket for  ││ │                 │
-│                             ││││ Staging Assets │◀─┘                 ││││ Staging Assets │◀─┘                 │
-│                             │││└────────────────┘│                   │││└────────────────┘│      ┌───────────┐│
-│                             │││                  │                   │││                  │  ┌───│ ECR Asset ││
-│                             │││                  │                   │││┌────────────────┐│  │   └───────────┘│
-│                             │││                  │                   ││││ ECR Repository ││  │                │
-│                             │││                  │                   ││││  for Staging   │◀──┘                │
-│                             │││                  │                   ││││     Assets     ││                   │
-│                             │││                  │                   │││└────────────────┘│                   │
-│                             │││                  │                   │││                  │                   │
-│                             │││                  │                   │││                  │                   │
-│                             │││                  │                   │││                  │                   │
-│                             │││                  │                   │││                  │                   │
-│                             │││                  │                   │││                  │                   │
-│                             ││└──────────────────┘                   ││└──────────────────┘                   │
-└─────────────────────────────┘└───────────────────────────────────────┘└───────────────────────────────────────┘
-```
-
-This allows staging resources to be created when needed next to the CDK App. It has the following
-benefits:
-
+- Because staging resources are now application-specific, they can be fully cleaned up when you clean up
+  the application.
+- Because there is now one ECR repository per image instead of one ECR repository for all images, it is
+  possible to effectively use ECR life cycle rules (for example, retain only the most recent 5 images)
+  to cut down on storage costs.
 - Resources between separate CDK Apps are separated so they can be cleaned up and lifecycle
-controlled individually.
-- Users have a familiar way to customize staging resources in the CDK Application.
+  controlled individually.
+- Because the only shared bootstrapping resources required are Roles, which are global resources,
+  you now only need to bootstrap every account in one Region (instead of every Region). This makes it
+  easier to do with CloudFormation StackSets.
+
+For the deployment roles, this synthesizer still uses the Roles from the default
+bootstrap stack, and nothing else. The staging resources from that bootstrap
+stack will be unused. You can customize the template to remove those resources
+if you prefer.  In the future, we will provide a bootstrap stack template with
+only those Roles, specifically for use with this synthesizer.
 
 ## Using the Default Staging Stack per Environment
 
@@ -159,6 +97,10 @@ its staging resources. To use this kind of synthesizer, use `AppStagingSynthesiz
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
+
+    // The following line is optional. By default it is assumed you have bootstrapped in the same
+    // region(s) as the stack(s) you are deploying.
+    deploymentIdentities: DeploymentIdentities.defaultBootstrapRoles({ bootstrapRegion: 'us-east-1' }),
   }),
 });
 ```
@@ -232,7 +174,7 @@ assumable by the deployment role. You can also specify an existing IAM role for 
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
-    fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/S3Access'), 
+    fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/S3Access'),
     imageAssetPublishingRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/ECRAccess'),
   }),
 });
@@ -242,14 +184,14 @@ const app = new App({
 
 There are two types of assets:
 
-- Assets used only during deployment. These are used to hand off a large piece of data to another 
-service, that will make a private copy of that data. After deployment, the asset is only necessary for 
-a potential future rollback. 
+- Assets used only during deployment. These are used to hand off a large piece of data to another
+service, that will make a private copy of that data. After deployment, the asset is only necessary for
+a potential future rollback.
 - Assets accessed throughout the running life time of the application.
 
 Examples of assets that are only used at deploy time are CloudFormation Templates and Lambda Code
-bundles. Examples of assets accessed throughout the life time of the application are script files 
-downloaded to run in a CodeBuild Project, or on EC2 instance startup. ECR images are always application 
+bundles. Examples of assets accessed throughout the life time of the application are script files
+downloaded to run in a CodeBuild Project, or on EC2 instance startup. ECR images are always application
 life-time assets. S3 deploy time assets are stored with a `deploy-time/` prefix, and a lifecycle rule will collect them after a configurable number of days.
 
 Lambda assets are by default marked as deploy time assets:
@@ -275,9 +217,9 @@ const asset = new Asset(stack, 'deploy-time-asset', {
 });
 ```
 
-By default, we store deploy time assets for 30 days, but you can change this number by specifying 
+By default, we store deploy time assets for 30 days, but you can change this number by specifying
 `deployTimeFileAssetLifetime`. The number you specify here is how long you will be able to roll back
-to a previous version of an application just by doing a CloudFormation deployment with the old 
+to a previous version of an application just by doing a CloudFormation deployment with the old
 template, without rebuilding and republishing assets.
 
 ```ts
@@ -307,6 +249,22 @@ const app = new App({
 });
 ```
 
+### Auto Delete Staging Assets on Deletion
+
+By default, the staging resources will be cleaned up on stack deletion. That means that the
+S3 Bucket and ECR Repositories are set to `RemovalPolicy.DESTROY` and have `autoDeleteObjects`
+or `autoDeleteImages` turned on. This creates custom resources under the hood to facilitate
+cleanup. To turn this off, specify `autoDeleteStagingAssets: false`.
+
+```ts
+const app = new App({
+  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+    appId: 'my-app-id',
+    autoDeleteStagingAssets: false,
+  }),
+});
+```
+
 ## Using a Custom Staging Stack per Environment
 
 If you want to customize some behavior that is not configurable via properties,
@@ -316,7 +274,7 @@ you can subclass `DefaultStagingStack`.
 ```ts
 interface CustomStagingStackOptions extends DefaultStagingStackOptions {}
 
-class CustomStagingStack extends DefaultStagingStack {  
+class CustomStagingStack extends DefaultStagingStack {
 }
 ```
 
@@ -389,13 +347,13 @@ const app = new App({
 
 Since this module is experimental, there are some known limitations:
 
-- Currently this module does not support CDK Pipelines. You must deploy CDK Apps using this 
-  synthesizer via `cdk deploy`.
+- Currently this module does not support CDK Pipelines. You must deploy CDK Apps using this
+  synthesizer via `cdk deploy`. Please upvote [this issue](https://github.com/aws/aws-cdk/issues/26118)
+  to indicate you want this.
 - This synthesizer only needs a bootstrap stack with Roles, without staging resources. We
   haven't written such a bootstrap stack yet; at the moment you can use the existing modern
-  bootstrap stack, the staging resources in them will just go unused.
+  bootstrap stack, the staging resources in them will just go unused. You can customize the
+  template to remove them if desired.
 - Due to limitations on the CloudFormation template size, CDK Applications can have
-  at most 38 independent ECR images.
-- When you run `cdk destroy` (for example during testing), the staging bucket and ECR
-  repositories will be left behind because CloudFormation cannot clean up non-empty resources.
-  You must deploy those resources manually if you want to redeploy again using the same `appId`.
+  at most 20 independent ECR images. Please upvote [this issue](https://github.com/aws/aws-cdk/issues/26119)
+  if you need more than this.

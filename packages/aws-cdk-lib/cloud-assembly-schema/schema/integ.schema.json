@@ -199,6 +199,10 @@
                     "default": false,
                     "type": "boolean"
                 },
+                "concurrency": {
+                    "description": "Deploy multiple stacks in parallel (Default 1)",
+                    "type": "number"
+                },
                 "stacks": {
                     "description": "List of stacks to deploy\n\nRequried if `all` is not set (Default - [])",
                     "type": "array",

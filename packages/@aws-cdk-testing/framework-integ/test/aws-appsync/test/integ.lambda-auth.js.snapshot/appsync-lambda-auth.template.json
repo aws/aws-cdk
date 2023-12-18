@@ -40,14 +40,14 @@
      },
      "S3Key": "df9f207d681056c35badb6bc0d60a945b44c887b227b759715fd6a6443486443.zip"
     },
+    "Handler": "lambda-tutorial.handler",
     "Role": {
      "Fn::GetAtt": [
       "funcServiceRoleA96CCB44",
       "Arn"
      ]
     },
-    "Handler": "lambda-tutorial.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "funcServiceRoleA96CCB44"
@@ -83,7 +83,6 @@
    "Type": "AWS::AppSync::GraphQLApi",
    "Properties": {
     "AuthenticationType": "AWS_LAMBDA",
-    "Name": "api1",
     "LambdaAuthorizerConfig": {
      "AuthorizerUri": {
       "Fn::GetAtt": [
@@ -91,7 +90,8 @@
        "Arn"
       ]
      }
-    }
+    },
+    "Name": "api1"
    }
   },
   "api1SchemaFFA53DB6": {
@@ -110,7 +110,6 @@
    "Type": "AWS::AppSync::GraphQLApi",
    "Properties": {
     "AuthenticationType": "AWS_LAMBDA",
-    "Name": "api2",
     "LambdaAuthorizerConfig": {
      "AuthorizerUri": {
       "Fn::GetAtt": [
@@ -118,7 +117,8 @@
        "Arn"
       ]
      }
-    }
+    },
+    "Name": "api2"
    }
   },
   "api2SchemaD5C26031": {

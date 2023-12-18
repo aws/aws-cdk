@@ -1,9 +1,9 @@
 import * as path from 'node:path';
-import { ModuleMap, ModuleMapEntry } from '@aws-cdk/cfn2ts';
 import { createLibraryReadme } from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
 import awsEventsTargets from './aws-events-targets';
 import cloudformationInclude from './cloudformation-include';
+import { ModuleMap, ModuleMapEntry } from '../codegen';
 
 export default async function submodulesGen(modules: ModuleMap, outPath: string) {
   for (const submodule of Object.values(modules)) {
@@ -38,7 +38,16 @@ async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
   const sourcePath = path.join(modulePath, 'lib');
   if (!fs.existsSync(path.join(sourcePath, 'index.ts'))) {
     const lines = submodule.scopes.map((s: string) => `// ${s} Cloudformation Resources`);
-    lines.push(...submodule.files.map((f) => `export * from './${path.relative(sourcePath, f).replace('.ts', '')}';`));
+    lines.push(...submodule.files
+      .map((f) => {
+        // New codegen uses absolute paths
+        if (path.isAbsolute(f)) {
+          return path.relative(sourcePath, f);
+        }
+        // Old codegen uses a filename that's already relative to sourcePath
+        return f;
+      })
+      .map((f) => `export * from './${f.replace('.ts', '')}';`));
     await fs.writeFile(path.join(sourcePath, 'index.ts'), lines.join('\n') + '\n');
   }
 
@@ -46,7 +55,7 @@ async function ensureSubmodule(submodule: ModuleMapEntry, modulePath: string) {
   if (!fs.existsSync(path.join(modulePath, '.jsiirc.json'))) {
     if (!submodule.definition) {
       throw new Error(
-        `Cannot infer path or namespace for submodule named "${name}". Manually create ${modulePath}/.jsiirc.json file.`,
+        `Cannot infer path or namespace for submodule named "${submodule.name}". Manually create ${modulePath}/.jsiirc.json file.`,
       );
     }
 

@@ -89,7 +89,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-us-east-1",
-     "S3Key": "27f8287125ebe89b1cb7f97768a61c84b3f3221450e0a22c152addc630ab2430.zip"
+     "S3Key": "efed83658c390f4cf6b11ee3102d0915b4e59221bffb59919511e5653e6db7f9.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -100,7 +100,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"

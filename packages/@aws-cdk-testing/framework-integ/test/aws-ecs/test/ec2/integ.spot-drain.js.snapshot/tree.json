@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.140"
-        }
-      },
       "aws-ecs-integ-spot": {
         "id": "aws-ecs-integ-spot",
         "path": "aws-ecs-integ-spot",
@@ -39,7 +31,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPC",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
                   "version": "0.0.0"
                 }
               },
@@ -53,9 +45,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -79,11 +68,14 @@
                             "key": "Name",
                             "value": "aws-ecs-integ-spot/Vpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -91,7 +83,7 @@
                     "id": "Acl",
                     "path": "aws-ecs-integ-spot/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -101,19 +93,19 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-ecs-integ-spot/Vpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -132,7 +124,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -142,17 +134,17 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -172,7 +164,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -182,14 +174,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VpcPublicSubnet1EIPD7E02669",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
                         },
                         "tags": [
                           {
@@ -200,13 +192,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -220,9 +212,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -246,11 +235,14 @@
                             "key": "Name",
                             "value": "aws-ecs-integ-spot/Vpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -258,7 +250,7 @@
                     "id": "Acl",
                     "path": "aws-ecs-integ-spot/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -268,19 +260,19 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-ecs-integ-spot/Vpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -299,7 +291,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -309,17 +301,17 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -339,7 +331,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -349,14 +341,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VpcPublicSubnet2Subnet691E08A3"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VpcPublicSubnet2EIP3C605A87",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet2Subnet691E08A3"
                         },
                         "tags": [
                           {
@@ -367,13 +359,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -387,9 +379,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -413,11 +402,14 @@
                             "key": "Name",
                             "value": "aws-ecs-integ-spot/Vpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -425,7 +417,7 @@
                     "id": "Acl",
                     "path": "aws-ecs-integ-spot/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -435,19 +427,19 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-ecs-integ-spot/Vpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -466,7 +458,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -476,23 +468,23 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -506,9 +498,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -532,11 +521,14 @@
                             "key": "Name",
                             "value": "aws-ecs-integ-spot/Vpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -544,7 +536,7 @@
                     "id": "Acl",
                     "path": "aws-ecs-integ-spot/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -554,19 +546,19 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-ecs-integ-spot/Vpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -585,7 +577,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -595,23 +587,23 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -630,7 +622,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
                   "version": "0.0.0"
                 }
               },
@@ -640,22 +632,22 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "Vpc8378EB38"
-                    },
                     "internetGatewayId": {
                       "Ref": "VpcIGWD7BA715C"
+                    },
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.Vpc",
+              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
               "version": "0.0.0"
             }
           },
@@ -671,7 +663,7 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecs.CfnCluster",
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnCluster",
                   "version": "0.0.0"
                 }
               },
@@ -709,13 +701,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                       "version": "0.0.0"
                     }
                   },
@@ -723,6 +715,14 @@
                     "id": "InstanceRole",
                     "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/InstanceRole",
                     "children": {
+                      "ImportInstanceRole": {
+                        "id": "ImportInstanceRole",
+                        "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/InstanceRole/ImportInstanceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/InstanceRole/Resource",
@@ -750,7 +750,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       },
@@ -820,19 +820,19 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
                       "version": "0.0.0"
                     }
                   },
@@ -850,50 +850,114 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnInstanceProfile",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
                       "version": "0.0.0"
                     }
                   },
-                  "LaunchConfig": {
-                    "id": "LaunchConfig",
-                    "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/LaunchConfig",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
-                      "aws:cdk:cloudformation:props": {
-                        "imageId": {
-                          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-                        },
-                        "instanceType": "c5.xlarge",
-                        "iamInstanceProfile": {
-                          "Ref": "EcsClusterasgSpotInstanceProfile0D6DD08D"
-                        },
-                        "securityGroups": [
-                          {
-                            "Fn::GetAtt": [
-                              "EcsClusterasgSpotInstanceSecurityGroupEA17787D",
-                              "GroupId"
-                            ]
-                          }
-                        ],
-                        "spotPrice": "0.0735",
-                        "userData": {
-                          "Fn::Base64": {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "#!/bin/bash\necho ECS_CLUSTER=",
+                  "ImportedInstanceProfile": {
+                    "id": "ImportedInstanceProfile",
+                    "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/ImportedInstanceProfile",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "LaunchTemplate": {
+                    "id": "LaunchTemplate",
+                    "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/LaunchTemplate",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/LaunchTemplate/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                          "aws:cdk:cloudformation:props": {
+                            "launchTemplateData": {
+                              "iamInstanceProfile": {
+                                "arn": {
+                                  "Fn::GetAtt": [
+                                    "EcsClusterasgSpotInstanceProfile0D6DD08D",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "imageId": {
+                                "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+                              },
+                              "instanceType": "c5.xlarge",
+                              "instanceMarketOptions": {
+                                "marketType": "spot",
+                                "spotOptions": {
+                                  "maxPrice": "0.0735"
+                                }
+                              },
+                              "monitoring": {
+                                "enabled": false
+                              },
+                              "securityGroupIds": [
                                 {
-                                  "Ref": "EcsCluster97242B84"
+                                  "Fn::GetAtt": [
+                                    "EcsClusterasgSpotInstanceSecurityGroupEA17787D",
+                                    "GroupId"
+                                  ]
+                                }
+                              ],
+                              "tagSpecifications": [
+                                {
+                                  "resourceType": "instance",
+                                  "tags": [
+                                    {
+                                      "key": "Name",
+                                      "value": "aws-ecs-integ-spot/EcsCluster/asgSpot/LaunchTemplate"
+                                    }
+                                  ]
                                 },
-                                " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config\necho ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config"
-                              ]
+                                {
+                                  "resourceType": "volume",
+                                  "tags": [
+                                    {
+                                      "key": "Name",
+                                      "value": "aws-ecs-integ-spot/EcsCluster/asgSpot/LaunchTemplate"
+                                    }
+                                  ]
+                                }
+                              ],
+                              "userData": {
+                                "Fn::Base64": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "#!/bin/bash\necho ECS_CLUSTER=",
+                                      {
+                                        "Ref": "EcsCluster97242B84"
+                                      },
+                                      " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config\necho ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "tagSpecifications": [
+                              {
+                                "resourceType": "launch-template",
+                                "tags": [
+                                  {
+                                    "key": "Name",
+                                    "value": "aws-ecs-integ-spot/EcsCluster/asgSpot/LaunchTemplate"
+                                  }
+                                ]
+                              }
                             ]
                           }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-autoscaling.CfnLaunchConfiguration",
+                      "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
                       "version": "0.0.0"
                     }
                   },
@@ -903,12 +967,20 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
                       "aws:cdk:cloudformation:props": {
-                        "maxSize": "2",
-                        "minSize": "2",
-                        "desiredCapacity": "2",
-                        "launchConfigurationName": {
-                          "Ref": "EcsClusterasgSpotLaunchConfig75BCA823"
+                        "desiredCapacity": "3",
+                        "launchTemplate": {
+                          "launchTemplateId": {
+                            "Ref": "EcsClusterasgSpotLaunchTemplateA53AD60C"
+                          },
+                          "version": {
+                            "Fn::GetAtt": [
+                              "EcsClusterasgSpotLaunchTemplateA53AD60C",
+                              "LatestVersionNumber"
+                            ]
+                          }
                         },
+                        "maxSize": "3",
+                        "minSize": "3",
                         "tags": [
                           {
                             "key": "Name",
@@ -927,7 +999,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-autoscaling.CfnAutoScalingGroup",
+                      "fqn": "aws-cdk-lib.aws_autoscaling.CfnAutoScalingGroup",
                       "version": "0.0.0"
                     }
                   },
@@ -943,6 +1015,14 @@
                             "id": "ServiceRole",
                             "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/ServiceRole",
                             "children": {
+                              "ImportServiceRole": {
+                                "id": "ImportServiceRole",
+                                "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/ServiceRole/ImportServiceRole",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.Resource",
+                                  "version": "0.0.0"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/ServiceRole/Resource",
@@ -984,7 +1064,7 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                                   "version": "0.0.0"
                                 }
                               },
@@ -1083,19 +1163,19 @@
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                       "version": "0.0.0"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.Policy",
+                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.Role",
+                              "fqn": "aws-cdk-lib.aws_iam.Role",
                               "version": "0.0.0"
                             }
                           },
@@ -1108,12 +1188,6 @@
                                 "code": {
                                   "zipFile": "import boto3, json, os, time\n\necs = boto3.client('ecs')\nautoscaling = boto3.client('autoscaling')\n\n\ndef lambda_handler(event, context):\n  print(json.dumps(dict(event, ResponseURL='...')))\n  cluster = os.environ['CLUSTER']\n  snsTopicArn = event['Records'][0]['Sns']['TopicArn']\n  lifecycle_event = json.loads(event['Records'][0]['Sns']['Message'])\n  instance_id = lifecycle_event.get('EC2InstanceId')\n  if not instance_id:\n    print('Got event without EC2InstanceId: %s', json.dumps(dict(event, ResponseURL='...')))\n    return\n\n  instance_arn = container_instance_arn(cluster, instance_id)\n  print('Instance %s has container instance ARN %s' % (lifecycle_event['EC2InstanceId'], instance_arn))\n\n  if not instance_arn:\n    return\n\n  task_arns = container_instance_task_arns(cluster, instance_arn)\n\n  if task_arns:\n    print('Instance ARN %s has task ARNs %s' % (instance_arn, ', '.join(task_arns)))\n\n  while has_tasks(cluster, instance_arn, task_arns):\n    time.sleep(10)\n\n  try:\n    print('Terminating instance %s' % instance_id)\n    autoscaling.complete_lifecycle_action(\n        LifecycleActionResult='CONTINUE',\n        **pick(lifecycle_event, 'LifecycleHookName', 'LifecycleActionToken', 'AutoScalingGroupName'))\n  except Exception as e:\n    # Lifecycle action may have already completed.\n    print(str(e))\n\n\ndef container_instance_arn(cluster, instance_id):\n  \"\"\"Turn an instance ID into a container instance ARN.\"\"\"\n  arns = ecs.list_container_instances(cluster=cluster, filter='ec2InstanceId==' + instance_id)['containerInstanceArns']\n  if not arns:\n    return None\n  return arns[0]\n\ndef container_instance_task_arns(cluster, instance_arn):\n  \"\"\"Fetch tasks for a container instance ARN.\"\"\"\n  arns = ecs.list_tasks(cluster=cluster, containerInstance=instance_arn)['taskArns']\n  return arns\n\ndef has_tasks(cluster, instance_arn, task_arns):\n  \"\"\"Return True if the instance is running tasks for the given cluster.\"\"\"\n  instances = ecs.describe_container_instances(cluster=cluster, containerInstances=[instance_arn])['containerInstances']\n  if not instances:\n    return False\n  instance = instances[0]\n\n  if instance['status'] == 'ACTIVE':\n    # Start draining, then try again later\n    set_container_instance_to_draining(cluster, instance_arn)\n    return True\n\n  task_count = None\n\n  if task_arns:\n    # Fetch details for tasks running on the container instance\n    tasks = ecs.describe_tasks(cluster=cluster, tasks=task_arns)['tasks']\n    if tasks:\n      # Consider any non-stopped tasks as running\n      task_count = sum(task['lastStatus'] != 'STOPPED' for task in tasks) + instance['pendingTasksCount']\n\n  if not task_count:\n    # Fallback to instance task counts if detailed task information is unavailable\n    task_count = instance['runningTasksCount'] + instance['pendingTasksCount']\n\n  print('Instance %s has %s tasks' % (instance_arn, task_count))\n\n  return task_count > 0\n\ndef set_container_instance_to_draining(cluster, instance_arn):\n  ecs.update_container_instances_state(\n      cluster=cluster,\n      containerInstances=[instance_arn], status='DRAINING')\n\n\ndef pick(dct, *keys):\n  \"\"\"Pick a subset of a dict.\"\"\"\n  return {k: v for k, v in dct.items() if k in keys}\n"
                                 },
-                                "role": {
-                                  "Fn::GetAtt": [
-                                    "EcsClusterasgSpotDrainECSHookFunctionServiceRole8EEDDFE0",
-                                    "Arn"
-                                  ]
-                                },
                                 "environment": {
                                   "variables": {
                                     "CLUSTER": {
@@ -1122,6 +1196,12 @@
                                   }
                                 },
                                 "handler": "index.lambda_handler",
+                                "role": {
+                                  "Fn::GetAtt": [
+                                    "EcsClusterasgSpotDrainECSHookFunctionServiceRole8EEDDFE0",
+                                    "Arn"
+                                  ]
+                                },
                                 "runtime": "python3.9",
                                 "tags": [
                                   {
@@ -1133,7 +1213,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                               "version": "0.0.0"
                             }
                           },
@@ -1157,7 +1237,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                               "version": "0.0.0"
                             }
                           },
@@ -1171,39 +1251,39 @@
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                                   "aws:cdk:cloudformation:props": {
-                                    "protocol": "lambda",
-                                    "topicArn": {
-                                      "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
-                                    },
                                     "endpoint": {
                                       "Fn::GetAtt": [
                                         "EcsClusterasgSpotDrainECSHookFunction969F1553",
                                         "Arn"
                                       ]
+                                    },
+                                    "protocol": "lambda",
+                                    "topicArn": {
+                                      "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-sns.CfnSubscription",
+                                  "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-sns.Subscription",
+                              "fqn": "aws-cdk-lib.aws_sns.Subscription",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-lambda.Function",
+                          "fqn": "aws-cdk-lib.aws_lambda.Function",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.2.70"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -1229,13 +1309,13 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                              "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-sns.Topic",
+                          "fqn": "aws-cdk-lib.aws_sns.Topic",
                           "version": "0.0.0"
                         }
                       },
@@ -1243,6 +1323,14 @@
                         "id": "Role",
                         "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/LifecycleHookDrainHook/Role",
                         "children": {
+                          "ImportRole": {
+                            "id": "ImportRole",
+                            "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/LifecycleHookDrainHook/Role/ImportRole",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/LifecycleHookDrainHook/Role/Resource",
@@ -1270,7 +1358,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnRole",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -1305,19 +1393,19 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.Policy",
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Role",
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
                           "version": "0.0.0"
                         }
                       },
@@ -1330,9 +1418,9 @@
                             "autoScalingGroupName": {
                               "Ref": "EcsClusterasgSpotASG0D77F041"
                             },
-                            "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
                             "defaultResult": "CONTINUE",
                             "heartbeatTimeout": 300,
+                            "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
                             "notificationTargetArn": {
                               "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
                             },
@@ -1345,19 +1433,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-autoscaling.CfnLifecycleHook",
+                          "fqn": "aws-cdk-lib.aws_autoscaling.CfnLifecycleHook",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-autoscaling.LifecycleHook",
+                      "fqn": "aws-cdk-lib.aws_autoscaling.LifecycleHook",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-autoscaling.AutoScalingGroup",
+                  "fqn": "aws-cdk-lib.aws_autoscaling.AutoScalingGroup",
                   "version": "0.0.0"
                 }
               },
@@ -1395,13 +1483,13 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                       "version": "0.0.0"
                     }
                   },
@@ -1409,6 +1497,14 @@
                     "id": "InstanceRole",
                     "path": "aws-ecs-integ-spot/EcsCluster/asgOd/InstanceRole",
                     "children": {
+                      "ImportInstanceRole": {
+                        "id": "ImportInstanceRole",
+                        "path": "aws-ecs-integ-spot/EcsCluster/asgOd/InstanceRole/ImportInstanceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-ecs-integ-spot/EcsCluster/asgOd/InstanceRole/Resource",
@@ -1436,7 +1532,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       },
@@ -1506,19 +1602,19 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
                       "version": "0.0.0"
                     }
                   },
@@ -1536,49 +1632,108 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnInstanceProfile",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
                       "version": "0.0.0"
                     }
                   },
-                  "LaunchConfig": {
-                    "id": "LaunchConfig",
-                    "path": "aws-ecs-integ-spot/EcsCluster/asgOd/LaunchConfig",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
-                      "aws:cdk:cloudformation:props": {
-                        "imageId": {
-                          "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-                        },
-                        "instanceType": "t3.large",
-                        "iamInstanceProfile": {
-                          "Ref": "EcsClusterasgOdInstanceProfileE5B88756"
-                        },
-                        "securityGroups": [
-                          {
-                            "Fn::GetAtt": [
-                              "EcsClusterasgOdInstanceSecurityGroup301DFBED",
-                              "GroupId"
-                            ]
-                          }
-                        ],
-                        "userData": {
-                          "Fn::Base64": {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "#!/bin/bash\necho ECS_CLUSTER=",
+                  "ImportedInstanceProfile": {
+                    "id": "ImportedInstanceProfile",
+                    "path": "aws-ecs-integ-spot/EcsCluster/asgOd/ImportedInstanceProfile",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "LaunchTemplate": {
+                    "id": "LaunchTemplate",
+                    "path": "aws-ecs-integ-spot/EcsCluster/asgOd/LaunchTemplate",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-integ-spot/EcsCluster/asgOd/LaunchTemplate/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                          "aws:cdk:cloudformation:props": {
+                            "launchTemplateData": {
+                              "iamInstanceProfile": {
+                                "arn": {
+                                  "Fn::GetAtt": [
+                                    "EcsClusterasgOdInstanceProfileE5B88756",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "imageId": {
+                                "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+                              },
+                              "instanceType": "t3.large",
+                              "monitoring": {
+                                "enabled": false
+                              },
+                              "securityGroupIds": [
                                 {
-                                  "Ref": "EcsCluster97242B84"
+                                  "Fn::GetAtt": [
+                                    "EcsClusterasgOdInstanceSecurityGroup301DFBED",
+                                    "GroupId"
+                                  ]
+                                }
+                              ],
+                              "tagSpecifications": [
+                                {
+                                  "resourceType": "instance",
+                                  "tags": [
+                                    {
+                                      "key": "Name",
+                                      "value": "aws-ecs-integ-spot/EcsCluster/asgOd/LaunchTemplate"
+                                    }
+                                  ]
                                 },
-                                " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
-                              ]
+                                {
+                                  "resourceType": "volume",
+                                  "tags": [
+                                    {
+                                      "key": "Name",
+                                      "value": "aws-ecs-integ-spot/EcsCluster/asgOd/LaunchTemplate"
+                                    }
+                                  ]
+                                }
+                              ],
+                              "userData": {
+                                "Fn::Base64": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "#!/bin/bash\necho ECS_CLUSTER=",
+                                      {
+                                        "Ref": "EcsCluster97242B84"
+                                      },
+                                      " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "tagSpecifications": [
+                              {
+                                "resourceType": "launch-template",
+                                "tags": [
+                                  {
+                                    "key": "Name",
+                                    "value": "aws-ecs-integ-spot/EcsCluster/asgOd/LaunchTemplate"
+                                  }
+                                ]
+                              }
                             ]
                           }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-autoscaling.CfnLaunchConfiguration",
+                      "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
                       "version": "0.0.0"
                     }
                   },
@@ -1588,12 +1743,20 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
                       "aws:cdk:cloudformation:props": {
+                        "desiredCapacity": "1",
+                        "launchTemplate": {
+                          "launchTemplateId": {
+                            "Ref": "EcsClusterasgOdLaunchTemplate6065F652"
+                          },
+                          "version": {
+                            "Fn::GetAtt": [
+                              "EcsClusterasgOdLaunchTemplate6065F652",
+                              "LatestVersionNumber"
+                            ]
+                          }
+                        },
                         "maxSize": "2",
                         "minSize": "1",
-                        "desiredCapacity": "1",
-                        "launchConfigurationName": {
-                          "Ref": "EcsClusterasgOdLaunchConfigD3B9E271"
-                        },
                         "tags": [
                           {
                             "key": "Name",
@@ -1612,7 +1775,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-autoscaling.CfnAutoScalingGroup",
+                      "fqn": "aws-cdk-lib.aws_autoscaling.CfnAutoScalingGroup",
                       "version": "0.0.0"
                     }
                   },
@@ -1628,6 +1791,14 @@
                             "id": "ServiceRole",
                             "path": "aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/ServiceRole",
                             "children": {
+                              "ImportServiceRole": {
+                                "id": "ImportServiceRole",
+                                "path": "aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/ServiceRole/ImportServiceRole",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.Resource",
+                                  "version": "0.0.0"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/ServiceRole/Resource",
@@ -1669,7 +1840,7 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.CfnRole",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                                   "version": "0.0.0"
                                 }
                               },
@@ -1768,19 +1939,19 @@
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                       "version": "0.0.0"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.Policy",
+                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.Role",
+                              "fqn": "aws-cdk-lib.aws_iam.Role",
                               "version": "0.0.0"
                             }
                           },
@@ -1793,12 +1964,6 @@
                                 "code": {
                                   "zipFile": "import boto3, json, os, time\n\necs = boto3.client('ecs')\nautoscaling = boto3.client('autoscaling')\n\n\ndef lambda_handler(event, context):\n  print(json.dumps(dict(event, ResponseURL='...')))\n  cluster = os.environ['CLUSTER']\n  snsTopicArn = event['Records'][0]['Sns']['TopicArn']\n  lifecycle_event = json.loads(event['Records'][0]['Sns']['Message'])\n  instance_id = lifecycle_event.get('EC2InstanceId')\n  if not instance_id:\n    print('Got event without EC2InstanceId: %s', json.dumps(dict(event, ResponseURL='...')))\n    return\n\n  instance_arn = container_instance_arn(cluster, instance_id)\n  print('Instance %s has container instance ARN %s' % (lifecycle_event['EC2InstanceId'], instance_arn))\n\n  if not instance_arn:\n    return\n\n  task_arns = container_instance_task_arns(cluster, instance_arn)\n\n  if task_arns:\n    print('Instance ARN %s has task ARNs %s' % (instance_arn, ', '.join(task_arns)))\n\n  while has_tasks(cluster, instance_arn, task_arns):\n    time.sleep(10)\n\n  try:\n    print('Terminating instance %s' % instance_id)\n    autoscaling.complete_lifecycle_action(\n        LifecycleActionResult='CONTINUE',\n        **pick(lifecycle_event, 'LifecycleHookName', 'LifecycleActionToken', 'AutoScalingGroupName'))\n  except Exception as e:\n    # Lifecycle action may have already completed.\n    print(str(e))\n\n\ndef container_instance_arn(cluster, instance_id):\n  \"\"\"Turn an instance ID into a container instance ARN.\"\"\"\n  arns = ecs.list_container_instances(cluster=cluster, filter='ec2InstanceId==' + instance_id)['containerInstanceArns']\n  if not arns:\n    return None\n  return arns[0]\n\ndef container_instance_task_arns(cluster, instance_arn):\n  \"\"\"Fetch tasks for a container instance ARN.\"\"\"\n  arns = ecs.list_tasks(cluster=cluster, containerInstance=instance_arn)['taskArns']\n  return arns\n\ndef has_tasks(cluster, instance_arn, task_arns):\n  \"\"\"Return True if the instance is running tasks for the given cluster.\"\"\"\n  instances = ecs.describe_container_instances(cluster=cluster, containerInstances=[instance_arn])['containerInstances']\n  if not instances:\n    return False\n  instance = instances[0]\n\n  if instance['status'] == 'ACTIVE':\n    # Start draining, then try again later\n    set_container_instance_to_draining(cluster, instance_arn)\n    return True\n\n  task_count = None\n\n  if task_arns:\n    # Fetch details for tasks running on the container instance\n    tasks = ecs.describe_tasks(cluster=cluster, tasks=task_arns)['tasks']\n    if tasks:\n      # Consider any non-stopped tasks as running\n      task_count = sum(task['lastStatus'] != 'STOPPED' for task in tasks) + instance['pendingTasksCount']\n\n  if not task_count:\n    # Fallback to instance task counts if detailed task information is unavailable\n    task_count = instance['runningTasksCount'] + instance['pendingTasksCount']\n\n  print('Instance %s has %s tasks' % (instance_arn, task_count))\n\n  return task_count > 0\n\ndef set_container_instance_to_draining(cluster, instance_arn):\n  ecs.update_container_instances_state(\n      cluster=cluster,\n      containerInstances=[instance_arn], status='DRAINING')\n\n\ndef pick(dct, *keys):\n  \"\"\"Pick a subset of a dict.\"\"\"\n  return {k: v for k, v in dct.items() if k in keys}\n"
                                 },
-                                "role": {
-                                  "Fn::GetAtt": [
-                                    "EcsClusterasgOdDrainECSHookFunctionServiceRoleFC088D55",
-                                    "Arn"
-                                  ]
-                                },
                                 "environment": {
                                   "variables": {
                                     "CLUSTER": {
@@ -1807,6 +1972,12 @@
                                   }
                                 },
                                 "handler": "index.lambda_handler",
+                                "role": {
+                                  "Fn::GetAtt": [
+                                    "EcsClusterasgOdDrainECSHookFunctionServiceRoleFC088D55",
+                                    "Arn"
+                                  ]
+                                },
                                 "runtime": "python3.9",
                                 "tags": [
                                   {
@@ -1818,7 +1989,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                               "version": "0.0.0"
                             }
                           },
@@ -1842,7 +2013,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                               "version": "0.0.0"
                             }
                           },
@@ -1856,39 +2027,39 @@
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                                   "aws:cdk:cloudformation:props": {
-                                    "protocol": "lambda",
-                                    "topicArn": {
-                                      "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
-                                    },
                                     "endpoint": {
                                       "Fn::GetAtt": [
                                         "EcsClusterasgOdDrainECSHookFunction962490E0",
                                         "Arn"
                                       ]
+                                    },
+                                    "protocol": "lambda",
+                                    "topicArn": {
+                                      "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-sns.CfnSubscription",
+                                  "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-sns.Subscription",
+                              "fqn": "aws-cdk-lib.aws_sns.Subscription",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-lambda.Function",
+                          "fqn": "aws-cdk-lib.aws_lambda.Function",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.140"
+                      "version": "10.2.70"
                     }
                   },
                   "LifecycleHookDrainHook": {
@@ -1914,13 +2085,13 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                              "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-sns.Topic",
+                          "fqn": "aws-cdk-lib.aws_sns.Topic",
                           "version": "0.0.0"
                         }
                       },
@@ -1928,6 +2099,14 @@
                         "id": "Role",
                         "path": "aws-ecs-integ-spot/EcsCluster/asgOd/LifecycleHookDrainHook/Role",
                         "children": {
+                          "ImportRole": {
+                            "id": "ImportRole",
+                            "path": "aws-ecs-integ-spot/EcsCluster/asgOd/LifecycleHookDrainHook/Role/ImportRole",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.Resource",
+                              "version": "0.0.0"
+                            }
+                          },
                           "Resource": {
                             "id": "Resource",
                             "path": "aws-ecs-integ-spot/EcsCluster/asgOd/LifecycleHookDrainHook/Role/Resource",
@@ -1955,7 +2134,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnRole",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -1990,19 +2169,19 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.Policy",
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Role",
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
                           "version": "0.0.0"
                         }
                       },
@@ -2015,9 +2194,9 @@
                             "autoScalingGroupName": {
                               "Ref": "EcsClusterasgOdASG0E5C30EC"
                             },
-                            "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
                             "defaultResult": "CONTINUE",
                             "heartbeatTimeout": 300,
+                            "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
                             "notificationTargetArn": {
                               "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
                             },
@@ -2030,25 +2209,25 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-autoscaling.CfnLifecycleHook",
+                          "fqn": "aws-cdk-lib.aws_autoscaling.CfnLifecycleHook",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-autoscaling.LifecycleHook",
+                      "fqn": "aws-cdk-lib.aws_autoscaling.LifecycleHook",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-autoscaling.AutoScalingGroup",
+                  "fqn": "aws-cdk-lib.aws_autoscaling.AutoScalingGroup",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ecs.Cluster",
+              "fqn": "aws-cdk-lib.aws_ecs.Cluster",
               "version": "0.0.0"
             }
           },
@@ -2056,7 +2235,7 @@
             "id": "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "path": "aws-ecs-integ-spot/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -2064,7 +2243,7 @@
             "id": "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "path": "aws-ecs-integ-spot/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -2076,6 +2255,14 @@
                 "id": "TaskRole",
                 "path": "aws-ecs-integ-spot/Task/TaskRole",
                 "children": {
+                  "ImportTaskRole": {
+                    "id": "ImportTaskRole",
+                    "path": "aws-ecs-integ-spot/Task/TaskRole/ImportTaskRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-ecs-integ-spot/Task/TaskRole/Resource",
@@ -2097,13 +2284,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -2142,7 +2329,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecs.CfnTaskDefinition",
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnTaskDefinition",
                   "version": "0.0.0"
                 }
               },
@@ -2150,13 +2337,13 @@
                 "id": "PHP",
                 "path": "aws-ecs-integ-spot/Task/PHP",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
+                  "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ecs.TaskDefinition",
+              "fqn": "aws-cdk-lib.aws_ecs.TaskDefinition",
               "version": "0.0.0"
             }
           },
@@ -2175,7 +2362,12 @@
                     },
                     "deploymentConfiguration": {
                       "maximumPercent": 200,
-                      "minimumHealthyPercent": 50
+                      "minimumHealthyPercent": 50,
+                      "alarms": {
+                        "alarmNames": [],
+                        "enable": false,
+                        "rollback": false
+                      }
                     },
                     "enableEcsManagedTags": false,
                     "launchType": "EC2",
@@ -2186,25 +2378,49 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecs.CfnService",
+                  "fqn": "aws-cdk-lib.aws_ecs.CfnService",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ecs.Ec2Service",
+              "fqn": "aws-cdk-lib.aws_ecs.Ec2Service",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-ecs-integ-spot/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-ecs-integ-spot/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

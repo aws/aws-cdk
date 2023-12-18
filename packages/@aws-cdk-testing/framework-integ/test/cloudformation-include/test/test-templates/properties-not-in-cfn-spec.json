@@ -11,12 +11,8 @@
         "CorsConfiguration": {
           "CorsRules": [
             {
-              "AllowedMethods": [
-                "GET"
-              ],
-              "AllowedOrigins": [
-                "origin1"
-              ],
+              "AllowedMethods": ["GET"],
+              "AllowedOrigins": ["origin1"],
               "MaxAge": 5,
               "PropertyNotInCfnSchema": "unmodeled property in array"
             }
@@ -28,7 +24,7 @@
       "Type": "AWS::Serverless::Function",
       "Properties": {
         "Handler": "index.handler",
-        "Runtime": "nodejs14.x",
+        "Runtime": "nodejs18.x",
         "CodeUri": {
           "Bucket": "bucket",
           "Key": "key"

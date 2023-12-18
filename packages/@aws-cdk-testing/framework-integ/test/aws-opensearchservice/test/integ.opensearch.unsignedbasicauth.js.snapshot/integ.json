@@ -1,14 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
-    "integ.opensearch.unsignedbasicauth": {
+    "OpenSearchUnsignedBasicAuthInteg/DefaultTest": {
       "stacks": [
         "cdk-integ-opensearch-unsignedbasicauth"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "OpenSearchUnsignedBasicAuthInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OpenSearchUnsignedBasicAuthIntegDefaultTestDeployAssert833213F2"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

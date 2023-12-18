@@ -1,14 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
-    "integ.stacksets": {
+    "StackSetPipelineStackInteg/DefaultTest": {
       "stacks": [
         "StackSetPipelineStack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "StackSetPipelineStackInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "StackSetPipelineStackIntegDefaultTestDeployAssertFF0B72DB"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "aws-cdk-ec2-lt-metadata-1.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-ec2-lt-metadata-1.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/534a1fbecaccb7e2a071086c8085be5c15b2501781767cdeddf754fe3a0ceecb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1975c0e0a47d9efbeaa29fcda41d15a77c1dd606436eb175d5daed1e57ed2df.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +34,46 @@
         "aws-cdk-ec2-lt-metadata-1.assets"
       ],
       "metadata": {
+        "/aws-cdk-ec2-lt-metadata-1/MyVpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcF9F0CA6F"
+          }
+        ],
+        "/aws-cdk-ec2-lt-metadata-1/MyVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcRestrictDefaultSecurityGroupCustomResourceA4FCCD62"
+          }
+        ],
+        "/aws-cdk-ec2-lt-metadata-1/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/aws-cdk-ec2-lt-metadata-1/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/aws-cdk-ec2-lt-metadata-1/sg1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "sg15CEFF4E3"
+          }
+        ],
         "/aws-cdk-ec2-lt-metadata-1/LT/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LTC4631592"
+          }
+        ],
+        "/aws-cdk-ec2-lt-metadata-1/sg2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "sg2860DD91F"
           }
         ],
         "/aws-cdk-ec2-lt-metadata-1/LTWithMachineImage/Resource": [
@@ -79,6 +116,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "LambdaTestDefaultTestDeployAssert1AF2B360.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

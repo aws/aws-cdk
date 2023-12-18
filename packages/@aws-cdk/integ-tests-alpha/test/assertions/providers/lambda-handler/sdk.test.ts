@@ -1,9 +1,10 @@
 // Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-import * as SDK from 'aws-sdk';
-import * as AWS from 'aws-sdk-mock';
-import * as sinon from 'sinon';
+import { S3Client, ListObjectsOutput, ListObjectsCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { DescribeInstancesCommand, EC2Client } from '@aws-sdk/client-ec2';
+import { mockClient } from 'aws-sdk-client-mock';
 import { AwsApiCallRequest, AwsApiCallResult } from '../../../../lib/assertions';
 import { AwsApiCallHandler } from '../../../../lib/assertions/providers/lambda-handler/sdk';
+import 'aws-sdk-client-mock-jest';
 
 function sdkHandler() {
   const context: any = {
@@ -20,13 +21,12 @@ afterAll(() => {
   jest.restoreAllMocks();
 });
 
+let s3Mock = mockClient(S3Client);
+let ec2Mock = mockClient(EC2Client);
 describe('SdkHandler', () => {
   beforeEach(() => {
-    AWS.setSDKInstance(SDK);
-  });
-
-  afterEach(() => {
-    AWS.restore();
+    s3Mock.reset();
+    ec2Mock.reset();
   });
 
   test('default', async () => {
@@ -42,14 +42,14 @@ describe('SdkHandler', () => {
           ETag: 'second-key-etag',
         },
       ],
-    } as SDK.S3.ListObjectsOutput;
-    AWS.mock('S3', 'listObjects', sinon.fake.resolves(expectedResponse));
+    } as ListObjectsOutput;
+    s3Mock.on(ListObjectsCommand).resolves(expectedResponse);
     const handler = sdkHandler() as any;
     const request: AwsApiCallRequest = {
       service: 'S3',
       api: 'listObjects',
       parameters: {
-        Bucket: 'myBucket',
+        Bucket: '"myBucket"',
       },
     };
 
@@ -63,14 +63,14 @@ describe('SdkHandler', () => {
   describe('decode', () => {
     test('boolean true', async () => {
       // GIVEN
-      const fake = sinon.fake.resolves({});
-      AWS.mock('EC2', 'describeInstances', fake);
+      ec2Mock.on(DescribeInstancesCommand).resolves({});
+
       const handler = sdkHandler() as any;
       const request: AwsApiCallRequest = {
         service: 'EC2',
         api: 'describeInstances',
         parameters: {
-          DryRun: 'TRUE:BOOLEAN',
+          DryRun: 'true',
         },
       };
 
@@ -78,19 +78,18 @@ describe('SdkHandler', () => {
       await handler.processEvent(request);
 
       // THEN
-      sinon.assert.calledWith(fake, { DryRun: true });
+      expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { DryRun: true });
     });
 
     test('boolean false', async () => {
       // GIVEN
-      const fake = sinon.fake.resolves({});
-      AWS.mock('EC2', 'describeInstances', fake);
+      ec2Mock.on(DescribeInstancesCommand).resolves({});
       const handler = sdkHandler() as any;
       const request: AwsApiCallRequest = {
         service: 'EC2',
         api: 'describeInstances',
         parameters: {
-          DryRun: 'FALSE:BOOLEAN',
+          DryRun: 'false',
         },
       };
 
@@ -98,7 +97,90 @@ describe('SdkHandler', () => {
       await handler.processEvent(request);
 
       // THEN
-      sinon.assert.calledWith(fake, { DryRun: false });
+      expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { DryRun: false });
+    });
+
+    test('numbers', async () => {
+      // GIVEN
+      ec2Mock.on(DescribeInstancesCommand).resolves({});
+      const handler = sdkHandler() as any;
+      const request: AwsApiCallRequest = {
+        service: 'EC2',
+        api: 'describeInstances',
+        parameters: {
+          MaxResults: 1,
+        },
+      };
+
+      // WHEN
+      await handler.processEvent(request);
+
+      // THEN
+      expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { MaxResults: 1 });
+    });
+
+    test('strings', async () => {
+      // GIVEN
+      ec2Mock.on(DescribeInstancesCommand).resolves({});
+      const handler = sdkHandler() as any;
+      const request: AwsApiCallRequest = {
+        service: 'EC2',
+        api: 'describeInstances',
+        parameters: {
+          NextToken: '"TOKEN"',
+          InstanceIds: '["foo","bar"]',
+        },
+      };
+
+      // WHEN
+      await handler.processEvent(request);
+
+      // THEN
+      expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { NextToken: 'TOKEN', InstanceIds: ['foo', 'bar'] });
+    });
+
+    test('unparsable values are unchanged', async () => {
+      // GIVEN
+      ec2Mock.on(DescribeInstancesCommand).resolves({});
+      const handler = sdkHandler() as any;
+      const request: AwsApiCallRequest = {
+        service: 'EC2',
+        api: 'describeInstances',
+        parameters: {
+          NextToken: 'To"ken',
+        },
+      };
+
+      // WHEN
+      await handler.processEvent(request);
+
+      // THEN
+      expect(ec2Mock).toHaveReceivedCommandWith(DescribeInstancesCommand, { NextToken: 'To"ken' });
+    });
+
+    test('byte array coercion', async () => {
+      // GIVEN
+      s3Mock.on(PutObjectCommand).resolves({ });
+      const handler = sdkHandler() as any;
+      const request: AwsApiCallRequest = {
+        service: 'S3',
+        api: 'putObject',
+        parameters: {
+          Bucket: '"myBucket"',
+          Key: '"foo"',
+          Body: '"abc"',
+        },
+      };
+
+      // WHEN
+      await handler.processEvent(request);
+
+      // THEN
+      expect(s3Mock).toHaveReceivedCommandWith(PutObjectCommand, {
+        Bucket: 'myBucket',
+        Key: 'foo',
+        Body: Uint8Array.from([97, 98, 99]),
+      });
     });
   });
 
@@ -116,14 +198,14 @@ describe('SdkHandler', () => {
           ETag: 'second-key-etag',
         },
       ],
-    } as SDK.S3.ListObjectsOutput;
-    AWS.mock('S3', 'listObjects', sinon.fake.resolves(responseFake));
+    } as ListObjectsOutput;
+    s3Mock.on(ListObjectsCommand).resolves(responseFake);
     const handler = sdkHandler() as any;
     const request: AwsApiCallRequest = {
       service: 'S3',
       api: 'listObjects',
       parameters: {
-        Bucket: 'myBucket',
+        Bucket: '"myBucket"',
       },
       outputPaths: ['Name', 'Contents.0.Key'],
     };

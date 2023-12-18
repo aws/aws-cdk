@@ -1,7 +1,8 @@
-import * as cfnspec from '@aws-cdk/cfnspec';
+import { PropertyScrutinyType, ResourceScrutinyType } from '@aws-cdk/service-spec-types';
 import * as chalk from 'chalk';
 import { ManagedPolicyAttachment, ManagedPolicyJson } from './managed-policy';
 import { parseLambdaPermission, parseStatements, Statement, StatementJson } from './statement';
+import { MaybeParsed } from '../diff/maybe-parsed';
 import { PropertyChange, PropertyMap, ResourceChange } from '../diff/types';
 import { DiffableCollection } from '../diffable';
 import { renderIntrinsics } from '../render-intrinsics';
@@ -17,15 +18,15 @@ export interface IamChangesProps {
  */
 export class IamChanges {
   public static IamPropertyScrutinies = [
-    cfnspec.schema.PropertyScrutinyType.InlineIdentityPolicies,
-    cfnspec.schema.PropertyScrutinyType.InlineResourcePolicy,
-    cfnspec.schema.PropertyScrutinyType.ManagedPolicies,
+    PropertyScrutinyType.InlineIdentityPolicies,
+    PropertyScrutinyType.InlineResourcePolicy,
+    PropertyScrutinyType.ManagedPolicies,
   ];
 
   public static IamResourceScrutinies = [
-    cfnspec.schema.ResourceScrutinyType.ResourcePolicyResource,
-    cfnspec.schema.ResourceScrutinyType.IdentityPolicyResource,
-    cfnspec.schema.ResourceScrutinyType.LambdaPermission,
+    ResourceScrutinyType.ResourcePolicyResource,
+    ResourceScrutinyType.IdentityPolicyResource,
+    ResourceScrutinyType.LambdaPermission,
   ];
 
   public readonly statements = new DiffableCollection<Statement>();
@@ -143,17 +144,17 @@ export class IamChanges {
 
   private readPropertyChange(propertyChange: PropertyChange) {
     switch (propertyChange.scrutinyType) {
-      case cfnspec.schema.PropertyScrutinyType.InlineIdentityPolicies:
+      case PropertyScrutinyType.InlineIdentityPolicies:
         // AWS::IAM::{ Role | User | Group }.Policies
         this.statements.addOld(...this.readIdentityPolicies(propertyChange.oldValue, propertyChange.resourceLogicalId));
         this.statements.addNew(...this.readIdentityPolicies(propertyChange.newValue, propertyChange.resourceLogicalId));
         break;
-      case cfnspec.schema.PropertyScrutinyType.InlineResourcePolicy:
+      case PropertyScrutinyType.InlineResourcePolicy:
         // Any PolicyDocument on a resource (including AssumeRolePolicyDocument)
         this.statements.addOld(...this.readResourceStatements(propertyChange.oldValue, propertyChange.resourceLogicalId));
         this.statements.addNew(...this.readResourceStatements(propertyChange.newValue, propertyChange.resourceLogicalId));
         break;
-      case cfnspec.schema.PropertyScrutinyType.ManagedPolicies:
+      case PropertyScrutinyType.ManagedPolicies:
         // Just a list of managed policies
         this.managedPolicies.addOld(...this.readManagedPolicies(propertyChange.oldValue, propertyChange.resourceLogicalId));
         this.managedPolicies.addNew(...this.readManagedPolicies(propertyChange.newValue, propertyChange.resourceLogicalId));
@@ -163,17 +164,17 @@ export class IamChanges {
 
   private readResourceChange(resourceChange: ResourceChange) {
     switch (resourceChange.scrutinyType) {
-      case cfnspec.schema.ResourceScrutinyType.IdentityPolicyResource:
+      case ResourceScrutinyType.IdentityPolicyResource:
         // AWS::IAM::Policy
         this.statements.addOld(...this.readIdentityPolicyResource(resourceChange.oldProperties));
         this.statements.addNew(...this.readIdentityPolicyResource(resourceChange.newProperties));
         break;
-      case cfnspec.schema.ResourceScrutinyType.ResourcePolicyResource:
+      case ResourceScrutinyType.ResourcePolicyResource:
         // AWS::*::{Bucket,Queue,Topic}Policy
         this.statements.addOld(...this.readResourcePolicyResource(resourceChange.oldProperties));
         this.statements.addNew(...this.readResourcePolicyResource(resourceChange.newProperties));
         break;
-      case cfnspec.schema.ResourceScrutinyType.LambdaPermission:
+      case ResourceScrutinyType.LambdaPermission:
         this.statements.addOld(...this.readLambdaStatements(resourceChange.oldProperties));
         this.statements.addNew(...this.readLambdaStatements(resourceChange.newProperties));
         break;
@@ -184,7 +185,7 @@ export class IamChanges {
    * Parse a list of policies on an identity
    */
   private readIdentityPolicies(policies: any, logicalId: string): Statement[] {
-    if (policies === undefined) { return []; }
+    if (policies === undefined || !Array.isArray(policies)) { return []; }
 
     const appliesToPrincipal = 'AWS:${' + logicalId + '}';
 
@@ -276,8 +277,8 @@ function defaultResource(resource: string, statements: Statement[]) {
 }
 
 export interface IamChangesJson {
-  statementAdditions?: StatementJson[];
-  statementRemovals?: StatementJson[];
-  managedPolicyAdditions?: ManagedPolicyJson[];
-  managedPolicyRemovals?: ManagedPolicyJson[];
+  statementAdditions?: Array<MaybeParsed<StatementJson>>;
+  statementRemovals?: Array<MaybeParsed<StatementJson>>;
+  managedPolicyAdditions?: Array<MaybeParsed<ManagedPolicyJson>>;
+  managedPolicyRemovals?: Array<MaybeParsed<ManagedPolicyJson>>;
 }

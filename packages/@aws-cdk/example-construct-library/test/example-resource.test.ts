@@ -9,7 +9,7 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as core from 'aws-cdk-lib';
+import * as core from 'aws-cdk-lib/core';
 
 // Always import the module you're testing qualified -
 // don't import individual classes from it!

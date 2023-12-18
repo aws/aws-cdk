@@ -17,9 +17,6 @@ Flags come in three types:
 
 | Flag | Summary | Since | Type |
 | ----- | ----- | ----- | ----- |
-| [@aws-cdk/aws-apigateway:requestValidatorUniqueId](#aws-cdkaws-apigatewayrequestvalidatoruniqueid) | Generate a unique id for each RequestValidator added to a method | V2·NEXT | (fix) |
-| [@aws-cdk/aws-ec2:restrictDefaultSecurityGroup](#aws-cdkaws-ec2restrictdefaultsecuritygroup) | Restrict access to the VPC default security group | V2·NEXT | (default) |
-| [@aws-cdk/aws-route53-patters:useCertificate](#aws-cdkaws-route53-pattersusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | V2·NEXT | (default) |
 | [@aws-cdk/core:newStyleStackSynthesis](#aws-cdkcorenewstylestacksynthesis) | Switch to new stack synthesis method which enables CI/CD | 2.0.0 | (fix) |
 | [@aws-cdk/core:stackRelativeExports](#aws-cdkcorestackrelativeexports) | Name exports based on the construct paths relative to the stack, rather than the global construct path | 2.0.0 | (fix) |
 | [@aws-cdk/aws-rds:lowercaseDbIdentifier](#aws-cdkaws-rdslowercasedbidentifier) | Force lowercasing of RDS Cluster names in CDK | 2.0.0 | (fix) |
@@ -45,6 +42,7 @@ Flags come in three types:
 | [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | (fix) |
 | [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.60.0 | (fix) |
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | (default) |
+| [@aws-cdk/aws-route53-patters:useCertificate](#aws-cdkaws-route53-pattersusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | 2.61.0 | (default) |
 | [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | 2.65.0 | (fix) |
 | [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | 2.65.0 | (fix) |
 | [@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId](#aws-cdkaws-apigatewayauthorizerchangedeploymentlogicalid) | Include authorizer configuration in the calculation of the API deployment logical ID. | 2.66.0 | (fix) |
@@ -52,6 +50,19 @@ Flags come in three types:
 | [@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments](#aws-cdkaws-secretsmanageruseattachedsecretresourcepolicyforsecrettargetattachments) | SecretTargetAttachments uses the ResourcePolicy of the attached Secret. | 2.67.0 | (fix) |
 | [@aws-cdk/aws-redshift:columnId](#aws-cdkaws-redshiftcolumnid) | Whether to use an ID to track Redshift column changes | 2.68.0 | (fix) |
 | [@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2](#aws-cdkaws-stepfunctions-tasksenableemrservicepolicyv2) | Enable AmazonEMRServicePolicy_v2 managed policies | 2.72.0 | (fix) |
+| [@aws-cdk/aws-apigateway:requestValidatorUniqueId](#aws-cdkaws-apigatewayrequestvalidatoruniqueid) | Generate a unique id for each RequestValidator added to a method | 2.78.0 | (fix) |
+| [@aws-cdk/aws-ec2:restrictDefaultSecurityGroup](#aws-cdkaws-ec2restrictdefaultsecuritygroup) | Restrict access to the VPC default security group | 2.78.0 | (default) |
+| [@aws-cdk/aws-kms:aliasNameRef](#aws-cdkaws-kmsaliasnameref) | KMS Alias name and keyArn will have implicit reference to KMS Key | 2.83.0 | (fix) |
+| [@aws-cdk/core:includePrefixInUniqueNameGeneration](#aws-cdkcoreincludeprefixinuniquenamegeneration) | Include the stack prefix in the stack name generation process | 2.84.0 | (fix) |
+| [@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig](#aws-cdkaws-autoscalinggeneratelaunchtemplateinsteadoflaunchconfig) | Generate a launch template when creating an AutoScalingGroup | 2.88.0 | (fix) |
+| [@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby](#aws-cdkaws-opensearchserviceenableopensearchmultiazwithstandby) | Enables support for Multi-AZ with Standby deployment for opensearch domains | 2.88.0 | (default) |
+| [@aws-cdk/aws-efs:denyAnonymousAccess](#aws-cdkaws-efsdenyanonymousaccess) | EFS denies anonymous clients accesses | 2.93.0 | (default) |
+| [@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId](#aws-cdkaws-efsmounttargetorderinsensitivelogicalid) | When enabled, mount targets will have a stable logicalId that is linked to the associated subnet. | 2.93.0 | (fix) |
+| [@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion](#aws-cdkaws-lambda-nodejsuselatestruntimeversion) | Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default | 2.93.0 | (default) |
+| [@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier](#aws-cdkaws-appsyncusearnforsourceapiassociationidentifier) | When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id. | 2.97.0 | (fix) |
+| [@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters](#aws-cdkaws-rdsauroraclusterchangescopeofinstanceparametergroupwitheachparameters) | When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change. | 2.97.0 | (fix) |
+| [@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials](#aws-cdkaws-rdspreventrenderingdeprecatedcredentials) | When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials. | 2.98.0 | (fix) |
+| [@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource](#aws-cdkaws-codepipeline-actionsusenewdefaultbranchforcodecommitsource) | When enabled, the CodeCommit source action is using the default branch name 'main'. | 2.103.1 | (fix) |
 
 <!-- END table -->
 
@@ -94,7 +105,18 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-redshift:columnId": true,
     "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2": true,
     "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
-    "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true
+    "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
+    "@aws-cdk/aws-kms:aliasNameRef": true,
+    "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
+    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
+    "@aws-cdk/aws-efs:denyAnonymousAccess": true,
+    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
+    "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true,
+    "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true,
+    "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": true,
+    "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
+    "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
+    "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true
   }
 }
 ```
@@ -322,65 +344,6 @@ Encryption can also be configured explicitly using the `encrypted` property.
 | (default in v2) | `true` |  |
 
 **Compatibility with old behavior:** Pass the `encrypted: false` property to the `FileSystem` construct to disable encryption.
-
-
-### @aws-cdk/aws-apigateway:requestValidatorUniqueId
-
-*Generate a unique id for each RequestValidator added to a method* (fix)
-
-This flag allows multiple RequestValidators to be added to a RestApi when
-providing the `RequestValidatorOptions` in the `addMethod()` method.
-
-If the flag is not set then only a single RequestValidator can be added in this way.
-Any additional RequestValidators have to be created directly with `new RequestValidator`.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2·NEXT | `false` | `true` |
-
-
-### @aws-cdk/aws-ec2:restrictDefaultSecurityGroup
-
-*Restrict access to the VPC default security group* (default)
-
-Enable this feature flag to remove the default ingress/egress rules from the
-VPC default security group.
-
-When a VPC is created, a default security group is created as well and this cannot
-be deleted. The default security group is created with ingress/egress rules that allow
-_all_ traffic. [AWS Security best practices recommend](https://docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html#ec2-2)
-removing these ingress/egress rules in order to restrict access to the default security group.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2·NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** 
-      To allow all ingress/egress traffic to the VPC default security group you
-      can set the `restrictDefaultSecurityGroup: false`.
-    
-
-
-### @aws-cdk/aws-route53-patters:useCertificate
-
-*Use the official `Certificate` resource instead of `DnsValidatedCertificate`* (default)
-
-Enable this feature flag to use the official CloudFormation supported `Certificate` resource instead
-of the deprecated `DnsValidatedCertificate` construct. If this flag is enabled and you are creating
-the stack in a region other than us-east-1 then you must also set `crossRegionReferences=true` on the
-stack.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2·NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** Define a `DnsValidatedCertificate` explicitly and pass in the `certificate` property
 
 
 ### @aws-cdk/core:newStyleStackSynthesis
@@ -837,6 +800,24 @@ flag on a resource-by-resource basis to enable it if necessary.
 **Compatibility with old behavior:** Set installLatestAwsSdk: true on all resources that need it.
 
 
+### @aws-cdk/aws-route53-patters:useCertificate
+
+*Use the official `Certificate` resource instead of `DnsValidatedCertificate`* (default)
+
+Enable this feature flag to use the official CloudFormation supported `Certificate` resource instead
+of the deprecated `DnsValidatedCertificate` construct. If this flag is enabled and you are creating
+the stack in a region other than us-east-1 then you must also set `crossRegionReferences=true` on the
+stack.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.61.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Define a `DnsValidatedCertificate` explicitly and pass in the `certificate` property
+
+
 ### @aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup
 
 *Remove CloudWatch alarms from deployment group* (fix)
@@ -965,6 +946,251 @@ intervention since they might not have the appropriate tags propagated automatic
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.72.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-apigateway:requestValidatorUniqueId
+
+*Generate a unique id for each RequestValidator added to a method* (fix)
+
+This flag allows multiple RequestValidators to be added to a RestApi when
+providing the `RequestValidatorOptions` in the `addMethod()` method.
+
+If the flag is not set then only a single RequestValidator can be added in this way.
+Any additional RequestValidators have to be created directly with `new RequestValidator`.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.78.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-ec2:restrictDefaultSecurityGroup
+
+*Restrict access to the VPC default security group* (default)
+
+Enable this feature flag to remove the default ingress/egress rules from the
+VPC default security group.
+
+When a VPC is created, a default security group is created as well and this cannot
+be deleted. The default security group is created with ingress/egress rules that allow
+_all_ traffic. [AWS Security best practices recommend](https://docs.aws.amazon.com/securityhub/latest/userguide/ec2-controls.html#ec2-2)
+removing these ingress/egress rules in order to restrict access to the default security group.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.78.0 | `false` | `true` |
+
+**Compatibility with old behavior:** 
+      To allow all ingress/egress traffic to the VPC default security group you
+      can set the `restrictDefaultSecurityGroup: false`.
+    
+
+
+### @aws-cdk/aws-kms:aliasNameRef
+
+*KMS Alias name and keyArn will have implicit reference to KMS Key* (fix)
+
+This flag allows an implicit dependency to be created between KMS Alias and KMS Key
+when referencing key.aliasName or key.keyArn.
+
+If the flag is not set then a raw string is passed as the Alias name and no
+implicit dependencies will be set.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.83.0 | `false` | `true` |
+
+
+### @aws-cdk/core:includePrefixInUniqueNameGeneration
+
+*Include the stack prefix in the stack name generation process* (fix)
+
+This flag prevents the prefix of a stack from making the stack's name longer than the 128 character limit.
+
+If the flag is set, the prefix is included in the stack name generation process.
+If the flag is not set, then the prefix of the stack is prepended to the generated stack name.
+
+**NOTE** - Enabling this flag comes at a **risk**. If you have already deployed stacks, changing the status of this
+feature flag can lead to a change in stacks' name. Changing a stack name mean recreating the whole stack, which
+is not viable in some productive setups.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.84.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig
+
+*Generate a launch template when creating an AutoScalingGroup* (fix)
+
+Enable this flag to allow AutoScalingGroups to generate a launch template when being created.
+Launch configurations have been deprecated and cannot be created in AWS Accounts created after
+December 31, 2023. Existing 'AutoScalingGroup' properties used for creating a launch configuration
+will now create an equivalent 'launchTemplate'. Alternatively, users can provide an explicit
+'launchTemplate' or 'mixedInstancesPolicy'. When this flag is enabled a 'launchTemplate' will
+attempt to set user data according to the OS of the machine image if explicit user data is not
+provided.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.88.0 | `false` | `true` |
+
+**Compatibility with old behavior:** 
+      If backwards compatibility needs to be maintained due to an existing autoscaling group
+      using a launch config, set this flag to false.
+    
+
+
+### @aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby
+
+*Enables support for Multi-AZ with Standby deployment for opensearch domains* (default)
+
+If this is set, an opensearch domain will automatically be created with
+multi-az with standby enabled.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.88.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.
+
+
+### @aws-cdk/aws-efs:denyAnonymousAccess
+
+*EFS denies anonymous clients accesses* (default)
+
+This flag adds the file system policy that denies anonymous clients
+access to `efs.FileSystem`.
+
+If this flag is not set, `efs.FileSystem` will allow all anonymous clients
+that can access over the network.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.93.0 | `false` | `true` |
+
+**Compatibility with old behavior:** You can pass `allowAnonymousAccess: true` so allow anonymous clients access.
+
+
+### @aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId
+
+*When enabled, mount targets will have a stable logicalId that is linked to the associated subnet.* (fix)
+
+When this feature flag is enabled, each mount target will have a stable
+logicalId that is linked to the associated subnet. If the flag is set to
+false then the logicalIds of the mount targets can change if the number of
+subnets changes.
+
+Set this flag to false for existing mount targets.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.93.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion
+
+*Enables aws-lambda-nodejs.Function to use the latest available NodeJs runtime as the default* (default)
+
+If this is set, and a `runtime` prop is not passed to, Lambda NodeJs
+functions will us the latest version of the runtime provided by the Lambda
+service. Do not use this if you your lambda function is reliant on dependencies
+shipped as part of the runtime environment.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.93.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `runtime: lambda.Runtime.NODEJS_16_X` to `Function` construct to restore the previous behavior.
+
+
+### @aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier
+
+*When enabled, will always use the arn for identifiers for CfnSourceApiAssociation in the GraphqlApi construct rather than id.* (fix)
+
+When this feature flag is enabled, we use the IGraphqlApi ARN rather than ID when creating or updating CfnSourceApiAssociation in 
+the GraphqlApi construct. Using the ARN allows the association to support an association with a source api or merged api in another account.
+Note that for existing source api associations created with this flag disabled, enabling the flag will lead to a resource replacement.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.97.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters
+
+*When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change.* (fix)
+
+When this feature flag is enabled, a scope of `InstanceParameterGroup` for
+`AuroraClusterInstance` with each parameters will change to AuroraClusterInstance
+from AuroraCluster.
+
+If the flag is set to false then it can only make one `AuroraClusterInstance`
+with each `InstanceParameterGroup` in the AuroraCluster.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.97.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-rds:preventRenderingDeprecatedCredentials
+
+*When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials.* (fix)
+
+The `credentials` property on the `DatabaseClusterFromSnapshotProps`
+interface was deprecated with the new `snapshotCredentials` property being
+recommended. Before deprecating `credentials`, a secret would be generated
+while rendering credentials if the `credentials` property was undefined or
+if a secret wasn't provided via the `credentials` property. This behavior
+is replicated with the new `snapshotCredentials` property, but the original
+`credentials` secret can still be created resulting in an extra database
+secret.
+
+Set this flag to prevent rendering deprecated `credentials` and creating an
+extra database secret when only using `snapshotCredentials` to create an RDS
+database cluster from a snapshot.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.98.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource
+
+*When enabled, the CodeCommit source action is using the default branch name 'main'.* (fix)
+
+When setting up a CodeCommit source action for the source stage of a pipeline, please note that the 
+default branch is 'master'.
+However, with the activation of this feature flag, the default branch is updated to 'main'.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.103.1 | `false` | `true` |
 
 
 <!-- END details -->

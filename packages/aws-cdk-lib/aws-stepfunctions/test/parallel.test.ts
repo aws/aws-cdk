@@ -8,7 +8,7 @@ describe('Parallel State', () => {
 
     // WHEN
     const parallel = new stepfunctions.Parallel(stack, 'Parallel State');
-    parallel.branch(new stepfunctions.Pass(stack, 'Branch 1'));
+    parallel.branch(new stepfunctions.Pass(stack, 'Branch 1', { stateName: 'first-pass-state' }));
     parallel.branch(new stepfunctions.Pass(stack, 'Branch 2'));
 
     // THEN
@@ -19,7 +19,7 @@ describe('Parallel State', () => {
           Type: 'Parallel',
           End: true,
           Branches: [
-            { StartAt: 'Branch 1', States: { 'Branch 1': { Type: 'Pass', End: true } } },
+            { StartAt: 'first-pass-state', States: { 'first-pass-state': { Type: 'Pass', End: true } } },
             { StartAt: 'Branch 2', States: { 'Branch 2': { Type: 'Pass', End: true } } },
           ],
         },

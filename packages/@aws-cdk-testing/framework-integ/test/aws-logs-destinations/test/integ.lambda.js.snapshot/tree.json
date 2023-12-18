@@ -148,14 +148,14 @@
                     "code": {
                       "zipFile": "exports.handler = async (event) => {\n        return 'success';\n      };"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "MyFunctionServiceRole3C357FF2",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -173,10 +173,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::EventInvokeConfig",
                       "aws:cdk:cloudformation:props": {
-                        "functionName": {
-                          "Ref": "MyFunction3BAA72D1"
-                        },
-                        "qualifier": "$LATEST",
                         "destinationConfig": {
                           "onSuccess": {
                             "destination": {
@@ -186,7 +182,11 @@
                               ]
                             }
                           }
-                        }
+                        },
+                        "functionName": {
+                          "Ref": "MyFunction3BAA72D1"
+                        },
+                        "qualifier": "$LATEST"
                       }
                     },
                     "constructInfo": {
@@ -434,14 +434,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "lambda-logssubscription-integ/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "AWS679f53fac002430cb0da5b7982bd2287": {
             "id": "AWS679f53fac002430cb0da5b7982bd2287",
             "path": "lambda-logssubscription-integ/AWS679f53fac002430cb0da5b7982bd2287",
@@ -539,24 +531,16 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "a9d3d4d1afa000946b9863b3e7578a5a5ad86d88274b3639938aa2baebf822ce.zip"
+                      "s3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": {
-                      "Fn::FindInMap": [
-                        "DefaultCrNodeVersionMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "value"
-                      ]
-                    },
+                    "runtime": "nodejs18.x",
                     "timeout": 120
                   }
                 },
@@ -586,7 +570,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {
@@ -624,27 +608,27 @@
                 "path": "LambdaInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "LambdaInteg/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallEventBridgeputEvents": {
-                    "id": "AwsApiCallEventBridgeputEvents",
-                    "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents",
+                  "AwsApiCallEventBridgeputEvents9a20df3f29597ff1b9e82b1f34c42383": {
+                    "id": "AwsApiCallEventBridgeputEvents9a20df3f29597ff1b9e82b1f34c42383",
+                    "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents9a20df3f29597ff1b9e82b1f34c42383",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents/SdkProvider",
+                        "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents9a20df3f29597ff1b9e82b1f34c42383/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents/SdkProvider/AssertionsProvider",
+                            "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents9a20df3f29597ff1b9e82b1f34c42383/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.70"
                             }
                           }
                         },
@@ -655,11 +639,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents/Default",
+                        "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents9a20df3f29597ff1b9e82b1f34c42383/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents/Default/Default",
+                            "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents9a20df3f29597ff1b9e82b1f34c42383/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -708,23 +692,23 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.70"
                     }
                   },
-                  "AwsApiCallSQSreceiveMessage": {
-                    "id": "AwsApiCallSQSreceiveMessage",
-                    "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage",
+                  "AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0": {
+                    "id": "AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0",
+                    "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/SdkProvider",
+                        "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/SdkProvider/AssertionsProvider",
+                            "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.70"
                             }
                           }
                         },
@@ -735,11 +719,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/Default",
+                        "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/Default/Default",
+                            "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -753,7 +737,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/AssertionResults",
+                        "path": "LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -804,7 +788,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },

@@ -1,10 +1,11 @@
 {
-  "version": "30.0.0",
+  "version": "35.0.0",
   "testCases": {
     "iodc-provider-test/DefaultTest": {
       "stacks": [
         "oidc-provider-integ-test"
       ],
+      "diffAssets": true,
       "assertionStack": "iodc-provider-test/DefaultTest/DeployAssert",
       "assertionStackName": "iodcprovidertestDefaultTestDeployAssert2D70E37E"
     }

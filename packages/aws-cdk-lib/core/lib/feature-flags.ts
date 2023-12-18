@@ -4,7 +4,7 @@ import * as cxapi from '../../cx-api';
 /**
  * Features that are implemented behind a flag in order to preserve backwards
  * compatibility for existing apps. The list of flags are available in the
- * `@aws-cdk/cx-api` module.
+ * `aws-cdk-lib/cx-api` module.
  *
  * The state of the flag for this application is stored as a CDK context variable.
  */

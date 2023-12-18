@@ -9,29 +9,29 @@
   "ExistingRecord8E2B2167": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "integ.cdk.dev.",
-    "Type": "A",
     "HostedZoneId": {
      "Ref": "HostedZoneDB99F866"
     },
+    "Name": "integ.cdk.dev.",
     "ResourceRecords": [
      "1.2.3.4"
     ],
-    "TTL": "1800"
+    "TTL": "1800",
+    "Type": "A"
    }
   },
   "NewRecordB9E8EE35": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "integ.cdk.dev.",
-    "Type": "A",
     "HostedZoneId": {
      "Ref": "HostedZoneDB99F866"
     },
+    "Name": "integ.cdk.dev.",
     "ResourceRecords": [
      "5.6.7.8"
     ],
-    "TTL": "7200"
+    "TTL": "7200",
+    "Type": "A"
    },
    "DependsOn": [
     "ExistingRecord8E2B2167",
@@ -151,7 +151,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "93d4963306216a9c4bf68e6d8b69958040b1812029cb78b74b9a2189b274e66a.zip"
+     "S3Key": "ba20e995a2ca17e37bf8ad885e4216b4d3e436c7992e68d9bbce15b508dc720e.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -162,114 +162,11 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "CustomDeleteExistingRecordSetCustomResourceProviderRole03A7ED08"
    ]
-  }
- },
- "Mappings": {
-  "DefaultCrNodeVersionMap": {
-   "af-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs16.x"
-   },
-   "me-central-1": {
-    "value": "nodejs16.x"
-   },
-   "me-south-1": {
-    "value": "nodejs16.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-2": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs14.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-west-2": {
-    "value": "nodejs16.x"
-   }
   }
  },
  "Parameters": {

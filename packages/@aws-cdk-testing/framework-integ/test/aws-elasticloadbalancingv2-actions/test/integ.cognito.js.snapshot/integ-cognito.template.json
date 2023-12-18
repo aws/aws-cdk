@@ -18,9 +18,6 @@
   "StackPublicSubnet1Subnet0AD81D22": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Stack8A423254"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -44,21 +41,24 @@
       "Key": "Name",
       "Value": "integ-cognito/Stack/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    }
    }
   },
   "StackPublicSubnet1RouteTable5057189D": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Stack8A423254"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-cognito/Stack/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    }
    }
   },
   "StackPublicSubnet1RouteTableAssociation74F1C1B6": {
@@ -75,12 +75,12 @@
   "StackPublicSubnet1DefaultRoute16154E3D": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "StackPublicSubnet1RouteTable5057189D"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "StackIGW2F0A1126"
+    },
+    "RouteTableId": {
+     "Ref": "StackPublicSubnet1RouteTable5057189D"
     }
    },
    "DependsOn": [
@@ -102,14 +102,14 @@
   "StackPublicSubnet1NATGatewayD2E1ABF7": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "StackPublicSubnet1Subnet0AD81D22"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "StackPublicSubnet1EIPBDAAB2A5",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "StackPublicSubnet1Subnet0AD81D22"
     },
     "Tags": [
      {
@@ -126,9 +126,6 @@
   "StackPublicSubnet2Subnet3C7D2288": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Stack8A423254"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -152,21 +149,24 @@
       "Key": "Name",
       "Value": "integ-cognito/Stack/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    }
    }
   },
   "StackPublicSubnet2RouteTableCD306445": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Stack8A423254"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-cognito/Stack/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    }
    }
   },
   "StackPublicSubnet2RouteTableAssociation5E8F73F1": {
@@ -183,12 +183,12 @@
   "StackPublicSubnet2DefaultRoute0319539B": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "StackPublicSubnet2RouteTableCD306445"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "StackIGW2F0A1126"
+    },
+    "RouteTableId": {
+     "Ref": "StackPublicSubnet2RouteTableCD306445"
     }
    },
    "DependsOn": [
@@ -210,14 +210,14 @@
   "StackPublicSubnet2NATGatewayA8E03AB3": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "StackPublicSubnet2Subnet3C7D2288"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "StackPublicSubnet2EIP8CDBC8C2",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "StackPublicSubnet2Subnet3C7D2288"
     },
     "Tags": [
      {
@@ -234,9 +234,6 @@
   "StackPrivateSubnet1Subnet47AC2BC7": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Stack8A423254"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -260,21 +257,24 @@
       "Key": "Name",
       "Value": "integ-cognito/Stack/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    }
    }
   },
   "StackPrivateSubnet1RouteTable8ADA6A0C": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Stack8A423254"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-cognito/Stack/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    }
    }
   },
   "StackPrivateSubnet1RouteTableAssociationFFE38495": {
@@ -291,21 +291,18 @@
   "StackPrivateSubnet1DefaultRouteFBF81BA5": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "StackPrivateSubnet1RouteTable8ADA6A0C"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "StackPublicSubnet1NATGatewayD2E1ABF7"
+    },
+    "RouteTableId": {
+     "Ref": "StackPrivateSubnet1RouteTable8ADA6A0C"
     }
    }
   },
   "StackPrivateSubnet2SubnetA2F8EDD8": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Stack8A423254"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -329,21 +326,24 @@
       "Key": "Name",
       "Value": "integ-cognito/Stack/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    }
    }
   },
   "StackPrivateSubnet2RouteTableA5546697": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Stack8A423254"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-cognito/Stack/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Stack8A423254"
+    }
    }
   },
   "StackPrivateSubnet2RouteTableAssociation68ACB8C1": {
@@ -360,12 +360,12 @@
   "StackPrivateSubnet2DefaultRoute22004492": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "StackPrivateSubnet2RouteTableA5546697"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "StackPublicSubnet2NATGatewayA8E03AB3"
+    },
+    "RouteTableId": {
+     "Ref": "StackPrivateSubnet2RouteTableA5546697"
     }
    }
   },
@@ -383,11 +383,11 @@
   "StackVPCGWFFCB6290": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "Stack8A423254"
-    },
     "InternetGatewayId": {
      "Ref": "StackIGW2F0A1126"
+    },
+    "VpcId": {
+     "Ref": "Stack8A423254"
     }
    }
   },
@@ -475,6 +475,13 @@
   "LBListener49E825B4": {
    "Type": "AWS::ElasticLoadBalancingV2::Listener",
    "Properties": {
+    "Certificates": [
+     {
+      "CertificateArn": {
+       "Ref": "Certificate4E7ABB08"
+      }
+     }
+    ],
     "DefaultActions": [
      {
       "AuthenticateCognitoConfig": {
@@ -508,13 +515,6 @@
     "LoadBalancerArn": {
      "Ref": "LB8A12904C"
     },
-    "Certificates": [
-     {
-      "CertificateArn": {
-       "Ref": "Certificate4E7ABB08"
-      }
-     }
-    ],
     "Port": 443,
     "Protocol": "HTTPS"
    }
@@ -562,10 +562,10 @@
       }
      }
     ],
-    "Priority": 1,
     "ListenerArn": {
      "Ref": "LBListener49E825B4"
-    }
+    },
+    "Priority": 1
    }
   },
   "UserPool6BA7E5F2": {
@@ -602,9 +602,6 @@
   "Client4A7F64DF": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
-    "UserPoolId": {
-     "Ref": "UserPool6BA7E5F2"
-    },
     "AllowedOAuthFlows": [
      "code"
     ],
@@ -624,7 +621,10 @@
     "RefreshTokenValidity": 1,
     "SupportedIdentityProviders": [
      "COGNITO"
-    ]
+    ],
+    "UserPoolId": {
+     "Ref": "UserPool6BA7E5F2"
+    }
    }
   },
   "Domain66AC69E0": {
@@ -639,8 +639,6 @@
   "ARecordE7B57761": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "example.com.",
-    "Type": "A",
     "AliasTarget": {
      "DNSName": {
       "Fn::Join": [
@@ -663,7 +661,9 @@
       ]
      }
     },
-    "HostedZoneId": "Z23ABC4XYZL05B"
+    "HostedZoneId": "Z23ABC4XYZL05B",
+    "Name": "example.com.",
+    "Type": "A"
    }
   },
   "UserFDDCDD17": {
@@ -827,24 +827,16 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a9d3d4d1afa000946b9863b3e7578a5a5ad86d88274b3639938aa2baebf822ce.zip"
+     "S3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": {
-     "Fn::FindInMap": [
-      "DefaultCrNodeVersionMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs18.x",
     "Timeout": 120
    },
    "DependsOn": [
@@ -891,12 +883,6 @@
      },
      "S3Key": "1832f4c7bb54fe8f4eb5677dc53ae4204e4b27b12077ddd397a6755206864302.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "SigninServiceRole24B8BB32",
-      "Arn"
-     ]
-    },
     "Environment": {
      "Variables": {
       "TEST_USERNAME": "test-user@example.com",
@@ -907,6 +893,12 @@
     "FunctionName": "cdk-integ-alb-cognito-signin-handler",
     "Handler": "index.handler",
     "MemorySize": 1024,
+    "Role": {
+     "Fn::GetAtt": [
+      "SigninServiceRole24B8BB32",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x",
     "Timeout": 300
    },
@@ -925,109 +917,6 @@
    },
    "Export": {
     "Name": "integ-cognito:ExportsOutputRefSignin352C80E64BA58F71"
-   }
-  }
- },
- "Mappings": {
-  "DefaultCrNodeVersionMap": {
-   "af-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs16.x"
-   },
-   "me-central-1": {
-    "value": "nodejs16.x"
-   },
-   "me-south-1": {
-    "value": "nodejs16.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-2": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs14.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-west-2": {
-    "value": "nodejs16.x"
    }
   }
  },

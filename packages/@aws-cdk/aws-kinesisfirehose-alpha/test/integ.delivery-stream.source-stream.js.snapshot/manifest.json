@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-firehose-delivery-stream-source-stream.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-firehose-delivery-stream-source-stream.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/be598567e1d5fd0d41466eb09c80aba0c9a6cd2d5e0ca28a3a21580b6c3f32b5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0b8a49e0b01e92c6b238e6d77538735e5b7a45a5bd1b32808ce9fe81fccc7c2e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -85,6 +86,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawskinesisfirehoseCidrBlocks"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-source-stream/Delivery Stream No Source Or Encryption Key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeliveryStreamNoSourceOrEncryptionKey0E4AAB82"
           }
         ],
         "/aws-cdk-firehose-delivery-stream-source-stream/BootstrapVersion": [

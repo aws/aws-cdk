@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.102"
-        }
-      },
       "cdk-backup": {
         "id": "cdk-backup",
         "path": "cdk-backup",
@@ -26,16 +18,16 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
                   "aws:cdk:cloudformation:props": {
-                    "keySchema": [
-                      {
-                        "attributeName": "id",
-                        "keyType": "HASH"
-                      }
-                    ],
                     "attributeDefinitions": [
                       {
                         "attributeName": "id",
                         "attributeType": "S"
+                      }
+                    ],
+                    "keySchema": [
+                      {
+                        "attributeName": "id",
+                        "keyType": "HASH"
                       }
                     ],
                     "provisionedThroughput": {
@@ -45,22 +37,22 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               },
               "ScalingRole": {
                 "id": "ScalingRole",
                 "path": "cdk-backup/Table/ScalingRole",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-dynamodb.Table",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
             }
           },
           "FileSystem": {
@@ -71,8 +63,8 @@
               "aws:cdk:cloudformation:props": {}
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-efs.CfnFileSystem",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
             }
           },
           "Vault": {
@@ -92,14 +84,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-backup.CfnBackupVault",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-backup.BackupVault",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
             }
           },
           "SecondaryVault": {
@@ -119,14 +111,59 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-backup.CfnBackupVault",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-backup.BackupVault",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
+            }
+          },
+          "Env": {
+            "id": "Env",
+            "path": "cdk-backup/Env",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
+            }
+          },
+          "ThirdVault": {
+            "id": "ThirdVault",
+            "path": "cdk-backup/ThirdVault",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-backup/ThirdVault/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Backup::BackupVault",
+                  "aws:cdk:cloudformation:props": {
+                    "backupVaultName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "backupVault-",
+                          {
+                            "Ref": "Env"
+                          }
+                        ]
+                      ]
+                    },
+                    "lockConfiguration": {
+                      "minRetentionDays": 5
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
             }
           },
           "Plan": {
@@ -203,15 +240,18 @@
                                 "moveToColdStorageAfterDays": 30
                               }
                             }
-                          ]
+                          ],
+                          "recoveryPointTags": {
+                            "stage": "prod"
+                          }
                         }
                       ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-backup.CfnBackupPlan",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               },
               "Selection": {
@@ -222,6 +262,14 @@
                     "id": "Role",
                     "path": "cdk-backup/Plan/Selection/Role",
                     "children": {
+                      "ImportRole": {
+                        "id": "ImportRole",
+                        "path": "cdk-backup/Plan/Selection/Role/ImportRole",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.69"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "cdk-backup/Plan/Selection/Role/Resource",
@@ -257,14 +305,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnRole",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.2.69"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Role",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   },
                   "Resource": {
@@ -346,32 +394,56 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-backup.CfnBackupSelection",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.69"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-backup.BackupSelection",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-backup.BackupPlan",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-backup/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-backup/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.69"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.2.69"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.69"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.2.69"
     }
   }
 }

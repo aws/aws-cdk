@@ -222,8 +222,8 @@ export class Alarm extends AlarmBase {
       value: props.threshold,
     };
 
-    for (const w of this.metric.warnings ?? []) {
-      Annotations.of(this).addWarning(w);
+    for (const [i, message] of Object.entries(this.metric.warningsV2 ?? {})) {
+      Annotations.of(this).addWarningV2(i, message);
     }
   }
 
@@ -250,7 +250,7 @@ export class Alarm extends AlarmBase {
   /**
    * Trigger this action if the alarm fires
    *
-   * Typically the ARN of an SNS topic or ARN of an AutoScaling policy.
+   * Typically SnsAcion or AutoScalingAction.
    */
   public addAlarmAction(...actions: IAlarmAction[]) {
     if (this.alarmActionArns === undefined) {

@@ -45,9 +45,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "IntegVPC2FF1AB0E"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -71,7 +68,10 @@
                             "key": "Name",
                             "value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "IntegVPC2FF1AB0E"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -93,15 +93,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "IntegVPC2FF1AB0E"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "IntegVPC2FF1AB0E"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -134,12 +134,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "IntegVPCPublicSubnet1RouteTable622895C7"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "IntegVPCIGW02FC78B6"
+                        },
+                        "routeTableId": {
+                          "Ref": "IntegVPCPublicSubnet1RouteTable622895C7"
                         }
                       }
                     },
@@ -174,14 +174,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "IntegVPCPublicSubnet1SubnetE05F7E7D"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "IntegVPCPublicSubnet1EIP1AC057E9",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "IntegVPCPublicSubnet1SubnetE05F7E7D"
                         },
                         "tags": [
                           {
@@ -212,9 +212,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "IntegVPC2FF1AB0E"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -238,7 +235,10 @@
                             "key": "Name",
                             "value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "IntegVPC2FF1AB0E"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -260,15 +260,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "IntegVPC2FF1AB0E"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "IntegVPC2FF1AB0E"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -301,12 +301,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "IntegVPCPublicSubnet2RouteTableB79B3910"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "IntegVPCIGW02FC78B6"
+                        },
+                        "routeTableId": {
+                          "Ref": "IntegVPCPublicSubnet2RouteTableB79B3910"
                         }
                       }
                     },
@@ -341,14 +341,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "IntegVPCPublicSubnet2Subnet9648DE97"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "IntegVPCPublicSubnet2EIPEA07DF99",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "IntegVPCPublicSubnet2Subnet9648DE97"
                         },
                         "tags": [
                           {
@@ -379,9 +379,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "IntegVPC2FF1AB0E"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -405,7 +402,10 @@
                             "key": "Name",
                             "value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "IntegVPC2FF1AB0E"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -427,15 +427,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "IntegVPC2FF1AB0E"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "IntegVPC2FF1AB0E"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -468,12 +468,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "IntegVPCPrivateSubnet1RouteTableF2678D77"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "IntegVPCPublicSubnet1NATGateway380AC0A0"
+                        },
+                        "routeTableId": {
+                          "Ref": "IntegVPCPrivateSubnet1RouteTableF2678D77"
                         }
                       }
                     },
@@ -498,9 +498,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "IntegVPC2FF1AB0E"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -524,7 +521,10 @@
                             "key": "Name",
                             "value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "IntegVPC2FF1AB0E"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -546,15 +546,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "IntegVPC2FF1AB0E"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "IntegVPC2FF1AB0E"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -587,12 +587,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "IntegVPCPrivateSubnet2RouteTable4132D373"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "IntegVPCPublicSubnet2NATGateway912800A3"
+                        },
+                        "routeTableId": {
+                          "Ref": "IntegVPCPrivateSubnet2RouteTable4132D373"
                         }
                       }
                     },
@@ -632,11 +632,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "IntegVPC2FF1AB0E"
-                    },
                     "internetGatewayId": {
                       "Ref": "IntegVPCIGW02FC78B6"
+                    },
+                    "vpcId": {
+                      "Ref": "IntegVPC2FF1AB0E"
                     }
                   }
                 },
@@ -957,7 +957,6 @@
                       "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
                       "aws:cdk:cloudformation:props": {
                         "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                        "evaluationPeriods": 3,
                         "dimensions": [
                           {
                             "name": "DBClusterIdentifier",
@@ -966,6 +965,7 @@
                             }
                           }
                         ],
+                        "evaluationPeriods": 3,
                         "metricName": "ServerlessDatabaseCapacity",
                         "namespace": "AWS/RDS",
                         "period": 600,
@@ -995,7 +995,6 @@
                       "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
                       "aws:cdk:cloudformation:props": {
                         "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                        "evaluationPeriods": 3,
                         "dimensions": [
                           {
                             "name": "DBClusterIdentifier",
@@ -1004,6 +1003,7 @@
                             }
                           }
                         ],
+                        "evaluationPeriods": 3,
                         "metricName": "ACUUtilization",
                         "namespace": "AWS/RDS",
                         "period": 600,
@@ -1025,7 +1025,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.26"
+              "version": "10.2.69"
             }
           },
           "integ-aurora-serverlessv2-1": {
@@ -1340,7 +1340,6 @@
                       "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
                       "aws:cdk:cloudformation:props": {
                         "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                        "evaluationPeriods": 3,
                         "dimensions": [
                           {
                             "name": "DBClusterIdentifier",
@@ -1349,6 +1348,7 @@
                             }
                           }
                         ],
+                        "evaluationPeriods": 3,
                         "metricName": "ServerlessDatabaseCapacity",
                         "namespace": "AWS/RDS",
                         "period": 600,
@@ -1378,7 +1378,6 @@
                       "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
                       "aws:cdk:cloudformation:props": {
                         "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                        "evaluationPeriods": 3,
                         "dimensions": [
                           {
                             "name": "DBClusterIdentifier",
@@ -1387,6 +1386,7 @@
                             }
                           }
                         ],
+                        "evaluationPeriods": 3,
                         "metricName": "ACUUtilization",
                         "namespace": "AWS/RDS",
                         "period": 600,
@@ -1408,7 +1408,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.26"
+              "version": "10.2.69"
             }
           },
           "integ-aurora-serverlessv2-2": {
@@ -1723,7 +1723,6 @@
                       "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
                       "aws:cdk:cloudformation:props": {
                         "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                        "evaluationPeriods": 3,
                         "dimensions": [
                           {
                             "name": "DBClusterIdentifier",
@@ -1732,6 +1731,7 @@
                             }
                           }
                         ],
+                        "evaluationPeriods": 3,
                         "metricName": "ServerlessDatabaseCapacity",
                         "namespace": "AWS/RDS",
                         "period": 600,
@@ -1761,7 +1761,6 @@
                       "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
                       "aws:cdk:cloudformation:props": {
                         "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                        "evaluationPeriods": 3,
                         "dimensions": [
                           {
                             "name": "DBClusterIdentifier",
@@ -1770,6 +1769,7 @@
                             }
                           }
                         ],
+                        "evaluationPeriods": 3,
                         "metricName": "ACUUtilization",
                         "namespace": "AWS/RDS",
                         "period": 600,
@@ -1791,7 +1791,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.26"
+              "version": "10.2.69"
             }
           },
           "BootstrapVersion": {
@@ -1829,7 +1829,7 @@
                 "path": "integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.69"
                 }
               },
               "DeployAssert": {
@@ -1875,7 +1875,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.69"
         }
       }
     },

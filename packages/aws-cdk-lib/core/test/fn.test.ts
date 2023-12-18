@@ -18,8 +18,8 @@ function asyncTest(cb: () => Promise<void>): () => void {
   };
 }
 
-const nonEmptyString = fc.string(1, 16);
-const tokenish = fc.array(nonEmptyString, 2, 2).map(arr => ({ [arr[0]]: arr[1] }));
+const nonEmptyString = fc.string({ minLength: 1, maxLength: 16 }).filter((x) => x !== '__proto__');
+const tokenish = fc.array(nonEmptyString, { minLength: 2, maxLength: 2 }).map(arr => ({ [arr[0]]: arr[1] }));
 const anyValue = fc.oneof<any>(nonEmptyString, tokenish);
 
 describe('fn', () => {
@@ -106,7 +106,7 @@ describe('fn', () => {
       const stack = new Stack();
       fc.assert(
         fc.property(
-          fc.string(), fc.array(nonEmptyString, 1, 15),
+          fc.string(), fc.array(nonEmptyString, { minLength: 1, maxLength: 15 }),
           (delimiter, values) => stack.resolve(Fn.join(delimiter, values)) === values.join(delimiter),
         ),
         { verbose: true },
@@ -117,12 +117,12 @@ describe('fn', () => {
       const stack = new Stack();
       fc.assert(
         fc.property(
-          fc.string(), fc.array(nonEmptyString, 1, 3), tokenish, fc.array(nonEmptyString, 1, 3),
+          fc.string(), fc.array(nonEmptyString, { minLength: 1, maxLength: 3 }), tokenish, fc.array(nonEmptyString, { minLength: 1, maxLength: 3 }),
           (delimiter, prefix, obj, suffix) =>
             _.isEqual(stack.resolve(Fn.join(delimiter, [...prefix, stringToken(obj), ...suffix])),
               { 'Fn::Join': [delimiter, [prefix.join(delimiter), obj, suffix.join(delimiter)]] }),
         ),
-        { verbose: true, seed: 1539874645005, path: '0:0:0:0:0:0:0:0:0' },
+        { verbose: true },
       );
     }));
 
@@ -131,7 +131,7 @@ describe('fn', () => {
       fc.assert(
         fc.property(
           fc.string(), fc.array(anyValue),
-          fc.array(anyValue, 1, 3),
+          fc.array(anyValue, { minLength: 1, maxLength: 3 }),
           fc.array(anyValue),
           (delimiter, prefix, nested, suffix) =>
             // Gonna test
@@ -147,9 +147,9 @@ describe('fn', () => {
       fc.assert(
         fc.property(
           fc.string(), fc.string(),
-          fc.array(anyValue, 1, 3),
-          fc.array(tokenish, 2, 3),
-          fc.array(anyValue, 3),
+          fc.array(anyValue, { minLength: 1, maxLength: 3 }),
+          fc.array(tokenish, { minLength: 2, maxLength: 3 }),
+          fc.array(anyValue, { minLength: 3 }),
           (delimiter1, delimiter2, prefix, nested, suffix) => {
             fc.pre(delimiter1 !== delimiter2);
             const join = Fn.join(delimiter1, [...prefix as string[], Fn.join(delimiter2, stringListToken(nested)), ...suffix as string[]]);

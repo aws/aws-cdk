@@ -74,6 +74,15 @@ const bucket = new s3.Bucket(this, 'Buck', {
 assert(bucket.encryptionKey == null);
 ```
 
+Enable DSSE encryption:
+
+```
+const bucket = new s3.Bucket(stack, 'MyDSSEBucket', {
+  encryption: s3.BucketEncryption.DSSE_MANAGED,
+  bucketKeyEnabled: true,
+});
+```
+
 ## Permissions
 
 A bucket policy will be automatically created for the bucket upon the first call to
@@ -156,6 +165,15 @@ To require all requests use Secure Socket Layer (SSL):
 ```ts
 const bucket = new s3.Bucket(this, 'Bucket', {
   enforceSSL: true,
+});
+```
+
+To require a minimum TLS version for all requests:
+
+```ts
+const bucket = new s3.Bucket(this, 'Bucket', {
+  enforceSSL: true,
+  minimumTLSVersion: 1.2,
 });
 ```
 
@@ -260,7 +278,7 @@ bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(
 This call will also ensure that the topic policy can accept notifications for
 this specific bucket.
 
-Supported S3 notification targets are exposed by the `@aws-cdk/aws-s3-notifications` package.
+Supported S3 notification targets are exposed by the `aws-cdk-lib/aws-s3-notifications` package.
 
 It is also possible to specify S3 object key filters when subscribing. The
 following example will notify `myQueue` when objects prefixed with `foo/` and
@@ -492,7 +510,7 @@ const bucket = new s3.Bucket(this, 'MyRedirectedBucket', {
 ## Filling the bucket as part of deployment
 
 To put files into a bucket as part of a deployment (for example, to host a
-website), see the `@aws-cdk/aws-s3-deployment` package, which provides a
+website), see the `aws-cdk-lib/aws-s3-deployment` package, which provides a
 resource that can do just that.
 
 ## The URL for objects

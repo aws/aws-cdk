@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "34.0.0",
   "testCases": {
-    "integ.lambda-rotation": {
+    "cdk-integ-secret-lambda-rotation-test/DefaultTest": {
       "stacks": [
         "cdk-integ-secret-lambda-rotation"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "cdk-integ-secret-lambda-rotation-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegsecretlambdarotationtestDefaultTestDeployAssert65AE5426"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

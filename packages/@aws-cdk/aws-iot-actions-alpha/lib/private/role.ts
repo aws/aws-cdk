@@ -1,5 +1,5 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { PhysicalName } from 'aws-cdk-lib';
+import { PhysicalName } from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
 
 /**

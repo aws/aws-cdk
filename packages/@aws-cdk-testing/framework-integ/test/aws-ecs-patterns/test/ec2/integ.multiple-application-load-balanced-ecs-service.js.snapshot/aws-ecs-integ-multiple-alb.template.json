@@ -1016,10 +1016,10 @@
       }
      }
     ],
+    "Priority": 10,
     "ListenerArn": {
      "Ref": "myServiceLBPublicListenerC78AE8A0"
-    },
-    "Priority": 10
+    }
    }
   },
   "myServiceTaskDefTaskRole1C1DE6CC": {
@@ -1181,6 +1181,11 @@
      "Ref": "ClusterEB0386A7"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -1213,7 +1218,9 @@
     "myServiceLBPublicListenerECSTargetGroupweb80GroupCA306BD0",
     "myServiceLBPublicListenerECSTargetGroupweb90Group6388E5B5",
     "myServiceLBPublicListenerECSTargetGroupweb90Rule0CAA997D",
-    "myServiceLBPublicListenerC78AE8A0"
+    "myServiceLBPublicListenerC78AE8A0",
+    "myServiceTaskDefTaskRoleDefaultPolicyD48473C0",
+    "myServiceTaskDefTaskRole1C1DE6CC"
    ]
   }
  },

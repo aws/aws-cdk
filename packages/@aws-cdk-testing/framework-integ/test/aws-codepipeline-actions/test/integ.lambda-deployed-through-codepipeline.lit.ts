@@ -5,6 +5,7 @@ import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as codepipeline_actions from 'aws-cdk-lib/aws-codepipeline-actions';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App();
 
@@ -14,7 +15,7 @@ const lambdaCode = lambda.Code.fromCfnParameters();
 new lambda.Function(lambdaStack, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 // other resources that your Lambda needs, added to the lambdaStack...
 
@@ -49,7 +50,7 @@ pipeline.addStage({
 // adjust the build environment and/or commands accordingly
 const cdkBuildProject = new codebuild.Project(pipelineStack, 'CdkBuildProject', {
   environment: {
-    buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
+    buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
   },
   buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
@@ -82,7 +83,7 @@ const cdkBuildAction = new codepipeline_actions.CodeBuildAction({
 // make sure to adjust the build environment and/or commands if they don't match your specific situation
 const lambdaBuildProject = new codebuild.Project(pipelineStack, 'LambdaBuildProject', {
   environment: {
-    buildImage: codebuild.LinuxBuildImage.UBUNTU_14_04_NODEJS_10_1_0,
+    buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
   },
   buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',

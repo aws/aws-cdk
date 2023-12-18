@@ -1,5 +1,6 @@
 /* eslint-disable import/order */
 import * as os from 'os';
+import { bockfs } from '@aws-cdk/cdk-build-tools';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
@@ -9,7 +10,6 @@ import { FakeSts, RegisterRoleOptions, RegisterUserOptions } from './fake-sts';
 import { ISDK, Mode, SDK, SdkProvider, defaultCliUserAgent } from '../../lib/api/aws-auth';
 import { PluginHost } from '../../lib/api/plugin';
 import * as logging from '../../lib/logging';
-import * as bockfs from '../bockfs';
 import { withMocked } from '../util';
 
 jest.mock('promptly', () => ({
@@ -606,7 +606,7 @@ test('even when using a profile to assume another profile, STS calls goes throug
         throw error;
       }
     }
-    return FakeAgent;
+    return { ProxyAgent: FakeAgent };
   });
 
   // WHEN

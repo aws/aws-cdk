@@ -6,8 +6,9 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as targets from '@aws-cdk/aws-scheduler-targets-alpha';
 import { App, Stack, TimeZone, Duration } from 'aws-cdk-lib';
-import { ScheduleExpression } from '@aws-cdk/aws-scheduler-alpha';
+import { ScheduleExpression, ScheduleTargetInput, ContextAttribute, Group, Schedule, TimeWindow } from '@aws-cdk/aws-scheduler-alpha';
 
 class Fixture extends cdk.Stack {
   constructor(scope: Construct, id: string) {

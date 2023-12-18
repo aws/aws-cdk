@@ -1,34 +1,41 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
+import { Column } from '../../table';
 import { executeStatement } from './redshift-data';
 import { ClusterProps, TableAndClusterProps, TableSortStyle } from './types';
-import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns } from './util';
-import { Column } from '../../table';
+import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns, makePhysicalId } from './util';
 
 export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const tableNamePrefix = props.tableName.prefix;
-  const tableNameSuffix = props.tableName.generateSuffix === 'true' ? `${event.RequestId.substring(0, 8)}` : '';
+  const getTableNameSuffix = (generateSuffix: string) => generateSuffix === 'true' ? `${event.StackId.substring(event.StackId.length - 12)}` : '';
   const tableColumns = props.tableColumns;
   const tableAndClusterProps = props;
   const useColumnIds = props.useColumnIds;
+  let tableName = tableNamePrefix + getTableNameSuffix(props.tableName.generateSuffix);
 
   if (event.RequestType === 'Create') {
-    const tableName = await createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
-    return { PhysicalResourceId: tableName };
+    tableName = await createTable(tableNamePrefix, getTableNameSuffix(props.tableName.generateSuffix), tableColumns, tableAndClusterProps);
+    return { PhysicalResourceId: makePhysicalId(tableNamePrefix, tableAndClusterProps, event.StackId.substring(event.StackId.length - 12)) };
   } else if (event.RequestType === 'Delete') {
-    await dropTable(event.PhysicalResourceId, tableAndClusterProps);
+    await dropTable(
+      event.PhysicalResourceId.includes(event.StackId.substring(event.StackId.length - 12)) ? tableName : event.PhysicalResourceId,
+      tableAndClusterProps,
+    );
     return;
   } else if (event.RequestType === 'Update') {
-    const tableName = await updateTable(
-      event.PhysicalResourceId,
+    const isTableV2 = event.PhysicalResourceId.includes(event.StackId.substring(event.StackId.length - 12));
+    const oldTableName = event.OldResourceProperties.tableName.prefix + getTableNameSuffix(event.OldResourceProperties.tableName.generateSuffix);
+    tableName = await updateTable(
+      isTableV2 ? oldTableName : event.PhysicalResourceId,
       tableNamePrefix,
-      tableNameSuffix,
+      getTableNameSuffix(props.tableName.generateSuffix),
       tableColumns,
       useColumnIds,
       tableAndClusterProps,
       event.OldResourceProperties as TableAndClusterProps,
+      isTableV2,
     );
-    return { PhysicalResourceId: tableName };
+    return { PhysicalResourceId: event.PhysicalResourceId };
   } else {
     /* eslint-disable-next-line dot-notation */
     throw new Error(`Unrecognized event type: ${event['RequestType']}`);
@@ -87,16 +94,13 @@ async function updateTable(
   useColumnIds: boolean,
   tableAndClusterProps: TableAndClusterProps,
   oldResourceProperties: TableAndClusterProps,
+  isTableV2: boolean,
 ): Promise<string> {
   const alterationStatements: string[] = [];
+  const newTableName = tableNamePrefix + tableNameSuffix;
 
   const oldClusterProps = oldResourceProperties;
   if (tableAndClusterProps.clusterName !== oldClusterProps.clusterName || tableAndClusterProps.databaseName !== oldClusterProps.databaseName) {
-    return createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
-  }
-
-  const oldTableNamePrefix = oldResourceProperties.tableName.prefix;
-  if (tableNamePrefix !== oldTableNamePrefix) {
     return createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
   }
 
@@ -164,9 +168,14 @@ async function updateTable(
 
   const oldDistKey = getDistKeyColumn(oldTableColumns)?.name;
   const newDistKey = getDistKeyColumn(tableColumns)?.name;
-  if ((!oldDistKey && newDistKey ) || (oldDistKey && !newDistKey)) {
-    return createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
+  if (!oldDistKey && newDistKey) {
+    // Table has no existing distribution key, add a new one
+    alterationStatements.push(`ALTER TABLE ${tableName} ALTER DISTSTYLE KEY DISTKEY ${newDistKey}`);
+  } else if (oldDistKey && !newDistKey) {
+    // Table has a distribution key, remove and set to AUTO
+    alterationStatements.push(`ALTER TABLE ${tableName} ALTER DISTSTYLE AUTO`);
   } else if (oldDistKey !== newDistKey) {
+    // Table has an existing distribution key, change it
     alterationStatements.push(`ALTER TABLE ${tableName} ALTER DISTKEY ${newDistKey}`);
   }
 
@@ -202,6 +211,14 @@ async function updateTable(
   }
 
   await Promise.all(alterationStatements.map(statement => executeStatement(statement, tableAndClusterProps)));
+
+  if (isTableV2) {
+    const oldTableNamePrefix = oldResourceProperties.tableName.prefix;
+    if (tableNamePrefix !== oldTableNamePrefix) {
+      await executeStatement(`ALTER TABLE ${tableName} RENAME TO ${newTableName}`, tableAndClusterProps);
+      return tableNamePrefix + tableNameSuffix;
+    }
+  }
 
   return tableName;
 }

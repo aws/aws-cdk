@@ -1,10 +1,11 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
     "cdk-integ-codepipeline-with-file-system-locations/DefaultTest": {
       "stacks": [
         "PipelinesFileSystemLocations"
       ],
+      "diffAssets": true,
       "assertionStack": "cdk-integ-codepipeline-with-file-system-locations/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegcodepipelinewithfilesystemlocationsDefaultTestDeployAssert3E26E748"
     }

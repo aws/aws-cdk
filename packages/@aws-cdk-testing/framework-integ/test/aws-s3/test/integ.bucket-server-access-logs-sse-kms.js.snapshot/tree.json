@@ -22,6 +22,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                       "aws:cdk:cloudformation:props": {
+                        "description": "Created by aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket",
                         "keyPolicy": {
                           "Statement": [
                             {
@@ -62,8 +63,7 @@
                             }
                           ],
                           "Version": "2012-10-17"
-                        },
-                        "description": "Created by aws-cdk-s3-server-access-logs-sse-kms/ServerAccessLogsBucket"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -130,7 +130,8 @@
                               "Action": [
                                 "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*"
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -240,14 +241,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "aws-cdk-s3-server-access-logs-sse-kms/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "aws-cdk-s3-server-access-logs-sse-kms/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -346,7 +339,7 @@
                 "path": "ServerAccessLogsSseKmsTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.9"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -392,7 +385,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.9"
+          "version": "10.2.70"
         }
       }
     },

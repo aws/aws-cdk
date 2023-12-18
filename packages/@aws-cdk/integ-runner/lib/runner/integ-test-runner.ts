@@ -1,21 +1,34 @@
 import * as path from 'path';
-import { DeployOptions, DestroyOptions } from '@aws-cdk/cdk-cli-wrapper';
+import { DeployOptions, DestroyOptions, HotswapMode, StackActivityProgress } from '@aws-cdk/cdk-cli-wrapper';
 import { RequireApproval } from '@aws-cdk/cloud-assembly-schema';
+import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
+import * as workerpool from 'workerpool';
 import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner-base';
 import * as logger from '../logger';
 import { chunks, exec } from '../utils';
-import { DestructiveChange, AssertionResults, AssertionResult } from '../workers/common';
+import { DestructiveChange, AssertionResults, AssertionResult, DiagnosticReason, formatAssertionResults } from '../workers/common';
 
-/**
- * Options for the integration test runner
- */
-export interface RunOptions {
+export interface CommonOptions {
   /**
    * The name of the test case
    */
   readonly testCaseName: string;
 
+  /**
+   * The level of verbosity for logging.
+   *
+   * @default 0
+   */
+  readonly verbosity?: number;
+}
+
+export interface WatchOptions extends CommonOptions { }
+
+/**
+ * Options for the integration test runner
+ */
+export interface RunOptions extends CommonOptions {
   /**
    * Whether or not to run `cdk destroy` and cleanup the
    * integration test stacks.
@@ -48,13 +61,6 @@ export interface RunOptions {
    * @default true
    */
   readonly updateWorkflow?: boolean;
-
-  /**
-   * The level of verbosity for logging.
-   *
-   * @default 0
-   */
-  readonly verbosity?: number;
 }
 
 /**
@@ -71,9 +77,17 @@ export class IntegTestRunner extends IntegRunner {
     // test then point the user to the new `IntegTest` construct
     if (!this.hasSnapshot() && this.isLegacyTest) {
       throw new Error(`${this.testName} is a new test. Please use the IntegTest construct ` +
-       'to configure the test\n' +
-        'https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests',
+        'to configure the test\n' +
+        'https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests-alpha',
       );
+    }
+  }
+
+  public createCdkContextJson(): void {
+    if (!fs.existsSync(this.cdkContextPath)) {
+      fs.writeFileSync(this.cdkContextPath, JSON.stringify({
+        watch: { },
+      }, undefined, 2));
     }
   }
 
@@ -127,11 +141,48 @@ export class IntegTestRunner extends IntegRunner {
         });
       } catch (e) {
         logger.warning('%s\n%s',
-          `Could not checkout snapshot directory ${this.snapshotDir} using these commands: `,
-          `git merge-base HEAD ${baseBranch} && git checkout {merge-base} -- ${relativeSnapshotDir}`,
+          `Could not checkout snapshot directory '${this.snapshotDir}'. Please verify the following command completes correctly:`,
+          `git checkout $(git merge-base HEAD ${baseBranch}) -- ${relativeSnapshotDir}`,
+          '',
         );
         logger.warning('error: %s', e);
       }
+    }
+  }
+
+  /**
+   * Runs cdk deploy --watch for an integration test
+   *
+   * This is meant to be run on a single test and will not create a snapshot
+   */
+  public async watchIntegTest(options: WatchOptions): Promise<void> {
+    const actualTestCase = this.actualTestSuite.testSuite[options.testCaseName];
+    if (!actualTestCase) {
+      throw new Error(`Did not find test case name '${options.testCaseName}' in '${Object.keys(this.actualTestSuite.testSuite)}'`);
+    }
+    const enableForVerbosityLevel = (needed = 1) => {
+      const verbosity = options.verbosity ?? 0;
+      return (verbosity >= needed) ? true : undefined;
+    };
+    try {
+      await this.watch(
+        {
+          ...this.defaultArgs,
+          progress: StackActivityProgress.BAR,
+          hotswap: HotswapMode.FALL_BACK,
+          deploymentMethod: 'direct',
+          profile: this.profile,
+          requireApproval: RequireApproval.NEVER,
+          traceLogs: enableForVerbosityLevel(2) ?? false,
+          verbose: enableForVerbosityLevel(3),
+          debug: enableForVerbosityLevel(4),
+          watch: true,
+        },
+        options.testCaseName,
+        options.verbosity ?? 0,
+      );
+    } catch (e) {
+      throw e;
     }
   }
 
@@ -245,6 +296,138 @@ export class IntegTestRunner extends IntegRunner {
         actualTestCase.cdkCommandOptions?.destroy?.expectedMessage,
       );
     }
+  }
+
+  private async watch(watchArgs: DeployOptions, testCaseName: string, verbosity: number): Promise<void> {
+    const actualTestCase = this.actualTestSuite.testSuite[testCaseName];
+    if (actualTestCase.hooks?.preDeploy) {
+      actualTestCase.hooks.preDeploy.forEach(cmd => {
+        exec(chunks(cmd), {
+          cwd: path.dirname(this.snapshotDir),
+        });
+      });
+    }
+    const deployArgs = {
+      ...watchArgs,
+      lookups: this.actualTestSuite.enableLookups,
+      stacks: [
+        ...actualTestCase.stacks,
+        ...actualTestCase.assertionStack ? [actualTestCase.assertionStack] : [],
+      ],
+      output: path.relative(this.directory, this.cdkOutDir),
+      outputsFile: path.relative(this.directory, path.join(this.cdkOutDir, 'assertion-results.json')),
+      ...actualTestCase?.cdkCommandOptions?.deploy?.args,
+      context: {
+        ...this.getContext(actualTestCase?.cdkCommandOptions?.deploy?.args?.context),
+      },
+      app: this.cdkApp,
+    };
+    const destroyMessage = {
+      additionalMessages: [
+        'After you are done you must manually destroy the deployed stacks',
+        `  ${[
+          ...process.env.AWS_REGION ? [`AWS_REGION=${process.env.AWS_REGION}`] : [],
+          'cdk destroy',
+          `-a '${this.cdkApp}'`,
+          deployArgs.stacks.join(' '),
+          `--profile ${deployArgs.profile}`,
+        ].join(' ')}`,
+      ],
+    };
+    workerpool.workerEmit(destroyMessage);
+    if (watchArgs.verbose) {
+      // if `-vvv` (or above) is used then print out the command that was used
+      // this allows users to manually run the command
+      workerpool.workerEmit({
+        additionalMessages: [
+          'Repro:',
+          `  ${[
+            'cdk synth',
+            `-a '${this.cdkApp}'`,
+            `-o '${this.cdkOutDir}'`,
+            ...Object.entries(this.getContext()).flatMap(([k, v]) => typeof v !== 'object' ? [`-c '${k}=${v}'`] : []),
+            deployArgs.stacks.join(' '),
+            `--outputs-file ${deployArgs.outputsFile}`,
+            `--profile ${deployArgs.profile}`,
+            '--hotswap-fallback',
+          ].join(' ')}`,
+        ],
+      });
+    }
+
+    const assertionResults = path.join(this.cdkOutDir, 'assertion-results.json');
+    const watcher = chokidar.watch([this.cdkOutDir], {
+      cwd: this.directory,
+    });
+    watcher.on('all', (event: 'add' | 'change', file: string) => {
+      // we only care about changes to the `assertion-results.json` file. If there
+      // are assertions then this will change on every deployment
+      if (assertionResults.endsWith(file) && (event === 'add' || event === 'change')) {
+        const start = Date.now();
+        if (actualTestCase.hooks?.postDeploy) {
+          actualTestCase.hooks.postDeploy.forEach(cmd => {
+            exec(chunks(cmd), {
+              cwd: path.dirname(this.snapshotDir),
+            });
+          });
+        }
+
+        if (actualTestCase.assertionStack && actualTestCase.assertionStackName) {
+          const res = this.processAssertionResults(
+            assertionResults,
+            actualTestCase.assertionStackName,
+            actualTestCase.assertionStack,
+          );
+          if (res && Object.values(res).some(r => r.status === 'fail')) {
+            workerpool.workerEmit({
+              reason: DiagnosticReason.ASSERTION_FAILED,
+              testName: `${testCaseName} (${watchArgs.profile}`,
+              message: formatAssertionResults(res),
+              duration: (Date.now() - start) / 1000,
+            });
+          } else {
+            workerpool.workerEmit({
+              reason: DiagnosticReason.TEST_SUCCESS,
+              testName: `${testCaseName}`,
+              message: res ? formatAssertionResults(res) : 'NO ASSERTIONS',
+              duration: (Date.now() - start) / 1000,
+            });
+          }
+          // emit the destroy message after every run
+          // so that it's visible to the user
+          workerpool.workerEmit(destroyMessage);
+        }
+      }
+    });
+    await new Promise(resolve => {
+      watcher.on('ready', async () => {
+        resolve({});
+      });
+    });
+
+    const child = this.cdk.watch(deployArgs);
+    // if `-v` (or above) is passed then stream the logs
+    child.stdout?.on('data', (message) => {
+      if (verbosity > 0) {
+        process.stdout.write(message);
+      }
+    });
+    child.stderr?.on('data', (message) => {
+      if (verbosity > 0) {
+        process.stderr.write(message);
+      }
+    });
+
+    await new Promise(resolve => {
+      child.on('close', async (code) => {
+        if (code !== 0) {
+          throw new Error('Watch exited with error');
+        }
+        child.stdin?.end();
+        await watcher.close();
+        resolve(code);
+      });
+    });
   }
 
   /**

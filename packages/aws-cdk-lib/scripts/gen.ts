@@ -1,12 +1,11 @@
 import * as path from 'node:path';
-import { generateAll, ModuleMap } from '@aws-cdk/cfn2ts';
 import * as fs from 'fs-extra';
+import { generateAll, ModuleMap } from './codegen';
 import submodulesGen from './submodules';
 
 const awsCdkLibDir = path.join(__dirname, '..');
 const pkgJsonPath = path.join(awsCdkLibDir, 'package.json');
 const topLevelIndexFilePath = path.join(awsCdkLibDir, 'index.ts');
-const lazyExportsFilePath = path.join(awsCdkLibDir, 'lazy-index.ts');
 const scopeMapPath = path.join(__dirname, 'scope-map.json');
 
 main().catch(e => {
@@ -49,11 +48,6 @@ async function updateExportsAndEntryPoints(modules: ModuleMap) {
     const indexFile = await fs.readFile(topLevelIndexFilePath);
     indexStatements.push(...indexFile.toString('utf-8').split('\n').filter(Boolean));
   }
-  const lazyExports = new Array<string>();
-  if (fs.existsSync(lazyExportsFilePath)) {
-    const lazExportsFile = await fs.readFile(lazyExportsFilePath);
-    lazyExports.push(...lazExportsFile.toString('utf-8').split('\n').filter(Boolean));
-  }
 
   for (const [moduleName, { definition }] of Object.entries(modules)) {
     const moduleConfig = {
@@ -69,14 +63,6 @@ async function updateExportsAndEntryPoints(modules: ModuleMap) {
     if (!indexStatements.find(e => e.includes(moduleConfig.name))) {
       indexStatements.push(`export * as ${moduleConfig.submodule} from './${moduleConfig.name}';`);
     }
-
-    if (!lazyExports.find(e => e.includes(moduleConfig.name))) {
-      if (moduleConfig.name === 'core') {
-        lazyExports.unshift(`export * from './${moduleConfig.name}';`);
-      } else {
-        lazyExports.push(`Object.defineProperty(exports, '${moduleConfig.submodule}', { get: function () { return require('${exportName}'); } });`);
-      }
-    }
   }
 
   // sort exports
@@ -84,5 +70,4 @@ async function updateExportsAndEntryPoints(modules: ModuleMap) {
 
   await fs.writeJson(pkgJsonPath, pkgJson, { spaces: 2 });
   await fs.writeFile(topLevelIndexFilePath, indexStatements.sort((l1, l2) => l1.localeCompare(l2)).join('\n') + '\n');
-  await fs.writeFile(lazyExportsFilePath, lazyExports.sort((l1, l2) => l1.localeCompare(l2)).join('\n') + '\n');
 }

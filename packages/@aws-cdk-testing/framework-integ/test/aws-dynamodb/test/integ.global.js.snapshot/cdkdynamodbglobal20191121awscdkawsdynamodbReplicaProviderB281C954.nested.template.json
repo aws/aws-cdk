@@ -122,16 +122,16 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
      },
-     "S3Key": "5a7f3302fd1dfc742444432a2241181566528964eb1e6046d3a5068b6ed04fe0.zip"
+     "S3Key": "654051b03fb3684cba885b9015a42237db092a98a4fd2ffc75f07919dde1aca4.zip"
     },
+    "Handler": "index.onEventHandler",
     "Role": {
      "Fn::GetAtt": [
       "OnEventHandlerServiceRole15A26729",
       "Arn"
      ]
     },
-    "Handler": "index.onEventHandler",
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Timeout": 300
    },
    "DependsOn": [
@@ -177,16 +177,16 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
      },
-     "S3Key": "5a7f3302fd1dfc742444432a2241181566528964eb1e6046d3a5068b6ed04fe0.zip"
+     "S3Key": "654051b03fb3684cba885b9015a42237db092a98a4fd2ffc75f07919dde1aca4.zip"
     },
+    "Handler": "index.isCompleteHandler",
     "Role": {
      "Fn::GetAtt": [
       "IsCompleteHandlerServiceRole5810CC58",
       "Arn"
      ]
     },
-    "Handler": "index.isCompleteHandler",
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Timeout": 30
    },
    "DependsOn": [
@@ -300,13 +300,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
      },
-     "S3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "ProviderframeworkonEventServiceRole9FF04296",
-      "Arn"
-     ]
+     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
@@ -329,7 +323,13 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs14.x",
+    "Role": {
+     "Fn::GetAtt": [
+      "ProviderframeworkonEventServiceRole9FF04296",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -437,13 +437,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
      },
-     "S3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "ProviderframeworkisCompleteServiceRoleB1087139",
-      "Arn"
-     ]
+     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
@@ -463,7 +457,13 @@
      }
     },
     "Handler": "framework.isComplete",
-    "Runtime": "nodejs14.x",
+    "Role": {
+     "Fn::GetAtt": [
+      "ProviderframeworkisCompleteServiceRoleB1087139",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -571,13 +571,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
      },
-     "S3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "ProviderframeworkonTimeoutServiceRole28643D26",
-      "Arn"
-     ]
+     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
     "Environment": {
@@ -597,7 +591,13 @@
      }
     },
     "Handler": "framework.onTimeout",
-    "Runtime": "nodejs14.x",
+    "Role": {
+     "Fn::GetAtt": [
+      "ProviderframeworkonTimeoutServiceRole28643D26",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
     "Timeout": 900
    },
    "DependsOn": [

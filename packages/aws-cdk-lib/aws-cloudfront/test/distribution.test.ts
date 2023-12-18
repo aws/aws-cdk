@@ -2,12 +2,14 @@ import { defaultOrigin, defaultOriginGroup } from './test-origin';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
 import * as iam from '../../aws-iam';
+import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, Duration, Stack } from '../../core';
 import {
   CfnDistribution,
   Distribution,
+  Endpoint,
   Function,
   FunctionCode,
   FunctionEventType,
@@ -16,6 +18,7 @@ import {
   IOrigin,
   LambdaEdgeEventType,
   PriceClass,
+  RealtimeLogConfig,
   SecurityPolicyProtocol,
   SSLMethod,
 } from '../lib';
@@ -663,7 +666,7 @@ describe('with Lambda@Edge functions', () => {
 
   beforeEach(() => {
     lambdaFunction = new lambda.Function(stack, 'Function', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('whatever'),
       handler: 'index.handler',
     });
@@ -693,7 +696,7 @@ describe('with Lambda@Edge functions', () => {
               EventType: 'origin-request',
               IncludeBody: true,
               LambdaFunctionARN: {
-                Ref: 'FunctionCurrentVersion4E2B2261627f862ed5d048a0c695ee87fce6fb47',
+                Ref: Match.stringLikeRegexp(stack.getLogicalId(lambdaFunction.currentVersion.node.defaultChild as lambda.CfnVersion)),
               },
             },
           ],
@@ -763,7 +766,7 @@ describe('with Lambda@Edge functions', () => {
               {
                 EventType: 'viewer-request',
                 LambdaFunctionARN: {
-                  Ref: 'FunctionCurrentVersion4E2B2261627f862ed5d048a0c695ee87fce6fb47',
+                  Ref: Match.stringLikeRegexp(stack.getLogicalId(lambdaFunction.currentVersion.node.defaultChild as lambda.CfnVersion)),
                 },
               },
             ],
@@ -791,7 +794,7 @@ describe('with Lambda@Edge functions', () => {
 
   test('with removable env vars', () => {
     const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('whateverwithenv'),
       handler: 'index.handler',
     });
@@ -819,7 +822,7 @@ describe('with Lambda@Edge functions', () => {
 
   test('with incompatible env vars', () => {
     const envLambdaFunction = new lambda.Function(stack, 'EnvFunction', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('whateverwithenv'),
       handler: 'index.handler',
       environment: {
@@ -845,7 +848,7 @@ describe('with Lambda@Edge functions', () => {
   test('with singleton function', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: 'singleton-for-cloudfront',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('code'),
       handler: 'index.handler',
     });
@@ -869,7 +872,7 @@ describe('with Lambda@Edge functions', () => {
             {
               EventType: 'origin-request',
               LambdaFunctionARN: {
-                Ref: 'SingletonLambdasingletonforcloudfrontCurrentVersion0078406340d5752510648adb0d76f136b832c5bd',
+                Ref: Match.stringLikeRegexp(stack.getLogicalId(singleton.currentVersion.node.defaultChild as lambda.CfnVersion)),
               },
             },
           ],
@@ -1145,4 +1148,96 @@ test('grants createInvalidation', () => {
       ],
     },
   });
+});
+
+test('render distribution behavior with realtime log config', () => {
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('cloudfront.amazonaws.com'),
+  });
+
+  const stream = new kinesis.Stream(stack, 'stream', {
+    streamMode: kinesis.StreamMode.ON_DEMAND,
+    encryption: kinesis.StreamEncryption.MANAGED,
+  });
+
+  const realTimeConfig = new RealtimeLogConfig(stack, 'RealtimeConfig', {
+    endPoints: [
+      Endpoint.fromKinesisStream(stream, role),
+    ],
+    fields: ['timestamp'],
+    realtimeLogConfigName: 'realtime-config',
+    samplingRate: 50,
+  });
+
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: {
+      origin: defaultOrigin(),
+      realtimeLogConfig: realTimeConfig,
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution',
+    Match.objectLike({
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          RealtimeLogConfigArn: {
+            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+          },
+        },
+      },
+    }));
+});
+
+test('render distribution behavior with realtime log config - multiple behaviors', () => {
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('cloudfront.amazonaws.com'),
+  });
+
+  const stream = new kinesis.Stream(stack, 'stream', {
+    streamMode: kinesis.StreamMode.ON_DEMAND,
+    encryption: kinesis.StreamEncryption.MANAGED,
+  });
+
+  const realTimeConfig = new RealtimeLogConfig(stack, 'RealtimeConfig', {
+    endPoints: [
+      Endpoint.fromKinesisStream(stream, role),
+    ],
+    fields: ['timestamp'],
+    realtimeLogConfigName: 'realtime-config',
+    samplingRate: 50,
+  });
+
+  const origin2 = defaultOrigin('origin2.example.com');
+
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: {
+      origin: defaultOrigin(),
+      realtimeLogConfig: realTimeConfig,
+    },
+    additionalBehaviors: {
+      '/api/*': {
+        origin: origin2,
+        realtimeLogConfig: realTimeConfig,
+      },
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution',
+    Match.objectLike({
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          RealtimeLogConfigArn: {
+            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+          },
+          TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+        },
+        CacheBehaviors: [{
+          PathPattern: '/api/*',
+          RealtimeLogConfigArn: {
+            'Fn::GetAtt': ['RealtimeConfigB6004E8E', 'Arn'],
+          },
+          TargetOriginId: 'StackMyDistOrigin20B96F3AD',
+        }],
+      },
+    }));
 });

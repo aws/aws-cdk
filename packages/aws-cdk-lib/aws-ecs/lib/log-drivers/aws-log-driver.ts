@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { LogDriver, LogDriverConfig } from './log-driver';
 import { removeEmpty } from './utils';
 import * as logs from '../../../aws-logs';
+import { Size, SizeRoundingBehavior } from '../../../core';
 import { ContainerDefinition } from '../container-definition';
 
 /**
@@ -82,6 +83,16 @@ export interface AwsLogDriverProps {
    * @default - AwsLogDriverMode.BLOCKING
    */
   readonly mode?: AwsLogDriverMode;
+
+  /**
+   * When AwsLogDriverMode.NON_BLOCKING is configured, this parameter
+   * controls the size of the non-blocking buffer used to temporarily
+   * store messages. This parameter is not valid with
+   * AwsLogDriverMode.BLOCKING.
+   *
+   * @default - 1 megabyte if driver mode is non-blocking, otherwise this property is not set
+   */
+  readonly maxBufferSize?: Size;
 }
 
 /**
@@ -106,6 +117,10 @@ export class AwsLogDriver extends LogDriver {
     if (props.logGroup && props.logRetention) {
       throw new Error('Cannot specify both `logGroup` and `logRetentionDays`.');
     }
+
+    if (props.maxBufferSize && props.mode !== AwsLogDriverMode.NON_BLOCKING) {
+      throw new Error('Cannot specify `maxBufferSize` when the driver mode is blocking');
+    }
   }
 
   /**
@@ -115,6 +130,10 @@ export class AwsLogDriver extends LogDriver {
     this.logGroup = this.props.logGroup || new logs.LogGroup(scope, 'LogGroup', {
       retention: this.props.logRetention || Infinity,
     });
+
+    const maxBufferSize = this.props.maxBufferSize
+      ? `${this.props.maxBufferSize.toBytes({ rounding: SizeRoundingBehavior.FLOOR })}b`
+      : undefined;
 
     this.logGroup.grantWrite(containerDefinition.taskDefinition.obtainExecutionRole());
 
@@ -127,6 +146,7 @@ export class AwsLogDriver extends LogDriver {
         'awslogs-datetime-format': this.props.datetimeFormat,
         'awslogs-multiline-pattern': this.props.multilinePattern,
         'mode': this.props.mode,
+        'max-buffer-size': maxBufferSize,
       }),
     };
   }

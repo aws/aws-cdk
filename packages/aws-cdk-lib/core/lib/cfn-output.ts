@@ -11,6 +11,11 @@ export interface CfnOutputProps {
   readonly description?: string;
 
   /**
+   * The key of the property returned by aws cloudformation describe-stacks command.
+   */
+  readonly key?: string;
+
+  /**
    * The value of the property returned by the aws cloudformation describe-stacks command.
    * The value of an output can include literals, parameter references, pseudo-parameters,
    * a mapping value, or intrinsic functions.
@@ -38,6 +43,7 @@ export interface CfnOutputProps {
 export class CfnOutput extends CfnElement {
   private _description?: string;
   private _condition?: CfnCondition;
+  private _key?: string;
   private _value?: any;
   private _exportName?: string;
 
@@ -58,6 +64,7 @@ export class CfnOutput extends CfnElement {
     }
 
     this._description = props.description;
+    this._key = props.key;
     this._value = props.value;
     this._condition = props.condition;
     this._exportName = props.exportName;
@@ -160,7 +167,7 @@ export class CfnOutput extends CfnElement {
   public _toCloudFormation(): object {
     return {
       Outputs: {
-        [this.logicalId]: {
+        [this._key ?? this.logicalId]: {
           Description: this._description,
           Value: this._value,
           Export: this._exportName != null ? { Name: this._exportName } : undefined,

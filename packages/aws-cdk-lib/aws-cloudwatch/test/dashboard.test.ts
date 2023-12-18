@@ -1,6 +1,15 @@
-import { Template, Annotations, Match } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import { App, Duration, Stack } from '../../core';
-import { Dashboard, GraphWidget, PeriodOverride, TextWidget, MathExpression, TextWidgetBackground } from '../lib';
+import {
+  Dashboard, DashboardVariable, DefaultValue,
+  GraphWidget,
+  MathExpression,
+  PeriodOverride,
+  TextWidget,
+  TextWidgetBackground, Values,
+  VariableInputType,
+  VariableType,
+} from '../lib';
 
 describe('Dashboard', () => {
   test('widgets in different adds are laid out underneath each other', () => {
@@ -152,6 +161,35 @@ describe('Dashboard', () => {
 
   });
 
+  test('throws if both defaultInterval and start are specified', () => {
+    // GIVEN
+    const stack = new Stack();
+    // WHEN
+    const toThrow = () => {
+      new Dashboard(stack, 'Dash', {
+        start: '-P7D',
+        defaultInterval: Duration.days(7),
+      });
+    };
+
+    // THEN
+    expect(() => toThrow()).toThrow(/both properties defaultInterval and start cannot be set at once/);
+  });
+
+  test('throws if end is specified but start is not', () => {
+    // GIVEN
+    const stack = new Stack();
+    // WHEN
+    const toThrow = () => {
+      new Dashboard(stack, 'Dash', {
+        end: '2018-12-17T06:00:00.000Z',
+      });
+    };
+
+    // THEN
+    expect(() => toThrow()).toThrow(/If you specify a value for end, you must also specify a value for start./);
+  });
+
   test('DashboardName is set when provided', () => {
     // GIVEN
     const app = new App();
@@ -230,6 +268,202 @@ describe('Dashboard', () => {
     const template = Annotations.fromStack(stack);
     template.hasWarning('/MyStack/MyDashboard', Match.stringLikeRegexp("Math expression 'oops' references unknown identifiers"));
   });
+
+  test('dashboard has initial select/pattern variable', () => {
+    // GIVEN
+    const stack = new Stack();
+    // WHEN
+    new Dashboard(stack, 'Dashboard', {
+      variables: [new DashboardVariable({
+        type: VariableType.PATTERN,
+        value: 'us-east-1',
+        inputType: VariableInputType.SELECT,
+        id: 'region3',
+        label: 'RegionPatternWithValues',
+        defaultValue: DefaultValue.value('us-east-1'),
+        visible: true,
+        values: Values.fromValues({ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }),
+      })],
+    });
+
+    // THEN
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    expect(Object.keys(resources).length).toEqual(1);
+    const key = Object.keys(resources)[0];
+    hasVariables(resources[key].Properties, [
+      { defaultValue: 'us-east-1', id: 'region3', inputType: 'select', label: 'RegionPatternWithValues', pattern: 'us-east-1', type: 'pattern', values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }], visible: true },
+    ]);
+
+  });
+
+  test('dashboard has initial and added variable', () => {
+    // GIVEN
+    const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dashboard', {
+      variables: [new DashboardVariable({
+        type: VariableType.PATTERN,
+        value: 'us-east-1',
+        inputType: VariableInputType.SELECT,
+        id: 'region3',
+        label: 'RegionPatternWithValues',
+        defaultValue: DefaultValue.value('us-east-1'),
+        visible: true,
+        values: Values.fromValues({ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }),
+      })],
+    });
+
+    dashboard.addVariable(new DashboardVariable({
+      type: VariableType.PATTERN,
+      value: 'us-east-1',
+      inputType: VariableInputType.INPUT,
+      id: 'region2',
+      label: 'RegionPattern',
+      defaultValue: DefaultValue.value('us-east-1'),
+      visible: true,
+    }));
+
+    // THEN
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    expect(Object.keys(resources).length).toEqual(1);
+    const key = Object.keys(resources)[0];
+    hasVariables(resources[key].Properties, [
+      { defaultValue: 'us-east-1', id: 'region3', inputType: 'select', label: 'RegionPatternWithValues', pattern: 'us-east-1', type: 'pattern', values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }], visible: true },
+      { defaultValue: 'us-east-1', id: 'region2', inputType: 'input', label: 'RegionPattern', pattern: 'us-east-1', type: 'pattern', visible: true },
+    ]);
+
+  });
+
+  test('dashboard has property/select search variable', () => {
+    // GIVEN
+    const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dashboard');
+
+    // WHEN
+    dashboard.addVariable(new DashboardVariable({
+      defaultValue: DefaultValue.FIRST,
+      id: 'InstanceId',
+      label: 'Instance',
+      inputType: VariableInputType.SELECT,
+      type: VariableType.PROPERTY,
+      value: 'InstanceId',
+      values: Values.fromSearchComponents({
+        namespace: 'AWS/EC2',
+        dimensions: ['InstanceId'],
+        metricName: 'CPUUtilization',
+        populateFrom: 'InstanceId',
+      }),
+      visible: true,
+    }));
+
+    // THEN
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    expect(Object.keys(resources).length).toEqual(1);
+    const key = Object.keys(resources)[0];
+    hasVariables(resources[key].Properties, [
+      { defaultValue: '__FIRST', id: 'InstanceId', inputType: 'select', label: 'Instance', populateFrom: 'InstanceId', property: 'InstanceId', search: '{AWS/EC2,InstanceId} MetricName="CPUUtilization"', type: 'property', visible: true },
+    ]);
+  });
+
+  test('dashboard has input/pattern value variable', () => {
+    // GIVEN
+    const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dashboard');
+
+    // WHEN
+    dashboard.addVariable(new DashboardVariable({
+      type: VariableType.PATTERN,
+      value: 'us-east-1',
+      inputType: VariableInputType.INPUT,
+      id: 'region2',
+      label: 'RegionPattern',
+      defaultValue: DefaultValue.value('us-east-1'),
+      visible: true,
+    }));
+
+    // THEN
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    expect(Object.keys(resources).length).toEqual(1);
+    const key = Object.keys(resources)[0];
+    hasVariables(resources[key].Properties, [
+      { defaultValue: 'us-east-1', id: 'region2', inputType: 'input', label: 'RegionPattern', pattern: 'us-east-1', type: 'pattern', visible: true },
+    ]);
+  });
+
+  test('dashboard has property/radio value variable', () => {
+    // GIVEN
+    const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dashboard');
+
+    // WHEN
+    dashboard.addVariable(new DashboardVariable({
+      type: VariableType.PROPERTY,
+      value: 'region',
+      inputType: VariableInputType.RADIO,
+      id: 'region3',
+      label: 'RegionRadio',
+      defaultValue: DefaultValue.value('us-east-1'),
+      visible: true,
+      values: Values.fromValues({ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }),
+    }));
+
+    // THEN
+    const resources = Template.fromStack(stack).findResources('AWS::CloudWatch::Dashboard');
+    expect(Object.keys(resources).length).toEqual(1);
+    const key = Object.keys(resources)[0];
+    hasVariables(resources[key].Properties, [
+      { defaultValue: 'us-east-1', id: 'region3', inputType: 'radio', label: 'RegionRadio', property: 'region', type: 'property', values: [{ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }], visible: true },
+    ]);
+  });
+
+  test('dashboard variable fails if unsupported input inputType', () => {
+    expect(() => new DashboardVariable({
+      defaultValue: DefaultValue.FIRST,
+      id: 'InstanceId',
+      label: 'Instance',
+      inputType: VariableInputType.INPUT,
+      type: VariableType.PROPERTY,
+      value: 'InstanceId',
+      values: Values.fromSearchComponents({
+        namespace: 'AWS/EC2',
+        dimensions: ['InstanceId'],
+        metricName: 'CPUUtilization',
+        populateFrom: 'InstanceId',
+      }),
+      visible: true,
+    })).toThrow(/inputType INPUT cannot be combined with values. Please choose either SELECT or RADIO or remove 'values' from options/);
+  });
+
+  test('dashboard variable fails if no values provided for select or radio inputType', () => {
+    [VariableInputType.SELECT, VariableInputType.RADIO].forEach(inputType => {
+      expect(() => new DashboardVariable({
+        inputType,
+        type: VariableType.PATTERN,
+        value: 'us-east-1',
+        id: 'region3',
+        label: 'RegionPatternWithValues',
+        defaultValue: DefaultValue.value('us-east-1'),
+        visible: true,
+      })).toThrow(`Variable with inputType (${inputType}) requires values to be set`);
+    });
+  });
+
+  test('search values fail if empty dimensions', () => {
+    expect(() => Values.fromSearchComponents({
+      namespace: 'AWS/EC2',
+      dimensions: [],
+      metricName: 'CPUUtilization',
+      populateFrom: 'InstanceId',
+    })).toThrow(/Empty dimensions provided. Please specify one dimension at least/);
+  });
+
+  test('search values fail if populateFrom is not present in dimensions', () => {
+    expect(() => Values.fromSearchComponents({
+      namespace: 'AWS/EC2',
+      dimensions: ['InstanceId'],
+      metricName: 'CPUUtilization',
+      populateFrom: 'DontExist',
+    })).toThrow('populateFrom (DontExist) is not present in dimensions');
+  });
 });
 
 /**
@@ -245,4 +479,19 @@ function hasWidgets(props: any, widgets: any[]) {
     throw e;
   }
   expect(actualWidgets).toEqual(expect.arrayContaining(widgets));
+}
+
+/**
+ * Returns a property predicate that checks that the given Dashboard has the indicated variables
+ */
+function hasVariables(props: any, variables: any[]) {
+  let actualVariables: any[] = [];
+  try {
+    actualVariables = JSON.parse(props.DashboardBody).variables;
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Error parsing', props);
+    throw e;
+  }
+  expect(actualVariables).toEqual(expect.arrayContaining(variables));
 }

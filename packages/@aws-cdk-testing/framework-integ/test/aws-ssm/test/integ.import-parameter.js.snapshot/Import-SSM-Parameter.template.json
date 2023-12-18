@@ -1,0 +1,85 @@
+{
+ "Resources": {
+  "StringParameter472EED0E": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "String",
+    "Value": "Initial parameter value",
+    "Name": "import-parameter-test"
+   }
+  }
+ },
+ "Parameters": {
+  "ImportedWithNameParameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-ebs"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Outputs": {
+  "ImportedWithNameOutput": {
+   "Value": {
+    "Ref": "ImportedWithNameParameter"
+   }
+  },
+  "ImportedWithIntrinsicOutput": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "{{resolve:ssm:",
+      {
+       "Ref": "StringParameter472EED0E"
+      },
+      "}}"
+     ]
+    ]
+   }
+  },
+  "ImportedWithForceFlagOutput": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "{{resolve:ssm:",
+      {
+       "Ref": "StringParameter472EED0E"
+      },
+      "}}"
+     ]
+    ]
+   }
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

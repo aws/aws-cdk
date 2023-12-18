@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "lambda-layer-node-proxy-agent-integ-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b883ea1add117070bf110900be40acfe7a91676b4d373ecac67423dfc7a3ab1e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/71e7459cc060d0832eba0cc91df3e890747bb7d336c6b351ec47195d5a13416f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,40 +39,40 @@
             "data": "NodeProxyAgentLayer924C1971"
           }
         ],
-        "/lambda-layer-node-proxy-agent-integ-stack/Lambda$Node14/ServiceRole/Resource": [
+        "/lambda-layer-node-proxy-agent-integ-stack/Lambda$Node/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaNode14ServiceRole3CFE3F36"
+            "data": "LambdaNodeServiceRole22807D7A"
           }
         ],
-        "/lambda-layer-node-proxy-agent-integ-stack/Lambda$Node14/Resource": [
+        "/lambda-layer-node-proxy-agent-integ-stack/Lambda$Node/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaNode146E3D4F58"
+            "data": "LambdaNode19AFA38E"
           }
         ],
-        "/lambda-layer-node-proxy-agent-integ-stack/ProviderNode14/framework-onEvent/ServiceRole/Resource": [
+        "/lambda-layer-node-proxy-agent-integ-stack/ProviderNode/framework-onEvent/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProviderNode14frameworkonEventServiceRoleFAE87DBE"
+            "data": "ProviderNodeframeworkonEventServiceRoleA4E95D5E"
           }
         ],
-        "/lambda-layer-node-proxy-agent-integ-stack/ProviderNode14/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+        "/lambda-layer-node-proxy-agent-integ-stack/ProviderNode/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProviderNode14frameworkonEventServiceRoleDefaultPolicyE34339F9"
+            "data": "ProviderNodeframeworkonEventServiceRoleDefaultPolicy87D91D05"
           }
         ],
-        "/lambda-layer-node-proxy-agent-integ-stack/ProviderNode14/framework-onEvent/Resource": [
+        "/lambda-layer-node-proxy-agent-integ-stack/ProviderNode/framework-onEvent/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProviderNode14frameworkonEventD778512E"
+            "data": "ProviderNodeframeworkonEvent51EAE46A"
           }
         ],
-        "/lambda-layer-node-proxy-agent-integ-stack/CustomResourceNode14/Default": [
+        "/lambda-layer-node-proxy-agent-integ-stack/CustomResourceNode/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomResourceNode14"
+            "data": "CustomResourceNode"
           }
         ],
         "/lambda-layer-node-proxy-agent-integ-stack/BootstrapVersion": [
@@ -85,6 +85,60 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "LambdaNode16ServiceRole639A5B64": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaNode16ServiceRole639A5B64",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "LambdaNode168CB141CB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaNode168CB141CB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ProviderNode16frameworkonEventServiceRole2CA3DCA3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderNode16frameworkonEventServiceRole2CA3DCA3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ProviderNode16frameworkonEventServiceRoleDefaultPolicyBED16F1E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderNode16frameworkonEventServiceRoleDefaultPolicyBED16F1E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ProviderNode16frameworkonEventB6060997": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderNode16frameworkonEventB6060997",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "CustomResourceNode16": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomResourceNode16",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

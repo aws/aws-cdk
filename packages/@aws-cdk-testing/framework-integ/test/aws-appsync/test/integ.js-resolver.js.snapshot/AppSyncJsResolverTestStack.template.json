@@ -35,7 +35,6 @@
    "Type": "AWS::AppSync::GraphQLApi",
    "Properties": {
     "AuthenticationType": "API_KEY",
-    "Name": "JsResolverApi",
     "LogConfig": {
      "CloudWatchLogsRoleArn": {
       "Fn::GetAtt": [
@@ -44,7 +43,8 @@
       ]
      },
      "FieldLogLevel": "NONE"
-    }
+    },
+    "Name": "JsResolverApi"
    }
   },
   "JsResolverApiSchema1CF261C1": {
@@ -169,8 +169,6 @@
       "ApiId"
      ]
     },
-    "Name": "DynamoDataSource",
-    "Type": "AMAZON_DYNAMODB",
     "DynamoDBConfig": {
      "AwsRegion": {
       "Ref": "AWS::Region"
@@ -179,12 +177,14 @@
       "Ref": "DynamoTableB2B22E15"
      }
     },
+    "Name": "DynamoDataSource",
     "ServiceRoleArn": {
      "Fn::GetAtt": [
       "JsResolverApiDynamoDataSourceServiceRole6406F7E8",
       "Arn"
      ]
-    }
+    },
+    "Type": "AMAZON_DYNAMODB"
    }
   },
   "JsResolverApiAddTestFunction76B4557F": {
@@ -196,12 +196,12 @@
       "ApiId"
      ]
     },
-    "DataSourceName": "DynamoDataSource",
-    "Name": "addTestFunc",
     "CodeS3Location": {
      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/64f136fd66d0a20e8574eddfe2e50aa10168344ebac0f3ca03e5ae0b4b7475ec.js"
     },
+    "DataSourceName": "DynamoDataSource",
     "FunctionVersion": "2018-05-29",
+    "Name": "addTestFunc",
     "Runtime": {
      "Name": "APPSYNC_JS",
      "RuntimeVersion": "1.0.0"
@@ -271,20 +271,13 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Handler": "index.handler",
-    "Runtime": {
-     "Fn::FindInMap": [
-      "DefaultCrNodeVersionMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 900,
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0f8a80f5f2310ea7e3295258fdbb79c43a1e8c0a11e863e63dc82832599412ed.zip"
+     "S3Key": "a8515c042d9c942705087943220417be929ac44f968d8fcef2681681b400c0c0.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -301,16 +294,16 @@
   "DynamoTableB2B22E15": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "KeySchema": [
-     {
-      "AttributeName": "id",
-      "KeyType": "HASH"
-     }
-    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "id",
       "AttributeType": "S"
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
      }
     ],
     "ProvisionedThroughput": {
@@ -330,11 +323,10 @@
       "ApiId"
      ]
     },
-    "FieldName": "addTest",
-    "TypeName": "Mutation",
     "CodeS3Location": {
      "Fn::Sub": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/922ddc9d9563ca9402e283efe80ad2b4e00c8ddf6fbbbc2ae2b9dc6fe7107061.js"
     },
+    "FieldName": "addTest",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -349,7 +341,8 @@
     "Runtime": {
      "Name": "APPSYNC_JS",
      "RuntimeVersion": "1.0.0"
-    }
+    },
+    "TypeName": "Mutation"
    },
    "DependsOn": [
     "JsResolverApiSchema1CF261C1"
@@ -395,121 +388,18 @@
      },
      "S3Key": "c8a056b7b029cede879af4833f48bcc456748b2f8456f85ba76393466c08693a.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "InvokeApiServiceRoleFB17CD97",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "InvokeApiServiceRoleFB17CD97"
    ]
-  }
- },
- "Mappings": {
-  "DefaultCrNodeVersionMap": {
-   "af-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs16.x"
-   },
-   "me-central-1": {
-    "value": "nodejs16.x"
-   },
-   "me-south-1": {
-    "value": "nodejs16.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-2": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs14.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-west-2": {
-    "value": "nodejs16.x"
-   }
   }
  },
  "Outputs": {

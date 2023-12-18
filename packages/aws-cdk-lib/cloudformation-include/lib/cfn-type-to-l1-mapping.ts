@@ -10,7 +10,7 @@ let cfnTypeToL1Mapping: { [type: string]: string };
  * or undefined if the given type was not found.
  *
  * For example, lookup("AWS::S3::Bucket")
- * returns "@aws-cdk/aws-s3.CfnBucket".
+ * returns "aws-cdk-lib/aws-s3.CfnBucket".
  */
 export function lookup(cfnType: string): string | undefined {
   if (!cfnTypeToL1Mapping) {

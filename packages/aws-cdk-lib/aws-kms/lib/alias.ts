@@ -2,7 +2,8 @@ import { Construct } from 'constructs';
 import { IKey } from './key';
 import { CfnAlias } from './kms.generated';
 import * as iam from '../../aws-iam';
-import { RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import { FeatureFlags, RemovalPolicy, Resource, Stack, Token, Tokenization } from '../../core';
+import { KMS_ALIAS_NAME_REF } from '../../cx-api';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 const DISALLOWED_PREFIX = REQUIRED_ALIAS_PREFIX + 'aws/';
@@ -58,7 +59,26 @@ abstract class AliasBase extends Resource implements IAlias {
 
   public abstract readonly aliasTargetKey: IKey;
 
+  /**
+   * The ARN of the alias.
+   *
+   * @attribute
+   * @deprecated use `aliasArn` instead
+   */
   public get keyArn(): string {
+    return Stack.of(this).formatArn({
+      service: 'kms',
+      // aliasName already contains the '/'
+      resource: this.aliasName,
+    });
+  }
+
+  /**
+   * The ARN of the alias.
+   *
+   * @attribute
+   */
+  public get aliasArn(): string {
     return Stack.of(this).formatArn({
       service: 'kms',
       // aliasName already contains the '/'
@@ -224,7 +244,11 @@ export class Alias extends AliasBase {
       targetKeyId: this.aliasTargetKey.keyArn,
     });
 
-    this.aliasName = this.getResourceNameAttribute(resource.aliasName);
+    if (FeatureFlags.of(this).isEnabled(KMS_ALIAS_NAME_REF)) {
+      this.aliasName = this.getResourceNameAttribute(resource.ref);
+    } else {
+      this.aliasName = this.getResourceNameAttribute(resource.aliasName);
+    }
 
     if (props.removalPolicy) {
       resource.applyRemovalPolicy(props.removalPolicy);

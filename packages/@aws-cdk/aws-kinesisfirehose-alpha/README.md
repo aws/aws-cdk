@@ -401,7 +401,7 @@ configuration.
 // Provide a Lambda function that will transform records before delivery, with custom
 // buffering and retry configuration
 const lambdaFunction = new lambda.Function(this, 'Processor', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'process-records')),
 });
@@ -430,13 +430,15 @@ The DeliveryStream class automatically creates IAM service roles with all the mi
 necessary permissions for Kinesis Data Firehose to access the resources referenced by your
 delivery stream. One service role is created for the delivery stream that allows Kinesis
 Data Firehose to read from a Kinesis data stream (if one is configured as the delivery
-stream source) and for server-side encryption. Another service role is created for each
-destination, which gives Kinesis Data Firehose write access to the destination resource,
-as well as the ability to invoke data transformers and read schemas for record format
-conversion. If you wish, you may specify your own IAM role for either the delivery stream
-or the destination service role, or both. It must have the correct trust policy (it must
-allow Kinesis Data Firehose to assume it) or delivery stream creation or data delivery
-will fail. Other required permissions to destination resources, encryption keys, etc.,
+stream source) and for server-side encryption. Note that if the DeliveryStream is created 
+without specifying `sourceStream` or `encryptionKey`, this role is not created as it is not needed.
+
+Another service role is created for each destination, which gives Kinesis Data Firehose write 
+access to the destination resource, as well as the ability to invoke data transformers and 
+read schemas for record format conversion. If you wish, you may specify your own IAM role for 
+either the delivery stream or the destination service role, or both. It must have the correct 
+trust policy (it must allow Kinesis Data Firehose to assume it) or delivery stream creation or 
+data delivery will fail. Other required permissions to destination resources, encryption keys, etc.,
 will be provided automatically.
 
 ```ts
@@ -498,14 +500,14 @@ Conversely to the above, Kinesis Data Firehose requires permissions in order for
 streams to interact with resources that you own. For example, if an S3 bucket is specified
 as a destination of a delivery stream, the delivery stream must be granted permissions to
 put and get objects from the bucket. When using the built-in AWS service destinations
-found in the `@aws-cdk/aws-kinesisfirehose-destinations` module, the CDK grants the
+found in the `@aws-cdk/aws-kinesisfirehose-destinations-alpha` module, the CDK grants the
 permissions automatically. However, custom or third-party destinations may require custom
 permissions. In this case, use the delivery stream as an `IGrantable`, as follows:
 
 ```ts
 const fn = new lambda.Function(this, 'Function', {
   code: lambda.Code.fromInline('exports.handler = (event) => {}'),
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
 });
 

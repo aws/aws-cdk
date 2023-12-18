@@ -3,7 +3,8 @@ import * as appscaling from 'aws-cdk-lib/aws-applicationautoscaling';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
+import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
 import { Construct } from 'constructs';
 import { EndpointConfig, IEndpointConfig, InstanceProductionVariant } from './endpoint-config';
 import { InstanceType } from './instance-type';
@@ -20,30 +21,12 @@ const BURSTABLE_INSTANCE_TYPE_PREFIXES = Object.entries(ec2.InstanceClass)
   .filter(([name, _]) => name.startsWith('T'))
   .map(([_, prefix]) => `ml.${prefix}.`);
 
+// IEndpoint is stabilized so that it can be used in aws-apigateway SagemakerIntegration
+// Exposing it again here so that there is no breakage to aws-sagemaker-alpha
 /**
- * The interface for a SageMaker Endpoint resource.
+ * The Interface for a SageMaker Endpoint resource.
  */
-export interface IEndpoint extends cdk.IResource {
-  /**
-   * The ARN of the endpoint.
-   *
-   * @attribute
-   */
-  readonly endpointArn: string;
-
-  /**
-   * The name of the endpoint.
-   *
-   * @attribute
-   */
-  readonly endpointName: string;
-
-  /**
-   * Permits an IAM principal to invoke this endpoint
-   * @param grantee The principal to grant access to
-   */
-  grantInvoke(grantee: iam.IGrantable): iam.Grant;
-}
+export interface IEndpoint extends sagemaker.IEndpoint {}
 
 /**
  * Represents the features common to all production variant types (e.g., instance, serverless) that

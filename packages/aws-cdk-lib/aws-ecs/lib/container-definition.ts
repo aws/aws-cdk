@@ -294,8 +294,9 @@ export interface ContainerDefinitionOptions {
   readonly readonlyRootFilesystem?: boolean;
 
   /**
-   * The user name to use inside the container.
+   * The user to use inside the container. This parameter maps to User in the Create a container section of the Docker Remote API and the --user option to docker run.
    *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#ContainerDefinition-user
    * @default root
    */
   readonly user?: string;
@@ -381,6 +382,8 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
  * A container definition is used in a task definition to describe the containers that are launched as part of a task.
  */
 export class ContainerDefinition extends Construct {
+  public static readonly CONTAINER_PORT_USE_RANGE = 0;
+
   /**
    * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    */
@@ -706,16 +709,18 @@ export class ContainerDefinition extends Construct {
   }
 
   /**
-   * Set HostPort to 0 When netowork mode is Brdige
+   * This method sets the host port to 0 if the network mode is Bridge and neither
+   * the host port nor the container port range is already set.
    */
   private addHostPortIfNeeded(pm: PortMapping) :PortMapping {
-    const newPM = {
+    if (this.taskDefinition.networkMode !== NetworkMode.BRIDGE || pm.hostPort !== undefined || pm.containerPortRange !== undefined) {
+      return pm;
+    }
+
+    return {
       ...pm,
+      hostPort: 0,
     };
-    if (this.taskDefinition.networkMode !== NetworkMode.BRIDGE) return newPM;
-    if (pm.hostPort !== undefined) return newPM;
-    newPM.hostPort = 0;
-    return newPM;
   }
 
   /**
@@ -749,6 +754,11 @@ export class ContainerDefinition extends Construct {
     if (this.taskDefinition.networkMode === NetworkMode.BRIDGE) {
       return 0;
     }
+
+    if (defaultPortMapping.containerPortRange !== undefined) {
+      throw new Error(`The first port mapping of the container ${this.containerName} must expose a single port.`);
+    }
+
     return defaultPortMapping.containerPort;
   }
 
@@ -760,6 +770,11 @@ export class ContainerDefinition extends Construct {
       throw new Error(`Container ${this.containerName} hasn't defined any ports. Call addPortMappings().`);
     }
     const defaultPortMapping = this.portMappings[0];
+
+    if (defaultPortMapping.containerPortRange !== undefined) {
+      throw new Error(`The first port mapping of the container ${this.containerName} must expose a single port.`);
+    }
+
     return defaultPortMapping.containerPort;
   }
 
@@ -1071,8 +1086,27 @@ export interface PortMapping {
    *
    * For more information, see hostPort.
    * Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.
+   *
+   * If you want to expose a port range, you must specify `CONTAINER_PORT_USE_RANGE` as container port.
    */
   readonly containerPort: number;
+
+  /**
+   * The port number range on the container that's bound to the dynamically mapped host port range.
+   *
+   * The following rules apply when you specify a `containerPortRange`:
+   *
+   * - You must specify `CONTAINER_PORT_USE_RANGE` as `containerPort`
+   * - You must use either the `bridge` network mode or the `awsvpc` network mode.
+   * - The container instance must have at least version 1.67.0 of the container agent and at least version 1.67.0-1 of the `ecs-init` package
+   * - You can specify a maximum of 100 port ranges per container.
+   * - A port can only be included in one port mapping per container.
+   * - You cannot specify overlapping port ranges.
+   * - The first port in the range must be less than last port in the range.
+   *
+   * If you want to expose a single port, you must not set a range.
+   */
+  readonly containerPortRange?: string;
 
   /**
    * The port number on the container instance to reserve for your container.
@@ -1145,9 +1179,38 @@ export class PortMap {
     if (!this.isvalidPortName()) {
       throw new Error('Port mapping name cannot be an empty string.');
     }
-    if (!this.isValidPorts()) {
-      const pm = this.portmapping;
-      throw new Error(`Host port (${pm.hostPort}) must be left out or equal to container port ${pm.containerPort} for network mode ${this.networkmode}`);
+
+    if (this.portmapping.containerPort === ContainerDefinition.CONTAINER_PORT_USE_RANGE && this.portmapping.containerPortRange === undefined) {
+      throw new Error(`The containerPortRange must be set when containerPort is equal to ${ContainerDefinition.CONTAINER_PORT_USE_RANGE}`);
+    }
+
+    if (this.portmapping.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE && this.portmapping.containerPortRange !== undefined) {
+      throw new Error('Cannot set "containerPort" and "containerPortRange" at the same time.');
+    }
+
+    if (this.portmapping.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE) {
+      if ((this.networkmode === NetworkMode.AWS_VPC || this.networkmode === NetworkMode.HOST)
+          && this.portmapping.hostPort !== undefined && this.portmapping.hostPort !== this.portmapping.containerPort) {
+        throw new Error('The host port must be left out or must be the same as the container port for AwsVpc or Host network mode.');
+      }
+    }
+
+    if (this.portmapping.containerPortRange !== undefined) {
+      if (cdk.Token.isUnresolved(this.portmapping.containerPortRange)) {
+        throw new Error('The value of containerPortRange must be concrete (no Tokens)');
+      }
+
+      if (this.portmapping.hostPort !== undefined) {
+        throw new Error('Cannot set "hostPort" while using a port range for the container.');
+      }
+
+      if (this.networkmode !== NetworkMode.BRIDGE && this.networkmode !== NetworkMode.AWS_VPC) {
+        throw new Error('Either AwsVpc or Bridge network mode is required to set a port range for the container.');
+      }
+
+      if (!/^\d+-\d+$/.test(this.portmapping.containerPortRange)) {
+        throw new Error('The containerPortRange must be a string in the format [start port]-[end port].');
+      }
     }
   }
 
@@ -1155,16 +1218,6 @@ export class PortMap {
     if (this.portmapping.name === '') {
       return false;
     }
-    return true;
-  }
-
-  private isValidPorts() :boolean {
-    const isAwsVpcMode = this.networkmode == NetworkMode.AWS_VPC;
-    const isHostMode = this.networkmode == NetworkMode.HOST;
-    if (!isAwsVpcMode && !isHostMode) return true;
-    const hostPort = this.portmapping.hostPort;
-    const containerPort = this.portmapping.containerPort;
-    if (containerPort !== hostPort && hostPort !== undefined ) return false;
     return true;
   }
 
@@ -1270,7 +1323,8 @@ export class AppProtocol {
 
 function renderPortMapping(pm: PortMapping): CfnTaskDefinition.PortMappingProperty {
   return {
-    containerPort: pm.containerPort,
+    containerPort: pm.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE ? pm.containerPort : undefined,
+    containerPortRange: pm.containerPortRange,
     hostPort: pm.hostPort,
     protocol: pm.protocol || Protocol.TCP,
     appProtocol: pm.appProtocol?.value,

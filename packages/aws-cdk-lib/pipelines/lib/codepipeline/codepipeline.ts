@@ -138,7 +138,7 @@ export interface CodePipelineProps {
    * application stacks.
    *
    * A common way to use bundling assets in your application is by
-   * using the `@aws-cdk/aws-lambda-nodejs` library.
+   * using the `aws-cdk-lib/aws-lambda-nodejs` library.
    *
    * Configures privileged mode for the synth CodeBuild action.
    *
@@ -153,7 +153,7 @@ export interface CodePipelineProps {
   /**
    * Customize the CodeBuild projects created for this pipeline
    *
-   * @default - All projects run non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_6_0
+   * @default - All projects run non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_7_0
    */
   readonly codeBuildDefaults?: CodeBuildOptions;
 
@@ -266,7 +266,7 @@ export interface CodeBuildOptions {
   /**
    * Partial build environment, will be combined with other build environments that apply
    *
-   * @default - Non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_6_0
+   * @default - Non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_7_0
    */
   readonly buildEnvironment?: cb.BuildEnvironment;
 

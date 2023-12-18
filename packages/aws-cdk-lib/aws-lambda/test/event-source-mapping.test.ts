@@ -1,5 +1,6 @@
 import { Match, Template } from '../../assertions';
 import * as cdk from '../../core';
+import * as lambda from '../lib';
 import { Code, EventSourceMapping, Function, Runtime, Alias, StartingPosition, FilterRule, FilterCriteria } from '../lib';
 
 let stack: cdk.Stack;
@@ -9,7 +10,7 @@ beforeEach(() => {
   fn = new Function(stack, 'fn', {
     handler: 'index.handler',
     code: Code.fromInline('exports.handler = ${handler.toString()}'),
-    runtime: Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
   });
 });
 
@@ -57,6 +58,14 @@ describe('event source mapping', () => {
       eventSourceArn: '',
       maxConcurrency: 1001,
     })).toThrow(/maxConcurrency must be between 2 and 1000 concurrent instances/);
+  });
+
+  test('does not throw if maxConcurrency is a token', () => {
+    expect(() => new EventSourceMapping(stack, 'test', {
+      target: fn,
+      eventSourceArn: '',
+      maxConcurrency: cdk.Token.asNumber({ Ref: 'abc' }),
+    })).not.toThrow();
   });
 
   test('maxConcurrency appears in stack', () => {

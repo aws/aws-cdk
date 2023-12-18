@@ -274,10 +274,17 @@ The most important properties to set while creating an Alarms are:
 
 To create a cross-account alarm, make sure you have enabled [cross-account functionality](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html) in CloudWatch. Then, set the `account` property in the `Metric` object either manually or via the `metric.attachTo()` method.
 
+Please note that it is **not possible** to:
+
+- Create a cross-Account alarm that has `evaluateLowSampleCountPercentile: "ignore"`. The reason is that the only
+  way to pass an AccountID is to use the [`Metrics` field of the Alarm resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudwatch-alarm.html#cfn-cloudwatch-alarm-metrics). If we use the `Metrics` field, the CloudWatch event that is
+  used to evaluate the Alarm doesn't have a `SampleCount` field anymore ("[When CloudWatch evaluates alarms, periods are aggregated into single data points](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Create-alarm-on-metric-math-expression.html)"). The result is that the Alarm cannot evaluate at all.
+- Create a cross-Region alarm ([source](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html)).
+
 ### Alarm Actions
 
 To add actions to an alarm, use the integration classes from the
-`@aws-cdk/aws-cloudwatch-actions` package. For example, to post a message to
+`aws-cdk-lib/aws-cloudwatch-actions` package. For example, to post a message to
 an SNS topic when an alarm breaches, do the following:
 
 ```ts
@@ -421,7 +428,7 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
 
 Using the methods `addLeftMetric()` and `addRightMetric()` you can add metrics to a graph widget later on.
 
-Graph widgets can also display annotations attached to the left or the right y-axis.
+Graph widgets can also display annotations attached to the left or right y-axis or the x-axis.
 
 ```ts
 declare const dashboard: cloudwatch.Dashboard;
@@ -433,6 +440,9 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
     { value: 1800, label: Duration.minutes(30).toHumanString(), color: cloudwatch.Color.RED, },
     { value: 3600, label: '1 hour', color: '#2ca02c', }
   ],
+  verticalAnnotations: [
+    { date: '2022-10-19T00:00:00Z', label: 'Deployment', color: cloudwatch.Color.RED, }
+  ]
 }));
 ```
 
@@ -469,6 +479,20 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
   // ...
 
   view: cloudwatch.GraphWidgetView.BAR,
+}));
+```
+
+The `start` and `end` properties can be used to specify the time range for each graph widget independently from those of the dashboard.
+The parameters can be specified at `GraphWidget`, `GaugeWidget`, and `SingleValueWidget`.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  // ...
+
+  start: '-P7D',
+  end: '2018-12-17T06:00:00.000Z',
 }));
 ```
 
@@ -541,6 +565,18 @@ dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   metrics: [ /* ... */ ],
 
   sparkline: true,
+}));
+```
+
+Period allows you to set the default period for the widget:
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.SingleValueWidget({
+  metrics: [ /* ... */ ],
+
+  period: Duration.minutes(15),
 }));
 ```
 
@@ -704,3 +740,84 @@ const dashboard = new cw.Dashboard(this, 'Dash', {
 ```
 
 Here, the dashboard would show the metrics for the last 7 days.
+
+### Dashboard variables
+
+Dashboard variables are a convenient way to create flexible dashboards that display different content depending
+on the value of an input field within a dashboard. They create a dashboard on which it's possible to quickly switch between
+different Lambda functions, Amazon EC2 instances, etc.
+
+You can learn more about Dashboard variables in the [Amazon Cloudwatch User Guide](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_dashboard_variables.html)
+
+There are two types of dashboard variables available: a property variable and a pattern variable.
+- Property variables can change any JSON property in the JSON source of a dashboard like `region`. It can also change the dimension name for a metric.
+- Pattern variables use a regular expression pattern to change all or part of a JSON property.
+
+A use case of a **property variable** is a dashboard with the ability to toggle the `region` property to see the same dashboard in different regions:
+
+```ts
+import * as cw from 'aws-cdk-lib/aws-cloudwatch';
+
+const dashboard = new cw.Dashboard(this, 'Dash', {
+  defaultInterval: Duration.days(7),
+  variables: [new cw.DashboardVariable({
+    id: 'region',
+    type: cw.VariableType.PROPERTY,
+    label: 'Region',
+    inputType: cw.VariableInputType.RADIO,
+    value: 'region',
+    values: cw.Values.fromValues({ label: 'IAD', value: 'us-east-1' }, { label: 'DUB', value: 'us-west-2' }),
+    defaultValue: cw.DefaultValue.value('us-east-1'),
+    visible: true,
+  })],
+});
+```
+
+This example shows how to change `region` everywhere, assuming the current dashboard is showing region `us-east-1` already, by using **pattern variable**
+
+```ts
+import * as cw from 'aws-cdk-lib/aws-cloudwatch';
+
+const dashboard = new cw.Dashboard(this, 'Dash', {
+  defaultInterval: Duration.days(7),
+  variables: [new cw.DashboardVariable({
+    id: 'region2',
+    type: cw.VariableType.PATTERN,
+    label: 'RegionPattern',
+    inputType: cw.VariableInputType.INPUT,
+    value: 'us-east-1',
+    defaultValue: cw.DefaultValue.value('us-east-1'),
+    visible: true,
+  })],
+});
+```
+
+The following example generates a Lambda function variable, with a radio button for each function. Functions are discovered by a metric query search.
+The `values` with `cw.Values.fromSearchComponents` indicates that the values will be populated from `FunctionName` values retrieved from the search expression `{AWS/Lambda,FunctionName} MetricName=\"Duration\"`.
+The `defaultValue` with `cw.DefaultValue.FIRST` indicates that the default value will be the first value returned from the search.
+
+```ts
+import * as cw from 'aws-cdk-lib/aws-cloudwatch';
+
+const dashboard = new cw.Dashboard(this, 'Dash', {
+  defaultInterval: Duration.days(7),
+  variables: [new cw.DashboardVariable({
+    id: 'functionName',
+    type: cw.VariableType.PATTERN,
+    label: 'Function',
+    inputType: cw.VariableInputType.RADIO,
+    value: 'originalFuncNameInDashboard',
+    // equivalent to cw.Values.fromSearch('{AWS/Lambda,FunctionName} MetricName=\"Duration\"', 'FunctionName')
+    values: cw.Values.fromSearchComponents({
+      namespace: 'AWS/Lambda',
+      dimensions: ['FunctionName'],
+      metricName: 'Duration',
+      populateFrom: 'FunctionName',
+    }),
+    defaultValue: cw.DefaultValue.FIRST,
+    visible: true,
+  })],
+});
+```
+
+You can add a variable after object instantiation with the method `dashboard.addVariable()`.

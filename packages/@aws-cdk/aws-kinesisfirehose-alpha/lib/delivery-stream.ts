@@ -3,7 +3,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 import * as kms from 'aws-cdk-lib/aws-kms';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { RegionInfo } from 'aws-cdk-lib/region-info';
 import { Construct, Node } from 'constructs';
 import { IDestination } from './destination';
@@ -311,21 +311,34 @@ export class DeliveryStream extends DeliveryStreamBase {
 
   readonly deliveryStreamArn: string;
 
-  readonly grantPrincipal: iam.IPrincipal;
+  private _role?: iam.IRole;
+
+  public get grantPrincipal(): iam.IPrincipal {
+    if (this._role) {
+      return this._role;
+    }
+    // backwards compatibility
+    return new iam.Role(this, 'Service Role', {
+      assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+    });
+  }
 
   constructor(scope: Construct, id: string, props: DeliveryStreamProps) {
     super(scope, id, {
       physicalName: props.deliveryStreamName,
     });
 
+    this._role = props.role;
+
     if (props.destinations.length !== 1) {
       throw new Error(`Only one destination is allowed per delivery stream, given ${props.destinations.length}`);
     }
 
-    const role = props.role ?? new iam.Role(this, 'Service Role', {
-      assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
-    });
-    this.grantPrincipal = role;
+    if (props.encryptionKey || props.sourceStream) {
+      this._role = this._role ?? new iam.Role(this, 'Service Role', {
+        assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+      });
+    }
 
     if (
       props.sourceStream &&
@@ -351,13 +364,19 @@ export class DeliveryStream extends DeliveryStreamBase {
      * period where data will be buffered and retried if access is denied to the encryption key. For that reason, it is
      * acceptable to omit the dependency for now. See: https://github.com/aws/aws-cdk/issues/15790
      */
-    encryptionKey?.grantEncryptDecrypt(role);
+    if (this._role && encryptionKey) {
+      encryptionKey?.grantEncryptDecrypt(this._role);
+    }
 
-    const sourceStreamConfig = props.sourceStream ? {
-      kinesisStreamArn: props.sourceStream.streamArn,
-      roleArn: role.roleArn,
-    } : undefined;
-    const readStreamGrant = props.sourceStream?.grantRead(role);
+    let sourceStreamConfig = undefined;
+    let readStreamGrant = undefined;
+    if (this._role && props.sourceStream) {
+      sourceStreamConfig = {
+        kinesisStreamArn: props.sourceStream.streamArn,
+        roleArn: this._role.roleArn,
+      };
+      readStreamGrant = props.sourceStream.grantRead(this._role);
+    }
 
     const destinationConfig = props.destinations[0].bind(this, {});
 

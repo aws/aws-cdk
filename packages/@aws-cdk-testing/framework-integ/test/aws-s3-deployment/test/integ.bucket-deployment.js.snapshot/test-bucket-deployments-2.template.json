@@ -44,7 +44,8 @@
        "Action": [
         "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*"
+        "s3:List*",
+        "s3:PutBucketPolicy"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -131,18 +132,18 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "40aa87cdf43c4095cec18bc443965f22ab2f8c1ace47e482a0ba4e35d83b0cc9.zip"
+     "S3Key": "2ec8ad9e91dcd6e7ad6a5c84ffc6c9c05c408aca3b26ceb2816d81043e6c4dc3.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x",
+    "Runtime": "nodejs18.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -167,7 +168,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -410,13 +411,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
-      "Arn"
-     ]
+     "S3Key": "e976a796f036a5efbf44b99e44cfb5a961df08d8dbf7cd37e60bf216fb982a00.zip"
     },
     "Environment": {
      "Variables": {
@@ -429,6 +424,12 @@
       "Ref": "DeployMeAwsCliLayer5F9219E9"
      }
     ],
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+      "Arn"
+     ]
+    },
     "Runtime": "python3.9",
     "Timeout": 900
    },
@@ -455,9 +456,6 @@
   "InlineVpcPublicSubnet1Subnet2EDC574A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "InlineVpc2605A3C4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -481,21 +479,24 @@
       "Key": "Name",
       "Value": "test-bucket-deployments-2/InlineVpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "InlineVpc2605A3C4"
+    }
    }
   },
   "InlineVpcPublicSubnet1RouteTable67856EA2": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "InlineVpc2605A3C4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "test-bucket-deployments-2/InlineVpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "InlineVpc2605A3C4"
+    }
    }
   },
   "InlineVpcPublicSubnet1RouteTableAssociationDA9AACF2": {
@@ -512,12 +513,12 @@
   "InlineVpcPublicSubnet1DefaultRoute84A6786F": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "InlineVpcPublicSubnet1RouteTable67856EA2"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "InlineVpcIGW515300DC"
+    },
+    "RouteTableId": {
+     "Ref": "InlineVpcPublicSubnet1RouteTable67856EA2"
     }
    },
    "DependsOn": [
@@ -539,14 +540,14 @@
   "InlineVpcPublicSubnet1NATGateway88242629": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "InlineVpcPublicSubnet1Subnet2EDC574A"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "InlineVpcPublicSubnet1EIPCB8385DA",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "InlineVpcPublicSubnet1Subnet2EDC574A"
     },
     "Tags": [
      {
@@ -563,9 +564,6 @@
   "InlineVpcPublicSubnet2SubnetAB52037C": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "InlineVpc2605A3C4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -589,21 +587,24 @@
       "Key": "Name",
       "Value": "test-bucket-deployments-2/InlineVpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "InlineVpc2605A3C4"
+    }
    }
   },
   "InlineVpcPublicSubnet2RouteTable053CA1F8": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "InlineVpc2605A3C4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "test-bucket-deployments-2/InlineVpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "InlineVpc2605A3C4"
+    }
    }
   },
   "InlineVpcPublicSubnet2RouteTableAssociation3DB8A2E6": {
@@ -620,12 +621,12 @@
   "InlineVpcPublicSubnet2DefaultRoute9E9BF17A": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "InlineVpcPublicSubnet2RouteTable053CA1F8"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "InlineVpcIGW515300DC"
+    },
+    "RouteTableId": {
+     "Ref": "InlineVpcPublicSubnet2RouteTable053CA1F8"
     }
    },
    "DependsOn": [
@@ -647,14 +648,14 @@
   "InlineVpcPublicSubnet2NATGatewayB5A60DA8": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "InlineVpcPublicSubnet2SubnetAB52037C"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "InlineVpcPublicSubnet2EIPFCFD7982",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "InlineVpcPublicSubnet2SubnetAB52037C"
     },
     "Tags": [
      {
@@ -671,9 +672,6 @@
   "InlineVpcPrivateSubnet1Subnet0EC98BAD": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "InlineVpc2605A3C4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -697,21 +695,24 @@
       "Key": "Name",
       "Value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "InlineVpc2605A3C4"
+    }
    }
   },
   "InlineVpcPrivateSubnet1RouteTable19DB57E6": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "InlineVpc2605A3C4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "InlineVpc2605A3C4"
+    }
    }
   },
   "InlineVpcPrivateSubnet1RouteTableAssociation9D48EE22": {
@@ -728,21 +729,18 @@
   "InlineVpcPrivateSubnet1DefaultRouteC56CB768": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "InlineVpcPrivateSubnet1RouteTable19DB57E6"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "InlineVpcPublicSubnet1NATGateway88242629"
+    },
+    "RouteTableId": {
+     "Ref": "InlineVpcPrivateSubnet1RouteTable19DB57E6"
     }
    }
   },
   "InlineVpcPrivateSubnet2Subnet60DB7D03": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "InlineVpc2605A3C4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -766,21 +764,24 @@
       "Key": "Name",
       "Value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "InlineVpc2605A3C4"
+    }
    }
   },
   "InlineVpcPrivateSubnet2RouteTableE3C67EFF": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "InlineVpc2605A3C4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "test-bucket-deployments-2/InlineVpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "InlineVpc2605A3C4"
+    }
    }
   },
   "InlineVpcPrivateSubnet2RouteTableAssociation6D6562EB": {
@@ -797,12 +798,12 @@
   "InlineVpcPrivateSubnet2DefaultRouteA98D214A": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "InlineVpcPrivateSubnet2RouteTableE3C67EFF"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "InlineVpcPublicSubnet2NATGatewayB5A60DA8"
+    },
+    "RouteTableId": {
+     "Ref": "InlineVpcPrivateSubnet2RouteTableE3C67EFF"
     }
    }
   },
@@ -820,11 +821,11 @@
   "InlineVpcVPCGWE98B1862": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "InlineVpc2605A3C4"
-    },
     "InternetGatewayId": {
      "Ref": "InlineVpcIGW515300DC"
+    },
+    "VpcId": {
+     "Ref": "InlineVpc2605A3C4"
     }
    }
   },
@@ -835,7 +836,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
     },
     "Description": "/opt/awscli/aws"
    },
@@ -921,6 +922,26 @@
    "Type": "AWS::EFS::FileSystem",
    "Properties": {
     "Encrypted": true,
+    "FileSystemPolicy": {
+     "Statement": [
+      {
+       "Action": [
+        "elasticfilesystem:ClientRootAccess",
+        "elasticfilesystem:ClientWrite"
+       ],
+       "Condition": {
+        "Bool": {
+         "elasticfilesystem:AccessedViaMountTarget": "true"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "*"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
     "FileSystemTags": [
      {
       "Key": "Name",
@@ -956,7 +977,6 @@
   "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsSecurityGroupfromtestbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupBDC138BF20498CD714A7": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
-    "IpProtocol": "tcp",
     "Description": "from testbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupBDC138BF:2049",
     "FromPort": 2049,
     "GroupId": {
@@ -965,6 +985,7 @@
       "GroupId"
      ]
     },
+    "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
       "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupD7C1D75A",
@@ -974,7 +995,7 @@
     "ToPort": 2049
    }
   },
-  "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget140913EA1": {
+  "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet1A574AC08": {
    "Type": "AWS::EFS::MountTarget",
    "Properties": {
     "FileSystemId": {
@@ -993,7 +1014,7 @@
     }
    }
   },
-  "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget215F1A11A": {
+  "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet2133D302E": {
    "Type": "AWS::EFS::MountTarget",
    "Properties": {
     "FileSystemId": {
@@ -1015,15 +1036,15 @@
   "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faAccessPoint657AFA25": {
    "Type": "AWS::EFS::AccessPoint",
    "Properties": {
-    "FileSystemId": {
-     "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B"
-    },
     "AccessPointTags": [
      {
       "Key": "Name",
       "Value": "test-bucket-deployments-2/BucketDeploymentEFS-VPC-c8e45d2d82aec23f89c7172e7e6f994ff3d9c444fa/AccessPoint"
      }
     ],
+    "FileSystemId": {
+     "Ref": "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faDE9EC34B"
+    },
     "PosixUser": {
      "Gid": "1001",
      "Uid": "1001"
@@ -1038,8 +1059,8 @@
     }
    },
    "DependsOn": [
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget140913EA1",
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget215F1A11A"
+    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet1A574AC08",
+    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet2133D302E"
    ]
   },
   "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRole1F2E85D4": {
@@ -1085,8 +1106,8 @@
     ]
    },
    "DependsOn": [
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget140913EA1",
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget215F1A11A",
+    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet1A574AC08",
+    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet2133D302E",
     "InlineVpcPrivateSubnet1DefaultRouteC56CB768",
     "InlineVpcPrivateSubnet1RouteTableAssociation9D48EE22",
     "InlineVpcPrivateSubnet2DefaultRouteA98D214A",
@@ -1246,8 +1267,8 @@
     ]
    },
    "DependsOn": [
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget140913EA1",
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget215F1A11A",
+    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet1A574AC08",
+    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet2133D302E",
     "InlineVpcPrivateSubnet1DefaultRouteC56CB768",
     "InlineVpcPrivateSubnet1RouteTableAssociation9D48EE22",
     "InlineVpcPrivateSubnet2DefaultRouteA98D214A",
@@ -1270,8 +1291,8 @@
     }
    },
    "DependsOn": [
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget140913EA1",
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget215F1A11A",
+    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet1A574AC08",
+    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet2133D302E",
     "InlineVpcPrivateSubnet1DefaultRouteC56CB768",
     "InlineVpcPrivateSubnet1RouteTableAssociation9D48EE22",
     "InlineVpcPrivateSubnet2DefaultRouteA98D214A",
@@ -1285,13 +1306,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRole1F2E85D4",
-      "Arn"
-     ]
+     "S3Key": "e976a796f036a5efbf44b99e44cfb5a961df08d8dbf7cd37e60bf216fb982a00.zip"
     },
     "Environment": {
      "Variables": {
@@ -1333,6 +1348,12 @@
       "Ref": "DeployMeWithEfsStorageAwsCliLayer1619A3EE"
      }
     ],
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRole1F2E85D4",
+      "Arn"
+     ]
+    },
     "Runtime": "python3.9",
     "Timeout": 900,
     "VpcConfig": {
@@ -1355,8 +1376,8 @@
     }
    },
    "DependsOn": [
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget140913EA1",
-    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTarget215F1A11A",
+    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet1A574AC08",
+    "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsMountTargetPrivateSubnet2133D302E",
     "BucketDeploymentEFSVPCc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faEfsSecurityGroupfromtestbucketdeployments2CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faSecurityGroupBDC138BF20498CD714A7",
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRoleDefaultPolicyDE2C8526",
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8e45d2d82aec23f89c7172e7e6f994ff3d9c444faServiceRole1F2E85D4",
@@ -1395,7 +1416,8 @@
        "Action": [
         "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*"
+        "s3:List*",
+        "s3:PutBucketPolicy"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -1460,7 +1482,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1521,7 +1543,8 @@
        "Action": [
         "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*"
+        "s3:List*",
+        "s3:PutBucketPolicy"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -1586,7 +1609,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1633,7 +1656,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1671,7 +1694,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1734,7 +1757,8 @@
        "Action": [
         "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*"
+        "s3:List*",
+        "s3:PutBucketPolicy"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -1799,7 +1823,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1860,7 +1884,8 @@
        "Action": [
         "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*"
+        "s3:List*",
+        "s3:PutBucketPolicy"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -1925,7 +1950,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1963,109 +1988,6 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  }
- },
- "Mappings": {
-  "DefaultCrNodeVersionMap": {
-   "af-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs16.x"
-   },
-   "me-central-1": {
-    "value": "nodejs16.x"
-   },
-   "me-south-1": {
-    "value": "nodejs16.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-2": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs14.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-west-2": {
-    "value": "nodejs16.x"
-   }
   }
  },
  "Outputs": {

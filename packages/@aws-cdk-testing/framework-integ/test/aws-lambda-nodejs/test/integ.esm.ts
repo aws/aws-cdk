@@ -2,6 +2,7 @@ import * as path from 'path';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -17,5 +18,10 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-lambda-nodejs-esm');
+const stack = new TestStack(app, 'cdk-integ-lambda-nodejs-esm');
+
+new IntegTest(app, 'LambdaNodeJsEsmInteg', {
+  testCases: [stack],
+  diffAssets: true,
+});
 app.synth();

@@ -21,10 +21,10 @@ describe('ADOT Lambda Layer', () => {
     });
 
     test('is added properly when the region information is available at synthesis time', () => {
-      const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.V1_19_0.layerArn(fn.stack, fn.architecture);
+      const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.V1_31_0.layerArn(fn.stack, fn.architecture);
 
       expect(layerArn).toEqual(
-        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-19-0:1',
+        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-31-0:1',
       );
     });
 
@@ -32,7 +32,39 @@ describe('ADOT Lambda Layer', () => {
       const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.LATEST.layerArn(fn.stack, fn.architecture);
 
       expect(layerArn).toEqual(
-        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-19-0:1',
+        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-31-0:1',
+      );
+    });
+  });
+
+  describe('when the Python ADOT version is specified', () => {
+
+    let fn: lambda.Function;
+
+    beforeEach(() => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack', { env: { region: 'us-west-2' } });
+      const bucket = new s3.Bucket(stack, 'CodeBucket');
+      fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromBucket(bucket, 'mock_key'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.PYTHON_3_11,
+      });
+    });
+
+    test('is added properly when the region information is available at synthesis time', () => {
+      const layerArn = lambda.AdotLambdaLayerPythonSdkVersion.V1_20_0_1.layerArn(fn.stack, fn.architecture);
+
+      expect(layerArn).toEqual(
+        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-20-0:3',
+      );
+    });
+
+    test('is added properly when using "LATEST" version', () => {
+      const layerArn = lambda.AdotLambdaLayerPythonSdkVersion.LATEST.layerArn(fn.stack, fn.architecture);
+
+      expect(layerArn).toEqual(
+        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-20-0:3',
       );
     });
   });
@@ -63,7 +95,7 @@ describe('ADOT Lambda Layer', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: new lambda.InlineCode('FooBar'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         architecture: lambda.Architecture.ARM_64,
       });
 
@@ -75,12 +107,15 @@ describe('ADOT Lambda Layer', () => {
       // THEN
       Template.fromStack(fn.stack).hasOutput('ExportLayerArn', {
         Value: {
-          'Fn::FindInMap': [
-            'AdotlambdalayerMap',
-            {
-              Ref: 'AWS::Region',
-            },
-            'JAVAxSDKx1x19x0xarm64',
+          'Fn::Join': [
+            '',
+            [
+              'arn:aws:lambda:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-31-0:1',
+            ],
           ],
         },
       });

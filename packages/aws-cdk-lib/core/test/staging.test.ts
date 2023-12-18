@@ -19,6 +19,7 @@ enum DockerStubCommand {
   SUCCESS_NO_OUTPUT = 'DOCKER_STUB_SUCCESS_NO_OUTPUT',
   MULTIPLE_FILES = 'DOCKER_STUB_MULTIPLE_FILES',
   SINGLE_ARCHIVE = 'DOCKER_STUB_SINGLE_ARCHIVE',
+  SINGLE_FILE = 'DOCKER_STUB_SINGLE_FILE',
   VOLUME_SINGLE_ARCHIVE = 'DOCKER_STUB_VOLUME_SINGLE_ARCHIVE',
 }
 
@@ -1257,8 +1258,39 @@ describe('staging', () => {
         command: [DockerStubCommand.MULTIPLE_FILES],
         outputType: BundlingOutput.ARCHIVED,
       },
-    })).toThrow(/Bundling output directory is expected to include only a single archive file when `output` is set to `ARCHIVED`/);
+    })).toThrow(/Bundling output directory is expected to include only a single file when `output` is set to `ARCHIVED` or `SINGLE_FILE`/);
   });
+
+  test('bundling that produces a single file with SINGLE_FILE', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1', 'subdir');
+
+    // WHEN
+    const staging = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SINGLE_FILE],
+        outputType: BundlingOutput.SINGLE_FILE,
+      },
+    });
+
+    // THEN
+    const assembly = app.synth();
+    expect(fs.readdirSync(assembly.directory)).toEqual([
+      'asset.adb7bb3f9419564842d16f48e6b90468f63ec759d2775e8e40d6a87e6b8e3469',
+      'asset.adb7bb3f9419564842d16f48e6b90468f63ec759d2775e8e40d6a87e6b8e3469.txt',
+      'cdk.out',
+      'manifest.json',
+      'stack.template.json',
+      'tree.json',
+    ]);
+    expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(staging.isArchive).toEqual(false);
+  });
+
 });
 
 describe('staging with docker cp', () => {

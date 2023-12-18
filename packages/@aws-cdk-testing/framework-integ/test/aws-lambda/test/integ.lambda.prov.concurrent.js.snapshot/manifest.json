@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "34.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-lambda-pce-1.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/995d495b5c036e8621c3d1ad12a324fc5e9f08082dc0867eebab4ae919eb9ed8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94eb787de5b73b68d1daa3b92361b24a2e5dae708997ec2f1bea10f616a099c2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -60,7 +54,7 @@
         "/aws-cdk-lambda-pce-1/MyLambdaAliasPCE/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaAliasPCECurrentVersion072335D3224448d87cb592b450e76b3259c1d874"
+            "data": "MyLambdaAliasPCECurrentVersion072335D3abd7022526e1eae404a6f2a50ba64569"
           }
         ],
         "/aws-cdk-lambda-pce-1/Alias/Resource": [
@@ -96,7 +90,7 @@
         "/aws-cdk-lambda-pce-1/MyLambdaVersionPCE/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaVersionPCECurrentVersion27FC3932d779c9115684f8f405cbd7282b1508f5"
+            "data": "MyLambdaVersionPCECurrentVersion27FC3932e3372865403c1e027068d9691afe3f3f"
           }
         ],
         "/aws-cdk-lambda-pce-1/Alias2/Resource": [
@@ -123,19 +117,19 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "MyLambdaAliasPCECurrentVersion072335D322935888161d542257ba1aa7d6060c95": [
+        "MyLambdaAliasPCECurrentVersion072335D34a3f83f8218b6b94346920ff28a940e4": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaAliasPCECurrentVersion072335D322935888161d542257ba1aa7d6060c95",
+            "data": "MyLambdaAliasPCECurrentVersion072335D34a3f83f8218b6b94346920ff28a940e4",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "MyLambdaVersionPCECurrentVersion27FC3932fa78bcfe53ab85fefd72b3ac4cc5679c": [
+        "MyLambdaVersionPCECurrentVersion27FC39322c322873dbc351359405806a77875357": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaVersionPCECurrentVersion27FC3932fa78bcfe53ab85fefd72b3ac4cc5679c",
+            "data": "MyLambdaVersionPCECurrentVersion27FC39322c322873dbc351359405806a77875357",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -143,6 +137,12 @@
         ]
       },
       "displayName": "aws-cdk-lambda-pce-1"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

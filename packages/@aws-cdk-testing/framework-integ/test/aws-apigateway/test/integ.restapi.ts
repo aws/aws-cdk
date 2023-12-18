@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Size } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class Test extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -12,6 +13,7 @@ class Test extends cdk.Stack {
       retainDeployments: true,
       cloudWatchRole: true,
       minCompressionSize: Size.bytes(1024),
+      description: 'api description',
       deployOptions: {
         cacheClusterEnabled: true,
         stageName: 'beta',
@@ -27,7 +29,7 @@ class Test extends cdk.Stack {
     });
 
     const handler = new lambda.Function(this, 'MyHandler', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       code: lambda.Code.fromInline(`exports.handler = ${handlerCode}`),
       handler: 'index.handler',
     });
@@ -41,7 +43,7 @@ class Test extends cdk.Stack {
     toys.addMethod('POST');
     toys.addMethod('PUT');
 
-    const appliances = v1.addResource('appliances:all');
+    const appliances = v1.addResource('$appliances:all');
     appliances.addMethod('GET');
 
     const books = v1.addResource('books');

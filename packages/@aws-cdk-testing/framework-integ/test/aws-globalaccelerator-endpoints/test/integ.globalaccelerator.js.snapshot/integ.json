@@ -1,14 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
-    "integ.globalaccelerator": {
+    "GlobalAcceleratorInteg/DefaultTest": {
       "stacks": [
         "integ-globalaccelerator"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "GlobalAcceleratorInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "GlobalAcceleratorIntegDefaultTestDeployAssert748E6B41"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

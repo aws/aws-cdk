@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "cdk-integ-secret-lambda-rotation": {
         "id": "cdk-integ-secret-lambda-rotation",
         "path": "cdk-integ-secret-lambda-rotation",
@@ -137,13 +129,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kms.CfnKey",
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-kms.Key",
+              "fqn": "aws-cdk-lib.aws_kms.Key",
               "version": "0.0.0"
             }
           },
@@ -167,7 +159,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                   "version": "0.0.0"
                 }
               },
@@ -181,9 +173,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SecretsManager::RotationSchedule",
                       "aws:cdk:cloudformation:props": {
-                        "secretId": {
-                          "Ref": "SecretA720EF05"
-                        },
                         "rotationLambdaArn": {
                           "Fn::GetAtt": [
                             "LambdaD247545B",
@@ -191,18 +180,21 @@
                           ]
                         },
                         "rotationRules": {
-                          "automaticallyAfterDays": 30
+                          "scheduleExpression": "rate(4 hours)"
+                        },
+                        "secretId": {
+                          "Ref": "SecretA720EF05"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.CfnRotationSchedule",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnRotationSchedule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.RotationSchedule",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.RotationSchedule",
                   "version": "0.0.0"
                 }
               },
@@ -250,19 +242,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.CfnResourcePolicy",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnResourcePolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.ResourcePolicy",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.ResourcePolicy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
               "version": "0.0.0"
             }
           },
@@ -274,6 +266,14 @@
                 "id": "ServiceRole",
                 "path": "cdk-integ-secret-lambda-rotation/Lambda/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "cdk-integ-secret-lambda-rotation/Lambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "cdk-integ-secret-lambda-rotation/Lambda/ServiceRole/Resource",
@@ -309,7 +309,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -354,19 +354,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -379,18 +379,18 @@
                     "code": {
                       "zipFile": "NOOP"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "LambdaServiceRoleA8ED4D3B",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               },
@@ -411,26 +411,104 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-integ-secret-lambda-rotation/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-integ-secret-lambda-rotation/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "cdk-integ-secret-lambda-rotation-test": {
+        "id": "cdk-integ-secret-lambda-rotation-test",
+        "path": "cdk-integ-secret-lambda-rotation-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-integ-secret-lambda-rotation-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-integ-secret-lambda-rotation-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-integ-secret-lambda-rotation-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-integ-secret-lambda-rotation-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-integ-secret-lambda-rotation-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

@@ -1,14 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "35.0.0",
   "testCases": {
-    "integ.bucket-deployment-cloudfront": {
+    "TestBucketDeploymentInteg/DefaultTest": {
       "stacks": [
         "test-bucket-deployments-1"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "TestBucketDeploymentInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "TestBucketDeploymentIntegDefaultTestDeployAssert08D70206"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

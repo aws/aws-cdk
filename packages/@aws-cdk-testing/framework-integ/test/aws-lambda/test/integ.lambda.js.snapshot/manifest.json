@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "34.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-lambda-1.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/811c02a1b423ba875c9e41bef2453805f9bd51c7419b5e04664f0e386b7fb4d0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aeb38ab17304d1f5dafe1758949dbde748ba823d4a2a513c5135e2b99c0ce4bd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -66,7 +60,7 @@
         "/aws-cdk-lambda-1/MyLambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629"
+            "data": "MyLambdaCurrentVersionE7A382CC9ce8e408346691aecad19aa25bc70350"
           }
         ],
         "/aws-cdk-lambda-1/Alias/Resource": [
@@ -93,6 +87,24 @@
             "data": "Aliasinvokefunctionurl4CA9917B"
           }
         ],
+        "/aws-cdk-lambda-1/MySnapStartLambda": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "SnapStart only support published Lambda versions. Ignore if function already have published versions [ack: @aws-cdk/aws-lambda:snapStartRequirePublish]"
+          }
+        ],
+        "/aws-cdk-lambda-1/MySnapStartLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySnapStartLambdaServiceRoleE0F04324"
+          }
+        ],
+        "/aws-cdk-lambda-1/MySnapStartLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySnapStartLambda8F562E6E"
+          }
+        ],
         "/aws-cdk-lambda-1/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -105,10 +117,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "MyLambdaCurrentVersionE7A382CC1786de9fc1bc4cb2fd5b64d612628c6f": [
+        "MyLambdaCurrentVersionE7A382CC1bbf26fffae216f511ef7223d3cba742": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCurrentVersionE7A382CC1786de9fc1bc4cb2fd5b64d612628c6f",
+            "data": "MyLambdaCurrentVersionE7A382CC1bbf26fffae216f511ef7223d3cba742",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
@@ -116,6 +128,12 @@
         ]
       },
       "displayName": "aws-cdk-lambda-1"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

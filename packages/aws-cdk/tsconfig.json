@@ -2,7 +2,11 @@
     "compilerOptions": {
         "target": "ES2020",
         "module": "commonjs",
-        "lib": ["es2019", "es2020", "dom"],
+        "lib": [
+            "es2019",
+            "es2020",
+            "dom"
+        ],
         "strict": true,
         "alwaysStrict": true,
         "skipLibCheck": true,
@@ -25,7 +29,8 @@
     ],
     "exclude": [
         "lib/init-templates/**/typescript/*/*.ts",
-        "test/integ/cli/sam_cdk_integ_app/**/*"
+        "test/integ/cli/sam_cdk_integ_app/**/*",
+        "vendor/**/*",
     ],
     "references": [
         {

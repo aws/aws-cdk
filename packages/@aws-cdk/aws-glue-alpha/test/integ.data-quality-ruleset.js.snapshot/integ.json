@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "glue-data-quality-ruleset/DefaultTest": {
+      "stacks": [
+        "aws-glue-data-quality-ruleset"
+      ],
+      "assertionStack": "glue-data-quality-ruleset/DefaultTest/DeployAssert",
+      "assertionStackName": "gluedataqualityrulesetDefaultTestDeployAssertDE1B6FD7"
+    }
+  }
+}

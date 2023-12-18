@@ -33,7 +33,7 @@ func main() {
 
 	app := awscdk.NewApp(nil)
 
-	New%name.PascalCased%Stack(app, "%name.PascalCased%Stack", &%name.PascalCased%StackProps{
+	New%name.PascalCased%Stack(app, "%stackname%", &%name.PascalCased%StackProps{
 		awscdk.StackProps{
 			Env: env(),
 		},

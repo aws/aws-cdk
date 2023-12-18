@@ -3,6 +3,8 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { TestOrigin } from './test-origin';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -12,13 +14,13 @@ const stack = new cdk.Stack(app, 'integ-distribution-lambda-cross-region', { env
 const lambdaFunction = new cloudfront.experimental.EdgeFunction(stack, 'Lambda', {
   code: lambda.Code.fromInline('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 
 const lambdaFunction2 = new cloudfront.experimental.EdgeFunction(stack, 'Lambda2', {
   code: lambda.Code.fromInline('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   stackId: `edge-lambda-stack-${region}-2`,
 });
 
@@ -42,4 +44,7 @@ new cloudfront.Distribution(stack, 'Dist', {
   },
 });
 
-app.synth();
+new integ.IntegTest(app, 'cdk-integ-distribution-lambda-cross-region', {
+  testCases: [stack],
+  diffAssets: true,
+});

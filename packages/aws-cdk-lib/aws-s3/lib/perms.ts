@@ -28,6 +28,10 @@ export const BUCKET_PUT_ACL_ACTIONS = [
   's3:PutObjectVersionAcl',
 ];
 
+export const BUCKET_PUT_POLICY_ACTIONS = [
+  's3:PutBucketPolicy',
+];
+
 export const BUCKET_DELETE_ACTIONS = [
   's3:DeleteObject*',
 ];

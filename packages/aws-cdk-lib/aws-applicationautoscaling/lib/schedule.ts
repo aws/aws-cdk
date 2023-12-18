@@ -63,7 +63,7 @@ export abstract class Schedule {
       public readonly expressionString: string = `cron(${minute} ${hour} ${day} ${month} ${weekDay} ${year})`;
       public _bind(scope: Construct) {
         if (!options.minute) {
-          Annotations.of(scope).addWarning('cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.');
+          Annotations.of(scope).addWarningV2('@aws-cdk/aws-applicationautoscaling:defaultRunEveryMinute', 'cron: If you don\'t pass \'minute\', by default the event runs every minute. Pass \'minute: \'*\'\' if that\'s what you intend, or \'minute: 0\' to run once per hour instead.');
         }
         return new LiteralSchedule(this.expressionString);
       }

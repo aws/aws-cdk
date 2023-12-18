@@ -1,5 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import { IResource, RemovalPolicy, Resource } from 'aws-cdk-lib';
+import { IResource, RemovalPolicy, Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnDBSubnetGroup } from 'aws-cdk-lib/aws-neptune';
 

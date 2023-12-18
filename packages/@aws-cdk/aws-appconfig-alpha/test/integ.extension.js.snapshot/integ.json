@@ -1,0 +1,19 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "aws-appconfig-extension/MyApplication/appconfig-extension/DefaultTest": {
+      "stacks": [
+        "aws-appconfig-extension"
+      ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "args": {
+            "force": true
+          }
+        }
+      },
+      "assertionStack": "aws-appconfig-extension/MyApplication/appconfig-extension/DefaultTest/DeployAssert",
+      "assertionStackName": "awsappconfigextensionMyApplicationappconfigextensionDefaultTestDeployAssert64BA6C4E"
+    }
+  }
+}

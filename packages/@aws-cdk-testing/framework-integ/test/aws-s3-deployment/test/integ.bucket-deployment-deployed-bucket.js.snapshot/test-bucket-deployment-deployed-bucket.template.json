@@ -29,7 +29,8 @@
        "Action": [
         "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*"
+        "s3:List*",
+        "s3:PutBucketPolicy"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -116,18 +117,18 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "40aa87cdf43c4095cec18bc443965f22ab2f8c1ace47e482a0ba4e35d83b0cc9.zip"
+     "S3Key": "2ec8ad9e91dcd6e7ad6a5c84ffc6c9c05c408aca3b26ceb2816d81043e6c4dc3.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x",
+    "Runtime": "nodejs18.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -152,7 +153,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -321,13 +322,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
-      "Arn"
-     ]
+     "S3Key": "e976a796f036a5efbf44b99e44cfb5a961df08d8dbf7cd37e60bf216fb982a00.zip"
     },
     "Environment": {
      "Variables": {
@@ -340,6 +335,12 @@
       "Ref": "DeployMe5AwsCliLayerF0F79631"
      }
     ],
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+      "Arn"
+     ]
+    },
     "Runtime": "python3.9",
     "Timeout": 900
    },
@@ -347,210 +348,6 @@
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
     "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
    ]
-  }
- },
- "Mappings": {
-  "DefaultCrNodeVersionMap": {
-   "af-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs16.x"
-   },
-   "me-central-1": {
-    "value": "nodejs16.x"
-   },
-   "me-south-1": {
-    "value": "nodejs16.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-2": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs14.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-west-2": {
-    "value": "nodejs16.x"
-   }
-  },
-  "S3staticwebsiteMap": {
-   "af-south-1": {
-    "endpoint": "s3-website.af-south-1.amazonaws.com"
-   },
-   "ap-east-1": {
-    "endpoint": "s3-website.ap-east-1.amazonaws.com"
-   },
-   "ap-northeast-1": {
-    "endpoint": "s3-website-ap-northeast-1.amazonaws.com"
-   },
-   "ap-northeast-2": {
-    "endpoint": "s3-website.ap-northeast-2.amazonaws.com"
-   },
-   "ap-northeast-3": {
-    "endpoint": "s3-website.ap-northeast-3.amazonaws.com"
-   },
-   "ap-south-1": {
-    "endpoint": "s3-website.ap-south-1.amazonaws.com"
-   },
-   "ap-south-2": {
-    "endpoint": "s3-website.ap-south-2.amazonaws.com"
-   },
-   "ap-southeast-1": {
-    "endpoint": "s3-website-ap-southeast-1.amazonaws.com"
-   },
-   "ap-southeast-2": {
-    "endpoint": "s3-website-ap-southeast-2.amazonaws.com"
-   },
-   "ap-southeast-3": {
-    "endpoint": "s3-website.ap-southeast-3.amazonaws.com"
-   },
-   "ca-central-1": {
-    "endpoint": "s3-website.ca-central-1.amazonaws.com"
-   },
-   "cn-north-1": {
-    "endpoint": "s3-website.cn-north-1.amazonaws.com.cn"
-   },
-   "cn-northwest-1": {
-    "endpoint": "s3-website.cn-northwest-1.amazonaws.com.cn"
-   },
-   "eu-central-1": {
-    "endpoint": "s3-website.eu-central-1.amazonaws.com"
-   },
-   "eu-central-2": {
-    "endpoint": "s3-website.eu-central-2.amazonaws.com"
-   },
-   "eu-north-1": {
-    "endpoint": "s3-website.eu-north-1.amazonaws.com"
-   },
-   "eu-south-1": {
-    "endpoint": "s3-website.eu-south-1.amazonaws.com"
-   },
-   "eu-south-2": {
-    "endpoint": "s3-website.eu-south-2.amazonaws.com"
-   },
-   "eu-west-1": {
-    "endpoint": "s3-website-eu-west-1.amazonaws.com"
-   },
-   "eu-west-2": {
-    "endpoint": "s3-website.eu-west-2.amazonaws.com"
-   },
-   "eu-west-3": {
-    "endpoint": "s3-website.eu-west-3.amazonaws.com"
-   },
-   "me-central-1": {
-    "endpoint": "s3-website.me-central-1.amazonaws.com"
-   },
-   "me-south-1": {
-    "endpoint": "s3-website.me-south-1.amazonaws.com"
-   },
-   "sa-east-1": {
-    "endpoint": "s3-website-sa-east-1.amazonaws.com"
-   },
-   "us-east-1": {
-    "endpoint": "s3-website-us-east-1.amazonaws.com"
-   },
-   "us-east-2": {
-    "endpoint": "s3-website.us-east-2.amazonaws.com"
-   },
-   "us-gov-east-1": {
-    "endpoint": "s3-website.us-gov-east-1.amazonaws.com"
-   },
-   "us-gov-west-1": {
-    "endpoint": "s3-website-us-gov-west-1.amazonaws.com"
-   },
-   "us-iso-east-1": {
-    "endpoint": "s3-website.us-iso-east-1.c2s.ic.gov"
-   },
-   "us-iso-west-1": {
-    "endpoint": "s3-website.us-iso-west-1.c2s.ic.gov"
-   },
-   "us-isob-east-1": {
-    "endpoint": "s3-website.us-isob-east-1.sc2s.sgov.gov"
-   },
-   "us-west-1": {
-    "endpoint": "s3-website-us-west-1.amazonaws.com"
-   },
-   "us-west-2": {
-    "endpoint": "s3-website-us-west-2.amazonaws.com"
-   }
   }
  },
  "Outputs": {
@@ -601,6 +398,115 @@
    },
    "Export": {
     "Name": "WebsiteUrl"
+   }
+  }
+ },
+ "Mappings": {
+  "S3staticwebsiteMap": {
+   "af-south-1": {
+    "endpoint": "s3-website.af-south-1.amazonaws.com"
+   },
+   "ap-east-1": {
+    "endpoint": "s3-website.ap-east-1.amazonaws.com"
+   },
+   "ap-northeast-1": {
+    "endpoint": "s3-website-ap-northeast-1.amazonaws.com"
+   },
+   "ap-northeast-2": {
+    "endpoint": "s3-website.ap-northeast-2.amazonaws.com"
+   },
+   "ap-northeast-3": {
+    "endpoint": "s3-website.ap-northeast-3.amazonaws.com"
+   },
+   "ap-south-1": {
+    "endpoint": "s3-website.ap-south-1.amazonaws.com"
+   },
+   "ap-south-2": {
+    "endpoint": "s3-website.ap-south-2.amazonaws.com"
+   },
+   "ap-southeast-1": {
+    "endpoint": "s3-website-ap-southeast-1.amazonaws.com"
+   },
+   "ap-southeast-2": {
+    "endpoint": "s3-website-ap-southeast-2.amazonaws.com"
+   },
+   "ap-southeast-3": {
+    "endpoint": "s3-website.ap-southeast-3.amazonaws.com"
+   },
+   "ap-southeast-4": {
+    "endpoint": "s3-website.ap-southeast-4.amazonaws.com"
+   },
+   "ca-central-1": {
+    "endpoint": "s3-website.ca-central-1.amazonaws.com"
+   },
+   "cn-north-1": {
+    "endpoint": "s3-website.cn-north-1.amazonaws.com.cn"
+   },
+   "cn-northwest-1": {
+    "endpoint": "s3-website.cn-northwest-1.amazonaws.com.cn"
+   },
+   "eu-central-1": {
+    "endpoint": "s3-website.eu-central-1.amazonaws.com"
+   },
+   "eu-central-2": {
+    "endpoint": "s3-website.eu-central-2.amazonaws.com"
+   },
+   "eu-north-1": {
+    "endpoint": "s3-website.eu-north-1.amazonaws.com"
+   },
+   "eu-south-1": {
+    "endpoint": "s3-website.eu-south-1.amazonaws.com"
+   },
+   "eu-south-2": {
+    "endpoint": "s3-website.eu-south-2.amazonaws.com"
+   },
+   "eu-west-1": {
+    "endpoint": "s3-website-eu-west-1.amazonaws.com"
+   },
+   "eu-west-2": {
+    "endpoint": "s3-website.eu-west-2.amazonaws.com"
+   },
+   "eu-west-3": {
+    "endpoint": "s3-website.eu-west-3.amazonaws.com"
+   },
+   "il-central-1": {
+    "endpoint": "s3-website.il-central-1.amazonaws.com"
+   },
+   "me-central-1": {
+    "endpoint": "s3-website.me-central-1.amazonaws.com"
+   },
+   "me-south-1": {
+    "endpoint": "s3-website.me-south-1.amazonaws.com"
+   },
+   "sa-east-1": {
+    "endpoint": "s3-website-sa-east-1.amazonaws.com"
+   },
+   "us-east-1": {
+    "endpoint": "s3-website-us-east-1.amazonaws.com"
+   },
+   "us-east-2": {
+    "endpoint": "s3-website.us-east-2.amazonaws.com"
+   },
+   "us-gov-east-1": {
+    "endpoint": "s3-website.us-gov-east-1.amazonaws.com"
+   },
+   "us-gov-west-1": {
+    "endpoint": "s3-website-us-gov-west-1.amazonaws.com"
+   },
+   "us-iso-east-1": {
+    "endpoint": "s3-website.us-iso-east-1.c2s.ic.gov"
+   },
+   "us-iso-west-1": {
+    "endpoint": "s3-website.us-iso-west-1.c2s.ic.gov"
+   },
+   "us-isob-east-1": {
+    "endpoint": "s3-website.us-isob-east-1.sc2s.sgov.gov"
+   },
+   "us-west-1": {
+    "endpoint": "s3-website-us-west-1.amazonaws.com"
+   },
+   "us-west-2": {
+    "endpoint": "s3-website-us-west-2.amazonaws.com"
    }
   }
  },

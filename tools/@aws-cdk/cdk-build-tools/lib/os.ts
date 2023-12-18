@@ -15,19 +15,24 @@ interface ShellOptions {
  * Is platform-aware, handles errors nicely.
  */
 export async function shell(command: string[], options: ShellOptions = {}): Promise<string> {
-  const timer = (options.timers || new Timers()).start(command[0]);
+  const [cmd, ...args] = command;
+  const timer = (options.timers || new Timers()).start(cmd);
 
-  await makeShellScriptExecutable(command[0]);
+  await makeShellScriptExecutable(cmd);
 
-  const child = child_process.spawn(command[0], command.slice(1), {
-    // Need this for Windows where we want .cmd and .bat to be found as well.
-    shell: true,
-    stdio: ['ignore', 'pipe', 'pipe'],
-    env: {
-      ...process.env,
-      ...options.env,
-    },
-  });
+  // yarn exec runs the provided command with the correct environment for the workspace.
+  const child = child_process.spawn(
+    cmd,
+    args,
+    {
+      // Need this for Windows where we want .cmd and .bat to be found as well.
+      shell: true,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      env: {
+        ...process.env,
+        ...options.env,
+      },
+    });
 
   const makeRed = process.stderr.isTTY ? chalk.red : (x: string) => x;
 
@@ -102,7 +107,7 @@ function hasAnyChars(...chars: string[]): (x: string) => boolean {
  */
 function posixEscape(x: string) {
   // Turn ' -> '"'"'
-  x = x.replace("'", "'\"'\"'");
+  x = x.replace(/'/g, "'\"'\"'");
   return `'${x}'`;
 }
 

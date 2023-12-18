@@ -117,6 +117,40 @@ new route53.AaaaRecord(this, 'Alias', {
 });
 ```
 
+[Geolocation routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-geo.html) can be enabled for continent, country or subdivision:
+
+```ts
+declare const myZone: route53.HostedZone;
+
+// continent
+new route53.ARecord(this, 'ARecordGeoLocationContinent', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.0', '5.6.7.0'),
+  geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE),
+});
+
+// country
+new route53.ARecord(this, 'ARecordGeoLocationCountry', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.1', '5.6.7.1'),
+  geoLocation: route53.GeoLocation.country('DE'), // Germany
+});
+
+// subdivision
+new route53.ARecord(this, 'ARecordGeoLocationSubDividion', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.2', '5.6.7.2'),
+  geoLocation: route53.GeoLocation.subdivision('WA'), // Washington
+});
+
+// default (wildcard record if no specific record is found)
+new route53.ARecord(this, 'ARecordGeoLocationDefault', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.3', '5.6.7.3'),
+  geoLocation: route53.GeoLocation.default(),
+});
+```
+
 Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
@@ -253,6 +287,26 @@ const zoneFromAttributes = route53.PublicHostedZone.fromPublicHostedZoneAttribut
 
 // Does not know zoneName
 const zoneFromId = route53.PublicHostedZone.fromPublicHostedZoneId(this, 'MyZone', 'ZOJJZC49E0EPZ');
+```
+
+You can use `CrossAccountZoneDelegationRecord` on imported Hosted Zones with the `grantDelegation` method:
+
+```ts
+const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
+  // The role name must be predictable
+  roleName: 'MyDelegationRole',
+  // The other account
+  assumedBy: new iam.AccountPrincipal('12345678901'),
+});
+
+const zoneFromId = route53.HostedZone.fromHostedZoneId(this, 'MyZone', 'zone-id');
+zoneFromId.grantDelegation(crossAccountRole);
+
+const publicZoneFromId = route53.PublicHostedZone.fromPublicHostedZoneId(this, 'MyPublicZone', 'public-zone-id');
+publicZoneFromId.grantDelegation(crossAccountRole);
+
+const privateZoneFromId = route53.PrivateHostedZone.fromPrivateHostedZoneId(this, 'MyPrivateZone', 'private-zone-id');
+privateZoneFromId.grantDelegation(crossAccountRole);
 ```
 
 ## VPC Endpoint Service Private DNS

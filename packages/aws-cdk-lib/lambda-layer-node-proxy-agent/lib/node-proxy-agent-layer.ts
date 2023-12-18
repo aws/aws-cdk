@@ -1,4 +1,4 @@
-import { ASSET_FILE, LAYER_SOURCE_DIR } from '@aws-cdk/asset-node-proxy-agent-v5';
+import { ASSET_FILE, LAYER_SOURCE_DIR } from '@aws-cdk/asset-node-proxy-agent-v6';
 import { Construct } from 'constructs';
 import * as lambda from '../../aws-lambda';
 import { FileSystem } from '../../core';

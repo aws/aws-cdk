@@ -8,7 +8,7 @@ function mockFunction(stack: cdk.Stack, id: string) {
   return new lambda.Function(stack, id, {
     code: lambda.Code.fromInline('mock'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
   });
 }
 function mockAlias(stack: cdk.Stack) {
@@ -51,8 +51,8 @@ testDeprecated('custom resource created', () => {
         'Arn',
       ],
     },
-    Create: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"CustomConfig.LambdaCanary5Percent1Minutes","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":"1","canaryPercentage":"5"}}},"physicalResourceId":{"id":"CustomConfig.LambdaCanary5Percent1Minutes"}}',
-    Update: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"CustomConfig.LambdaCanary5Percent1Minutes","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":"1","canaryPercentage":"5"}}},"physicalResourceId":{"id":"CustomConfig.LambdaCanary5Percent1Minutes"}}',
+    Create: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"CustomConfig.LambdaCanary5Percent1Minutes","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":1,"canaryPercentage":5}}},"physicalResourceId":{"id":"CustomConfig.LambdaCanary5Percent1Minutes"}}',
+    Update: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"CustomConfig.LambdaCanary5Percent1Minutes","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":1,"canaryPercentage":5}}},"physicalResourceId":{"id":"CustomConfig.LambdaCanary5Percent1Minutes"}}',
     Delete: '{"service":"CodeDeploy","action":"deleteDeploymentConfig","parameters":{"deploymentConfigName":"CustomConfig.LambdaCanary5Percent1Minutes"}}',
   });
 
@@ -91,8 +91,8 @@ testDeprecated('custom resource created with specific name', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
-    Create: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":"1","canaryPercentage":"5"}}},"physicalResourceId":{"id":"MyDeploymentConfig"}}',
-    Update: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":"1","canaryPercentage":"5"}}},"physicalResourceId":{"id":"MyDeploymentConfig"}}',
+    Create: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":1,"canaryPercentage":5}}},"physicalResourceId":{"id":"MyDeploymentConfig"}}',
+    Update: '{"service":"CodeDeploy","action":"createDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig","computePlatform":"Lambda","trafficRoutingConfig":{"type":"TimeBasedCanary","timeBasedCanary":{"canaryInterval":1,"canaryPercentage":5}}},"physicalResourceId":{"id":"MyDeploymentConfig"}}',
     Delete: '{"service":"CodeDeploy","action":"deleteDeploymentConfig","parameters":{"deploymentConfigName":"MyDeploymentConfig"}}',
   });
 });

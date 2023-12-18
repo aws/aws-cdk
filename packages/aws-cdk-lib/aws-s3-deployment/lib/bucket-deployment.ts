@@ -1,7 +1,8 @@
-import * as path from 'path';
+
+import * as fs from 'fs';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
-import { ISource, SourceConfig } from './source';
+import { ISource, SourceConfig, Source } from './source';
 import * as cloudfront from '../../aws-cloudfront';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
@@ -10,6 +11,7 @@ import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { BucketDeploymentSingletonFunction } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
 // tag key has a limit of 128 characters
@@ -85,7 +87,7 @@ export interface BucketDeploymentProps {
    * NOTICE: Configuring this to "false" might have operational implications. Please
    * visit to the package documentation referred below to make sure you fully understand those implications.
    *
-   * @see https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment#retain-on-delete
+   * @see https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-s3-deployment#retain-on-delete
    * @default true - when resource is deleted/updated, files are retained
    */
   readonly retainOnDelete?: boolean;
@@ -314,18 +316,15 @@ export class BucketDeployment extends Construct {
     }
 
     const mountPath = `/mnt${accessPointPath}`;
-    const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
+    const handler = new BucketDeploymentSingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc),
-      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
-      runtime: lambda.Runtime.PYTHON_3_9,
       environment: {
         ...props.useEfs ? { MOUNT_PATH: mountPath } : undefined,
         // Override the built-in CA bundle from the AWS CLI with the Lambda-curated one
         // This is necessary to make the CLI work in ADC regions.
         AWS_CA_BUNDLE: '/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem',
       },
-      handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
@@ -375,9 +374,9 @@ export class BucketDeployment extends Construct {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
-        SourceBucketNames: cdk.Lazy.list({ produce: () => this.sources.map(source => source.bucket.bucketName) }),
-        SourceObjectKeys: cdk.Lazy.list({ produce: () => this.sources.map(source => source.zipObjectKey) }),
-        SourceMarkers: cdk.Lazy.any({
+        SourceBucketNames: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.bucket.bucketName) }),
+        SourceObjectKeys: cdk.Lazy.uncachedList({ produce: () => this.sources.map(source => source.zipObjectKey) }),
+        SourceMarkers: cdk.Lazy.uncachedAny({
           produce: () => {
             return this.sources.reduce((acc, source) => {
               if (source.markers) {
@@ -517,7 +516,10 @@ export class BucketDeployment extends Construct {
    * deployment.addSource(s3deploy.Source.asset('./another-asset'));
    */
   public addSource(source: ISource): void {
-    this.sources.push(source.bind(this, { handlerRole: this.handlerRole }));
+    const config = source.bind(this, { handlerRole: this.handlerRole });
+    if (!this.sources.some((c) => sourceConfigEqual(cdk.Stack.of(this), c, config))) {
+      this.sources.push(config);
+    }
   }
 
   private renderUniqueId(memoryLimit?: number, ephemeralStorageSize?: cdk.Size, vpc?: ec2.IVpc) {
@@ -574,6 +576,71 @@ export class BucketDeployment extends Construct {
     const stack = cdk.Stack.of(scope);
     const uuid = `BucketDeploymentEFS-VPC-${fileSystemProps.vpc.node.addr}`;
     return stack.node.tryFindChild(uuid) as efs.FileSystem ?? new efs.FileSystem(scope, uuid, fileSystemProps);
+  }
+}
+
+export interface DeployTimeSubstitutedFileProps {
+  /**
+   * Path to the user's local file.
+   */
+  readonly source: string;
+
+  /**
+   * The S3 bucket to sync the contents of the zip file to.
+   */
+  readonly destinationBucket: s3.IBucket;
+
+  /**
+   * User-defined substitutions to make in the file.
+   * Placeholders in the user's local file must be specified with double curly
+   * brackets and spaces. For example, if you use the key 'xxxx' in the file,
+   * it must be written as: {{ xxxx }} to be recognized by the construct as a
+   * substitution.
+   */
+  readonly substitutions: { [key: string]: string };
+
+  /**
+   * Execution role associated with this function
+   *
+   * @default - A role is automatically created
+   */
+  readonly role?: iam.IRole;
+}
+
+/**
+ * `DeployTimeSubstitutedFile` is an extension of `BucketDeployment` that allows users to
+ * upload individual files and specify to make substitutions in the file.
+ */
+export class DeployTimeSubstitutedFile extends BucketDeployment {
+
+  public readonly objectKey: string;
+
+  constructor(scope: Construct, id: string, props: DeployTimeSubstitutedFileProps) {
+    if (!fs.existsSync(props.source)) {
+      throw new Error(`No file found at 'source' path ${props.source}`);
+    }
+    // Makes substitutions on the file
+    let fileData = fs.readFileSync(props.source, 'utf-8');
+    fileData = fileData.replace(/{{\s*(\w+)\s*}}/g, function(match, expr) {
+      return props.substitutions[expr] ?? match;
+    });
+
+    const objectKey = cdk.FileSystem.fingerprint(props.source);
+    const fileSource = Source.data(objectKey, fileData);
+    const fullBucketDeploymentProps: BucketDeploymentProps = {
+      prune: false,
+      extract: true,
+      ...props,
+      sources: [fileSource],
+      role: props.role,
+    };
+    super(scope, id, fullBucketDeploymentProps);
+    // sets the object key
+    this.objectKey = objectKey;
+  }
+
+  public get bucket(): s3.IBucket {
+    return this.deployedBucket;
   }
 }
 
@@ -809,4 +876,11 @@ export interface UserDefinedObjectMetadata {
    * @jsii ignore
    */
   readonly [key: string]: string;
+}
+
+function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
+  return (
+    JSON.stringify(stack.resolve(a.bucket.bucketName)) === JSON.stringify(stack.resolve(b.bucket.bucketName))
+    && a.zipObjectKey === b.zipObjectKey
+    && a.markers === undefined && b.markers === undefined);
 }

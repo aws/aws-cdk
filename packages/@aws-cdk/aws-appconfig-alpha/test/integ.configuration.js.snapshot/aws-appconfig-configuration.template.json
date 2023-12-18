@@ -1,0 +1,1853 @@
+{
+ "Resources": {
+  "MyAppConfigB4B63E75": {
+   "Type": "AWS::AppConfig::Application",
+   "Properties": {
+    "Name": "AppForConfigTest"
+   }
+  },
+  "MyAppConfigHostedEnvF39C847E": {
+   "Type": "AWS::AppConfig::Environment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "Name": "awsappconfigconfiguration-MyAppConfig-HostedEnv-D1EED3BE"
+   }
+  },
+  "MyAppConfigHostedEnvFromJson9E6E36C4": {
+   "Type": "AWS::AppConfig::Environment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "Name": "awsappconfigconfiguration-MyAppConfig-HostedEnvFromJson-140D2DDD"
+   }
+  },
+  "MyAppConfigHostedEnvFromYaml82D3D1B2": {
+   "Type": "AWS::AppConfig::Environment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "Name": "awsappconfigconfiguration-MyAppConfig-HostedEnvFromYaml-BB2C802A"
+   }
+  },
+  "MyAppConfigEnvDeployLater26FA1032": {
+   "Type": "AWS::AppConfig::Environment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "Name": "awsappconfigconfiguration-MyAppConfig-EnvDeployLater-91038922"
+   }
+  },
+  "MyAppConfigParameterEnvD769FB19": {
+   "Type": "AWS::AppConfig::Environment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "Name": "awsappconfigconfiguration-MyAppConfig-ParameterEnv-803E803A"
+   }
+  },
+  "MyAppConfigDocumentEnv34B10223": {
+   "Type": "AWS::AppConfig::Environment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "Name": "awsappconfigconfiguration-MyAppConfig-DocumentEnv-5B0DCEC5"
+   }
+  },
+  "MyAppConfigBucketEnvCBDFEF45": {
+   "Type": "AWS::AppConfig::Environment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "Name": "awsappconfigconfiguration-MyAppConfig-BucketEnv-1A81B6F5"
+   }
+  },
+  "MyAppConfigSecretEnvE1102B63": {
+   "Type": "AWS::AppConfig::Environment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "Name": "awsappconfigconfiguration-MyAppConfig-SecretEnv-371FF6BB"
+   }
+  },
+  "MyAppConfigSecretEnvWithKey9C93DA23": {
+   "Type": "AWS::AppConfig::Environment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "Name": "awsappconfigconfiguration-MyAppConfig-SecretEnvWithKey-8D4A2FFE"
+   }
+  },
+  "MyDeployStrategy062CAEA2": {
+   "Type": "AWS::AppConfig::DeploymentStrategy",
+   "Properties": {
+    "DeploymentDurationInMinutes": 0,
+    "GrowthFactor": 100,
+    "GrowthType": "LINEAR",
+    "Name": "awsappconfigconfiguration-MyDeployStrategy-91730AE8",
+    "ReplicateTo": "NONE"
+   }
+  },
+  "MyHostedConfigFromFileDeploymentStrategyCAF37A7C": {
+   "Type": "AWS::AppConfig::DeploymentStrategy",
+   "Properties": {
+    "DeploymentDurationInMinutes": 20,
+    "FinalBakeTimeInMinutes": 10,
+    "GrowthFactor": 10,
+    "GrowthType": "EXPONENTIAL",
+    "Name": "awsappconfigconfiguration-MyFromFile-DeploymentStrategy-C2367737",
+    "ReplicateTo": "NONE"
+   }
+  },
+  "MyHostedConfigFromFileConfigurationProfile32B2D26F": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "LocationUri": "hosted",
+    "Name": "awsappconfigconfiguration-MyHostedConfigFromFile-8ED1123C"
+   }
+  },
+  "MyHostedConfigFromFile943CF9F9": {
+   "Type": "AWS::AppConfig::HostedConfigurationVersion",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigFromFileConfigurationProfile32B2D26F"
+    },
+    "Content": "{\n  \"content\": \"This is the configuration content\"\n}",
+    "ContentType": "application/json"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyHostedConfigConfigurationProfile2E1A2BBC": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "LocationUri": "hosted",
+    "Name": "awsappconfigconfiguration-MyHostedConfig-4CF350AE",
+    "Validators": [
+     {
+      "Content": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"string\"\n}",
+      "Type": "JSON_SCHEMA"
+     },
+     {
+      "Content": "{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"string\"\n}",
+      "Type": "JSON_SCHEMA"
+     }
+    ]
+   }
+  },
+  "MyHostedConfig51D3877D": {
+   "Type": "AWS::AppConfig::HostedConfigurationVersion",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigConfigurationProfile2E1A2BBC"
+    },
+    "Content": "This is my configuration content.",
+    "ContentType": "text/plain"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyHostedConfigDeploymentE4742E8E64DF4": {
+   "Type": "AWS::AppConfig::Deployment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigConfigurationProfile2E1A2BBC"
+    },
+    "ConfigurationVersion": {
+     "Ref": "MyHostedConfig51D3877D"
+    },
+    "DeploymentStrategyId": {
+     "Ref": "MyDeployStrategy062CAEA2"
+    },
+    "EnvironmentId": {
+     "Ref": "MyAppConfigHostedEnvF39C847E"
+    }
+   }
+  },
+  "MyHostedConfigFromJsonConfigurationProfile863E1E42": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "LocationUri": "hosted",
+    "Name": "awsappconfigconfiguration-MyHostedConfigFromJson-3E786E81"
+   }
+  },
+  "MyHostedConfigFromJsonD8CF9BE4": {
+   "Type": "AWS::AppConfig::HostedConfigurationVersion",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigFromJsonConfigurationProfile863E1E42"
+    },
+    "Content": "This is the configuration content",
+    "ContentType": "text/plain"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyHostedConfigFromJsonDeploymentCD82E3049E374": {
+   "Type": "AWS::AppConfig::Deployment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigFromJsonConfigurationProfile863E1E42"
+    },
+    "ConfigurationVersion": {
+     "Ref": "MyHostedConfigFromJsonD8CF9BE4"
+    },
+    "DeploymentStrategyId": {
+     "Ref": "MyDeployStrategy062CAEA2"
+    },
+    "EnvironmentId": {
+     "Ref": "MyAppConfigHostedEnvFromJson9E6E36C4"
+    }
+   }
+  },
+  "MyHostedConfigFromJsonDeploymentEFECDBC4087F1": {
+   "Type": "AWS::AppConfig::Deployment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigFromJsonConfigurationProfile863E1E42"
+    },
+    "ConfigurationVersion": {
+     "Ref": "MyHostedConfigFromJsonD8CF9BE4"
+    },
+    "DeploymentStrategyId": {
+     "Ref": "MyDeployStrategy062CAEA2"
+    },
+    "EnvironmentId": {
+     "Ref": "MyAppConfigEnvDeployLater26FA1032"
+    }
+   }
+  },
+  "MyHostedConfigFromYamlConfigurationProfile7C77A435": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "LocationUri": "hosted",
+    "Name": "awsappconfigconfiguration-MyHostedConfigFromYaml-87E9786A"
+   }
+  },
+  "MyHostedConfigFromYaml13C5BE35": {
+   "Type": "AWS::AppConfig::HostedConfigurationVersion",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigFromYamlConfigurationProfile7C77A435"
+    },
+    "Content": "This is the configuration content",
+    "ContentType": "application/x-yaml"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyHostedConfigFromYamlDeploymentFE9624CBE5FC6": {
+   "Type": "AWS::AppConfig::Deployment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyHostedConfigFromYamlConfigurationProfile7C77A435"
+    },
+    "ConfigurationVersion": {
+     "Ref": "MyHostedConfigFromYaml13C5BE35"
+    },
+    "DeploymentStrategyId": {
+     "Ref": "MyDeployStrategy062CAEA2"
+    },
+    "EnvironmentId": {
+     "Ref": "MyAppConfigHostedEnvFromYaml82D3D1B2"
+    }
+   }
+  },
+  "MyValidatorFunctionServiceRole5CD02390": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "MyValidatorFunctionA679CB3C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "\ndef handler(event, context):\n  print('This is my dummy validator')\n"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "MyValidatorFunctionServiceRole5CD02390",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.8"
+   },
+   "DependsOn": [
+    "MyValidatorFunctionServiceRole5CD02390"
+   ]
+  },
+  "MyValidatorFunctionAppConfigPermission77CD11AC": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyValidatorFunctionA679CB3C",
+      "Arn"
+     ]
+    },
+    "Principal": "appconfig.amazonaws.com"
+   }
+  },
+  "MyParameter18BA547D": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "String",
+    "Value": "This is the content stored in ssm parameter"
+   }
+  },
+  "MyConfigFromParameterRole4E40C8BC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appconfig.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "ssm:GetParameter",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":ssm:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":parameter/",
+            {
+             "Ref": "MyParameter18BA547D"
+            }
+           ]
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "AllowAppConfigReadFromSourcePolicy"
+     }
+    ]
+   }
+  },
+  "MyConfigFromParameterDC204468": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "Description": "This is a configuration profile used for integ testing",
+    "LocationUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":ssm:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":parameter/",
+       {
+        "Ref": "MyParameter18BA547D"
+       }
+      ]
+     ]
+    },
+    "Name": "TestConfigProfileStoredAsParamater",
+    "RetrievalRoleArn": {
+     "Fn::GetAtt": [
+      "MyConfigFromParameterRole4E40C8BC",
+      "Arn"
+     ]
+    },
+    "Validators": [
+     {
+      "Content": {
+       "Fn::GetAtt": [
+        "MyValidatorFunctionA679CB3C",
+        "Arn"
+       ]
+      },
+      "Type": "LAMBDA"
+     }
+    ]
+   }
+  },
+  "MyConfigFromParameterDeployment0C84B4B3BAD6B": {
+   "Type": "AWS::AppConfig::Deployment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyConfigFromParameterDC204468"
+    },
+    "ConfigurationVersion": "1",
+    "DeploymentStrategyId": {
+     "Ref": "MyDeployStrategy062CAEA2"
+    },
+    "Description": "This is a configuration profile used for integ testing",
+    "EnvironmentId": {
+     "Ref": "MyAppConfigParameterEnvD769FB19"
+    }
+   }
+  },
+  "MyDocument": {
+   "Type": "AWS::SSM::Document",
+   "Properties": {
+    "Content": {
+     "schemaVersion": "2.2",
+     "description": "Sample SSM Document",
+     "mainSteps": [
+      {
+       "action": "aws:runShellScript",
+       "name": "step1",
+       "inputs": {
+        "runCommand": [
+         "echo \"Hello, World!\""
+        ]
+       }
+      }
+     ]
+    },
+    "DocumentType": "Command",
+    "Name": "TestDocument"
+   }
+  },
+  "MyConfigFromDocumentRole29FB4D3D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appconfig.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "ssm:GetDocument",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":ssm:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":document/",
+            {
+             "Ref": "MyDocument"
+            }
+           ]
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "AllowAppConfigReadFromSourcePolicy"
+     }
+    ]
+   }
+  },
+  "MyConfigFromDocument79E66ABA": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "LocationUri": {
+     "Fn::Join": [
+      "",
+      [
+       "ssm-document://",
+       {
+        "Ref": "MyDocument"
+       }
+      ]
+     ]
+    },
+    "Name": "awsappconfigconfiguration-MyConfigFromDocument-A15AC401",
+    "RetrievalRoleArn": {
+     "Fn::GetAtt": [
+      "MyConfigFromDocumentRole29FB4D3D",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "MyConfigFromDocumentDeployment1520EE7C916D3": {
+   "Type": "AWS::AppConfig::Deployment",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "ConfigurationProfileId": {
+     "Ref": "MyConfigFromDocument79E66ABA"
+    },
+    "ConfigurationVersion": "1",
+    "DeploymentStrategyId": {
+     "Ref": "MyDeployStrategy062CAEA2"
+    },
+    "EnvironmentId": {
+     "Ref": "MyAppConfigDocumentEnv34B10223"
+    }
+   }
+  },
+  "MyBucketF68F3FF0": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:cr-owned:2255b7ad",
+      "Value": "true"
+     }
+    ],
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DeployConfigInBucketAwsCliLayerFC57D055": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   }
+  },
+  "DeployConfigInBucketCustomResource91997C5B": {
+   "Type": "Custom::CDKBucketDeployment",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
+      "Arn"
+     ]
+    },
+    "SourceBucketNames": [
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     }
+    ],
+    "SourceObjectKeys": [
+     "9f148cad39f325035dfec935c0a2e907135f10cb64e7c4ef78c2320fc9ad24ae.zip",
+     "9b7590a121e3b39547297cbf009beb8a27e1cf9daaa760cb82c42bd530d5ef8f.zip"
+    ],
+    "SourceMarkers": [
+     {},
+     {}
+    ],
+    "DestinationBucketName": {
+     "Ref": "MyBucketF68F3FF0"
+    },
+    "RetainOnDelete": false,
+    "Prune": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           },
+           "/*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":s3:::",
+           {
+            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+           }
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyBucketF68F3FF0",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyBucketF68F3FF0",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+    "Roles": [
+     {
+      "Ref": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+     }
+    ]
+   }
+  },
+  "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "e976a796f036a5efbf44b99e44cfb5a961df08d8dbf7cd37e60bf216fb982a00.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_CA_BUNDLE": "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+     }
+    },
+    "Handler": "index.handler",
+    "Layers": [
+     {
+      "Ref": "DeployConfigInBucketAwsCliLayerFC57D055"
+     }
+    ],
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.9",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF",
+    "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+   ]
+  },
+  "MyConfigFromBucketDeploymentStrategy59D68C4F": {
+   "Type": "AWS::AppConfig::DeploymentStrategy",
+   "Properties": {
+    "DeploymentDurationInMinutes": 20,
+    "FinalBakeTimeInMinutes": 10,
+    "GrowthFactor": 10,
+    "GrowthType": "EXPONENTIAL",
+    "Name": "awsappconfigconfiguration-MyomBucket-DeploymentStrategy-8366DF86",
+    "ReplicateTo": "NONE"
+   }
+  },
+  "MyConfigFromBucketRole5749669F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appconfig.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "s3:GetObject",
+          "s3:GetObjectMetadata",
+          "s3:GetObjectVersion"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":s3:::",
+            {
+             "Ref": "MyBucketF68F3FF0"
+            },
+            "/hello/world/file.txt"
+           ]
+          ]
+         }
+        },
+        {
+         "Action": [
+          "s3:GetBucketLocation",
+          "s3:GetBucketVersioning",
+          "s3:ListBucket",
+          "s3:ListBucketVersions"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":s3:::",
+            {
+             "Ref": "MyBucketF68F3FF0"
+            }
+           ]
+          ]
+         }
+        },
+        {
+         "Action": "s3:ListAllMyBuckets",
+         "Effect": "Allow",
+         "Resource": "*"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "AllowAppConfigReadFromSourcePolicy"
+     }
+    ]
+   }
+  },
+  "MyConfigFromBucket064B5420": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Sourced from ",
+       {
+        "Fn::Select": [
+         0,
+         {
+          "Fn::GetAtt": [
+           "DeployConfigInBucketCustomResource91997C5B",
+           "SourceObjectKeys"
+          ]
+         }
+        ]
+       }
+      ]
+     ]
+    },
+    "LocationUri": {
+     "Fn::Join": [
+      "",
+      [
+       "s3://",
+       {
+        "Ref": "MyBucketF68F3FF0"
+       },
+       "/hello/world/file.txt"
+      ]
+     ]
+    },
+    "Name": "awsappconfigconfiguration-MyConfigFromBucket-79972829",
+    "RetrievalRoleArn": {
+     "Fn::GetAtt": [
+      "MyConfigFromBucketRole5749669F",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "MySecret8FE80B51": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "SecretString": "This is the content stored in secrets manager"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyConfigFromSecretDeploymentStrategy7E7398AA": {
+   "Type": "AWS::AppConfig::DeploymentStrategy",
+   "Properties": {
+    "DeploymentDurationInMinutes": 20,
+    "FinalBakeTimeInMinutes": 10,
+    "GrowthFactor": 10,
+    "GrowthType": "EXPONENTIAL",
+    "Name": "awsappconfigconfiguration-MyomSecret-DeploymentStrategy-2F6D94AB",
+    "ReplicateTo": "NONE"
+   }
+  },
+  "MyConfigFromSecretRole77E11CE7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appconfig.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "secretsmanager:GetSecretValue",
+         "Effect": "Allow",
+         "Resource": {
+          "Ref": "MySecret8FE80B51"
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "AllowAppConfigReadFromSourcePolicy"
+     }
+    ]
+   }
+  },
+  "MyConfigFromSecret42EED9DC": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "LocationUri": {
+     "Ref": "MySecret8FE80B51"
+    },
+    "Name": "awsappconfigconfiguration-MyConfigFromSecret-3BD4C031",
+    "RetrievalRoleArn": {
+     "Fn::GetAtt": [
+      "MyConfigFromSecretRole77E11CE7",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "MyKey6AB29FA6": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:CreateGrant",
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "kms:ViaService": {
+          "Fn::Join": [
+           "",
+           [
+            "secretsmanager.",
+            {
+             "Ref": "AWS::Region"
+            },
+            ".amazonaws.com"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MySecretWithKey1F7B590B": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "KmsKeyId": {
+     "Fn::GetAtt": [
+      "MyKey6AB29FA6",
+      "Arn"
+     ]
+    },
+    "SecretString": "This is the content stored in secrets manager"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyConfigFromSecretWithKeyDeploymentStrategy9FAC9F62": {
+   "Type": "AWS::AppConfig::DeploymentStrategy",
+   "Properties": {
+    "DeploymentDurationInMinutes": 20,
+    "FinalBakeTimeInMinutes": 10,
+    "GrowthFactor": 10,
+    "GrowthType": "EXPONENTIAL",
+    "Name": "awsappconfigconfiguration-MytWithKey-DeploymentStrategy-70C32371",
+    "ReplicateTo": "NONE"
+   }
+  },
+  "MyConfigFromSecretWithKeyRole3C7B494A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "appconfig.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "secretsmanager:GetSecretValue",
+         "Effect": "Allow",
+         "Resource": {
+          "Ref": "MySecretWithKey1F7B590B"
+         }
+        },
+        {
+         "Action": "kms:Decrypt",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "MyKey6AB29FA6",
+           "Arn"
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "AllowAppConfigReadFromSourcePolicy"
+     }
+    ]
+   }
+  },
+  "MyConfigFromSecretWithKey6F08D343": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "LocationUri": {
+     "Ref": "MySecretWithKey1F7B590B"
+    },
+    "Name": "awsappconfigconfiguration-MyConfigFromSecretWithKey-516D9EB2",
+    "RetrievalRoleArn": {
+     "Fn::GetAtt": [
+      "MyConfigFromSecretWithKeyRole3C7B494A",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyPipelineArtifactsBucketEncryptionKeyAlias9D4F8C59": {
+   "Type": "AWS::KMS::Alias",
+   "Properties": {
+    "AliasName": "alias/codepipeline-aws-appconfig-configuration-mypipeline-893f29d4",
+    "TargetKeyId": {
+     "Fn::GetAtt": [
+      "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyPipelineArtifactsBucket727923DD": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "KMSMasterKeyID": {
+         "Fn::GetAtt": [
+          "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+          "Arn"
+         ]
+        },
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyPipelineArtifactsBucketPolicyDFDA675B": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "MyPipelineArtifactsBucket727923DD"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyPipelineArtifactsBucket727923DD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyPipelineArtifactsBucket727923DD",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyPipelineRoleC0D47CA4": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codepipeline.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyPipelineRoleDefaultPolicy34F09EFA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyPipelineArtifactsBucket727923DD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyPipelineArtifactsBucket727923DD",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyPipelinebetaSourceCodePipelineActionRoleA59DCC4C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "MyPipelineprodDeployCodePipelineActionRoleFAD07544",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyPipelineRoleDefaultPolicy34F09EFA",
+    "Roles": [
+     {
+      "Ref": "MyPipelineRoleC0D47CA4"
+     }
+    ]
+   }
+  },
+  "MyPipelineAED38ECF": {
+   "Type": "AWS::CodePipeline::Pipeline",
+   "Properties": {
+    "ArtifactStore": {
+     "EncryptionKey": {
+      "Id": {
+       "Fn::GetAtt": [
+        "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+        "Arn"
+       ]
+      },
+      "Type": "KMS"
+     },
+     "Location": {
+      "Ref": "MyPipelineArtifactsBucket727923DD"
+     },
+     "Type": "S3"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "MyPipelineRoleC0D47CA4",
+      "Arn"
+     ]
+    },
+    "Stages": [
+     {
+      "Actions": [
+       {
+        "ActionTypeId": {
+         "Category": "Source",
+         "Owner": "AWS",
+         "Provider": "S3",
+         "Version": "1"
+        },
+        "Configuration": {
+         "S3Bucket": {
+          "Ref": "MyBucketF68F3FF0"
+         },
+         "S3ObjectKey": "hello/world/codepipeline.txt"
+        },
+        "Name": "Source",
+        "OutputArtifacts": [
+         {
+          "Name": "SourceOutput"
+         }
+        ],
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "MyPipelinebetaSourceCodePipelineActionRoleA59DCC4C",
+          "Arn"
+         ]
+        },
+        "RunOrder": 1
+       }
+      ],
+      "Name": "beta"
+     },
+     {
+      "Actions": [
+       {
+        "ActionTypeId": {
+         "Category": "Deploy",
+         "Owner": "AWS",
+         "Provider": "S3",
+         "Version": "1"
+        },
+        "Configuration": {
+         "BucketName": {
+          "Ref": "MyBucketF68F3FF0"
+         },
+         "Extract": "true"
+        },
+        "InputArtifacts": [
+         {
+          "Name": "SourceOutput"
+         }
+        ],
+        "Name": "Deploy",
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "MyPipelineprodDeployCodePipelineActionRoleFAD07544",
+          "Arn"
+         ]
+        },
+        "RunOrder": 1
+       }
+      ],
+      "Name": "prod"
+     }
+    ]
+   },
+   "DependsOn": [
+    "MyPipelineRoleDefaultPolicy34F09EFA",
+    "MyPipelineRoleC0D47CA4"
+   ]
+  },
+  "MyPipelinebetaSourceCodePipelineActionRoleA59DCC4C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyPipelinebetaSourceCodePipelineActionRoleDefaultPolicy4F6DF82E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyBucketF68F3FF0",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyBucketF68F3FF0",
+             "Arn"
+            ]
+           },
+           "/hello/world/codepipeline.txt"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyPipelineArtifactsBucket727923DD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyPipelineArtifactsBucket727923DD",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyPipelinebetaSourceCodePipelineActionRoleDefaultPolicy4F6DF82E",
+    "Roles": [
+     {
+      "Ref": "MyPipelinebetaSourceCodePipelineActionRoleA59DCC4C"
+     }
+    ]
+   }
+  },
+  "MyPipelineprodDeployCodePipelineActionRoleFAD07544": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyPipelineprodDeployCodePipelineActionRoleDefaultPolicyF1913519": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyBucketF68F3FF0",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyBucketF68F3FF0",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyPipelineArtifactsBucket727923DD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyPipelineArtifactsBucket727923DD",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyPipelineprodDeployCodePipelineActionRoleDefaultPolicyF1913519",
+    "Roles": [
+     {
+      "Ref": "MyPipelineprodDeployCodePipelineActionRoleFAD07544"
+     }
+    ]
+   }
+  },
+  "MyConfigFromPipelineDeploymentStrategyF07EE763": {
+   "Type": "AWS::AppConfig::DeploymentStrategy",
+   "Properties": {
+    "DeploymentDurationInMinutes": 20,
+    "FinalBakeTimeInMinutes": 10,
+    "GrowthFactor": 10,
+    "GrowthType": "EXPONENTIAL",
+    "Name": "awsappconfigconfiguration-MyPipeline-DeploymentStrategy-5F76004F",
+    "ReplicateTo": "NONE"
+   }
+  },
+  "MyConfigFromPipelineEA8471A4": {
+   "Type": "AWS::AppConfig::ConfigurationProfile",
+   "Properties": {
+    "ApplicationId": {
+     "Ref": "MyAppConfigB4B63E75"
+    },
+    "LocationUri": {
+     "Fn::Join": [
+      "",
+      [
+       "codepipeline://",
+       {
+        "Ref": "MyPipelineAED38ECF"
+       }
+      ]
+     ]
+    },
+    "Name": "awsappconfigconfiguration-MyConfigFromPipeline-FD2B6B65"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

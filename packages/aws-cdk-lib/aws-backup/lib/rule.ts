@@ -10,7 +10,7 @@ export interface BackupPlanRuleProps {
    * The duration after a backup job is successfully started before it must be
    * completed or it is canceled by AWS Backup.
    *
-   * @default - 8 hours
+   * @default - 7 days
    */
   readonly completionWindow?: Duration;
 
@@ -77,6 +77,13 @@ export interface BackupPlanRuleProps {
    * @default - no copy actions
    */
   readonly copyActions?: BackupPlanCopyActionProps[];
+
+  /**
+   * To help organize your resources, you can assign your own metadata to the resources that you create. Each tag is a key-value pair.
+   *
+   * @default - no recovery point tags.
+   */
+  readonly recoveryPointTags?: { [key: string]: string };
 }
 
 /**

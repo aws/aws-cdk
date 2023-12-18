@@ -40,20 +40,20 @@
     "Code": {
      "ZipFile": "foo"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "LambdaServiceRoleA8ED4D3B",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "LambdaServiceRoleA8ED4D3B"
    ]
   },
-  "LambdaCurrentVersionDF706F6A1ee13d0fa54e9f5621e8c7b616fc53fc": {
+  "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -72,7 +72,7 @@
        {
         "EventType": "origin-request",
         "LambdaFunctionARN": {
-         "Ref": "LambdaCurrentVersionDF706F6A1ee13d0fa54e9f5621e8c7b616fc53fc"
+         "Ref": "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05"
         }
        }
       ],

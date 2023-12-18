@@ -13,7 +13,7 @@ import { addAlias, flatMap } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import { Annotations, ArnFormat, IResource, Resource, Token } from '../../core';
+import { Annotations, ArnFormat, IResource, Resource, Token, Stack } from '../../core';
 
 export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
 
@@ -103,6 +103,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   grantInvokeUrl(identity: iam.IGrantable): iam.Grant;
 
   /**
+   * Grant multiple principals the ability to invoke this Lambda via CompositePrincipal
+   */
+  grantInvokeCompositePrincipal(compositePrincipal: iam.CompositePrincipal): iam.Grant[];
+
+  /**
    * Return the given named metric for this Lambda
    */
   metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
@@ -131,11 +136,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * Adds an event source to this function.
    *
-   * Event sources are implemented in the @aws-cdk/aws-lambda-event-sources module.
+   * Event sources are implemented in the aws-cdk-lib/aws-lambda-event-sources module.
    *
    * The following example adds an SQS Queue as an event source:
    * ```
-   * import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
+   * import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
    * myFunction.addEventSource(new SqsEventSource(myQueue));
    * ```
    */
@@ -325,7 +330,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   }
 
   protected warnInvokeFunctionPermissions(scope: Construct): void {
-    Annotations.of(scope).addWarning([
+    Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda:addPermissionsToVersionOrAlias', [
       "AWS Lambda has changed their authorization strategy, which may cause client invocations using the 'Qualifier' parameter of the lambda function to fail with Access Denied errors.",
       "If you are using a lambda Version or Alias, make sure to call 'grantInvoke' or 'addPermission' on the Version or Alias, not the underlying Function",
       'See: https://github.com/aws/aws-cdk/issues/19273',
@@ -339,7 +344,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    */
   public addPermission(id: string, permission: Permission) {
     if (!this.canCreatePermissions) {
-      // FIXME: @deprecated(v2) - throw an error if calling `addPermission` on a resource that doesn't support it.
+      Annotations.of(this).addWarningV2('UnclearLambdaEnvironment', `addPermission() has no effect on a Lambda Function with region=${this.env.region}, account=${this.env.account}, in a Stack with region=${Stack.of(this).region}, account=${Stack.of(this).account}. Suppress this warning if this is is intentional, or pass sameEnvironment=true to fromFunctionAttributes() if you would like to add the permissions.`);
       return;
     }
 
@@ -447,6 +452,13 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       this._functionUrlInvocationGrants[identifier] = grant;
     }
     return grant;
+  }
+
+  /**
+   * Grant multiple principals the ability to invoke this Lambda via CompositePrincipal
+   */
+  public grantInvokeCompositePrincipal(compositePrincipal: iam.CompositePrincipal): iam.Grant[] {
+    return compositePrincipal.principals.map((principal) => this.grantInvoke(principal));
   }
 
   public addEventSource(source: IEventSource) {

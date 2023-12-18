@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-lambda-autoscaling": {
         "id": "aws-lambda-autoscaling",
         "path": "aws-lambda-autoscaling",
@@ -24,6 +16,14 @@
                 "id": "ServiceRole",
                 "path": "aws-lambda-autoscaling/MyLambda/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-lambda-autoscaling/MyLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-lambda-autoscaling/MyLambda/ServiceRole/Resource",
@@ -59,14 +59,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Resource": {
@@ -78,19 +78,19 @@
                     "code": {
                       "zipFile": "exports.handler = async () => { console.log('hello world'); };"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "MyLambdaServiceRole4539ECB6",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "CurrentVersion": {
@@ -109,20 +109,20 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.CfnVersion",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.Version",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "Alias": {
@@ -140,7 +140,7 @@
                     },
                     "functionVersion": {
                       "Fn::GetAtt": [
-                        "MyLambdaCurrentVersionE7A382CC0be4c7f7b82230afaf72d130ee920da9",
+                        "MyLambdaCurrentVersionE7A382CCe371c9697d7882d1bd7bf42e0dece697",
                         "Version"
                       ]
                     },
@@ -148,16 +148,16 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnAlias",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "ScalingRole": {
                 "id": "ScalingRole",
                 "path": "aws-lambda-autoscaling/Alias/ScalingRole",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "AliasScaling": {
@@ -215,7 +215,6 @@
                               ]
                             },
                             "scalableDimension": "lambda:function:ProvisionedConcurrency",
-                            "serviceNamespace": "lambda",
                             "scheduledActions": [
                               {
                                 "scheduledActionName": "ScaleUpInTheMorning",
@@ -230,13 +229,23 @@
                                 "scalableTargetAction": {
                                   "maxCapacity": 20
                                 }
+                              },
+                              {
+                                "scheduledActionName": "WithStartAndEnd",
+                                "schedule": "cron(0 20 * * ? *)",
+                                "startTime": "2023-12-25T00:00:00.000Z",
+                                "endTime": "2023-12-26T00:00:00.000Z",
+                                "scalableTargetAction": {
+                                  "maxCapacity": 20
+                                }
                               }
-                            ]
+                            ],
+                            "serviceNamespace": "lambda"
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalableTarget",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Tracking": {
@@ -263,52 +272,76 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-applicationautoscaling.CfnScalingPolicy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-applicationautoscaling.TargetTrackingScalingPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-applicationautoscaling.ScalableTarget",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-applicationautoscaling.BaseScalableAttribute",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Alias",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "FunctionName": {
             "id": "FunctionName",
             "path": "aws-lambda-autoscaling/FunctionName",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-lambda-autoscaling/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-lambda-autoscaling/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
     }
   }
 }

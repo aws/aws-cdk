@@ -3,16 +3,16 @@
   "TableCD117FA1": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "KeySchema": [
-     {
-      "AttributeName": "hashKey",
-      "KeyType": "HASH"
-     }
-    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "hashKey",
       "AttributeType": "S"
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
      }
     ],
     "ProvisionedThroughput": {
@@ -29,6 +29,18 @@
   "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD9856B771F8F2CCB": {
    "Type": "AWS::IAM::ManagedPolicy",
    "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "DynamoDB replication managed policy for table ",
+       {
+        "Ref": "TableCD117FA1"
+       }
+      ]
+     ]
+    },
+    "Path": "/",
     "PolicyDocument": {
      "Statement": [
       {
@@ -87,18 +99,6 @@
      ],
      "Version": "2012-10-17"
     },
-    "Description": {
-     "Fn::Join": [
-      "",
-      [
-       "DynamoDB replication managed policy for table ",
-       {
-        "Ref": "TableCD117FA1"
-       }
-      ]
-     ]
-    },
-    "Path": "/",
     "Roles": [
      {
       "Fn::GetAtt": [
@@ -112,6 +112,18 @@
   "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleBE2B1C1A5DC546D2": {
    "Type": "AWS::IAM::ManagedPolicy",
    "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "DynamoDB replication managed policy for table ",
+       {
+        "Ref": "TableCD117FA1"
+       }
+      ]
+     ]
+    },
+    "Path": "/",
     "PolicyDocument": {
      "Statement": [
       {
@@ -132,18 +144,6 @@
      ],
      "Version": "2012-10-17"
     },
-    "Description": {
-     "Fn::Join": [
-      "",
-      [
-       "DynamoDB replication managed policy for table ",
-       {
-        "Ref": "TableCD117FA1"
-       }
-      ]
-     ]
-    },
-    "Path": "/",
     "Roles": [
      {
       "Fn::GetAtt": [
@@ -270,6 +270,11 @@
   "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D": {
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
+    "Parameters": {
+     "referencetoawscdkdynamodbglobalreplicasprovisionedTable12280A12Ref": {
+      "Ref": "TableCD117FA1"
+     }
+    },
     "TemplateURL": {
      "Fn::Join": [
       "",
@@ -286,14 +291,9 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/5e78147e176083d4da1e4be82eb9f8d4f2082ce6e49d8aedc7a128cd1ea6d3cd.json"
+       "/fac70c98815617bfec29fd3dc3b0a9295dba41bc56daf65deb4ecd6b3a35873d.json"
       ]
      ]
-    },
-    "Parameters": {
-     "referencetoawscdkdynamodbglobalreplicasprovisionedTable12280A12Ref": {
-      "Ref": "TableCD117FA1"
-     }
     }
    },
    "UpdateReplacePolicy": "Delete",

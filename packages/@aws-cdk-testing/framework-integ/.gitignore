@@ -9,9 +9,14 @@ junit.xml
 coverage
 nyc.config.js
 
+!test/aws-synthetics/test/canaries/**/*
+
+
 !**/*.snapshot/**/asset.*/*.js
 !**/*.snapshot/**/asset.*/*.d.ts
 
 !**/*.snapshot/**/asset.*/**
 
 **/*.ts.snapshot
+
+!jest.config.js

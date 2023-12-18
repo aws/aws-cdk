@@ -4,8 +4,9 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import * as workerpool from 'workerpool';
 import * as logger from './logger';
-import { IntegrationTests, IntegTestInfo } from './runner/integration-tests';
+import { IntegrationTests, IntegTest, IntegTestInfo } from './runner/integration-tests';
 import { runSnapshotTests, runIntegrationTests, IntegRunnerMetrics, IntegTestWorkerConfig, DestructiveChange } from './workers';
+import { watchIntegrationTest } from './workers/integ-watch-worker';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -21,6 +22,7 @@ export function parseCliArgs(args: string[] = []) {
       default: 'integ.config.json',
       desc: 'Load options from a JSON config file. Options provided as CLI arguments take precedent.',
     })
+    .option('watch', { type: 'boolean', default: false, desc: 'Perform integ tests in watch mode' })
     .option('list', { type: 'boolean', default: false, desc: 'List tests instead of running them' })
     .option('clean', { type: 'boolean', default: true, desc: 'Skips stack clean up after test is completed (use --no-clean to negate)' })
     .option('verbose', { type: 'boolean', default: false, alias: 'v', count: true, desc: 'Verbose logs and metrics on integration tests durations (specify multiple times to increase verbosity)' })
@@ -73,6 +75,7 @@ export function parseCliArgs(args: string[] = []) {
     app: argv.app as (string | undefined),
     testRegex: arrayFromYargs(argv['test-regex']),
     testRegions,
+    originalRegions: parallelRegions,
     profiles,
     runUpdateOnFailed: (argv['update-on-failed'] ?? false) as boolean,
     fromFile,
@@ -88,6 +91,7 @@ export function parseCliArgs(args: string[] = []) {
     dryRun: argv['dry-run'] as boolean,
     disableUpdateWorkflow: argv['disable-update-workflow'] as boolean,
     language: arrayFromYargs(argv.language),
+    watch: argv.watch as boolean,
   };
 }
 
@@ -96,38 +100,51 @@ export async function main(args: string[]) {
 
   const testsFromArgs = await new IntegrationTests(path.resolve(options.directory)).fromCliOptions(options);
 
-  // List only prints the discoverd tests
+  // List only prints the discovered tests
   if (options.list) {
     process.stdout.write(testsFromArgs.map(t => t.discoveryRelativeFileName).join('\n') + '\n');
     return;
   }
 
   const pool = workerpool.pool(path.join(__dirname, '../lib/workers/extract/index.js'), {
-    maxWorkers: options.maxWorkers,
+    maxWorkers: options.watch ? 1 : options.maxWorkers,
   });
 
   const testsToRun: IntegTestWorkerConfig[] = [];
-  const destructiveChanges: DestructiveChange[] = [];
+  let destructiveChanges: boolean = false;
   let failedSnapshots: IntegTestWorkerConfig[] = [];
   let testsSucceeded = false;
+  validateWatchArgs({
+    ...options,
+    testRegions: options.originalRegions,
+    tests: testsFromArgs,
+  });
 
   try {
-    // always run snapshot tests, but if '--force' is passed then
-    // run integration tests on all failed tests, not just those that
-    // failed snapshot tests
-    failedSnapshots = await runSnapshotTests(pool, testsFromArgs, {
-      retain: options.inspectFailures,
-      verbose: options.verbose,
-    });
-    for (const failure of failedSnapshots) {
-      destructiveChanges.push(...failure.destructiveChanges ?? []);
-    }
-    if (!options.force) {
-      testsToRun.push(...failedSnapshots);
+    if (!options.watch) {
+      // always run snapshot tests, but if '--force' is passed then
+      // run integration tests on all failed tests, not just those that
+      // failed snapshot tests
+      failedSnapshots = await runSnapshotTests(pool, testsFromArgs, {
+        retain: options.inspectFailures,
+        verbose: options.verbose,
+      });
+      for (const failure of failedSnapshots) {
+        logger.warning(`Failed: ${failure.fileName}`);
+        if (failure.destructiveChanges && failure.destructiveChanges.length > 0) {
+          printDestructiveChanges(failure.destructiveChanges);
+          destructiveChanges = true;
+        }
+      }
+      if (!options.force) {
+        testsToRun.push(...failedSnapshots);
+      } else {
+        // if any of the test failed snapshot tests, keep those results
+        // and merge with the rest of the tests from args
+        testsToRun.push(...mergeTests(testsFromArgs.map(t => t.info), failedSnapshots));
+      }
     } else {
-      // if any of the test failed snapshot tests, keep those results
-      // and merge with the rest of the tests from args
-      testsToRun.push(...mergeTests(testsFromArgs.map(t => t.info), failedSnapshots));
+      testsToRun.push(...testsFromArgs.map(t => t.info));
     }
 
     // run integration tests if `--update-on-failed` OR `--force` is used
@@ -141,6 +158,7 @@ export async function main(args: string[]) {
         dryRun: options.dryRun,
         verbosity: options.verbosity,
         updateWorkflow: !options.disableUpdateWorkflow,
+        watch: options.watch,
       });
       testsSucceeded = success;
 
@@ -155,13 +173,20 @@ export async function main(args: string[]) {
       if (!success) {
         throw new Error('Some integration tests failed!');
       }
+    } else if (options.watch) {
+      await watchIntegrationTest(pool, {
+        watch: true,
+        verbosity: options.verbosity,
+        ...testsToRun[0],
+        profile: options.profiles ? options.profiles[0] : undefined,
+        region: options.testRegions[0],
+      });
     }
   } finally {
     void pool.terminate();
   }
 
-  if (destructiveChanges.length > 0) {
-    printDestructiveChanges(destructiveChanges);
+  if (destructiveChanges) {
     throw new Error('Some changes were destructive!');
   }
   if (failedSnapshots.length > 0) {
@@ -174,6 +199,32 @@ export async function main(args: string[]) {
     }
   }
 
+}
+
+function validateWatchArgs(args: {
+  tests: IntegTest[],
+  testRegions?: string[],
+  profiles?: string[],
+  maxWorkers: number,
+  force: boolean,
+  dryRun: boolean,
+  disableUpdateWorkflow: boolean,
+  runUpdateOnFailed: boolean,
+  watch: boolean,
+}) {
+  if (args.watch) {
+    if (
+      (args.testRegions && args.testRegions.length > 1)
+        || (args.profiles && args.profiles.length > 1)
+        || args.tests.length > 1) {
+      throw new Error('Running with watch only supports a single test. Only provide a single option'+
+        'to `--profiles` `--parallel-regions` `--max-workers');
+    }
+
+    if (args.runUpdateOnFailed || args.disableUpdateWorkflow || args.force || args.dryRun) {
+      logger.warning('args `--update-on-failed`, `--disable-update-workflow`, `--force`, `--dry-run` have no effect when running with `--watch`');
+    }
+  }
 }
 
 function printDestructiveChanges(changes: DestructiveChange[]): void {

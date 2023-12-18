@@ -1,7 +1,7 @@
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Match } from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as constructs from 'constructs';
 import * as redshift from '../lib';
 
@@ -79,7 +79,7 @@ stacks.forEach(s => {
 const test = new integ.IntegTest(app, 'aws-cdk-redshift-reboot-test', {
   testCases: stacks,
   stackUpdateWorkflow: false,
-  // diffAssets: true,
+  diffAssets: false,
 });
 
 const describeClusters = test.assertions.awsApiCall('Redshift', 'describeClusters', { ClusterIdentifier: updateStack.cluster.clusterName });

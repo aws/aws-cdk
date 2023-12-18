@@ -18,9 +18,6 @@
   "integrationtesteksclusterDefaultVpcPublicSubnet1Subnet58061317": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -48,15 +45,15 @@
       "Key": "Name",
       "Value": "aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
+    }
    }
   },
   "integrationtesteksclusterDefaultVpcPublicSubnet1RouteTable1D5A7569": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
-    },
     "Tags": [
      {
       "Key": "kubernetes.io/role/elb",
@@ -66,7 +63,10 @@
       "Key": "Name",
       "Value": "aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
+    }
    }
   },
   "integrationtesteksclusterDefaultVpcPublicSubnet1RouteTableAssociation4831B6A7": {
@@ -83,12 +83,12 @@
   "integrationtesteksclusterDefaultVpcPublicSubnet1DefaultRoute33CE7FC3": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet1RouteTable1D5A7569"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "integrationtesteksclusterDefaultVpcIGW9ADAFE6F"
+    },
+    "RouteTableId": {
+     "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet1RouteTable1D5A7569"
     }
    },
    "DependsOn": [
@@ -114,14 +114,14 @@
   "integrationtesteksclusterDefaultVpcPublicSubnet1NATGatewayC9C984F9": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet1Subnet58061317"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "integrationtesteksclusterDefaultVpcPublicSubnet1EIP62A0A17B",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet1Subnet58061317"
     },
     "Tags": [
      {
@@ -142,9 +142,6 @@
   "integrationtesteksclusterDefaultVpcPublicSubnet2Subnet68EAAF11": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -172,15 +169,15 @@
       "Key": "Name",
       "Value": "aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
+    }
    }
   },
   "integrationtesteksclusterDefaultVpcPublicSubnet2RouteTableA4C7B327": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
-    },
     "Tags": [
      {
       "Key": "kubernetes.io/role/elb",
@@ -190,7 +187,10 @@
       "Key": "Name",
       "Value": "aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/DefaultVpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
+    }
    }
   },
   "integrationtesteksclusterDefaultVpcPublicSubnet2RouteTableAssociation62710C52": {
@@ -207,12 +207,12 @@
   "integrationtesteksclusterDefaultVpcPublicSubnet2DefaultRoute253A231E": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet2RouteTableA4C7B327"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "integrationtesteksclusterDefaultVpcIGW9ADAFE6F"
+    },
+    "RouteTableId": {
+     "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet2RouteTableA4C7B327"
     }
    },
    "DependsOn": [
@@ -238,14 +238,14 @@
   "integrationtesteksclusterDefaultVpcPublicSubnet2NATGatewayE109B761": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet2Subnet68EAAF11"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "integrationtesteksclusterDefaultVpcPublicSubnet2EIPFC53AC43",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet2Subnet68EAAF11"
     },
     "Tags": [
      {
@@ -266,9 +266,6 @@
   "integrationtesteksclusterDefaultVpcPrivateSubnet1Subnet4E00CAFB": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -296,15 +293,15 @@
       "Key": "Name",
       "Value": "aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
+    }
    }
   },
   "integrationtesteksclusterDefaultVpcPrivateSubnet1RouteTable4A47F4AC": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
-    },
     "Tags": [
      {
       "Key": "kubernetes.io/role/internal-elb",
@@ -314,7 +311,10 @@
       "Key": "Name",
       "Value": "aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
+    }
    }
   },
   "integrationtesteksclusterDefaultVpcPrivateSubnet1RouteTableAssociation7482DD1E": {
@@ -331,21 +331,18 @@
   "integrationtesteksclusterDefaultVpcPrivateSubnet1DefaultRouteCC99A72C": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet1RouteTable4A47F4AC"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet1NATGatewayC9C984F9"
+    },
+    "RouteTableId": {
+     "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet1RouteTable4A47F4AC"
     }
    }
   },
   "integrationtesteksclusterDefaultVpcPrivateSubnet2Subnet0C3539A8": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -373,15 +370,15 @@
       "Key": "Name",
       "Value": "aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
+    }
    }
   },
   "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableD7E59903": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
-    },
     "Tags": [
      {
       "Key": "kubernetes.io/role/internal-elb",
@@ -391,7 +388,10 @@
       "Key": "Name",
       "Value": "aws-stepfunctions-tasks-emr-containers-all-services-test/integration-test-eks-cluster/DefaultVpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
+    }
    }
   },
   "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableAssociation99F934D5": {
@@ -408,12 +408,12 @@
   "integrationtesteksclusterDefaultVpcPrivateSubnet2DefaultRoute50FF167F": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableD7E59903"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "integrationtesteksclusterDefaultVpcPublicSubnet2NATGatewayE109B761"
+    },
+    "RouteTableId": {
+     "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet2RouteTableD7E59903"
     }
    }
   },
@@ -431,11 +431,11 @@
   "integrationtesteksclusterDefaultVpcVPCGWE4DC2204": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
-    },
     "InternetGatewayId": {
      "Ref": "integrationtesteksclusterDefaultVpcIGW9ADAFE6F"
+    },
+    "VpcId": {
+     "Ref": "integrationtesteksclusterDefaultVpc395E1A86"
     }
    }
   },
@@ -765,6 +765,9 @@
        "Arn"
       ]
      },
+     "kubernetesNetworkConfig": {
+      "ipFamily": "ipv4"
+     },
      "resourcesVpcConfig": {
       "subnetIds": [
        {
@@ -900,14 +903,24 @@
   "integrationtesteksclusterNodegroupDefaultCapacity536CF32C": {
    "Type": "AWS::EKS::Nodegroup",
    "Properties": {
+    "AmiType": "AL2_x86_64",
     "ClusterName": {
      "Ref": "integrationtesteksclusterE5C0ED98"
     },
+    "ForceUpdateEnabled": true,
+    "InstanceTypes": [
+     "m5.xlarge"
+    ],
     "NodeRole": {
      "Fn::GetAtt": [
       "integrationtesteksclusterNodegroupDefaultCapacityNodeGroupRole75D45BA7",
       "Arn"
      ]
+    },
+    "ScalingConfig": {
+     "DesiredSize": 3,
+     "MaxSize": 3,
+     "MinSize": 3
     },
     "Subnets": [
      {
@@ -916,17 +929,7 @@
      {
       "Ref": "integrationtesteksclusterDefaultVpcPrivateSubnet2Subnet0C3539A8"
      }
-    ],
-    "AmiType": "AL2_x86_64",
-    "ForceUpdateEnabled": true,
-    "InstanceTypes": [
-     "m5.xlarge"
-    ],
-    "ScalingConfig": {
-     "DesiredSize": 3,
-     "MaxSize": 3,
-     "MinSize": 3
-    }
+    ]
    }
   },
   "integrationtesteksclusterAwsAuthmanifestAEF9C6DF": {
@@ -990,7 +993,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/321595624fe2a5936bd5b770784623e91b8258c615ac5fcd9d3b433e18927740.json"
+       "/aee7a3022668898eed3daede225d805dc9953d71f24800f7c3ff42b42cb63d9f.json"
       ]
      ]
     }
@@ -1001,26 +1004,6 @@
   "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B": {
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
-    "TemplateURL": {
-     "Fn::Join": [
-      "",
-      [
-       "https://s3.",
-       {
-        "Ref": "AWS::Region"
-       },
-       ".",
-       {
-        "Ref": "AWS::URLSuffix"
-       },
-       "/",
-       {
-        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-       },
-       "/7bd0c0abb30c27c1a552f2f3b656c3416a7960abc2a5141f6f745bae305fc4af.json"
-      ]
-     ]
-    },
     "Parameters": {
      "referencetoawsstepfunctionstasksemrcontainersallservicestestintegrationtesteksclusterKubectlHandlerRole4EA39100Arn": {
       "Fn::GetAtt": [
@@ -1040,6 +1023,26 @@
        "ClusterSecurityGroupId"
       ]
      }
+    },
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+       },
+       "/4d1daa1f3ed0ca51282b59405e5632c05317f2a37fa1348a13adc5c2700ba112.json"
+      ]
+     ]
     }
    },
    "DependsOn": [
@@ -1328,12 +1331,6 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "StateMachineRoleB840431D",
-      "Arn"
-     ]
-    },
     "DefinitionString": {
      "Fn::Join": [
       "",
@@ -1371,6 +1368,12 @@
        },
        ":states:::emr-containers:deleteVirtualCluster\",\"Parameters\":{\"Id.$\":\"$.job.VirtualClusterId\"}}},\"TimeoutSeconds\":1200}"
       ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
      ]
     }
    },

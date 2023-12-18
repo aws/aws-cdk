@@ -155,6 +155,10 @@
                         "type": "string"
                     }
                 },
+                "dockerBuildSsh": {
+                    "description": "SSH agent socket or keys\n\nRequires building with docker buildkit. (Default - No ssh flag is set)",
+                    "type": "string"
+                },
                 "dockerBuildSecrets": {
                     "description": "Additional build secrets\n\nOnly allowed when `directory` is set. (Default - No additional build secrets)",
                     "type": "object",

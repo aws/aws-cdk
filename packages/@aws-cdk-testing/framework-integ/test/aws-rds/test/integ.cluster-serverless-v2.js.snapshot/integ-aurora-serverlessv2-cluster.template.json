@@ -18,9 +18,6 @@
   "IntegVPCPublicSubnet1SubnetE05F7E7D": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegVPC2FF1AB0E"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -44,21 +41,24 @@
       "Key": "Name",
       "Value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegVPC2FF1AB0E"
+    }
    }
   },
   "IntegVPCPublicSubnet1RouteTable622895C7": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegVPC2FF1AB0E"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegVPC2FF1AB0E"
+    }
    }
   },
   "IntegVPCPublicSubnet1RouteTableAssociation0E84800B": {
@@ -75,12 +75,12 @@
   "IntegVPCPublicSubnet1DefaultRouteE885D95E": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "IntegVPCPublicSubnet1RouteTable622895C7"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "IntegVPCIGW02FC78B6"
+    },
+    "RouteTableId": {
+     "Ref": "IntegVPCPublicSubnet1RouteTable622895C7"
     }
    },
    "DependsOn": [
@@ -102,14 +102,14 @@
   "IntegVPCPublicSubnet1NATGateway380AC0A0": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "IntegVPCPublicSubnet1SubnetE05F7E7D"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "IntegVPCPublicSubnet1EIP1AC057E9",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "IntegVPCPublicSubnet1SubnetE05F7E7D"
     },
     "Tags": [
      {
@@ -126,9 +126,6 @@
   "IntegVPCPublicSubnet2Subnet9648DE97": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegVPC2FF1AB0E"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -152,21 +149,24 @@
       "Key": "Name",
       "Value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegVPC2FF1AB0E"
+    }
    }
   },
   "IntegVPCPublicSubnet2RouteTableB79B3910": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegVPC2FF1AB0E"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegVPC2FF1AB0E"
+    }
    }
   },
   "IntegVPCPublicSubnet2RouteTableAssociation831EA0CC": {
@@ -183,12 +183,12 @@
   "IntegVPCPublicSubnet2DefaultRoute2FC4B163": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "IntegVPCPublicSubnet2RouteTableB79B3910"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "IntegVPCIGW02FC78B6"
+    },
+    "RouteTableId": {
+     "Ref": "IntegVPCPublicSubnet2RouteTableB79B3910"
     }
    },
    "DependsOn": [
@@ -210,14 +210,14 @@
   "IntegVPCPublicSubnet2NATGateway912800A3": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "IntegVPCPublicSubnet2Subnet9648DE97"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "IntegVPCPublicSubnet2EIPEA07DF99",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "IntegVPCPublicSubnet2Subnet9648DE97"
     },
     "Tags": [
      {
@@ -234,9 +234,6 @@
   "IntegVPCPrivateSubnet1SubnetD5B61223": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegVPC2FF1AB0E"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -260,21 +257,24 @@
       "Key": "Name",
       "Value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegVPC2FF1AB0E"
+    }
    }
   },
   "IntegVPCPrivateSubnet1RouteTableF2678D77": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegVPC2FF1AB0E"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegVPC2FF1AB0E"
+    }
    }
   },
   "IntegVPCPrivateSubnet1RouteTableAssociationAD4B0EBF": {
@@ -291,21 +291,18 @@
   "IntegVPCPrivateSubnet1DefaultRoute140D7A84": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "IntegVPCPrivateSubnet1RouteTableF2678D77"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "IntegVPCPublicSubnet1NATGateway380AC0A0"
+    },
+    "RouteTableId": {
+     "Ref": "IntegVPCPrivateSubnet1RouteTableF2678D77"
     }
    }
   },
   "IntegVPCPrivateSubnet2SubnetFCC4EF23": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegVPC2FF1AB0E"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -329,21 +326,24 @@
       "Key": "Name",
       "Value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegVPC2FF1AB0E"
+    }
    }
   },
   "IntegVPCPrivateSubnet2RouteTable4132D373": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegVPC2FF1AB0E"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-aurora-serverlessv2-cluster/Integ-VPC/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "IntegVPC2FF1AB0E"
+    }
    }
   },
   "IntegVPCPrivateSubnet2RouteTableAssociation9A15DAD6": {
@@ -360,12 +360,12 @@
   "IntegVPCPrivateSubnet2DefaultRouteAE44E307": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "IntegVPCPrivateSubnet2RouteTable4132D373"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "IntegVPCPublicSubnet2NATGateway912800A3"
+    },
+    "RouteTableId": {
+     "Ref": "IntegVPCPrivateSubnet2RouteTable4132D373"
     }
    }
   },
@@ -383,11 +383,11 @@
   "IntegVPCVPCGW4DD476C7": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "IntegVPC2FF1AB0E"
-    },
     "InternetGatewayId": {
      "Ref": "IntegVPCIGW02FC78B6"
+    },
+    "VpcId": {
+     "Ref": "IntegVPC2FF1AB0E"
     }
    }
   },
@@ -489,7 +489,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ba598c1f1d84f7077ea9c16a6b921e4f8acf18e996100e72a8f17da980e64fdd.zip"
+     "S3Key": "18d379b052acd60e0d086d5b19d9bef956ebc0bd018c5570960125aab0c7f837.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -500,7 +500,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x",
+    "Runtime": "nodejs18.x",
     "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
    },
    "DependsOn": [
@@ -583,18 +583,6 @@
     },
     "Engine": "aurora-mysql",
     "EngineVersion": "8.0.mysql_aurora.3.03.0",
-    "MasterUsername": {
-     "Fn::Join": [
-      "",
-      [
-       "{{resolve:secretsmanager:",
-       {
-        "Ref": "integauroraserverlessv20IntegClusterSecretB9E432EB"
-       },
-       ":SecretString:username::}}"
-      ]
-     ]
-    },
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -604,6 +592,18 @@
         "Ref": "integauroraserverlessv20IntegClusterSecretB9E432EB"
        },
        ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "integauroraserverlessv20IntegClusterSecretB9E432EB"
+       },
+       ":SecretString:username::}}"
       ]
      ]
     },
@@ -646,7 +646,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 3,
     "Dimensions": [
      {
       "Name": "DBClusterIdentifier",
@@ -655,6 +654,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 3,
     "MetricName": "ServerlessDatabaseCapacity",
     "Namespace": "AWS/RDS",
     "Period": 600,
@@ -666,7 +666,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 3,
     "Dimensions": [
      {
       "Name": "DBClusterIdentifier",
@@ -675,6 +674,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 3,
     "MetricName": "ACUUtilization",
     "Namespace": "AWS/RDS",
     "Period": 600,
@@ -758,18 +758,6 @@
     },
     "Engine": "aurora-mysql",
     "EngineVersion": "8.0.mysql_aurora.3.03.0",
-    "MasterUsername": {
-     "Fn::Join": [
-      "",
-      [
-       "{{resolve:secretsmanager:",
-       {
-        "Ref": "integauroraserverlessv21IntegClusterSecretA8DA28CB"
-       },
-       ":SecretString:username::}}"
-      ]
-     ]
-    },
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -779,6 +767,18 @@
         "Ref": "integauroraserverlessv21IntegClusterSecretA8DA28CB"
        },
        ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "integauroraserverlessv21IntegClusterSecretA8DA28CB"
+       },
+       ":SecretString:username::}}"
       ]
      ]
     },
@@ -859,7 +859,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 3,
     "Dimensions": [
      {
       "Name": "DBClusterIdentifier",
@@ -868,6 +867,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 3,
     "MetricName": "ServerlessDatabaseCapacity",
     "Namespace": "AWS/RDS",
     "Period": 600,
@@ -879,7 +879,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 3,
     "Dimensions": [
      {
       "Name": "DBClusterIdentifier",
@@ -888,6 +887,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 3,
     "MetricName": "ACUUtilization",
     "Namespace": "AWS/RDS",
     "Period": 600,
@@ -971,18 +971,6 @@
     },
     "Engine": "aurora-mysql",
     "EngineVersion": "8.0.mysql_aurora.3.03.0",
-    "MasterUsername": {
-     "Fn::Join": [
-      "",
-      [
-       "{{resolve:secretsmanager:",
-       {
-        "Ref": "integauroraserverlessv22IntegClusterSecretBF74DBA3"
-       },
-       ":SecretString:username::}}"
-      ]
-     ]
-    },
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -992,6 +980,18 @@
         "Ref": "integauroraserverlessv22IntegClusterSecretBF74DBA3"
        },
        ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "integauroraserverlessv22IntegClusterSecretBF74DBA3"
+       },
+       ":SecretString:username::}}"
       ]
      ]
     },
@@ -1072,7 +1072,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 3,
     "Dimensions": [
      {
       "Name": "DBClusterIdentifier",
@@ -1081,6 +1080,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 3,
     "MetricName": "ServerlessDatabaseCapacity",
     "Namespace": "AWS/RDS",
     "Period": 600,
@@ -1092,7 +1092,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 3,
     "Dimensions": [
      {
       "Name": "DBClusterIdentifier",
@@ -1101,6 +1100,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 3,
     "MetricName": "ACUUtilization",
     "Namespace": "AWS/RDS",
     "Period": 600,

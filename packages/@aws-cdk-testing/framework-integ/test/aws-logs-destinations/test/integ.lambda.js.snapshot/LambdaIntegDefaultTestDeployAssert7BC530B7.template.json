@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallEventBridgeputEvents": {
+  "AwsApiCallEventBridgeputEvents9a20df3f29597ff1b9e82b1f34c42383": {
    "Type": "Custom::DeployAssert@SdkCallEventBridgeputEvents",
    "Properties": {
     "ServiceToken": {
@@ -12,16 +12,10 @@
     "service": "EventBridge",
     "api": "putEvents",
     "parameters": {
-     "Entries": [
-      {
-       "Detail": "{\"foo\":\"bar\"}",
-       "DetailType": "cdk-integ-custom-rule",
-       "Source": "cdk-lambda-integ"
-      }
-     ]
+     "Entries": "[{\"Detail\":\"{\\\"foo\\\":\\\"bar\\\"}\",\"DetailType\":\"cdk-integ-custom-rule\",\"Source\":\"cdk-lambda-integ\"}]"
     },
     "flattenResponse": "false",
-    "salt": "1682378097699"
+    "salt": "1696336945479"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -54,7 +48,7 @@
        "Statement": [
         {
          "Action": [
-          "eventbridge:PutEvents"
+          "events:PutEvents"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -88,12 +82,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
+     "S3Key": "179eeca719a9f09faf1a812e2037454351e324e06a91f4c8d09a21df62cead80.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -105,7 +99,7 @@
     }
    }
   },
-  "AwsApiCallSQSreceiveMessage": {
+  "AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0": {
    "Type": "Custom::DeployAssert@SdkCallSQSreceiveMessage",
    "Properties": {
     "ServiceToken": {
@@ -119,22 +113,31 @@
     "expected": "{\"$ObjectLike\":{\"Messages\":[{\"Body\":{\"$StringLike\":\"\\\"responsePayload\\\":\\\"success\\\"\"}}]}}",
     "parameters": {
      "QueueUrl": {
-      "Fn::ImportValue": "lambda-logssubscription-integ:ExportsOutputRefQueue4A7E3555425E8BD3"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "lambda-logssubscription-integ:ExportsOutputRefQueue4A7E3555425E8BD3"
+        },
+        "\""
+       ]
+      ]
      },
-     "WaitTimeSeconds": 20
+     "WaitTimeSeconds": "20"
     },
     "flattenResponse": "false",
-    "salt": "1682378097700"
+    "salt": "1696336945480"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallSQSreceiveMessage": {
+  "AssertionResultsAwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSQSreceiveMessage",
+     "AwsApiCallSQSreceiveMessage3913742af0f68967ecd340999fcff4d0",
      "assertion"
     ]
    }

@@ -43,6 +43,7 @@ export interface BuildEnvironmentCertificate {
    * The bucket where the certificate is
    */
   readonly bucket: s3.IBucket;
+
   /**
    * The full path and name of the key file
    */
@@ -616,9 +617,18 @@ export interface CommonProjectProps {
   /**
    * Where to place the network interfaces within the VPC.
    *
-   * Only used if 'vpc' is supplied.
+   * To access AWS services, your CodeBuild project needs to be in one of the following types of subnets:
    *
-   * @default - All private subnets.
+   * 1. Subnets with access to the internet (of type PRIVATE_WITH_EGRESS).
+   * 2. Private subnets unconnected to the internet, but with [VPC endpoints](https://docs.aws.amazon.com/codebuild/latest/userguide/use-vpc-endpoints-with-codebuild.html) for the necessary services.
+   *
+   * If you don't specify a subnet selection, the default behavior is to use PRIVATE_WITH_EGRESS subnets first if they exist,
+   * then PRIVATE_WITHOUT_EGRESS, and finally PUBLIC subnets. If your VPC doesn't have PRIVATE_WITH_EGRESS subnets but you need
+   * AWS service access, add VPC Endpoints to your private subnets.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/vpc-support.html for more details.
+   *
+   * @default - private subnets if available else public subnets
    */
   readonly subnetSelection?: ec2.SubnetSelection;
 
@@ -765,7 +775,6 @@ export interface BindToCodePipelineOptions {
  * A representation of a CodeBuild Project.
  */
 export class Project extends ProjectBase {
-
   public static fromProjectArn(scope: Construct, id: string, projectArn: string): IProject {
     const parsedArn = Stack.of(scope).splitArn(projectArn, ArnFormat.SLASH_RESOURCE_NAME);
 
@@ -1742,6 +1751,8 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:3.0');
   /** The Amazon Linux 2 x86_64 standard image, version `4.0`. */
   public static readonly AMAZON_LINUX_2_4 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:4.0');
+  /** The Amazon Linux 2 x86_64 standard image, version `5.0`. */
+  public static readonly AMAZON_LINUX_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:5.0');
 
   /** @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0 instead. */
   public static readonly AMAZON_LINUX_2_ARM = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0;
@@ -1912,7 +1923,7 @@ export enum WindowsImageType {
   /**
    * The WINDOWS_SERVER_2019_CONTAINER environment type
    */
-  SERVER_2019 = 'WINDOWS_SERVER_2019_CONTAINER'
+  SERVER_2019 = 'WINDOWS_SERVER_2019_CONTAINER',
 }
 
 /**
@@ -1944,7 +1955,7 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * Corresponds to the standard CodeBuild image `aws/codebuild/windows-base:1.0`.
    *
-   * @deprecated `WindowsBuildImage.WINDOWS_BASE_2_0` should be used instead.
+   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0` should be used instead.
    */
   public static readonly WIN_SERVER_CORE_2016_BASE: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:1.0',
@@ -1954,6 +1965,8 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * The standard CodeBuild image `aws/codebuild/windows-base:2.0`, which is
    * based off Windows Server Core 2016.
+   *
+   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0` should be used instead.
    */
   public static readonly WINDOWS_BASE_2_0: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:2.0',
@@ -2055,8 +2068,8 @@ export class WindowsBuildImage implements IBuildImage {
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret: string[] = [];
-    if (buildEnvironment.computeType === ComputeType.SMALL) {
-      ret.push('Windows images do not support the Small ComputeType');
+    if (buildEnvironment.computeType === ComputeType.SMALL || buildEnvironment.computeType === ComputeType.X2_LARGE) {
+      ret.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
     }
     return ret;
   }
@@ -2120,7 +2133,7 @@ export enum BuildEnvironmentVariableType {
   /**
    * An environment variable stored in AWS Secrets Manager.
    */
-  SECRETS_MANAGER = 'SECRETS_MANAGER'
+  SECRETS_MANAGER = 'SECRETS_MANAGER',
 }
 
 /**

@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "32.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-ecs-patterns-queue-isolated.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dc05f4add0027a554e1004cd43559c02f03d4e8566d9a60b0f579b8c29c947ac.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d32f9798024acecd18b6acbb9577d0c7b0aa7aa7291f4b00fd4fe0956e966765.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -252,10 +246,7 @@
         "/aws-ecs-patterns-queue-isolated/IsolatedQueueService/QueueProcessingTaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IsolatedQueueServiceQueueProcessingTaskDef0F0CE105",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "IsolatedQueueServiceQueueProcessingTaskDef0F0CE105"
           }
         ],
         "/aws-ecs-patterns-queue-isolated/IsolatedQueueService/QueueProcessingTaskDef/QueueProcessingContainer/LogGroup/Resource": [
@@ -385,6 +376,12 @@
         ]
       },
       "displayName": "isolatedQueueProcessingFargateServiceTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

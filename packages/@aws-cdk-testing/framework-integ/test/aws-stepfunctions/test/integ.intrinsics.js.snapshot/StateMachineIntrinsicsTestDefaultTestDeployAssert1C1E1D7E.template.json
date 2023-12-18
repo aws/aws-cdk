@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallStepFunctionsdescribeStateMachine": {
+  "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa": {
    "Type": "Custom::DeployAssert@SdkCallStepFunctionsdescribeStateMachin",
    "Properties": {
     "ServiceToken": {
@@ -14,11 +14,20 @@
     "expected": "{\"$ObjectLike\":{\"status\":\"ACTIVE\"}}",
     "parameters": {
      "stateMachineArn": {
-      "Fn::ImportValue": "aws-stepfunctions-intrinsics-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-stepfunctions-intrinsics-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1676022935565"
+    "salt": "1695836644681"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -67,12 +76,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
+     "S3Key": "b7c985ebfbf370ce93607a33c3851adc0b2b6a530f4c06be487e3c2ec3c06c39.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -86,10 +95,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallStepFunctionsdescribeStateMachine": {
+  "AssertionResultsAwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallStepFunctionsdescribeStateMachine",
+     "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa",
      "assertion"
     ]
    }

@@ -19,6 +19,10 @@ export class NestedStackSynthesizer extends StackSynthesizer {
     return this.parentDeployment.bootstrapQualifier;
   }
 
+  public get lookupRole(): string | undefined {
+    return this.parentDeployment.lookupRole;
+  }
+
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {
     // Forward to parent deployment. By the magic of cross-stack references any parameter
     // returned and used will magically be forwarded to the nested stack.
@@ -34,6 +38,6 @@ export class NestedStackSynthesizer extends StackSynthesizer {
   public synthesize(session: ISynthesisSession): void {
     // Synthesize the template, but don't emit as a cloud assembly artifact.
     // It will be registered as an S3 asset of its parent instead.
-    this.synthesizeTemplate(session);
+    this.synthesizeTemplate(session, this.lookupRole);
   }
 }

@@ -1166,7 +1166,18 @@ test('managed policy ARNs are deduplicated', () => {
       ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'),
     ],
   });
-  role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'));
+  role.addToPrincipalPolicy(
+    new PolicyStatement({
+      actions: ['s3:*'],
+      resources: ['*'],
+    }),
+  );
+
+  for (let i = 0; i < 20; i++) {
+    role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'));
+  }
+
+  Annotations.fromStack(stack).hasNoWarning('/my-stack/MyRole', Match.stringLikeRegexp('.*'));
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     ManagedPolicyArns: [
@@ -1182,6 +1193,26 @@ test('managed policy ARNs are deduplicated', () => {
       },
     ],
   });
+});
+
+test('too many managed policies warning', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  const role = new Role(stack, 'MyRole', {
+    assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+  });
+  role.addToPrincipalPolicy(
+    new PolicyStatement({
+      actions: ['s3:*'],
+      resources: ['*'],
+    }),
+  );
+
+  for (let i = 0; i < 20; i++) {
+    role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName(`SuperDeveloper${i}`));
+  }
+
+  Annotations.fromStack(stack).hasWarning('/my-stack/MyRole', Match.stringLikeRegexp('.*'));
 });
 
 describe('role with too large inline policy', () => {

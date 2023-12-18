@@ -65,14 +65,18 @@ export class Topic extends TopicBase {
       public readonly topicArn = topicArn;
       public readonly topicName = Stack.of(scope).splitArn(topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
       public readonly fifo = this.topicName.endsWith('.fifo');
+      public readonly contentBasedDeduplication = false;
       protected autoCreatePolicy: boolean = false;
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: topicArn,
+    });
   }
 
   public readonly topicArn: string;
   public readonly topicName: string;
+  public readonly contentBasedDeduplication: boolean;
   public readonly fifo: boolean;
 
   protected readonly autoCreatePolicy: boolean = true;
@@ -114,5 +118,6 @@ export class Topic extends TopicBase {
     });
     this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
     this.fifo = props.fifo || false;
+    this.contentBasedDeduplication = props.contentBasedDeduplication || false;
   }
 }

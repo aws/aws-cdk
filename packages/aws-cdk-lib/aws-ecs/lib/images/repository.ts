@@ -8,7 +8,7 @@ import { ContainerImage, ContainerImageConfig } from '../container-image';
  * Regex pattern to check if it is an ECR image URL.
  *
  */
-const ECR_IMAGE_REGEX = /(^[a-zA-Z0-9][a-zA-Z0-9-_]*).dkr.ecr.([a-zA-Z0-9][a-zA-Z0-9-_]*).amazonaws.com(.cn)?\/.*/;
+const ECR_IMAGE_REGEX = /(^[a-zA-Z0-9][a-zA-Z0-9-_]*)\.dkr\.ecr\.([a-zA-Z0-9][a-zA-Z0-9-_]*)\.amazonaws.com(\.cn)?\/.*/;
 
 /**
  * The properties for an image hosted in a public or private repository.
@@ -37,7 +37,7 @@ export class RepositoryImage extends ContainerImage {
   public bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
     // name could be a Token - in that case, skip validation altogether
     if (!Token.isUnresolved(this.imageName) && ECR_IMAGE_REGEX.test(this.imageName)) {
-      Annotations.of(scope).addWarning("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-ecs:ecrImageRequiresPolicy', "Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
     }
 
     if (this.props.credentials) {

@@ -255,6 +255,17 @@ integTest('can use the custom permissions boundary to bootstrap', withoutBootstr
   expect(template).toContain('permission-boundary-name');
 }));
 
+integTest('can use the custom permissions boundary (with slashes) to bootstrap', withoutBootstrap(async (fixture) => {
+  let template = await fixture.cdkBootstrapModern({
+    // toolkitStackName doesn't matter for this particular invocation
+    toolkitStackName: fixture.bootstrapStackName,
+    showTemplate: true,
+    customPermissionsBoundary: 'permission-boundary-name/with/path',
+  });
+
+  expect(template).toContain('permission-boundary-name/with/path');
+}));
+
 integTest('can remove customPermissionsBoundary', withoutBootstrap(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
   const policyName = `${bootstrapStackName}-pb`;

@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallSQSreceiveMessage": {
+  "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4": {
    "Type": "Custom::DeployAssert@SdkCallSQSreceiveMessage",
    "Properties": {
     "ServiceToken": {
@@ -14,24 +14,33 @@
     "expected": "{\"$StringLike\":\"^hello world!$\"}",
     "actualPath": "Messages.0.Body",
     "stateMachineArn": {
-     "Ref": "AwsApiCallSQSreceiveMessageWaitFor10141935"
+     "Ref": "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4WaitFor2891A454"
     },
     "parameters": {
      "QueueUrl": {
-      "Fn::ImportValue": "MyStack:ExportsOutputRefTestQueue6F0069AA4C7E94E2"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "MyStack:ExportsOutputRefTestQueue6F0069AA4C7E94E2"
+        },
+        "\""
+       ]
+      ]
      },
-     "WaitTimeSeconds": 20
+     "WaitTimeSeconds": "20"
     },
     "flattenResponse": "true",
     "outputPaths": [
      "Messages.0.Body"
     ],
-    "salt": "1682351508584"
+    "salt": "1699910059901"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallSQSreceiveMessageWaitForIsCompleteProviderInvoke92C9A498": {
+  "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4WaitForIsCompleteProviderInvoke0972BE31": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -43,13 +52,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallSQSreceiveMessageWaitForRole90A5ABAA",
+      "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4WaitForRoleA5502331",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallSQSreceiveMessageWaitForTimeoutProviderInvoke88C69E59": {
+  "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4WaitForTimeoutProviderInvoke1D0F75E3": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -61,13 +70,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallSQSreceiveMessageWaitForRole90A5ABAA",
+      "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4WaitForRoleA5502331",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallSQSreceiveMessageWaitForRole90A5ABAA": {
+  "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4WaitForRoleA5502331": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -112,7 +121,7 @@
     ]
    }
   },
-  "AwsApiCallSQSreceiveMessageWaitFor10141935": {
+  "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4WaitFor2891A454": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
@@ -139,13 +148,13 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "AwsApiCallSQSreceiveMessageWaitForRole90A5ABAA",
+      "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4WaitForRoleA5502331",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallSQSreceiveMessageWaitForRole90A5ABAA"
+    "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4WaitForRoleA5502331"
    ]
   },
   "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
@@ -201,12 +210,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "36618132bd37b6b15f9987b57ad1fbf613f1ad937aec72381232b163ed9c44c4.zip"
+     "S3Key": "6e5ba7464138b7720c27df56bcc0a5463093492a1f311ed8a4f4c6baf84acaa8.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -262,12 +271,12 @@
   "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "36618132bd37b6b15f9987b57ad1fbf613f1ad937aec72381232b163ed9c44c4.zip"
+     "S3Key": "6e5ba7464138b7720c27df56bcc0a5463093492a1f311ed8a4f4c6baf84acaa8.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -304,12 +313,12 @@
   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "36618132bd37b6b15f9987b57ad1fbf613f1ad937aec72381232b163ed9c44c4.zip"
+     "S3Key": "6e5ba7464138b7720c27df56bcc0a5463093492a1f311ed8a4f4c6baf84acaa8.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -323,10 +332,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallSQSreceiveMessage": {
+  "AssertionResultsAwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSQSreceiveMessage",
+     "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4",
      "assertion"
     ]
    }

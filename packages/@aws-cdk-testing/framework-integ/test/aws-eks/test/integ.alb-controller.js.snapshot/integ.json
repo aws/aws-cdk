@@ -1,12 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "35.0.0",
   "testCases": {
-    "aws-cdk-cluster-alb-controller/DefaultTest": {
+    "aws-cdk-cluster-alb-controller-integ/DefaultTest": {
       "stacks": [
-        "aws-cdk-eks-cluster-alb-controller-test"
+        "aws-cdk-eks-cluster-alb-controller"
       ],
-      "assertionStack": "aws-cdk-cluster-alb-controller/DefaultTest/DeployAssert",
-      "assertionStackName": "awscdkclusteralbcontrollerDefaultTestDeployAssert78AE94CA"
+      "diffAssets": false,
+      "assertionStack": "aws-cdk-cluster-alb-controller-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkclusteralbcontrollerintegDefaultTestDeployAssert5A4A7C6A"
     }
   }
 }

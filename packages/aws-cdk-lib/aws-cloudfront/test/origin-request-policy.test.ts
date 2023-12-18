@@ -141,6 +141,17 @@ describe.each([
   test('allowList() throws if list is empty', () => {
     expect(() => clazz.allowList()).toThrow(new RegExp(`At least one ${type} to allow must be provided`));
   });
+
+  test('denyList()', () => {
+    const behavior = clazz.denyList('SESSION_ID', 'secrets');
+
+    expect(behavior.behavior).toEqual('allExcept');
+    expect(items(behavior)).toEqual(['SESSION_ID', 'secrets']);
+  });
+
+  test('denyList() throws if list is empty', () => {
+    expect(() => clazz.denyList()).toThrow(new RegExp(`At least one ${type} to deny must be provided`));
+  });
 });
 
 describe('HeaderBehavior', () => {
@@ -181,5 +192,16 @@ describe('HeaderBehavior', () => {
       const errorMessage = 'additional CloudFront headers passed to `OriginRequestHeaderBehavior.all()` must begin with \'CloudFront-\'';
       expect(() => { OriginRequestHeaderBehavior.all('X-MyCustomHeader'); }).toThrow(errorMessage);
     });
+  });
+
+  test('denyList()', () => {
+    const headers = OriginRequestHeaderBehavior.denyList('SESSION_ID', 'secrets');
+
+    expect(headers.behavior).toEqual('allExcept');
+    expect(headers.headers).toEqual(['SESSION_ID', 'secrets']);
+  });
+
+  test('denyList() throws if list is empty', () => {
+    expect(() => OriginRequestHeaderBehavior.denyList()).toThrow(/At least one header to deny must be provided/);
   });
 });

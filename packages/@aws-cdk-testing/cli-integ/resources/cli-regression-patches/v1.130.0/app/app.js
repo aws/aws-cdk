@@ -109,7 +109,7 @@ class OutputsStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
-    const topic =  new sns.Topic(this, 'MyOutput', {
+    const topic = new sns.Topic(this, 'MyOutput', {
       topicName: `${cdk.Stack.of(this).stackName}MyTopic`
     });
 
@@ -195,7 +195,7 @@ class LambdaStack extends cdk.Stack {
 
     const fn = new lambda.Function(this, 'my-function', {
       code: lambda.Code.asset(path.join(__dirname, 'lambda')),
-      runtime: lambda.Runtime.NODEJS_12_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler'
     });
 
@@ -339,7 +339,7 @@ switch (stackSet) {
       if (process.env.ENABLE_VPC_TESTING === 'DEFINE')
         new DefineVpcStack(app, `${stackPrefix}-define-vpc`, { env });
       if (process.env.ENABLE_VPC_TESTING === 'IMPORT')
-      new ImportVpcStack(app, `${stackPrefix}-import-vpc`, { env });
+        new ImportVpcStack(app, `${stackPrefix}-import-vpc`, { env });
     }
 
     new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)

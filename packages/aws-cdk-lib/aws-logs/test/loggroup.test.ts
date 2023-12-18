@@ -1,9 +1,10 @@
-import { Template } from '../../assertions';
+import { Construct } from 'constructs';
+import { Annotations, Template, Match } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
-import { CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
-import { LogGroup, RetentionDays, DataProtectionPolicy, DataIdentifier } from '../lib';
+import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
+import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern } from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -111,6 +112,74 @@ describe('log group', () => {
         Ref: 'RetentionInDays',
       },
     });
+  });
+
+  test('with INFREQUENT_ACCESS log group class', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      logGroupClass: LogGroupClass.INFREQUENT_ACCESS,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupClass: LogGroupClass.INFREQUENT_ACCESS,
+    });
+  });
+
+  test('with STANDARD log group class', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      logGroupClass: LogGroupClass.STANDARD,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupClass: LogGroupClass.STANDARD,
+    });
+  });
+
+  // when LogGroupClass is not specified, leave it to CFN and/or backend to default to STANDARD
+  test('with default log group class', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup');
+
+    // THEN
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::Logs::LogGroup', {
+      LogGroupClass: LogGroupClass.STANDARD,
+    }, 0);
+
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::Logs::LogGroup', {
+      LogGroupClass: LogGroupClass.INFREQUENT_ACCESS,
+    }, 0);
+  });
+
+  test('with log group class in a non-supported region', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'TestStack', {
+      env: {
+        region: 'us-isob-east-1',
+      },
+    });
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      logGroupClass: LogGroupClass.STANDARD,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp(/The LogGroupClass property is not supported in the following regions.+us-isob-east-1/));
   });
 
   test('will delete log group if asked to', () => {
@@ -686,11 +755,42 @@ describe('log group', () => {
   });
 });
 
+describe('subscription filter', () => {
+  test('add subscription filter with custom name', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const logGroup = new LogGroup(stack, 'LogGroup');
+    logGroup.addSubscriptionFilter('Subscription', {
+      destination: new FakeDestination(),
+      filterPattern: FilterPattern.literal('some pattern'),
+      filterName: 'CustomSubscriptionFilterName',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::SubscriptionFilter', {
+      DestinationArn: 'arn:bogus',
+      FilterPattern: 'some pattern',
+      LogGroupName: { Ref: 'LogGroupF5B46931' },
+      FilterName: 'CustomSubscriptionFilterName',
+    });
+  });
+});
+
 function dataDrivenTests(cases: string[], body: (suffix: string) => void): void {
   for (let i = 0; i < cases.length; i++) {
     const args = cases[i]; // Need to capture inside loop for safe use inside closure.
     test(`case ${i + 1}`, () => {
       body(args);
     });
+  }
+}
+
+class FakeDestination implements ILogSubscriptionDestination {
+  public bind(_scope: Construct, _sourceLogGroup: ILogGroup) {
+    return {
+      arn: 'arn:bogus',
+    };
   }
 }

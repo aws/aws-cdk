@@ -15,23 +15,27 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 ## Table of Contents
 
-- [User Pools](#user-pools)
-  - [Sign Up](#sign-up)
-  - [Sign In](#sign-in)
-  - [Attributes](#attributes)
-  - [Security](#security)
-    - [Multi-factor Authentication](#multi-factor-authentication-mfa)
-    - [Account Recovery Settings](#account-recovery-settings)
-  - [Emails](#emails)
-  - [Device Tracking](#device-tracking)
-  - [Lambda Triggers](#lambda-triggers)
-    - [Trigger Permissions](#trigger-permissions)
-  - [Import](#importing-user-pools)
-  - [Identity Providers](#identity-providers)
-  - [App Clients](#app-clients)
-  - [Resource Servers](#resource-servers)
-  - [Domains](#domains)
-  - [Deletion protection](#deletion-protection)
+- [Amazon Cognito Construct Library](#amazon-cognito-construct-library)
+  - [Table of Contents](#table-of-contents)
+  - [User Pools](#user-pools)
+    - [Sign Up](#sign-up)
+    - [Sign In](#sign-in)
+    - [Attributes](#attributes)
+    - [Attribute verification](#attribute-verification)
+    - [Security](#security)
+      - [Multi-factor Authentication (MFA)](#multi-factor-authentication-mfa)
+      - [Account Recovery Settings](#account-recovery-settings)
+      - [Advanced Security Mode](#advanced-security-mode)
+    - [Emails](#emails)
+    - [Device Tracking](#device-tracking)
+    - [Lambda Triggers](#lambda-triggers)
+      - [Trigger Permissions](#trigger-permissions)
+    - [Importing User Pools](#importing-user-pools)
+    - [Identity Providers](#identity-providers)
+    - [App Clients](#app-clients)
+    - [Resource Servers](#resource-servers)
+    - [Domains](#domains)
+    - [Deletion protection](#deletion-protection)
 
 ## User Pools
 
@@ -450,7 +454,7 @@ on the construct, as so -
 
 ```ts
 const authChallengeFn = new lambda.Function(this, 'authChallengeFn', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'path/to/asset')),
 });
@@ -464,7 +468,7 @@ const userpool = new cognito.UserPool(this, 'myuserpool', {
 });
 
 userpool.addTrigger(cognito.UserPoolOperation.USER_MIGRATION, new lambda.Function(this, 'userMigrationFn', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'path/to/asset')),
 }));

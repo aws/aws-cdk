@@ -1,14 +1,15 @@
 # Amazon Elastic Load Balancing Construct Library
 
 
-The `@aws-cdk/aws-elasticloadbalancing` package provides constructs for configuring
+The `aws-cdk-lib/aws-elasticloadbalancing` package provides constructs for configuring
 classic load balancers.
 
 ## Configuring a Load Balancer
 
 Load balancers send traffic to one or more AutoScalingGroups. Create a load
 balancer, set up listeners and a health check, and supply the fleet(s) you want
-to load balance to in the `targets` property.
+to load balance to in the `targets` property. If you want the load balancer to be
+ accessible from the internet, set `internetFacing: true`.
 
 ```ts
 declare const vpc: ec2.IVpc;
@@ -47,6 +48,7 @@ You can add an EC2 instance to the load balancer by calling using `new InstanceT
 declare const vpc: ec2.IVpc;
 const lb = new elb.LoadBalancer(this, 'LB', {
   vpc,
+  internetFacing: true,
 });
 
 // instance to add as the target for load balancer.

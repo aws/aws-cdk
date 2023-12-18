@@ -85,7 +85,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1ef463e71119677d383a964bbb0740f0c4de382c21d5a8d68be98334d514ae8a.zip"
+     "S3Key": "0fc0f23d90182f641a75eed45976b37c0aaf20f7f5ddbe6c24e4505a9a077188.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -96,7 +96,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "CustomACMImportCertificatesCustomResourceProviderRole2CE46D14"
@@ -124,9 +124,6 @@
   "VpcPublicSubnet1Subnet5C2D37C4": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -150,7 +147,10 @@
       "Key": "Name",
       "Value": "cdk-ec2-client-vpn-endpoint/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    },
    "DependsOn": [
     "ImportCertificatesCreateCertificates71085A81",
@@ -160,15 +160,15 @@
   "VpcPublicSubnet1RouteTable6C95E38E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "cdk-ec2-client-vpn-endpoint/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    },
    "DependsOn": [
     "ImportCertificatesCreateCertificates71085A81",
@@ -193,12 +193,12 @@
   "VpcPublicSubnet1DefaultRoute3DA9E72A": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
     }
    },
    "DependsOn": [
@@ -210,9 +210,6 @@
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -236,7 +233,10 @@
       "Key": "Name",
       "Value": "cdk-ec2-client-vpn-endpoint/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    },
    "DependsOn": [
     "ImportCertificatesCreateCertificates71085A81",
@@ -246,15 +246,15 @@
   "VpcPublicSubnet2RouteTable94F7E489": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "cdk-ec2-client-vpn-endpoint/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    },
    "DependsOn": [
     "ImportCertificatesCreateCertificates71085A81",
@@ -279,12 +279,12 @@
   "VpcPublicSubnet2DefaultRoute97F91067": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
     }
    },
    "DependsOn": [
@@ -296,9 +296,6 @@
   "VpcIsolatedSubnet1SubnetE48C5737": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -322,7 +319,10 @@
       "Key": "Name",
       "Value": "cdk-ec2-client-vpn-endpoint/Vpc/IsolatedSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    },
    "DependsOn": [
     "ImportCertificatesCreateCertificates71085A81",
@@ -332,15 +332,15 @@
   "VpcIsolatedSubnet1RouteTable4771E3E5": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "cdk-ec2-client-vpn-endpoint/Vpc/IsolatedSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    },
    "DependsOn": [
     "ImportCertificatesCreateCertificates71085A81",
@@ -365,9 +365,6 @@
   "VpcIsolatedSubnet2Subnet16364B91": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -391,7 +388,10 @@
       "Key": "Name",
       "Value": "cdk-ec2-client-vpn-endpoint/Vpc/IsolatedSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    },
    "DependsOn": [
     "ImportCertificatesCreateCertificates71085A81",
@@ -401,15 +401,15 @@
   "VpcIsolatedSubnet2RouteTable1D30AF7D": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "cdk-ec2-client-vpn-endpoint/Vpc/IsolatedSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    },
    "DependsOn": [
     "ImportCertificatesCreateCertificates71085A81",
@@ -449,11 +449,11 @@
   "VpcVPCGWBF912B6E": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "InternetGatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
     }
    },
    "DependsOn": [
@@ -510,12 +510,6 @@
      },
      "Enabled": true
     },
-    "ServerCertificateArn": {
-     "Fn::GetAtt": [
-      "ImportCertificatesCreateCertificates71085A81",
-      "ClientCertificateArn"
-     ]
-    },
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -524,6 +518,12 @@
       ]
      }
     ],
+    "ServerCertificateArn": {
+     "Fn::GetAtt": [
+      "ImportCertificatesCreateCertificates71085A81",
+      "ClientCertificateArn"
+     ]
+    },
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
@@ -566,6 +566,7 @@
   "VpcEndpointAuthorizeAll70F0E613": {
    "Type": "AWS::EC2::ClientVpnAuthorizationRule",
    "Properties": {
+    "AuthorizeAllGroups": true,
     "ClientVpnEndpointId": {
      "Ref": "VpcEndpoint6FF034F6"
     },
@@ -574,8 +575,7 @@
       "Vpc8378EB38",
       "CidrBlock"
      ]
-    },
-    "AuthorizeAllGroups": true
+    }
    },
    "DependsOn": [
     "ImportCertificatesCreateCertificates71085A81",

@@ -183,6 +183,29 @@
     "DeliveryStreamServiceRoleDefaultPolicyB87D9ACF",
     "RoleDefaultPolicy5FFB7DAB"
    ]
+  },
+  "DeliveryStreamNoSourceOrEncryptionKey0E4AAB82": {
+   "Type": "AWS::KinesisFirehose::DeliveryStream",
+   "Properties": {
+    "DeliveryStreamType": "DirectPut",
+    "ExtendedS3DestinationConfiguration": {
+     "BucketARN": {
+      "Fn::GetAtt": [
+       "Bucket83908E77",
+       "Arn"
+      ]
+     },
+     "RoleARN": {
+      "Fn::GetAtt": [
+       "Role1ABCC5F0",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "RoleDefaultPolicy5FFB7DAB"
+   ]
   }
  },
  "Conditions": {
@@ -227,6 +250,9 @@
    "ap-south-1": {
     "FirehoseCidrBlock": "13.232.67.32/27"
    },
+   "ap-south-2": {
+    "FirehoseCidrBlock": "18.60.192.128/27"
+   },
    "ap-southeast-1": {
     "FirehoseCidrBlock": "13.228.64.192/27"
    },
@@ -235,6 +261,9 @@
    },
    "ap-southeast-3": {
     "FirehoseCidrBlock": "108.136.221.64/27"
+   },
+   "ap-southeast-4": {
+    "FirehoseCidrBlock": "16.50.161.128/27"
    },
    "ca-central-1": {
     "FirehoseCidrBlock": "35.183.92.128/27"
@@ -268,6 +297,12 @@
    },
    "eu-west-3": {
     "FirehoseCidrBlock": "35.180.1.96/27"
+   },
+   "il-central-1": {
+    "FirehoseCidrBlock": "51.16.102.0/27"
+   },
+   "me-central-1": {
+    "FirehoseCidrBlock": "3.28.159.32/27"
    },
    "me-south-1": {
     "FirehoseCidrBlock": "15.185.91.0/27"

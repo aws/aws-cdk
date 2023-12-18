@@ -26,14 +26,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "cdk-sfn-evaluate-expression-integ/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "Eval41256dc5445742738ed917bc818694e5": {
             "id": "Eval41256dc5445742738ed917bc818694e5",
             "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5",
@@ -131,24 +123,16 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "4a61519d8f4df8206cfaff4e519462aa81beab9213c3642a1353cd679c697638.zip"
+                      "s3Key": "b8cec122f25692e8b194663d25a2ee5e0b65e55df966120791d6a3ddc08fc136.zip"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": {
-                      "Fn::FindInMap": [
-                        "DefaultCrNodeVersionMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "value"
-                      ]
-                    }
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -169,144 +153,6 @@
               "EvalFunction": {
                 "id": "EvalFunction",
                 "path": "cdk-sfn-evaluate-expression-integ/Multiply/EvalFunction",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.EvaluateExpression",
-              "version": "0.0.0"
-            }
-          },
-          "Eval2a430b68eb4b40269232ee39b71c1db8": {
-            "id": "Eval2a430b68eb4b40269232ee39b71c1db8",
-            "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8",
-            "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/ServiceRole",
-                "children": {
-                  "ImportServiceRole": {
-                    "id": "ImportServiceRole",
-                    "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/ServiceRole/ImportServiceRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/ServiceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "Code": {
-                "id": "Code",
-                "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/Code",
-                "children": {
-                  "Stage": {
-                    "id": "Stage",
-                    "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/Code/Stage",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "AssetBucket": {
-                    "id": "AssetBucket",
-                    "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/Code/AssetBucket",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                  "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "s3Bucket": {
-                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                      },
-                      "s3Key": "4a61519d8f4df8206cfaff4e519462aa81beab9213c3642a1353cd679c697638.zip"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "Eval2a430b68eb4b40269232ee39b71c1db8ServiceRole2388DF3C",
-                        "Arn"
-                      ]
-                    },
-                    "handler": "index.handler",
-                    "runtime": "nodejs16.x"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
-            }
-          },
-          "Now": {
-            "id": "Now",
-            "path": "cdk-sfn-evaluate-expression-integ/Now",
-            "children": {
-              "EvalFunction": {
-                "id": "EvalFunction",
-                "path": "cdk-sfn-evaluate-expression-integ/Now/EvalFunction",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                   "version": "0.0.0"
@@ -415,15 +261,15 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "4a61519d8f4df8206cfaff4e519462aa81beab9213c3642a1353cd679c697638.zip"
+                      "s3Key": "b8cec122f25692e8b194663d25a2ee5e0b65e55df966120791d6a3ddc08fc136.zip"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "Eval078d40d3fb4e4d5394a79c46fc11fe02ServiceRoleDD279E15",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "nodejs18.x"
                   }
                 },
@@ -435,6 +281,24 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Now": {
+            "id": "Now",
+            "path": "cdk-sfn-evaluate-expression-integ/Now",
+            "children": {
+              "EvalFunction": {
+                "id": "EvalFunction",
+                "path": "cdk-sfn-evaluate-expression-integ/Now/EvalFunction",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.EvaluateExpression",
               "version": "0.0.0"
             }
           },
@@ -511,12 +375,6 @@
                                     },
                                     {
                                       "Fn::GetAtt": [
-                                        "Eval2a430b68eb4b40269232ee39b71c1db8D6CA9948",
-                                        "Arn"
-                                      ]
-                                    },
-                                    {
-                                      "Fn::GetAtt": [
                                         "Eval41256dc5445742738ed917bc818694e54EB1134F",
                                         "Arn"
                                       ]
@@ -528,20 +386,6 @@
                                           {
                                             "Fn::GetAtt": [
                                               "Eval078d40d3fb4e4d5394a79c46fc11fe029D0ED2B4",
-                                              "Arn"
-                                            ]
-                                          },
-                                          ":*"
-                                        ]
-                                      ]
-                                    },
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          {
-                                            "Fn::GetAtt": [
-                                              "Eval2a430b68eb4b40269232ee39b71c1db8D6CA9948",
                                               "Arn"
                                             ]
                                           },
@@ -599,12 +443,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
-                    "roleArn": {
-                      "Fn::GetAtt": [
-                        "StateMachineRoleB840431D",
-                        "Arn"
-                      ]
-                    },
                     "definitionString": {
                       "Fn::Join": [
                         "",
@@ -619,7 +457,7 @@
                           "\",\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}}},\"Multiply\":{\"Next\":\"Wait\",\"Type\":\"Task\",\"ResultPath\":\"$.d\",\"Resource\":\"",
                           {
                             "Fn::GetAtt": [
-                              "Eval2a430b68eb4b40269232ee39b71c1db8D6CA9948",
+                              "Eval078d40d3fb4e4d5394a79c46fc11fe029D0ED2B4",
                               "Arn"
                             ]
                           },
@@ -632,6 +470,12 @@
                           },
                           "\",\"Parameters\":{\"expression\":\"(new Date()).toUTCString()\",\"expressionAttributeValues\":{}}}}}"
                         ]
+                      ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRoleB840431D",
+                        "Arn"
                       ]
                     }
                   }
@@ -690,7 +534,7 @@
                 "path": "EvaluateExpressionInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -736,7 +580,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },

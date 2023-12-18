@@ -73,7 +73,7 @@ time $ROSETTA extract \
 
 if $infuse; then
     echo "💎 Generating synthetic examples for the remainder" >&2
-    time npx cdk-generate-synthetic-examples@^0.1.14 \
+    time npx cdk-generate-synthetic-examples@^0.1.292 \
         $(cat $jsii_pkgs_file)
 
     time $ROSETTA extract \

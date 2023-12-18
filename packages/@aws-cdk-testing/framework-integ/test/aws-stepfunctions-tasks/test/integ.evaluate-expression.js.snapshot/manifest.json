@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "cdk-sfn-evaluate-expression-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-sfn-evaluate-expression-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3895b91ba678a060a1d38543164fee767cb5a3cbf05476d1c6c3ae4323aed33f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3defd0dcacbdfd76991b677ef909cf98e4904ceef0cdb515bcfcd240bab96d3d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,12 +34,6 @@
         "cdk-sfn-evaluate-expression-integ.assets"
       ],
       "metadata": {
-        "/cdk-sfn-evaluate-expression-integ/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
-          }
-        ],
         "/cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -49,18 +44,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Eval41256dc5445742738ed917bc818694e54EB1134F"
-          }
-        ],
-        "/cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Eval2a430b68eb4b40269232ee39b71c1db8ServiceRole2388DF3C"
-          }
-        ],
-        "/cdk-sfn-evaluate-expression-integ/Eval2a430b68eb4b40269232ee39b71c1db8/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Eval2a430b68eb4b40269232ee39b71c1db8D6CA9948"
           }
         ],
         "/cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02/ServiceRole/Resource": [
@@ -110,24 +93,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "Evalda2d1181604e4a4586941a6abd7fe42dServiceRoleED144118": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Evalda2d1181604e4a4586941a6abd7fe42dServiceRoleED144118",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "Evalda2d1181604e4a4586941a6abd7fe42dF371675D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Evalda2d1181604e4a4586941a6abd7fe42dF371675D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "cdk-sfn-evaluate-expression-integ"
@@ -145,6 +110,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "EvaluateExpressionIntegDefaultTestDeployAssert03097648.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

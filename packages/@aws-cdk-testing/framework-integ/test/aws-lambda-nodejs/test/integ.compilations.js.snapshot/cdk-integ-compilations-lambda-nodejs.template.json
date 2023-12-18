@@ -38,13 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8df6c4f7f61921e6f88f328521b8a71aef10b045b77847bd61cfe75cf3a64c32.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "tsdecoratorhandlerServiceRole61E9E52C",
-      "Arn"
-     ]
+     "S3Key": "2344c8450ec3c069ed98fedf1714f33c31b9f3c8e0d295ea361224732e1fef37.zip"
     },
     "Environment": {
      "Variables": {
@@ -52,7 +46,13 @@
      }
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs16.x"
+    "Role": {
+     "Fn::GetAtt": [
+      "tsdecoratorhandlerServiceRole61E9E52C",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "tsdecoratorhandlerServiceRole61E9E52C"
@@ -96,13 +96,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8df6c4f7f61921e6f88f328521b8a71aef10b045b77847bd61cfe75cf3a64c32.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "tsdecoratorhandlertsconfigServiceRoleC4AE481E",
-      "Arn"
-     ]
+     "S3Key": "112c693f98d7e411850f8d441167216bdfe392567d99a11e03b6cd921e36398b.zip"
     },
     "Environment": {
      "Variables": {
@@ -110,7 +104,13 @@
      }
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs16.x"
+    "Role": {
+     "Fn::GetAtt": [
+      "tsdecoratorhandlertsconfigServiceRoleC4AE481E",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "tsdecoratorhandlertsconfigServiceRoleC4AE481E"

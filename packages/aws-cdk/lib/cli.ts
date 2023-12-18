@@ -22,6 +22,7 @@ import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
 import { realHandler as context } from '../lib/commands/context';
 import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
+import { MIGRATE_SUPPORTED_LANGUAGES } from '../lib/commands/migrate';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
@@ -257,10 +258,11 @@ async function parseCommandLineArguments(args: string[]) {
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only diff requested stacks, don\'t include dependencies' })
       .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
       .option('template', { type: 'string', desc: 'The path to the CloudFormation template to compare with', requiresArg: true })
-      .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources', default: false })
+      .option('strict', { type: 'boolean', desc: 'Do not filter out AWS::CDK::Metadata resources or mangled non-ASCII characters', default: false })
       .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
       .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' })
-      .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false }))
+      .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false })
+      .option('quiet', { type: 'boolean', alias: 'q', desc: 'Do not print stack name and default message when there is no diff to stdout', default: false }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
     .command('notices', 'Returns a list of relevant notices')
@@ -268,6 +270,16 @@ async function parseCommandLineArguments(args: string[]) {
       .option('language', { type: 'string', alias: 'l', desc: 'The language to be used for the new project (default can be configured in ~/.cdk.json)', choices: initTemplateLanguages })
       .option('list', { type: 'boolean', desc: 'List the available templates' })
       .option('generate-only', { type: 'boolean', default: false, desc: 'If true, only generates project files, without executing additional operations such as setting up a git repo, installing dependencies or compiling the project' }),
+    )
+    .command('migrate', false /* hidden from "cdk --help" */, (yargs: Argv) => yargs
+      .option('stack-name', { type: 'string', alias: 'n', desc: 'The name assigned to the stack created in the new project. The name of the app will be based off this name as well.', requiresArg: true })
+      .option('language', { type: 'string', default: 'typescript', alias: 'l', desc: 'The language to be used for the new project', choices: MIGRATE_SUPPORTED_LANGUAGES })
+      .option('account', { type: 'string', desc: 'The account to retrieve the CloudFormation stack template from' })
+      .option('region', { type: 'string', desc: 'The region to retrieve the CloudFormation stack template from' })
+      .option('from-path', { type: 'string', desc: 'The path to the CloudFormation template to migrate. Use this for locally stored templates' })
+      .option('from-stack', { type: 'boolean', desc: 'Use this flag to retrieve the template for an existing CloudFormation stack' })
+      .option('output-path', { type: 'string', desc: 'The output path for the migrated CDK app' })
+      .option('compress', { type: 'boolean', desc: 'Use this flag to zip the generated CDK app' }),
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
       .option('reset', { alias: 'e', desc: 'The context key (or its index) to reset', type: 'string', requiresArg: true })
@@ -347,8 +359,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       caBundlePath: argv['ca-bundle-path'],
     },
   });
-
-  const cloudFormation = new Deployments({ sdkProvider });
 
   let outDirLock: ILock | undefined;
   const cloudExecutable = new CloudExecutable({
@@ -434,6 +444,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
     debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 
+    const cloudFormation = new Deployments({ sdkProvider, toolkitStackName });
+
     if (args.all && args.STACKS) {
       throw new Error('You must either specify a list of Stacks or the `--all` argument');
     }
@@ -482,6 +494,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           fail: args.fail != null ? args.fail : !enableDiffNoFail,
           stream: args.ci ? process.stdout : undefined,
           compareAgainstProcessedTemplate: args.processed,
+          quiet: args.quiet,
         });
 
       case 'bootstrap':
@@ -647,8 +660,24 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         if (args.list) {
           return printAvailableTemplates(language);
         } else {
-          return cliInit(args.TEMPLATE, language, undefined, args.generateOnly);
+          return cliInit({
+            type: args.TEMPLATE,
+            language,
+            canUseNetwork: undefined,
+            generateOnly: args.generateOnly,
+          });
         }
+      case 'migrate':
+        return cli.migrate({
+          stackName: args['stack-name'],
+          fromPath: args['from-path'],
+          fromStack: args['from-stack'],
+          language: args.language,
+          outputPath: args['output-path'],
+          account: args.account,
+          region: args.region,
+          compress: args.compress,
+        });
       case 'version':
         return data(version.DISPLAY_VERSION);
 
@@ -656,7 +685,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         throw new Error('Unknown command: ' + command);
     }
   }
-
 }
 
 /**

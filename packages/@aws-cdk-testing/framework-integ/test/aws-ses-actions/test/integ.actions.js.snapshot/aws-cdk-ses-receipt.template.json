@@ -40,14 +40,14 @@
     "Code": {
      "ZipFile": "exports.handler = async (event) => event;"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "FunctionServiceRole675BB04A",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "FunctionServiceRole675BB04A"
@@ -203,6 +203,9 @@
   "RuleSetFirstRule0A27C8CC": {
    "Type": "AWS::SES::ReceiptRule",
    "Properties": {
+    "After": {
+     "Ref": "RuleSetDropSpamRule5809F51B"
+    },
     "Rule": {
      "Actions": [
       {
@@ -272,9 +275,6 @@
     },
     "RuleSetName": {
      "Ref": "RuleSetE30C6C48"
-    },
-    "After": {
-     "Ref": "RuleSetDropSpamRule5809F51B"
     }
    },
    "DependsOn": [
@@ -285,6 +285,9 @@
   "RuleSetSecondRule03178AD4": {
    "Type": "AWS::SES::ReceiptRule",
    "Properties": {
+    "After": {
+     "Ref": "RuleSetFirstRule0A27C8CC"
+    },
     "Rule": {
      "Actions": [
       {
@@ -300,9 +303,6 @@
     },
     "RuleSetName": {
      "Ref": "RuleSetE30C6C48"
-    },
-    "After": {
-     "Ref": "RuleSetFirstRule0A27C8CC"
     }
    }
   },
@@ -346,14 +346,14 @@
      },
      "S3Key": "96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "SingletonLambda224e77f9a32e4b4dac32983477abba16ServiceRole3037F5B4",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "SingletonLambda224e77f9a32e4b4dac32983477abba16ServiceRole3037F5B4"

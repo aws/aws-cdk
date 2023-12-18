@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "Integ-SecretsManager-ParsedSecretName": {
         "id": "Integ-SecretsManager-ParsedSecretName",
         "path": "Integ-SecretsManager-ParsedSecretName",
@@ -30,13 +22,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
               "version": "0.0.0"
             }
           },
@@ -55,13 +47,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
               "version": "0.0.0"
             }
           },
@@ -80,13 +72,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
               "version": "0.0.0"
             }
           },
@@ -104,13 +96,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                  "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-secretsmanager.Secret",
+              "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
               "version": "0.0.0"
             }
           },
@@ -122,30 +114,30 @@
                 "id": "Staging",
                 "path": "Integ-SecretsManager-ParsedSecretName/Custom::IntegVerificationSecretNameMatchesCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
                 }
               },
               "Role": {
                 "id": "Role",
                 "path": "Integ-SecretsManager-ParsedSecretName/Custom::IntegVerificationSecretNameMatchesCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
                 }
               },
               "Handler": {
                 "id": "Handler",
                 "path": "Integ-SecretsManager-ParsedSecretName/Custom::IntegVerificationSecretNameMatchesCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "version": "0.0.0"
             }
           },
           "SecretNameVerification": {
@@ -156,26 +148,50 @@
                 "id": "Default",
                 "path": "Integ-SecretsManager-ParsedSecretName/SecretNameVerification/Default",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "aws-cdk-lib.CustomResource",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "Integ-SecretsManager-ParsedSecretName/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "Integ-SecretsManager-ParsedSecretName/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

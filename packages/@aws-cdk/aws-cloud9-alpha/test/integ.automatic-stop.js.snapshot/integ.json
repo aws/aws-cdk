@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "cloud-9-automatic-stop-time-mintues/DefaultTest": {
+      "stacks": [
+        "C9automaticStopStack"
+      ],
+      "assertionStack": "cloud-9-automatic-stop-time-mintues/DefaultTest/DeployAssert",
+      "assertionStackName": "cloud9automaticstoptimemintuesDefaultTestDeployAssertBBFEEF89"
+    }
+  }
+}

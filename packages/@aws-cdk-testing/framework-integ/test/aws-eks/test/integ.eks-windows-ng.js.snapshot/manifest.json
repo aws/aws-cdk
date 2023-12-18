@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster-windows-ng-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3167b8a624449eaabbd98ba7a3bb446f105cf03ea7a3680d864db94405b89413.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1a551f5002a1f8ab49ddcae9297ee5374e6c492c2407c7be3b326f4fee6c804.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -429,16 +429,16 @@
             "data": "awscdkeksclusterwindowsngtestawscdkawseksKubectlProviderframeworkonEventCEC3AFF7Arn"
           }
         ],
-        "/aws-cdk-eks-cluster-windows-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterwindowsngtestClusterKubectlHandlerRoleA205E29AArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksclusterwindowsngtestClusterKubectlHandlerRoleA205E29AArn"
-          }
-        ],
         "/aws-cdk-eks-cluster-windows-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterwindowsngtestKubectlLayer31B52BE6Ref": [
           {
             "type": "aws:cdk:logicalId",
             "data": "referencetoawscdkeksclusterwindowsngtestKubectlLayer31B52BE6Ref"
+          }
+        ],
+        "/aws-cdk-eks-cluster-windows-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterwindowsngtestClusterKubectlHandlerRoleA205E29AArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawscdkeksclusterwindowsngtestClusterKubectlHandlerRoleA205E29AArn"
           }
         ],
         "/aws-cdk-eks-cluster-windows-ng-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterwindowsngtestVpcPrivateSubnet1Subnet55633596Ref": [

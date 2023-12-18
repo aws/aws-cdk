@@ -218,7 +218,7 @@ export class Group extends GroupBase {
 
   private managedPoliciesExceededWarning() {
     if (this.managedPolicies.length > 10) {
-      Annotations.of(this).addWarning(`You added ${this.managedPolicies.length} to IAM Group ${this.physicalName}. The maximum number of managed policies attached to an IAM group is 10.`);
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-iam:groupMaxPoliciesExceeded', `You added ${this.managedPolicies.length} to IAM Group ${this.physicalName}. The maximum number of managed policies attached to an IAM group is 10.`);
     }
   }
 }

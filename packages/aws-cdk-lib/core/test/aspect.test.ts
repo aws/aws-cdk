@@ -50,7 +50,7 @@ describe('aspect', () => {
     });
     app.synth();
     expect(root.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-    expect(root.node.metadata[0].data).toEqual('We detected an Aspect was added via another Aspect, and will not be applied');
+    expect(root.node.metadata[0].data).toEqual('We detected an Aspect was added via another Aspect, and will not be applied [ack: @aws-cdk/core:ignoredAspect]');
     // warning is not added to child construct
     expect(child.node.metadata.length).toEqual(0);
   });

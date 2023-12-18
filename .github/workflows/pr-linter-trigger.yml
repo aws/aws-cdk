@@ -1,0 +1,23 @@
+name: PR Linter Trigger
+
+on:
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Save PR number
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          mkdir -p ./pr
+          echo $PR_NUMBER > ./pr/pr_number
+          echo $PR_SHA > ./pr/pr_sha
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pr_info
+          path: pr/

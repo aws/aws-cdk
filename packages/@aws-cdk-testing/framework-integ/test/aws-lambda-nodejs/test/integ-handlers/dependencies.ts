@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { S3 } from 'aws-sdk'; // eslint-disable-line import/no-extraneous-dependencies
+import { S3 } from '@aws-sdk/client-s3'; // eslint-disable-line import/no-extraneous-dependencies
 import delay from 'delay';
 
 const s3 = new S3();

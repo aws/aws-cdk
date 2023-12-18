@@ -1,0 +1,13 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "integrationtest-stepfunctions-start-execution/DefaultTest": {
+      "stacks": [
+        "aws-cdk-scheduler-targets-sfn-start-execution"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integrationtest-stepfunctions-start-execution/DefaultTest/DeployAssert",
+      "assertionStackName": "integrationteststepfunctionsstartexecutionDefaultTestDeployAssert9FF5F59A"
+    }
+  }
+}

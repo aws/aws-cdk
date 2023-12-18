@@ -161,6 +161,26 @@ describe('logical id', () => {
     expect(() => toCloudFormation(stack)).toThrow(/Logical ID must adhere to the regular expression/);
   });
 
+  test('alphanumeric logical IDs are allowed', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const generatedStrings = Array.from({ length: 5 }, () => generateAlphaNumericString(200));
+    for (const generatedString of generatedStrings) {
+      new CfnResource(stack, generatedString, { type: 'R' });
+    }
+
+    // THEN
+    const expectedResources: { [key: string]: { Type: string } } = {};
+    for (const generatedString of generatedStrings) {
+      expectedResources[generatedString] = { Type: 'R' };
+    }
+    expect(toCloudFormation(stack)).toEqual({
+      Resources: expectedResources,
+    });
+  });
+
   test('too large identifiers are truncated yet still remain unique', () => {
     // GIVEN
     const stack = new Stack();
@@ -263,6 +283,19 @@ function generateString(chars: number) {
 
   function randomAlpha() {
     return String.fromCharCode('a'.charCodeAt(0) + Math.floor(Math.random() * 26));
+  }
+}
+
+function generateAlphaNumericString(chars: number) {
+  let s = '';
+  for (let i = 0; i < chars; ++i) {
+    s += randomAlphaNumeric();
+  }
+  return s;
+
+  function randomAlphaNumeric() {
+    const alphaNumericChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    return alphaNumericChars.charAt(Math.floor(Math.random() * 62));
   }
 }
 

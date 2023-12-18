@@ -1,16 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
-    "integ.pipeline-with-variables": {
+    "VariablePipelineTest/DefaultTest": {
       "stacks": [
         "VariablePipelineStack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "VariablePipelineTest/DefaultTest/DeployAssert",
+      "assertionStackName": "VariablePipelineTestDefaultTestDeployAssertC1E57581"
     }
-  },
-  "synthContext": {
-    "@aws-cdk/core:newStyleStackSynthesis": "true"
-  },
-  "enableLookups": false
+  }
 }

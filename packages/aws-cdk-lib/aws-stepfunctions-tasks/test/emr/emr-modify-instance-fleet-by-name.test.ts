@@ -55,7 +55,7 @@ test('task policies are generated', () => {
     targetSpotCapacity: 0,
   });
   new sfn.StateMachine(stack, 'SM', {
-    definition: task,
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   // THEN

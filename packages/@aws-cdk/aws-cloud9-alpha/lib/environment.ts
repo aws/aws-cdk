@@ -1,7 +1,7 @@
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { IUser } from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnEnvironmentEC2 } from 'aws-cdk-lib/aws-cloud9';
 
@@ -50,9 +50,19 @@ export enum ImageId {
    */
   AMAZON_LINUX_2 = 'amazonlinux-2-x86_64',
   /**
-   * Create using Ubunut 18.04
+   * Create using Amazon Linux 2023
    */
-  UBUNTU_18_04 = 'ubuntu-18.04-x86_64'
+  AMAZON_LINUX_2023 = 'amazonlinux-2023-x86_64',
+  /**
+   * Create using Ubuntu 18.04
+   *
+   * @deprecated Since Ubuntu 18.04 has ended standard support as of May 31, 2023, we recommend you choose Ubuntu 22.04.
+   */
+  UBUNTU_18_04 = 'ubuntu-18.04-x86_64',
+  /**
+   * Create using Ubuntu 22.04
+   */
+  UBUNTU_22_04 = 'ubuntu-22.04-x86_64',
 }
 /**
  * Properties for Ec2Environment
@@ -124,6 +134,16 @@ export interface Ec2EnvironmentProps {
    *
    */
   readonly imageId: ImageId
+
+  /**
+   * The number of minutes until the running instance is shut down after the
+   * environment was last used.
+   *
+   * Setting a value of 0 means the instance will never be automatically shut down."
+   *
+   * @default - The instance will not be shut down automatically.
+   */
+  readonly automaticStop?: cdk.Duration
 }
 
 /**
@@ -200,6 +220,7 @@ export class Ec2Environment extends cdk.Resource implements IEc2Environment {
       })) : undefined,
       connectionType: props.connectionType ?? ConnectionType.CONNECT_SSH,
       imageId: props.imageId,
+      automaticStopTimeMinutes: props.automaticStop?.toMinutes(),
     });
     this.environmentId = c9env.ref;
     this.ec2EnvironmentArn = c9env.getAtt('Arn').toString();
@@ -244,6 +265,26 @@ export class Owner {
    */
   public static user(user: IUser): Owner {
     return { ownerArn: user.userArn };
+  }
+
+  /**
+   * Make an IAM assumed role the environment owner
+   *
+   * @param accountId The account id of the target account
+   * @param roleName The name of the assumed role
+   */
+  public static assumedRole(accountId: string, roleName: string): Owner {
+    return { ownerArn: `arn:${cdk.Aws.PARTITION}:sts::${accountId}:assumed-role/${roleName}` };
+  }
+
+  /**
+   * Make an IAM federated user the environment owner
+   *
+   * @param accountId The AccountId of the target account
+   * @param userName The name of the federated user
+   */
+  public static federatedUser(accountId: string, userName: string): Owner {
+    return { ownerArn: `arn:${cdk.Aws.PARTITION}:sts::${accountId}:federated-user/${userName}` };
   }
 
   /**

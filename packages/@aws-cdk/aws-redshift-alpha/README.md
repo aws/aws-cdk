@@ -166,6 +166,18 @@ new Table(this, 'Table', {
 });
 ```
 
+Tables greater than v2.114.1 can have their table name changed, for versions <= v2.114.1, this would not be possible.
+Therefore, changing of table names for <= v2.114.1 have been disabled.
+
+```ts fixture=cluster
+new Table(this, 'Table', {
+  tableName: 'oldTableName' // This value can be change for versions greater than v2.114.1
+  tableColumns: [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }],
+  cluster: cluster,
+  databaseName: 'databaseName',
+});
+```
+
 The table can be configured to have distStyle attribute and a distKey column:
 
 ```ts fixture=cluster
@@ -543,3 +555,28 @@ const cluster = new Cluster(this, 'Redshift', {
 });
 cluster.addIamRole(role);
 ```
+
+## Resizing
+
+As your data warehousing needs change, it's possible to resize your Redshift cluster. If the cluster was deployed via CDK, 
+it's important to resize it via CDK so the change is registered in the AWS CloudFormation template. 
+There are two types of resize operations:
+
+* Elastic resize - Number of nodes and node type can be changed, but not at the same time. Elastic resize is the default behavior, 
+as it's a fast operation and typically completes in minutes. Elastic resize is only supported on clusters of the following types:
+  * dc1.large (if your cluster is in a VPC)
+  * dc1.8xlarge (if your cluster is in a VPC)
+  * dc2.large
+  * dc2.8xlarge
+  * ds2.xlarge
+  * ds2.8xlarge
+  * ra3.xlplus
+  * ra3.4xlarge
+  * ra3.16xlarge
+
+* Classic resize - Number of nodes, node type, or both, can be changed. This operation takes longer to complete, 
+but is useful when the resize operation doesn't meet the criteria of an elastic resize. If you prefer classic resizing,
+you can set the `classicResizing` flag when creating the cluster.
+
+There are other constraints to be aware of, for example, elastic resizing does not support single-node clusters and there are 
+limits on the number of nodes you can add to a cluster. See the [AWS Redshift Documentation](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-operations.html#rs-resize-tutorial) and [AWS API Documentation](https://docs.aws.amazon.com/redshift/latest/APIReference/API_ResizeCluster.html) for more details.

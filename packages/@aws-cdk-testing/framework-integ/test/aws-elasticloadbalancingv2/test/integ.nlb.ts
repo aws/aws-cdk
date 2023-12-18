@@ -11,9 +11,13 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
   maxAzs: 2,
 });
 
+const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), 'allow https access from the world');
+
 const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
   vpc,
   internetFacing: true,
+  securityGroups: [sg],
 });
 
 const listener = lb.addListener('Listener', {
@@ -27,7 +31,10 @@ const group = listener.addTargets('Target', {
 
 group.configureHealthCheck({
   interval: cdk.Duration.seconds(250),
+  timeout: cdk.Duration.seconds(100),
   protocol: elbv2.Protocol.TCP,
+  healthyThresholdCount: 5,
+  unhealthyThresholdCount: 2,
 });
 
 vpc.publicSubnets.forEach(subnet => group.node.addDependency(subnet));

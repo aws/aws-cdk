@@ -113,6 +113,12 @@ class MyL2Resource extends Resource implements IMyL2Resource {
   public readonly constructPath: string;
   constructor(scope: Construct, id: string) {
     super(scope, id);
+    new core.CfnResource(this, 'Resource1', {
+      type: 'AWS::CDK::TestResource',
+      properties: {
+        testProp1: 'testValue',
+      },
+    });
     const resource = new core.CfnResource(this, 'Resource', {
       type: 'AWS::CDK::TestResource',
       properties: {
@@ -127,6 +133,7 @@ class MyConstruct extends Construct {
   public readonly constructPath: string;
   constructor(scope: Construct, id: string) {
     super(scope, id);
+    new MyL2Resource(this, 'MyL2Resource1');
     const myResource = new MyL2Resource(this, 'MyL2Resource');
     this.constructPath = myResource.constructPath;
   }
@@ -136,6 +143,8 @@ class MyStack extends core.Stack {
   public readonly constructPath: string;
   constructor(scope: Construct, id: string, props?: core.StackProps) {
     super(scope, id, props);
+    new MyConstruct(this, 'MyConstruct2');
+    new MyConstruct(this, 'MyConstruct3');
     const myConstruct = new MyConstruct(this, 'MyConstruct');
     this.constructPath = myConstruct.constructPath;
   }

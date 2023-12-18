@@ -28,6 +28,13 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
     return undefined;
   }
 
+  /**
+   * The role used to lookup for this stack
+   */
+  public get lookupRole(): string | undefined {
+    return undefined;
+  }
+
   private _boundStack?: Stack;
 
   /**

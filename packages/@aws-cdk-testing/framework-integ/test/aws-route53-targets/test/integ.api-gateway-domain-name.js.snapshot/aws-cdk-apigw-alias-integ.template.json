@@ -37,14 +37,14 @@
     "Code": {
      "ZipFile": "exports.handler = async () => {\n        return {\n          statusCode: '200',\n          body: 'hello, world!'\n        };\n      };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "HandlerServiceRoleFCDC14AE",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "HandlerServiceRoleFCDC14AE"
@@ -108,10 +108,10 @@
   "apiDeployment149F1294891f10d69bae7c4d19bdee7af013a950": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "apiC8550315"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "apiproxyANY7F13F09C",
@@ -122,11 +122,11 @@
   "apiDeploymentStageprod896C8101": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "apiC8550315"
-    },
     "DeploymentId": {
      "Ref": "apiDeployment149F1294891f10d69bae7c4d19bdee7af013a950"
+    },
+    "RestApiId": {
+     "Ref": "apiC8550315"
     },
     "StageName": "prod"
    },
@@ -256,14 +256,8 @@
   "apiproxyANY7F13F09C": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "ANY",
-    "ResourceId": {
-     "Ref": "apiproxy4EA44110"
-    },
-    "RestApiId": {
-     "Ref": "apiC8550315"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -290,6 +284,12 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "apiproxy4EA44110"
+    },
+    "RestApiId": {
+     "Ref": "apiC8550315"
     }
    }
   },
@@ -374,17 +374,8 @@
   "apiANYB3DF8C3C": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "ANY",
-    "ResourceId": {
-     "Fn::GetAtt": [
-      "apiC8550315",
-      "RootResourceId"
-     ]
-    },
-    "RestApiId": {
-     "Ref": "apiC8550315"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -411,14 +402,21 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "apiC8550315",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "apiC8550315"
     }
    }
   },
   "Alias325C5727": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "example.com.",
-    "Type": "A",
     "AliasTarget": {
      "DNSName": {
       "Fn::GetAtt": [
@@ -433,7 +431,9 @@
       ]
      }
     },
-    "HostedZoneId": "AAAAAAAAAAAAA"
+    "HostedZoneId": "AAAAAAAAAAAAA",
+    "Name": "example.com.",
+    "Type": "A"
    }
   }
  },

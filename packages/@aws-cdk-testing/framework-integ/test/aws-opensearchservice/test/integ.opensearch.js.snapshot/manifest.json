@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "cdk-integ-opensearch.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-opensearch.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1590bf18545cb200cf598376101c900a719a4e0e6fb1d973572494d941777663.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/126170e4ef086fa09dff1b8f322ce4df85e4e24891db0976d402c158dcab24d8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -45,6 +46,12 @@
             "data": "Domain1AppLogs6E8D1D67"
           }
         ],
+        "/cdk-integ-opensearch/Domain1/ESLogGroupPolicyc881416c4fcb1ec2b4bf7f47a5cde4097f01ec50fc": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
+          }
+        ],
         "/cdk-integ-opensearch/Domain1/ESLogGroupPolicyc881416c4fcb1ec2b4bf7f47a5cde4097f01ec50fc/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -63,6 +70,12 @@
             "data": "Domain19FCBCB91"
           }
         ],
+        "/cdk-integ-opensearch/Domain1/AccessPolicy": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
+          }
+        ],
         "/cdk-integ-opensearch/Domain1/AccessPolicy/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -73,12 +86,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain1AccessPolicyCustomResourcePolicy3BA04487"
-          }
-        ],
-        "/cdk-integ-opensearch/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
           }
         ],
         "/cdk-integ-opensearch/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -105,6 +112,12 @@
             "data": "Domain2AppLogs810876E2"
           }
         ],
+        "/cdk-integ-opensearch/Domain2/ESLogGroupPolicyc80140a7754e9c0dd4e81167ef19e15da5b55dca02": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
+          }
+        ],
         "/cdk-integ-opensearch/Domain2/ESLogGroupPolicyc80140a7754e9c0dd4e81167ef19e15da5b55dca02/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -121,6 +134,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain2644FE48C"
+          }
+        ],
+        "/cdk-integ-opensearch/Domain2/AccessPolicy": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
           }
         ],
         "/cdk-integ-opensearch/Domain2/AccessPolicy/Resource/Default": [
@@ -149,6 +168,54 @@
         ]
       },
       "displayName": "cdk-integ-opensearch"
+    },
+    "OpenSearchIntegDefaultTestDeployAssertFAE78D8A.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "OpenSearchIntegDefaultTestDeployAssertFAE78D8A.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "OpenSearchIntegDefaultTestDeployAssertFAE78D8A": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "OpenSearchIntegDefaultTestDeployAssertFAE78D8A.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "OpenSearchIntegDefaultTestDeployAssertFAE78D8A.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "OpenSearchIntegDefaultTestDeployAssertFAE78D8A.assets"
+      ],
+      "metadata": {
+        "/OpenSearchInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/OpenSearchInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "OpenSearchInteg/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

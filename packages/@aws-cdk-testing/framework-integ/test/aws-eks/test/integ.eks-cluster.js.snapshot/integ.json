@@ -1,10 +1,11 @@
 {
-  "version": "31.0.0",
+  "version": "35.0.0",
   "testCases": {
-    "aws-cdk-eks-cluster/DefaultTest": {
+    "aws-cdk-eks-cluster-integ/DefaultTest": {
       "stacks": [
-        "aws-cdk-eks-cluster-test"
+        "aws-cdk-eks-cluster"
       ],
+      "diffAssets": false,
       "cdkCommandOptions": {
         "deploy": {
           "args": {
@@ -12,8 +13,8 @@
           }
         }
       },
-      "assertionStack": "aws-cdk-eks-cluster/DefaultTest/DeployAssert",
-      "assertionStackName": "awscdkeksclusterDefaultTestDeployAssertFBF4B356"
+      "assertionStack": "aws-cdk-eks-cluster-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterintegDefaultTestDeployAssertB6AAB3A3"
     }
   }
 }

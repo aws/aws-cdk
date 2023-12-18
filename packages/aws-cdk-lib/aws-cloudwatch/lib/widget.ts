@@ -21,8 +21,14 @@ export interface IWidget {
 
   /**
    * Any warnings that are produced as a result of putting together this widget
+   * @deprecated - use warningsV2
    */
   readonly warnings?: string[];
+
+  /**
+   * Any warnings that are produced as a result of putting together this widget
+   */
+  readonly warningsV2?: { [id: string]: string };
 
   /**
    * Place the widget at a given position
@@ -47,6 +53,7 @@ export abstract class ConcreteWidget implements IWidget {
   protected y?: number;
 
   public readonly warnings: string[] | undefined = [];
+  public readonly warningsV2: { [id: string]: string } | undefined = {};
 
   constructor(width: number, height: number) {
     this.width = width;
@@ -68,6 +75,10 @@ export abstract class ConcreteWidget implements IWidget {
    * Copy the warnings from the given metric
    */
   protected copyMetricWarnings(...ms: IMetric[]) {
-    this.warnings?.push(...ms.flatMap(m => m.warnings ?? []));
+    ms.forEach(m => {
+      for (const [id, message] of Object.entries(m.warningsV2 ?? {})) {
+        this.warningsV2![id] = message;
+      }
+    });
   }
 }

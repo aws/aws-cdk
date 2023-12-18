@@ -15,7 +15,7 @@ describe('layers', () => {
     // WHEN
     new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_LATEST],
     });
 
     // THEN
@@ -24,7 +24,7 @@ describe('layers', () => {
         S3Bucket: stack.resolve(bucket.bucketName),
         S3Key: 'ObjectKey',
       },
-      CompatibleRuntimes: ['nodejs14.x'],
+      CompatibleRuntimes: [lambda.Runtime.NODEJS_LATEST.name],
     });
   });
 
@@ -35,7 +35,7 @@ describe('layers', () => {
     const code = new lambda.S3Code(bucket, 'ObjectKey');
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_LATEST],
     });
 
     // WHEN
@@ -85,7 +85,7 @@ describe('layers', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::LayerVersion', {
       Metadata: {
-        'aws:asset:path': 'asset.8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34',
+        'aws:asset:path': 'asset.77023498ccd2a36a67da602f712470107a3e7476646238ed135367d435d0fa43',
         'aws:asset:is-bundled': false,
         'aws:asset:property': 'Content',
       },

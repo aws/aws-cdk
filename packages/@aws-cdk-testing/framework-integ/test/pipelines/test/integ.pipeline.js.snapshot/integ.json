@@ -1,16 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
-    "integ.pipeline": {
+    "PipelineStackTest/DefaultTest": {
       "stacks": [
         "PipelineStack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "PipelineStackTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PipelineStackTestDefaultTestDeployAssertBC780F98"
     }
-  },
-  "synthContext": {
-    "@aws-cdk/core:newStyleStackSynthesis": "true"
-  },
-  "enableLookups": false
+  }
 }

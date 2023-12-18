@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-cdk-eks-cluster-alb-controller-test": {
-        "id": "aws-cdk-eks-cluster-alb-controller-test",
-        "path": "aws-cdk-eks-cluster-alb-controller-test",
+      "aws-cdk-eks-cluster-alb-controller": {
+        "id": "aws-cdk-eks-cluster-alb-controller",
+        "path": "aws-cdk-eks-cluster-alb-controller",
         "children": {
           "Vpc": {
             "id": "Vpc",
-            "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc",
+            "path": "aws-cdk-eks-cluster-alb-controller/Vpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/Resource",
+                "path": "aws-cdk-eks-cluster-alb-controller/Vpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +25,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-cdk-eks-cluster-alb-controller-test/Vpc"
+                        "value": "aws-cdk-eks-cluster-alb-controller/Vpc"
                       }
                     ]
                   }
@@ -37,17 +37,14 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1",
+                "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1/Subnet",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -73,9 +70,12 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1"
+                            "value": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -85,7 +85,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1/Acl",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -93,13 +93,10 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1/RouteTable",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "kubernetes.io/role/elb",
@@ -107,9 +104,12 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1"
+                            "value": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -119,7 +119,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -138,16 +138,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1/DefaultRoute",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
                         }
                       }
                     },
@@ -158,7 +158,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1/EIP",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -170,7 +170,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1"
+                            "value": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -182,18 +182,18 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1/NATGateway",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VpcPublicSubnet1EIPD7E02669",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
                         },
                         "tags": [
                           {
@@ -202,7 +202,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet1"
+                            "value": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -220,17 +220,14 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet2",
+                "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet2/Subnet",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -256,9 +253,12 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet2"
+                            "value": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -268,7 +268,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet2/Acl",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -276,13 +276,10 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet2/RouteTable",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "kubernetes.io/role/elb",
@@ -290,9 +287,12 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet2"
+                            "value": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -302,7 +302,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -321,16 +321,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PublicSubnet2/DefaultRoute",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
                         }
                       }
                     },
@@ -347,17 +347,14 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet1",
+                "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet1/Subnet",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -383,9 +380,12 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet1"
+                            "value": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -395,7 +395,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet1/Acl",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -403,13 +403,10 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet1/RouteTable",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "kubernetes.io/role/internal-elb",
@@ -417,9 +414,12 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet1"
+                            "value": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -429,7 +429,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet1/RouteTableAssociation",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -448,16 +448,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet1/DefaultRoute",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
                         }
                       }
                     },
@@ -474,17 +474,14 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet2",
+                "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet2/Subnet",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -510,9 +507,12 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet2"
+                            "value": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -522,7 +522,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet2/Acl",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -530,13 +530,10 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet2/RouteTable",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "kubernetes.io/role/internal-elb",
@@ -544,9 +541,12 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet2"
+                            "value": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -556,7 +556,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet2/RouteTableAssociation",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -575,16 +575,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/PrivateSubnet2/DefaultRoute",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Vpc/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
                         }
                       }
                     },
@@ -601,14 +601,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/IGW",
+                "path": "aws-cdk-eks-cluster-alb-controller/Vpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-cdk-eks-cluster-alb-controller-test/Vpc"
+                        "value": "aws-cdk-eks-cluster-alb-controller/Vpc"
                       }
                     ]
                   }
@@ -620,15 +620,15 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Vpc/VPCGW",
+                "path": "aws-cdk-eks-cluster-alb-controller/Vpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "Vpc8378EB38"
-                    },
                     "internetGatewayId": {
                       "Ref": "VpcIGWD7BA715C"
+                    },
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
                     }
                   }
                 },
@@ -645,15 +645,15 @@
           },
           "KubectlLayer": {
             "id": "KubectlLayer",
-            "path": "aws-cdk-eks-cluster-alb-controller-test/KubectlLayer",
+            "path": "aws-cdk-eks-cluster-alb-controller/KubectlLayer",
             "children": {
               "Code": {
                 "id": "Code",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/KubectlLayer/Code",
+                "path": "aws-cdk-eks-cluster-alb-controller/KubectlLayer/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/KubectlLayer/Code/Stage",
+                    "path": "aws-cdk-eks-cluster-alb-controller/KubectlLayer/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -661,7 +661,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/KubectlLayer/Code/AssetBucket",
+                    "path": "aws-cdk-eks-cluster-alb-controller/KubectlLayer/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -675,7 +675,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/KubectlLayer/Resource",
+                "path": "aws-cdk-eks-cluster-alb-controller/KubectlLayer/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                   "aws:cdk:cloudformation:props": {
@@ -697,20 +697,20 @@
             },
             "constructInfo": {
               "fqn": "@aws-cdk/lambda-layer-kubectl-v24.KubectlV24Layer",
-              "version": "2.0.188"
+              "version": "2.0.242"
             }
           },
           "Cluster": {
             "id": "Cluster",
-            "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster",
+            "path": "aws-cdk-eks-cluster-alb-controller/Cluster",
             "children": {
               "KubectlHandlerRole": {
                 "id": "KubectlHandlerRole",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/KubectlHandlerRole",
+                "path": "aws-cdk-eks-cluster-alb-controller/Cluster/KubectlHandlerRole",
                 "children": {
                   "ImportKubectlHandlerRole": {
                     "id": "ImportKubectlHandlerRole",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/KubectlHandlerRole/ImportKubectlHandlerRole",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/KubectlHandlerRole/ImportKubectlHandlerRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -718,7 +718,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/KubectlHandlerRole/Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/KubectlHandlerRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -801,11 +801,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/KubectlHandlerRole/DefaultPolicy",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/KubectlHandlerRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/KubectlHandlerRole/DefaultPolicy/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/Cluster/KubectlHandlerRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -861,11 +861,11 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/Role",
+                "path": "aws-cdk-eks-cluster-alb-controller/Cluster/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/Role/ImportRole",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -873,7 +873,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/Role/Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -918,11 +918,11 @@
               },
               "ControlPlaneSecurityGroup": {
                 "id": "ControlPlaneSecurityGroup",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/ControlPlaneSecurityGroup",
+                "path": "aws-cdk-eks-cluster-alb-controller/Cluster/ControlPlaneSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/ControlPlaneSecurityGroup/Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/ControlPlaneSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
@@ -952,15 +952,15 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/Resource",
+                "path": "aws-cdk-eks-cluster-alb-controller/Cluster/Resource",
                 "children": {
                   "CreationRole": {
                     "id": "CreationRole",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/Resource/CreationRole",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/Resource/CreationRole",
                     "children": {
                       "ImportCreationRole": {
                         "id": "ImportCreationRole",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/Resource/CreationRole/ImportCreationRole",
+                        "path": "aws-cdk-eks-cluster-alb-controller/Cluster/Resource/CreationRole/ImportCreationRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -968,7 +968,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/Resource/CreationRole/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/Cluster/Resource/CreationRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -988,13 +988,13 @@
                                       {
                                         "Fn::GetAtt": [
                                           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-                                          "Outputs.awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleAE488DC9Arn"
+                                          "Outputs.awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole75085195Arn"
                                         ]
                                       },
                                       {
                                         "Fn::GetAtt": [
                                           "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454",
-                                          "Outputs.awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleEBBA51FAArn"
+                                          "Outputs.awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleD37D32B7Arn"
                                         ]
                                       }
                                     ]
@@ -1012,11 +1012,11 @@
                       },
                       "DefaultPolicy": {
                         "id": "DefaultPolicy",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/Resource/CreationRole/DefaultPolicy",
+                        "path": "aws-cdk-eks-cluster-alb-controller/Cluster/Resource/CreationRole/DefaultPolicy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/Resource/CreationRole/DefaultPolicy/Resource",
+                            "path": "aws-cdk-eks-cluster-alb-controller/Cluster/Resource/CreationRole/DefaultPolicy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                               "aws:cdk:cloudformation:props": {
@@ -1101,11 +1101,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/Resource/Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/Resource/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/Resource/Resource/Default",
+                        "path": "aws-cdk-eks-cluster-alb-controller/Cluster/Resource/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1120,12 +1120,12 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.17"
+                  "version": "10.3.0"
                 }
               },
               "KubectlReadyBarrier": {
                 "id": "KubectlReadyBarrier",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/KubectlReadyBarrier",
+                "path": "aws-cdk-eks-cluster-alb-controller/Cluster/KubectlReadyBarrier",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -1133,7 +1133,7 @@
               },
               "ClusterSecurityGroup": {
                 "id": "ClusterSecurityGroup",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/ClusterSecurityGroup",
+                "path": "aws-cdk-eks-cluster-alb-controller/Cluster/ClusterSecurityGroup",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -1141,7 +1141,7 @@
               },
               "HasEcrPublic": {
                 "id": "HasEcrPublic",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/HasEcrPublic",
+                "path": "aws-cdk-eks-cluster-alb-controller/Cluster/HasEcrPublic",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnCondition",
                   "version": "0.0.0"
@@ -1149,15 +1149,15 @@
               },
               "OpenIdConnectProvider": {
                 "id": "OpenIdConnectProvider",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/OpenIdConnectProvider",
+                "path": "aws-cdk-eks-cluster-alb-controller/Cluster/OpenIdConnectProvider",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/OpenIdConnectProvider/Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/OpenIdConnectProvider/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/OpenIdConnectProvider/Resource/Default",
+                        "path": "aws-cdk-eks-cluster-alb-controller/Cluster/OpenIdConnectProvider/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1177,19 +1177,19 @@
               },
               "AwsAuth": {
                 "id": "AwsAuth",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/AwsAuth",
+                "path": "aws-cdk-eks-cluster-alb-controller/Cluster/AwsAuth",
                 "children": {
                   "manifest": {
                     "id": "manifest",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/AwsAuth/manifest",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/AwsAuth/manifest",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/AwsAuth/manifest/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/Cluster/AwsAuth/manifest/Resource",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/AwsAuth/manifest/Resource/Default",
+                            "path": "aws-cdk-eks-cluster-alb-controller/Cluster/AwsAuth/manifest/Resource/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1215,15 +1215,15 @@
               },
               "NodegroupDefaultCapacity": {
                 "id": "NodegroupDefaultCapacity",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/NodegroupDefaultCapacity",
+                "path": "aws-cdk-eks-cluster-alb-controller/Cluster/NodegroupDefaultCapacity",
                 "children": {
                   "NodeGroupRole": {
                     "id": "NodeGroupRole",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/NodegroupDefaultCapacity/NodeGroupRole",
                     "children": {
                       "ImportNodeGroupRole": {
                         "id": "ImportNodeGroupRole",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole",
+                        "path": "aws-cdk-eks-cluster-alb-controller/Cluster/NodegroupDefaultCapacity/NodeGroupRole/ImportNodeGroupRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -1231,7 +1231,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/Cluster/NodegroupDefaultCapacity/NodeGroupRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -1300,18 +1300,28 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/NodegroupDefaultCapacity/Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/NodegroupDefaultCapacity/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EKS::Nodegroup",
                       "aws:cdk:cloudformation:props": {
+                        "amiType": "AL2_x86_64",
                         "clusterName": {
                           "Ref": "Cluster9EE0221C"
                         },
+                        "forceUpdateEnabled": true,
+                        "instanceTypes": [
+                          "m5.large"
+                        ],
                         "nodeRole": {
                           "Fn::GetAtt": [
                             "ClusterNodegroupDefaultCapacityNodeGroupRole55953B04",
                             "Arn"
                           ]
+                        },
+                        "scalingConfig": {
+                          "desiredSize": 2,
+                          "maxSize": 2,
+                          "minSize": 2
                         },
                         "subnets": [
                           {
@@ -1320,17 +1330,7 @@
                           {
                             "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
                           }
-                        ],
-                        "amiType": "AL2_x86_64",
-                        "forceUpdateEnabled": true,
-                        "instanceTypes": [
-                          "m5.large"
-                        ],
-                        "scalingConfig": {
-                          "desiredSize": 2,
-                          "maxSize": 2,
-                          "minSize": 2
-                        }
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -1346,15 +1346,15 @@
               },
               "echo-server": {
                 "id": "echo-server",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/echo-server",
+                "path": "aws-cdk-eks-cluster-alb-controller/Cluster/echo-server",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/echo-server/Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/echo-server/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/echo-server/Resource/Default",
+                        "path": "aws-cdk-eks-cluster-alb-controller/Cluster/echo-server/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1374,15 +1374,15 @@
               },
               "hello-server-deployment-service-ingress-c896bd7eLoadBalancerAddress": {
                 "id": "hello-server-deployment-service-ingress-c896bd7eLoadBalancerAddress",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/hello-server-deployment-service-ingress-c896bd7eLoadBalancerAddress",
+                "path": "aws-cdk-eks-cluster-alb-controller/Cluster/hello-server-deployment-service-ingress-c896bd7eLoadBalancerAddress",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/hello-server-deployment-service-ingress-c896bd7eLoadBalancerAddress/Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/Cluster/hello-server-deployment-service-ingress-c896bd7eLoadBalancerAddress/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/Cluster/hello-server-deployment-service-ingress-c896bd7eLoadBalancerAddress/Resource/Default",
+                        "path": "aws-cdk-eks-cluster-alb-controller/Cluster/hello-server-deployment-service-ingress-c896bd7eLoadBalancerAddress/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1408,19 +1408,19 @@
           },
           "@aws-cdk--aws-eks.ClusterResourceProvider": {
             "id": "@aws-cdk--aws-eks.ClusterResourceProvider",
-            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider",
+            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider",
             "children": {
               "NodeProxyAgentLayer": {
                 "id": "NodeProxyAgentLayer",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/Stage",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -1428,7 +1428,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/AssetBucket",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
@@ -1442,7 +1442,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                       "aws:cdk:cloudformation:props": {
@@ -1450,7 +1450,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "75dfa9114a30421542432dcb55212f010f591a9e3bd203ae98ba3f9bedf5bb31.zip"
+                          "s3Key": "9202bb21d52e07810fc1da0f6acf2dcb75a40a43a9a2efbcfc9ae39535c6260c.zip"
                         },
                         "description": "/opt/nodejs/node_modules/proxy-agent"
                       }
@@ -1468,15 +1468,15 @@
               },
               "OnEventHandler": {
                 "id": "OnEventHandler",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler",
                 "children": {
                   "ServiceRole": {
                     "id": "ServiceRole",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole",
                     "children": {
                       "ImportServiceRole": {
                         "id": "ImportServiceRole",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -1484,7 +1484,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -1529,11 +1529,11 @@
                   },
                   "Code": {
                     "id": "Code",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/Stage",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -1541,7 +1541,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/AssetBucket",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
@@ -1555,7 +1555,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                       "aws:cdk:cloudformation:props": {
@@ -1563,13 +1563,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "a21fb971385f0210c6b1c88a25f1b9986bae4e4e1bca8d4aa818c442e1878ddf.zip"
-                        },
-                        "role": {
-                          "Fn::GetAtt": [
-                            "OnEventHandlerServiceRole15A26729",
-                            "Arn"
-                          ]
+                          "s3Key": "61942cf3327d6ed09088c3ef6dc3323ede4f78254d605dda7068fd1de5dd704f.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -1583,7 +1577,13 @@
                             "Ref": "NodeProxyAgentLayer924C1971"
                           }
                         ],
-                        "runtime": "nodejs14.x",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "OnEventHandlerServiceRole15A26729",
+                            "Arn"
+                          ]
+                        },
+                        "runtime": "nodejs18.x",
                         "timeout": 60
                       }
                     },
@@ -1600,15 +1600,15 @@
               },
               "IsCompleteHandler": {
                 "id": "IsCompleteHandler",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler",
                 "children": {
                   "ServiceRole": {
                     "id": "ServiceRole",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole",
                     "children": {
                       "ImportServiceRole": {
                         "id": "ImportServiceRole",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -1616,7 +1616,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -1661,11 +1661,11 @@
                   },
                   "Code": {
                     "id": "Code",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/Stage",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -1673,7 +1673,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/AssetBucket",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
@@ -1687,7 +1687,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                       "aws:cdk:cloudformation:props": {
@@ -1695,13 +1695,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "a21fb971385f0210c6b1c88a25f1b9986bae4e4e1bca8d4aa818c442e1878ddf.zip"
-                        },
-                        "role": {
-                          "Fn::GetAtt": [
-                            "IsCompleteHandlerServiceRole5810CC58",
-                            "Arn"
-                          ]
+                          "s3Key": "61942cf3327d6ed09088c3ef6dc3323ede4f78254d605dda7068fd1de5dd704f.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -1715,7 +1709,13 @@
                             "Ref": "NodeProxyAgentLayer924C1971"
                           }
                         ],
-                        "runtime": "nodejs14.x",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "IsCompleteHandlerServiceRole5810CC58",
+                            "Arn"
+                          ]
+                        },
+                        "runtime": "nodejs18.x",
                         "timeout": 60
                       }
                     },
@@ -1732,19 +1732,19 @@
               },
               "Provider": {
                 "id": "Provider",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider",
                 "children": {
                   "framework-onEvent": {
                     "id": "framework-onEvent",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent",
                     "children": {
                       "ServiceRole": {
                         "id": "ServiceRole",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole",
                         "children": {
                           "ImportServiceRole": {
                             "id": "ImportServiceRole",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -1752,7 +1752,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -1791,11 +1791,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
+                                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -1884,11 +1884,11 @@
                       },
                       "Code": {
                         "id": "Code",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code",
                         "children": {
                           "Stage": {
                             "id": "Stage",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/Stage",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
@@ -1896,7 +1896,7 @@
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/AssetBucket",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
@@ -1910,7 +1910,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                           "aws:cdk:cloudformation:props": {
@@ -1918,15 +1918,9 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkonEventServiceRole9FF04296",
-                                "Arn"
-                              ]
-                            },
-                            "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
+                            "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
                               "variables": {
                                 "USER_ON_EVENT_FUNCTION_ARN": {
@@ -1947,7 +1941,13 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkonEventServiceRole9FF04296",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
@@ -1964,15 +1964,15 @@
                   },
                   "framework-isComplete": {
                     "id": "framework-isComplete",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete",
                     "children": {
                       "ServiceRole": {
                         "id": "ServiceRole",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole",
                         "children": {
                           "ImportServiceRole": {
                             "id": "ImportServiceRole",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -1980,7 +1980,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -2019,11 +2019,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource",
+                                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -2105,11 +2105,11 @@
                       },
                       "Code": {
                         "id": "Code",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code",
                         "children": {
                           "Stage": {
                             "id": "Stage",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/Stage",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/Stage",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
@@ -2117,7 +2117,7 @@
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/AssetBucket",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
@@ -2131,7 +2131,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                           "aws:cdk:cloudformation:props": {
@@ -2139,15 +2139,9 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkisCompleteServiceRoleB1087139",
-                                "Arn"
-                              ]
-                            },
-                            "description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
+                            "description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
                               "variables": {
                                 "USER_ON_EVENT_FUNCTION_ARN": {
@@ -2165,7 +2159,13 @@
                               }
                             },
                             "handler": "framework.isComplete",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkisCompleteServiceRoleB1087139",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
@@ -2182,15 +2182,15 @@
                   },
                   "framework-onTimeout": {
                     "id": "framework-onTimeout",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout",
                     "children": {
                       "ServiceRole": {
                         "id": "ServiceRole",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole",
                         "children": {
                           "ImportServiceRole": {
                             "id": "ImportServiceRole",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -2198,7 +2198,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -2237,11 +2237,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource",
+                                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -2323,11 +2323,11 @@
                       },
                       "Code": {
                         "id": "Code",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code",
                         "children": {
                           "Stage": {
                             "id": "Stage",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/Stage",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/Stage",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
@@ -2335,7 +2335,7 @@
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/AssetBucket",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
@@ -2349,7 +2349,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                           "aws:cdk:cloudformation:props": {
@@ -2357,15 +2357,9 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkonTimeoutServiceRole28643D26",
-                                "Arn"
-                              ]
-                            },
-                            "description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
+                            "description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
                               "variables": {
                                 "USER_ON_EVENT_FUNCTION_ARN": {
@@ -2383,7 +2377,13 @@
                               }
                             },
                             "handler": "framework.onTimeout",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkonTimeoutServiceRole28643D26",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
@@ -2400,15 +2400,15 @@
                   },
                   "waiter-state-machine": {
                     "id": "waiter-state-machine",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine",
                     "children": {
                       "Role": {
                         "id": "Role",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role",
                         "children": {
                           "ImportRole": {
                             "id": "ImportRole",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/ImportRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -2416,7 +2416,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -2441,11 +2441,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource",
+                                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -2527,7 +2527,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -2536,7 +2536,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.17"
+                      "version": "10.3.0"
                     }
                   }
                 },
@@ -2545,25 +2545,25 @@
                   "version": "0.0.0"
                 }
               },
-              "awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleEBBA51FAArn": {
-                "id": "awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleEBBA51FAArn",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleEBBA51FAArn",
+              "awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleD37D32B7Arn": {
+                "id": "awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleD37D32B7Arn",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleD37D32B7Arn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
-              "awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleAE488DC9Arn": {
-                "id": "awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleAE488DC9Arn",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRoleAE488DC9Arn",
+              "awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole75085195Arn": {
+                "id": "awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole75085195Arn",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole75085195Arn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
-              "awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderframeworkonEventB8A2CF0DArn": {
-                "id": "awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderframeworkonEventB8A2CF0DArn",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusteralbcontrollertestawscdkawseksClusterResourceProviderframeworkonEventB8A2CF0DArn",
+              "awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderframeworkonEvent9A4DBD44Arn": {
+                "id": "awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderframeworkonEvent9A4DBD44Arn",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusteralbcontrollerawscdkawseksClusterResourceProviderframeworkonEvent9A4DBD44Arn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -2577,11 +2577,11 @@
           },
           "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack": {
             "id": "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack",
-            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack",
+            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack",
             "children": {
               "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource": {
                 "id": "@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
                   "aws:cdk:cloudformation:props": {
@@ -2601,7 +2601,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/cb351f8e9fa7b7bd9e0bb7a035015854c5d0818651994724c77b2c1a68a4b723.json"
+                          "/4a91122ba7471a52d11948b8faa9e741dd6d471b7d5e0092fe1062dbb7dea6ae.json"
                         ]
                       ]
                     }
@@ -2615,24 +2615,24 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.17"
+              "version": "10.3.0"
             }
           },
           "@aws-cdk--aws-eks.KubectlProvider": {
             "id": "@aws-cdk--aws-eks.KubectlProvider",
-            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider",
+            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider",
             "children": {
               "Handler": {
                 "id": "Handler",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Handler",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Handler",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Handler/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/Stage",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -2640,7 +2640,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/AssetBucket",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
@@ -2654,7 +2654,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                       "aws:cdk:cloudformation:props": {
@@ -2662,10 +2662,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "9017774b84ae2457b1b2ad6fcbb4860d8ce2537062c77010b24d9b156ced5a1b.zip"
-                        },
-                        "role": {
-                          "Ref": "referencetoawscdkeksclusteralbcontrollertestClusterKubectlHandlerRole205F60D2Arn"
+                          "s3Key": "096b0b696556ba7cc2ef5b5aedafc3b30654d446f5fc1a0258831f858b87adaf.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "handler": "index.handler",
@@ -2674,24 +2671,27 @@
                             "Ref": "AwsCliLayerF44AAF94"
                           },
                           {
-                            "Ref": "referencetoawscdkeksclusteralbcontrollertestKubectlLayerD13282C5Ref"
+                            "Ref": "referencetoawscdkeksclusteralbcontrollerKubectlLayer4221D1EERef"
                           }
                         ],
                         "memorySize": 1024,
-                        "runtime": "python3.7",
+                        "role": {
+                          "Ref": "referencetoawscdkeksclusteralbcontrollerClusterKubectlHandlerRoleC392E7EDArn"
+                        },
+                        "runtime": "python3.10",
                         "timeout": 900,
                         "vpcConfig": {
                           "subnetIds": [
                             {
-                              "Ref": "referencetoawscdkeksclusteralbcontrollertestVpcPrivateSubnet1Subnet7C7DBEE5Ref"
+                              "Ref": "referencetoawscdkeksclusteralbcontrollerVpcPrivateSubnet1SubnetE39C0DCCRef"
                             },
                             {
-                              "Ref": "referencetoawscdkeksclusteralbcontrollertestVpcPrivateSubnet2Subnet7FBE197ERef"
+                              "Ref": "referencetoawscdkeksclusteralbcontrollerVpcPrivateSubnet2SubnetAB95E4A2Ref"
                             }
                           ],
                           "securityGroupIds": [
                             {
-                              "Ref": "referencetoawscdkeksclusteralbcontrollertestCluster80A60A64ClusterSecurityGroupId"
+                              "Ref": "referencetoawscdkeksclusteralbcontrollerClusterABDFE911ClusterSecurityGroupId"
                             }
                           ]
                         }
@@ -2710,15 +2710,15 @@
               },
               "AwsCliLayer": {
                 "id": "AwsCliLayer",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer",
                 "children": {
                   "Code": {
                     "id": "Code",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/Stage",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -2726,7 +2726,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/AssetBucket",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
@@ -2740,7 +2740,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                       "aws:cdk:cloudformation:props": {
@@ -2748,7 +2748,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "6a28458f7bc3d04e4d2b17f9c3da0709bf456e34b06ea7c96111eecb2fddd054.zip"
+                          "s3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -2766,7 +2766,7 @@
               },
               "ConditionalPolicyArn": {
                 "id": "ConditionalPolicyArn",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/ConditionalPolicyArn",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/ConditionalPolicyArn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -2774,7 +2774,7 @@
               },
               "conditionalPolicy": {
                 "id": "conditionalPolicy",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/conditionalPolicy",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/conditionalPolicy",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -2782,19 +2782,19 @@
               },
               "Provider": {
                 "id": "Provider",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Provider",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider",
                 "children": {
                   "framework-onEvent": {
                     "id": "framework-onEvent",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent",
+                    "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent",
                     "children": {
                       "ServiceRole": {
                         "id": "ServiceRole",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole",
                         "children": {
                           "ImportServiceRole": {
                             "id": "ImportServiceRole",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -2802,7 +2802,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -2853,11 +2853,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
+                                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -2919,11 +2919,11 @@
                       },
                       "Code": {
                         "id": "Code",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code",
                         "children": {
                           "Stage": {
                             "id": "Stage",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/Stage",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
@@ -2931,7 +2931,7 @@
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/AssetBucket",
+                            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
@@ -2945,7 +2945,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                           "aws:cdk:cloudformation:props": {
@@ -2953,15 +2953,9 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ProviderframeworkonEventServiceRole9FF04296",
-                                "Arn"
-                              ]
-                            },
-                            "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/Provider)",
+                            "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/Provider)",
                             "environment": {
                               "variables": {
                                 "USER_ON_EVENT_FUNCTION_ARN": {
@@ -2973,20 +2967,26 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ProviderframeworkonEventServiceRole9FF04296",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900,
                             "vpcConfig": {
                               "subnetIds": [
                                 {
-                                  "Ref": "referencetoawscdkeksclusteralbcontrollertestVpcPrivateSubnet1Subnet7C7DBEE5Ref"
+                                  "Ref": "referencetoawscdkeksclusteralbcontrollerVpcPrivateSubnet1SubnetE39C0DCCRef"
                                 },
                                 {
-                                  "Ref": "referencetoawscdkeksclusteralbcontrollertestVpcPrivateSubnet2Subnet7FBE197ERef"
+                                  "Ref": "referencetoawscdkeksclusteralbcontrollerVpcPrivateSubnet2SubnetAB95E4A2Ref"
                                 }
                               ],
                               "securityGroupIds": [
                                 {
-                                  "Ref": "referencetoawscdkeksclusteralbcontrollertestCluster80A60A64ClusterSecurityGroupId"
+                                  "Ref": "referencetoawscdkeksclusteralbcontrollerClusterABDFE911ClusterSecurityGroupId"
                                 }
                               ]
                             }
@@ -3009,49 +3009,49 @@
                   "version": "0.0.0"
                 }
               },
-              "awscdkeksclusteralbcontrollertestawscdkawseksKubectlProviderframeworkonEvent4AFC769CArn": {
-                "id": "awscdkeksclusteralbcontrollertestawscdkawseksKubectlProviderframeworkonEvent4AFC769CArn",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/awscdkeksclusteralbcontrollertestawscdkawseksKubectlProviderframeworkonEvent4AFC769CArn",
+              "awscdkeksclusteralbcontrollerawscdkawseksKubectlProviderframeworkonEvent17CBA575Arn": {
+                "id": "awscdkeksclusteralbcontrollerawscdkawseksKubectlProviderframeworkonEvent17CBA575Arn",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/awscdkeksclusteralbcontrollerawscdkawseksKubectlProviderframeworkonEvent17CBA575Arn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkeksclusteralbcontrollertestClusterKubectlHandlerRole205F60D2Arn": {
-                "id": "reference-to-awscdkeksclusteralbcontrollertestClusterKubectlHandlerRole205F60D2Arn",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteralbcontrollertestClusterKubectlHandlerRole205F60D2Arn",
+              "reference-to-awscdkeksclusteralbcontrollerKubectlLayer4221D1EERef": {
+                "id": "reference-to-awscdkeksclusteralbcontrollerKubectlLayer4221D1EERef",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteralbcontrollerKubectlLayer4221D1EERef",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkeksclusteralbcontrollertestKubectlLayerD13282C5Ref": {
-                "id": "reference-to-awscdkeksclusteralbcontrollertestKubectlLayerD13282C5Ref",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteralbcontrollertestKubectlLayerD13282C5Ref",
+              "reference-to-awscdkeksclusteralbcontrollerClusterKubectlHandlerRoleC392E7EDArn": {
+                "id": "reference-to-awscdkeksclusteralbcontrollerClusterKubectlHandlerRoleC392E7EDArn",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteralbcontrollerClusterKubectlHandlerRoleC392E7EDArn",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkeksclusteralbcontrollertestVpcPrivateSubnet1Subnet7C7DBEE5Ref": {
-                "id": "reference-to-awscdkeksclusteralbcontrollertestVpcPrivateSubnet1Subnet7C7DBEE5Ref",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteralbcontrollertestVpcPrivateSubnet1Subnet7C7DBEE5Ref",
+              "reference-to-awscdkeksclusteralbcontrollerVpcPrivateSubnet1SubnetE39C0DCCRef": {
+                "id": "reference-to-awscdkeksclusteralbcontrollerVpcPrivateSubnet1SubnetE39C0DCCRef",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteralbcontrollerVpcPrivateSubnet1SubnetE39C0DCCRef",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkeksclusteralbcontrollertestVpcPrivateSubnet2Subnet7FBE197ERef": {
-                "id": "reference-to-awscdkeksclusteralbcontrollertestVpcPrivateSubnet2Subnet7FBE197ERef",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteralbcontrollertestVpcPrivateSubnet2Subnet7FBE197ERef",
+              "reference-to-awscdkeksclusteralbcontrollerVpcPrivateSubnet2SubnetAB95E4A2Ref": {
+                "id": "reference-to-awscdkeksclusteralbcontrollerVpcPrivateSubnet2SubnetAB95E4A2Ref",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteralbcontrollerVpcPrivateSubnet2SubnetAB95E4A2Ref",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
                 }
               },
-              "reference-to-awscdkeksclusteralbcontrollertestCluster80A60A64ClusterSecurityGroupId": {
-                "id": "reference-to-awscdkeksclusteralbcontrollertestCluster80A60A64ClusterSecurityGroupId",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteralbcontrollertestCluster80A60A64ClusterSecurityGroupId",
+              "reference-to-awscdkeksclusteralbcontrollerClusterABDFE911ClusterSecurityGroupId": {
+                "id": "reference-to-awscdkeksclusteralbcontrollerClusterABDFE911ClusterSecurityGroupId",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusteralbcontrollerClusterABDFE911ClusterSecurityGroupId",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
@@ -3065,14 +3065,37 @@
           },
           "@aws-cdk--aws-eks.KubectlProvider.NestedStack": {
             "id": "@aws-cdk--aws-eks.KubectlProvider.NestedStack",
-            "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider.NestedStack",
+            "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider.NestedStack",
             "children": {
               "@aws-cdk--aws-eks.KubectlProvider.NestedStackResource": {
                 "id": "@aws-cdk--aws-eks.KubectlProvider.NestedStackResource",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/@aws-cdk--aws-eks.KubectlProvider.NestedStack/@aws-cdk--aws-eks.KubectlProvider.NestedStackResource",
+                "path": "aws-cdk-eks-cluster-alb-controller/@aws-cdk--aws-eks.KubectlProvider.NestedStack/@aws-cdk--aws-eks.KubectlProvider.NestedStackResource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudFormation::Stack",
                   "aws:cdk:cloudformation:props": {
+                    "parameters": {
+                      "referencetoawscdkeksclusteralbcontrollerKubectlLayer4221D1EERef": {
+                        "Ref": "KubectlLayer600207B5"
+                      },
+                      "referencetoawscdkeksclusteralbcontrollerClusterKubectlHandlerRoleC392E7EDArn": {
+                        "Fn::GetAtt": [
+                          "ClusterKubectlHandlerRole94549F93",
+                          "Arn"
+                        ]
+                      },
+                      "referencetoawscdkeksclusteralbcontrollerVpcPrivateSubnet1SubnetE39C0DCCRef": {
+                        "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                      },
+                      "referencetoawscdkeksclusteralbcontrollerVpcPrivateSubnet2SubnetAB95E4A2Ref": {
+                        "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                      },
+                      "referencetoawscdkeksclusteralbcontrollerClusterABDFE911ClusterSecurityGroupId": {
+                        "Fn::GetAtt": [
+                          "Cluster9EE0221C",
+                          "ClusterSecurityGroupId"
+                        ]
+                      }
+                    },
                     "templateUrl": {
                       "Fn::Join": [
                         "",
@@ -3089,32 +3112,9 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/0a61ba4da9f8b612f45ba4397e75e2656a2db13ecc893028c349c8abcd9ce0f0.json"
+                          "/53092355d13ebb604dd2b929ce32682e3f8a7380c56b54ffdb3d32841ef9a271.json"
                         ]
                       ]
-                    },
-                    "parameters": {
-                      "referencetoawscdkeksclusteralbcontrollertestClusterKubectlHandlerRole205F60D2Arn": {
-                        "Fn::GetAtt": [
-                          "ClusterKubectlHandlerRole94549F93",
-                          "Arn"
-                        ]
-                      },
-                      "referencetoawscdkeksclusteralbcontrollertestKubectlLayerD13282C5Ref": {
-                        "Ref": "KubectlLayer600207B5"
-                      },
-                      "referencetoawscdkeksclusteralbcontrollertestVpcPrivateSubnet1Subnet7C7DBEE5Ref": {
-                        "Ref": "VpcPrivateSubnet1Subnet536B997A"
-                      },
-                      "referencetoawscdkeksclusteralbcontrollertestVpcPrivateSubnet2Subnet7FBE197ERef": {
-                        "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-                      },
-                      "referencetoawscdkeksclusteralbcontrollertestCluster80A60A64ClusterSecurityGroupId": {
-                        "Fn::GetAtt": [
-                          "Cluster9EE0221C",
-                          "ClusterSecurityGroupId"
-                        ]
-                      }
                     }
                   }
                 },
@@ -3126,28 +3126,28 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.17"
+              "version": "10.3.0"
             }
           },
-          "awscdkeksclusteralbcontrollertestCluster481F6464-AlbController": {
-            "id": "awscdkeksclusteralbcontrollertestCluster481F6464-AlbController",
-            "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController",
+          "awscdkeksclusteralbcontrollerCluster0686D58B-AlbController": {
+            "id": "awscdkeksclusteralbcontrollerCluster0686D58B-AlbController",
+            "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController",
             "children": {
               "alb-sa": {
                 "id": "alb-sa",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController/alb-sa",
+                "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa",
                 "children": {
                   "ConditionJson": {
                     "id": "ConditionJson",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController/alb-sa/ConditionJson",
+                    "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/ConditionJson",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController/alb-sa/ConditionJson/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/ConditionJson/Resource",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController/alb-sa/ConditionJson/Resource/Default",
+                            "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/ConditionJson/Resource/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -3167,11 +3167,11 @@
                   },
                   "Role": {
                     "id": "Role",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController/alb-sa/Role",
+                    "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/Role",
                     "children": {
                       "ImportRole": {
                         "id": "ImportRole",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController/alb-sa/Role/ImportRole",
+                        "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/Role/ImportRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -3179,7 +3179,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController/alb-sa/Role/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/Role/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -3190,7 +3190,7 @@
                                   "Condition": {
                                     "StringEquals": {
                                       "Fn::GetAtt": [
-                                        "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaConditionJsonCB1A2F4A",
+                                        "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaConditionJson853930C0",
                                         "Value"
                                       ]
                                     }
@@ -3214,11 +3214,11 @@
                       },
                       "DefaultPolicy": {
                         "id": "DefaultPolicy",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController/alb-sa/Role/DefaultPolicy",
+                        "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/Role/DefaultPolicy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController/alb-sa/Role/DefaultPolicy/Resource",
+                            "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/Role/DefaultPolicy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                               "aws:cdk:cloudformation:props": {
@@ -3303,7 +3303,18 @@
                                         }
                                       },
                                       "Effect": "Allow",
-                                      "Resource": "arn:aws:ec2:*:*:security-group/*"
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":ec2:*:*:security-group/*"
+                                          ]
+                                        ]
+                                      }
                                     },
                                     {
                                       "Action": [
@@ -3317,7 +3328,18 @@
                                         }
                                       },
                                       "Effect": "Allow",
-                                      "Resource": "arn:aws:ec2:*:*:security-group/*"
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":ec2:*:*:security-group/*"
+                                          ]
+                                        ]
+                                      }
                                     },
                                     {
                                       "Action": [
@@ -3367,9 +3389,42 @@
                                       },
                                       "Effect": "Allow",
                                       "Resource": [
-                                        "arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*",
-                                        "arn:aws:elasticloadbalancing:*:*:loadbalancer/net/*/*",
-                                        "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*"
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":elasticloadbalancing:*:*:loadbalancer/app/*/*"
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":elasticloadbalancing:*:*:loadbalancer/net/*/*"
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":elasticloadbalancing:*:*:targetgroup/*/*"
+                                            ]
+                                          ]
+                                        }
                                       ]
                                     },
                                     {
@@ -3379,10 +3434,54 @@
                                       ],
                                       "Effect": "Allow",
                                       "Resource": [
-                                        "arn:aws:elasticloadbalancing:*:*:listener-rule/app/*/*/*",
-                                        "arn:aws:elasticloadbalancing:*:*:listener-rule/net/*/*/*",
-                                        "arn:aws:elasticloadbalancing:*:*:listener/app/*/*/*",
-                                        "arn:aws:elasticloadbalancing:*:*:listener/net/*/*/*"
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":elasticloadbalancing:*:*:listener-rule/app/*/*/*"
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":elasticloadbalancing:*:*:listener-rule/net/*/*/*"
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":elasticloadbalancing:*:*:listener/app/*/*/*"
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":elasticloadbalancing:*:*:listener/net/*/*/*"
+                                            ]
+                                          ]
+                                        }
                                       ]
                                     },
                                     {
@@ -3400,9 +3499,42 @@
                                       },
                                       "Effect": "Allow",
                                       "Resource": [
-                                        "arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*",
-                                        "arn:aws:elasticloadbalancing:*:*:loadbalancer/net/*/*",
-                                        "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*"
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":elasticloadbalancing:*:*:loadbalancer/app/*/*"
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":elasticloadbalancing:*:*:loadbalancer/net/*/*"
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":elasticloadbalancing:*:*:targetgroup/*/*"
+                                            ]
+                                          ]
+                                        }
                                       ]
                                     },
                                     {
@@ -3411,15 +3543,26 @@
                                         "elasticloadbalancing:RegisterTargets"
                                       ],
                                       "Effect": "Allow",
-                                      "Resource": "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*"
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":elasticloadbalancing:*:*:targetgroup/*/*"
+                                          ]
+                                        ]
+                                      }
                                     }
                                   ],
                                   "Version": "2012-10-17"
                                 },
-                                "policyName": "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaRoleDefaultPolicy2047BBBC",
+                                "policyName": "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaRoleDefaultPolicy0BB22F48",
                                 "roles": [
                                   {
-                                    "Ref": "awscdkeksclusteralbcontrollertestCluster481F6464AlbControlleralbsaRole84609927"
+                                    "Ref": "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaRoleE08C7B02"
                                   }
                                 ]
                               }
@@ -3443,15 +3586,15 @@
                   },
                   "manifest-alb-saServiceAccountResource": {
                     "id": "manifest-alb-saServiceAccountResource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController/alb-sa/manifest-alb-saServiceAccountResource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/manifest-alb-saServiceAccountResource",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController/alb-sa/manifest-alb-saServiceAccountResource/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/manifest-alb-saServiceAccountResource/Resource",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController/alb-sa/manifest-alb-saServiceAccountResource/Resource/Default",
+                            "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/alb-sa/manifest-alb-saServiceAccountResource/Resource/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -3477,15 +3620,15 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController/Resource",
+                "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/Resource",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController/Resource/Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/Resource/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/awscdkeksclusteralbcontrollertestCluster481F6464-AlbController/Resource/Resource/Default",
+                        "path": "aws-cdk-eks-cluster-alb-controller/awscdkeksclusteralbcontrollerCluster0686D58B-AlbController/Resource/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -3511,11 +3654,11 @@
           },
           "Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": {
             "id": "Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider",
-            "path": "aws-cdk-eks-cluster-alb-controller-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider",
+            "path": "aws-cdk-eks-cluster-alb-controller/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Staging",
+                "path": "aws-cdk-eks-cluster-alb-controller/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
@@ -3523,7 +3666,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role",
+                "path": "aws-cdk-eks-cluster-alb-controller/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -3531,7 +3674,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler",
+                "path": "aws-cdk-eks-cluster-alb-controller/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -3543,21 +3686,13 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "aws-cdk-eks-cluster-alb-controller-test/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "AWSCDKCfnUtilsProviderCustomResourceProvider": {
             "id": "AWSCDKCfnUtilsProviderCustomResourceProvider",
-            "path": "aws-cdk-eks-cluster-alb-controller-test/AWSCDKCfnUtilsProviderCustomResourceProvider",
+            "path": "aws-cdk-eks-cluster-alb-controller/AWSCDKCfnUtilsProviderCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/AWSCDKCfnUtilsProviderCustomResourceProvider/Staging",
+                "path": "aws-cdk-eks-cluster-alb-controller/AWSCDKCfnUtilsProviderCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
@@ -3565,7 +3700,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/AWSCDKCfnUtilsProviderCustomResourceProvider/Role",
+                "path": "aws-cdk-eks-cluster-alb-controller/AWSCDKCfnUtilsProviderCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -3573,7 +3708,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/AWSCDKCfnUtilsProviderCustomResourceProvider/Handler",
+                "path": "aws-cdk-eks-cluster-alb-controller/AWSCDKCfnUtilsProviderCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -3587,19 +3722,19 @@
           },
           "IngressPinger": {
             "id": "IngressPinger",
-            "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger",
+            "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger",
             "children": {
               "Function": {
                 "id": "Function",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Function",
+                "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Function",
                 "children": {
                   "ServiceRole": {
                     "id": "ServiceRole",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Function/ServiceRole",
+                    "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Function/ServiceRole",
                     "children": {
                       "ImportServiceRole": {
                         "id": "ImportServiceRole",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Function/ServiceRole/ImportServiceRole",
+                        "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Function/ServiceRole/ImportServiceRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -3607,7 +3742,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Function/ServiceRole/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Function/ServiceRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -3664,11 +3799,11 @@
                   },
                   "Code": {
                     "id": "Code",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Function/Code",
+                    "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Function/Code",
                     "children": {
                       "Stage": {
                         "id": "Stage",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Function/Code/Stage",
+                        "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Function/Code/Stage",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -3676,7 +3811,7 @@
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Function/Code/AssetBucket",
+                        "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Function/Code/AssetBucket",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                           "version": "0.0.0"
@@ -3690,15 +3825,15 @@
                   },
                   "SecurityGroup": {
                     "id": "SecurityGroup",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Function/SecurityGroup",
+                    "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Function/SecurityGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Function/SecurityGroup/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Function/SecurityGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
-                            "groupDescription": "Automatic security group for Lambda Function awscdkeksclusteralbcontrollertestIngressPingerFunction2F7B2C81",
+                            "groupDescription": "Automatic security group for Lambda Function awscdkeksclusteralbcontrollerIngressPingerFunctionCB8DD6F2",
                             "securityGroupEgress": [
                               {
                                 "cidrIp": "0.0.0.0/0",
@@ -3724,7 +3859,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Function/Resource",
+                    "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Function/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                       "aws:cdk:cloudformation:props": {
@@ -3734,13 +3869,13 @@
                           },
                           "s3Key": "5f49893093e1ad14831626016699156d48da5f0890f19eb930bc3c46cf5f636d.zip"
                         },
+                        "handler": "index.handler",
                         "role": {
                           "Fn::GetAtt": [
                             "IngressPingerFunctionServiceRoleD01E9C19",
                             "Arn"
                           ]
                         },
-                        "handler": "index.handler",
                         "runtime": "python3.9",
                         "timeout": 600,
                         "vpcConfig": {
@@ -3776,19 +3911,19 @@
               },
               "Provider": {
                 "id": "Provider",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Provider",
+                "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider",
                 "children": {
                   "framework-onEvent": {
                     "id": "framework-onEvent",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Provider/framework-onEvent",
+                    "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent",
                     "children": {
                       "ServiceRole": {
                         "id": "ServiceRole",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Provider/framework-onEvent/ServiceRole",
+                        "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/ServiceRole",
                         "children": {
                           "ImportServiceRole": {
                             "id": "ImportServiceRole",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
+                            "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
@@ -3796,7 +3931,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Provider/framework-onEvent/ServiceRole/Resource",
+                            "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/ServiceRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -3835,11 +3970,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
+                            "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/ServiceRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
+                                "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -3901,11 +4036,11 @@
                       },
                       "Code": {
                         "id": "Code",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Provider/framework-onEvent/Code",
+                        "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/Code",
                         "children": {
                           "Stage": {
                             "id": "Stage",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Provider/framework-onEvent/Code/Stage",
+                            "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.AssetStaging",
                               "version": "0.0.0"
@@ -3913,7 +4048,7 @@
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
-                            "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Provider/framework-onEvent/Code/AssetBucket",
+                            "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/Code/AssetBucket",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                               "version": "0.0.0"
@@ -3927,7 +4062,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Provider/framework-onEvent/Resource",
+                        "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider/framework-onEvent/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                           "aws:cdk:cloudformation:props": {
@@ -3935,15 +4070,9 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
+                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
                             },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "IngressPingerProviderframeworkonEventServiceRole89300FAD",
-                                "Arn"
-                              ]
-                            },
-                            "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Provider)",
+                            "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-alb-controller/IngressPinger/Provider)",
                             "environment": {
                               "variables": {
                                 "USER_ON_EVENT_FUNCTION_ARN": {
@@ -3955,7 +4084,13 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "IngressPingerProviderframeworkonEventServiceRole89300FAD",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
@@ -3978,11 +4113,11 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Resource",
+                "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Resource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPinger/Resource/Default",
+                    "path": "aws-cdk-eks-cluster-alb-controller/IngressPinger/Resource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -3997,12 +4132,12 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.17"
+              "version": "10.3.0"
             }
           },
           "IngressPingerResponse": {
             "id": "IngressPingerResponse",
-            "path": "aws-cdk-eks-cluster-alb-controller-test/IngressPingerResponse",
+            "path": "aws-cdk-eks-cluster-alb-controller/IngressPingerResponse",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
@@ -4010,7 +4145,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-cdk-eks-cluster-alb-controller-test/BootstrapVersion",
+            "path": "aws-cdk-eks-cluster-alb-controller/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -4018,7 +4153,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-eks-cluster-alb-controller-test/CheckBootstrapVersion",
+            "path": "aws-cdk-eks-cluster-alb-controller/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -4030,29 +4165,29 @@
           "version": "0.0.0"
         }
       },
-      "aws-cdk-cluster-alb-controller": {
-        "id": "aws-cdk-cluster-alb-controller",
-        "path": "aws-cdk-cluster-alb-controller",
+      "aws-cdk-cluster-alb-controller-integ": {
+        "id": "aws-cdk-cluster-alb-controller-integ",
+        "path": "aws-cdk-cluster-alb-controller-integ",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "aws-cdk-cluster-alb-controller/DefaultTest",
+            "path": "aws-cdk-cluster-alb-controller-integ/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "aws-cdk-cluster-alb-controller/DefaultTest/Default",
+                "path": "aws-cdk-cluster-alb-controller-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.17"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "aws-cdk-cluster-alb-controller/DefaultTest/DeployAssert",
+                "path": "aws-cdk-cluster-alb-controller-integ/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "aws-cdk-cluster-alb-controller/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "aws-cdk-cluster-alb-controller-integ/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -4060,7 +4195,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "aws-cdk-cluster-alb-controller/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "aws-cdk-cluster-alb-controller-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
@@ -4089,7 +4224,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.17"
+          "version": "10.3.0"
         }
       }
     },

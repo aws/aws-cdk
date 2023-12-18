@@ -4,7 +4,7 @@
  */
 export class InvalidCidrRangeError extends Error {
   constructor(cidr: string) {
-    super(cidr + ' is not a valid VPC CIDR range (must be between /16 and /28)');
+    super(cidr + ' is not a valid VPC CIDR range. VPCs must be between /16 and /28 and the minimum subnet size is /28.');
     // The following line is required for type checking of custom errors, and must be called right after super()
     // https://stackoverflow.com/questions/31626231/custom-error-class-in-typescript
     Object.setPrototypeOf(this, InvalidCidrRangeError.prototype);

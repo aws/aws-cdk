@@ -1,10 +1,11 @@
 /* eslint-disable import/order */
-import { deployStack, DeployStackOptions, ToolkitInfo } from '../../lib/api';
+import { deployStack, DeployStackOptions } from '../../lib/api';
 import { HotswapMode } from '../../lib/api/hotswap/common';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { setCI } from '../../lib/logging';
 import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
+import { NoBootstrapStackEnvironmentResources } from '../../lib/api/environment-resources';
 
 jest.mock('../../lib/api/hotswap-deployments');
 
@@ -76,12 +77,13 @@ beforeEach(() => {
 });
 
 function standardDeployStackArguments(): DeployStackOptions {
+  const resolvedEnvironment = mockResolvedEnvironment();
   return {
     stack: FAKE_STACK,
     sdk,
     sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
-    toolkitInfo: ToolkitInfo.bootstraplessDeploymentsOnly(sdk),
+    resolvedEnvironment,
+    envResources: new NoBootstrapStackEnvironmentResources(resolvedEnvironment, sdk),
   };
 }
 
@@ -147,6 +149,36 @@ test('correctly passes CFN parameters when hotswapping', async () => {
 
   // THEN
   expect(tryHotswapDeployment).toHaveBeenCalledWith(expect.anything(), { A: 'A-value', B: 'B=value' }, expect.anything(), expect.anything(), HotswapMode.FALL_BACK);
+});
+
+test('correctly passes SSM parameters when hotswapping', async () => {
+  // GIVEN
+  givenStackExists({
+    Parameters: [
+      { ParameterKey: 'SomeParameter', ParameterValue: 'ParameterName', ResolvedValue: 'SomeValue' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    stack: testStack({
+      stackName: 'stack',
+      template: {
+        Parameters: {
+          SomeParameter: {
+            Type: 'AWS::SSM::Parameter::Value<String>',
+            Default: 'ParameterName',
+          },
+        },
+      },
+    }),
+    hotswap: HotswapMode.FALL_BACK,
+    usePreviousParameters: true,
+  });
+
+  // THEN
+  expect(tryHotswapDeployment).toHaveBeenCalledWith(expect.anything(), { SomeParameter: 'SomeValue' }, expect.anything(), expect.anything(), HotswapMode.FALL_BACK);
 });
 
 test('call CreateStack when method=direct and the stack doesnt exist yet', async () => {
@@ -500,18 +532,19 @@ test('deploy not skipped if template did not change but tags changed', async () 
   });
 
   // WHEN
+  const resolvedEnvironment = mockResolvedEnvironment();
   await deployStack({
     stack: FAKE_STACK,
     sdk,
     sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
+    resolvedEnvironment,
     tags: [
       {
         Key: 'Key',
         Value: 'NewValue',
       },
     ],
-    toolkitInfo: ToolkitInfo.bootstraplessDeploymentsOnly(sdk),
+    envResources: new NoBootstrapStackEnvironmentResources(resolvedEnvironment, sdk),
   });
 
   // THEN

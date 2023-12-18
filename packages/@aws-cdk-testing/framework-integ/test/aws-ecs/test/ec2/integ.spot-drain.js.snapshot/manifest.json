@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "34.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-ecs-integ-spot.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecs-integ-spot.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/665700511794c06e02834c42c548b678ad5a512bccdd7d38598a0c0447f0edfb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/44926d05cbee0f90f190349229e489e2618e153e620668d9fe68f22416d3c64f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -186,7 +181,7 @@
         "/aws-ecs-integ-spot/EcsCluster/asgSpot": [
           {
             "type": "aws:cdk:warning",
-            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgSpot/InstanceSecurityGroup/Resource": [
@@ -213,10 +208,10 @@
             "data": "EcsClusterasgSpotInstanceProfile0D6DD08D"
           }
         ],
-        "/aws-ecs-integ-spot/EcsCluster/asgSpot/LaunchConfig": [
+        "/aws-ecs-integ-spot/EcsCluster/asgSpot/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgSpotLaunchConfig75BCA823"
+            "data": "EcsClusterasgSpotLaunchTemplateA53AD60C"
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgSpot/ASG": [
@@ -282,7 +277,7 @@
         "/aws-ecs-integ-spot/EcsCluster/asgOd": [
           {
             "type": "aws:cdk:warning",
-            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgOd/InstanceSecurityGroup/Resource": [
@@ -309,10 +304,10 @@
             "data": "EcsClusterasgOdInstanceProfileE5B88756"
           }
         ],
-        "/aws-ecs-integ-spot/EcsCluster/asgOd/LaunchConfig": [
+        "/aws-ecs-integ-spot/EcsCluster/asgOd/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgOdLaunchConfigD3B9E271"
+            "data": "EcsClusterasgOdLaunchTemplate6065F652"
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgOd/ASG": [
@@ -413,6 +408,12 @@
         ]
       },
       "displayName": "aws-ecs-integ-spot"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

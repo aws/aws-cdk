@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Function, FunctionOptions, Runtime, RuntimeFamily } from 'aws-cdk-lib/aws-lambda';
-import { Stack } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
@@ -18,8 +18,6 @@ export interface PythonFunctionProps extends FunctionOptions {
   /**
    * The runtime environment. Only runtimes of the Python family are
    * supported.
-   *
-   * @default Runtime.PYTHON_3_7
    */
   readonly runtime: Runtime;
 

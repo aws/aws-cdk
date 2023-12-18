@@ -52,16 +52,18 @@ export function renderData(scope: Construct, data: string): Content {
       throw new Error(`Unexpected "Fn::Join" part, expecting string or object but got ${typeof (part)}`);
     }
 
-  } else if (obj.Ref || obj['Fn::GetAtt']) {
+  } else if (obj.Ref || obj['Fn::GetAtt'] || obj['Fn::Select']) {
     addMarker(obj);
   } else {
     throw new Error('Unexpected: Expecting `resolve()` to return "Fn::Join", "Ref" or "Fn::GetAtt"');
   }
 
-  function addMarker(part: Ref | GetAtt) {
+  function addMarker(part: Ref | GetAtt | FnSelect) {
     const keys = Object.keys(part);
-    if (keys.length !== 1 || (keys[0] != 'Ref' && keys[0] != 'Fn::GetAtt')) {
-      throw new Error(`Invalid CloudFormation reference. "Ref" or "Fn::GetAtt". Got ${JSON.stringify(part)}`);
+    const acceptedCfnFns = ['Ref', 'Fn::GetAtt', 'Fn::Select'];
+    if (keys.length !== 1 || !acceptedCfnFns.includes(keys[0])) {
+      const stringifiedAcceptedCfnFns = acceptedCfnFns.map((fn) => `"${fn}"`).join(' or ');
+      throw new Error(`Invalid CloudFormation reference. Key must start with any of ${stringifiedAcceptedCfnFns}. Got ${JSON.stringify(part)}`);
     }
 
     const marker = `<<marker:0xbaba:${markerIndex++}>>`;
@@ -73,6 +75,8 @@ export function renderData(scope: Construct, data: string): Content {
 }
 
 type FnJoin = [string, FnJoinPart[]];
-type FnJoinPart = string | Ref | GetAtt;
+type FnJoinPart = string | Ref | GetAtt | FnSelect;
 type Ref = { Ref: string };
 type GetAtt = { 'Fn::GetAtt': [string, string] };
+type FnSplit = { 'Fn::Split': [string, string | Ref] };
+type FnSelect = { 'Fn::Select': [number, string[] | FnSplit] };

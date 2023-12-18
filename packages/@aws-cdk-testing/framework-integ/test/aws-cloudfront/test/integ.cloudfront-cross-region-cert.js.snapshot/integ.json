@@ -1,12 +1,12 @@
 {
   "enableLookups": true,
-  "version": "31.0.0",
+  "version": "35.0.0",
   "testCases": {
     "integ-cloudfront-cross-region-acm/DefaultTest": {
       "stacks": [
         "integ-cloudfront-stack"
       ],
-      "diffAssets": false,
+      "diffAssets": true,
       "assertionStack": "integ-cloudfront-cross-region-acm/DefaultTest/DeployAssert",
       "assertionStackName": "integcloudfrontcrossregionacmDefaultTestDeployAssertD48673AA"
     }

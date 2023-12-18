@@ -306,7 +306,7 @@ export interface ApplicationLoadBalancerProps {
   readonly domainZone?: IHostedZone;
 
   /**
-   * The load balancer idle timeout, in seconds
+   * The load balancer idle timeout, in seconds. Can be between 1 and 4000 seconds.
    *
    * @default - CloudFormation sets idle timeout to 60 seconds
    */
@@ -585,7 +585,8 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
   private validateLbProps(props: ApplicationLoadBalancerProps[]) {
     for (let prop of props) {
       if (prop.idleTimeout) {
-        if (prop.idleTimeout > Duration.seconds(4000) || prop.idleTimeout < Duration.seconds(1)) {
+        const idleTimeout = prop.idleTimeout.toSeconds();
+        if (idleTimeout > Duration.seconds(4000).toSeconds() || idleTimeout < Duration.seconds(1).toSeconds()) {
           throw new Error('Load balancer idle timeout must be between 1 and 4000 seconds.');
         }
       }

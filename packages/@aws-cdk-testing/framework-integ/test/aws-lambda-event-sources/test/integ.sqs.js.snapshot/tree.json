@@ -128,14 +128,14 @@
                     "code": {
                       "zipFile": "exports.handler = async function handler(event) {\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    return { event };\n}"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "FServiceRole3AC82EE1",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -153,15 +153,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::EventSourceMapping",
                       "aws:cdk:cloudformation:props": {
-                        "functionName": {
-                          "Ref": "FC4345940"
-                        },
                         "batchSize": 5,
                         "eventSourceArn": {
                           "Fn::GetAtt": [
                             "Q63C6E3AB",
                             "Arn"
                           ]
+                        },
+                        "functionName": {
+                          "Ref": "FC4345940"
                         }
                       }
                     },
@@ -239,7 +239,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },

@@ -2,7 +2,7 @@ import { join } from 'path';
 import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { AttributeType, BillingMode, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function } from 'aws-cdk-lib/aws-lambda';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import {
   AuthorizationType,
@@ -14,6 +14,7 @@ import {
   IamResource,
   SchemaFile,
 } from 'aws-cdk-lib/aws-appsync';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 /*
  * Creates an Appsync GraphQL API and Lambda with IAM Roles.
@@ -87,7 +88,7 @@ testDS.createResolver('MutationAddTest', {
   responseMappingTemplate: MappingTemplate.dynamoDbResultItem(),
 });
 
-const lambdaIAM = new Role(stack, 'LambdaIAM', { assumedBy: new ServicePrincipal('lambda') });
+const lambdaIAM = new Role(stack, 'LambdaIAM', { assumedBy: new ServicePrincipal('lambda.amazonaws.com') });
 
 api.grant(lambdaIAM, IamResource.custom('types/Query/fields/getTests'), 'appsync:graphql');
 api.grant(lambdaIAM, IamResource.ofType('test'), 'appsync:GraphQL');
@@ -96,14 +97,14 @@ api.grantMutation(lambdaIAM, 'addTest');
 new Function(stack, 'testQuery', {
   code: Code.fromAsset(join(__dirname, 'verify/iam-query')),
   handler: 'iam-query.handler',
-  runtime: Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   environment: { APPSYNC_ENDPOINT: api.graphqlUrl },
   role: lambdaIAM,
 });
 new Function(stack, 'testFail', {
   code: Code.fromAsset(join(__dirname, 'verify/iam-query')),
   handler: 'iam-query.handler',
-  runtime: Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   environment: { APPSYNC_ENDPOINT: api.graphqlUrl },
 });
 

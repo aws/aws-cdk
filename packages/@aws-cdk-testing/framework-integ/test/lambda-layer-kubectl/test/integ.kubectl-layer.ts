@@ -38,6 +38,7 @@ for (const runtime of runtimes) {
 
 new integ.IntegTest(app, 'lambda-layer-kubectl-integ-test', {
   testCases: [stack],
+  diffAssets: true,
   cdkCommandOptions: {
     deploy: {
       args: {

@@ -29,6 +29,21 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    * @default - none
    */
   readonly consumerGroupId?: string;
+
+  /**
+   * Add filter criteria to Event Source
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventfiltering.html
+   *
+   * @default - none
+   */
+  readonly filters?: Array<{[key: string]: any}>
+
+  /**
+   * Add an on Failure Destination for this Kafka event. SNS/SQS/S3 are supported
+   *
+   * @default - discarded records are ignored
+   */
+  readonly onFailure?: lambda.IEventSourceDlq;
 }
 
 /**
@@ -130,10 +145,13 @@ export class ManagedKafkaEventSource extends StreamEventSource {
       `KafkaEventSource:${Names.nodeUniqueId(target.node)}${this.innerProps.topic}`,
       this.enrichMappingOptions({
         eventSourceArn: this.innerProps.clusterArn,
+        filters: this.innerProps.filters,
         startingPosition: this.innerProps.startingPosition,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
         kafkaTopic: this.innerProps.topic,
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,
+        onFailure: this.innerProps.onFailure,
+        supportS3OnFailureDestination: true,
       }),
     );
 
@@ -217,11 +235,14 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
     target.addEventSourceMapping(
       this.mappingId(target),
       this.enrichMappingOptions({
+        filters: this.innerProps.filters,
         kafkaBootstrapServers: this.innerProps.bootstrapServers,
         kafkaTopic: this.innerProps.topic,
         kafkaConsumerGroupId: this.innerProps.consumerGroupId,
         startingPosition: this.innerProps.startingPosition,
         sourceAccessConfigurations: this.sourceAccessConfigurations(),
+        onFailure: this.innerProps.onFailure,
+        supportS3OnFailureDestination: true,
       }),
     );
 

@@ -103,7 +103,7 @@ export class SqsEventSource implements lambda.IEventSource {
     if (target.role) {
       this.queue.grantConsumeMessages(target);
     } else {
-      Annotations.of(target).addWarning(`Function '${target.node.path}' was imported without an IAM role `+
+      Annotations.of(target).addWarningV2('@aws-cdk/aws-lambda-event-sources:sqsFunctionImportWithoutRole', `Function '${target.node.path}' was imported without an IAM role `+
         `so it was not granted access to consume messages from '${this.queue.node.path}'`);
     }
   }

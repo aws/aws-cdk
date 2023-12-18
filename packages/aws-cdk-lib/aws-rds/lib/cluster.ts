@@ -2,23 +2,23 @@ import { Construct } from 'constructs';
 import { IAuroraClusterInstance, IClusterInstance, InstanceType } from './aurora-cluster-instance';
 import { IClusterEngine } from './cluster-engine';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
-import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { NetworkType } from './instance';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
-import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials } from './private/util';
 import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
 import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { Annotations, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Token } from '../../core';
+import { Annotations, ArnFormat, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -458,6 +458,19 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
       targetType: secretsmanager.AttachmentTargetType.RDS_DB_CLUSTER,
     };
   }
+
+  public grantConnect(grantee: iam.IGrantable, dbUser: string): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      actions: ['rds-db:connect'],
+      grantee,
+      resourceArns: [Stack.of(this).formatArn({
+        service: 'rds-db',
+        resource: 'dbuser',
+        resourceName: `${this.clusterResourceIdentifier}/${dbUser}`,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      })],
+    });
+  }
 }
 
 /**
@@ -632,22 +645,35 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    *
    * @internal
    */
-  protected _createInstances(props: DatabaseClusterProps): InstanceConfig {
+  protected _createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterProps): InstanceConfig {
     const instanceEndpoints: Endpoint[] = [];
     const instanceIdentifiers: string[] = [];
     const readers: IAuroraClusterInstance[] = [];
+
+    let monitoringRole = props.monitoringRole;
+    if (!props.monitoringRole && props.monitoringInterval && props.monitoringInterval.toSeconds()) {
+      monitoringRole = new Role(cluster, 'MonitoringRole', {
+        assumedBy: new ServicePrincipal('monitoring.rds.amazonaws.com'),
+        managedPolicies: [
+          ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSEnhancedMonitoringRole'),
+        ],
+      });
+    }
+
     // need to create the writer first since writer is determined by what instance is first
     const writer = props.writer!.bind(this, this, {
       monitoringInterval: props.monitoringInterval,
-      monitoringRole: props.monitoringRole,
+      monitoringRole: monitoringRole,
       removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
       subnetGroup: this.subnetGroup,
       promotionTier: 0, // override the promotion tier so that writers are always 0
     });
+    instanceIdentifiers.push(writer.instanceIdentifier);
+
     (props.readers ?? []).forEach(instance => {
       const clusterInstance = instance.bind(this, this, {
         monitoringInterval: props.monitoringInterval,
-        monitoringRole: props.monitoringRole,
+        monitoringRole: monitoringRole,
         removalPolicy: props.removalPolicy ?? RemovalPolicy.SNAPSHOT,
         subnetGroup: this.subnetGroup,
       });
@@ -706,23 +732,27 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       const hasOnlyServerlessReaders = hasServerlessReader && !hasProvisionedReader;
       if (hasOnlyServerlessReaders) {
         if (noFailoverTierInstances) {
-          Annotations.of(this).addWarning(
+          Annotations.of(this).addWarningV2(
+            '@aws-cdk/aws-rds:noFailoverServerlessReaders',
             `Cluster ${this.node.id} only has serverless readers and no reader is in promotion tier 0-1.`+
             'Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to '+
             'availability issues if a failover event occurs. It is recommended that at least one reader '+
             'has `scaleWithWriter` set to true',
           );
+
         }
       } else {
         if (serverlessInHighestTier && highestTier > 1) {
-          Annotations.of(this).addWarning(
+          Annotations.of(this).addWarningV2(
+            '@aws-cdk/aws-rds:serverlessInHighestTier2-15',
             `There are serverlessV2 readers in tier ${highestTier}. Since there are no instances in a higher tier, `+
             'any instance in this tier is a failover target. Since this tier is > 1 the serverless reader will not scale '+
             'with the writer which could lead to availability issues during failover.',
           );
         }
         if (someProvisionedReadersDontMatchWriter.length > 0 && writer.type === InstanceType.PROVISIONED) {
-          Annotations.of(this).addWarning(
+          Annotations.of(this).addWarningV2(
+            '@aws-cdk/aws-rds:provisionedReadersDontMatchWriter',
             `There are provisioned readers in the highest promotion tier ${highestTier} that do not have the same `+
             'InstanceSize as the writer. Any of these instances could be chosen as the new writer in the event '+
             'of a failover.\n'+
@@ -741,7 +771,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     if (writer.type === InstanceType.PROVISIONED) {
       if (reader.type === InstanceType.SERVERLESS_V2) {
         if (!instanceSizeSupportedByServerlessV2(writer.instanceSize!, this.serverlessV2MaxCapacity)) {
-          Annotations.of(this).addWarning(
+          Annotations.of(this).addWarningV2('@aws-cdk/aws-rds:serverlessInstanceCantScaleWithWriter',
             'For high availability any serverless instances in promotion tiers 0-1 '+
             'should be able to scale to match the provisioned instance capacity.\n'+
             `Serverless instance ${reader.node.id} is in promotion tier ${reader.tier},\n`+
@@ -988,7 +1018,7 @@ export class DatabaseCluster extends DatabaseClusterNew {
       throw new Error('writer must be provided');
     }
 
-    const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
+    const createdInstances = props.writer ? this._createInstances(this, props) : legacyCreateInstances(this, props, this.subnetGroup);
     this.instanceIdentifiers = createdInstances.instanceIdentifiers;
     this.instanceEndpoints = createdInstances.instanceEndpoints;
   }
@@ -1107,7 +1137,7 @@ export interface DatabaseClusterFromSnapshotProps extends DatabaseClusterBasePro
 /**
  * A database cluster restored from a snapshot.
  *
- * @resource AWS::RDS::DBInstance
+ * @resource AWS::RDS::DBCluster
  */
 export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
   public readonly clusterIdentifier: string;
@@ -1127,43 +1157,32 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     super(scope, id, props);
 
     if (props.credentials && !props.credentials.password && !props.credentials.secret) {
-      Annotations.of(this).addWarning('Use `snapshotCredentials` to modify password of a cluster created from a snapshot.');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-rds:useSnapshotCredentials', 'Use `snapshotCredentials` to modify password of a cluster created from a snapshot.');
     }
     if (!props.credentials && !props.snapshotCredentials) {
-      Annotations.of(this).addWarning('Generated credentials will not be applied to cluster. Use `snapshotCredentials` instead. `addRotationSingleUser()` and `addRotationMultiUser()` cannot be used on this cluster.');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-rds:generatedCredsNotApplied', 'Generated credentials will not be applied to cluster. Use `snapshotCredentials` instead. `addRotationSingleUser()` and `addRotationMultiUser()` cannot be used on this cluster.');
     }
-    const deprecatedCredentials = renderCredentials(this, props.engine, props.credentials);
 
-    let credentials = props.snapshotCredentials;
-    let secret = credentials?.secret;
-    if (!secret && credentials?.generatePassword) {
-      if (!credentials.username) {
-        throw new Error('`snapshotCredentials` `username` must be specified when `generatePassword` is set to true');
-      }
+    const deprecatedCredentials = !FeatureFlags.of(this).isEnabled(cxapi.RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS)
+      ? renderCredentials(this, props.engine, props.credentials)
+      : undefined;
 
-      secret = new DatabaseSecret(this, 'SnapshotSecret', {
-        username: credentials.username,
-        encryptionKey: credentials.encryptionKey,
-        excludeCharacters: credentials.excludeCharacters,
-        replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
-        replicaRegions: credentials.replicaRegions,
-      });
-    }
+    const credentials = renderSnapshotCredentials(this, props.snapshotCredentials);
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       snapshotIdentifier: props.snapshotIdentifier,
-      masterUserPassword: secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
+      masterUserPassword: credentials?.secret?.secretValueFromJson('password')?.unsafeUnwrap() ?? credentials?.password?.unsafeUnwrap(), // Safe usage
     });
 
     this.clusterIdentifier = cluster.ref;
     this.clusterResourceIdentifier = cluster.attrDbClusterResourceId;
 
-    if (secret) {
-      this.secret = secret.attach(this);
+    if (credentials?.secret) {
+      this.secret = credentials.secret.attach(this);
     }
 
-    if (deprecatedCredentials.secret) {
+    if (deprecatedCredentials?.secret) {
       const deprecatedSecret = deprecatedCredentials.secret.attach(this);
       if (!this.secret) {
         this.secret = deprecatedSecret;
@@ -1185,7 +1204,7 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     if ((props.writer || props.readers) && (props.instances || props.instanceProps)) {
       throw new Error('Cannot provide clusterInstances if instances or instanceProps are provided');
     }
-    const createdInstances = props.writer ? this._createInstances(props) : legacyCreateInstances(this, props, this.subnetGroup);
+    const createdInstances = props.writer ? this._createInstances(this, props) : legacyCreateInstances(this, props, this.subnetGroup);
     this.instanceIdentifiers = createdInstances.instanceIdentifiers;
     this.instanceEndpoints = createdInstances.instanceEndpoints;
   }

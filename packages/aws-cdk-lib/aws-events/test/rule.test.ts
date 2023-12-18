@@ -38,7 +38,7 @@ describe('rule', () => {
       }),
     });
 
-    Annotations.fromStack(stack).hasWarning('/Default/MyRule', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+    Annotations.fromStack(stack).hasWarning('/Default/MyRule', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-events:scheduleWillRunEveryMinute]");
   });
 
   test('rule does not display warning when minute is set to * in cron', () => {
@@ -576,6 +576,20 @@ describe('rule', () => {
     // THEN
     expect(importedRule.ruleArn).toEqual('arn:aws:events:us-east-2:123456789012:rule/example');
     expect(importedRule.ruleName).toEqual('example');
+  });
+
+  test('sets account for imported rule env by fromEventRuleArn', () => {
+    const stack = new cdk.Stack();
+    const importedRule = Rule.fromEventRuleArn(stack, 'Imported', 'arn:aws:events:us-west-2:999999999999:rule/example');
+
+    expect(importedRule.env.account).toEqual('999999999999');
+  });
+
+  test('sets region for imported rule env by fromEventRuleArn', () => {
+    const stack = new cdk.Stack();
+    const importedRule = Rule.fromEventRuleArn(stack, 'Imported', 'arn:aws:events:us-west-2:999999999999:rule/example');
+
+    expect(importedRule.env.region).toEqual('us-west-2');
   });
 
   test('rule can be disabled', () => {

@@ -1,5 +1,5 @@
 import * as iotevents from '@aws-cdk/aws-iotevents-alpha';
-import { Duration } from 'aws-cdk-lib';
+import { Duration } from 'aws-cdk-lib/core';
 
 /**
  * The duration of the timer.

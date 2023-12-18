@@ -1,0 +1,12 @@
+{
+  "exclude": [
+    "attribute-tag:@aws-cdk/aws-apprunner-alpha.Service.serviceName",
+    "docs-public-apis:@aws-cdk/aws-apprunner-alpha.HealthCheck.healthCheckProtocolType",
+    "docs-public-apis:@aws-cdk/aws-apprunner-alpha.HealthCheck.healthyThreshold",
+    "docs-public-apis:@aws-cdk/aws-apprunner-alpha.HealthCheck.interval",
+    "docs-public-apis:@aws-cdk/aws-apprunner-alpha.HealthCheck.timeout",
+    "docs-public-apis:@aws-cdk/aws-apprunner-alpha.HealthCheck.unhealthyThreshold",
+    "docs-public-apis:@aws-cdk/aws-apprunner-alpha.HealthCheck.path",
+    "docs-public-apis:@aws-cdk/aws-apprunner-alpha.HealthCheck.bind"
+  ]
+}

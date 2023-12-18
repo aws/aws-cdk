@@ -1,6 +1,6 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as sns from 'aws-cdk-lib/aws-sns';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnGameSessionQueue } from 'aws-cdk-lib/aws-gamelift';
 
@@ -22,21 +22,24 @@ export interface IGameSessionQueueDestination {
  */
 export enum PriorityType {
   /**
-     * FleetIQ prioritizes locations where the average player latency (provided in each game session request) is lowest.
-     */
+   * FleetIQ prioritizes locations where the average player latency (provided in each game session request) is lowest.
+   */
   LATENCY = 'LATENCY',
+
   /**
    * FleetIQ prioritizes destinations with the lowest current hosting costs. Cost is evaluated based on the location, instance type, and fleet type (Spot or On-Demand) for each destination in the queue.
    */
   COST = 'COST',
+
   /**
    * FleetIQ prioritizes based on the order that destinations are listed in the queue configuration.
    */
   DESTINATION = 'DESTINATION',
+
   /**
    * FleetIQ prioritizes based on the provided order of locations, as defined in `LocationOrder`
    */
-  LOCATION = 'LOCATION'
+  LOCATION = 'LOCATION',
 }
 
 /**
@@ -53,11 +56,12 @@ export enum PriorityType {
  */
 export interface PriorityConfiguration {
   /**
-     * The prioritization order to use for fleet locations, when the PriorityOrder property includes LOCATION. Locations are identified by AWS Region codes such as `us-west-2.
-     *
-     * Each location can only be listed once.
-     */
+   * The prioritization order to use for fleet locations, when the PriorityOrder property includes LOCATION. Locations are identified by AWS Region codes such as `us-west-2.
+   *
+   * Each location can only be listed once.
+   */
   readonly locationOrder: string[];
+
   /**
    * The recommended sequence to use when prioritizing where to place new game sessions.
    * Each type can only be listed once.
@@ -73,10 +77,10 @@ export interface PriorityConfiguration {
  */
 export interface PlayerLatencyPolicy {
   /**
-     * The maximum latency value that is allowed for any player, in milliseconds.
-     *
-     * All policies must have a value set for this property.
-     */
+   * The maximum latency value that is allowed for any player, in milliseconds.
+   *
+   * All policies must have a value set for this property.
+   */
   readonly maximumIndividualPlayerLatency: cdk.Duration;
 
   /**
@@ -91,24 +95,23 @@ export interface PlayerLatencyPolicy {
  * Represents a Gamelift GameSessionQueue for a Gamelift fleet destination.
  */
 export interface IGameSessionQueue extends cdk.IResource {
-
   /**
-       * The Name of the gameSessionQueue.
-       *
-       * @attribute
-       */
+   * The Name of the gameSessionQueue.
+   *
+   * @attribute
+   */
   readonly gameSessionQueueName: string;
 
   /**
-     * The ARN of the gameSessionQueue.
-     *
-     * @attribute
-     */
+   * The ARN of the gameSessionQueue.
+   *
+   * @attribute
+   */
   readonly gameSessionQueueArn: string;
 
   /**
-    * Return the given named metric for this fleet.
-    */
+   * Return the given named metric for this fleet.
+   */
   metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
@@ -143,8 +146,8 @@ export interface IGameSessionQueue extends cdk.IResource {
 }
 
 /**
-   * A full specification of an gameSessionQueue that can be used to import it fluently into the CDK application.
-   */
+ * A full specification of an gameSessionQueue that can be used to import it fluently into the CDK application.
+ */
 export interface GameSessionQueueAttributes {
   /**
    * The ARN of the gameSessionQueue
@@ -166,12 +169,12 @@ export interface GameSessionQueueAttributes {
 }
 
 /**
-   * Properties for a new Fleet gameSessionQueue
-   */
+ * Properties for a new Fleet gameSessionQueue
+ */
 export interface GameSessionQueueProps {
   /**
-       * Name of this gameSessionQueue
-       */
+   * Name of this gameSessionQueue
+   */
   readonly gameSessionQueueName: string;
 
   /**
@@ -231,10 +234,10 @@ export interface GameSessionQueueProps {
   readonly timeout?: cdk.Duration;
 
   /**
-     * A list of fleets and/or fleet alias that can be used to fulfill game session placement requests in the queue.
-     *
-     * Destinations are listed in order of placement preference.
-     */
+   * A list of fleets and/or fleet alias that can be used to fulfill game session placement requests in the queue.
+   *
+   * Destinations are listed in order of placement preference.
+   */
   readonly destinations: IGameSessionQueueDestination[];
 }
 
@@ -246,9 +249,10 @@ export abstract class GameSessionQueueBase extends cdk.Resource implements IGame
    * The name of the gameSessionQueue.
    */
   public abstract readonly gameSessionQueueName: string;
+
   /**
-     * The ARN of the gameSessionQueue
-     */
+   * The ARN of the gameSessionQueue
+   */
   public abstract readonly gameSessionQueueArn: string;
 
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
@@ -296,7 +300,6 @@ export abstract class GameSessionQueueBase extends cdk.Resource implements IGame
  * @resource AWS::GameLift::GameSessionQueue
  */
 export class GameSessionQueue extends GameSessionQueueBase {
-
   /**
    * Import an existing gameSessionQueue from its name.
    */
@@ -350,8 +353,8 @@ export class GameSessionQueue extends GameSessionQueueBase {
   public readonly gameSessionQueueName: string;
 
   /**
-    * The ARN of the gameSessionQueue.
-    */
+   * The ARN of the gameSessionQueue.
+   */
   public readonly gameSessionQueueArn: string;
 
   private readonly destinations: IGameSessionQueueDestination[] = [];

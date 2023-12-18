@@ -5,6 +5,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deployment from 'aws-cdk-lib/aws-s3-deployment';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-integ');
@@ -68,6 +69,11 @@ containerDefinition.node.addDependency(envFileDeployment);
 new ecs.Ec2Service(stack, 'Service', {
   cluster,
   taskDefinition,
+});
+
+new IntegTest(app, 'Integ', {
+  testCases: [stack],
+  diffAssets: true,
 });
 
 app.synth();

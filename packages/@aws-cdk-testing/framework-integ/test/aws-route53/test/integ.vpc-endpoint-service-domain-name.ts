@@ -2,6 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { PublicHostedZone, VpcEndpointServiceDomainName } from 'aws-cdk-lib/aws-route53';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /**
  * A load balancer that can host a VPC Endpoint Service.
@@ -43,6 +44,11 @@ new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
   endpointService: vpces,
   domainName: 'my-stuff.aws-cdk.dev',
   publicHostedZone: zone,
+});
+
+new IntegTest(app, 'AwsCdkVpcEndpointDnsIntegTest', {
+  testCases: [stack],
+  diffAssets: true,
 });
 
 app.synth();

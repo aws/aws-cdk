@@ -38,16 +38,16 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0.zip"
+     "S3Key": "32958f9442f31389bed730b768bd21f066c7343a5d0e87b9cad92b365e9d3c37.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "MyAuthorizerFunctionServiceRole8A34C19E",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MyAuthorizerFunctionServiceRole8A34C19E"
@@ -188,13 +188,13 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "MyRestApiDeploymentB555B582d83364d66d67f510f848797cd89349d5": {
+  "MyRestApiDeploymentB555B58276a4103e7ef38befb395a9ace5fdce44": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "MyRestApi2D1F47A9"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "MyAuthorizer6575980E",
@@ -207,11 +207,11 @@
   "MyRestApiDeploymentStageprodC33B8E5F": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
+    "DeploymentId": {
+     "Ref": "MyRestApiDeploymentB555B58276a4103e7ef38befb395a9ace5fdce44"
+    },
     "RestApiId": {
      "Ref": "MyRestApi2D1F47A9"
-    },
-    "DeploymentId": {
-     "Ref": "MyRestApiDeploymentB555B582d83364d66d67f510f848797cd89349d5"
     },
     "StageName": "prod"
    },
@@ -222,20 +222,11 @@
   "MyRestApiANY05143F93": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "ANY",
-    "ResourceId": {
-     "Fn::GetAtt": [
-      "MyRestApi2D1F47A9",
-      "RootResourceId"
-     ]
-    },
-    "RestApiId": {
-     "Ref": "MyRestApi2D1F47A9"
-    },
     "AuthorizationType": "CUSTOM",
     "AuthorizerId": {
      "Ref": "MyAuthorizer6575980E"
     },
+    "HttpMethod": "ANY",
     "Integration": {
      "IntegrationResponses": [
       {
@@ -252,7 +243,16 @@
      {
       "StatusCode": "200"
      }
-    ]
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "MyRestApi2D1F47A9",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "MyRestApi2D1F47A9"
+    }
    }
   },
   "MyRestApiauth918A22B9": {
@@ -273,17 +273,11 @@
   "MyRestApiauthANY12A3CAB7": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "ANY",
-    "ResourceId": {
-     "Ref": "MyRestApiauth918A22B9"
-    },
-    "RestApiId": {
-     "Ref": "MyRestApi2D1F47A9"
-    },
     "AuthorizationType": "CUSTOM",
     "AuthorizerId": {
      "Ref": "MySecondAuthorizer25A69B96"
     },
+    "HttpMethod": "ANY",
     "Integration": {
      "IntegrationResponses": [
       {
@@ -300,17 +294,19 @@
      {
       "StatusCode": "200"
      }
-    ]
+    ],
+    "ResourceId": {
+     "Ref": "MyRestApiauth918A22B9"
+    },
+    "RestApiId": {
+     "Ref": "MyRestApi2D1F47A9"
+    }
    }
   },
   "MyAuthorizer6575980E": {
    "Type": "AWS::ApiGateway::Authorizer",
    "Properties": {
-    "Name": "RequestAuthorizerIntegMyAuthorizer5D9D41C5",
-    "RestApiId": {
-     "Ref": "MyRestApi2D1F47A9"
-    },
-    "Type": "REQUEST",
+    "AuthorizerResultTtlInSeconds": 300,
     "AuthorizerUri": {
      "Fn::Join": [
       "",
@@ -360,17 +356,18 @@
       ]
      ]
     },
-    "IdentitySource": "method.request.header.Authorization,method.request.querystring.allow"
+    "IdentitySource": "method.request.header.Authorization,method.request.querystring.allow",
+    "Name": "RequestAuthorizerIntegMyAuthorizer5D9D41C5",
+    "RestApiId": {
+     "Ref": "MyRestApi2D1F47A9"
+    },
+    "Type": "REQUEST"
    }
   },
   "MySecondAuthorizer25A69B96": {
    "Type": "AWS::ApiGateway::Authorizer",
    "Properties": {
-    "Name": "RequestAuthorizerIntegMySecondAuthorizerCCC4ECED",
-    "RestApiId": {
-     "Ref": "MyRestApi2D1F47A9"
-    },
-    "Type": "REQUEST",
+    "AuthorizerResultTtlInSeconds": 300,
     "AuthorizerUri": {
      "Fn::Join": [
       "",
@@ -420,7 +417,12 @@
       ]
      ]
     },
-    "IdentitySource": "method.request.header.Authorization,method.request.querystring.allow"
+    "IdentitySource": "method.request.header.Authorization,method.request.querystring.allow",
+    "Name": "RequestAuthorizerIntegMySecondAuthorizerCCC4ECED",
+    "RestApiId": {
+     "Ref": "MyRestApi2D1F47A9"
+    },
+    "Type": "REQUEST"
    }
   }
  },

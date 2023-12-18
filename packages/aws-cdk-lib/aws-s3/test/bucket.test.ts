@@ -64,6 +64,17 @@ describe('bucket', () => {
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'BucketEncryption': {
+              'ServerSideEncryptionConfiguration': [
+                {
+                  'ServerSideEncryptionByDefault': {
+                    'SSEAlgorithm': 'AES256',
+                  },
+                },
+              ],
+            },
+          },
           'DeletionPolicy': 'Retain',
           'UpdateReplacePolicy': 'Retain',
         },
@@ -87,6 +98,34 @@ describe('bucket', () => {
                 {
                   'ServerSideEncryptionByDefault': {
                     'SSEAlgorithm': 'aws:kms',
+                  },
+                },
+              ],
+            },
+          },
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+    });
+  });
+
+  test('bucket with DSSE_MANAGED encryption', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      encryption: s3.BucketEncryption.DSSE_MANAGED,
+    });
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'BucketEncryption': {
+              'ServerSideEncryptionConfiguration': [
+                {
+                  'ServerSideEncryptionByDefault': {
+                    'SSEAlgorithm': 'aws:kms:dsse',
                   },
                 },
               ],
@@ -223,7 +262,17 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
       encryptionKey: myKey,
-    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS/);
+    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
+  });
+
+  test('fails if encryption key is used with dsse managed encryption', () => {
+    const stack = new cdk.Stack();
+    const myKey = new kms.Key(stack, 'MyKey');
+
+    expect(() => new s3.Bucket(stack, 'MyBucket', {
+      encryption: s3.BucketEncryption.DSSE_MANAGED,
+      encryptionKey: myKey,
+    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
   });
 
   testDeprecated('fails if encryption key is used with encryption set to UNENCRYPTED', () => {
@@ -233,7 +282,7 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.UNENCRYPTED,
       encryptionKey: myKey,
-    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS/);
+    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
   });
 
   test('fails if encryption key is used with encryption set to S3_MANAGED', () => {
@@ -243,7 +292,7 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.S3_MANAGED,
       encryptionKey: myKey,
-    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS/);
+    })).toThrow(/encryptionKey is specified, so 'encryption' must be set to KMS or DSSE/);
   });
 
   test('encryptionKey can specify kms key', () => {
@@ -263,6 +312,62 @@ describe('bucket', () => {
               'KMSMasterKeyID': {
                 'Fn::GetAtt': [
                   'MyKey6AB29FA6',
+                  'Arn',
+                ],
+              },
+              'SSEAlgorithm': 'aws:kms',
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('dsse encryptionKey can specify kms key', () => {
+    const stack = new cdk.Stack();
+
+    const encryptionKey = new kms.Key(stack, 'MyKey', { description: 'hello, world' });
+
+    new s3.Bucket(stack, 'MyBucket', { encryptionKey, encryption: s3.BucketEncryption.DSSE });
+
+    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      'BucketEncryption': {
+        'ServerSideEncryptionConfiguration': [
+          {
+            'ServerSideEncryptionByDefault': {
+              'KMSMasterKeyID': {
+                'Fn::GetAtt': [
+                  'MyKey6AB29FA6',
+                  'Arn',
+                ],
+              },
+              'SSEAlgorithm': 'aws:kms:dsse',
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('KMS key is generated if encryption is KMS and no encryptionKey is specified', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      'Description': 'Created by Default/MyBucket',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      'BucketEncryption': {
+        'ServerSideEncryptionConfiguration': [
+          {
+            'ServerSideEncryptionByDefault': {
+              'KMSMasterKeyID': {
+                'Fn::GetAtt': [
+                  'MyBucketKeyC17130CF',
                   'Arn',
                 ],
               },
@@ -334,6 +439,103 @@ describe('bucket', () => {
     });
   });
 
+  test('with minimumTLSVersion', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      enforceSSL: true,
+      minimumTLSVersion: 1.2,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Action': 's3:*',
+            'Condition': {
+              'Bool': {
+                'aws:SecureTransport': 'false',
+              },
+            },
+            'Effect': 'Deny',
+            'Principal': { AWS: '*' },
+            'Resource': [
+              {
+                'Fn::GetAtt': [
+                  'MyBucketF68F3FF0',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyBucketF68F3FF0',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
+          {
+            'Action': 's3:*',
+            'Condition': {
+              'NumericLessThan': {
+                's3:TlsVersion': 1.2,
+              },
+            },
+            'Effect': 'Deny',
+            'Principal': { AWS: '*' },
+            'Resource': [
+              {
+                'Fn::GetAtt': [
+                  'MyBucketF68F3FF0',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'MyBucketF68F3FF0',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+    });
+  });
+
+  test('enforceSSL must be enabled for minimumTLSVersion to work', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket1', {
+        enforceSSL: false,
+        minimumTLSVersion: 1.2,
+      });
+    }).toThrow(/'enforceSSL' must be enabled for 'minimumTLSVersion' to be applied/);
+
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket2', {
+        minimumTLSVersion: 1.2,
+      });
+    }).toThrow(/'enforceSSL' must be enabled for 'minimumTLSVersion' to be applied/);
+  });
+
   test.each([s3.BucketEncryption.KMS, s3.BucketEncryption.KMS_MANAGED])('bucketKeyEnabled can be enabled with %p encryption', (encryption) => {
     const stack = new cdk.Stack();
 
@@ -353,15 +555,34 @@ describe('bucket', () => {
     });
   });
 
+  test.each([s3.BucketEncryption.DSSE, s3.BucketEncryption.DSSE_MANAGED])('bucketKeyEnabled can be enabled with %p encryption', (encryption) => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      'BucketEncryption': {
+        'ServerSideEncryptionConfiguration': [
+          {
+            'BucketKeyEnabled': true,
+            'ServerSideEncryptionByDefault': Match.objectLike({
+              'SSEAlgorithm': 'aws:kms:dsse',
+            }),
+          },
+        ],
+      },
+    });
+  });
+
   test('throws error if bucketKeyEnabled is set, but encryption is not KMS', () => {
     const stack = new cdk.Stack();
 
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.S3_MANAGED });
-    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: S3_MANAGED)");
+    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: S3_MANAGED)");
     expect(() => {
       new s3.Bucket(stack, 'MyBucket3', { bucketKeyEnabled: true });
-    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: UNENCRYPTED)");
+    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: UNENCRYPTED)");
 
   });
 
@@ -383,7 +604,7 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.KMS_MANAGED, serverAccessLogsPrefix: 'test' });
-    }).toThrow(/Default bucket encryption with KMS managed key is not supported for Server Access Logging target buckets/);
+    }).toThrow(/Default bucket encryption with KMS managed or DSSE managed key is not supported for Server Access Logging target buckets/);
   });
 
   test('logs to self, KMS encryption without key does not throw error', () => {
@@ -2469,6 +2690,38 @@ describe('bucket', () => {
       });
 
     });
+    test('adds RedirectRules property with empty keyPrefixEquals condition', () => {
+      const stack = new cdk.Stack();
+      new s3.Bucket(stack, 'Website', {
+        websiteRoutingRules: [{
+          hostName: 'www.example.com',
+          httpRedirectCode: '302',
+          protocol: s3.RedirectProtocol.HTTPS,
+          replaceKey: s3.ReplaceKey.prefixWith('test/'),
+          condition: {
+            httpErrorCodeReturnedEquals: '200',
+            keyPrefixEquals: '',
+          },
+        }],
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+        WebsiteConfiguration: {
+          RoutingRules: [{
+            RedirectRule: {
+              HostName: 'www.example.com',
+              HttpRedirectCode: '302',
+              Protocol: 'https',
+              ReplaceKeyPrefixWith: 'test/',
+            },
+            RoutingRuleCondition: {
+              HttpErrorCodeReturnedEquals: '200',
+              KeyPrefixEquals: '',
+            },
+          }],
+        },
+      });
+
+    });
     test('fails if routingRule condition object is empty', () => {
       const stack = new cdk.Stack();
       expect(() => {
@@ -2566,10 +2819,27 @@ describe('bucket', () => {
   test('if a kms key is specified, it implies bucket is encrypted with kms (dah)', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const key = new kms.Key(stack, 'k');
-
+    const key = new kms.Key(stack, 'MyKey');
+    // WHEN
+    new s3.Bucket(stack, 'MyBucket', { encryptionKey: key });
     // THEN
-    new s3.Bucket(stack, 'b', { encryptionKey: key });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      'BucketEncryption': {
+        'ServerSideEncryptionConfiguration': [
+          {
+            'ServerSideEncryptionByDefault': {
+              'KMSMasterKeyID': {
+                'Fn::GetAtt': [
+                  'MyKey6AB29FA6',
+                  'Arn',
+                ],
+              },
+              'SSEAlgorithm': 'aws:kms',
+            },
+          },
+        ],
+      },
+    });
   });
 
   test('Bucket with Server Access Logs', () => {
@@ -2864,6 +3134,49 @@ describe('bucket', () => {
     });
   });
 
+  test('Inventory Ids are shortened to 64 characters', () => {
+    // Given
+    const stack = new cdk.Stack();
+
+    const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket');
+    new s3.Bucket(stack, 'AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVery@#$+:;?!&LongNodeIdName', {
+      inventories: [
+        {
+          destination: {
+            bucket: inventoryBucket,
+          },
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      InventoryConfigurations: Match.arrayWith([
+        Match.objectLike({
+          Id: 'VeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongNodeIdNameInventory0',
+        }),
+      ]),
+    });
+  });
+
+  test('throws when inventoryid is invalid', () => {
+    // Given
+    const stack = new cdk.Stack();
+
+    const inventoryBucket = new s3.Bucket(stack, 'InventoryBucket');
+    new s3.Bucket(stack, 'MyBucket2', {
+      inventories: [
+        {
+          destination: {
+            bucket: inventoryBucket,
+          },
+          inventoryId: 'InvalidId&123',
+        },
+      ],
+    });
+
+    expect(() => Template.fromStack(stack)).toThrow(/inventoryId should not exceed 64 characters and should not contain special characters except . and -, got InvalidId&123/);
+  });
+
   test('Bucket with objectOwnership set to BUCKET_OWNER_ENFORCED', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
@@ -2976,6 +3289,7 @@ describe('bucket', () => {
         'Statement': [
           {
             'Action': [
+              's3:PutBucketPolicy',
               's3:GetBucket*',
               's3:List*',
               's3:DeleteObject*',
@@ -3373,3 +3687,4 @@ describe('bucket', () => {
     });
   });
 });
+

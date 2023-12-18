@@ -1,47 +1,48 @@
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'stack');
 
 new lambda.Function(stack, 'MyFunc1', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
   insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_54_0,
 });
 
 new lambda.Function(stack, 'MyFunc2', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
   insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_86_0,
 });
 
 new lambda.Function(stack, 'MyFunc3', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
   insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_89_0,
 });
 
 new lambda.Function(stack, 'MyFunc4', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
   insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_98_0,
 });
 
 new lambda.Function(stack, 'MyFunc5', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
   insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_119_0,
 });
 
 new lambda.Function(stack, 'MyFunc6', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   architecture: lambda.Architecture.ARM_64,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),

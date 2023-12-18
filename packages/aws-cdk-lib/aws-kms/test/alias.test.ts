@@ -2,7 +2,8 @@ import { Construct } from 'constructs';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { ArnPrincipal, PolicyStatement } from '../../aws-iam';
-import { App, Aws, CfnOutput, Stack } from '../../core';
+import { App, Arn, Aws, CfnOutput, Stack } from '../../core';
+import { KMS_ALIAS_NAME_REF } from '../../cx-api';
 import { Alias } from '../lib/alias';
 import { IKey, Key } from '../lib/key';
 
@@ -110,8 +111,34 @@ test('fails if alias starts with "alias/aws/"', () => {
   })).toThrow(/Alias cannot start with alias\/aws\/: alias\/AWS\/awesome/);
 });
 
+test('keyId includes reference to alias under feature flag', () => {
+  // GIVEN
+  const stack = new Stack();
+  stack.node.setContext(KMS_ALIAS_NAME_REF, true);
+
+  const myKey = new Key(stack, 'MyKey', {
+    enableKeyRotation: true,
+    enabled: true,
+  });
+  const myAlias = new Alias(stack, 'MyAlias', {
+    targetKey: myKey,
+    aliasName: 'alias/myAlias',
+  });
+
+  // WHEN
+  new AliasOutputsConstruct(stack, 'AliasOutputsConstruct', myAlias);
+
+  // THEN - keyId includes reference to the alias itself
+  Template.fromStack(stack).hasOutput('OutId', {
+    Value: {
+      Ref: 'MyAlias9A08CB8C',
+    },
+  });
+});
+
 test('can be used wherever a key is expected', () => {
   const stack = new Stack();
+  stack.node.setContext(KMS_ALIAS_NAME_REF, false);
 
   const myKey = new Key(stack, 'MyKey', {
     enableKeyRotation: true,
@@ -122,21 +149,7 @@ test('can be used wherever a key is expected', () => {
     aliasName: 'alias/myAlias',
   });
 
-  /* eslint-disable @aws-cdk/no-core-construct */
-  class MyConstruct extends Construct {
-    constructor(scope: Construct, id: string, key: IKey) {
-      super(scope, id);
-
-      new CfnOutput(stack, 'OutId', {
-        value: key.keyId,
-      });
-      new CfnOutput(stack, 'OutArn', {
-        value: key.keyArn,
-      });
-    }
-  }
-  new MyConstruct(stack, 'MyConstruct', myAlias);
-  /* eslint-enable @aws-cdk/no-core-construct */
+  new AliasOutputsConstruct(stack, 'AliasOutputsConstruct', myAlias);
 
   Template.fromStack(stack).hasOutput('OutId', {
     Value: 'alias/myAlias',
@@ -161,21 +174,7 @@ test('imported alias by name - can be used where a key is expected', () => {
 
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
 
-  /* eslint-disable @aws-cdk/no-core-construct */
-  class MyConstruct extends Construct {
-    constructor(scope: Construct, id: string, key: IKey) {
-      super(scope, id);
-
-      new CfnOutput(stack, 'OutId', {
-        value: key.keyId,
-      });
-      new CfnOutput(stack, 'OutArn', {
-        value: key.keyArn,
-      });
-    }
-  }
-  new MyConstruct(stack, 'MyConstruct', myAlias);
-  /* eslint-enable @aws-cdk/no-core-construct */
+  new AliasOutputsConstruct(stack, 'AliasOutputsConstruct', myAlias);
 
   Template.fromStack(stack).hasOutput('OutId', {
     Value: 'alias/myAlias',
@@ -358,3 +357,39 @@ test('does not add alias if starts with token', () => {
   });
 });
 
+test('aliasArn and keyArn from alias should match', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Test');
+  const key = new Key(stack, 'Key');
+
+  const alias = new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
+
+  expect(alias.aliasArn).toEqual(alias.keyArn);
+});
+
+test('aliasArn should be a valid ARN', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Test');
+  const key = new Key(stack, 'Key');
+
+  const alias = new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
+
+  expect(alias.aliasArn).toEqual(Arn.format({
+    service: 'kms',
+    // aliasName already contains the '/'
+    resource: alias.aliasName,
+  }, stack));
+});
+
+class AliasOutputsConstruct extends Construct {
+  constructor(scope: Construct, id: string, key: IKey) {
+    super(scope, id);
+
+    new CfnOutput(scope, 'OutId', {
+      value: key.keyId,
+    });
+    new CfnOutput(scope, 'OutArn', {
+      value: key.keyArn,
+    });
+  }
+}

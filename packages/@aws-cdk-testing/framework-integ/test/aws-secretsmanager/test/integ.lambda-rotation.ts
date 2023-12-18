@@ -2,6 +2,8 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
@@ -15,14 +17,21 @@ class TestStack extends cdk.Stack {
 
     secret.addRotationSchedule('Schedule', {
       rotationLambda: new lambda.Function(this, 'Lambda', {
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: STANDARD_NODEJS_RUNTIME,
         handler: 'index.handler',
         code: lambda.Code.fromInline('NOOP'),
       }),
+      automaticallyAfter: cdk.Duration.hours(4),
     });
   }
 }
 
 const app = new cdk.App();
-new TestStack(app, 'cdk-integ-secret-lambda-rotation');
+
+const stack = new TestStack(app, 'cdk-integ-secret-lambda-rotation');
+
+new integ.IntegTest(app, 'cdk-integ-secret-lambda-rotation-test', {
+  testCases: [stack],
+});
+
 app.synth();

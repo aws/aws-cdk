@@ -1,10 +1,12 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
     "AwsCustomResourceTest/DefaultTest": {
       "stacks": [
-        "aws-cdk-sdk-js"
+        "aws-cdk-sdk-js",
+        "aws-cdk-sdk-js-v3"
       ],
+      "diffAssets": true,
       "assertionStack": "AwsCustomResourceTest/DefaultTest/DeployAssert",
       "assertionStackName": "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5"
     }

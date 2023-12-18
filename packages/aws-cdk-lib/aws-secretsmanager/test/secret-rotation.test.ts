@@ -63,7 +63,7 @@ test('secret rotation single user', () => {
       ],
     },
     RotationRules: {
-      AutomaticallyAfterDays: 30,
+      ScheduleExpression: 'rate(30 days)',
     },
   });
 
@@ -268,6 +268,22 @@ test('secret rotation allows passing an empty string for excludeCharacters', () 
     Parameters: {
       excludeCharacters: '',
     },
+  });
+});
+
+test('secret rotation without immediate rotation', () => {
+  // WHEN
+  new secretsmanager.SecretRotation(stack, 'SecretRotation', {
+    application: secretsmanager.SecretRotationApplication.MARIADB_ROTATION_SINGLE_USER,
+    secret,
+    target,
+    vpc,
+    rotateImmediatelyOnUpdate: false,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+    RotateImmediatelyOnUpdate: false,
   });
 });
 

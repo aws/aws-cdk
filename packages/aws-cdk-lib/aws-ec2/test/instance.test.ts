@@ -104,7 +104,7 @@ describe('instance', () => {
   test('instance architecture is correctly discerned for arm instances', () => {
     // GIVEN
     const sampleInstanceClasses = [
-      'a1', 't4g', 'c6g', 'c7g', 'c6gd', 'c6gn', 'm6g', 'm6gd', 'm7g', 'r6g', 'r6gd', 'r7g', 'g5g', 'im4gn', 'is4gen', // current Graviton-based instance classes
+      'a1', 't4g', 'c6g', 'c7g', 'c6gd', 'c6gn', 'c7g', 'c7gd', 'm6g', 'm6gd', 'm7g', 'm7gd', 'r6g', 'r6gd', 'r7g', 'r7gd', 'g5g', 'im4gn', 'is4gen', // current Graviton-based instance classes
       'a13', 't11g', 'y10ng', 'z11ngd', // theoretical future Graviton-based instance classes
     ];
 
@@ -119,7 +119,7 @@ describe('instance', () => {
   });
   test('instance architecture is correctly discerned for x86-64 instance', () => {
     // GIVEN
-    const sampleInstanceClasses = ['c5', 'm5ad', 'r5n', 'm6', 't3a', 'r6i', 'r6a', 'p4de']; // A sample of x86-64 instance classes
+    const sampleInstanceClasses = ['c5', 'm5ad', 'r5n', 'm6', 't3a', 'r6i', 'r6a', 'p4de', 'p5']; // A sample of x86-64 instance classes
 
     for (const instanceClass of sampleInstanceClasses) {
       // WHEN
@@ -365,7 +365,7 @@ describe('instance', () => {
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/Instance', 'iops will be ignored without volumeType: IO1, IO2, or GP3');
+      Annotations.fromStack(stack).hasWarning('/Default/Instance', 'iops will be ignored without volumeType: IO1, IO2, or GP3 [ack: @aws-cdk/aws-ec2:iopsIgnored]');
     });
 
     test('warning if iops and invalid volumeType', () => {
@@ -385,7 +385,7 @@ describe('instance', () => {
       });
 
       // THEN
-      Annotations.fromStack(stack).hasWarning('/Default/Instance', 'iops will be ignored without volumeType: IO1, IO2, or GP3');
+      Annotations.fromStack(stack).hasWarning('/Default/Instance', 'iops will be ignored without volumeType: IO1, IO2, or GP3 [ack: @aws-cdk/aws-ec2:iopsIgnored]');
     });
   });
 
@@ -402,6 +402,57 @@ describe('instance', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       InstanceType: 't3.large',
       PrivateIpAddress: '10.0.0.2',
+    });
+
+  });
+
+  test('instance can be created with Private IP Address AND Associate Public IP Address', () => {
+    const privateIpAddress = '10.0.0.2';
+    // GIVEN
+    const securityGroup = new SecurityGroup(stack, 'SecurityGroup', { vpc });
+
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      vpcSubnets: { subnetType: SubnetType.PUBLIC },
+      securityGroup,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      privateIpAddress: privateIpAddress,
+      associatePublicIpAddress: true,
+    });
+
+    // THEN
+    // PrivateIpAddress AND NetworkInterfaces cannot both be present
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      PrivateIpAddress: Match.absent(),
+    });
+    Template.fromStack(stack).hasResource('AWS::EC2::Instance', {
+      Properties: {
+        NetworkInterfaces: [{
+          PrivateIpAddress: privateIpAddress,
+          AssociatePublicIpAddress: true,
+          DeviceIndex: '0',
+          GroupSet: [
+            {
+              'Fn::GetAtt': [
+                'SecurityGroupDD263621',
+                'GroupId',
+              ],
+            },
+          ],
+          SubnetId: {
+            Ref: 'VPCPublicSubnet1SubnetB4246D30',
+          },
+        }],
+      },
+      DependsOn: [
+        'InstanceInstanceRoleE9785DE5',
+        'VPCPublicSubnet1DefaultRoute91CEF279',
+        'VPCPublicSubnet1RouteTableAssociation0B0896DC',
+        'VPCPublicSubnet2DefaultRouteB7481BBA',
+        'VPCPublicSubnet2RouteTableAssociation5A808732',
+      ],
     });
 
   });

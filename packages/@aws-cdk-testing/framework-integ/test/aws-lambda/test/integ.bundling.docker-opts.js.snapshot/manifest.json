@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "34.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "cdk-integ-lambda-bundling-docker-bundling-opts.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-lambda-bundling-docker-bundling-opts.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/960f12323a11055ebf2ee1d2c433bd4e1a6ca31550ce0bf2983f011dd8e63046.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ba64758e5e8c0e3d562b357c68729fc9684947697f6058c355e6d5183505c32a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -72,27 +67,28 @@
       },
       "displayName": "cdk-integ-lambda-bundling-docker-bundling-opts"
     },
-    "BundlingDefaultTestDeployAssertAACA0CAF.assets": {
+    "DockerOptsBundlingDefaultTestDeployAssert72BE28F7.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "BundlingDefaultTestDeployAssertAACA0CAF.assets.json",
+        "file": "DockerOptsBundlingDefaultTestDeployAssert72BE28F7.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "BundlingDefaultTestDeployAssertAACA0CAF": {
+    "DockerOptsBundlingDefaultTestDeployAssert72BE28F7": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "BundlingDefaultTestDeployAssertAACA0CAF.template.json",
+        "templateFile": "DockerOptsBundlingDefaultTestDeployAssert72BE28F7.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ee1dea1410fd3184d3f81700e326bdc22da699a312cb46aad6e80df72dfe2c4f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/69f703191f606f5a19dd918e84e8429f7ce04992b0ddc72b99e254b917f4be07.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "BundlingDefaultTestDeployAssertAACA0CAF.assets"
+          "DockerOptsBundlingDefaultTestDeployAssert72BE28F7.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -102,59 +98,59 @@
       },
       "dependencies": [
         "cdk-integ-lambda-bundling-docker-bundling-opts",
-        "BundlingDefaultTestDeployAssertAACA0CAF.assets"
+        "DockerOptsBundlingDefaultTestDeployAssert72BE28F7.assets"
       ],
       "metadata": {
-        "/Bundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default/Default": [
+        "/DockerOptsBundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8"
           }
         ],
-        "/Bundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Invoke": [
+        "/DockerOptsBundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/Invoke": [
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8InvokeA3F6E40A"
           }
         ],
-        "/Bundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertEqualsLambdainvoke/Default/Default": [
+        "/DockerOptsBundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8AssertEqualsLambdainvoke89C63F4A"
+            "data": "AssertionResultsLambdaInvoke55933c6da447c7ea94ebd3a50e8557a8"
           }
         ],
-        "/Bundling/DefaultTest/DeployAssert/LambdaInvoke55933c6da447c7ea94ebd3a50e8557a8/AssertEqualsLambdainvoke/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAssertEqualsLambdainvoke"
-          }
-        ],
-        "/Bundling/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+        "/DockerOptsBundling/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
           }
         ],
-        "/Bundling/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+        "/DockerOptsBundling/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/Bundling/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/DockerOptsBundling/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/Bundling/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/DockerOptsBundling/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "Bundling/DefaultTest/DeployAssert"
+      "displayName": "DockerOptsBundling/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

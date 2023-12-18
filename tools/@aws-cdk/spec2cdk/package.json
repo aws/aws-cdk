@@ -1,0 +1,67 @@
+{
+  "name": "@aws-cdk/spec2cdk",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Generate L1 resources from @aws-cdk/aws-service-specs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "tools/@aws-cdk/spec2cdk"
+  },
+  "bin": {
+    "cfn2ts": "bin/cfn2ts",
+    "spec2cdk": "bin/spec2cdk"
+  },
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "pkglint": "pkglint -f",
+    "build+test": "yarn build && yarn test",
+    "build+extract": "yarn build",
+    "build+test+extract": "yarn build+test",
+    "build+test+package": "yarn build+test"
+  },
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@aws-cdk/aws-service-spec": "^0.0.35",
+    "@aws-cdk/service-spec-importers": "^0.0.11",
+    "@aws-cdk/service-spec-types": "^0.0.35",
+    "@cdklabs/tskb": "^0.0.3",
+    "@cdklabs/typewriter": "^0.0.3",
+    "camelcase": "^6",
+    "fs-extra": "^9",
+    "yargs": "^16.2.0"
+  },
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^29.5.11",
+    "@types/node": "^18",
+    "jest": "^29.7.0"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "ubergen": {
+    "exclude": true
+  },
+  "pkglint": {
+    "exclude": [
+      "dependencies/cdk-point-dependencies"
+    ]
+  }
+}

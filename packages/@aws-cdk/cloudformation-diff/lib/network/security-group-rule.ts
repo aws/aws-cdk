@@ -28,7 +28,7 @@ export class SecurityGroupRule {
   public readonly peer?: RulePeer;
 
   constructor(ruleObject: any, groupRef?: string) {
-    this.ipProtocol = ruleObject.IpProtocol || '*unknown*';
+    this.ipProtocol = ruleObject.IpProtocol?.toString() || '*unknown*';
     this.fromPort = ruleObject.FromPort;
     this.toPort = ruleObject.ToPort;
     this.groupId = ruleObject.GroupId || groupRef || '*unknown*'; // In case of an inline rule
@@ -121,8 +121,12 @@ function peerEqual(a?: RulePeer, b?: RulePeer) {
 
 function findFirst<T>(obj: any, keys: string[], fn: (x: string) => T): T | undefined {
   for (const key of keys) {
-    if (key in obj) {
-      return fn(obj[key]);
+    try {
+      if (key in obj) {
+        return fn(obj[key]);
+      }
+    } catch (e) {
+      debugger;
     }
   }
   return undefined;

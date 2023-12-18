@@ -42,15 +42,15 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
-                    "name": "integ.cdk.dev.",
-                    "type": "A",
                     "hostedZoneId": {
                       "Ref": "HostedZoneDB99F866"
                     },
+                    "name": "integ.cdk.dev.",
                     "resourceRecords": [
                       "1.2.3.4"
                     ],
-                    "ttl": "1800"
+                    "ttl": "1800",
+                    "type": "A"
                   }
                 },
                 "constructInfo": {
@@ -74,15 +74,15 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
-                    "name": "integ.cdk.dev.",
-                    "type": "A",
                     "hostedZoneId": {
                       "Ref": "HostedZoneDB99F866"
                     },
+                    "name": "integ.cdk.dev.",
                     "resourceRecords": [
                       "5.6.7.8"
                     ],
-                    "ttl": "7200"
+                    "ttl": "7200",
+                    "type": "A"
                   }
                 },
                 "constructInfo": {
@@ -111,14 +111,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_route53.ARecord",
-              "version": "0.0.0"
-            }
-          },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "cdk-route53-integ-delete-existing-record-set/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -178,12 +170,66 @@
           "version": "0.0.0"
         }
       },
+      "Rooute53DeleteExistingRecordSetInteg": {
+        "id": "Rooute53DeleteExistingRecordSetInteg",
+        "path": "Rooute53DeleteExistingRecordSetInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "Rooute53DeleteExistingRecordSetInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "Rooute53DeleteExistingRecordSetInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "Rooute53DeleteExistingRecordSetInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "Rooute53DeleteExistingRecordSetInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "Rooute53DeleteExistingRecordSetInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
       "Tree": {
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.3.0"
         }
       }
     },

@@ -1,10 +1,11 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
     "LogRetentionInteg/DefaultTest": {
       "stacks": [
         "aws-cdk-log-retention-integ"
       ],
+      "diffAssets": true,
       "assertionStack": "LogRetentionInteg/DefaultTest/DeployAssert",
       "assertionStackName": "LogRetentionIntegDefaultTestDeployAssert6ACC5A74"
     }

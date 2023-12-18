@@ -9,8 +9,11 @@ class TestStack extends Stack {
 
     // deploy the latest opensearch domain with minimal configuration
     const domainProps: opensearch.DomainProps = {
-      version: opensearch.EngineVersion.openSearch('2.5'),
+      version: opensearch.EngineVersion.OPENSEARCH_2_11,
       removalPolicy: RemovalPolicy.DESTROY,
+      capacity: {
+        multiAzWithStandbyEnabled: false,
+      },
     };
 
     new opensearch.Domain(this, 'Domain', domainProps);

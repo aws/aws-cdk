@@ -69,7 +69,9 @@ describe('Metric Math', () => {
       expression: 'm1 + m2',
     });
 
-    expect(m.warnings).toContainEqual(expect.stringContaining("'m1 + m2' references unknown identifiers"));
+    expect(m.warningsV2).toMatchObject({
+      'CloudWatch:Math:UnknownIdentifier': expect.stringContaining("'m1 + m2' references unknown identifiers"),
+    });
   });
 
   test('metrics METRICS expression does not produce warning for unknown identifier', () => {
@@ -78,7 +80,7 @@ describe('Metric Math', () => {
       usingMetrics: {},
     });
 
-    expect(m.warnings).toBeUndefined();
+    expect(m.warningsV2).toBeUndefined();
   });
 
   test('metrics search expression does not produce warning for unknown identifier', () => {
@@ -87,7 +89,7 @@ describe('Metric Math', () => {
       usingMetrics: {},
     });
 
-    expect(m.warnings).toBeUndefined();
+    expect(m.warningsV2).toBeUndefined();
   });
 
   test('metrics insights expression does not produce warning for unknown identifier', () => {
@@ -95,7 +97,7 @@ describe('Metric Math', () => {
       expression: "SELECT AVG(CpuUsage) FROM EC2 WHERE Instance = '123456'",
     });
 
-    expect(m.warnings).toBeUndefined();
+    expect(m.warningsV2).toBeUndefined();
   });
 
   test('math expression referring to unknown expressions produces a warning, even when nested', () => {
@@ -108,7 +110,9 @@ describe('Metric Math', () => {
       },
     });
 
-    expect(m.warnings).toContainEqual(expect.stringContaining("'m1 + m2' references unknown identifiers"));
+    expect(m.warningsV2).toMatchObject({
+      'CloudWatch:Math:UnknownIdentifier': expect.stringContaining("'m1 + m2' references unknown identifiers"),
+    });
   });
 
   describe('in graphs', () => {

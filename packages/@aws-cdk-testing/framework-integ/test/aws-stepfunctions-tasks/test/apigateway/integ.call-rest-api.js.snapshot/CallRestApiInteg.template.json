@@ -58,10 +58,10 @@
   "MyRestApiDeploymentB555B582d61dc696e12272a0706c826196fa8d62": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "MyRestApi2D1F47A9"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "MyRestApiANY05143F93"
@@ -70,11 +70,11 @@
   "MyRestApiDeploymentStageprodC33B8E5F": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "MyRestApi2D1F47A9"
-    },
     "DeploymentId": {
      "Ref": "MyRestApiDeploymentB555B582d61dc696e12272a0706c826196fa8d62"
+    },
+    "RestApiId": {
+     "Ref": "MyRestApi2D1F47A9"
     },
     "StageName": "prod"
    },
@@ -163,17 +163,8 @@
   "MyRestApiANY05143F93": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "ANY",
-    "ResourceId": {
-     "Fn::GetAtt": [
-      "MyRestApi2D1F47A9",
-      "RootResourceId"
-     ]
-    },
-    "RestApiId": {
-     "Ref": "MyRestApi2D1F47A9"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -200,6 +191,15 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "MyRestApi2D1F47A9",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "MyRestApi2D1F47A9"
     }
    }
   },
@@ -240,14 +240,14 @@
     "Code": {
      "ZipFile": "exports.handler = async function(event, context) { return { statusCode: 200, body: \"hello, world!\" }; };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "HelloServiceRole1E55EA16",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "HelloServiceRole1E55EA16"
@@ -317,12 +317,6 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "StateMachineRoleB840431D",
-      "Arn"
-     ]
-    },
     "DefinitionString": {
      "Fn::Join": [
       "",
@@ -345,6 +339,12 @@
        },
        "\",\"Method\":\"GET\",\"Stage\":\"prod\",\"AuthType\":\"IAM_ROLE\"}}},\"TimeoutSeconds\":30}"
       ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
      ]
     }
    },

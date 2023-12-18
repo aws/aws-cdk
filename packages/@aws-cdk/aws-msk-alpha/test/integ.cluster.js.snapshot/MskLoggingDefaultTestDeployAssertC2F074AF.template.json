@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallS3listObjectsV2": {
+  "AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f": {
    "Type": "Custom::DeployAssert@SdkCallS3listObjectsV2",
    "Properties": {
     "ServiceToken": {
@@ -14,24 +14,33 @@
     "expected": "{\"$ObjectLike\":{\"KeyCount\":1}}",
     "parameters": {
      "Bucket": {
-      "Fn::ImportValue": "aws-cdk-msk-integ:ExportsOutputRefLoggingBucket1E5A6F3B2AAAD6ED"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-msk-integ:ExportsOutputRefLoggingBucket1E5A6F3B2AAAD6ED"
+        },
+        "\""
+       ]
+      ]
      },
-     "MaxKeys": 1,
+     "MaxKeys": "1",
      "Prefix": {
       "Fn::Join": [
        "",
        [
-        "AWSLogs/",
+        "\"AWSLogs/",
         {
          "Ref": "AWS::AccountId"
         },
-        "/KafkaBrokerLogs"
+        "/KafkaBrokerLogs\""
        ]
       ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1681842181010"
+    "salt": "1695730694461"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -119,12 +128,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
+     "S3Key": "63ae5d5f48d3638501e722718b99b5f2fddb9ab73a15d7cb607215a500df19e1.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -138,10 +147,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallS3listObjectsV2": {
+  "AssertionResultsAwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallS3listObjectsV2",
+     "AwsApiCallS3listObjectsV26b9d6cbe6c7fc63b1146226918d8056f",
      "assertion"
     ]
    }
