@@ -1,0 +1,700 @@
+{
+ "Resources": {
+  "DualStackProtocolVpc85768F2C": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc"
+     }
+    ]
+   }
+  },
+  "DualStackProtocolVpcipv6cidr449C49CD": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Ref": "DualStackProtocolVpc85768F2C"
+    }
+   }
+  },
+  "DualStackProtocolVpcPublicSubnet1Subnet833729C2": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::Cidr": [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::GetAtt": [
+            "DualStackProtocolVpc85768F2C",
+            "Ipv6CidrBlocks"
+           ]
+          }
+         ]
+        },
+        4,
+        "64"
+       ]
+      }
+     ]
+    },
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "DualStackProtocolVpc85768F2C"
+    }
+   }
+  },
+  "DualStackProtocolVpcPublicSubnet1RouteTable9CB5AD97": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "DualStackProtocolVpc85768F2C"
+    }
+   }
+  },
+  "DualStackProtocolVpcPublicSubnet1RouteTableAssociation771E7E9B": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "DualStackProtocolVpcPublicSubnet1RouteTable9CB5AD97"
+    },
+    "SubnetId": {
+     "Ref": "DualStackProtocolVpcPublicSubnet1Subnet833729C2"
+    }
+   }
+  },
+  "DualStackProtocolVpcPublicSubnet1DefaultRouteCA9C1683": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "DualStackProtocolVpcIGW0F74732B"
+    },
+    "RouteTableId": {
+     "Ref": "DualStackProtocolVpcPublicSubnet1RouteTable9CB5AD97"
+    }
+   },
+   "DependsOn": [
+    "DualStackProtocolVpcVPCGWADE48B7D"
+   ]
+  },
+  "DualStackProtocolVpcPublicSubnet1DefaultRoute6970D4C05": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationIpv6CidrBlock": "::/0",
+    "GatewayId": {
+     "Ref": "DualStackProtocolVpcIGW0F74732B"
+    },
+    "RouteTableId": {
+     "Ref": "DualStackProtocolVpcPublicSubnet1RouteTable9CB5AD97"
+    }
+   }
+  },
+  "DualStackProtocolVpcPublicSubnet1EIP398A9CF7": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet1"
+     }
+    ]
+   }
+  },
+  "DualStackProtocolVpcPublicSubnet1NATGatewayBACCB761": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "DualStackProtocolVpcPublicSubnet1EIP398A9CF7",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "DualStackProtocolVpcPublicSubnet1Subnet833729C2"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "DualStackProtocolVpcPublicSubnet1DefaultRouteCA9C1683",
+    "DualStackProtocolVpcPublicSubnet1DefaultRoute6970D4C05",
+    "DualStackProtocolVpcPublicSubnet1RouteTableAssociation771E7E9B"
+   ]
+  },
+  "DualStackProtocolVpcPublicSubnet2Subnet67CC66F5": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::Cidr": [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::GetAtt": [
+            "DualStackProtocolVpc85768F2C",
+            "Ipv6CidrBlocks"
+           ]
+          }
+         ]
+        },
+        4,
+        "64"
+       ]
+      }
+     ]
+    },
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "DualStackProtocolVpc85768F2C"
+    }
+   }
+  },
+  "DualStackProtocolVpcPublicSubnet2RouteTable08C51FD4": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "DualStackProtocolVpc85768F2C"
+    }
+   }
+  },
+  "DualStackProtocolVpcPublicSubnet2RouteTableAssociation1BA963D0": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "DualStackProtocolVpcPublicSubnet2RouteTable08C51FD4"
+    },
+    "SubnetId": {
+     "Ref": "DualStackProtocolVpcPublicSubnet2Subnet67CC66F5"
+    }
+   }
+  },
+  "DualStackProtocolVpcPublicSubnet2DefaultRoute25B1CA3C": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "DualStackProtocolVpcIGW0F74732B"
+    },
+    "RouteTableId": {
+     "Ref": "DualStackProtocolVpcPublicSubnet2RouteTable08C51FD4"
+    }
+   },
+   "DependsOn": [
+    "DualStackProtocolVpcVPCGWADE48B7D"
+   ]
+  },
+  "DualStackProtocolVpcPublicSubnet2DefaultRoute63C872529": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationIpv6CidrBlock": "::/0",
+    "GatewayId": {
+     "Ref": "DualStackProtocolVpcIGW0F74732B"
+    },
+    "RouteTableId": {
+     "Ref": "DualStackProtocolVpcPublicSubnet2RouteTable08C51FD4"
+    }
+   }
+  },
+  "DualStackProtocolVpcPublicSubnet2EIP51AAF25A": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "DualStackProtocolVpcPublicSubnet2NATGateway74C738A1": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "DualStackProtocolVpcPublicSubnet2EIP51AAF25A",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "DualStackProtocolVpcPublicSubnet2Subnet67CC66F5"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "DualStackProtocolVpcPublicSubnet2DefaultRoute25B1CA3C",
+    "DualStackProtocolVpcPublicSubnet2DefaultRoute63C872529",
+    "DualStackProtocolVpcPublicSubnet2RouteTableAssociation1BA963D0"
+   ]
+  },
+  "DualStackProtocolVpcPrivateSubnet1Subnet9E9EAE3F": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      2,
+      {
+       "Fn::Cidr": [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::GetAtt": [
+            "DualStackProtocolVpc85768F2C",
+            "Ipv6CidrBlocks"
+           ]
+          }
+         ]
+        },
+        4,
+        "64"
+       ]
+      }
+     ]
+    },
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "DualStackProtocolVpc85768F2C"
+    }
+   }
+  },
+  "DualStackProtocolVpcPrivateSubnet1RouteTable63AA1762": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "DualStackProtocolVpc85768F2C"
+    }
+   }
+  },
+  "DualStackProtocolVpcPrivateSubnet1RouteTableAssociationB2DBB184": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "DualStackProtocolVpcPrivateSubnet1RouteTable63AA1762"
+    },
+    "SubnetId": {
+     "Ref": "DualStackProtocolVpcPrivateSubnet1Subnet9E9EAE3F"
+    }
+   }
+  },
+  "DualStackProtocolVpcPrivateSubnet1DefaultRoute6D2568D1": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "DualStackProtocolVpcPublicSubnet1NATGatewayBACCB761"
+    },
+    "RouteTableId": {
+     "Ref": "DualStackProtocolVpcPrivateSubnet1RouteTable63AA1762"
+    }
+   }
+  },
+  "DualStackProtocolVpcPrivateSubnet1DefaultRoute66D82EFDF": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationIpv6CidrBlock": "::/0",
+    "EgressOnlyInternetGatewayId": {
+     "Ref": "DualStackProtocolVpcEIGW64BED696A"
+    },
+    "RouteTableId": {
+     "Ref": "DualStackProtocolVpcPrivateSubnet1RouteTable63AA1762"
+    }
+   }
+  },
+  "DualStackProtocolVpcPrivateSubnet2Subnet9E59D50E": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      3,
+      {
+       "Fn::Cidr": [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::GetAtt": [
+            "DualStackProtocolVpc85768F2C",
+            "Ipv6CidrBlocks"
+           ]
+          }
+         ]
+        },
+        4,
+        "64"
+       ]
+      }
+     ]
+    },
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "DualStackProtocolVpc85768F2C"
+    }
+   }
+  },
+  "DualStackProtocolVpcPrivateSubnet2RouteTableF8F882A5": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "DualStackProtocolVpc85768F2C"
+    }
+   }
+  },
+  "DualStackProtocolVpcPrivateSubnet2RouteTableAssociationE6AE5FE6": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "DualStackProtocolVpcPrivateSubnet2RouteTableF8F882A5"
+    },
+    "SubnetId": {
+     "Ref": "DualStackProtocolVpcPrivateSubnet2Subnet9E59D50E"
+    }
+   }
+  },
+  "DualStackProtocolVpcPrivateSubnet2DefaultRouteE9EC7720": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "DualStackProtocolVpcPublicSubnet2NATGateway74C738A1"
+    },
+    "RouteTableId": {
+     "Ref": "DualStackProtocolVpcPrivateSubnet2RouteTableF8F882A5"
+    }
+   }
+  },
+  "DualStackProtocolVpcPrivateSubnet2DefaultRoute6E003FFF0": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationIpv6CidrBlock": "::/0",
+    "EgressOnlyInternetGatewayId": {
+     "Ref": "DualStackProtocolVpcEIGW64BED696A"
+    },
+    "RouteTableId": {
+     "Ref": "DualStackProtocolVpcPrivateSubnet2RouteTableF8F882A5"
+    }
+   }
+  },
+  "DualStackProtocolVpcIGW0F74732B": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc"
+     }
+    ]
+   }
+  },
+  "DualStackProtocolVpcVPCGWADE48B7D": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "DualStackProtocolVpcIGW0F74732B"
+    },
+    "VpcId": {
+     "Ref": "DualStackProtocolVpc85768F2C"
+    }
+   }
+  },
+  "DualStackProtocolVpcEIGW64BED696A": {
+   "Type": "AWS::EC2::EgressOnlyInternetGateway",
+   "Properties": {
+    "VpcId": {
+     "Ref": "DualStackProtocolVpc85768F2C"
+    }
+   }
+  },
+  "DualStackProtocolVpcRestrictDefaultSecurityGroupCustomResource592699C8": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "DualStackProtocolVpc85768F2C",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "DualStackProtocolVpc85768F2C",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "4554b47be6f57b68c6c7a7391dcc73894866d2377fe174883351e7639097f292.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
