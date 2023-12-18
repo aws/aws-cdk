@@ -616,6 +616,55 @@
               "version": "0.0.0"
             }
           },
+          "UseFlexibleTimeWindow": {
+            "id": "UseFlexibleTimeWindow",
+            "path": "aws-cdk-scheduler-schedule/UseFlexibleTimeWindow",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-schedule/UseFlexibleTimeWindow/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
+                  "aws:cdk:cloudformation:props": {
+                    "flexibleTimeWindow": {
+                      "mode": "FLEXIBLE",
+                      "maximumWindowInMinutes": 10
+                    },
+                    "scheduleExpression": "rate(12 hours)",
+                    "scheduleExpressionTimezone": "Etc/UTC",
+                    "state": "ENABLED",
+                    "target": {
+                      "arn": {
+                        "Fn::GetAtt": [
+                          "Function76856677",
+                          "Arn"
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "Role1ABCC5F0",
+                          "Arn"
+                        ]
+                      },
+                      "input": "\"Input Text\"",
+                      "retryPolicy": {
+                        "maximumEventAgeInSeconds": 180,
+                        "maximumRetryAttempts": 3
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_scheduler.CfnSchedule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "version": "0.0.0"
+            }
+          },
           "ScheduleWithTimeFrame": {
             "id": "ScheduleWithTimeFrame",
             "path": "aws-cdk-scheduler-schedule/ScheduleWithTimeFrame",
