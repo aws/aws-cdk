@@ -10178,7 +10178,6 @@ jsii-pacmak@1.93.0:
     xmlbuilder "^15.1.1"
     yargs "^16.2.0"
 
-
 jsii-reflect@1.93.0, jsii-reflect@^1.93.0:
   version "1.93.0"
   resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.93.0.tgz#5b2dcb964a25e5886b3d5d23020485d02630d301"
@@ -10246,7 +10245,6 @@ jsii@1.93.0, jsii@^1.93.0:
     spdx-license-list "^6.8.0"
     typescript "~3.9.10"
     yargs "^16.2.0"
-
 
 jsii@~5.2.41, jsii@~5.2.5:
   version "5.2.41"
@@ -15161,4 +15159,3 @@ zip-stream@^4.1.0:
     archiver-utils "^3.0.4"
     compress-commons "^4.1.2"
     readable-stream "^3.6.0"
-
