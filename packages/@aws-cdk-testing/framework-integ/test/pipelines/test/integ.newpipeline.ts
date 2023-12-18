@@ -1,10 +1,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 /// !cdk-integ PipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
+
 import { App, Fn, Stack, StackProps, Stage, StageProps } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 import { Construct } from 'constructs';
+
 class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
@@ -26,15 +28,7 @@ class PipelineStack extends Stack {
 
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
       synth: new pipelines.ShellStep('Synth', {
-        input: pipelines.CodePipelineSource.s3(
-          s3.Bucket.fromBucketName(
-            this,
-            'SourceBucket-' + id,
-            '290582178775-gitsync',
-          ),
-          'mobility-operations-experience/serviceteam/services/test-cdk-contribution/main/src/' +
-            'mobility-operations-experience_serviceteam_services_test-cdk-contribution.zip',
-        ),
+        input: pipelines.CodePipelineSource.gitHub('Nico-DB/aws-cdk', 'main'),
         commands: ['npm ci', 'npm run build', 'npx cdk synth'],
       }),
       pipelineName: 'test-cdk-contribution',
@@ -135,5 +129,15 @@ const app = new App({
     '@aws-cdk/core:newStyleStackSynthesis': '1',
   },
 });
-new PipelineStack(app, 'TestCdkContributionStack');
+
+
+const pipeStack = new PipelineStack(
+  app,
+  'PipelineStack',
+);
+
+new IntegTest(app, 'Integ', {
+  testCases: [pipeStack],
+});
 app.synth();
+

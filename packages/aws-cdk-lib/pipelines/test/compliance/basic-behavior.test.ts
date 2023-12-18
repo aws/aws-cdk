@@ -6,6 +6,8 @@ import { Capture, Match, Template } from '../../../assertions';
 import { Stack, Stage, StageProps, Tags } from '../../../core';
 import { BucketStack, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, TestApp, behavior, stringLike } from '../testhelpers';
 
+
+
 let app: TestApp;
 let pipelineStack: Stack;
 
@@ -41,7 +43,7 @@ behavior('stack templates in nested assemblies are correctly addressed', (suite)
         Name: 'App',
         Actions: Match.arrayWith([
           Match.objectLike({
-            Name: stringLike('*Prepare'),
+            Name: stringLike('*Prepare*'),
             InputArtifacts: [Match.objectLike({})],
             Configuration: Match.objectLike({
               StackName: 'App-Stack',
@@ -98,7 +100,7 @@ behavior('overridden stack names are respected', (suite) => {
         {
           Name: 'App1',
           Actions: Match.arrayWith([Match.objectLike({
-            Name: stringLike('*Prepare'),
+            Name: stringLike('*Prepare*'),
             Configuration: Match.objectLike({
               StackName: 'MyFancyStack',
             }),
@@ -107,7 +109,7 @@ behavior('overridden stack names are respected', (suite) => {
         {
           Name: 'App2',
           Actions: Match.arrayWith([Match.objectLike({
-            Name: stringLike('*Prepare'),
+            Name: stringLike('*Prepare*'),
             Configuration: Match.objectLike({
               StackName: 'MyFancyStack',
             }),
@@ -195,7 +197,7 @@ behavior('tags get reflected in pipeline', (suite) => {
         Name: 'App',
         Actions: Match.arrayWith([
           Match.objectLike({
-            Name: stringLike('*Prepare'),
+            Name: stringLike('*Prepare*'),
             InputArtifacts: [Match.objectLike({})],
             Configuration: Match.objectLike({
               StackName: 'App-Stack',

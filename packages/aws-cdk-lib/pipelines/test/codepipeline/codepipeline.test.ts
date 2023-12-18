@@ -314,7 +314,7 @@ describe('deployment of stack', () => {
             Configuration: Match.objectLike({
               ActionMode: 'CHANGE_SET_REPLACE',
             }),
-            Name: 'Prepare',
+            Name: 'Prepare-App-Stack',
           }),
           Match.objectLike({
             Configuration: Match.objectLike({
@@ -415,8 +415,8 @@ test('synths with change set approvers', () => {
     Stages: Match.arrayWith([{
       Name: 'TheApp',
       Actions: Match.arrayWith([
-        Match.objectLike({ Name: 'Stack1.Prepare', RunOrder: 1 }),
-        Match.objectLike({ Name: 'Stack2.Prepare', RunOrder: 1 }),
+        Match.objectLike({ Name: 'Stack1.Prepare-TheApp-Stack1', RunOrder: 1 }),
+        Match.objectLike({ Name: 'Stack2.Prepare-TheApp-Stack2', RunOrder: 1 }),
         Match.objectLike({ Name: 'Stack1.ChangeSetApproval', RunOrder: 2 }),
         Match.objectLike({ Name: 'Stack1.Deploy', RunOrder: 3 }),
         Match.objectLike({ Name: 'Stack2.Deploy', RunOrder: 3 }),

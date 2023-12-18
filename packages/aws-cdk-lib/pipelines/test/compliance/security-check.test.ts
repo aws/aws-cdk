@@ -327,40 +327,51 @@ behavior('confirmBroadeningPermissions and notification topic options generates 
 
   function THEN_codePipelineExpectation() {
     Template.fromStack(pipelineStack).resourceCountIs('AWS::SNS::Topic', 1);
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      Stages: Match.arrayWith([
-        {
-          Name: 'MyStack',
-          Actions: [
-            Match.objectLike({
-              Configuration: {
-                ProjectName: { Ref: stringLike('*SecurityCheck*') },
-                EnvironmentVariables: {
-                  'Fn::Join': ['', [
-                    stringLike('*'),
-                    { Ref: 'NotificationTopicEB7A0DF1' },
-                    stringLike('*'),
-                  ]],
+
+
+    Template.fromStack(pipelineStack).hasResourceProperties(
+      'AWS::CodePipeline::Pipeline',
+      {
+        Stages: Match.arrayWith([
+          {
+            Name: 'MyStack',
+            Actions: [
+              Match.objectLike({
+                Configuration: {
+                  ProjectName: { Ref: stringLike('*SecurityCheck*') },
+                  EnvironmentVariables: {
+                    'Fn::Join': [
+                      '',
+                      [
+                        stringLike('*'),
+                        { Ref: 'NotificationTopicEB7A0DF1' },
+                        stringLike('*'),
+                      ],
+                    ],
+                  },
                 },
-              },
-              Name: stringLike('*Check'),
-              Namespace: stringLike('*'),
-              RunOrder: 1,
-            }),
-            Match.objectLike({
-              Configuration: {
-                CustomData: stringLike('#{*.MESSAGE}'),
-                ExternalEntityLink: stringLike('#{*.LINK}'),
-              },
-              Name: stringLike('*Approv*'),
-              RunOrder: 2,
-            }),
-            Match.objectLike({ Name: 'Stack.Prepare', RunOrder: 3 }),
-            Match.objectLike({ Name: 'Stack.Deploy', RunOrder: 4 }),
-          ],
-        },
-      ]),
-    });
+                Name: stringLike('*Check'),
+                Namespace: stringLike('*'),
+                RunOrder: 1,
+              }),
+              Match.objectLike({
+                Configuration: {
+                  CustomData: stringLike('#{*.MESSAGE}'),
+                  ExternalEntityLink: stringLike('#{*.LINK}'),
+                },
+                Name: stringLike('*Approv*'),
+                RunOrder: 2,
+              }),
+              Match.objectLike({
+                Name: stringLike('Stack.Prepare*'),
+                RunOrder: 3,
+              }),
+              Match.objectLike({ Name: 'Stack.Deploy', RunOrder: 4 }),
+            ],
+          },
+        ]),
+      },
+    );
   }
 });
 

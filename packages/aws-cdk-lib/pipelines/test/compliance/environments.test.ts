@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { Match, Template } from '../../../assertions';
 import { Stack } from '../../../core';
-import { behavior, LegacyTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, stringLike } from '../testhelpers';
+import { LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, TestApp, behavior, stringLike } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -55,7 +55,7 @@ behavior('action has right settings for same-env deployment', (suite) => {
         Name: 'Same',
         Actions: [
           Match.objectLike({
-            Name: stringLike('*Prepare'),
+            Name: stringLike('*Prepare*'),
             RoleArn: roleArn('deploy-role'),
             Configuration: Match.objectLike({
               StackName: 'Same-Stack',
@@ -113,7 +113,7 @@ behavior('action has right settings for cross-account deployment', (suite) => {
         Name: 'CrossAccount',
         Actions: [
           Match.objectLike({
-            Name: stringLike('*Prepare'),
+            Name: stringLike('*Prepare*'),
             RoleArn: {
               'Fn::Join': ['', [
                 'arn:',
@@ -198,7 +198,7 @@ behavior('action has right settings for cross-region deployment', (suite) => {
         Name: 'CrossRegion',
         Actions: [
           Match.objectLike({
-            Name: stringLike('*Prepare'),
+            Name: stringLike('*Prepare*'),
             RoleArn: {
               'Fn::Join': ['', [
                 'arn:',
@@ -288,7 +288,7 @@ behavior('action has right settings for cross-account/cross-region deployment', 
         Name: 'CrossBoth',
         Actions: [
           Match.objectLike({
-            Name: stringLike('*Prepare'),
+            Name: stringLike('*Prepare*'),
             RoleArn: {
               'Fn::Join': ['', [
                 'arn:',

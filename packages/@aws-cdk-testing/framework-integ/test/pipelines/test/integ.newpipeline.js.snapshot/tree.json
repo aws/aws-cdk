@@ -340,10 +340,10 @@
                             "name": "Source",
                             "actions": [
                               {
-                                "name": "rix0rrr_cdk-pipelines-demo",
+                                "name": "Nico-DB_aws-cdk",
                                 "outputArtifacts": [
                                   {
-                                    "name": "rix0rrr_cdk_pipelines_demo_Source"
+                                    "name": "Nico_DB_aws_cdk_Source"
                                   }
                                 ],
                                 "actionTypeId": {
@@ -353,8 +353,8 @@
                                   "provider": "GitHub"
                                 },
                                 "configuration": {
-                                  "Owner": "rix0rrr",
-                                  "Repo": "cdk-pipelines-demo",
+                                  "Owner": "Nico-DB",
+                                  "Repo": "aws-cdk",
                                   "Branch": "main",
                                   "OAuthToken": "{{resolve:secretsmanager:github-token:SecretString:::}}",
                                   "PollForSourceChanges": false
@@ -370,7 +370,7 @@
                                 "name": "Synth",
                                 "inputArtifacts": [
                                   {
-                                    "name": "rix0rrr_cdk_pipelines_demo_Source"
+                                    "name": "Nico_DB_aws_cdk_Source"
                                   }
                                 ],
                                 "outputArtifacts": [
@@ -436,7 +436,7 @@
                             "name": "Beta",
                             "actions": [
                               {
-                                "name": "Stack1.Prepare",
+                                "name": "Stack1.Prepare-Beta-Stack1",
                                 "inputArtifacts": [
                                   {
                                     "name": "Synth_Output"
@@ -542,7 +542,7 @@
                                 }
                               },
                               {
-                                "name": "Stack2.Prepare",
+                                "name": "Stack2.Prepare-Beta-Stack2",
                                 "inputArtifacts": [
                                   {
                                     "name": "Synth_Output"
@@ -653,7 +653,7 @@
                             "name": "Wave1",
                             "actions": [
                               {
-                                "name": "Prod1.Stack1.Prepare",
+                                "name": "Prod1.Stack1.Prepare-Prod1-Stack1",
                                 "inputArtifacts": [
                                   {
                                     "name": "Synth_Output"
@@ -721,7 +721,7 @@
                                 }
                               },
                               {
-                                "name": "Prod2.Stack1.Prepare",
+                                "name": "Prod2.Stack1.Prepare-Prod2-Stack1",
                                 "inputArtifacts": [
                                   {
                                     "name": "Synth_Output"
@@ -865,7 +865,7 @@
                                 }
                               },
                               {
-                                "name": "Prod1.Stack2.Prepare",
+                                "name": "Prod1.Stack2.Prepare-Prod1-Stack2",
                                 "inputArtifacts": [
                                   {
                                     "name": "Synth_Output"
@@ -933,7 +933,7 @@
                                 }
                               },
                               {
-                                "name": "Prod2.Stack2.Prepare",
+                                "name": "Prod2.Stack2.Prepare-Prod2-Stack2",
                                 "inputArtifacts": [
                                   {
                                     "name": "Synth_Output"
@@ -1082,7 +1082,7 @@
                             "name": "Wave2",
                             "actions": [
                               {
-                                "name": "Prod3.Stack1.Prepare",
+                                "name": "Prod3.Stack1.Prepare-Prod3-Stack1",
                                 "inputArtifacts": [
                                   {
                                     "name": "Synth_Output"
@@ -1150,7 +1150,7 @@
                                 }
                               },
                               {
-                                "name": "Prod4.Stack1.Prepare",
+                                "name": "Prod4.Stack1.Prepare-Prod4-Stack1",
                                 "inputArtifacts": [
                                   {
                                     "name": "Synth_Output"
@@ -1218,7 +1218,7 @@
                                 }
                               },
                               {
-                                "name": "Prod5.Stack1.Prepare",
+                                "name": "Prod5.Stack1.Prepare-Prod5-Stack1",
                                 "inputArtifacts": [
                                   {
                                     "name": "Synth_Output"
@@ -1286,7 +1286,7 @@
                                 }
                               },
                               {
-                                "name": "Prod6.Stack1.Prepare",
+                                "name": "Prod6.Stack1.Prepare-Prod6-Stack1",
                                 "inputArtifacts": [
                                   {
                                     "name": "Synth_Output"
@@ -1506,7 +1506,7 @@
                                 }
                               },
                               {
-                                "name": "Prod3.Stack2.Prepare",
+                                "name": "Prod3.Stack2.Prepare-Prod3-Stack2",
                                 "inputArtifacts": [
                                   {
                                     "name": "Synth_Output"
@@ -1574,7 +1574,7 @@
                                 }
                               },
                               {
-                                "name": "Prod4.Stack2.Prepare",
+                                "name": "Prod4.Stack2.Prepare-Prod4-Stack2",
                                 "inputArtifacts": [
                                   {
                                     "name": "Synth_Output"
@@ -1642,7 +1642,7 @@
                                 }
                               },
                               {
-                                "name": "Prod5.Stack2.Prepare",
+                                "name": "Prod5.Stack2.Prepare-Prod5-Stack2",
                                 "inputArtifacts": [
                                   {
                                     "name": "Synth_Output"
@@ -1710,7 +1710,7 @@
                                 }
                               },
                               {
-                                "name": "Prod6.Stack2.Prepare",
+                                "name": "Prod6.Stack2.Prepare-Prod6-Stack2",
                                 "inputArtifacts": [
                                   {
                                     "name": "Synth_Output"
@@ -1950,13 +1950,13 @@
                     "id": "Source",
                     "path": "PipelineStack/Pipeline/Pipeline/Source",
                     "children": {
-                      "rix0rrr_cdk-pipelines-demo": {
-                        "id": "rix0rrr_cdk-pipelines-demo",
-                        "path": "PipelineStack/Pipeline/Pipeline/Source/rix0rrr_cdk-pipelines-demo",
+                      "Nico-DB_aws-cdk": {
+                        "id": "Nico-DB_aws-cdk",
+                        "path": "PipelineStack/Pipeline/Pipeline/Source/Nico-DB_aws-cdk",
                         "children": {
                           "WebhookResource": {
                             "id": "WebhookResource",
-                            "path": "PipelineStack/Pipeline/Pipeline/Source/rix0rrr_cdk-pipelines-demo/WebhookResource",
+                            "path": "PipelineStack/Pipeline/Pipeline/Source/Nico-DB_aws-cdk/WebhookResource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::CodePipeline::Webhook",
                               "aws:cdk:cloudformation:props": {
@@ -1970,7 +1970,7 @@
                                     "matchEquals": "refs/heads/{Branch}"
                                   }
                                 ],
-                                "targetAction": "rix0rrr_cdk-pipelines-demo",
+                                "targetAction": "Nico-DB_aws-cdk",
                                 "targetPipeline": {
                                   "Ref": "Pipeline9850B417"
                                 },
@@ -2290,9 +2290,9 @@
                     "id": "Beta",
                     "path": "PipelineStack/Pipeline/Pipeline/Beta",
                     "children": {
-                      "Stack1.Prepare": {
-                        "id": "Stack1.Prepare",
-                        "path": "PipelineStack/Pipeline/Pipeline/Beta/Stack1.Prepare",
+                      "Stack1.Prepare-Beta-Stack1": {
+                        "id": "Stack1.Prepare-Beta-Stack1",
+                        "path": "PipelineStack/Pipeline/Pipeline/Beta/Stack1.Prepare-Beta-Stack1",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.1.270"
@@ -2306,9 +2306,9 @@
                           "version": "10.1.270"
                         }
                       },
-                      "Stack2.Prepare": {
-                        "id": "Stack2.Prepare",
-                        "path": "PipelineStack/Pipeline/Pipeline/Beta/Stack2.Prepare",
+                      "Stack2.Prepare-Beta-Stack2": {
+                        "id": "Stack2.Prepare-Beta-Stack2",
+                        "path": "PipelineStack/Pipeline/Pipeline/Beta/Stack2.Prepare-Beta-Stack2",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.1.270"
@@ -2374,17 +2374,17 @@
                     "id": "Wave1",
                     "path": "PipelineStack/Pipeline/Pipeline/Wave1",
                     "children": {
-                      "Prod1.Stack1.Prepare": {
-                        "id": "Prod1.Stack1.Prepare",
-                        "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod1.Stack1.Prepare",
+                      "Prod1.Stack1.Prepare-Prod1-Stack1": {
+                        "id": "Prod1.Stack1.Prepare-Prod1-Stack1",
+                        "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod1.Stack1.Prepare-Prod1-Stack1",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.1.270"
                         }
                       },
-                      "Prod2.Stack1.Prepare": {
-                        "id": "Prod2.Stack1.Prepare",
-                        "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod2.Stack1.Prepare",
+                      "Prod2.Stack1.Prepare-Prod2-Stack1": {
+                        "id": "Prod2.Stack1.Prepare-Prod2-Stack1",
+                        "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod2.Stack1.Prepare-Prod2-Stack1",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.1.270"
@@ -2406,17 +2406,17 @@
                           "version": "10.1.270"
                         }
                       },
-                      "Prod1.Stack2.Prepare": {
-                        "id": "Prod1.Stack2.Prepare",
-                        "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod1.Stack2.Prepare",
+                      "Prod1.Stack2.Prepare-Prod1-Stack2": {
+                        "id": "Prod1.Stack2.Prepare-Prod1-Stack2",
+                        "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod1.Stack2.Prepare-Prod1-Stack2",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.1.270"
                         }
                       },
-                      "Prod2.Stack2.Prepare": {
-                        "id": "Prod2.Stack2.Prepare",
-                        "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod2.Stack2.Prepare",
+                      "Prod2.Stack2.Prepare-Prod2-Stack2": {
+                        "id": "Prod2.Stack2.Prepare-Prod2-Stack2",
+                        "path": "PipelineStack/Pipeline/Pipeline/Wave1/Prod2.Stack2.Prepare-Prod2-Stack2",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.1.270"
@@ -2448,33 +2448,33 @@
                     "id": "Wave2",
                     "path": "PipelineStack/Pipeline/Pipeline/Wave2",
                     "children": {
-                      "Prod3.Stack1.Prepare": {
-                        "id": "Prod3.Stack1.Prepare",
-                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod3.Stack1.Prepare",
+                      "Prod3.Stack1.Prepare-Prod3-Stack1": {
+                        "id": "Prod3.Stack1.Prepare-Prod3-Stack1",
+                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod3.Stack1.Prepare-Prod3-Stack1",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.1.270"
                         }
                       },
-                      "Prod4.Stack1.Prepare": {
-                        "id": "Prod4.Stack1.Prepare",
-                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod4.Stack1.Prepare",
+                      "Prod4.Stack1.Prepare-Prod4-Stack1": {
+                        "id": "Prod4.Stack1.Prepare-Prod4-Stack1",
+                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod4.Stack1.Prepare-Prod4-Stack1",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.1.270"
                         }
                       },
-                      "Prod5.Stack1.Prepare": {
-                        "id": "Prod5.Stack1.Prepare",
-                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod5.Stack1.Prepare",
+                      "Prod5.Stack1.Prepare-Prod5-Stack1": {
+                        "id": "Prod5.Stack1.Prepare-Prod5-Stack1",
+                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod5.Stack1.Prepare-Prod5-Stack1",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.1.270"
                         }
                       },
-                      "Prod6.Stack1.Prepare": {
-                        "id": "Prod6.Stack1.Prepare",
-                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod6.Stack1.Prepare",
+                      "Prod6.Stack1.Prepare-Prod6-Stack1": {
+                        "id": "Prod6.Stack1.Prepare-Prod6-Stack1",
+                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod6.Stack1.Prepare-Prod6-Stack1",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.1.270"
@@ -2512,33 +2512,33 @@
                           "version": "10.1.270"
                         }
                       },
-                      "Prod3.Stack2.Prepare": {
-                        "id": "Prod3.Stack2.Prepare",
-                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod3.Stack2.Prepare",
+                      "Prod3.Stack2.Prepare-Prod3-Stack2": {
+                        "id": "Prod3.Stack2.Prepare-Prod3-Stack2",
+                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod3.Stack2.Prepare-Prod3-Stack2",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.1.270"
                         }
                       },
-                      "Prod4.Stack2.Prepare": {
-                        "id": "Prod4.Stack2.Prepare",
-                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod4.Stack2.Prepare",
+                      "Prod4.Stack2.Prepare-Prod4-Stack2": {
+                        "id": "Prod4.Stack2.Prepare-Prod4-Stack2",
+                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod4.Stack2.Prepare-Prod4-Stack2",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.1.270"
                         }
                       },
-                      "Prod5.Stack2.Prepare": {
-                        "id": "Prod5.Stack2.Prepare",
-                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod5.Stack2.Prepare",
+                      "Prod5.Stack2.Prepare-Prod5-Stack2": {
+                        "id": "Prod5.Stack2.Prepare-Prod5-Stack2",
+                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod5.Stack2.Prepare-Prod5-Stack2",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.1.270"
                         }
                       },
-                      "Prod6.Stack2.Prepare": {
-                        "id": "Prod6.Stack2.Prepare",
-                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod6.Stack2.Prepare",
+                      "Prod6.Stack2.Prepare-Prod6-Stack2": {
+                        "id": "Prod6.Stack2.Prepare-Prod6-Stack2",
+                        "path": "PipelineStack/Pipeline/Pipeline/Wave2/Prod6.Stack2.Prepare-Prod6-Stack2",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.1.270"
@@ -3923,6 +3923,60 @@
         },
         "constructInfo": {
           "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Integ": {
+        "id": "Integ",
+        "path": "Integ",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "Integ/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "Integ/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "Integ/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "Integ/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "Integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },

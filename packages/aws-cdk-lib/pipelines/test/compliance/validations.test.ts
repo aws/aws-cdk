@@ -9,7 +9,20 @@ import { Stack } from '../../../core';
 import * as cdkp from '../../lib';
 import { CodePipelineSource, ShellStep } from '../../lib';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
-import { AppWithOutput, behavior, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, sortByRunOrder, StageWithStackOutput, stringNoLongerThan, TestApp, TwoStackApp } from '../testhelpers';
+import {
+  AppWithOutput,
+  LegacyTestGitHubNpmPipeline,
+  ModernTestGitHubNpmPipeline,
+  OneStackApp,
+  PIPELINE_ENV,
+  StageWithStackOutput,
+  TestApp,
+  TwoStackApp,
+  behavior,
+  sortByRunOrder,
+  stringLike,
+  stringNoLongerThan,
+} from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -37,18 +50,23 @@ behavior('can add manual approval after app', (suite) => {
     });
 
     // THEN
-    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-      Stages: Match.arrayWith([{
-        Name: 'MyApp',
-        Actions: sortByRunOrder([
-          Match.objectLike({ Name: 'Stack1.Prepare' }),
-          Match.objectLike({ Name: 'Stack1.Deploy' }),
-          Match.objectLike({ Name: 'Stack2.Prepare' }),
-          Match.objectLike({ Name: 'Stack2.Deploy' }),
-          Match.objectLike({ Name: 'Approve' }),
+    Template.fromStack(pipelineStack).hasResourceProperties(
+      'AWS::CodePipeline::Pipeline',
+      {
+        Stages: Match.arrayWith([
+          {
+            Name: 'MyApp',
+            Actions: sortByRunOrder([
+              Match.objectLike({ Name: 'Stack1.Prepare-MyApp-Stack1' }),
+              Match.objectLike({ Name: 'Stack1.Deploy' }),
+              Match.objectLike({ Name: 'Stack2.Prepare-MyApp-Stack2' }),
+              Match.objectLike({ Name: 'Stack2.Deploy' }),
+              Match.objectLike({ Name: 'Approve' }),
+            ]),
+          },
         ]),
-      }]),
-    });
+      },
+    );
   });
 });
 
@@ -73,9 +91,9 @@ behavior('can add steps to wave', (suite) => {
       Stages: Match.arrayWith([{
         Name: 'MyWave',
         Actions: sortByRunOrder([
-          Match.objectLike({ Name: 'Stage1.Stack.Prepare' }),
-          Match.objectLike({ Name: 'Stage2.Stack.Prepare' }),
-          Match.objectLike({ Name: 'Stage3.Stack.Prepare' }),
+          Match.objectLike({ Name: stringLike('Stage1.Stack.Prepare*') }),
+          Match.objectLike({ Name: stringLike('Stage2.Stack.Prepare*') }),
+          Match.objectLike({ Name: stringLike('Stage3.Stack.Prepare*') }),
           Match.objectLike({ Name: 'Stage1.Stack.Deploy' }),
           Match.objectLike({ Name: 'Stage2.Stack.Deploy' }),
           Match.objectLike({ Name: 'Stage3.Stack.Deploy' }),

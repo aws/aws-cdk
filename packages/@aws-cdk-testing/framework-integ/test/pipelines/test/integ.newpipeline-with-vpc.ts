@@ -1,12 +1,14 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 /// !cdk-integ PipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
-import * as path from 'path';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { App, Stack, StackProps, Stage, StageProps } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
-import { App, Stack, StackProps, Stage, StageProps } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
+import { Construct } from 'constructs';
+import * as path from 'path';
+
 
 class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -17,7 +19,7 @@ class PipelineStack extends Stack {
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
       codeBuildDefaults: { vpc },
       synth: new pipelines.ShellStep('Synth', {
-        input: pipelines.CodePipelineSource.gitHub('aws/aws-cdk', 'v2-main'),
+        input: pipelines.CodePipelineSource.gitHub('Nico-DB/aws-cdk', 'main'),
         commands: [
           'npm ci',
           'npm run build',
@@ -51,5 +53,9 @@ const app = new App({
     '@aws-cdk/core:newStyleStackSynthesis': '1',
   },
 });
-new PipelineStack(app, 'PipelineStack');
+const pipeStack = new PipelineStack(app, 'PipelineStack');
+
+new IntegTest(app, 'Integ', {
+  testCases: [pipeStack],
+});
 app.synth();

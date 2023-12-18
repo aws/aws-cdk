@@ -43,7 +43,7 @@ describe('blueprint with one stage', () => {
     ]);
 
     expect(childrenAt(graph, 'CrossAccount', 'Stack')).toEqual([
-      'Prepare',
+      'Prepare-CrossAccount-Stack',
       'Deploy',
     ]);
   });
@@ -114,6 +114,7 @@ describe('blueprint with wave and stage', () => {
     ]);
   });
 
+
   test('postPrepare and prepareNodes are added correctly inside stack graph', () => {
     // GIVEN
     const appWithExposedStacks = new AppWithExposedStacks(app, 'Gamma');
@@ -152,6 +153,7 @@ describe('blueprint with wave and stage', () => {
     ]);
   });
 
+
   test('pre, changeSet, and post are added correctly inside stack graph', () => {
     // GIVEN
     const appWithExposedStacks = new AppWithExposedStacks(app, 'Gamma');
@@ -173,7 +175,7 @@ describe('blueprint with wave and stage', () => {
       'Step1',
       'Step2',
       'Step3',
-      'Prepare',
+      'Prepare-Gamma-Stack1',
       'Manual Approval',
       'Deploy',
       'Post Approval',

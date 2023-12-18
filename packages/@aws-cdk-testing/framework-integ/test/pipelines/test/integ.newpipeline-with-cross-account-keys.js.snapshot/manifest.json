@@ -66,7 +66,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d012d0452ea703b36e1f5a5e8e65093b04658d40d4e28e97b1fca923b2a0b119.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d37e10348f6474aa9131d38ccd04bccbe7753b2458bdd2bf7175b29ecc6c8d06.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -124,10 +124,10 @@
             "data": "Pipeline9850B417"
           }
         ],
-        "/PipelineStack/Pipeline/Pipeline/Source/tkglaser_cdk-pipelines-demo/WebhookResource": [
+        "/PipelineStack/Pipeline/Pipeline/Source/Nico-DB_aws-cdk/WebhookResource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PipelineSourcetkglasercdkpipelinesdemoWebhookResource54EE51BE"
+            "data": "PipelineSourceNicoDBawscdkWebhookResource5DAA82C4"
           }
         ],
         "/PipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/Resource": [

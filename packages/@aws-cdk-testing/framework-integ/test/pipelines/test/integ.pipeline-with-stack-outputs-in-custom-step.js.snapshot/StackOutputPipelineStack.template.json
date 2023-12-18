@@ -386,7 +386,7 @@
           "Name": "Synth_Output"
          }
         ],
-        "Name": "Stack.Prepare",
+        "Name": "Stack.Prepare-AppStage-Stack",
         "RoleArn": {
          "Fn::Join": [
           "",
