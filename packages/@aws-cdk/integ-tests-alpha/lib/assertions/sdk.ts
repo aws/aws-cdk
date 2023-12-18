@@ -214,7 +214,7 @@ export interface LambdaInvokeFunctionProps {
 
 /**
  * An AWS Lambda Invoke function API call.
- * Use this istead of the generic AwsApiCall in order to
+ * Use this instead of the generic AwsApiCall in order to
  * invoke a lambda function. This will automatically create
  * the correct permissions to invoke the function
  */
@@ -251,6 +251,7 @@ export class LambdaInvokeFunction extends AwsApiCall {
       resourceName: props.functionName,
     })]);
 
+    // If using 'waitForAssertions', it is necessary to add permissions on the waiterProvider side.
     Aspects.of(this).add({
       visit(node: IConstruct) {
         if (node instanceof AwsApiCall) {

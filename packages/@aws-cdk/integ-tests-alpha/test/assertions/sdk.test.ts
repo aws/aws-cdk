@@ -292,8 +292,23 @@ describe('AwsApiCall', () => {
     expect(lambdaRole).toEqual({
       Type: 'AWS::IAM::Role',
       Properties: {
-        AssumeRolePolicyDocument: expect.any(Object),
-        ManagedPolicyArns: expect.any(Array),
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'lambda.amazonaws.com',
+              },
+            },
+          ],
+        },
+        ManagedPolicyArns: [
+          {
+            'Fn::Sub': 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+          },
+        ],
         Policies: expect.arrayContaining([
           {
             PolicyName: 'Inline',
