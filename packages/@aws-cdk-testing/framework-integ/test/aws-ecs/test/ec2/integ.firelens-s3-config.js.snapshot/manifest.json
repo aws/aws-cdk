@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "32.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-ecs-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/812deb9204aeb799b23ee4bf20ce5ffa218124c8b05207910438c9e3e49c9117.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/25039895d2a6fbaa22673106b7d6e5bd38323ef33f56e2cbe539b440bde5d8d5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -207,10 +201,10 @@
             "data": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
           }
         ],
-        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LaunchConfig": [
+        "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
+            "data": "EcsClusterDefaultAutoScalingGroupLaunchTemplate3719972A"
           }
         ],
         "/aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/ASG": [
@@ -338,9 +332,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-ecs-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

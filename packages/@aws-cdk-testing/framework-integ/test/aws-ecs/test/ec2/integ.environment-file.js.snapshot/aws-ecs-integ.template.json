@@ -35,7 +35,8 @@
        "Action": [
         "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*"
+        "s3:List*",
+        "s3:PutBucketPolicy"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -122,18 +123,18 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "40aa87cdf43c4095cec18bc443965f22ab2f8c1ace47e482a0ba4e35d83b0cc9.zip"
+     "S3Key": "2ec8ad9e91dcd6e7ad6a5c84ffc6c9c05c408aca3b26ceb2816d81043e6c4dc3.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x",
+    "Runtime": "nodejs18.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -169,9 +170,6 @@
   "VpcPublicSubnet1Subnet5C2D37C4": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -195,21 +193,24 @@
       "Key": "Name",
       "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet1RouteTable6C95E38E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet1RouteTableAssociation97140677": {
@@ -226,12 +227,12 @@
   "VpcPublicSubnet1DefaultRoute3DA9E72A": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
     }
    },
    "DependsOn": [
@@ -253,14 +254,14 @@
   "VpcPublicSubnet1NATGateway4D7517AA": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet1EIPD7E02669",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
     },
     "Tags": [
      {
@@ -277,9 +278,6 @@
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -303,21 +301,24 @@
       "Key": "Name",
       "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet2RouteTable94F7E489": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
@@ -334,12 +335,12 @@
   "VpcPublicSubnet2DefaultRoute97F91067": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
     }
    },
    "DependsOn": [
@@ -361,14 +362,14 @@
   "VpcPublicSubnet2NATGateway9182C01D": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet2Subnet691E08A3"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet2EIP3C605A87",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet2Subnet691E08A3"
     },
     "Tags": [
      {
@@ -385,9 +386,6 @@
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -411,21 +409,24 @@
       "Key": "Name",
       "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet1RouteTableB2C5B500": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
@@ -442,21 +443,18 @@
   "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
     }
    }
   },
   "VpcPrivateSubnet2Subnet3788AAA1": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -480,21 +478,24 @@
       "Key": "Name",
       "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet2RouteTableA678073B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
@@ -511,12 +512,12 @@
   "VpcPrivateSubnet2DefaultRoute060D2087": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
     }
    }
   },
@@ -534,11 +535,11 @@
   "VpcVPCGWBF912B6E": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "InternetGatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
     }
    }
   },
@@ -658,38 +659,79 @@
     ]
    }
   },
-  "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "EcsClusterDefaultAutoScalingGroupLaunchTemplate3719972A": {
+   "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "t2.micro",
-    "IamInstanceProfile": {
-     "Ref": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
-    },
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231",
-       "GroupId"
-      ]
-     }
-    ],
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "",
-       [
-        "#!/bin/bash\necho ECS_CLUSTER=",
-        {
-         "Ref": "EcsCluster97242B84"
-        },
-        " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3",
+        "Arn"
        ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t2.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "EcsClusterDefaultAutoScalingGroupInstanceSecurityGroup912E1231",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "#!/bin/bash\necho ECS_CLUSTER=",
+         {
+          "Ref": "EcsCluster97242B84"
+         },
+         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-ecs-integ/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate"
+       }
       ]
      }
-    }
+    ]
    },
    "DependsOn": [
     "EcsClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy04DC6C80",
@@ -699,11 +741,19 @@
   "EcsClusterDefaultAutoScalingGroupASGC1A785DB": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
    "Properties": {
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "EcsClusterDefaultAutoScalingGroupLaunchTemplate3719972A"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "EcsClusterDefaultAutoScalingGroupLaunchTemplate3719972A",
+       "LatestVersionNumber"
+      ]
+     }
+    },
     "MaxSize": "1",
     "MinSize": "1",
-    "LaunchConfigurationName": {
-     "Ref": "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
-    },
     "Tags": [
      {
       "Key": "Name",
@@ -859,12 +909,6 @@
     "Code": {
      "ZipFile": "import boto3, json, os, time\n\necs = boto3.client('ecs')\nautoscaling = boto3.client('autoscaling')\n\n\ndef lambda_handler(event, context):\n  print(json.dumps(dict(event, ResponseURL='...')))\n  cluster = os.environ['CLUSTER']\n  snsTopicArn = event['Records'][0]['Sns']['TopicArn']\n  lifecycle_event = json.loads(event['Records'][0]['Sns']['Message'])\n  instance_id = lifecycle_event.get('EC2InstanceId')\n  if not instance_id:\n    print('Got event without EC2InstanceId: %s', json.dumps(dict(event, ResponseURL='...')))\n    return\n\n  instance_arn = container_instance_arn(cluster, instance_id)\n  print('Instance %s has container instance ARN %s' % (lifecycle_event['EC2InstanceId'], instance_arn))\n\n  if not instance_arn:\n    return\n\n  task_arns = container_instance_task_arns(cluster, instance_arn)\n\n  if task_arns:\n    print('Instance ARN %s has task ARNs %s' % (instance_arn, ', '.join(task_arns)))\n\n  while has_tasks(cluster, instance_arn, task_arns):\n    time.sleep(10)\n\n  try:\n    print('Terminating instance %s' % instance_id)\n    autoscaling.complete_lifecycle_action(\n        LifecycleActionResult='CONTINUE',\n        **pick(lifecycle_event, 'LifecycleHookName', 'LifecycleActionToken', 'AutoScalingGroupName'))\n  except Exception as e:\n    # Lifecycle action may have already completed.\n    print(str(e))\n\n\ndef container_instance_arn(cluster, instance_id):\n  \"\"\"Turn an instance ID into a container instance ARN.\"\"\"\n  arns = ecs.list_container_instances(cluster=cluster, filter='ec2InstanceId==' + instance_id)['containerInstanceArns']\n  if not arns:\n    return None\n  return arns[0]\n\ndef container_instance_task_arns(cluster, instance_arn):\n  \"\"\"Fetch tasks for a container instance ARN.\"\"\"\n  arns = ecs.list_tasks(cluster=cluster, containerInstance=instance_arn)['taskArns']\n  return arns\n\ndef has_tasks(cluster, instance_arn, task_arns):\n  \"\"\"Return True if the instance is running tasks for the given cluster.\"\"\"\n  instances = ecs.describe_container_instances(cluster=cluster, containerInstances=[instance_arn])['containerInstances']\n  if not instances:\n    return False\n  instance = instances[0]\n\n  if instance['status'] == 'ACTIVE':\n    # Start draining, then try again later\n    set_container_instance_to_draining(cluster, instance_arn)\n    return True\n\n  task_count = None\n\n  if task_arns:\n    # Fetch details for tasks running on the container instance\n    tasks = ecs.describe_tasks(cluster=cluster, tasks=task_arns)['tasks']\n    if tasks:\n      # Consider any non-stopped tasks as running\n      task_count = sum(task['lastStatus'] != 'STOPPED' for task in tasks) + instance['pendingTasksCount']\n\n  if not task_count:\n    # Fallback to instance task counts if detailed task information is unavailable\n    task_count = instance['runningTasksCount'] + instance['pendingTasksCount']\n\n  print('Instance %s has %s tasks' % (instance_arn, task_count))\n\n  return task_count > 0\n\ndef set_container_instance_to_draining(cluster, instance_arn):\n  ecs.update_container_instances_state(\n      cluster=cluster,\n      containerInstances=[instance_arn], status='DRAINING')\n\n\ndef pick(dct, *keys):\n  \"\"\"Pick a subset of a dict.\"\"\"\n  return {k: v for k, v in dct.items() if k in keys}\n"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA",
-      "Arn"
-     ]
-    },
     "Environment": {
      "Variables": {
       "CLUSTER": {
@@ -873,6 +917,12 @@
      }
     },
     "Handler": "index.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA",
+      "Arn"
+     ]
+    },
     "Runtime": "python3.9",
     "Tags": [
      {
@@ -906,15 +956,15 @@
   "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic8F34E394": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
-    "Protocol": "lambda",
-    "TopicArn": {
-     "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
-    },
     "Endpoint": {
      "Fn::GetAtt": [
       "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionE17A5F5E",
       "Arn"
      ]
+    },
+    "Protocol": "lambda",
+    "TopicArn": {
+     "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
     }
    }
   },
@@ -981,9 +1031,9 @@
     "AutoScalingGroupName": {
      "Ref": "EcsClusterDefaultAutoScalingGroupASGC1A785DB"
     },
-    "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
     "DefaultResult": "CONTINUE",
     "HeartbeatTimeout": 300,
+    "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
     "NotificationTargetARN": {
      "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
     },
@@ -1128,7 +1178,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1290,13 +1340,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
-      "Arn"
-     ]
+     "S3Key": "e976a796f036a5efbf44b99e44cfb5a961df08d8dbf7cd37e60bf216fb982a00.zip"
     },
     "Environment": {
      "Variables": {
@@ -1309,6 +1353,12 @@
       "Ref": "EnvFileDeploymentAwsCliLayerA8FC897D"
      }
     ],
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+      "Arn"
+     ]
+    },
     "Runtime": "python3.9",
     "Timeout": 900
    },
@@ -1324,6 +1374,11 @@
      "Ref": "EcsCluster97242B84"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -1354,7 +1409,10 @@
     "TaskDefinition": {
      "Ref": "TaskDefinitionB36D86D9"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefinitionTaskRoleFD40A61D"
+   ]
   },
   "ServiceSecurityGroupC96ED6A7": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -1370,110 +1428,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
-  }
- },
- "Mappings": {
-  "DefaultCrNodeVersionMap": {
-   "af-south-1": {
-    "value": "nodejs16.x"
    },
-   "ap-east-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs16.x"
-   },
-   "me-central-1": {
-    "value": "nodejs16.x"
-   },
-   "me-south-1": {
-    "value": "nodejs16.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-2": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs14.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-west-2": {
-    "value": "nodejs16.x"
-   }
+   "DependsOn": [
+    "TaskDefinitionTaskRoleFD40A61D"
+   ]
   }
  },
  "Parameters": {

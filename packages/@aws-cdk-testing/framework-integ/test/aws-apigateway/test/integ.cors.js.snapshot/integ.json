@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "34.0.0",
   "testCases": {
     "cors/DefaultTest": {
       "stacks": [
         "cors-twitch-test"
       ],
-      "assertionStack": "cors/DefaultTest/DeployAssert"
+      "assertionStack": "cors/DefaultTest/DeployAssert",
+      "assertionStackName": "corsDefaultTestDeployAssert5CF8F851"
     }
   }
 }

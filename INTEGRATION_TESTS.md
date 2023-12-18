@@ -3,14 +3,16 @@
 This document describes the purpose of integration tests as well as acting as a guide
 on what type of changes require integrations tests and how you should write integration tests.
 
-- [What are CDK Integration Tests](#what-are-cdk-integration-tests)
-- [When are integration tests required](#when-are-integration-tests-required)
-- [How to write Integration Tests](#how-to-write-integration-tests)
-  - [Creating a test](#creating-a-test)
-  - [New L2 Constructs](#new-l2-constructs)
-  - [Existing L2 Constructs](#existing-l2-constructs)
-  - [Assertions](#assertions)
-- [Running Integration Tests](#running-integration-tests)
+- [Integration Tests](#integration-tests)
+  - [What are CDK Integration Tests](#what-are-cdk-integration-tests)
+  - [When are Integration Tests Required](#when-are-integration-tests-required)
+  - [How to write Integration Tests](#how-to-write-integration-tests)
+    - [Creating a Test](#creating-a-test)
+    - [New L2 Constructs](#new-l2-constructs)
+    - [Existing L2 Constructs](#existing-l2-constructs)
+    - [Assertions](#assertions)
+  - [Running Integration Tests](#running-integration-tests)
+    - [Running large numbers of Tests](#running-large-numbers-of-tests)
 
 ## What are CDK Integration Tests
 
@@ -22,7 +24,7 @@ All Construct libraries in the CDK code base have integration tests that serve t
    This is done by running `yarn integ` which will run `cdk deploy` across all of the integration tests in that package.
    If you are developing a new integration test or for some other reason want to work on a single integration test
    over and over again without running through all the integration tests you can do so using
-   `yarn integ integ.test-name.js` .Remember to set up AWS credentials before doing this.
+   `yarn integ integ.test-name.js`. Remember to set up AWS credentials before doing this.
 3. (Optionally) Acts as a way to validate that constructs set up the CloudFormation resources as expected.
    A successful CloudFormation deployment does not mean that the resources are set up correctly.
 
@@ -49,8 +51,8 @@ an integration test for the new feature can ensure that it works and avoid unnec
 
 **3. Involves configuring resource types across services (i.e. integrations)**
 For example, you are adding functionality that allows for service x to integrate with service y.
-A good example of this is the [aws-stepfunctions-tasks](./packages/@aws-cdk/aws-stepfunctions-tasks) or
-[aws-apigatewayv2-integrations](./packages/@aws-cdk/aws-apigatewayv2-integrations) modules. Both of these
+A good example of this is the [aws-stepfunctions-tasks](./packages/aws-cdk-lib/aws-stepfunctions-tasks) or
+[aws-apigatewayv2-integrations-alpha](./packages/@aws-cdk/aws-apigatewayv2-integrations-alpha) modules. Both of these
 have L2 constructs that provide functionality to integrate services.
 
 Sometimes these integrations involve configuring/formatting json/vtl or some other type of data.
@@ -73,8 +75,7 @@ you have good test coverage.
 
 ### Creating a Test
 
-An integration tests is any file located in the `test/` directory that has a name that starts with `integ.`
-(e.g. `integ.*.ts`).
+Integration tests for stable modules live in `@aws-cdk-testing/framework-integ/test/MODULE_NAME/test/`. Alpha module integ tests still live in their `test/` directories. Names of integration tests start with integ (e.g. `integ.*.ts`).
 
 To create a new integration test, first create a new file, for example `integ.my-new-construct.ts`.
 The contents of this file should be a CDK app. For example, a very simple integration test for a
@@ -82,9 +83,9 @@ Lambda Function would look like this:
 
 _integ.lambda.ts_
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
-import * as lambda from '../lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib/core';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
@@ -94,14 +95,12 @@ const stack = new cdk.Stack(app, 'aws-cdk-lambda-1');
 const fn = new lambda.Function(stack, 'MyLambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
 });
 
 new integ.IntegTest(app, 'LambdaTest', {
   testCases: [stack],
 });
-
-app.synth();
 ```
 
 To run the test you would run:
@@ -230,22 +229,24 @@ to deploy the Lambda Function _and_ then rerun the assertions to ensure that the
 ### Assertions
 
 Sometimes it is necessary to perform some form of _assertion_ against the deployed infrastructure to validate that the
-test succeeds. A good example of this is the `@aws-cdk/aws-stepfunctions-tasks` module which creates integrations between
+test succeeds. A good example of this is the `aws-cdk-lib/aws-stepfunctions-tasks` module which creates integrations between
 AWS StepFunctions and other AWS services. 
 
-If we look at the [integ.put-events.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/aws-stepfunctions-tasks/test/eventbridge/integ.put-events.ts)
-integration test we can see that we are creating an `@aws-cdk/aws-events.EventBus` along with a `@aws-cdk/aws-stepfunctions.StateMachine`
+If we look at the [integ.put-events.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/eventbridge/integ.put-events.ts)
+integration test we can see that we are creating an `aws-cdk-lib/aws-events.EventBus` along with a `aws-cdk-lib/aws-stepfunctions.StateMachine`
 which will send an event to the `EventBus`. In a typical integration test we would just deploy the test and the fact that the
 infrastructure deployed successfully would be enough of a validation that the test succeeded. In this case though, we ideally
 want to validate that the _integration_ connecting `StepFunctions` to the `EventBus` has been setup correctly, and the only
 way to do that is to actually trigger the `StateMachine` and validate that it was successful.
 
 ```ts
+import * as integ from '@aws-cdk/integ-tests-alpha';
+
 declare const app: App;
 declare const sm: sfn.StateMachine;
 declare const stack: Stack;
 
-const testCase = new IntegTest(app, 'PutEvents', {
+const testCase = new integ.IntegTest(app, 'PutEvents', {
   testCases: [stack],
 });
 
@@ -260,20 +261,46 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
 });
 
 // assert the results
-describe.expect(ExpectedResult.objectLike({
+describe.expect(integ.ExpectedResult.objectLike({
   status: 'SUCCEEDED',
 }));
 ```
 
-Not every test requires an assertion. We typically do not need to assert CloudFormation behavior. For example, if we create an S3 Bucket
+If we want to pick out certain values from the api call response, we can use the `assertAtPath()` method, as in the [integ.pipeline-with-additional-inputs.ts](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk-testing/framework-integ/test/pipelines/test/integ.pipeline-with-additional-inputs.ts) integ test. Note that using the `outputPaths` optional parameter on the `awsApiCall()` function often interacts poorly with the `expect()` function. 
+
+```ts
+import * as integ from '@aws-cdk/integ-tests-alpha';
+
+declare const app: App;
+declare const stack: Stack;
+declare const pipelineName: string;
+declare const expectedString: string;
+
+const testCase = new integ.IntegTest(app, 'PipelineAdditionalInputsTest', {
+  testCases: [stack],
+});
+
+const source = testCase.assertions.awsApiCall('CodePipeline', 'GetPipeline', {
+  name: pipelineName,
+});
+
+// assert the value at the given path matches the expected string
+// the numbers index arrays in the json response object
+source.assertAtPath('pipeline.stages.0.actions.0.name', integ.ExpectedResult.stringLikeRegexp(expectedString));
+```
+A helpful trick is to deploy the integ test with `--no-clean` and then make the api call locally. We can then trace the path to specific values easily. For example, `> aws codepipeline get-pipeline --name MyFirstPipeline`.
+
+Adding assertions is preferred on all new integ tests; however, it is not strictly required. We typically do not need to assert CloudFormation behavior. For example, if we create an S3 Bucket
 with Encryption, we do not need to assert that Encryption is set on the bucket. We can trust that the CloudFormation behavior works.
 Some things you should look for in deciding if the test needs an assertion:
 
-- Integrations between services (i.e. integration libraries like `@aws-cdk/aws-lambda-destinations`, `@aws-cdk/aws-stepfunctions-tasks`, etc)
-- Anything that bundles or deploys custom code (i.e. does a Lambda function bundled with `@aws-cdk/aws-lambda-nodejs` still invoke or did we break bundling behavior)
+- Integrations between services (i.e. integration libraries like `aws-cdk-lib/aws-lambda-destinations`, `aws-cdk-lib/aws-stepfunctions-tasks`, etc).
+- All custom resources. Must assert the expected behavior of the lambda is correct.
+- Anything that bundles or deploys custom code (i.e. does a Lambda function bundled with `aws-cdk-lib/aws-lambda-nodejs` still invoke or did we break bundling behavior).
 - IAM/Networking connections.
   - This one is a bit of a judgement call. Most things do not need assertions, but sometimes we handle complicated configurations involving IAM permissions or
     Networking access.
+
 
 ## Running Integration Tests
 

@@ -1,10 +1,11 @@
 {
-  "version": "30.0.0",
+  "version": "34.0.0",
   "testCases": {
     "lambda-layer-kubectl-integ-test/DefaultTest": {
       "stacks": [
         "lambda-layer-kubectl-integ-stack"
       ],
+      "diffAssets": true,
       "cdkCommandOptions": {
         "deploy": {
           "args": {

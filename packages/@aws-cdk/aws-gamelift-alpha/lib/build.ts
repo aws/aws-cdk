@@ -1,7 +1,7 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Content } from './content';
 import { CfnBuild } from 'aws-cdk-lib/aws-gamelift';
@@ -16,7 +16,6 @@ import { CfnBuild } from 'aws-cdk-lib/aws-gamelift';
  * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/gamelift-build-cli-uploading.html
  */
 export interface IBuild extends cdk.IResource, iam.IGrantable {
-
   /**
    * The Identifier of the build.
    *
@@ -37,12 +36,13 @@ export interface IBuild extends cdk.IResource, iam.IGrantable {
  */
 export abstract class BuildBase extends cdk.Resource implements IBuild {
   /**
-     * The Identifier of the build.
-     */
+   * The Identifier of the build.
+   */
   public abstract readonly buildId: string;
+
   /**
-     * The ARN of the build.
-     */
+   * The ARN of the build.
+   */
   public abstract readonly buildArn: string;
 
   public abstract readonly grantPrincipal: iam.IPrincipal;
@@ -52,9 +52,34 @@ export abstract class BuildBase extends cdk.Resource implements IBuild {
  * The operating system that the game server binaries are built to run on.
  */
 export enum OperatingSystem {
+  /**
+   * Amazon Linux operating system.
+   */
   AMAZON_LINUX = 'AMAZON_LINUX',
+
+  /**
+   * Amazon Linux 2 operating system.
+   */
   AMAZON_LINUX_2 = 'AMAZON_LINUX_2',
-  WINDOWS_2012 = 'WINDOWS_2012'
+
+  /**
+   * Amazon Linux 2023 operating system.
+   */
+  AMAZON_LINUX_2023 = 'AMAZON_LINUX_2023',
+
+  /**
+   * Windows Server 2012 operating system.
+   *
+   * @deprecated If you have active fleets using the Windows Server 2012 operating system,
+   * you can continue to create new builds using this OS until October 10, 2023, when Microsoft ends its support.
+   * All others must use Windows Server 2016 when creating new Windows-based builds.
+   */
+  WINDOWS_2012 = 'WINDOWS_2012',
+
+  /**
+   * Windows Server 2016 operating system.
+   */
+  WINDOWS_2016 = 'WINDOWS_2016',
 }
 
 /**
@@ -62,21 +87,21 @@ export enum OperatingSystem {
  */
 export interface BuildAttributes {
   /**
-     * The ARN of the build
-     *
-     * At least one of `buildArn` and `buildId` must be provided.
-     *
-     * @default derived from `buildId`.
-     */
+   * The ARN of the build
+   *
+   * At least one of `buildArn` and `buildId` must be provided.
+   *
+   * @default derived from `buildId`.
+   */
   readonly buildArn?: string;
 
   /**
-    * The identifier of the build
-    *
-    * At least one of `buildId` and `buildArn`  must be provided.
-    *
-    * @default derived from `buildArn`.
-    */
+   * The identifier of the build
+   *
+   * At least one of `buildId` and `buildArn`  must be provided.
+   *
+   * @default derived from `buildArn`.
+   */
   readonly buildId?: string;
   /**
    * The IAM role assumed by GameLift to access server build in S3.
@@ -90,53 +115,62 @@ export interface BuildAttributes {
  */
 export interface BuildProps {
   /**
-     * Name of this build
-     *
-     * @default No name
-     */
+   * Name of this build
+   *
+   * @default No name
+   */
   readonly buildName?: string;
 
   /**
-     * Version of this build
-     *
-     * @default No version
-     */
+    * Version of this build
+    *
+    * @default No version
+    */
   readonly buildVersion?: string;
 
   /**
-     * The operating system that the game server binaries are built to run on.
-     *
-     * @default No version
-     */
+   * The operating system that the game server binaries are built to run on.
+   *
+   * @default No version
+   */
   readonly operatingSystem?: OperatingSystem;
 
   /**
-     * The game build file storage
-     */
+   * The game build file storage
+   */
   readonly content: Content;
 
   /**
-    * The IAM role assumed by GameLift to access server build in S3.
-    * If providing a custom role, it needs to trust the GameLift service principal (gamelift.amazonaws.com) and be granted sufficient permissions
-    * to have Read access to a specific key content into a specific S3 bucket.
-    * Below an example of required permission:
-    * {
-    *  "Version": "2012-10-17",
-    *  "Statement": [{
-    *        "Effect": "Allow",
-    *        "Action": [
-    *            "s3:GetObject",
-    *            "s3:GetObjectVersion"
-    *        ],
-    *        "Resource": "arn:aws:s3:::bucket-name/object-name"
-    *  }]
-    *}
-    *
-    * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-access-storage-loc
-    *
-    * @default - a role will be created with default permissions.
-    */
+   * The IAM role assumed by GameLift to access server build in S3.
+   * If providing a custom role, it needs to trust the GameLift service principal (gamelift.amazonaws.com) and be granted sufficient permissions
+   * to have Read access to a specific key content into a specific S3 bucket.
+   * Below an example of required permission:
+   * {
+   *  "Version": "2012-10-17",
+   *  "Statement": [{
+   *        "Effect": "Allow",
+   *        "Action": [
+   *            "s3:GetObject",
+   *            "s3:GetObjectVersion"
+   *        ],
+   *        "Resource": "arn:aws:s3:::bucket-name/object-name"
+   *  }]
+   * }
+   *
+   * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-access-storage-loc
+   *
+   * @default - a role will be created with default permissions.
+   */
   readonly role?: iam.IRole;
+
+  /**
+   * A server SDK version you used when integrating your game server build with Amazon GameLift.
+   *
+   * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/integration-custom-intro.html
+   *
+   * @default - 4.0.2
+   */
+  readonly serverSdkVersion?: string;
 }
 
 /**
@@ -148,7 +182,6 @@ export interface BuildProps {
  * @resource AWS::GameLift::Build
  */
 export class Build extends BuildBase {
-
   /**
    * Create a new Build from s3 content
    */
@@ -168,15 +201,15 @@ export class Build extends BuildBase {
   }
 
   /**
-     * Import a build into CDK using its identifier
-     */
+   * Import a build into CDK using its identifier
+   */
   static fromBuildId(scope: Construct, id: string, buildId: string): IBuild {
     return this.fromBuildAttributes(scope, id, { buildId });
   }
 
   /**
-     * Import a build into CDK using its ARN
-     */
+   * Import a build into CDK using its ARN
+   */
   static fromBuildArn(scope: Construct, id: string, buildArn: string): IBuild {
     return this.fromBuildAttributes(scope, id, { buildArn });
   }
@@ -247,6 +280,8 @@ export class Build extends BuildBase {
       }
     }
 
+    this.validateServerSdkVersion(props.serverSdkVersion);
+
     this.role = props.role ?? new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('gamelift.amazonaws.com'),
     });
@@ -263,6 +298,7 @@ export class Build extends BuildBase {
         objectVersion: content.s3Location && content.s3Location.objectVersion,
         roleArn: this.role.roleArn,
       },
+      serverSdkVersion: props.serverSdkVersion,
     });
 
     resource.node.addDependency(this.role);
@@ -276,4 +312,13 @@ export class Build extends BuildBase {
     });
   }
 
+  private validateServerSdkVersion(serverSdkVersion?: string) {
+    if (serverSdkVersion === undefined || cdk.Token.isUnresolved(serverSdkVersion)) return;
+    if (!serverSdkVersion.match(/^\d+\.\d+\.\d+$/)) {
+      throw new Error(`serverSdkVersion must be in the 0.0.0 format, got \'${serverSdkVersion}\'.`);
+    }
+    if (serverSdkVersion.length > 128) {
+      throw new Error(`serverSdkVersion length must be smaller than or equal to 128, got ${serverSdkVersion.length}.`);
+    }
+  }
 }

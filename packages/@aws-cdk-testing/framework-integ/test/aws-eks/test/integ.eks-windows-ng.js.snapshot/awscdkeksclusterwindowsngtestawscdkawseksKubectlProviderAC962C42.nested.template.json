@@ -7,10 +7,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9017774b84ae2457b1b2ad6fcbb4860d8ce2537062c77010b24d9b156ced5a1b.zip"
-    },
-    "Role": {
-     "Ref": "referencetoawscdkeksclusterwindowsngtestClusterKubectlHandlerRoleA205E29AArn"
+     "S3Key": "7ee709fdaf72d4a95dabe6f431ed4176b1dbcb78127986bf956f0ed8cad04779.zip"
     },
     "Description": "onEvent handler for EKS kubectl resource provider",
     "Handler": "index.handler",
@@ -23,7 +20,10 @@
      }
     ],
     "MemorySize": 1024,
-    "Runtime": "python3.7",
+    "Role": {
+     "Ref": "referencetoawscdkeksclusterwindowsngtestClusterKubectlHandlerRoleA205E29AArn"
+    },
+    "Runtime": "python3.10",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -49,7 +49,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6a28458f7bc3d04e4d2b17f9c3da0709bf456e34b06ea7c96111eecb2fddd054.zip"
+     "S3Key": "e2277687077a2abf9ae1af1cc9565e6715e2ebb62f79ec53aa75a1af9298f642.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -146,13 +146,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "ProviderframeworkonEventServiceRole9FF04296",
-      "Arn"
-     ]
+     "S3Key": "81328426dba578d9ff57b0b54146bc81395a478131b0b61e40236fcc8395c2db.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-windows-ng-test/@aws-cdk--aws-eks.KubectlProvider/Provider)",
     "Environment": {
@@ -166,7 +160,13 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs14.x",
+    "Role": {
+     "Fn::GetAtt": [
+      "ProviderframeworkonEventServiceRole9FF04296",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -201,10 +201,10 @@
   }
  },
  "Parameters": {
-  "referencetoawscdkeksclusterwindowsngtestClusterKubectlHandlerRoleA205E29AArn": {
+  "referencetoawscdkeksclusterwindowsngtestKubectlLayer31B52BE6Ref": {
    "Type": "String"
   },
-  "referencetoawscdkeksclusterwindowsngtestKubectlLayer31B52BE6Ref": {
+  "referencetoawscdkeksclusterwindowsngtestClusterKubectlHandlerRoleA205E29AArn": {
    "Type": "String"
   },
   "referencetoawscdkeksclusterwindowsngtestVpcPrivateSubnet1Subnet55633596Ref": {

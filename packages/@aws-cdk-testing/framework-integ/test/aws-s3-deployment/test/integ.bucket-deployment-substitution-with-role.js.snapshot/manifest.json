@@ -1,0 +1,141 @@
+{
+  "version": "33.0.0",
+  "artifacts": {
+    "cdk-s3-deploy-substitution-with-role.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdk-s3-deploy-substitution-with-role.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdk-s3-deploy-substitution-with-role": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdk-s3-deploy-substitution-with-role.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/53cbaa4f485ae3e5652385a7f7ed6739d7acfd416da715bb83378b2924add65d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdk-s3-deploy-substitution-with-role.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdk-s3-deploy-substitution-with-role.assets"
+      ],
+      "metadata": {
+        "/cdk-s3-deploy-substitution-with-role/substitution-bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "substitutionbucket13A1BF4A"
+          }
+        ],
+        "/cdk-s3-deploy-substitution-with-role/execution-role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "executionroleD9A39BE6"
+          }
+        ],
+        "/cdk-s3-deploy-substitution-with-role/execution-role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "executionroleDefaultPolicy497F11A3"
+          }
+        ],
+        "/cdk-s3-deploy-substitution-with-role/Deployment/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeploymentAwsCliLayerB82B26A3"
+          }
+        ],
+        "/cdk-s3-deploy-substitution-with-role/Deployment/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeploymentCustomResource47E8B2E6"
+          }
+        ],
+        "/cdk-s3-deploy-substitution-with-role/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+          }
+        ],
+        "/cdk-s3-deploy-substitution-with-role/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-s3-deploy-substitution-with-role/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-s3-deploy-substitution-with-role"
+    },
+    "tests3deploysubstitutionwithroleDefaultTestDeployAssertC49A4480.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "tests3deploysubstitutionwithroleDefaultTestDeployAssertC49A4480.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "tests3deploysubstitutionwithroleDefaultTestDeployAssertC49A4480": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "tests3deploysubstitutionwithroleDefaultTestDeployAssertC49A4480.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "tests3deploysubstitutionwithroleDefaultTestDeployAssertC49A4480.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "tests3deploysubstitutionwithroleDefaultTestDeployAssertC49A4480.assets"
+      ],
+      "metadata": {
+        "/test-s3-deploy-substitution-with-role/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/test-s3-deploy-substitution-with-role/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "test-s3-deploy-substitution-with-role/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

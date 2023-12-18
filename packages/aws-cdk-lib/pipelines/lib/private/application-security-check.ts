@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { Construct } from 'constructs';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from './default-codebuild-image';
 import * as codebuild from '../../../aws-codebuild';
@@ -6,7 +5,7 @@ import * as cp from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import { Duration, Tags } from '../../../core';
-import { builtInCustomResourceNodeRuntime } from '../../../custom-resources';
+import { ApproveLambdaFunction } from '../../../custom-resource-handlers/dist/pipelines/approve-lambda.generated';
 
 /**
  * Properties for an ApplicationSecurityCheck
@@ -58,10 +57,7 @@ export class ApplicationSecurityCheck extends Construct {
       includeResourceTypes: ['AWS::CodePipeline::Pipeline'],
     });
 
-    this.preApproveLambda = new lambda.Function(this, 'CDKPipelinesAutoApprove', {
-      handler: 'index.handler',
-      runtime: builtInCustomResourceNodeRuntime(this),
-      code: lambda.Code.fromAsset(path.resolve(__dirname, 'approve-lambda')),
+    this.preApproveLambda = new ApproveLambdaFunction(this, 'CDKPipelinesAutoApprove', {
       timeout: Duration.minutes(5),
     });
 

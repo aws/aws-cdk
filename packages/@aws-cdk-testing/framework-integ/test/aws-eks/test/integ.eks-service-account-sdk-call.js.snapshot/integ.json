@@ -1,10 +1,11 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
     "aws-cdk-eks-service-account-sdk-call/DefaultTest": {
       "stacks": [
         "aws-eks-service-account-sdk-calls-test"
       ],
+      "diffAssets": false,
       "assertionStack": "aws-cdk-eks-service-account-sdk-call/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksserviceaccountsdkcallDefaultTestDeployAssertC5196707"
     }

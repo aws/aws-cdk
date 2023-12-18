@@ -124,6 +124,51 @@ describe('bundling', () => {
     ])).toEqual(true);
   });
 
+  test('bundling with image from asset with cache-to & cache-from', () => {
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const imageHash = '123456abcdef';
+    const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
+    fingerprintStub.callsFake(() => imageHash);
+    const cacheTo = { type: 'local', params: { dest: 'path/to/local/dir' } };
+    const cacheFrom1 = {
+      type: 's3', params: { region: 'us-west-2', bucket: 'my-bucket', name: 'foo' },
+    };
+    const cacheFrom2 = {
+      type: 'gha', params: { url: 'https://example.com', token: 'abc123', scope: 'gh-ref-image2' },
+    };
+
+    const options = { cacheTo, cacheFrom: [cacheFrom1, cacheFrom2] };
+    const image = DockerImage.fromBuild('docker-path', options);
+    image.run();
+
+    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
+      path: 'docker-path',
+      ...options,
+    })).digest('hex');
+    const tag = `cdk-${tagHash}`;
+
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
+      'build', '-t', tag,
+      '--cache-from', 'type=s3,region=us-west-2,bucket=my-bucket,name=foo',
+      '--cache-from', 'type=gha,url=https://example.com,token=abc123,scope=gh-ref-image2',
+      '--cache-to', 'type=local,dest=path/to/local/dir',
+      'docker-path',
+    ])).toEqual(true);
+
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
+      'run', '--rm',
+      tag,
+    ])).toEqual(true);
+  });
+
   test('bundling with image from asset with target stage', () => {
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
@@ -431,6 +476,39 @@ describe('bundling', () => {
     expect(spawnSyncStub.calledWith(dockerCmd, [
       'run', '--rm',
       '--network', 'host',
+      '-u', 'user:group',
+      '-v', '/host-path:/container-path:delegated',
+      '-w', '/working-directory',
+      'alpine',
+      'cool', 'command',
+    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('adding user provided platform', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const image = DockerImage.fromRegistry('alpine');
+
+    // GIVEN
+    image.run({
+      command: ['cool', 'command'],
+      platform: 'linux/amd64',
+      volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
+      workingDirectory: '/working-directory',
+      user: 'user:group',
+    });
+
+    expect(spawnSyncStub.calledWith(dockerCmd, [
+      'run', '--rm',
+      '--platform', 'linux/amd64',
       '-u', 'user:group',
       '-v', '/host-path:/container-path:delegated',
       '-w', '/working-directory',

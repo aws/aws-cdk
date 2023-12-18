@@ -1,7 +1,7 @@
 {
-  "version": "20.0.0",
+  "version": "32.0.0",
   "files": {
-    "d2917ea4195aa0183538531b99a1ccb6369a7a90926d79378d84278263b33b46": {
+    "4db5712a4ffeeb138b865a31a6cce9ec7becd96318f72baeb40d48a8b0d2a334": {
       "source": {
         "path": "LambdaApiIntegrationOptionsStack.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d2917ea4195aa0183538531b99a1ccb6369a7a90926d79378d84278263b33b46.json",
+          "objectKey": "4db5712a4ffeeb138b865a31a6cce9ec7becd96318f72baeb40d48a8b0d2a334.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "cdk-integ-elasticsearch.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/65733fdea65a4852c60bcf00d709b29a7f8afe4cbd8098ccd45ea1232e2d8347.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/008369e323689e375efe0d4afe9edf0becc60d9ce7b98a5271b40951c8a20463.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -73,12 +73,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain1ESAccessPolicyCustomResourcePolicyC04432B6"
-          }
-        ],
-        "/cdk-integ-elasticsearch/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
           }
         ],
         "/cdk-integ-elasticsearch/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [

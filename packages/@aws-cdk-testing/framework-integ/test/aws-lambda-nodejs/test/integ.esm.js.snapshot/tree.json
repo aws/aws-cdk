@@ -8,14 +8,6 @@
         "id": "cdk-integ-lambda-nodejs-esm",
         "path": "cdk-integ-lambda-nodejs-esm",
         "children": {
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "cdk-integ-lambda-nodejs-esm/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "esm": {
             "id": "esm",
             "path": "cdk-integ-lambda-nodejs-esm/esm",
@@ -115,27 +107,19 @@
                       },
                       "s3Key": "b1fe61f2900194572e27cce06c685324999fd8e34728c4ffc45e81f234b79e3f.zip"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "esmServiceRole84AC2522",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": {
-                      "Fn::FindInMap": [
-                        "DefaultCrNodeVersionMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "value"
+                    "role": {
+                      "Fn::GetAtt": [
+                        "esmServiceRole84AC2522",
+                        "Arn"
                       ]
-                    }
+                    },
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -171,12 +155,66 @@
           "version": "0.0.0"
         }
       },
+      "LambdaNodeJsEsmInteg": {
+        "id": "LambdaNodeJsEsmInteg",
+        "path": "LambdaNodeJsEsmInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "LambdaNodeJsEsmInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "LambdaNodeJsEsmInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.69"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "LambdaNodeJsEsmInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "LambdaNodeJsEsmInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "LambdaNodeJsEsmInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
       "Tree": {
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.69"
         }
       }
     },

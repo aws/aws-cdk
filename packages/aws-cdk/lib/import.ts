@@ -39,15 +39,6 @@ export type ResourceIdentifiers = { [resourceType: string]: string[][] };
  */
 export type ResourceMap = { [logicalResource: string]: ResourceIdentifierProperties };
 
-export interface ResourceImporterOptions {
-  /**
-   * Name of toolkit stack if non-default
-   *
-   * @default - Default toolkit stack name
-   */
-  readonly toolkitStackName?: string;
-}
-
 /**
  * Resource importing utility class
  *
@@ -63,8 +54,7 @@ export class ResourceImporter {
 
   constructor(
     private readonly stack: cxapi.CloudFormationStackArtifact,
-    private readonly cfn: Deployments,
-    private readonly options: ResourceImporterOptions = {}) { }
+    private readonly cfn: Deployments) { }
 
   /**
    * Ask the user for resources to import
@@ -222,7 +212,7 @@ export class ResourceImporter {
    */
   private async resourceIdentifiers(): Promise<ResourceIdentifiers> {
     const ret: ResourceIdentifiers = {};
-    const resourceIdentifierSummaries = await this.cfn.resourceIdentifierSummaries(this.stack, this.options.toolkitStackName);
+    const resourceIdentifierSummaries = await this.cfn.resourceIdentifierSummaries(this.stack);
     for (const summary of resourceIdentifierSummaries) {
       if ('ResourceType' in summary && summary.ResourceType && 'ResourceIdentifiers' in summary && summary.ResourceIdentifiers) {
         ret[summary.ResourceType] = (summary.ResourceIdentifiers ?? [])?.map(x => x.split(','));
@@ -300,10 +290,10 @@ export class ResourceImporter {
       for (const idProp of idProps) {
         // If we have a value from the template, use it as default. This will only be a partial
         // identifier if present, otherwise we would have done the import already above.
-        const defaultValue = typeof resourceProps[idProp] ?? '';
+        const defaultValue = resourceProps[idProp] ?? '';
 
         const prompt = [
-          promptPattern.replace(/%/, chalk.blue(idProp)),
+          promptPattern.replace(/%/g, chalk.blue(idProp)),
           defaultValue
             ? `[${defaultValue}]`
             : '(empty to skip)',

@@ -35,13 +35,13 @@
   "ApiF70053CD": {
    "Type": "AWS::AppSync::GraphQLApi",
    "Properties": {
-    "AuthenticationType": "AMAZON_COGNITO_USER_POOLS",
-    "Name": "Integ_Test_IAM",
     "AdditionalAuthenticationProviders": [
      {
       "AuthenticationType": "AWS_IAM"
      }
     ],
+    "AuthenticationType": "AMAZON_COGNITO_USER_POOLS",
+    "Name": "Integ_Test_IAM",
     "UserPoolConfig": {
      "AwsRegion": {
       "Ref": "AWS::Region"
@@ -135,8 +135,6 @@
       "ApiId"
      ]
     },
-    "Name": "testDataSource",
-    "Type": "AMAZON_DYNAMODB",
     "DynamoDBConfig": {
      "AwsRegion": {
       "Ref": "AWS::Region"
@@ -145,12 +143,14 @@
       "Ref": "TestTable5769773A"
      }
     },
+    "Name": "testDataSource",
     "ServiceRoleArn": {
      "Fn::GetAtt": [
       "ApidsServiceRoleADC7D124",
       "Arn"
      ]
-    }
+    },
+    "Type": "AMAZON_DYNAMODB"
    }
   },
   "ApiQueryGetTest0BEAD0F2": {
@@ -162,12 +162,12 @@
       "ApiId"
      ]
     },
-    "FieldName": "getTest",
-    "TypeName": "Query",
     "DataSourceName": "testDataSource",
+    "FieldName": "getTest",
     "Kind": "UNIT",
     "RequestMappingTemplate": "{\"version\": \"2017-02-28\", \"operation\": \"GetItem\", \"consistentRead\": false, \"key\": {\"id\": $util.dynamodb.toDynamoDBJson($ctx.args.id)}}",
-    "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+    "ResponseMappingTemplate": "$util.toJson($ctx.result)",
+    "TypeName": "Query"
    },
    "DependsOn": [
     "Apids0DB53FEA",
@@ -183,12 +183,12 @@
       "ApiId"
      ]
     },
-    "FieldName": "getTests",
-    "TypeName": "Query",
     "DataSourceName": "testDataSource",
+    "FieldName": "getTests",
     "Kind": "UNIT",
     "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\", \"consistentRead\": false}",
-    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)"
+    "ResponseMappingTemplate": "$util.toJson($ctx.result.items)",
+    "TypeName": "Query"
    },
    "DependsOn": [
     "Apids0DB53FEA",
@@ -204,12 +204,12 @@
       "ApiId"
      ]
     },
-    "FieldName": "addTest",
-    "TypeName": "Mutation",
     "DataSourceName": "testDataSource",
+    "FieldName": "addTest",
     "Kind": "UNIT",
     "RequestMappingTemplate": "\n      #set($input = $ctx.args.test)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
-    "ResponseMappingTemplate": "$util.toJson($ctx.result)"
+    "ResponseMappingTemplate": "$util.toJson($ctx.result)",
+    "TypeName": "Mutation"
    },
    "DependsOn": [
     "Apids0DB53FEA",
@@ -219,19 +219,19 @@
   "TestTable5769773A": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "KeySchema": [
-     {
-      "AttributeName": "id",
-      "KeyType": "HASH"
-     }
-    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "id",
       "AttributeType": "S"
      }
     ],
-    "BillingMode": "PAY_PER_REQUEST"
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ]
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -245,7 +245,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": "lambda"
+        "Service": "lambda.amazonaws.com"
        }
       }
      ],
@@ -369,12 +369,6 @@
      },
      "S3Key": "f38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "LambdaIAM687B49AF",
-      "Arn"
-     ]
-    },
     "Environment": {
      "Variables": {
       "APPSYNC_ENDPOINT": {
@@ -386,7 +380,13 @@
      }
     },
     "Handler": "iam-query.handler",
-    "Runtime": "nodejs14.x"
+    "Role": {
+     "Fn::GetAtt": [
+      "LambdaIAM687B49AF",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "LambdaIAMDefaultPolicy96DEA124",
@@ -433,12 +433,6 @@
      },
      "S3Key": "f38244b9028d22d4e265a5b466bdba928d93b5a4ac2b4bbf583309b3f027f044.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "testFailServiceRole9FF22F85",
-      "Arn"
-     ]
-    },
     "Environment": {
      "Variables": {
       "APPSYNC_ENDPOINT": {
@@ -450,7 +444,13 @@
      }
     },
     "Handler": "iam-query.handler",
-    "Runtime": "nodejs14.x"
+    "Role": {
+     "Fn::GetAtt": [
+      "testFailServiceRole9FF22F85",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "testFailServiceRole9FF22F85"

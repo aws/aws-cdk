@@ -31,9 +31,6 @@
   "FargateClusterDefaultVpcPublicSubnet1Subnet96AFDABC": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterDefaultVpcE69D3A13"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -61,15 +58,15 @@
       "Key": "Name",
       "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterDefaultVpcE69D3A13"
+    }
    }
   },
   "FargateClusterDefaultVpcPublicSubnet1RouteTableC2D2B434": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterDefaultVpcE69D3A13"
-    },
     "Tags": [
      {
       "Key": "kubernetes.io/role/elb",
@@ -79,7 +76,10 @@
       "Key": "Name",
       "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterDefaultVpcE69D3A13"
+    }
    }
   },
   "FargateClusterDefaultVpcPublicSubnet1RouteTableAssociation43821F5B": {
@@ -96,12 +96,12 @@
   "FargateClusterDefaultVpcPublicSubnet1DefaultRouteA0A93C70": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "FargateClusterDefaultVpcPublicSubnet1RouteTableC2D2B434"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "FargateClusterDefaultVpcIGWFD9278DA"
+    },
+    "RouteTableId": {
+     "Ref": "FargateClusterDefaultVpcPublicSubnet1RouteTableC2D2B434"
     }
    },
    "DependsOn": [
@@ -127,14 +127,14 @@
   "FargateClusterDefaultVpcPublicSubnet1NATGatewayEC4DEB51": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "FargateClusterDefaultVpcPublicSubnet1Subnet96AFDABC"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "FargateClusterDefaultVpcPublicSubnet1EIP0093A4E0",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "FargateClusterDefaultVpcPublicSubnet1Subnet96AFDABC"
     },
     "Tags": [
      {
@@ -155,9 +155,6 @@
   "FargateClusterDefaultVpcPublicSubnet2Subnet92A9CC93": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterDefaultVpcE69D3A13"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -185,15 +182,15 @@
       "Key": "Name",
       "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterDefaultVpcE69D3A13"
+    }
    }
   },
   "FargateClusterDefaultVpcPublicSubnet2RouteTableEDDB89D9": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterDefaultVpcE69D3A13"
-    },
     "Tags": [
      {
       "Key": "kubernetes.io/role/elb",
@@ -203,7 +200,10 @@
       "Key": "Name",
       "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterDefaultVpcE69D3A13"
+    }
    }
   },
   "FargateClusterDefaultVpcPublicSubnet2RouteTableAssociationCF18C87A": {
@@ -220,12 +220,12 @@
   "FargateClusterDefaultVpcPublicSubnet2DefaultRouteABE51CF2": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "FargateClusterDefaultVpcPublicSubnet2RouteTableEDDB89D9"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "FargateClusterDefaultVpcIGWFD9278DA"
+    },
+    "RouteTableId": {
+     "Ref": "FargateClusterDefaultVpcPublicSubnet2RouteTableEDDB89D9"
     }
    },
    "DependsOn": [
@@ -251,14 +251,14 @@
   "FargateClusterDefaultVpcPublicSubnet2NATGateway77D6A579": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "FargateClusterDefaultVpcPublicSubnet2Subnet92A9CC93"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "FargateClusterDefaultVpcPublicSubnet2EIPA4C07B68",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "FargateClusterDefaultVpcPublicSubnet2Subnet92A9CC93"
     },
     "Tags": [
      {
@@ -279,9 +279,6 @@
   "FargateClusterDefaultVpcPrivateSubnet1Subnet50EA43AA": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterDefaultVpcE69D3A13"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -309,15 +306,15 @@
       "Key": "Name",
       "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterDefaultVpcE69D3A13"
+    }
    }
   },
   "FargateClusterDefaultVpcPrivateSubnet1RouteTableA42013EB": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterDefaultVpcE69D3A13"
-    },
     "Tags": [
      {
       "Key": "kubernetes.io/role/internal-elb",
@@ -327,7 +324,10 @@
       "Key": "Name",
       "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterDefaultVpcE69D3A13"
+    }
    }
   },
   "FargateClusterDefaultVpcPrivateSubnet1RouteTableAssociationDC34627F": {
@@ -344,21 +344,18 @@
   "FargateClusterDefaultVpcPrivateSubnet1DefaultRouteE93D7B93": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "FargateClusterDefaultVpcPrivateSubnet1RouteTableA42013EB"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "FargateClusterDefaultVpcPublicSubnet1NATGatewayEC4DEB51"
+    },
+    "RouteTableId": {
+     "Ref": "FargateClusterDefaultVpcPrivateSubnet1RouteTableA42013EB"
     }
    }
   },
   "FargateClusterDefaultVpcPrivateSubnet2Subnet0C9D6154": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterDefaultVpcE69D3A13"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -386,15 +383,15 @@
       "Key": "Name",
       "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterDefaultVpcE69D3A13"
+    }
    }
   },
   "FargateClusterDefaultVpcPrivateSubnet2RouteTable1691B33C": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterDefaultVpcE69D3A13"
-    },
     "Tags": [
      {
       "Key": "kubernetes.io/role/internal-elb",
@@ -404,7 +401,10 @@
       "Key": "Name",
       "Value": "aws-cdk-eks-fargate-cluster-test/FargateCluster/DefaultVpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterDefaultVpcE69D3A13"
+    }
    }
   },
   "FargateClusterDefaultVpcPrivateSubnet2RouteTableAssociation6C0234FE": {
@@ -421,12 +421,12 @@
   "FargateClusterDefaultVpcPrivateSubnet2DefaultRouteABCE20FF": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "FargateClusterDefaultVpcPrivateSubnet2RouteTable1691B33C"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "FargateClusterDefaultVpcPublicSubnet2NATGateway77D6A579"
+    },
+    "RouteTableId": {
+     "Ref": "FargateClusterDefaultVpcPrivateSubnet2RouteTable1691B33C"
     }
    }
   },
@@ -444,11 +444,11 @@
   "FargateClusterDefaultVpcVPCGWA7F012E1": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterDefaultVpcE69D3A13"
-    },
     "InternetGatewayId": {
      "Ref": "FargateClusterDefaultVpcIGWFD9278DA"
+    },
+    "VpcId": {
+     "Ref": "FargateClusterDefaultVpcE69D3A13"
     }
    }
   },
@@ -786,6 +786,9 @@
        "Arn"
       ]
      },
+     "kubernetesNetworkConfig": {
+      "ipFamily": "ipv4"
+     },
      "resourcesVpcConfig": {
       "subnetIds": [
        {
@@ -1024,7 +1027,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/615ebbe5e350229c72ae7e49417eecc88db7f13dc2fc900cb20c6bbbd1fd4be6.json"
+       "/77aa63abab67d1fc3f710b23c58c1108e3c87a12e36b121462b5dc1e8be973ab.json"
       ]
      ]
     }
@@ -1035,6 +1038,29 @@
   "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B": {
    "Type": "AWS::CloudFormation::Stack",
    "Properties": {
+    "Parameters": {
+     "referencetoawscdkeksfargateclustertestKubectlLayer821D4586Ref": {
+      "Ref": "KubectlLayer600207B5"
+     },
+     "referencetoawscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn": {
+      "Fn::GetAtt": [
+       "FargateClusterKubectlHandlerRole93DCDA21",
+       "Arn"
+      ]
+     },
+     "referencetoawscdkeksfargateclustertestFargateClusterDefaultVpcPrivateSubnet1Subnet0278E6BCRef": {
+      "Ref": "FargateClusterDefaultVpcPrivateSubnet1Subnet50EA43AA"
+     },
+     "referencetoawscdkeksfargateclustertestFargateClusterDefaultVpcPrivateSubnet2Subnet1F1EC575Ref": {
+      "Ref": "FargateClusterDefaultVpcPrivateSubnet2Subnet0C9D6154"
+     },
+     "referencetoawscdkeksfargateclustertestFargateCluster8588769EClusterSecurityGroupId": {
+      "Fn::GetAtt": [
+       "FargateCluster019F03E8",
+       "ClusterSecurityGroupId"
+      ]
+     }
+    },
     "TemplateURL": {
      "Fn::Join": [
       "",
@@ -1051,32 +1077,9 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/21c09c572d970f4a280377c888441fc927aa40285dfe234c7078936fd52135e5.json"
+       "/e28977269ea881e94b598c7691c300880879e2e49b6485050041b50eb9df3ff9.json"
       ]
      ]
-    },
-    "Parameters": {
-     "referencetoawscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn": {
-      "Fn::GetAtt": [
-       "FargateClusterKubectlHandlerRole93DCDA21",
-       "Arn"
-      ]
-     },
-     "referencetoawscdkeksfargateclustertestKubectlLayer821D4586Ref": {
-      "Ref": "KubectlLayer600207B5"
-     },
-     "referencetoawscdkeksfargateclustertestFargateClusterDefaultVpcPrivateSubnet1Subnet0278E6BCRef": {
-      "Ref": "FargateClusterDefaultVpcPrivateSubnet1Subnet50EA43AA"
-     },
-     "referencetoawscdkeksfargateclustertestFargateClusterDefaultVpcPrivateSubnet2Subnet1F1EC575Ref": {
-      "Ref": "FargateClusterDefaultVpcPrivateSubnet2Subnet0C9D6154"
-     },
-     "referencetoawscdkeksfargateclustertestFargateCluster8588769EClusterSecurityGroupId": {
-      "Fn::GetAtt": [
-       "FargateCluster019F03E8",
-       "ClusterSecurityGroupId"
-      ]
-     }
     }
    },
    "DependsOn": [

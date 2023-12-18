@@ -1,5 +1,7 @@
 import * as AWS from 'aws-sdk';
+import { PromiseResult } from 'aws-sdk/lib/request';
 import { ISDK } from './aws-auth';
+import { NestedStackNames } from './nested-stack-helpers';
 
 export interface ListStackResources {
   listStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]>;
@@ -33,7 +35,57 @@ export class LazyListStackResources implements ListStackResources {
   }
 }
 
-export class CfnEvaluationException extends Error {}
+export interface LookupExport {
+  lookupExport(name: string): Promise<AWS.CloudFormation.Export | undefined>;
+}
+
+export class LookupExportError extends Error { }
+
+export class LazyLookupExport implements LookupExport {
+  private cachedExports: { [name: string]: AWS.CloudFormation.Export } = {}
+
+  constructor(private readonly sdk: ISDK) { }
+
+  async lookupExport(name: string): Promise<AWS.CloudFormation.Export | undefined> {
+    if (this.cachedExports[name]) {
+      return this.cachedExports[name];
+    }
+
+    for await (const cfnExport of this.listExports()) {
+      if (!cfnExport.Name) {
+        continue; // ignore any result that omits a name
+      }
+      this.cachedExports[cfnExport.Name] = cfnExport;
+
+      if (cfnExport.Name === name) {
+        return cfnExport;
+      }
+
+    }
+
+    return undefined; // export not found
+  }
+
+  private async * listExports() {
+    let nextToken: string | undefined = undefined;
+    while (true) {
+      const response: PromiseResult<AWS.CloudFormation.ListExportsOutput, AWS.AWSError> = await this.sdk.cloudFormation().listExports({
+        NextToken: nextToken,
+      }).promise();
+
+      for (const cfnExport of response.Exports ?? []) {
+        yield cfnExport;
+      }
+
+      if (!response.NextToken) {
+        return;
+      }
+      nextToken = response.NextToken;
+    }
+  }
+}
+
+export class CfnEvaluationException extends Error { }
 
 export interface ResourceDefinition {
   readonly LogicalId: string;
@@ -42,27 +94,34 @@ export interface ResourceDefinition {
 }
 
 export interface EvaluateCloudFormationTemplateProps {
+  readonly stackName: string;
   readonly template: Template;
   readonly parameters: { [parameterName: string]: string };
   readonly account: string;
   readonly region: string;
   readonly partition: string;
   readonly urlSuffix: (region: string) => string;
-  readonly listStackResources: ListStackResources;
+  readonly sdk: ISDK;
+  readonly nestedStackNames?: { [nestedStackLogicalId: string]: NestedStackNames };
 }
 
 export class EvaluateCloudFormationTemplate {
-  private readonly stackResources: ListStackResources;
+  private readonly stackName: string;
   private readonly template: Template;
   private readonly context: { [k: string]: any };
   private readonly account: string;
   private readonly region: string;
   private readonly partition: string;
   private readonly urlSuffix: (region: string) => string;
+  private readonly sdk: ISDK;
+  private readonly nestedStackNames: { [nestedStackLogicalId: string]: NestedStackNames };
+  private readonly stackResources: ListStackResources;
+  private readonly lookupExport: LookupExport;
+
   private cachedUrlSuffix: string | undefined;
 
   constructor(props: EvaluateCloudFormationTemplateProps) {
-    this.stackResources = props.listStackResources;
+    this.stackName = props.stackName;
     this.template = props.template;
     this.context = {
       'AWS::AccountId': props.account,
@@ -74,22 +133,37 @@ export class EvaluateCloudFormationTemplate {
     this.region = props.region;
     this.partition = props.partition;
     this.urlSuffix = props.urlSuffix;
+    this.sdk = props.sdk;
+
+    // We need names of nested stack so we can evaluate cross stack references
+    this.nestedStackNames = props.nestedStackNames ?? {};
+
+    // The current resources of the Stack.
+    // We need them to figure out the physical name of a resource in case it wasn't specified by the user.
+    // We fetch it lazily, to save a service call, in case all hotswapped resources have their physical names set.
+    this.stackResources = new LazyListStackResources(this.sdk, this.stackName);
+
+    // CloudFormation Exports lookup to be able to resolve Fn::ImportValue intrinsics in template
+    this.lookupExport = new LazyLookupExport(this.sdk);
   }
 
   // clones current EvaluateCloudFormationTemplate object, but updates the stack name
-  public createNestedEvaluateCloudFormationTemplate(
-    listNestedStackResources: ListStackResources,
+  public async createNestedEvaluateCloudFormationTemplate(
+    stackName: string,
     nestedTemplate: Template,
     nestedStackParameters: { [parameterName: string]: any },
   ) {
+    const evaluatedParams = await this.evaluateCfnExpression(nestedStackParameters);
     return new EvaluateCloudFormationTemplate({
+      stackName,
       template: nestedTemplate,
-      parameters: nestedStackParameters,
+      parameters: evaluatedParams,
       account: this.account,
       region: this.region,
       partition: this.partition,
       urlSuffix: this.urlSuffix,
-      listStackResources: listNestedStackResources,
+      sdk: this.sdk,
+      nestedStackNames: this.nestedStackNames,
     });
   }
 
@@ -133,6 +207,14 @@ export class EvaluateCloudFormationTemplate {
 
   public async evaluateCfnExpression(cfnExpression: any): Promise<any> {
     const self = this;
+    /**
+     * Evaluates CloudFormation intrinsic functions
+     *
+     * Note that supported intrinsic functions are documented in README.md -- please update
+     * list of supported functions when adding new evaluations
+     *
+     * See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
+     */
     class CfnIntrinsics {
       public evaluateIntrinsic(intrinsic: Intrinsic): any {
         const intrinsicFunc = (this as any)[intrinsic.name];
@@ -194,6 +276,17 @@ export class EvaluateCloudFormationTemplate {
               : this['Fn::GetAtt'](splitKey[0], splitKey.slice(1).join('.'));
           }
         });
+      }
+
+      async 'Fn::ImportValue'(name: string): Promise<string> {
+        const exported = await self.lookupExport.lookupExport(name);
+        if (!exported) {
+          throw new CfnEvaluationException(`Export '${name}' could not be found for evaluation`);
+        }
+        if (!exported.Value) {
+          throw new CfnEvaluationException(`Export '${name}' exists without a value`);
+        }
+        return exported.Value;
       }
     }
 
@@ -262,23 +355,68 @@ export class EvaluateCloudFormationTemplate {
       return this.cachedUrlSuffix;
     }
 
+    // Try finding the ref in the passed in parameters
     const parameterTarget = this.context[logicalId];
     if (parameterTarget) {
       return parameterTarget;
     }
+
+    // If not in the passed in parameters, see if there is a default value in the template parameter that was not passed in
+    const defaultParameterValue = this.template.Parameters?.[logicalId]?.Default;
+    if (defaultParameterValue) {
+      return defaultParameterValue;
+    }
+
     // if it's not a Parameter, we need to search in the current Stack resources
     return this.findGetAttTarget(logicalId);
   }
 
   private async findGetAttTarget(logicalId: string, attribute?: string): Promise<string | undefined> {
+
+    // Handle case where the attribute is referencing a stack output (used in nested stacks to share parameters)
+    // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-cloudformation.html#w2ab1c17c23c19b5
+    if (logicalId === 'Outputs' && attribute) {
+      return this.evaluateCfnExpression(this.template.Outputs[attribute]?.Value);
+    }
+
     const stackResources = await this.stackResources.listStackResources();
     const foundResource = stackResources.find(sr => sr.LogicalResourceId === logicalId);
     if (!foundResource) {
       return undefined;
     }
+
+    if (foundResource.ResourceType == 'AWS::CloudFormation::Stack' && attribute?.startsWith('Outputs.')) {
+      // need to resolve attributes from another stack's Output section
+      const dependantStackName = this.findNestedStack(logicalId, this.nestedStackNames);
+      if (!dependantStackName) {
+        //this is a newly created nested stack and cannot be hotswapped
+        return undefined;
+      }
+      const dependantStackTemplate = this.template.Resources[logicalId];
+      const evaluateCfnTemplate = await this.createNestedEvaluateCloudFormationTemplate(
+        dependantStackName,
+        dependantStackTemplate?.Properties?.NestedTemplate,
+        dependantStackTemplate.newValue?.Properties?.Parameters);
+
+      // Split Outputs.<refName> into 'Outputs' and '<refName>' and recursively call evaluate
+      return evaluateCfnTemplate.evaluateCfnExpression({ 'Fn::GetAtt': attribute.split(/\.(.*)/s) });
+    }
     // now, we need to format the appropriate identifier depending on the resource type,
     // and the requested attribute name
     return this.formatResourceAttribute(foundResource, attribute);
+  }
+
+  private findNestedStack(logicalId: string, nestedStackNames: {
+    [nestedStackLogicalId: string]: NestedStackNames;
+  }): string | undefined {
+    for (const [nestedStackLogicalId, { nestedChildStackNames, nestedStackPhysicalName }] of Object.entries(nestedStackNames)) {
+      if (nestedStackLogicalId === logicalId) {
+        return nestedStackPhysicalName;
+      }
+      const checkInNestedChildStacks = this.findNestedStack(logicalId, nestedChildStackNames);
+      if (checkInNestedChildStacks) return checkInNestedChildStacks;
+    }
+    return undefined;
   }
 
   private formatResourceAttribute(resource: AWS.CloudFormation.StackResourceSummary, attribute: string | undefined): string | undefined {
@@ -362,6 +500,8 @@ const RESOURCE_TYPE_ATTRIBUTES_FORMATS: { [type: string]: { [attribute: string]:
   },
   'AWS::DynamoDB::Table': { Arn: stdSlashResourceArnFmt },
   'AWS::AppSync::GraphQLApi': { ApiId: appsyncGraphQlApiApiIdFmt },
+  'AWS::AppSync::FunctionConfiguration': { FunctionId: appsyncGraphQlFunctionIDFmt },
+  'AWS::AppSync::DataSource': { Name: appsyncGraphQlDataSourceNameFmt },
 };
 
 function iamArnFmt(parts: ArnParts): string {
@@ -387,6 +527,16 @@ function stdSlashResourceArnFmt(parts: ArnParts): string {
 function appsyncGraphQlApiApiIdFmt(parts: ArnParts): string {
   // arn:aws:appsync:us-east-1:111111111111:apis/<apiId>
   return parts.resourceName.split('/')[1];
+}
+
+function appsyncGraphQlFunctionIDFmt(parts: ArnParts): string {
+  // arn:aws:appsync:us-east-1:111111111111:apis/<apiId>/functions/<functionId>
+  return parts.resourceName.split('/')[3];
+}
+
+function appsyncGraphQlDataSourceNameFmt(parts: ArnParts): string {
+  // arn:aws:appsync:us-east-1:111111111111:apis/<apiId>/datasources/<name>
+  return parts.resourceName.split('/')[3];
 }
 
 interface Intrinsic {

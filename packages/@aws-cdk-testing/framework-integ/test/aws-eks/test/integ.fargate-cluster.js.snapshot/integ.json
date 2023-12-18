@@ -1,10 +1,11 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
     "aws-cdk-eks-fargate-cluster/DefaultTest": {
       "stacks": [
         "aws-cdk-eks-fargate-cluster-test"
       ],
+      "diffAssets": false,
       "assertionStack": "aws-cdk-eks-fargate-cluster/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkeksfargateclusterDefaultTestDeployAssert7DCC5E4C"
     }

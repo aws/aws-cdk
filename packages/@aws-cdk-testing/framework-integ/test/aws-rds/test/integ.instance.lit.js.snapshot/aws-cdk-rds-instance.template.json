@@ -19,9 +19,6 @@
   "VPCPublicSubnet1SubnetB4246D30": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -45,21 +42,24 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-instance/VPC/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet1RouteTableFEE4B781": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-instance/VPC/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
@@ -76,12 +76,12 @@
   "VPCPublicSubnet1DefaultRoute91CEF279": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
     }
    },
    "DependsOn": [
@@ -103,14 +103,14 @@
   "VPCPublicSubnet1NATGatewayE0556630": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VPCPublicSubnet1SubnetB4246D30"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VPCPublicSubnet1EIP6AD938E8",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
     },
     "Tags": [
      {
@@ -127,9 +127,6 @@
   "VPCPublicSubnet2Subnet74179F39": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -153,21 +150,24 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-instance/VPC/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet2RouteTable6F1A15F1": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-instance/VPC/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPublicSubnet2RouteTableAssociation5A808732": {
@@ -184,12 +184,12 @@
   "VPCPublicSubnet2DefaultRouteB7481BBA": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
     }
    },
    "DependsOn": [
@@ -211,14 +211,14 @@
   "VPCPublicSubnet2NATGateway3C070193": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VPCPublicSubnet2Subnet74179F39"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VPCPublicSubnet2EIP4947BC00",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
     },
     "Tags": [
      {
@@ -235,9 +235,6 @@
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -261,21 +258,24 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-instance/VPC/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPrivateSubnet1RouteTableBE8A6027": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-instance/VPC/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPrivateSubnet1RouteTableAssociation347902D1": {
@@ -292,21 +292,18 @@
   "VPCPrivateSubnet1DefaultRouteAE1D6490": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
     }
    }
   },
   "VPCPrivateSubnet2SubnetCFCDAA7A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -330,21 +327,24 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-instance/VPC/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPrivateSubnet2RouteTable0A19E10E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-instance/VPC/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
    }
   },
   "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
@@ -361,12 +361,12 @@
   "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VPCPublicSubnet2NATGateway3C070193"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
     }
    }
   },
@@ -384,11 +384,11 @@
   "VPCVPCGW99B986DC": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "VPCB9E5F0B4"
-    },
     "InternetGatewayId": {
      "Ref": "VPCIGWB7E252D3"
+    },
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
     }
    }
   },
@@ -432,7 +432,6 @@
    "Properties": {
     "EngineName": "oracle-se2",
     "MajorEngineVersion": "19",
-    "OptionGroupDescription": "Option group for oracle-se2 19",
     "OptionConfigurations": [
      {
       "OptionName": "LOCATOR"
@@ -449,7 +448,8 @@
        }
       ]
      }
-    ]
+    ],
+    "OptionGroupDescription": "Option group for oracle-se2 19"
    }
   },
   "InstanceSubnetGroupF2CBA54F": {
@@ -485,7 +485,6 @@
   "InstanceSecurityGroupfrom00000IndirectPort7D6BC055": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
-    "IpProtocol": "tcp",
     "CidrIp": "0.0.0.0/0",
     "Description": "from 0.0.0.0/0:{IndirectPort}",
     "FromPort": {
@@ -500,6 +499,7 @@
       "GroupId"
      ]
     },
+    "IpProtocol": "tcp",
     "ToPort": {
      "Fn::GetAtt": [
       "InstanceC1063A87",
@@ -511,7 +511,6 @@
   "InstanceSecurityGroupfromawscdkrdsinstanceInstanceRotationSingleUserSecurityGroupE959D912IndirectPortFF39F421": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
-    "IpProtocol": "tcp",
     "Description": "from awscdkrdsinstanceInstanceRotationSingleUserSecurityGroupE959D912:{IndirectPort}",
     "FromPort": {
      "Fn::GetAtt": [
@@ -525,6 +524,7 @@
       "GroupId"
      ]
     },
+    "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
       "InstanceRotationSingleUserSecurityGroupF3FB5C25",
@@ -609,9 +609,6 @@
   "InstanceSecretAttachmentRotationScheduleCC555119": {
    "Type": "AWS::SecretsManager::RotationSchedule",
    "Properties": {
-    "SecretId": {
-     "Ref": "InstanceSecretAttachment83BEE581"
-    },
     "RotationLambdaARN": {
      "Fn::GetAtt": [
       "InstanceRotationSingleUser90E8AB49",
@@ -619,7 +616,10 @@
      ]
     },
     "RotationRules": {
-     "AutomaticallyAfterDays": 30
+     "ScheduleExpression": "rate(30 days)"
+    },
+    "SecretId": {
+     "Ref": "InstanceSecretAttachment83BEE581"
     }
    }
   },
@@ -685,18 +685,6 @@
     "EngineVersion": "19.0.0.0.ru-2020-04.rur-2020-04.r1",
     "Iops": 1000,
     "LicenseModel": "bring-your-own-license",
-    "MasterUsername": {
-     "Fn::Join": [
-      "",
-      [
-       "{{resolve:secretsmanager:",
-       {
-        "Ref": "InstanceSecret478E0A47"
-       },
-       ":SecretString:username::}}"
-      ]
-     ]
-    },
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -706,6 +694,18 @@
         "Ref": "InstanceSecret478E0A47"
        },
        ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "InstanceSecret478E0A47"
+       },
+       ":SecretString:username::}}"
       ]
      ]
     },
@@ -1043,20 +1043,13 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Handler": "index.handler",
-    "Runtime": {
-     "Fn::FindInMap": [
-      "DefaultCrNodeVersionMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 900,
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0f8a80f5f2310ea7e3295258fdbb79c43a1e8c0a11e863e63dc82832599412ed.zip"
+     "S3Key": "06e556630dea1544fb71a394cf744fc6471c533769911adb44a84d795729c1f5.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -1074,7 +1067,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 1,
     "Dimensions": [
      {
       "Name": "DBInstanceIdentifier",
@@ -1083,6 +1075,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 1,
     "MetricName": "CPUUtilization",
     "Namespace": "AWS/RDS",
     "Period": 300,
@@ -1127,14 +1120,14 @@
     "Code": {
      "ZipFile": "exports.handler = (event) => console.log(event);"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "FunctionServiceRole675BB04A",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "FunctionServiceRole675BB04A"
@@ -1145,7 +1138,7 @@
   "InstanceRotationSingleUserSARMappingFEA0C86E": {
    "aws": {
     "applicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSOracleRotationSingleUser",
-    "semanticVersion": "1.1.225"
+    "semanticVersion": "1.1.367"
    },
    "aws-cn": {
     "applicationId": "arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/SecretsManagerRDSOracleRotationSingleUser",
@@ -1154,107 +1147,6 @@
    "aws-us-gov": {
     "applicationId": "arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/SecretsManagerRDSOracleRotationSingleUser",
     "semanticVersion": "1.1.93"
-   }
-  },
-  "DefaultCrNodeVersionMap": {
-   "af-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs16.x"
-   },
-   "me-central-1": {
-    "value": "nodejs16.x"
-   },
-   "me-south-1": {
-    "value": "nodejs16.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-2": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs14.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-west-2": {
-    "value": "nodejs16.x"
    }
   }
  },

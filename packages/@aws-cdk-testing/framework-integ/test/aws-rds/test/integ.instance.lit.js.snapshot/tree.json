@@ -45,9 +45,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -71,7 +68,10 @@
                             "key": "Name",
                             "value": "aws-cdk-rds-instance/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -93,15 +93,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-rds-instance/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -134,12 +134,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
                         }
                       }
                     },
@@ -174,14 +174,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VPCPublicSubnet1EIP6AD938E8",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
                         },
                         "tags": [
                           {
@@ -212,9 +212,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -238,7 +235,10 @@
                             "key": "Name",
                             "value": "aws-cdk-rds-instance/VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -260,15 +260,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-rds-instance/VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -301,12 +301,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
                         }
                       }
                     },
@@ -341,14 +341,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VPCPublicSubnet2Subnet74179F39"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VPCPublicSubnet2EIP4947BC00",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet2Subnet74179F39"
                         },
                         "tags": [
                           {
@@ -379,9 +379,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -405,7 +402,10 @@
                             "key": "Name",
                             "value": "aws-cdk-rds-instance/VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -427,15 +427,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-rds-instance/VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -468,12 +468,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
                         }
                       }
                     },
@@ -498,9 +498,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -524,7 +521,10 @@
                             "key": "Name",
                             "value": "aws-cdk-rds-instance/VPC/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -546,15 +546,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-rds-instance/VPC/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -587,12 +587,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VPCPublicSubnet2NATGateway3C070193"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
                         }
                       }
                     },
@@ -632,11 +632,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "VPCB9E5F0B4"
-                    },
                     "internetGatewayId": {
                       "Ref": "VPCIGWB7E252D3"
+                    },
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
                     }
                   }
                 },
@@ -734,7 +734,6 @@
                   "aws:cdk:cloudformation:props": {
                     "engineName": "oracle-se2",
                     "majorEngineVersion": "19",
-                    "optionGroupDescription": "Option group for oracle-se2 19",
                     "optionConfigurations": [
                       {
                         "optionName": "LOCATOR"
@@ -751,7 +750,8 @@
                           }
                         ]
                       }
-                    ]
+                    ],
+                    "optionGroupDescription": "Option group for oracle-se2 19"
                   }
                 },
                 "constructInfo": {
@@ -835,7 +835,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "ipProtocol": "tcp",
                         "cidrIp": "0.0.0.0/0",
                         "description": "from 0.0.0.0/0:{IndirectPort}",
                         "fromPort": {
@@ -850,6 +849,7 @@
                             "GroupId"
                           ]
                         },
+                        "ipProtocol": "tcp",
                         "toPort": {
                           "Fn::GetAtt": [
                             "InstanceC1063A87",
@@ -869,7 +869,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "ipProtocol": "tcp",
                         "description": "from awscdkrdsinstanceInstanceRotationSingleUserSecurityGroupE959D912:{IndirectPort}",
                         "fromPort": {
                           "Fn::GetAtt": [
@@ -883,6 +882,7 @@
                             "GroupId"
                           ]
                         },
+                        "ipProtocol": "tcp",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
                             "InstanceRotationSingleUserSecurityGroupF3FB5C25",
@@ -1033,9 +1033,6 @@
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SecretsManager::RotationSchedule",
                               "aws:cdk:cloudformation:props": {
-                                "secretId": {
-                                  "Ref": "InstanceSecretAttachment83BEE581"
-                                },
                                 "rotationLambdaArn": {
                                   "Fn::GetAtt": [
                                     "InstanceRotationSingleUser90E8AB49",
@@ -1043,7 +1040,10 @@
                                   ]
                                 },
                                 "rotationRules": {
-                                  "automaticallyAfterDays": 30
+                                  "scheduleExpression": "rate(30 days)"
+                                },
+                                "secretId": {
+                                  "Ref": "InstanceSecretAttachment83BEE581"
                                 }
                               }
                             },
@@ -1653,15 +1653,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
-            }
-          },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "aws-cdk-rds-instance/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
+              "version": "10.2.70"
             }
           },
           "HighCPU": {
@@ -1675,7 +1667,6 @@
                   "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
                   "aws:cdk:cloudformation:props": {
                     "comparisonOperator": "GreaterThanOrEqualToThreshold",
-                    "evaluationPeriods": 1,
                     "dimensions": [
                       {
                         "name": "DBInstanceIdentifier",
@@ -1684,6 +1675,7 @@
                         }
                       }
                     ],
+                    "evaluationPeriods": 1,
                     "metricName": "CPUUtilization",
                     "namespace": "AWS/RDS",
                     "period": 300,
@@ -1772,14 +1764,14 @@
                     "code": {
                       "zipFile": "exports.handler = (event) => console.log(event);"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "FunctionServiceRole675BB04A",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -1820,7 +1812,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },

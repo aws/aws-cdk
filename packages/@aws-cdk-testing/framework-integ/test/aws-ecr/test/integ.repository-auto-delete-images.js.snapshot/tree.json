@@ -56,14 +56,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "aws-ecr-integ-stack/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "Custom::ECRAutoDeleteImagesCustomResourceProvider": {
             "id": "Custom::ECRAutoDeleteImagesCustomResourceProvider",
             "path": "aws-ecr-integ-stack/Custom::ECRAutoDeleteImagesCustomResourceProvider",
@@ -141,7 +133,7 @@
                 "path": "cdk-integ-auto-delete-images/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -187,7 +179,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },

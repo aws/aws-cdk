@@ -1,7 +1,7 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnGameServerGroup } from 'aws-cdk-lib/aws-gamelift';
 
@@ -11,11 +11,11 @@ import { CfnGameServerGroup } from 'aws-cdk-lib/aws-gamelift';
  */
 export interface AutoScalingPolicy {
   /**
-     * Length of time, it takes for a new instance to start new game server processes and register with GameLift FleetIQ.
-     * Specifying a warm-up time can be useful, particularly with game servers that take a long time to start up, because it avoids prematurely starting new instances.
-     *
-     * @default no instance warmup duration settled
-     */
+   * Length of time, it takes for a new instance to start new game server processes and register with GameLift FleetIQ.
+   * Specifying a warm-up time can be useful, particularly with game servers that take a long time to start up, because it avoids prematurely starting new instances.
+   *
+   * @default no instance warmup duration settled
+   */
   readonly estimatedInstanceWarmup?: cdk.Duration;
 
   /**
@@ -35,9 +35,10 @@ export interface AutoScalingPolicy {
  */
 export interface InstanceDefinition {
   /**
-     * An Amazon EC2 instance type designation.
-     */
+   * An Amazon EC2 instance type designation.
+   */
   readonly instanceType: ec2.InstanceType;
+
   /**
    * Instance weighting that indicates how much this instance type contributes to the total capacity of a game server group.
    * Instance weights are used by GameLift FleetIQ to calculate the instance type's cost per unit hour and better identify the most cost-effective options.
@@ -48,47 +49,53 @@ export interface InstanceDefinition {
    */
   readonly weight?: number;
 }
+
 /**
  * The type of delete to perform.
  * To delete a game server group, specify the DeleteOption.
  */
 export enum DeleteOption {
   /**
-    * Terminates the game server group and Amazon EC2 Auto Scaling group only when it has no game servers that are in UTILIZED status.
-    */
+   * Terminates the game server group and Amazon EC2 Auto Scaling group only when it has no game servers that are in UTILIZED status.
+   */
   SAFE_DELETE = 'SAFE_DELETE',
+
   /**
    * Terminates the game server group, including all active game servers regardless of their utilization status, and the Amazon EC2 Auto Scaling group.
    */
   FORCE_DELETE = 'FORCE_DELETE',
+
   /**
    * Does a safe delete of the game server group but retains the Amazon EC2 Auto Scaling group as is.
    */
   RETAIN = 'RETAIN',
 }
+
 /**
  * Indicates how GameLift FleetIQ balances the use of Spot Instances and On-Demand Instances in the game server group.
  */
 export enum BalancingStrategy {
   /**
-     * Only Spot Instances are used in the game server group.
-     * If Spot Instances are unavailable or not viable for game hosting, the game server group provides no hosting capacity until Spot Instances can again be used.
-     * Until then, no new instances are started, and the existing nonviable Spot Instances are terminated (after current gameplay ends) and are not replaced.
-     */
+   * Only Spot Instances are used in the game server group.
+   * If Spot Instances are unavailable or not viable for game hosting, the game server group provides no hosting capacity until Spot Instances can again be used.
+   * Until then, no new instances are started, and the existing nonviable Spot Instances are terminated (after current gameplay ends) and are not replaced.
+   */
   SPOT_ONLY = 'SPOT_ONLY',
+
   /**
    * Spot Instances are used whenever available in the game server group.
    * If Spot Instances are unavailable, the game server group continues to provide hosting capacity by falling back to On-Demand Instances.
    * Existing nonviable Spot Instances are terminated (after current gameplay ends) and are replaced with new On-Demand Instances.
    */
   SPOT_PREFERRED = 'SPOT_PREFERRED',
+
   /**
    * Only On-Demand Instances are used in the game server group.
    * No Spot Instances are used, even when available, while this balancing strategy is in force.
    */
   ON_DEMAND_ONLY = 'ON_DEMAND_ONLY',
-
 }
+
 /**
  * Represent a GameLift FleetIQ game server group.
  */
@@ -129,10 +136,9 @@ export interface IGameServerGroup extends cdk.IResource, iam.IGrantable {
  * Base class for new and imported GameLift FleetIQ game server group.
  */
 export abstract class GameServerGroupBase extends cdk.Resource implements IGameServerGroup {
-
   /**
-  * The ARN of the game server group.
-  */
+   * The ARN of the game server group.
+   */
   public abstract readonly gameServerGroupArn: string;
 
   /**
@@ -141,13 +147,13 @@ export abstract class GameServerGroupBase extends cdk.Resource implements IGameS
   public abstract readonly autoScalingGroupArn: string;
 
   /**
-  * The name of the game server group.
-  */
+   * The name of the game server group.
+   */
   public abstract readonly gameServerGroupName: string;
 
   /**
-  * The principal this GameLift game server group is using.
-  */
+   * The principal this GameLift game server group is using.
+   */
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
@@ -168,29 +174,28 @@ export abstract class GameServerGroupBase extends cdk.Resource implements IGameS
       ...props,
     }).attachTo(this);
   }
-
 }
 
 /**
  * Represents a GameServerGroup content defined outside of this stack.
  */
 export interface GameServerGroupAttributes {
+  /**
+   * The name of the game server group
+   *
+   * At least one of `gameServerGroupArn` and `gameServerGroupName` must be provided.
+   *
+   * @default derived from `gameServerGroupArn`.
+   */
+  readonly gameServerGroupName?: string;
 
   /**
-     * The name of the game server group
-     *
-     * At least one of `gameServerGroupArn` and `gameServerGroupName` must be provided.
-     *
-     * @default derived from `gameServerGroupArn`.
-     */
-  readonly gameServerGroupName?: string;
-  /**
-     * The ARN of the game server group
-     *
-     * At least one of `gameServerGroupArn` and `gameServerGroupName` must be provided.
-     *
-     * @default derived from `gameServerGroupName`.
-     */
+   * The ARN of the game server group
+   *
+   * At least one of `gameServerGroupArn` and `gameServerGroupName` must be provided.
+   *
+   * @default derived from `gameServerGroupName`.
+   */
   readonly gameServerGroupArn?: string;
 
   /**
@@ -213,18 +218,18 @@ export interface GameServerGroupAttributes {
  */
 export interface GameServerGroupProps {
   /**
-     * A developer-defined identifier for the game server group.
-     * The name is unique for each Region in each AWS account.
-     */
+   * A developer-defined identifier for the game server group.
+   * The name is unique for each Region in each AWS account.
+   */
   readonly gameServerGroupName: string;
 
   /**
-    * The IAM role that allows Amazon GameLift to access your Amazon EC2 Auto Scaling groups.
-    *
-    * @see https://docs.aws.amazon.com/gamelift/latest/fleetiqguide/gsg-iam-permissions-roles.html
-    *
-    * @default - a role will be created with default trust to Gamelift and Autoscaling service principal with a default policy `GameLiftGameServerGroupPolicy` attached.
-    */
+   * The IAM role that allows Amazon GameLift to access your Amazon EC2 Auto Scaling groups.
+   *
+   * @see https://docs.aws.amazon.com/gamelift/latest/fleetiqguide/gsg-iam-permissions-roles.html
+   *
+   * @default - a role will be created with default trust to Gamelift and Autoscaling service principal with a default policy `GameLiftGameServerGroupPolicy` attached.
+   */
   readonly role?: iam.IRole;
 
   /**
@@ -240,12 +245,12 @@ export interface GameServerGroupProps {
   readonly minSize?: number;
 
   /**
-    * The maximum number of instances allowed in the Amazon EC2 Auto Scaling group. During automatic scaling events, GameLift FleetIQ and EC2 do not scale up the group above this maximum.
-    *
-    * After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.
-    *
-    * @default the default is 1
-    */
+   * The maximum number of instances allowed in the Amazon EC2 Auto Scaling group. During automatic scaling events, GameLift FleetIQ and EC2 do not scale up the group above this maximum.
+   *
+   * After the Auto Scaling group is created, update this value directly in the Auto Scaling group using the AWS console or APIs.
+   *
+   * @default the default is 1
+   */
   readonly maxSize?: number;
 
   /**
@@ -343,7 +348,6 @@ export interface GameServerGroupProps {
  * @resource AWS::GameLift::GameServerGroup
  */
 export class GameServerGroup extends GameServerGroupBase {
-
   /**
    * Import an existing game server group from its attributes.
    */
@@ -397,13 +401,13 @@ export class GameServerGroup extends GameServerGroupBase {
   public readonly autoScalingGroupArn: string;
 
   /**
-    * The IAM role that allows Amazon GameLift to access your Amazon EC2 Auto Scaling groups.
-    */
+   * The IAM role that allows Amazon GameLift to access your Amazon EC2 Auto Scaling groups.
+   */
   public readonly role: iam.IRole;
 
   /**
-    * The principal this GameLift game server group is using.
-    */
+   * The principal this GameLift game server group is using.
+   */
   public readonly grantPrincipal: iam.IPrincipal;
 
   /**
@@ -412,8 +416,8 @@ export class GameServerGroup extends GameServerGroupBase {
   public readonly vpc: ec2.IVpc;
 
   /**
-    * The game server group's subnets.
-    */
+   * The game server group's subnets.
+   */
   public readonly vpcSubnets?: ec2.SubnetSelection;
 
   constructor(scope: Construct, id: string, props: GameServerGroupProps) {
@@ -489,7 +493,6 @@ export class GameServerGroup extends GameServerGroupBase {
       resourceName: this.physicalName,
       arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
     });
-
   }
 
   protected parseLaunchTemplate(props: GameServerGroupProps): CfnGameServerGroup.LaunchTemplateProperty {

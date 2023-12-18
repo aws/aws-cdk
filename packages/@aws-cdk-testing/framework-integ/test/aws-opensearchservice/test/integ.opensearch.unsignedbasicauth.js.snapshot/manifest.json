@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "cdk-integ-opensearch-unsignedbasicauth.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-opensearch-unsignedbasicauth.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e668f1f25a9151a0c4f38dc697752ac18be4fe278117c62370f1e16755735149.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a3409843ef01a2e2da7ce2ae7533b0e7b75c9a8c44497f450313b1284fe5fab5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -45,6 +46,12 @@
             "data": "Domain66AC69E0"
           }
         ],
+        "/cdk-integ-opensearch-unsignedbasicauth/Domain/AccessPolicy": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
+          }
+        ],
         "/cdk-integ-opensearch-unsignedbasicauth/Domain/AccessPolicy/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -55,12 +62,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DomainAccessPolicyCustomResourcePolicyE61F1845"
-          }
-        ],
-        "/cdk-integ-opensearch-unsignedbasicauth/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
           }
         ],
         "/cdk-integ-opensearch-unsignedbasicauth/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -89,6 +90,54 @@
         ]
       },
       "displayName": "cdk-integ-opensearch-unsignedbasicauth"
+    },
+    "OpenSearchUnsignedBasicAuthIntegDefaultTestDeployAssert833213F2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "OpenSearchUnsignedBasicAuthIntegDefaultTestDeployAssert833213F2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "OpenSearchUnsignedBasicAuthIntegDefaultTestDeployAssert833213F2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "OpenSearchUnsignedBasicAuthIntegDefaultTestDeployAssert833213F2.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "OpenSearchUnsignedBasicAuthIntegDefaultTestDeployAssert833213F2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "OpenSearchUnsignedBasicAuthIntegDefaultTestDeployAssert833213F2.assets"
+      ],
+      "metadata": {
+        "/OpenSearchUnsignedBasicAuthInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/OpenSearchUnsignedBasicAuthInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "OpenSearchUnsignedBasicAuthInteg/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

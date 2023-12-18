@@ -74,6 +74,7 @@ const stack = new PipelineStack(app, 'PreparelessPipelineStack');
 
 new integ.IntegTest(app, 'PreparelessPipelineTest', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 app.synth();

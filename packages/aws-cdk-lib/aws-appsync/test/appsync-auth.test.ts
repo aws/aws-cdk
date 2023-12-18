@@ -637,7 +637,7 @@ describe('AppSync Lambda Authorization', () => {
   let fn: lambda.Function;
   beforeEach(() => {
     fn = new lambda.Function(stack, 'auth-function', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: lambda.Code.fromInline('/* lambda authentication code here.*/'),
     });

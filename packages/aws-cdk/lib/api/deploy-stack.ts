@@ -4,10 +4,10 @@ import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as uuid from 'uuid';
 import { ISDK, SdkProvider } from './aws-auth';
+import { EnvironmentResources } from './environment-resources';
 import { CfnEvaluationException } from './evaluate-cloudformation-template';
 import { HotswapMode, ICON } from './hotswap/common';
 import { tryHotswapDeployment } from './hotswap-deployments';
-import { ToolkitInfo } from './toolkit-info';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
   waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges, ResourcesToImport,
@@ -15,7 +15,7 @@ import {
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { addMetadataAssetsToManifest } from '../assets';
 import { Tag } from '../cdk-toolkit';
-import { debug, error, print } from '../logging';
+import { debug, error, print, warning } from '../logging';
 import { toYAML } from '../serialize';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
@@ -71,7 +71,7 @@ export interface DeployStackOptions {
   /**
    * Information about the bootstrap stack found in the target environment
    */
-  readonly toolkitInfo: ToolkitInfo;
+  readonly envResources: EnvironmentResources;
 
   /**
    * Role to pass to CloudFormation to execute the change set
@@ -262,7 +262,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   // an ad-hoc asset manifest, while passing their locations via template
   // parameters.
   const legacyAssets = new AssetManifestBuilder();
-  const assetParams = await addMetadataAssetsToManifest(stackArtifact, legacyAssets, options.toolkitInfo, options.reuseAssets);
+  const assetParams = await addMetadataAssetsToManifest(stackArtifact, legacyAssets, options.envResources, options.reuseAssets);
 
   const finalParameterValues = { ...options.parameters, ...assetParams };
 
@@ -291,7 +291,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     stackArtifact,
     options.resolvedEnvironment,
     legacyAssets,
-    options.toolkitInfo,
+    options.envResources,
     options.sdk,
     options.overrideTemplate);
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv, {
@@ -391,6 +391,17 @@ class FullCloudFormationDeployment {
         debug('Deleting empty change set %s', changeSetDescription.ChangeSetId);
         await this.cfn.deleteChangeSet({ StackName: this.stackName, ChangeSetName: changeSetName }).promise();
       }
+
+      if (this.options.force) {
+        warning([
+          'You used the --force flag, but CloudFormation reported that the deployment would not make any changes.',
+          'According to CloudFormation, all resources are already up-to-date with the state in your CDK app.',
+          '',
+          'You cannot use the --force flag to get rid of changes you made in the console. Try using',
+          'CloudFormation drift detection instead: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html',
+        ].join('\n'));
+      }
+
       return { noOp: true, outputs: this.cloudFormationStack.outputs, stackArn: changeSetDescription.StackId! };
     }
 
@@ -565,7 +576,7 @@ async function makeBodyParameter(
   stack: cxapi.CloudFormationStackArtifact,
   resolvedEnvironment: cxapi.Environment,
   assetManifest: AssetManifestBuilder,
-  toolkitInfo: ToolkitInfo,
+  resources: EnvironmentResources,
   sdk: ISDK,
   overrideTemplate?: any,
 ): Promise<TemplateBodyParameter> {
@@ -582,6 +593,7 @@ async function makeBodyParameter(
     return { TemplateBody: templateJson };
   }
 
+  const toolkitInfo = await resources.lookupToolkit();
   if (!toolkitInfo.found) {
     error(
       `The template for stack "${stack.displayName}" is ${Math.round(templateJson.length / 1024)}KiB. ` +
@@ -623,7 +635,7 @@ async function makeBodyParameter(
 export async function makeBodyParameterAndUpload(
   stack: cxapi.CloudFormationStackArtifact,
   resolvedEnvironment: cxapi.Environment,
-  toolkitInfo: ToolkitInfo,
+  resources: EnvironmentResources,
   sdkProvider: SdkProvider,
   sdk: ISDK,
   overrideTemplate?: any): Promise<TemplateBodyParameter> {
@@ -635,7 +647,7 @@ export async function makeBodyParameterAndUpload(
   });
 
   const builder = new AssetManifestBuilder();
-  const bodyparam = await makeBodyParameter(forceUploadStack, resolvedEnvironment, builder, toolkitInfo, sdk, overrideTemplate);
+  const bodyparam = await makeBodyParameter(forceUploadStack, resolvedEnvironment, builder, resources, sdk, overrideTemplate);
   const manifest = builder.toManifest(stack.assembly.directory);
   await publishAssets(manifest, sdkProvider, resolvedEnvironment, { quiet: true });
   return bodyparam;

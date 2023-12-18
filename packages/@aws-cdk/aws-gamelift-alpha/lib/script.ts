@@ -1,13 +1,13 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Content } from './content';
 import { CfnScript } from 'aws-cdk-lib/aws-gamelift';
 
 /**
-  * Your configuration and custom game logic for use with Realtime Servers.
+ * Your configuration and custom game logic for use with Realtime Servers.
  * Realtime Servers are provided by GameLift to use instead of a custom-built game server.
  * You configure Realtime Servers for your game clients by creating a script using JavaScript,
  * and add custom game logic as appropriate to host game sessions for your players.
@@ -16,7 +16,6 @@ import { CfnScript } from 'aws-cdk-lib/aws-gamelift';
  * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/realtime-script-uploading.html
  */
 export interface IScript extends cdk.IResource, iam.IGrantable {
-
   /**
    * The Identifier of the realtime server script.
    *
@@ -37,8 +36,8 @@ export interface IScript extends cdk.IResource, iam.IGrantable {
  */
 export abstract class ScriptBase extends cdk.Resource implements IScript {
   /**
-     * The Identifier of the realtime server script.
-     */
+   * The Identifier of the realtime server script.
+   */
   public abstract readonly scriptId: string;
   public abstract readonly scriptArn: string;
 
@@ -50,9 +49,10 @@ export abstract class ScriptBase extends cdk.Resource implements IScript {
  */
 export interface ScriptAttributes {
   /**
-     * The ARN of the realtime server script
-     */
+   * The ARN of the realtime server script
+   */
   readonly scriptArn: string;
+
   /**
    * The IAM role assumed by GameLift to access server script in S3.
    * @default - undefined
@@ -65,45 +65,45 @@ export interface ScriptAttributes {
  */
 export interface ScriptProps {
   /**
-     * Name of this realtime server script
-     *
-     * @default No name
-     */
+   * Name of this realtime server script
+   *
+   * @default No name
+   */
   readonly scriptName?: string;
 
   /**
-     * Version of this realtime server script
-     *
-     * @default No version
-     */
+   * Version of this realtime server script
+   *
+   * @default No version
+   */
   readonly scriptVersion?: string;
 
   /**
-     * The game content
-     */
+   * The game content
+   */
   readonly content: Content;
 
   /**
-    * The IAM role assumed by GameLift to access server script in S3.
-    * If providing a custom role, it needs to trust the GameLift service principal (gamelift.amazonaws.com) and be granted sufficient permissions
-    * to have Read access to a specific key content into a specific S3 bucket.
-    * Below an example of required permission:
-    * {
-    *  "Version": "2012-10-17",
-    *  "Statement": [{
-    *        "Effect": "Allow",
-    *        "Action": [
-    *            "s3:GetObject",
-    *            "s3:GetObjectVersion"
-    *        ],
-    *        "Resource": "arn:aws:s3:::bucket-name/object-name"
-    *  }]
-    *}
-    *
-    * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-access-storage-loc
-    *
-    * @default - a role will be created with default permissions.
-    */
+   * The IAM role assumed by GameLift to access server script in S3.
+   * If providing a custom role, it needs to trust the GameLift service principal (gamelift.amazonaws.com) and be granted sufficient permissions
+   * to have Read access to a specific key content into a specific S3 bucket.
+   * Below an example of required permission:
+   * {
+   *  "Version": "2012-10-17",
+   *  "Statement": [{
+   *        "Effect": "Allow",
+   *        "Action": [
+   *            "s3:GetObject",
+   *            "s3:GetObjectVersion"
+   *        ],
+   *        "Resource": "arn:aws:s3:::bucket-name/object-name"
+   *  }]
+   * }
+   *
+   * @see https://docs.aws.amazon.com/gamelift/latest/developerguide/security_iam_id-based-policy-examples.html#security_iam_id-based-policy-examples-access-storage-loc
+   *
+   * @default - a role will be created with default permissions.
+   */
   readonly role?: iam.IRole;
 }
 
@@ -116,7 +116,6 @@ export interface ScriptProps {
  * @resource AWS::GameLift::Script
  */
 export class Script extends ScriptBase {
-
   /**
    * Create a new realtime server script from s3 content
    */
@@ -136,8 +135,8 @@ export class Script extends ScriptBase {
   }
 
   /**
-     * Import a script into CDK using its ARN
-     */
+   * Import a script into CDK using its ARN
+   */
   static fromScriptArn(scope: Construct, id: string, scriptArn: string): IScript {
     return this.fromScriptAttributes(scope, id, { scriptArn });
   }

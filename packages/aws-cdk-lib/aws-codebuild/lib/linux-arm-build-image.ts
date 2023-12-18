@@ -1,6 +1,6 @@
 import { BuildSpec } from './build-spec';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import { BuildEnvironment, ComputeType, IBuildImage, ImagePullPrincipalType } from './project';
+import { BuildEnvironment, ComputeType, IBuildImage, ImagePullPrincipalType, DockerImageOptions } from './project';
 import * as ecr from '../../aws-ecr';
 import * as secretsmanager from '../../aws-secretsmanager';
 
@@ -23,6 +23,7 @@ interface LinuxArmBuildImageProps {
  * You can also specify a custom image using the static method:
  *
  * - LinuxBuildImage.fromEcrRepository(repo[, tag])
+ * - LinuxBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])
  *
  *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
@@ -34,6 +35,17 @@ export class LinuxArmBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2_STANDARD_2_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux2-aarch64-standard:2.0');
   /** Image "aws/codebuild/amazonlinux2-aarch64-standard:3.0". */
   public static readonly AMAZON_LINUX_2_STANDARD_3_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux2-aarch64-standard:3.0');
+
+  /**
+   * @returns a x86-64 Linux build image from a Docker Hub image.
+   */
+  public static fromDockerRegistry(name: string, options: DockerImageOptions = {}): IBuildImage {
+    return new LinuxArmBuildImage({
+      ...options,
+      imageId: name,
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+    });
+  }
 
   /**
    * Returns an ARM image running Linux from an ECR repository.

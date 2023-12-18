@@ -1,10 +1,11 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
     "cdk-integ-alb-log/DefaultTest": {
       "stacks": [
         "aws-cdk-elbv2-integ"
       ],
+      "diffAssets": true,
       "assertionStack": "cdk-integ-alb-log/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegalblogDefaultTestDeployAssert0863986A"
     }

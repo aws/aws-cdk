@@ -1,5 +1,5 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as core from 'aws-cdk-lib';
+import * as core from 'aws-cdk-lib/core';
 
 interface ValidatedProps {
   applicationName?: string;

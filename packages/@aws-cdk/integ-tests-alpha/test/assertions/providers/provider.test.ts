@@ -143,25 +143,38 @@ describe('AssertionProvider', () => {
 
       // THEN
       expect(encoded).toEqual({
-        Key1: 'TRUE:BOOLEAN',
-        Key2: 'FALSE:BOOLEAN',
+        Key1: 'true',
+        Key2: 'false',
       });
     });
 
-    test('all other values return as usual', () => {
+    test('numbers', () => {
+      // WHEN
+      const provider = new AssertionsProvider(stack, 'AssertionsProvider');
+      const encoded = provider.encode({
+        Key1: 1,
+        Key2: 2,
+      });
+      // THEN
+      expect(encoded).toEqual({
+        Key1: '1',
+        Key2: '2',
+      });
+    });
+
+    test('strings are double encoded', () => {
       // WHEN
       const provider = new AssertionsProvider(stack, 'AssertionsProvider');
       const encoded = provider.encode({
         Key1: 'foo',
-        Key2: 30,
+        Key2: 'bar',
         Key3: ['hello', 'world'],
       });
-
       // THEN
       expect(encoded).toEqual({
-        Key1: 'foo',
-        Key2: 30,
-        Key3: ['hello', 'world'],
+        Key1: '"foo"',
+        Key2: '"bar"',
+        Key3: '["hello","world"]',
       });
     });
 

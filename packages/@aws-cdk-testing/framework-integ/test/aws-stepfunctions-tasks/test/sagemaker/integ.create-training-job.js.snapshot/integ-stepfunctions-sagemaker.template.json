@@ -276,12 +276,6 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "StateMachineRoleB840431D",
-      "Arn"
-     ]
-    },
     "DefinitionString": {
      "Fn::Join": [
       "",
@@ -297,7 +291,7 @@
          "Arn"
         ]
        },
-       "\",\"AlgorithmSpecification\":{\"TrainingInputMode\":\"File\",\"AlgorithmName\":\"arn:aws:sagemaker:us-east-1:865070037744:algorithm/scikit-decision-trees-15423055-57b73412d2e93e9239e4e16f83298b8f\"},\"InputDataConfig\":[{\"ChannelName\":\"InputData\",\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"https://s3.",
+       "\",\"AlgorithmSpecification\":{\"TrainingInputMode\":\"FastFile\",\"AlgorithmName\":\"BlazingText\"},\"InputDataConfig\":[{\"ChannelName\":\"InputData\",\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"https://s3.",
        {
         "Ref": "AWS::Region"
        },
@@ -323,6 +317,12 @@
        },
        "/result/\"},\"ResourceConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.m4.xlarge\",\"VolumeSizeInGB\":10},\"StoppingCondition\":{\"MaxRuntimeInSeconds\":3600}}}}}"
       ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
      ]
     }
    },

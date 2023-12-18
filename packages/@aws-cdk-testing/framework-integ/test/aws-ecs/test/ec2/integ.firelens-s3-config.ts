@@ -31,7 +31,11 @@ taskDefinition.addFirelensLogRouter('log_router', {
       configFileType: ecs.FirelensConfigFileType.S3,
     },
   },
-  logging: new ecs.AwsLogDriver({ streamPrefix: 'firelens' }),
+  logging: new ecs.AwsLogDriver({
+    streamPrefix: 'firelens',
+    mode: ecs.AwsLogDriverMode.NON_BLOCKING,
+    maxBufferSize: cdk.Size.mebibytes(25),
+  }),
   memoryReservationMiB: 50,
 });
 

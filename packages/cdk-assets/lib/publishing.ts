@@ -45,6 +45,13 @@ export interface AssetPublishingOptions {
    * @default true
    */
   readonly publishAssets?: boolean;
+
+  /**
+   * Whether to print publishing logs
+   *
+   * @default true
+   */
+  readonly quiet?: boolean;
 }
 
 /**
@@ -240,7 +247,9 @@ export class AssetPublishing implements IPublishProgress {
     if (existing) {
       return existing;
     }
-    const ret = makeAssetHandler(this.manifest, asset, this.handlerHost);
+    const ret = makeAssetHandler(this.manifest, asset, this.handlerHost, {
+      quiet: this.options.quiet,
+    });
     this.handlerCache.set(asset, ret);
     return ret;
   }

@@ -151,6 +151,7 @@ describe('image asset', () => {
     const asset6 = new DockerImageAsset(stack, 'Asset6', { directory, extraHash: 'random-extra' });
     const asset7 = new DockerImageAsset(stack, 'Asset7', { directory, outputs: ['123'] });
     const asset8 = new DockerImageAsset(stack, 'Asset8', { directory, buildSecrets: { mySecret: DockerBuildSecret.fromSrc('abc.txt') } });
+    const asset9 = new DockerImageAsset(stack, 'Asset9', { directory, buildSsh: 'default' });
 
     expect(asset1.assetHash).toEqual('13248c55633f3b198a628bb2ea4663cb5226f8b2801051bd0c725950266fd590');
     expect(asset2.assetHash).toEqual('36bf205fb9adc5e45ba1c8d534158a0aed96d190eff433af1d90f3b94f96e751');
@@ -160,7 +161,7 @@ describe('image asset', () => {
     expect(asset6.assetHash).toEqual('3528d6838647a5e9011b0f35aec514d03ad11af05a94653cdcf4dacdbb070a06');
     expect(asset7.assetHash).toEqual('ced0a3076efe217f9cbdff0943e543f36ecf77f70b9a6fe28b8633deb728a462');
     expect(asset8.assetHash).toEqual('ffc2718e616141d18c8f4623d13cdfd68cb8f010ca5db31c916c8b5f10c162be');
-
+    expect(asset9.assetHash).toEqual('52617cbf463d1931a93da1357dfe99687f32e092619fc6d280cee8d9ee31b63b');
   });
 
   testDeprecated('repositoryName is included in the asset id', () => {

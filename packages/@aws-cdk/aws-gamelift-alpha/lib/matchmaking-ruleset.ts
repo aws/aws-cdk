@@ -1,5 +1,5 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnMatchmakingRuleSet } from 'aws-cdk-lib/aws-gamelift';
 import { RuleSetContent } from './matchmaking-ruleset-body';
@@ -47,11 +47,11 @@ export interface IMatchmakingRuleSet extends cdk.IResource {
  */
 export interface MatchmakingRuleSetProps {
   /**
-     * A unique identifier for the matchmaking rule set.
-     * A matchmaking configuration identifies the rule set it uses by this name value.
-     *
-     * Note: the rule set name is different from the optional name field in the rule set body
-     */
+   * A unique identifier for the matchmaking rule set.
+   * A matchmaking configuration identifies the rule set it uses by this name value.
+   *
+   * Note: the rule set name is different from the optional name field in the rule set body
+   */
   readonly matchmakingRuleSetName: string;
 
   /**
@@ -65,21 +65,21 @@ export interface MatchmakingRuleSetProps {
  */
 export interface MatchmakingRuleSetAttributes {
   /**
-       * The ARN of the matchmaking ruleSet
-       *
-       * At least one of `matchmakingRuleSetArn` and `matchmakingRuleSetName` must be provided.
-       *
-       * @default derived from `matchmakingRuleSetName`.
-       */
+   * The ARN of the matchmaking ruleSet
+   *
+   * At least one of `matchmakingRuleSetArn` and `matchmakingRuleSetName` must be provided.
+   *
+   * @default derived from `matchmakingRuleSetName`.
+   */
   readonly matchmakingRuleSetArn?: string;
 
   /**
-     * The unique name of the matchmaking ruleSet
-     *
-     * At least one of `ruleSetName` and `matchmakingRuleSetArn`  must be provided.
-     *
-     * @default derived from `matchmakingRuleSetArn`.
-     */
+   * The unique name of the matchmaking ruleSet
+   *
+   * At least one of `ruleSetName` and `matchmakingRuleSetArn`  must be provided.
+   *
+   * @default derived from `matchmakingRuleSetArn`.
+   */
   readonly matchmakingRuleSetName?: string;
 
 }
@@ -88,11 +88,11 @@ export interface MatchmakingRuleSetAttributes {
  * Base class for new and imported GameLift matchmaking ruleSet.
  */
 export abstract class MatchmakingRuleSetBase extends cdk.Resource implements IMatchmakingRuleSet {
-
   /**
-    * The unique name of the ruleSet.
-    */
+   * The unique name of the ruleSet.
+   */
   public abstract readonly matchmakingRuleSetName: string;
+
   /**
    * The ARN of the ruleSet.
    */
@@ -134,17 +134,16 @@ export abstract class MatchmakingRuleSetBase extends cdk.Resource implements IMa
  * @resource AWS::GameLift::MatchmakingRuleSet
  */
 export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
-
   /**
-     * Import a ruleSet into CDK using its name
-     */
+   * Import a ruleSet into CDK using its name
+   */
   static fromMatchmakingRuleSetName(scope: Construct, id: string, matchmakingRuleSetName: string): IMatchmakingRuleSet {
     return this.fromMatchmakingRuleSetAttributes(scope, id, { matchmakingRuleSetName });
   }
 
   /**
-     * Import a ruleSet into CDK using its ARN
-     */
+   * Import a ruleSet into CDK using its ARN
+   */
   static fromMatchmakingRuleSetArn(scope: Construct, id: string, matchmakingRuleSetArn: string): IMatchmakingRuleSet {
     return this.fromMatchmakingRuleSetAttributes(scope, id, { matchmakingRuleSetArn });
   }
@@ -188,8 +187,8 @@ export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
   public readonly matchmakingRuleSetName: string;
 
   /**
-    * The ARN of the ruleSet.
-    */
+   * The ARN of the ruleSet.
+   */
   public readonly matchmakingRuleSetArn: string;
 
   constructor(scope: Construct, id: string, props: MatchmakingRuleSetProps) {
@@ -221,5 +220,4 @@ export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
       arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
     });
   }
-
 }

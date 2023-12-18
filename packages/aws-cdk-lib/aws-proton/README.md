@@ -16,7 +16,7 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts nofixture
-import * as proton from '@aws-cdk/aws-proton';
+import * as proton from 'aws-cdk-lib/aws-proton';
 ```
 
 <!--BEGIN CFNONLY DISCLAIMER-->

@@ -18,11 +18,12 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 
 - [Tasks for AWS Step Functions](#tasks-for-aws-step-functions)
   - [Table Of Contents](#table-of-contents)
+  - [Paths](#paths)
   - [Evaluate Expression](#evaluate-expression)
   - [API Gateway](#api-gateway)
     - [Call REST API Endpoint](#call-rest-api-endpoint)
     - [Call HTTP API Endpoint](#call-http-api-endpoint)
-  - [AWS SDK](#aws-sdk)
+    - [AWS SDK](#aws-sdk)
   - [Athena](#athena)
     - [StartQueryExecution](#startqueryexecution)
     - [GetQueryExecution](#getqueryexecution)
@@ -30,6 +31,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [StopQueryExecution](#stopqueryexecution)
   - [Batch](#batch)
     - [SubmitJob](#submitjob)
+  - [Bedrock](#bedrock)
+    - [InvokeModel](#invokemodel)
   - [CodeBuild](#codebuild)
     - [StartBuild](#startbuild)
   - [DynamoDB](#dynamodb)
@@ -94,7 +97,7 @@ const convertToSeconds = new tasks.EvaluateExpression(this, 'Convert to seconds'
 const createMessage = new tasks.EvaluateExpression(this, 'Create message', {
   // Note: this is a string inside a string.
   expression: '`Now waiting ${$.waitSeconds} seconds...`',
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   resultPath: '$.message',
 });
 
@@ -167,7 +170,7 @@ new tasks.CallApiGatewayRestApiEndpoint(this, 'Endpoint', {
 The `CallApiGatewayHttpApiEndpoint` calls the HTTP API endpoint.
 
 ```ts
-import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2-alpha';
+import * as apigatewayv2 from 'aws-cdk-lib/aws-apigatewayv2';
 const httpApi = new apigatewayv2.HttpApi(this, 'MyHttpApi');
 
 const invokeTask = new tasks.CallApiGatewayHttpApiEndpoint(this, 'Call HTTP API', {
@@ -256,6 +259,7 @@ const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start 
       objectKey: 'folder',
     },
   },
+  executionParameters: ['param1', 'param2'],
 });
 ```
 
@@ -298,7 +302,7 @@ Step Functions supports [Batch](https://docs.aws.amazon.com/step-functions/lates
 The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html) API submits an AWS Batch job from a job definition.
 
 ```ts
-import * as batch from '@aws-cdk/aws-batch-alpha';
+import * as batch from 'aws-cdk-lib/aws-batch';
 declare const batchJobDefinition: batch.EcsJobDefinition;
 declare const batchQueue: batch.JobQueue;
 
@@ -306,6 +310,42 @@ const task = new tasks.BatchSubmitJob(this, 'Submit Job', {
   jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
   jobName: 'MyJob',
   jobQueueArn: batchQueue.jobQueueArn,
+});
+```
+
+## Bedrock
+
+Step Functions supports [Bedrock](https://docs.aws.amazon.com/step-functions/latest/dg/connect-bedrock.html) through the service integration pattern.
+
+### InvokeModel
+
+The [InvokeModel](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_InvokeModel.html) API
+invokes the specified Bedrock model to run inference using the input provided.
+The format of the input body and the response body depend on the model selected.
+
+```ts
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
+  model,
+  body: sfn.TaskInput.fromObject(
+    {
+      inputText: 'Generate a list of five first names.',
+      textGenerationConfig: {
+        maxTokenCount: 100,
+        temperature: 1,
+      },
+    },
+  ),
+  resultSelector: {
+    names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
+  },
 });
 ```
 
@@ -614,6 +654,78 @@ Corresponds to the [`addJobFlowSteps`](https://docs.aws.amazon.com/emr/latest/AP
 ```ts
 new tasks.EmrAddStep(this, 'Task', {
   clusterId: 'ClusterId',
+  name: 'StepName',
+  jar: 'Jar',
+  actionOnFailure: tasks.ActionOnFailure.CONTINUE,
+});
+```
+
+To specify a custom runtime role use the `executionRoleArn` property.
+
+**Note:** The EMR cluster must be created with a security configuration and the runtime role must have a specific trust policy. 
+See this [blog post](https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/) for more details.
+
+```ts
+import * as emr from 'aws-cdk-lib/aws-emr';
+
+const cfnSecurityConfiguration = new emr.CfnSecurityConfiguration(this, 'EmrSecurityConfiguration', {
+  name: 'AddStepRuntimeRoleSecConfig',
+  securityConfiguration: JSON.parse(`
+    {
+      "AuthorizationConfiguration": {
+          "IAMConfiguration": {
+              "EnableApplicationScopedIAMRole": true,
+              "ApplicationScopedIAMRoleConfiguration": 
+                  {
+                      "PropagateSourceIdentity": true
+                  }
+          },
+          "LakeFormationConfiguration": {
+              "AuthorizedSessionTagValue": "Amazon EMR"
+          }
+      }
+    }`),
+});
+
+const task = new tasks.EmrCreateCluster(this, 'Create Cluster', {
+  instances: {},
+  name: sfn.TaskInput.fromJsonPathAt('$.ClusterName').value,
+  securityConfiguration: cfnSecurityConfiguration.name,
+});
+
+const executionRole = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ArnPrincipal(task.clusterRole.roleArn),
+});
+
+executionRole.assumeRolePolicy?.addStatements(
+  new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    principals: [
+      task.clusterRole,
+    ],
+    actions: [
+      'sts:SetSourceIdentity',
+    ],
+  }),
+  new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    principals: [
+      task.clusterRole,
+    ],
+    actions: [
+      'sts:TagSession',
+    ],
+    conditions: {
+      StringEquals: {
+        'aws:RequestTag/LakeFormationAuthorizedCaller': 'Amazon EMR',
+      },
+    },
+  }),
+);
+
+new tasks.EmrAddStep(this, 'Task', {
+  clusterId: 'ClusterId',
+  executionRoleArn: executionRole.roleArn,
   name: 'StepName',
   jar: 'Jar',
   actionOnFailure: tasks.ActionOnFailure.CONTINUE,
@@ -1011,7 +1123,7 @@ call. Learn more about [Callback with the Task
 Token](https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token).
 
 AWS Lambda can occasionally experience transient service errors. In this case, invoking Lambda
-results in a 500 error, such as `ServiceException`, `AWSLambdaException`, or `SdkClientException`.
+results in a 500 error, such as `ClientExecutionTimeoutException`, `ServiceException`, `AWSLambdaException`, or `SdkClientException`.
 As a best practice, the `LambdaInvoke` task will retry on those errors with an interval of 2 seconds,
 a back-off rate of 2 and 6 maximum attempts. Set the `retryOnServiceExceptions` prop to `false` to
 disable this behavior.
@@ -1059,6 +1171,12 @@ new tasks.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
   }, // optional: default is 1 hour
 });
 ```
+
+You can specify [TrainingInputMode](https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_AlgorithmSpecification.html#API_AlgorithmSpecification_Contents) via the trainingInputMode property.
+
+- To download the data from Amazon Simple Storage Service (Amazon S3) to the provisioned ML storage volume, and mount the directory to a Docker volume, choose `InputMode.FILE` if an algorithm supports it.
+- To stream data directly from Amazon S3 to the container, choose `InputMode.PIPE` if an algorithm supports it.
+- To stream data directly from Amazon S3 to the container with no code changes and to provide file system access to the data, choose `InputMode.FAST_FILE` if an algorithm supports it.
 
 ### Create Transform Job
 

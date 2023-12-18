@@ -1,0 +1,187 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "core-cfn-mapping-1": {
+        "id": "core-cfn-mapping-1",
+        "path": "core-cfn-mapping-1",
+        "children": {
+          "Regular mapping": {
+            "id": "Regular mapping",
+            "path": "core-cfn-mapping-1/Regular mapping",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
+            }
+          },
+          "Lazy mapping": {
+            "id": "Lazy mapping",
+            "path": "core-cfn-mapping-1/Lazy mapping",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
+            }
+          },
+          "Output0": {
+            "id": "Output0",
+            "path": "core-cfn-mapping-1/Output0",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
+            }
+          },
+          "Output1": {
+            "id": "Output1",
+            "path": "core-cfn-mapping-1/Output1",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
+            }
+          },
+          "Output2": {
+            "id": "Output2",
+            "path": "core-cfn-mapping-1/Output2",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
+            }
+          },
+          "Output3": {
+            "id": "Output3",
+            "path": "core-cfn-mapping-1/Output3",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
+            }
+          },
+          "Output4": {
+            "id": "Output4",
+            "path": "core-cfn-mapping-1/Output4",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
+            }
+          },
+          "Output5": {
+            "id": "Output5",
+            "path": "core-cfn-mapping-1/Output5",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
+            }
+          },
+          "CfnMappingFindInMapBucket": {
+            "id": "CfnMappingFindInMapBucket",
+            "path": "core-cfn-mapping-1/CfnMappingFindInMapBucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "core-cfn-mapping-1/CfnMappingFindInMapBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "core-cfn-mapping-1/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "core-cfn-mapping-1/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.55"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.55"
+        }
+      },
+      "CfnMappingFindInMapTest": {
+        "id": "CfnMappingFindInMapTest",
+        "path": "CfnMappingFindInMapTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "CfnMappingFindInMapTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CfnMappingFindInMapTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "CfnMappingFindInMapTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "CfnMappingFindInMapTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.55"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "CfnMappingFindInMapTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.55"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.55"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.2.55"
+    }
+  }
+}

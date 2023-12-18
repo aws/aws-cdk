@@ -2,7 +2,12 @@ import { Construct } from 'constructs';
 import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation } from './ec2.generated';
 import { AclCidr, AclTraffic } from './network-acl-types';
 import { ISubnet, IVpc, SubnetSelection } from './vpc';
-import { IResource, Resource } from '../../core';
+import { IResource, Resource, Tags } from '../../core';
+
+/**
+ * Name tag constant
+ */
+const NAME_TAG: string = 'Name';
 
 /**
  * A NetworkAcl
@@ -51,10 +56,9 @@ export interface NetworkAclProps {
   /**
    * The name of the NetworkAcl.
    *
-   * It is not recommended to use an explicit name.
+   * Since the NetworkAcl resource doesn't support providing a physical name, the value provided here will be recorded in the `Name` tag.
    *
-   * @default If you don't specify a networkAclName, AWS CloudFormation generates a
-   * unique physical ID and uses that ID for the group name.
+   * @default CDK generated name
    */
   readonly networkAclName?: string;
 
@@ -112,11 +116,11 @@ export class NetworkAcl extends NetworkAclBase {
   private readonly vpc: IVpc;
 
   constructor(scope: Construct, id: string, props: NetworkAclProps) {
-    super(scope, id, {
-      physicalName: props.networkAclName,
-    });
+    super(scope, id);
 
     this.vpc = props.vpc;
+
+    Tags.of(this).add(NAME_TAG, props.networkAclName || this.node.path);
 
     this.networkAcl = new CfnNetworkAcl(this, 'Resource', {
       vpcId: props.vpc.vpcId,

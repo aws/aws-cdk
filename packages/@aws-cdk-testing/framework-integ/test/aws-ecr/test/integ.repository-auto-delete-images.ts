@@ -17,4 +17,5 @@ new cdk.CfnOutput(stack, 'RepositoryURI', {
 
 new IntegTest(app, 'cdk-integ-auto-delete-images', {
   testCases: [stack],
+  diffAssets: true,
 });

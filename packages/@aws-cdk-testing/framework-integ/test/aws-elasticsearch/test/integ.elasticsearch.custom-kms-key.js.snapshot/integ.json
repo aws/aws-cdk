@@ -1,14 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
-    "integ.elasticsearch.custom-kms-key": {
+    "ElasticsearchCustomKmsInteg/DefaultTest": {
       "stacks": [
         "cdk-integ-elasticsearch-custom-kms-key"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ElasticsearchCustomKmsIntegDefaultTestDeployAssertFEEBA45B"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

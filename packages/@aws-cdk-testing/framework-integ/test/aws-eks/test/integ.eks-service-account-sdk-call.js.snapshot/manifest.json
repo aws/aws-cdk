@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-eks-service-account-sdk-calls-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5979df86c102e06323f8dfd8aac693d8e702e31d521b0c9893e862bcba844dad.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6537c75366cc661b22a54148561e3cb573eeea64b6d5258b25a399405320b8ee.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -435,16 +435,16 @@
             "data": "awseksserviceaccountsdkcallstestawscdkawseksKubectlProviderframeworkonEvent905838A2Arn"
           }
         ],
-        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn"
-          }
-        ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestKubectlLayer470A83D3Ref": [
           {
             "type": "aws:cdk:logicalId",
             "data": "referencetoawseksserviceaccountsdkcallstestKubectlLayer470A83D3Ref"
+          }
+        ],
+        "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawseksserviceaccountsdkcallstestClusterKubectlHandlerRole7777F0B9Arn"
           }
         ],
         "/aws-eks-service-account-sdk-calls-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awseksserviceaccountsdkcallstestVpcPrivateSubnet1Subnet0C10F776Ref": [
@@ -481,12 +481,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
-          }
-        ],
-        "/aws-eks-service-account-sdk-calls-test/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
           }
         ],
         "/aws-eks-service-account-sdk-calls-test/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [

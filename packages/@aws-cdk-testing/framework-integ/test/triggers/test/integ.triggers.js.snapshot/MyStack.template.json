@@ -46,14 +46,14 @@
     "Code": {
      "ZipFile": "exports.handler = function() { console.log(\"hi\"); };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "MyTriggerFunctionServiceRole1BB78C29",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MyTriggerFunctionServiceRole1BB78C29"
@@ -69,10 +69,11 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MyTriggerFunctionCurrentVersion61957CE160cd5b4c06c4d00191dc10a647ea0777"
+     "Ref": "MyTriggerFunctionCurrentVersion61957CE12b717c78220b5359f1feeee4ac371176"
     },
     "InvocationType": "RequestResponse",
-    "Timeout": "120000"
+    "Timeout": "120000",
+    "ExecuteOnHandlerChange": true
    },
    "DependsOn": [
     "Topic269377B75"
@@ -80,7 +81,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MyTriggerFunctionCurrentVersion61957CE160cd5b4c06c4d00191dc10a647ea0777": {
+  "MyTriggerFunctionCurrentVersion61957CE12b717c78220b5359f1feeee4ac371176": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -237,7 +238,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e6b302aaee9bb5261338cf6b21e540e805eeaf2c18eb3246f7556104f361f68d.zip"
+     "S3Key": "cbf346eeb9b13c1ea2b51d91ca38a34e1518d2e551aa6a4f27e9950c1c554dd3.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -248,7 +249,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A"
@@ -299,21 +300,21 @@
     "Code": {
      "ZipFile": "exports.handler = async function() { await setTimeout(() => {console.log(\"hi\")}, 3*60*1000); };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "MyLambdaFunctionServiceRole313A4D46",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs16.x",
+    "Runtime": "nodejs18.x",
     "Timeout": 900
    },
    "DependsOn": [
     "MyLambdaFunctionServiceRole313A4D46"
    ]
   },
-  "MyLambdaFunctionCurrentVersion4FAB80EC75f2df347bcc21ea05f818cb68778d9f": {
+  "MyLambdaFunctionCurrentVersion4FAB80EC179f87deb5063d4ec46ecac6b7f0c99e": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -331,10 +332,11 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC75f2df347bcc21ea05f818cb68778d9f"
+     "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC179f87deb5063d4ec46ecac6b7f0c99e"
     },
     "InvocationType": "Event",
-    "Timeout": "60000"
+    "Timeout": "60000",
+    "ExecuteOnHandlerChange": true
    },
    "DependsOn": [
     "Topic198E71B3E",
@@ -411,13 +413,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "004b12857696fed3c10ad54c8e3cabd07cdf653ec469cbadab6c64ae6c9ce690.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "MyAssertionLambdaFunctionServiceRole36146F3B",
-      "Arn"
-     ]
+     "S3Key": "e065f6e8b88b1e7afda877f6ad3d9db8223795efe79196dee3a2a097c45169c8.zip"
     },
     "Environment": {
      "Variables": {
@@ -427,7 +423,13 @@
      }
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs16.x",
+    "Role": {
+     "Fn::GetAtt": [
+      "MyAssertionLambdaFunctionServiceRole36146F3B",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -435,7 +437,7 @@
     "MyAssertionLambdaFunctionServiceRole36146F3B"
    ]
   },
-  "MyAssertionLambdaFunctionCurrentVersionF4FA4C80f14c7075b9f4d7c63066e881d45e211c": {
+  "MyAssertionLambdaFunctionCurrentVersionF4FA4C80523df5fd8667e8600ae9661e9fe779a6": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -453,10 +455,11 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MyAssertionLambdaFunctionCurrentVersionF4FA4C80f14c7075b9f4d7c63066e881d45e211c"
+     "Ref": "MyAssertionLambdaFunctionCurrentVersionF4FA4C80523df5fd8667e8600ae9661e9fe779a6"
     },
     "InvocationType": "RequestResponse",
-    "Timeout": "60000"
+    "Timeout": "60000",
+    "ExecuteOnHandlerChange": true
    },
    "DependsOn": [
     "TestQueue6F0069AA"
@@ -501,14 +504,14 @@
     "Code": {
      "ZipFile": "exports.handler = function() { console.log(\"hello\"); };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "MySecondFunctionServiceRole5B930841",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs16.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MySecondFunctionServiceRole5B930841"
@@ -524,15 +527,16 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MySecondFunctionCurrentVersion7D497B5D173a4bb1f758991022ea97d651403362"
+     "Ref": "MySecondFunctionCurrentVersion7D497B5D054029861f424b2f88575859bb7ebb23"
     },
     "InvocationType": "RequestResponse",
-    "Timeout": "120000"
+    "Timeout": "120000",
+    "ExecuteOnHandlerChange": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MySecondFunctionCurrentVersion7D497B5D173a4bb1f758991022ea97d651403362": {
+  "MySecondFunctionCurrentVersion7D497B5D054029861f424b2f88575859bb7ebb23": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -550,116 +554,14 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC75f2df347bcc21ea05f818cb68778d9f"
+     "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC179f87deb5063d4ec46ecac6b7f0c99e"
     },
     "InvocationType": "RequestResponse",
-    "Timeout": "120000"
+    "Timeout": "120000",
+    "ExecuteOnHandlerChange": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  }
- },
- "Mappings": {
-  "DefaultCrNodeVersionMap": {
-   "af-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs16.x"
-   },
-   "me-central-1": {
-    "value": "nodejs16.x"
-   },
-   "me-south-1": {
-    "value": "nodejs16.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-2": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs14.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-west-2": {
-    "value": "nodejs16.x"
-   }
   }
  },
  "Outputs": {

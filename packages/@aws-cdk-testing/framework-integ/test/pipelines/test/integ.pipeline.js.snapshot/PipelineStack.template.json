@@ -25,7 +25,8 @@
        "Action": [
         "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*"
+        "s3:List*",
+        "s3:PutBucketPolicy"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -112,18 +113,18 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "40aa87cdf43c4095cec18bc443965f22ab2f8c1ace47e482a0ba4e35d83b0cc9.zip"
+     "S3Key": "2ec8ad9e91dcd6e7ad6a5c84ffc6c9c05c408aca3b26ceb2816d81043e6c4dc3.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x",
+    "Runtime": "nodejs18.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -495,6 +496,22 @@
   "Pipeline9850B417": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
+    "ArtifactStore": {
+     "EncryptionKey": {
+      "Id": {
+       "Fn::GetAtt": [
+        "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+        "Arn"
+       ]
+      },
+      "Type": "KMS"
+     },
+     "Location": {
+      "Ref": "PipelineArtifactsBucketAEA9A052"
+     },
+     "Type": "S3"
+    },
+    "RestartExecutionOnUpdate": true,
     "RoleArn": {
      "Fn::GetAtt": [
       "PipelineRoleB27FAA37",
@@ -547,7 +564,7 @@
          "ProjectName": {
           "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
          },
-         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"51983b0b2e2ab480fd5d90c068e63373d8f0ab1a3a1da93ac53a82b8a296d34f\"}]"
+         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"7f66814704b7757367a6ec706823d271fb9c6fceda866eee4260d1e76b73967b\"}]"
         },
         "InputArtifacts": [
          {
@@ -743,23 +760,7 @@
       ],
       "Name": "PreProd"
      }
-    ],
-    "ArtifactStore": {
-     "EncryptionKey": {
-      "Id": {
-       "Fn::GetAtt": [
-        "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-        "Arn"
-       ]
-      },
-      "Type": "KMS"
-     },
-     "Location": {
-      "Ref": "PipelineArtifactsBucketAEA9A052"
-     },
-     "Type": "S3"
-    },
-    "RestartExecutionOnUpdate": true
+    ]
    },
    "DependsOn": [
     "PipelineRoleDefaultPolicy7BDC1ABB",
@@ -1138,30 +1139,6 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
-    "Environment": {
-     "ComputeType": "BUILD_GENERAL1_SMALL",
-     "EnvironmentVariables": [
-      {
-       "Name": "NPM_CONFIG_UNSAFE_PERM",
-       "Type": "PLAINTEXT",
-       "Value": "true"
-      }
-     ],
-     "Image": "aws/codebuild/standard:6.0",
-     "ImagePullCredentialsType": "CODEBUILD",
-     "PrivilegedMode": false,
-     "Type": "LINUX_CONTAINER"
-    },
-    "ServiceRole": {
-     "Fn::GetAtt": [
-      "PipelineBuildSynthCdkBuildProjectRole231EEA2A",
-      "Arn"
-     ]
-    },
-    "Source": {
-     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"pre_build\": {\n      \"commands\": [\n        \"npm ci\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"npx cdk synth\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"secondary-artifacts\": {\n      \"CloudAsm\": {\n        \"base-directory\": \"cdk.out\",\n        \"files\": \"**/*\"\n      },\n      \"IntegTests\": {\n        \"base-directory\": \"test\",\n        \"files\": \"**/*\"\n      }\n    }\n  }\n}",
-     "Type": "CODEPIPELINE"
-    },
     "Cache": {
      "Type": "NO_CACHE"
     },
@@ -1171,7 +1148,31 @@
       "Arn"
      ]
     },
-    "Name": "MyServicePipeline-synth"
+    "Environment": {
+     "ComputeType": "BUILD_GENERAL1_SMALL",
+     "EnvironmentVariables": [
+      {
+       "Name": "NPM_CONFIG_UNSAFE_PERM",
+       "Type": "PLAINTEXT",
+       "Value": "true"
+      }
+     ],
+     "Image": "aws/codebuild/standard:7.0",
+     "ImagePullCredentialsType": "CODEBUILD",
+     "PrivilegedMode": false,
+     "Type": "LINUX_CONTAINER"
+    },
+    "Name": "MyServicePipeline-synth",
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "PipelineBuildSynthCdkBuildProjectRole231EEA2A",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"pre_build\": {\n      \"commands\": [\n        \"npm ci\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"npx cdk synth\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"secondary-artifacts\": {\n      \"CloudAsm\": {\n        \"base-directory\": \"cdk.out\",\n        \"files\": \"**/*\"\n      },\n      \"IntegTests\": {\n        \"base-directory\": \"test\",\n        \"files\": \"**/*\"\n      }\n    }\n  }\n}",
+     "Type": "CODEPIPELINE"
+    }
    }
   },
   "PipelineUpdatePipelineSelfMutateCodePipelineActionRoleD6D4E5CF": {
@@ -1474,9 +1475,18 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": {
+     "Fn::GetAtt": [
+      "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+      "Arn"
+     ]
+    },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:6.0",
+     "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -1490,15 +1500,6 @@
     "Source": {
      "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"set -eu\",\n        \"cat README.md\"\n      ]\n    }\n  }\n}",
      "Type": "CODEPIPELINE"
-    },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "EncryptionKey": {
-     "Fn::GetAtt": [
-      "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-      "Arn"
-     ]
     }
    }
   },
@@ -1711,9 +1712,18 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": {
+     "Fn::GetAtt": [
+      "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+      "Arn"
+     ]
+    },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:6.0",
+     "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -1727,119 +1737,7 @@
     "Source": {
      "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g aws-cdk@2\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk -a . deploy PipelineStack --require-approval=never --verbose\"\n      ]\n    }\n  }\n}",
      "Type": "CODEPIPELINE"
-    },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "EncryptionKey": {
-     "Fn::GetAtt": [
-      "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-      "Arn"
-     ]
     }
-   }
-  }
- },
- "Mappings": {
-  "DefaultCrNodeVersionMap": {
-   "af-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs16.x"
-   },
-   "me-central-1": {
-    "value": "nodejs16.x"
-   },
-   "me-south-1": {
-    "value": "nodejs16.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-2": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs14.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-west-2": {
-    "value": "nodejs16.x"
    }
   }
  },

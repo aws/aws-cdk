@@ -45,9 +45,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -71,7 +68,10 @@
                             "key": "Name",
                             "value": "aws-cdk-route53-integ/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -93,15 +93,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-route53-integ/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -134,12 +134,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
                         }
                       }
                     },
@@ -174,14 +174,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VPCPublicSubnet1EIP6AD938E8",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
                         },
                         "tags": [
                           {
@@ -212,9 +212,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -238,7 +235,10 @@
                             "key": "Name",
                             "value": "aws-cdk-route53-integ/VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -260,15 +260,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-route53-integ/VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -301,12 +301,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
                         }
                       }
                     },
@@ -346,11 +346,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "VPCB9E5F0B4"
-                    },
                     "internetGatewayId": {
                       "Ref": "VPCIGWB7E252D3"
+                    },
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
                     }
                   }
                 },
@@ -403,16 +403,16 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                       "aws:cdk:cloudformation:props": {
-                        "name": "_foo.cdk.local.",
-                        "type": "TXT",
                         "hostedZoneId": {
                           "Ref": "PrivateZone27242E85"
                         },
+                        "name": "_foo.cdk.local.",
                         "resourceRecords": [
                           "\"Bar!\"",
                           "\"Baz?\""
                         ],
-                        "ttl": "60"
+                        "ttl": "60",
+                        "type": "TXT"
                       }
                     },
                     "constructInfo": {
@@ -460,18 +460,18 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                       "aws:cdk:cloudformation:props": {
-                        "name": "sub.cdk.test.",
-                        "type": "NS",
                         "hostedZoneId": {
                           "Ref": "PublicZone2E1C4E34"
                         },
+                        "name": "sub.cdk.test.",
                         "resourceRecords": {
                           "Fn::GetAtt": [
                             "PublicSubZoneDBD26A0A",
                             "NameServers"
                           ]
                         },
-                        "ttl": "172800"
+                        "ttl": "172800",
+                        "type": "NS"
                       }
                     },
                     "constructInfo": {
@@ -549,15 +549,15 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
-                    "name": "www.cdk.local.",
-                    "type": "CNAME",
                     "hostedZoneId": {
                       "Ref": "PrivateZone27242E85"
                     },
+                    "name": "www.cdk.local.",
                     "resourceRecords": [
                       "server"
                     ],
-                    "ttl": "1800"
+                    "ttl": "1800",
+                    "type": "CNAME"
                   }
                 },
                 "constructInfo": {
@@ -581,16 +581,203 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
-                    "name": "test.cdk.local.",
-                    "type": "A",
                     "hostedZoneId": {
                       "Ref": "PrivateZone27242E85"
                     },
+                    "name": "test.cdk.local.",
                     "resourceRecords": [
                       "1.2.3.4",
                       "5.6.7.8"
                     ],
-                    "ttl": "1800"
+                    "ttl": "1800",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "GeoLocationContinent": {
+            "id": "GeoLocationContinent",
+            "path": "aws-cdk-route53-integ/GeoLocationContinent",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-integ/GeoLocationContinent/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "geoLocation": {
+                      "continentCode": "EU"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "PrivateZone27242E85"
+                    },
+                    "name": "geolocation.cdk.local.",
+                    "resourceRecords": [
+                      "1.2.3.0",
+                      "5.6.7.0"
+                    ],
+                    "setIdentifier": "GEO_CONTINENT_EU",
+                    "ttl": "1800",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "GeoLocationCountry": {
+            "id": "GeoLocationCountry",
+            "path": "aws-cdk-route53-integ/GeoLocationCountry",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-integ/GeoLocationCountry/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "geoLocation": {
+                      "countryCode": "DE"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "PrivateZone27242E85"
+                    },
+                    "name": "geolocation.cdk.local.",
+                    "resourceRecords": [
+                      "1.2.3.1",
+                      "5.6.7.1"
+                    ],
+                    "setIdentifier": "GEO_COUNTRY_DE",
+                    "ttl": "1800",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "GeoLocationSubDividion": {
+            "id": "GeoLocationSubDividion",
+            "path": "aws-cdk-route53-integ/GeoLocationSubDividion",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-integ/GeoLocationSubDividion/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "geoLocation": {
+                      "countryCode": "US",
+                      "subdivisionCode": "WA"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "PrivateZone27242E85"
+                    },
+                    "name": "geolocation.cdk.local.",
+                    "resourceRecords": [
+                      "1.2.3.2",
+                      "5.6.7.2"
+                    ],
+                    "setIdentifier": "GEO_COUNTRY_US_SUBDIVISION_WA",
+                    "ttl": "1800",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "GeoLocationSubDividionUA": {
+            "id": "GeoLocationSubDividionUA",
+            "path": "aws-cdk-route53-integ/GeoLocationSubDividionUA",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-integ/GeoLocationSubDividionUA/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "geoLocation": {
+                      "countryCode": "UA",
+                      "subdivisionCode": "30"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "PrivateZone27242E85"
+                    },
+                    "name": "cdk.local.",
+                    "resourceRecords": [
+                      "1.2.3.4",
+                      "5.6.7.4"
+                    ],
+                    "setIdentifier": "GEO_COUNTRY_UA_SUBDIVISION_30",
+                    "ttl": "1800",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "GeoLocationDefault": {
+            "id": "GeoLocationDefault",
+            "path": "aws-cdk-route53-integ/GeoLocationDefault",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-route53-integ/GeoLocationDefault/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "geoLocation": {
+                      "countryCode": "*"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "PrivateZone27242E85"
+                    },
+                    "name": "geolocation.cdk.local.",
+                    "resourceRecords": [
+                      "1.2.3.3",
+                      "5.6.7.3"
+                    ],
+                    "setIdentifier": "GEO_COUNTRY_*",
+                    "ttl": "1800",
+                    "type": "A"
                   }
                 },
                 "constructInfo": {
@@ -614,15 +801,15 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
-                    "name": "cdk.test.",
-                    "type": "CAA",
                     "hostedZoneId": {
                       "Ref": "PublicZone2E1C4E34"
                     },
+                    "name": "cdk.test.",
                     "resourceRecords": [
                       "0 issue \"amazon.com\""
                     ],
-                    "ttl": "1800"
+                    "ttl": "1800",
+                    "type": "CAA"
                   }
                 },
                 "constructInfo": {
@@ -646,15 +833,15 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
-                    "name": "cdk.test.",
-                    "type": "TXT",
                     "hostedZoneId": {
                       "Ref": "PublicZone2E1C4E34"
                     },
+                    "name": "cdk.test.",
                     "resourceRecords": [
                       "\"this is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long stringthis is a very long s\"\"tring\""
                     ],
-                    "ttl": "1800"
+                    "ttl": "1800",
+                    "type": "TXT"
                   }
                 },
                 "constructInfo": {
@@ -711,7 +898,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.55"
         }
       }
     },

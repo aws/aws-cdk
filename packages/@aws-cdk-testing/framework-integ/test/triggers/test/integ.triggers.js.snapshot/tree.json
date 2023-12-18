@@ -122,14 +122,14 @@
                     "code": {
                       "zipFile": "exports.handler = function() { console.log(\"hi\"); };"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "MyTriggerFunctionServiceRole1BB78C29",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -194,14 +194,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.triggers.TriggerFunction",
-              "version": "0.0.0"
-            }
-          },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "MyStack/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -333,14 +325,14 @@
                     "code": {
                       "zipFile": "exports.handler = async function() { await setTimeout(() => {console.log(\"hi\")}, 3*60*1000); };"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "MyLambdaFunctionServiceRole313A4D46",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs16.x",
+                    "runtime": "nodejs18.x",
                     "timeout": 900
                   }
                 },
@@ -554,13 +546,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "004b12857696fed3c10ad54c8e3cabd07cdf653ec469cbadab6c64ae6c9ce690.zip"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "MyAssertionLambdaFunctionServiceRole36146F3B",
-                        "Arn"
-                      ]
+                      "s3Key": "e065f6e8b88b1e7afda877f6ad3d9db8223795efe79196dee3a2a097c45169c8.zip"
                     },
                     "environment": {
                       "variables": {
@@ -570,7 +556,13 @@
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs16.x",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyAssertionLambdaFunctionServiceRole36146F3B",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x",
                     "timeout": 900
                   }
                 },
@@ -709,14 +701,14 @@
                     "code": {
                       "zipFile": "exports.handler = function() { console.log(\"hello\"); };"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "MySecondFunctionServiceRole5B930841",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs16.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -827,7 +819,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -865,27 +857,27 @@
                 "path": "TriggerTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "TriggerTest/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallSQSreceiveMessage": {
-                    "id": "AwsApiCallSQSreceiveMessage",
-                    "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage",
+                  "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4": {
+                    "id": "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4",
+                    "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/SdkProvider",
+                        "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/SdkProvider/AssertionsProvider",
+                            "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -896,11 +888,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/Default",
+                        "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/Default/Default",
+                            "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -914,23 +906,23 @@
                       },
                       "WaitFor": {
                         "id": "WaitFor",
-                        "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor",
+                        "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/WaitFor",
                         "children": {
                           "IsCompleteProvider": {
                             "id": "IsCompleteProvider",
-                            "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/IsCompleteProvider",
+                            "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/WaitFor/IsCompleteProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.1.270"
+                                  "version": "10.3.0"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/IsCompleteProvider/Invoke",
+                                "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.CfnResource",
                                   "version": "0.0.0"
@@ -944,19 +936,19 @@
                           },
                           "TimeoutProvider": {
                             "id": "TimeoutProvider",
-                            "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/TimeoutProvider",
+                            "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/WaitFor/TimeoutProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
-                                  "version": "10.1.270"
+                                  "version": "10.3.0"
                                 }
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/TimeoutProvider/Invoke",
+                                "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.CfnResource",
                                   "version": "0.0.0"
@@ -970,7 +962,7 @@
                           },
                           "Role": {
                             "id": "Role",
-                            "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/Role",
+                            "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/WaitFor/Role",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -978,7 +970,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/Resource",
+                            "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/WaitFor/Resource",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -992,7 +984,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/AssertionResults",
+                        "path": "TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -1035,7 +1027,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
                   "SingletonFunction76b3e830a873425f8453eddd85c86925": {
@@ -1069,7 +1061,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
@@ -1103,7 +1095,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -1145,7 +1137,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.3.0"
         }
       }
     },

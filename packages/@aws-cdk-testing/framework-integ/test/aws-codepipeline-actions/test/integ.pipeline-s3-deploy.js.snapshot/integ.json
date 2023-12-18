@@ -1,10 +1,11 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
     "s3-deploy-test/DefaultTest": {
       "stacks": [
         "aws-cdk-codepipeline-s3-deploy"
       ],
+      "diffAssets": true,
       "assertionStack": "s3-deploy-test/DefaultTest/DeployAssert",
       "assertionStackName": "s3deploytestDefaultTestDeployAssert6BC61647"
     }

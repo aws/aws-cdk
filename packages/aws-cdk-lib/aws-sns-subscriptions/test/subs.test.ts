@@ -1193,9 +1193,49 @@ describe('Restrict sqs decryption feature flag', () => {
   });
 });
 
+test('throws an error when a queue is encrypted by AWS managed KMS kye for queue subscription', () => {
+  // WHEN
+  const queue = new sqs.Queue(stack, 'MyQueue', {
+    encryption: sqs.QueueEncryption.KMS_MANAGED,
+  });
+
+  // THEN
+  expect(() => topic.addSubscription(new subs.SqsSubscription(queue)))
+    .toThrowError(/SQS queue encrypted by AWS managed KMS key cannot be used as SNS subscription/);
+});
+
+test('throws an error when a dead-letter queue is encrypted by AWS managed KMS kye for queue subscription', () => {
+  // WHEN
+  const queue = new sqs.Queue(stack, 'MyQueue');
+  const dlq = new sqs.Queue(stack, 'MyDLQ', {
+    encryption: sqs.QueueEncryption.KMS_MANAGED,
+  });
+
+  // THEN
+  expect(() => topic.addSubscription(new subs.SqsSubscription(queue, {
+    deadLetterQueue: dlq,
+  })))
+    .toThrowError(/SQS queue encrypted by AWS managed KMS key cannot be used as dead-letter queue/);
+});
+
+test('importing SQS queue and specify this as subscription', () => {
+  // WHEN
+  const queue = sqs.Queue.fromQueueArn(stack, 'Queue', 'arn:aws:sqs:us-east-1:123456789012:queue1');
+  topic.addSubscription(new subs.SqsSubscription(queue));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
+    'Endpoint': 'arn:aws:sqs:us-east-1:123456789012:queue1',
+    'Protocol': 'sqs',
+    'TopicArn': {
+      'Ref': 'MyTopic86869434',
+    },
+  });
+});
+
 test('lambda subscription', () => {
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -1255,7 +1295,7 @@ test('lambda subscription', () => {
               'Arn',
             ],
           },
-          'Runtime': 'nodejs14.x',
+          'Runtime': lambda.Runtime.NODEJS_LATEST.name,
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',
@@ -1306,7 +1346,7 @@ test('lambda subscription, cross region env agnostic', () => {
     displayName: 'displayName',
   });
   const func = new lambda.Function(lambdaStack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -1359,7 +1399,7 @@ test('lambda subscription, cross region env agnostic', () => {
             ],
           },
           'Handler': 'index.handler',
-          'Runtime': 'nodejs14.x',
+          'Runtime': lambda.Runtime.NODEJS_LATEST.name,
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',
@@ -1420,7 +1460,7 @@ test('lambda subscription, cross region', () => {
     displayName: 'displayName',
   });
   const func = new lambda.Function(lambdaStack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -1473,7 +1513,7 @@ test('lambda subscription, cross region', () => {
             ],
           },
           'Handler': 'index.handler',
-          'Runtime': 'nodejs14.x',
+          'Runtime': lambda.Runtime.NODEJS_LATEST.name,
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',
@@ -1706,7 +1746,7 @@ test('email and url subscriptions with unresolved - four subscriptions', () => {
 test('multiple subscriptions', () => {
   const queue = new sqs.Queue(stack, 'MyQueue');
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -1822,7 +1862,7 @@ test('multiple subscriptions', () => {
               'Arn',
             ],
           },
-          'Runtime': 'nodejs14.x',
+          'Runtime': lambda.Runtime.NODEJS_LATEST.name,
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',
@@ -1874,7 +1914,7 @@ test('throws with mutliple subscriptions of the same subscriber', () => {
 
 test('with filter policy', () => {
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -1929,7 +1969,7 @@ test('with filter policy', () => {
 
 test('with filter policy scope MessageBody', () => {
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -2000,7 +2040,7 @@ test('region property on an imported topic as a parameter - sqs', () => {
 test('region property is present on an imported topic - lambda', () => {
   const imported = sns.Topic.fromTopicArn(stack, 'mytopic', 'arn:aws:sns:us-east-1:1234567890:mytopic');
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });
@@ -2015,7 +2055,7 @@ test('region property on an imported topic as a parameter - lambda', () => {
   const topicArn = new CfnParameter(stack, 'topicArn');
   const imported = sns.Topic.fromTopicArn(stack, 'mytopic', topicArn.valueAsString);
   const func = new lambda.Function(stack, 'MyFunc', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.handler',
     code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
   });

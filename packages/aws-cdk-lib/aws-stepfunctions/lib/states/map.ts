@@ -5,12 +5,19 @@ import { Token } from '../../../core';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import { CatchProps, IChainable, INextable, RetryProps } from '../types';
+import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
 
 /**
  * Properties for defining a Map state
  */
 export interface MapProps {
+  /**
+   * Optional name for this state
+   *
+   * @default - The construct ID will be used as state name
+   */
+  readonly stateName?: string;
+
   /**
    * An optional description for this state
    *
@@ -154,11 +161,27 @@ export class Map extends State implements INextable {
   }
 
   /**
-   * Define iterator state machine in Map
+   * Define iterator state machine in Map.
+   *
+   * A Map must either have a non-empty iterator or a non-empty item processor, not both.
+   *
+   * @deprecated - use `itemProcessor` instead.
    */
   public iterator(iterator: IChainable): Map {
     const name = `Map ${this.stateId} Iterator`;
     super.addIterator(new StateGraph(iterator.startState, name));
+    return this;
+  }
+
+  /**
+   * Define item processor in Map.
+   *
+   * A Map must either have a non-empty iterator or a non-empty item processor, not both.
+   */
+  public itemProcessor(processor: IChainable, config: ProcessorConfig = {}): Map {
+    const name = `Map ${this.stateId} Item Processor`;
+    const stateGraph = new StateGraph(processor.startState, name);
+    super.addItemProcessor(stateGraph, config);
     return this;
   }
 
@@ -177,6 +200,7 @@ export class Map extends State implements INextable {
       ...this.renderRetryCatch(),
       ...this.renderIterator(),
       ...this.renderItemsPath(),
+      ...this.renderItemProcessor(),
       MaxConcurrency: this.maxConcurrency,
     };
   }
@@ -187,11 +211,19 @@ export class Map extends State implements INextable {
   protected validateState(): string[] {
     const errors: string[] = [];
 
-    if (this.iteration === undefined) {
-      errors.push('Map state must have a non-empty iterator');
+    if (!this.iteration && !this.processor) {
+      errors.push('Map state must either have a non-empty iterator or a non-empty item processor');
     }
 
-    if (this.maxConcurrency !== undefined && !Token.isUnresolved(this.maxConcurrency) && !isPositiveInteger(this.maxConcurrency)) {
+    if (this.iteration && this.processor) {
+      errors.push('Map state cannot have both an iterator and an item processor');
+    }
+
+    if (this.processorConfig?.mode === ProcessorMode.DISTRIBUTED && !this.processorConfig?.executionType) {
+      errors.push('You must specify an execution type for the distributed Map workflow');
+    }
+
+    if (this.maxConcurrency && !Token.isUnresolved(this.maxConcurrency) && !isPositiveInteger(this.maxConcurrency)) {
       errors.push('maxConcurrency has to be a positive integer');
     }
 

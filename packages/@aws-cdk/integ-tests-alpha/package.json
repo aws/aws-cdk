@@ -44,7 +44,7 @@
   },
   "scripts": {
     "build": "cdk-build",
-    "bundle": "esbuild --bundle lib/assertions/providers/lambda-handler/index.ts --target=node14 --platform=node --external:aws-sdk --outfile=lib/assertions/providers/lambda-handler.bundle/index.js",
+    "bundle": "esbuild --bundle lib/assertions/providers/lambda-handler/index.ts --target=node18 --platform=node --outfile=lib/assertions/providers/lambda-handler.bundle/index.js",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -69,14 +69,21 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/sdk-v2-to-v3-adapter": "0.0.0",
+    "@aws-sdk/client-ec2": "3.421.0",
+    "@aws-sdk/client-s3": "3.421.0",
+    "@aws-sdk/client-sfn": "3.421.0",
+    "@aws-sdk/types": "^3.433.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^29.5.1",
-    "aws-sdk": "^2.1379.0",
-    "aws-sdk-mock": "5.6.0",
-    "jest": "^29.5.0",
-    "nock": "^13.3.1",
+    "@types/jest": "^29.5.11",
+    "aws-sdk-client-mock": "^3.0.0",
+    "aws-sdk-client-mock-jest": "^3.0.0",
+    "jest": "^29.7.0",
+    "nock": "^13.4.0",
     "sinon": "^9.2.4",
     "aws-cdk-lib": "0.0.0",
+    "node-fetch": "^2.7.0",
+    "@types/node-fetch": "^2.6.9",
     "constructs": "^10.0.0"
   },
   "dependencies": {},
@@ -103,11 +110,9 @@
     ],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    }
-  },
-  "awslint": {
-    "exclude": [
-      "*:*"
+    },
+    "post": [
+      "node lib/assertions/providers/lambda-handler.bundle/index.js"
     ]
   },
   "nozem": {

@@ -42,4 +42,5 @@ vpc.publicSubnets.forEach((subnet) => {
 
 new IntegTest(app, 'cdk-integ-alb-log', {
   testCases: [stack],
+  diffAssets: true,
 });

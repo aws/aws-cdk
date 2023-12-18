@@ -1,14 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
-    "integ.opensearch": {
+    "OpenSearchInteg/DefaultTest": {
       "stacks": [
         "cdk-integ-opensearch"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "OpenSearchInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OpenSearchIntegDefaultTestDeployAssertFAE78D8A"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

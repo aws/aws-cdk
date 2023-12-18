@@ -40,14 +40,14 @@
     "Code": {
      "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    /* eslint-disable no-console */\n    console.log('====================================================');\n    console.log(JSON.stringify(event, undefined, 2));\n    console.log('====================================================');\n    return callback(undefined, event);\n}"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "EchoServiceRoleBE28060B",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "EchoServiceRoleBE28060B"
@@ -72,16 +72,13 @@
   "EchoMyTopic4CB8819E": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
-    "Protocol": "lambda",
-    "TopicArn": {
-     "Ref": "MyTopic86869434"
-    },
     "Endpoint": {
      "Fn::GetAtt": [
       "Echo11F3FB29",
       "Arn"
      ]
     },
+    "Protocol": "lambda",
     "RedrivePolicy": {
      "deadLetterTargetArn": {
       "Fn::GetAtt": [
@@ -89,6 +86,9 @@
        "Arn"
       ]
      }
+    },
+    "TopicArn": {
+     "Ref": "MyTopic86869434"
     }
    }
   },
@@ -169,14 +169,14 @@
     "Code": {
      "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    /* eslint-disable no-console */\n    console.log('====================================================');\n    console.log(JSON.stringify(event, undefined, 2));\n    console.log('====================================================');\n    return callback(undefined, event);\n}"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "FilteredServiceRole16D9DDC1",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "FilteredServiceRole16D9DDC1"
@@ -201,10 +201,6 @@
   "FilteredMyTopicC8395C27": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
-    "Protocol": "lambda",
-    "TopicArn": {
-     "Ref": "MyTopic86869434"
-    },
     "Endpoint": {
      "Fn::GetAtt": [
       "Filtered186C0D0A",
@@ -239,6 +235,10 @@
        ]
       }
      ]
+    },
+    "Protocol": "lambda",
+    "TopicArn": {
+     "Ref": "MyTopic86869434"
     }
    }
   },
@@ -279,14 +279,14 @@
     "Code": {
      "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    /* eslint-disable no-console */\n    console.log('====================================================');\n    console.log(JSON.stringify(event, undefined, 2));\n    console.log('====================================================');\n    return callback(undefined, event);\n}"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "FilteredMessageBodyServiceRoleB2EB82B3",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "FilteredMessageBodyServiceRoleB2EB82B3"
@@ -311,10 +311,6 @@
   "FilteredMessageBodyMyTopicAD1F55C4": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
-    "Protocol": "lambda",
-    "TopicArn": {
-     "Ref": "MyTopic86869434"
-    },
     "Endpoint": {
      "Fn::GetAtt": [
       "FilteredMessageBody222AE8F1",
@@ -334,7 +330,11 @@
       ]
      }
     },
-    "FilterPolicyScope": "MessageBody"
+    "FilterPolicyScope": "MessageBody",
+    "Protocol": "lambda",
+    "TopicArn": {
+     "Ref": "MyTopic86869434"
+    }
    }
   }
  },

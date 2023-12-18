@@ -1,14 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
-    "integ.vpc-endpoint-service-domain-name": {
+    "AwsCdkVpcEndpointDnsIntegTest/DefaultTest": {
       "stacks": [
         "aws-cdk-vpc-endpoint-dns-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "AwsCdkVpcEndpointDnsIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsCdkVpcEndpointDnsIntegTestDefaultTestDeployAssertFB27EF1F"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

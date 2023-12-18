@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "MyStack.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "MyStack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e91c1cca866fd61b7711092caf0931c69f960d7a7fcddf0a968ceb17ac53855c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/75478d1ef6de73e508e237f2de57deffb78d5fad016e55361755422ad6c9e41c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -66,13 +67,7 @@
         "/MyStack/MyTriggerFunction/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyTriggerFunctionCurrentVersion61957CE160cd5b4c06c4d00191dc10a647ea0777"
-          }
-        ],
-        "/MyStack/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
+            "data": "MyTriggerFunctionCurrentVersion61957CE12b717c78220b5359f1feeee4ac371176"
           }
         ],
         "/MyStack/AWSCDK.TriggerCustomResourceProviderCustomResourceProvider/Role": [
@@ -108,7 +103,7 @@
         "/MyStack/MyLambdaFunction/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaFunctionCurrentVersion4FAB80EC75f2df347bcc21ea05f818cb68778d9f"
+            "data": "MyLambdaFunctionCurrentVersion4FAB80EC179f87deb5063d4ec46ecac6b7f0c99e"
           }
         ],
         "/MyStack/MyTrigger/Default/Default": [
@@ -138,7 +133,7 @@
         "/MyStack/MyAssertionLambdaFunction/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyAssertionLambdaFunctionCurrentVersionF4FA4C80f14c7075b9f4d7c63066e881d45e211c"
+            "data": "MyAssertionLambdaFunctionCurrentVersionF4FA4C80523df5fd8667e8600ae9661e9fe779a6"
           }
         ],
         "/MyStack/MyAssertionTrigger/Default/Default": [
@@ -168,7 +163,7 @@
         "/MyStack/MySecondFunction/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MySecondFunctionCurrentVersion7D497B5D173a4bb1f758991022ea97d651403362"
+            "data": "MySecondFunctionCurrentVersion7D497B5D054029861f424b2f88575859bb7ebb23"
           }
         ],
         "/MyStack/MyDefaultPropTrigger/Default/Default": [
@@ -211,10 +206,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "TriggerTestDefaultTestDeployAssert61636546.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c73344bec9b759a36df1f487655b48809096547e643155f56136fca1653ba2f5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/66d3ef042948a5e46d133320073a0c3b8cd6d5f4dff509a7ce2b5d2a052da271.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -231,40 +227,40 @@
         "TriggerTestDefaultTestDeployAssert61636546.assets"
       ],
       "metadata": {
-        "/TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/Default/Default": [
+        "/TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSreceiveMessage"
+            "data": "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4"
           }
         ],
-        "/TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/IsCompleteProvider/Invoke": [
+        "/TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/WaitFor/IsCompleteProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSreceiveMessageWaitForIsCompleteProviderInvoke92C9A498"
+            "data": "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4WaitForIsCompleteProviderInvoke0972BE31"
           }
         ],
-        "/TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/TimeoutProvider/Invoke": [
+        "/TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/WaitFor/TimeoutProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSreceiveMessageWaitForTimeoutProviderInvoke88C69E59"
+            "data": "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4WaitForTimeoutProviderInvoke1D0F75E3"
           }
         ],
-        "/TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/Role": [
+        "/TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/WaitFor/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSreceiveMessageWaitForRole90A5ABAA"
+            "data": "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4WaitForRoleA5502331"
           }
         ],
-        "/TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/WaitFor/Resource": [
+        "/TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/WaitFor/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallSQSreceiveMessageWaitFor10141935"
+            "data": "AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4WaitFor2891A454"
           }
         ],
-        "/TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/AssertionResults": [
+        "/TriggerTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallSQSreceiveMessage"
+            "data": "AssertionResultsAwsApiCallSQSreceiveMessage3bd20f8ab47b6a7aba2afa037c8a30f4"
           }
         ],
         "/TriggerTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [

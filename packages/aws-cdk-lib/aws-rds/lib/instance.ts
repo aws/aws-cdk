@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { CaCertificate } from './ca-certificate';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IInstanceEngine } from './instance-engine';
@@ -509,7 +510,7 @@ export interface DatabaseInstanceNewProps {
    * Indicates whether automated backups should be deleted or retained when
    * you delete a DB instance.
    *
-   * @default false
+   * @default true
    */
   readonly deleteAutomatedBackups?: boolean;
 
@@ -531,7 +532,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * Whether to enable Performance Insights for the DB instance.
    *
-   * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.
+   * @default - false, unless ``performanceInsightRetention`` or ``performanceInsightEncryptionKey`` is set.
    */
   readonly enablePerformanceInsights?: boolean;
 
@@ -701,9 +702,11 @@ export interface DatabaseInstanceNewProps {
   readonly s3ExportBuckets?: s3.IBucket[];
 
   /**
-   * Indicates whether the DB instance is an internet-facing instance.
+   * Indicates whether the DB instance is an internet-facing instance. If not specified,
+   * the instance's vpcSubnets will be used to determine if the instance is internet-facing
+   * or not.
    *
-   * @default - `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
+   * @default - `true` if the instance's `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
    */
   readonly publiclyAccessible?: boolean;
 
@@ -713,6 +716,20 @@ export interface DatabaseInstanceNewProps {
    * @default - IPV4
    */
   readonly networkType?: NetworkType;
+
+  /**
+   * The identifier of the CA certificate for this DB instance.
+   *
+   * Specifying or updating this property triggers a reboot.
+   *
+   * For RDS DB engines:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html
+   * For Aurora DB engines:
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html
+   *
+   * @default - RDS will choose a certificate authority
+   */
+  readonly caCertificate?: CaCertificate;
 }
 
 /**
@@ -824,6 +841,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       : props.instanceIdentifier;
 
     const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
+    const isInPublicSubnet = this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC;
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
@@ -857,7 +875,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
-      publiclyAccessible: props.publiclyAccessible ?? (this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC),
+      publiclyAccessible: props.publiclyAccessible ?? isInPublicSubnet,
       storageType,
       storageThroughput: props.storageThroughput,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
@@ -865,6 +883,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       domain: this.domainId,
       domainIamRoleName: this.domainRole?.roleName,
       networkType: props.networkType,
+      caCertificateIdentifier: props.caCertificate ? props.caCertificate.toString() : undefined,
     };
   }
 
@@ -1070,9 +1089,8 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    * Grant the given identity connection access to the database.
    *
    * @param grantee the Principal to grant the permissions to
-   * @param dbUser the name of the database user to allow connecting as to the db instance
-   *
-   * @default the default user, obtained from the Secret
+   * @param dbUser the name of the database user to allow connecting as to the db instance,
+   * or the default database user, obtained from the Secret, if not specified
    */
   public grantConnect(grantee: iam.IGrantable, dbUser?: string): iam.Grant {
     if (!dbUser) {
@@ -1080,7 +1098,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
         throw new Error('A secret or dbUser is required to grantConnect()');
       }
 
-      dbUser = this.secret.secretValueFromJson('username').toString();
+      dbUser = this.secret.secretValueFromJson('username').unsafeUnwrap();
     }
 
     return super.grantConnect(grantee, dbUser);

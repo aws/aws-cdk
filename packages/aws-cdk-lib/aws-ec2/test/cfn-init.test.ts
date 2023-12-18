@@ -660,7 +660,7 @@ function dontExpectLine(lines: string[], re: RegExp) {
 }
 
 function cmdArg(command: string, argument: string) {
-  return new RegExp(`${escapeRegex(command)}(\.exe)? .*${escapeRegex(argument)}`);
+  return new RegExp(`${escapeRegex(command)}(\\.exe)? .*${escapeRegex(argument)}`);
 }
 
 function escapeRegex(s: string) {

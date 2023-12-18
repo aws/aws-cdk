@@ -7,6 +7,7 @@ import { Stack, Stage, StageProps, Tags } from '../../../core';
 import { BucketStack, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, TestApp, behavior, stringLike } from '../testhelpers';
 
 
+
 let app: TestApp;
 let pipelineStack: Stack;
 

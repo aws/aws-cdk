@@ -1,0 +1,225 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdk-integ-assets-bundling": {
+        "id": "cdk-integ-assets-bundling",
+        "path": "cdk-integ-assets-bundling",
+        "children": {
+          "BundledAsset": {
+            "id": "BundledAsset",
+            "path": "cdk-integ-assets-bundling/BundledAsset",
+            "children": {
+              "Stage": {
+                "id": "Stage",
+                "path": "cdk-integ-assets-bundling/BundledAsset/Stage",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "AssetBucket": {
+                "id": "AssetBucket",
+                "path": "cdk-integ-assets-bundling/BundledAsset/AssetBucket",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+              "version": "0.0.0"
+            }
+          },
+          "MyUser": {
+            "id": "MyUser",
+            "path": "cdk-integ-assets-bundling/MyUser",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-assets-bundling/MyUser/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::User",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnUser",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "cdk-integ-assets-bundling/MyUser/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-integ-assets-bundling/MyUser/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:GetBucket*",
+                                "s3:GetObject*",
+                                "s3:HeadObject",
+                                "s3:List*"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":s3:::",
+                                      {
+                                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":s3:::",
+                                      {
+                                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                                      }
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "MyUserDefaultPolicy7B897426",
+                        "users": [
+                          {
+                            "Ref": "MyUserDC45028B"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.User",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-integ-assets-bundling/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-integ-assets-bundling/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "IntegTest": {
+        "id": "IntegTest",
+        "path": "IntegTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "IntegTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "IntegTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "IntegTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "IntegTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "IntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

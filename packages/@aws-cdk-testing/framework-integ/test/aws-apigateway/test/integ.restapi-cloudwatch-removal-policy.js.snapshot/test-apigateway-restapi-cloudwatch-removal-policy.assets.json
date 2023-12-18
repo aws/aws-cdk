@@ -1,0 +1,19 @@
+{
+  "version": "33.0.0",
+  "files": {
+    "ad0976eb05657cb79673c3a947078cdcaaac49665eb861a3a4d2e6eeb5774489": {
+      "source": {
+        "path": "test-apigateway-restapi-cloudwatch-removal-policy.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ad0976eb05657cb79673c3a947078cdcaaac49665eb861a3a4d2e6eeb5774489.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

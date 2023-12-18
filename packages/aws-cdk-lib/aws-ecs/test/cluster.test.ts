@@ -792,7 +792,7 @@ describe('cluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
-        Ref: 'SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+        Ref: 'SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
       InstanceType: 't2.micro',
       IamInstanceProfile: {
@@ -901,9 +901,9 @@ describe('cluster', () => {
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
     expect(template.Parameters).toEqual({
-      SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+      SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
         Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-        Default: '/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id',
+        Default: '/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-ECS_Optimized/image_id',
       },
     });
 
@@ -982,6 +982,17 @@ describe('cluster', () => {
 
   });
 
+  testDeprecated('allows returning the correct image for linux 2023 for EcsOptimizedAmi', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const ami = new ecs.EcsOptimizedAmi({
+      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
+    });
+
+    expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.LINUX);
+
+  });
+
   test('allows returning the correct image for linux for EcsOptimizedImage', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1009,6 +1020,24 @@ describe('cluster', () => {
 
   });
 
+  test('allows returning the correct image for linux 2023 for EcsOptimizedImage', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    expect(ecs.EcsOptimizedImage.amazonLinux2023().getImage(stack).osType).toEqual(
+      ec2.OperatingSystemType.LINUX);
+
+  });
+
+  test('allows returning the correct image for linux 2023 for EcsOptimizedImage with ARM hardware', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    expect(ecs.EcsOptimizedImage.amazonLinux2023(ecs.AmiHardwareType.ARM).getImage(stack).osType).toEqual(
+      ec2.OperatingSystemType.LINUX);
+
+  });
+
   test('allows returning the correct image for windows for EcsOptimizedImage', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1032,7 +1061,13 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect((cluster as any)._cfnCluster.serviceConnectDefaults.namespace).toBe('foo.com');
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      ServiceConnectDefaults: {
+        Namespace: {
+          'Fn::GetAtt': ['EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F', 'Arn'],
+        },
+      },
+    });
   });
 
   test('allows setting cluster _defaultCloudMapNamespace for HTTP namespace', () => {
@@ -1041,12 +1076,12 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     // WHEN
-    const namespace = cluster.addDefaultCloudMapNamespace({
+    cluster.addDefaultCloudMapNamespace({
       name: 'foo',
       type: cloudmap.NamespaceType.HTTP,
     });
-    // THEN
-    expect(namespace.namespaceName).toBe('foo');
+    expect(cluster.defaultCloudMapNamespace).not.toBe(undefined);
+    expect(cluster.defaultCloudMapNamespace!.namespaceName).toBe('foo');
   });
 
   /*
@@ -1129,9 +1164,9 @@ describe('cluster', () => {
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
     expect(template.Parameters).toEqual({
-      SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+      SsmParameterValueawsserviceamiwindowslatestWindowsServer2019EnglishFullECSOptimizedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
         Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-        Default: '/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id',
+        Default: '/aws/service/ami-windows-latest/Windows_Server-2019-English-Full-ECS_Optimized/image_id',
       },
     });
 
@@ -1366,6 +1401,20 @@ describe('cluster', () => {
 
     Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupEgress', 1);
 
+  });
+
+  test('Security groups are optonal for imported clusters', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    const cluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster-name',
+      vpc,
+    });
+
+    // THEN
+    expect(cluster.connections.securityGroups).toEqual([]);
   });
 
   test('Metric', () => {
@@ -2718,6 +2767,54 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
 
     cluster.addAsgCapacityProvider(capacityProviderAl2);
   }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+});
+
+test('throws when InstanceWarmupPeriod is less than 0', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'test');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+  const autoScalingGroupAl2 = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+    vpc,
+    instanceType: new ec2.InstanceType('t2.micro'),
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  });
+
+  // THEN
+  expect(() => {
+    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2', {
+      autoScalingGroup: autoScalingGroupAl2,
+      instanceWarmupPeriod: -1,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProviderAl2);
+  }).toThrow(/InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: -1./);
+});
+
+test('throws when InstanceWarmupPeriod is greater than 10000', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'test');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+  const autoScalingGroupAl2 = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+    vpc,
+    instanceType: new ec2.InstanceType('t2.micro'),
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  });
+
+  // THEN
+  expect(() => {
+    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2', {
+      autoScalingGroup: autoScalingGroupAl2,
+      instanceWarmupPeriod: 99999,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProviderAl2);
+  }).toThrow(/InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: 99999./);
 });
 
 describe('Accessing container instance role', function () {

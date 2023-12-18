@@ -306,38 +306,79 @@
     ]
    }
   },
-  "FargateClustercapacityLaunchConfig9B95CCB7": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "FargateClustercapacityLaunchTemplateD01E44DB": {
+   "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "t3.micro",
-    "IamInstanceProfile": {
-     "Ref": "FargateClustercapacityInstanceProfile8294296C"
-    },
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "FargateClustercapacityInstanceSecurityGroupCB3AEDA1",
-       "GroupId"
-      ]
-     }
-    ],
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "",
-       [
-        "#!/bin/bash\necho ECS_CLUSTER=",
-        {
-         "Ref": "FargateCluster7CCD5F93"
-        },
-        " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "FargateClustercapacityInstanceProfile8294296C",
+        "Arn"
        ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t3.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "FargateClustercapacityInstanceSecurityGroupCB3AEDA1",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ/FargateCluster/capacity/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ/FargateCluster/capacity/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "#!/bin/bash\necho ECS_CLUSTER=",
+         {
+          "Ref": "FargateCluster7CCD5F93"
+         },
+         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-ecs-integ/FargateCluster/capacity/LaunchTemplate"
+       }
       ]
      }
-    }
+    ]
    },
    "DependsOn": [
     "FargateClustercapacityInstanceRoleDefaultPolicy90B38927",
@@ -350,8 +391,16 @@
     "MaxSize": "1",
     "MinSize": "1",
     "DesiredCapacity": "1",
-    "LaunchConfigurationName": {
-     "Ref": "FargateClustercapacityLaunchConfig9B95CCB7"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "FargateClustercapacityLaunchTemplateD01E44DB"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "FargateClustercapacityLaunchTemplateD01E44DB",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "Tags": [
      {
@@ -733,6 +782,11 @@
      "Ref": "FargateCluster7CCD5F93"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -755,7 +809,10 @@
     "TaskDefinition": {
      "Ref": "TaskDef54694570"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   },
   "ServiceCloudmapService046058A4": {
    "Type": "AWS::ServiceDiscovery::Service",
@@ -784,7 +841,10 @@
       "Id"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   }
  },
  "Parameters": {

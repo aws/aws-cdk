@@ -4,8 +4,9 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
+import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from 'aws-cdk-lib/cx-api';
 
-const app = new cdk.App();
+const app = new cdk.App({ postCliContext: { [AUTOSCALING_GENERATE_LAUNCH_TEMPLATE]: false } });
 const stack = new cdk.Stack(app, 'aws-ecs-integ-alb-ec2-cmd-entrypoint');
 
 // Create VPC and ECS Cluster

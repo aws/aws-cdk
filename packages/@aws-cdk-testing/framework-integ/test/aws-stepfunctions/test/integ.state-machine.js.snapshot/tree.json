@@ -12,8 +12,32 @@
             "id": "wait time",
             "path": "aws-stepfunctions-integ/wait time",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Wait",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "short wait time": {
+            "id": "short wait time",
+            "path": "aws-stepfunctions-integ/short wait time",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "choice": {
+            "id": "choice",
+            "path": "aws-stepfunctions-integ/choice",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "success": {
+            "id": "success",
+            "path": "aws-stepfunctions-integ/success",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           },
           "Role": {
@@ -24,8 +48,8 @@
                 "id": "ImportRole",
                 "path": "aws-stepfunctions-integ/Role/ImportRole",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "Resource": {
@@ -49,8 +73,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnRole",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "DefaultPolicy": {
@@ -139,20 +163,20 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Policy",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.Role",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           },
           "StateMachine": {
@@ -167,8 +191,8 @@
                     "id": "ImportRole",
                     "path": "aws-stepfunctions-integ/StateMachine/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   },
                   "Resource": {
@@ -192,14 +216,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               },
               "Resource": {
@@ -208,46 +232,46 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
+                    "definitionString": "{\"StartAt\":\"wait time\",\"States\":{\"wait time\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.waitSeconds\",\"Next\":\"choice\"},\"choice\":{\"Type\":\"Choice\",\"Comment\":\"this is a comment for the choice state\",\"Choices\":[{\"Variable\":\"$.success\",\"IsPresent\":true,\"Next\":\"success\",\"Comment\":\"this is a comment for the when condition\"},{\"Variable\":\"$.noComment\",\"IsPresent\":true,\"Next\":\"short wait time\"}],\"Default\":\"success\"},\"success\":{\"Type\":\"Succeed\"},\"short wait time\":{\"Type\":\"Wait\",\"Seconds\":1,\"Next\":\"success\"}},\"Comment\":\"a super cool state machine\"}",
                     "roleArn": {
                       "Fn::GetAtt": [
                         "StateMachineRoleB840431D",
                         "Arn"
                       ]
-                    },
-                    "definitionString": "{\"StartAt\":\"wait time\",\"States\":{\"wait time\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.waitSeconds\",\"End\":true}}}"
+                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-stepfunctions-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "aws-stepfunctions-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
         }
       },
       "Tree": {
@@ -255,13 +279,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.237"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.2.70"
     }
   }
 }

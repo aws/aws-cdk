@@ -1,14 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
-    "integ.elasticsearch.unsignedbasicauth": {
+    "ElasticSearchUnsignedBasicAuthInteg/DefaultTest": {
       "stacks": [
         "cdk-integ-elasticsearch-unsignedbasicauth"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "ElasticSearchUnsignedBasicAuthInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "ElasticSearchUnsignedBasicAuthIntegDefaultTestDeployAssertB125FC47"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

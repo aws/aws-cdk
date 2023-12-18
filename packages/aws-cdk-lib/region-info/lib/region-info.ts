@@ -154,6 +154,15 @@ export class RegionInfo {
   }
 
   /**
+   * The ARN of the AppConfig Lambda Layer, for the given version.
+   * @param layerVersion The layer version (e.g. 2.0.181)
+   * @param architecture The Lambda Function architecture (e.g. 'x86_64' or 'arm64'), defaults to x86_64
+   */
+  public appConfigLambdaArn(layerVersion: string, architecture?: string) : string | undefined {
+    return Fact.find(this.name, FactName.appConfigLambdaLayerVersion(layerVersion, architecture));
+  }
+
+  /**
    * The ID of the AWS account that owns the public ECR repository that contains the
    * AWS App Mesh Envoy Proxy images in a given region.
    */
@@ -177,5 +186,15 @@ export class RegionInfo {
    */
   public adotLambdaLayerArn(type: string, version: string, architecture: string): string | undefined {
     return Fact.find(this.name, FactName.adotLambdaLayer(type, version, architecture));
+  }
+
+  /**
+   * The ARN of the Parameters and Secrets Lambda layer for the given lambda architecture.
+   *
+   * @param version the layer version
+   * @param architecture the Lambda Function architecture (e.g. 'x86_64' or 'arm64')
+   */
+  public paramsAndSecretsLambdaLayerArn(version: string, architecture: string): string | undefined {
+    return Fact.find(this.name, FactName.paramsAndSecretsLambdaLayer(version, architecture));
   }
 }

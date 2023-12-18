@@ -12,7 +12,7 @@
             "id": "Start Athena Query",
             "path": "aws-stepfunctions-tasks-athena-start-query-execution-integ/Start Athena Query",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.AthenaStartQueryExecution",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.AthenaStartQueryExecution",
               "version": "0.0.0"
             }
           },
@@ -28,7 +28,7 @@
                     "id": "ImportRole",
                     "path": "aws-stepfunctions-tasks-athena-start-query-execution-integ/StateMachine/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -53,7 +53,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -146,7 +146,7 @@
                                         {
                                           "Ref": "AWS::Partition"
                                         },
-                                        ":s3:::query-results-bucket/folder"
+                                        ":s3:::query-results-bucket/folder/*"
                                       ]
                                     ]
                                   }
@@ -269,19 +269,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -291,12 +291,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
-                    "roleArn": {
-                      "Fn::GetAtt": [
-                        "StateMachineRoleB840431D",
-                        "Arn"
-                      ]
-                    },
                     "definitionString": {
                       "Fn::Join": [
                         "",
@@ -305,20 +299,26 @@
                           {
                             "Ref": "AWS::Partition"
                           },
-                          ":states:::athena:startQueryExecution\",\"Parameters\":{\"QueryString.$\":\"$.queryString\",\"QueryExecutionContext\":{\"Database\":\"mydatabase\"},\"ResultConfiguration\":{\"EncryptionConfiguration\":{\"EncryptionOption\":\"SSE_S3\"},\"OutputLocation\":\"s3://query-results-bucket/folder/\"}}}},\"TimeoutSeconds\":30}"
+                          ":states:::athena:startQueryExecution\",\"Parameters\":{\"QueryString.$\":\"$.queryString\",\"QueryExecutionContext\":{\"Database\":\"mydatabase\"},\"ResultConfiguration\":{\"EncryptionConfiguration\":{\"EncryptionOption\":\"SSE_S3\"},\"OutputLocation\":\"s3://query-results-bucket/folder/\"},\"ExecutionParameters\":[\"param1\",\"param2\"]}}},\"TimeoutSeconds\":30}"
                         ]
+                      ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRoleB840431D",
+                        "Arn"
                       ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
               "version": "0.0.0"
             }
           },
@@ -326,7 +326,7 @@
             "id": "stateMachineArn",
             "path": "aws-stepfunctions-tasks-athena-start-query-execution-integ/stateMachineArn",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -334,7 +334,7 @@
             "id": "BootstrapVersion",
             "path": "aws-stepfunctions-tasks-athena-start-query-execution-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -342,13 +342,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-stepfunctions-tasks-athena-start-query-execution-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -357,12 +357,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.237"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

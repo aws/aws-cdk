@@ -1,4 +1,4 @@
-import { AssetHashType, BundlingFileAccess, DockerImage, DockerRunOptions } from 'aws-cdk-lib';
+import { AssetHashType, BundlingFileAccess, DockerImage, DockerRunOptions } from 'aws-cdk-lib/core';
 
 /**
  * Bundling options
@@ -15,7 +15,7 @@ export interface BundlingOptions extends DockerRunOptions {
   /**
    * A custom bundling Docker image.
    *
-   * @default - use the Docker image provided by @aws-cdk/aws-lambda-go
+   * @default - use the Docker image provided by @aws-cdk/aws-lambda-go-alpha
    */
   readonly dockerImage?: DockerImage;
 

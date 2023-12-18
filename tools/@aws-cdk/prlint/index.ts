@@ -1,8 +1,8 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
 import { Octokit } from '@octokit/rest';
-import * as linter from './lint';
 import { StatusEvent, PullRequestEvent } from '@octokit/webhooks-definitions/schema';
+import * as linter from './lint';
 
 async function run() {
   const token: string = process.env.GITHUB_TOKEN!;
@@ -24,6 +24,20 @@ async function run() {
           await prLinter.validateStatusEvent(pr, github.context.payload as StatusEvent);
         }
         break;
+      case 'workflow_run':
+        const prNumber = process.env.PR_NUMBER;
+        const prSha = process.env.PR_SHA;
+        if (!prNumber || !prSha) {
+          throw new Error(`Cannot have undefined values in: ${prNumber} pr number and ${prSha} pr sha.`)
+        }
+        const workflowPrLinter = new linter.PullRequestLinter({
+          client,
+          owner: github.context.repo.owner,
+          repo: github.context.repo.repo,
+          number: Number(prNumber),
+        });
+        await workflowPrLinter.validatePullRequestTarget(prSha);
+        break;
       default:
         const payload = github.context.payload as PullRequestEvent;
         const prLinter = new linter.PullRequestLinter({
@@ -39,4 +53,4 @@ async function run() {
   }
 }
 
-run()
+void run();

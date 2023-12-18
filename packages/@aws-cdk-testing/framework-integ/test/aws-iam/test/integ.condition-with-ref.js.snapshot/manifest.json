@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "test-condition-with-ref.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "test-condition-with-ref.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a83079d4341ed5e93d6bf8a68a1ec4f0534e97c2d11c626dc6588c2958267292.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bbf2e8bf4917e5457413b461a8328d9462c7d3975b3998548ffc8b41cddaf0cb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -43,12 +44,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PrincipalTagCondition94CCB594"
-          }
-        ],
-        "/test-condition-with-ref/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
           }
         ],
         "/test-condition-with-ref/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [
@@ -97,6 +92,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "iamtestconditionwithrefDefaultTestDeployAssert5E44A64B.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

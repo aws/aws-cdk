@@ -498,12 +498,12 @@ Custom resources are backed by a **custom resource provider** which can be
 implemented in one of the following ways. The following table compares the
 various provider types (ordered from low-level to high-level):
 
-| Provider                                                             | Compute Type | Error Handling | Submit to CloudFormation | Max Timeout     | Language | Footprint |
-|----------------------------------------------------------------------|:------------:|:--------------:|:------------------------:|:---------------:|:--------:|:---------:|
-| [sns.Topic](#amazon-sns-topic)                                       | Self-managed | Manual         | Manual                   | Unlimited       | Any      | Depends   |
-| [lambda.Function](#aws-lambda-function)                              | AWS Lambda   | Manual         | Manual                   | 15min           | Any      | Small     |
-| [core.CustomResourceProvider](#the-corecustomresourceprovider-class) | AWS Lambda   | Auto           | Auto                     | 15min           | Node.js  | Small     |
-| [custom-resources.Provider](#the-custom-resource-provider-framework) | AWS Lambda   | Auto           | Auto                     | Unlimited Async | Any      | Large     |
+| Provider                                                             | Compute Type | Error Handling | Submit to CloudFormation |   Max Timeout   | Language | Footprint |
+| -------------------------------------------------------------------- | :----------: | :------------: | :----------------------: | :-------------: | :------: | :-------: |
+| [sns.Topic](#amazon-sns-topic)                                       | Self-managed |     Manual     |          Manual          |    Unlimited    |   Any    |  Depends  |
+| [lambda.Function](#aws-lambda-function)                              |  AWS Lambda  |     Manual     |          Manual          |      15min      |   Any    |   Small   |
+| [core.CustomResourceProvider](#the-corecustomresourceprovider-class) |  AWS Lambda  |      Auto      |           Auto           |      15min      | Node.js  |   Small   |
+| [custom-resources.Provider](#the-custom-resource-provider-framework) |  AWS Lambda  |      Auto      |           Auto           | Unlimited Async |   Any    |   Large   |
 
 Legend:
 
@@ -605,7 +605,7 @@ stack-unique identifier and returns the service token:
 ```ts
 const serviceToken = CustomResourceProvider.getOrCreate(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_18_X,
   description: "Lambda function created by the custom resource provider",
 });
 
@@ -700,7 +700,7 @@ export class Sum extends Construct {
     const resourceType = 'Custom::Sum';
     const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
       codeDirectory: `${__dirname}/sum-handler`,
-      runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -730,7 +730,7 @@ built-in singleton method:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_18_X,
 });
 
 const roleArn = provider.roleArn;
@@ -743,7 +743,7 @@ To add IAM policy statements to this role, use `addToRolePolicy()`:
 ```ts
 const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
   codeDirectory: `${__dirname}/my-handler`,
-  runtime: CustomResourceProviderRuntime.NODEJS_14_X,
+  runtime: CustomResourceProviderRuntime.NODEJS_18_X,
 });
 provider.addToRolePolicy({
   Effect: 'Allow',
@@ -1058,6 +1058,31 @@ declare const regionTable: CfnMapping;
 regionTable.findInMap(Aws.REGION, 'regionName');
 ```
 
+An optional default value can also be passed to `findInMap`. If either key is not found in the map and the mapping is lazy, `findInMap` will return the default value and not render the mapping.
+If the mapping is not lazy or either key is an unresolved token, the call to `findInMap` will return a token that resolves to 
+`{ "Fn::FindInMap": [ "MapName", "TopLevelKey", "SecondLevelKey", { "DefaultValue": "DefaultValue" } ] }`, and the mapping will be rendered.
+Note that the `AWS::LanguageExtentions` transform is added to enable the default value functionality.
+
+For example, the following code will again not produce anything in the "Mappings" section. The
+call to `findInMap` will be able to resolve the value during synthesis and simply return
+`'Region not found'`.
+
+```ts
+const regionTable = new CfnMapping(this, 'RegionTable', {
+  mapping: {
+    'us-east-1': {
+      regionName: 'US East (N. Virginia)',
+    },
+    'us-east-2': {
+      regionName: 'US East (Ohio)',
+    },
+  },
+  lazy: true,
+});
+
+regionTable.findInMap('us-west-1', 'regionName', 'Region not found');
+```
+
 [cfn-mappings]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
 
 ### Dynamic References
@@ -1149,6 +1174,13 @@ const stack = new Stack(app, 'StackName', {
 });
 ```
 
+You can also set termination protection with the setter after you've instantiated the stack.
+
+```ts
+const stack = new Stack(app, 'StackName', {});
+stack.terminationProtection = true;
+```
+
 By default, termination protection is disabled.
 
 ### Description
@@ -1206,6 +1238,20 @@ When deploying to AWS CloudFormation, it needs to keep in check the amount of re
 It's possible to synthesize the project with more Resources than the allowed (or even reduce the number of Resources).
 
 Set the context key `@aws-cdk/core:stackResourceLimit` with the proper value, being 0 for disable the limit of resources.
+
+### Template Indentation
+
+The AWS CloudFormation templates generated by CDK include indentation by default. 
+Indentation makes the templates more readable, but also increases their size, 
+and CloudFormation templates cannot exceed 1MB.
+
+It's possible to reduce the size of your templates by suppressing indentation.
+
+To do this for all templates, set the context key `@aws-cdk/core:suppressTemplateIndentation` to `true`.
+
+To do this for a specific stack, add a `suppressTemplateIndentation: true` property to the 
+stack's `StackProps` parameter. You can also set this property to `false` to override 
+the context key setting.
 
 ## App Context
 
@@ -1413,5 +1459,41 @@ part of the installation of your package. With `npm`, for example, you can run
 add it to the `postinstall`
 [script](https://docs.npmjs.com/cli/v9/using-npm/scripts) in the `package.json`
 file.
+
+## Annotations
+
+Construct authors can add annotations to constructs to report at three different
+levels: `ERROR`, `WARN`, `INFO`.
+
+Typically warnings are added for things that are important for the user to be
+aware of, but will not cause deployment errors in all cases. Some common
+scenarios are (non-exhaustive list):
+
+- Warn when the user needs to take a manual action, e.g. IAM policy should be
+  added to an referenced resource.
+- Warn if the user configuration might not follow best practices (but is still
+  valid)
+- Warn if the user is using a deprecated API
+
+### Acknowledging Warnings
+
+If you would like to run with `--strict` mode enabled (warnings will throw
+errors) it is possible to `acknowledge` warnings to make the warning go away.
+
+For example, if > 10 IAM managed policies are added to an IAM Group, a warning
+will be created:
+
+```
+IAM:Group:MaxPoliciesExceeded: You added 11 to IAM Group my-group. The maximum number of managed policies attached to an IAM group is 10.
+```
+
+If you have requested a [quota increase](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html#reference_iam-quotas-entities)
+you may have the ability to add > 10 managed policies which means that this
+warning does not apply to you. You can acknowledge this by `acknowledging` the
+warning by the `id`.
+
+```ts
+Annotations.of(this).acknowledgeWarning('IAM:Group:MaxPoliciesExceeded', 'Account has quota increased to 20');
+```
 
 <!--END CORE DOCUMENTATION-->

@@ -168,49 +168,6 @@
             "id": "MyStream",
             "path": "test-stack/MyStream",
             "children": {
-              "Service Role": {
-                "id": "Service Role",
-                "path": "test-stack/MyStream/Service Role",
-                "children": {
-                  "ImportService Role": {
-                    "id": "ImportService Role",
-                    "path": "test-stack/MyStream/Service Role/ImportService Role",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "test-stack/MyStream/Service Role/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "firehose.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
               "S3 Destination Role": {
                 "id": "S3 Destination Role",
                 "path": "test-stack/MyStream/S3 Destination Role",
@@ -466,7 +423,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.70"
         }
       }
     },

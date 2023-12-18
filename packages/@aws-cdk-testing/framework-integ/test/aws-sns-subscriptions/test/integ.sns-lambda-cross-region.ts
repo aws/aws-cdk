@@ -2,6 +2,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cdk from 'aws-cdk-lib';
 import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 /// !cdk-integ * pragma:enable-lookups
 const app = new cdk.App();
@@ -21,7 +22,7 @@ const functionStack = new cdk.Stack(app, 'FunctionStack', {
 });
 const fction = new lambda.Function(functionStack, 'Echo', {
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
 });
 

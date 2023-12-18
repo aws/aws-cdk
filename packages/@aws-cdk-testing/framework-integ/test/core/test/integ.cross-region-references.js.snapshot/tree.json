@@ -1,0 +1,308 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "CrossRegionRefProducerInteg": {
+        "id": "CrossRegionRefProducerInteg",
+        "path": "CrossRegionRefProducerInteg",
+        "children": {
+          "SomeParameter": {
+            "id": "SomeParameter",
+            "path": "CrossRegionRefProducerInteg/SomeParameter",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CrossRegionRefProducerInteg/SomeParameter/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "KNOWN_PARAMETER_NAME",
+                    "type": "String",
+                    "value": "MY_PARAMETER_VALUE"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ssm.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ssm.StringParameter",
+              "version": "0.0.0"
+            }
+          },
+          "ExportsWriteruseast2828FA26B": {
+            "id": "ExportsWriteruseast2828FA26B",
+            "path": "CrossRegionRefProducerInteg/ExportsWriteruseast2828FA26B",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CrossRegionRefProducerInteg/ExportsWriteruseast2828FA26B/Resource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "CrossRegionRefProducerInteg/ExportsWriteruseast2828FA26B/Resource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "Custom::CrossRegionExportWriterCustomResourceProvider": {
+            "id": "Custom::CrossRegionExportWriterCustomResourceProvider",
+            "path": "CrossRegionRefProducerInteg/Custom::CrossRegionExportWriterCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "CrossRegionRefProducerInteg/Custom::CrossRegionExportWriterCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "CrossRegionRefProducerInteg/Custom::CrossRegionExportWriterCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "CrossRegionRefProducerInteg/Custom::CrossRegionExportWriterCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "CrossRegionRefProducerInteg/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "CrossRegionRefProducerInteg/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "CrossRegionRefConsumerInteg": {
+        "id": "CrossRegionRefConsumerInteg",
+        "path": "CrossRegionRefConsumerInteg",
+        "children": {
+          "SomeParameterMirrored": {
+            "id": "SomeParameterMirrored",
+            "path": "CrossRegionRefConsumerInteg/SomeParameterMirrored",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CrossRegionRefConsumerInteg/SomeParameterMirrored/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "KNOWN_PARAMETER_NAME",
+                    "type": "String",
+                    "value": {
+                      "Fn::GetAtt": [
+                        "ExportsReader8B249524",
+                        "/cdk/exports/CrossRegionRefConsumerInteg/CrossRegionRefProducerInteguseast1FnGetAttSomeParameterB1EDD45BValue399DD9D8"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ssm.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ssm.StringParameter",
+              "version": "0.0.0"
+            }
+          },
+          "ExportsReader": {
+            "id": "ExportsReader",
+            "path": "CrossRegionRefConsumerInteg/ExportsReader",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CrossRegionRefConsumerInteg/ExportsReader/Resource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "CrossRegionRefConsumerInteg/ExportsReader/Resource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "Custom::CrossRegionExportReaderCustomResourceProvider": {
+            "id": "Custom::CrossRegionExportReaderCustomResourceProvider",
+            "path": "CrossRegionRefConsumerInteg/Custom::CrossRegionExportReaderCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "CrossRegionRefConsumerInteg/Custom::CrossRegionExportReaderCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "CrossRegionRefConsumerInteg/Custom::CrossRegionExportReaderCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "CrossRegionRefConsumerInteg/Custom::CrossRegionExportReaderCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "CrossRegionRefConsumerInteg/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "CrossRegionRefConsumerInteg/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "CrossRegionSSMReferenceTest": {
+        "id": "CrossRegionSSMReferenceTest",
+        "path": "CrossRegionSSMReferenceTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "CrossRegionSSMReferenceTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CrossRegionSSMReferenceTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "CrossRegionSSMReferenceTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "CrossRegionSSMReferenceTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "CrossRegionSSMReferenceTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

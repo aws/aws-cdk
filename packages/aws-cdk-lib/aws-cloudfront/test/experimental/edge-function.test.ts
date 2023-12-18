@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
@@ -62,7 +62,7 @@ describe('stacks', () => {
   });
 
   test('creates the actual function and supporting resources in us-east-1 stack', () => {
-    new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
+    const edgeFn = new cloudfront.experimental.EdgeFunction(stack, 'MyFn', defaultEdgeFunctionProps());
 
     const fnStack = getFnStack();
 
@@ -90,14 +90,14 @@ describe('stacks', () => {
       Code: { ZipFile: 'foo' },
       Handler: 'index.handler',
       Role: { 'Fn::GetAtt': ['MyFnServiceRoleF3016589', 'Arn'] },
-      Runtime: 'nodejs14.x',
+      Runtime: lambda.Runtime.NODEJS_LATEST.name,
     });
     Template.fromStack(fnStack).hasResourceProperties('AWS::Lambda::Version', {
       FunctionName: { Ref: 'MyFn6F8F742F' },
     });
     Template.fromStack(fnStack).hasResourceProperties('AWS::SSM::Parameter', {
       Type: 'String',
-      Value: { Ref: 'MyFnCurrentVersion309B29FC565d8e08ba88650b100357cd5eaf4bbb' },
+      Value: { Ref: Match.stringLikeRegexp(stack.getLogicalId(edgeFn.currentVersion.node.defaultChild as lambda.CfnVersion)) },
       Name: '/cdk/EdgeFunctionArn/testregion/Stack/MyFn',
     });
   });
@@ -152,7 +152,7 @@ describe('stacks', () => {
       Code: { ZipFile: 'foo' },
       Handler: 'index.handler',
       Role: { 'Fn::GetAtt': ['MyFnServiceRole3F9D41E1', 'Arn'] },
-      Runtime: 'nodejs14.x',
+      Runtime: lambda.Runtime.NODEJS_LATEST.name,
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
       FunctionName: { Ref: 'MyFn223608AD' },
@@ -310,7 +310,7 @@ function defaultEdgeFunctionProps(stackId?: string) {
   return {
     code: lambda.Code.fromInline('foo'),
     handler: 'index.handler',
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     stackId: stackId,
   };
 }

@@ -971,6 +971,47 @@
                           }
                         },
                         "input": "{\"containerOverrides\":[{\"name\":\"TheContainer\",\"environment\":[{\"name\":\"I_WAS_TRIGGERED\",\"value\":\"From CloudWatch Events\"}]}]}"
+                      },
+                      {
+                        "id": "Target1",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "EcsCluster97242B84",
+                            "Arn"
+                          ]
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "TaskDefEventsRoleFB3B67B8",
+                            "Arn"
+                          ]
+                        },
+                        "ecsParameters": {
+                          "taskCount": 1,
+                          "taskDefinitionArn": {
+                            "Ref": "TaskDef54694570"
+                          },
+                          "launchType": "FARGATE",
+                          "networkConfiguration": {
+                            "awsVpcConfiguration": {
+                              "subnets": [
+                                {
+                                  "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+                                }
+                              ],
+                              "assignPublicIp": "ENABLED",
+                              "securityGroups": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "TaskDefSecurityGroupD50E7CF0",
+                                    "GroupId"
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "input": "{}"
                       }
                     ]
                   }

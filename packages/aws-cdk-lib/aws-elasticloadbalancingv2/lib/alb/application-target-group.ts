@@ -516,7 +516,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    * The only valid statistic is Sum. Note that this represents the average not the sum.
    *
    * @default Sum over 5 minutes
-   * @deprecated Use ``ApplicationTargetGroup.metrics.ipv6RequestCount`` instead
+   * @deprecated Use `ApplicationTargetGroup.metrics.requestCountPerTarget` instead
    */
   public metricRequestCountPerTarget(props?: cloudwatch.MetricOptions) {
     return this.metrics.requestCountPerTarget(props);
@@ -643,11 +643,11 @@ class ImportedApplicationTargetGroup extends ImportedTargetGroupBase implements 
 
   public registerListener(_listener: IApplicationListener, _associatingConstruct?: IConstruct) {
     // Nothing to do, we know nothing of our members
-    Annotations.of(this).addWarning('Cannot register listener on imported target group -- security groups might need to be updated manually');
+    Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:albTargetGroupCannotRegisterListener', 'Cannot register listener on imported target group -- security groups might need to be updated manually');
   }
 
   public registerConnectable(_connectable: ec2.IConnectable, _portRange?: ec2.Port | undefined): void {
-    Annotations.of(this).addWarning('Cannot register connectable on imported target group -- security groups might need to be updated manually');
+    Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:albTargetGroupCannotRegisterConnectable', 'Cannot register connectable on imported target group -- security groups might need to be updated manually');
   }
 
   public addTarget(...targets: IApplicationLoadBalancerTarget[]) {

@@ -1,9 +1,9 @@
-import * as camelcase from 'camelcase';
 import * as reflect from 'jsii-reflect';
 import { CfnResourceReflection } from './cfn-resource';
 import { ConstructReflection } from './construct';
 import { CoreTypes } from './core-types';
 import { getDocTag } from './util';
+import { camelize, pascalize } from '../case';
 import { Linter } from '../linter';
 
 const GRANT_RESULT_FQN = '@aws-cdk/aws-iam.Grant';
@@ -31,10 +31,9 @@ export class ResourceReflection {
       return []; // not part of the dep stack
     }
 
-    return ConstructReflection
-      .findAllConstructs(assembly)
-      .filter(c => CoreTypes.isResourceClass(c.classType))
-      .map(c => new ResourceReflection(c));
+    return assembly.allClasses
+      .filter(c => CoreTypes.isConstructClass(c) && CoreTypes.isResourceClass(c))
+      .map(c => new ResourceReflection(new ConstructReflection(c)));
   }
 
   public readonly attributes: Attribute[]; // actual attribute props
@@ -71,7 +70,7 @@ export class ResourceReflection {
       return undefined;
     }
 
-    const resourceName = camelcase(this.cfn.basename);
+    const resourceName = camelize(this.cfn.basename);
 
     // if resource name ends with "Name" (e.g. DomainName, then just use it as-is, otherwise append "Name")
     const physicalNameProp = resourceName.endsWith('Name') ? resourceName : `${resourceName}Name`;
@@ -89,7 +88,7 @@ export class ResourceReflection {
         continue; // skip any protected properties
       }
 
-      const basename = camelcase(this.cfn.basename);
+      const basename = camelize(this.cfn.basename);
 
       // an attribute property is a property which starts with the type name
       // (e.g. "bucketXxx") and/or has an @attribute doc tag.
@@ -108,7 +107,7 @@ export class ResourceReflection {
         // okay, we don't have an explicit CFN attribute name, so we'll guess it
         // from the name of the property.
 
-        const name = camelcase(p.name, { pascalCase: true });
+        const name = pascalize(p.name);
         if (this.cfn.attributeNames.includes(name)) {
           // special case: there is a cloudformation resource type in the attribute name
           // for example 'RoleId'.
@@ -158,7 +157,7 @@ resourceLinter.add({
   code: 'resource-class-extends-resource',
   message: 'resource classes must extend "cdk.Resource" directly or indirectly',
   eval: e => {
-    const resourceBase = e.ctx.sys.findClass(e.ctx.core.resourceClass.fqn);
+    const resourceBase = e.ctx.sys.findClass(e.ctx.core.resourceClassFqn);
     e.assert(e.ctx.construct.classType.extends(resourceBase), e.ctx.construct.fqn);
   },
 });
@@ -179,7 +178,7 @@ resourceLinter.add({
     const resourceInterface = e.ctx.construct.interfaceType;
     if (!resourceInterface) { return; }
 
-    const resourceInterfaceFqn = e.ctx.core.resourceInterface.fqn;
+    const resourceInterfaceFqn = e.ctx.core.resourceInterfaceFqn;
     const interfaceBase = e.ctx.sys.findInterface(resourceInterfaceFqn);
     e.assert(resourceInterface.extends(interfaceBase), resourceInterface.fqn);
   },
@@ -266,7 +265,7 @@ function tryResolveCfnResource(resourceClass: reflect.ClassType): CfnResourceRef
   }
 
   // try to resolve through ancestors
-  for (const base of resourceClass.getAncestors()) {
+  for (const base of resourceClass.ancestors) {
     const ret = tryResolveCfnResource(base);
     if (ret) {
       return ret;
@@ -278,8 +277,21 @@ function tryResolveCfnResource(resourceClass: reflect.ClassType): CfnResourceRef
 }
 
 function guessResourceName(fqn: string) {
-  const match = /@aws-cdk\/([a-z]+)-([a-z0-9]+)\.([A-Z][a-zA-Z0-9]+)/.exec(fqn);
+  // Strip any version suffixes e.g. 'TableV2' becomes 'Table'
+  var match = /^(.+?)(V[0-9]+)?$/.exec(fqn);
   if (!match) { return undefined; }
+  const [, versionless] = match;
+
+  match = /aws-cdk-lib\.([a-z]+)_([a-z0-9]+)\.([A-Z][a-zA-Z0-9]+)/.exec(versionless);
+
+  if (!match) {
+    // Alpha name
+    match = /@aws-cdk\/([a-z]+)-([a-z0-9]+)-alpha\.([A-Z][a-zA-Z0-9]+)/.exec(fqn);
+  }
+
+  if (!match) {
+    return undefined;
+  }
 
   const [, org, ns, rs] = match;
   if (!org || !ns || !rs) { return undefined; }

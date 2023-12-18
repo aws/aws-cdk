@@ -3,18 +3,20 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack, Duration } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult, Match } from '@aws-cdk/integ-tests-alpha';
 import { MockIntegration, PassthroughBehavior, RestApi, TokenAuthorizer, Cors } from 'aws-cdk-lib/aws-apigateway';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 const app = new App();
 const stack = new Stack(app, 'TokenAuthorizerInteg');
 
 const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler')),
 });
 
 const authorizer = new TokenAuthorizer(stack, 'MyAuthorizer', {
   handler: authorizerFn,
+  resultsCacheTtl: Duration.minutes(10),
 });
 
 const restapi = new RestApi(stack, 'MyRestApi', {
@@ -90,7 +92,7 @@ exports.handler = async function(event) {
 }
 `),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_16_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 
 const invokeGet = integ.assertions.invokeFunction({
@@ -101,7 +103,7 @@ const invokeGet = integ.assertions.invokeFunction({
   }),
 });
 invokeGet.expect(ExpectedResult.objectLike({
-  Payload: Match.stringLikeRegexp('200'),
+  Payload: { statusCode: 200 },
 }));
 
 const invokeGetDeny = integ.assertions.invokeFunction({
@@ -112,7 +114,7 @@ const invokeGetDeny = integ.assertions.invokeFunction({
   }),
 });
 invokeGetDeny.expect(ExpectedResult.objectLike({
-  Payload: Match.stringLikeRegexp('User is not authorized to access this resource with an explicit deny'),
+  Payload: { body: Match.stringLikeRegexp('User is not authorized to access this resource with an explicit deny') },
 }));
 
 const invokeOptions = integ.assertions.invokeFunction({
@@ -122,5 +124,5 @@ const invokeOptions = integ.assertions.invokeFunction({
   }),
 });
 invokeOptions.expect(ExpectedResult.objectLike({
-  Payload: Match.stringLikeRegexp('204'),
+  Payload: { statusCode: 204 },
 }));

@@ -1,0 +1,117 @@
+{
+  "name": "@aws-cdk/aws-appconfig-alpha",
+  "private": false,
+  "version": "0.0.0",
+  "description": "An experimental construct library for AWS AppConfig.",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.AppConfig.Alpha",
+        "packageId": "Amazon.CDK.AWS.AppConfig.Alpha",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "java": {
+        "package": "software.amazon.awscdk.services.appconfig.alpha",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "appconfig-alpha"
+        }
+      },
+      "python": {
+        "distName": "aws-cdk.aws-appconfig-alpha",
+        "module": "aws_cdk.aws_appconfig_alpha",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
+        ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkappconfigalpha"
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-appconfig-alpha"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "integ-runner",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "appconfig"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^29.5.11",
+    "@types/mime-types": "^2.1.4",
+    "aws-cdk-lib": "0.0.0",
+    "constructs": "^10.0.0",
+    "jest": "^29.7.0"
+  },
+  "dependencies": {
+    "mime-types": "^2.1.35"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "aws-cdk-lib": "^0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "separate-module": false,
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "awscdkio": {
+    "announce": false
+  },
+  "publishConfig": {
+    "tag": "latest"
+  },
+  "cdk-build": {
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "bundleDependencies": [
+    "mime-types"
+  ]
+}

@@ -1,14 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
-    "integ.log-retention": {
+    "LambdaLogRetentionInteg/DefaultTest": {
       "stacks": [
         "aws-cdk-lambda-log-retention"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "LambdaLogRetentionInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaLogRetentionIntegDefaultTestDeployAssert90E53934"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

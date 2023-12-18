@@ -280,6 +280,123 @@ describe('route', () => {
 
     });
 
+    test('should allow weighted targets with port specified', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      const router = new appmesh.VirtualRouter(stack, 'router', {
+        mesh,
+      });
+
+      // WHEN
+      const node = mesh.addVirtualNode('test-node', {
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http()],
+      });
+
+      router.addRoute('test-http-route', {
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [
+            {
+              virtualNode: node,
+              port: 1234,
+            },
+          ],
+          match: {
+            path: appmesh.HttpRoutePathMatch.startsWith('/node'),
+          },
+          timeout: {
+            idle: cdk.Duration.seconds(10),
+            perRequest: cdk.Duration.seconds(11),
+          },
+        }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
+        Spec: {
+          HttpRoute: {
+            Action: {
+              WeightedTargets: [
+                {
+                  VirtualNode: {
+                    'Fn::GetAtt': [
+                      'meshtestnodeF93946D4',
+                      'VirtualNodeName',
+                    ],
+                  },
+                  Weight: 1,
+                  Port: 1234,
+                },
+              ],
+            },
+          },
+        },
+        RouteName: 'test-http-route',
+      });
+
+    });
+
+    test('should not have weighted targets port when not specified', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      const router = new appmesh.VirtualRouter(stack, 'router', {
+        mesh,
+      });
+
+      // WHEN
+      const node = mesh.addVirtualNode('test-node', {
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http()],
+      });
+
+      router.addRoute('test-http-route', {
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [
+            {
+              virtualNode: node,
+            },
+          ],
+          match: {
+            path: appmesh.HttpRoutePathMatch.startsWith('/node'),
+          },
+          timeout: {
+            idle: cdk.Duration.seconds(10),
+            perRequest: cdk.Duration.seconds(11),
+          },
+        }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
+        Spec: {
+          HttpRoute: {
+            Action: {
+              WeightedTargets: [
+                {
+                  VirtualNode: {
+                    'Fn::GetAtt': [
+                      'meshtestnodeF93946D4',
+                      'VirtualNodeName',
+                    ],
+                  },
+                  Weight: 1,
+                  Port: Match.absent(),
+                },
+              ],
+            },
+          },
+        },
+        RouteName: 'test-http-route',
+      });
+
+    });
+
     test('should allow http retries', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -460,6 +577,76 @@ describe('route', () => {
             },
           },
         },
+      });
+    });
+
+    test('should have grpc route matcher with port when specified', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      const router = new appmesh.VirtualRouter(stack, 'router', {
+        mesh,
+      });
+      const virtualNode = mesh.addVirtualNode('test-node', {
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.grpc()],
+      });
+
+      // WHEN
+      router.addRoute('test-grpc-route', {
+        routeSpec: appmesh.RouteSpec.grpc({
+          weightedTargets: [{ virtualNode }],
+          match: { port: 1234 },
+        }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
+        Spec: {
+          GrpcRoute: {
+            Match: {
+              Port: 1234,
+            },
+          },
+        },
+        RouteName: 'test-grpc-route',
+      });
+    });
+
+    test('should have http route matcher with port when specified', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+      const router = new appmesh.VirtualRouter(stack, 'router', {
+        mesh,
+      });
+      const virtualNode = mesh.addVirtualNode('test-node', {
+        serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        listeners: [appmesh.VirtualNodeListener.http()],
+      });
+
+      // WHEN
+      router.addRoute('test-http-route', {
+        routeSpec: appmesh.RouteSpec.http({
+          weightedTargets: [{ virtualNode }],
+          match: { port: 1234 },
+        }),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::AppMesh::Route', {
+        Spec: {
+          HttpRoute: {
+            Match: {
+              Port: 1234,
+            },
+          },
+        },
+        RouteName: 'test-http-route',
       });
     });
 

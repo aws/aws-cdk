@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { ISecret, Secret } from './secret';
 import { CfnRotationSchedule } from './secretsmanager.generated';
 import * as ec2 from '../../aws-ec2';
+import { Schedule } from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
@@ -37,7 +38,10 @@ export interface RotationScheduleOptions {
    * Specifies the number of days after the previous rotation before
    * Secrets Manager triggers the next automatic rotation.
    *
-   * A value of zero will disable automatic rotation - `Duration.days(0)`.
+   * The minimum value is 4 hours.
+   * The maximum value is 1000 days.
+   *
+   * A value of zero (`Duration.days(0)`) will not create RotationRules.
    *
    * @default Duration.days(30)
    */
@@ -47,7 +51,7 @@ export interface RotationScheduleOptions {
    * Specifies whether to rotate the secret immediately or wait until the next
    * scheduled rotation window.
    *
-   * @default - secret is rotated immediately
+   * @default true
    */
   readonly rotateImmediatelyOnUpdate?: boolean;
 }
@@ -100,7 +104,8 @@ export class RotationSchedule extends Resource {
         );
       }
 
-      props.rotationLambda.grantInvoke(new iam.ServicePrincipal('secretsmanager.amazonaws.com'));
+      const grant = props.rotationLambda.grantInvoke(new iam.ServicePrincipal('secretsmanager.amazonaws.com'));
+      grant.applyBefore(this);
 
       props.rotationLambda.addToRolePolicy(
         new iam.PolicyStatement({
@@ -123,15 +128,26 @@ export class RotationSchedule extends Resource {
       );
     }
 
-    let automaticallyAfterDays: number | undefined = undefined;
-    if (props.automaticallyAfter?.toMilliseconds() !== 0) {
-      automaticallyAfterDays = props.automaticallyAfter?.toDays() || 30;
+    let scheduleExpression: string | undefined;
+    if (props.automaticallyAfter) {
+      const automaticallyAfterMillis = props.automaticallyAfter.toMilliseconds();
+      if (automaticallyAfterMillis > 0) {
+        if (automaticallyAfterMillis < Duration.hours(4).toMilliseconds()) {
+          throw new Error(`automaticallyAfter must not be smaller than 4 hours, got ${props.automaticallyAfter.toHours()} hours`);
+        }
+        if (automaticallyAfterMillis > Duration.days(1000).toMilliseconds()) {
+          throw new Error(`automaticallyAfter must not be greater than 1000 days, got ${props.automaticallyAfter.toDays()} days`);
+        }
+        scheduleExpression = Schedule.rate(props.automaticallyAfter).expressionString;
+      }
+    } else {
+      scheduleExpression = Schedule.rate(Duration.days(30)).expressionString;
     }
 
-    let rotationRules: CfnRotationSchedule.RotationRulesProperty | undefined = undefined;
-    if (automaticallyAfterDays !== undefined) {
+    let rotationRules: CfnRotationSchedule.RotationRulesProperty | undefined;
+    if (scheduleExpression) {
       rotationRules = {
-        automaticallyAfterDays,
+        scheduleExpression,
       };
     }
 

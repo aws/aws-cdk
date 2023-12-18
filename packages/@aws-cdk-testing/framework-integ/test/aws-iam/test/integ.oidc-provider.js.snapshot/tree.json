@@ -20,19 +20,19 @@
                     "id": "Default",
                     "path": "oidc-provider-integ-test/NoClientsNoThumbprint/Resource/Default",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CustomResource",
+                  "fqn": "aws-cdk-lib.CustomResource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.OpenIdConnectProvider",
+              "fqn": "aws-cdk-lib.aws_iam.OpenIdConnectProvider",
               "version": "0.0.0"
             }
           },
@@ -44,7 +44,7 @@
                 "id": "Staging",
                 "path": "oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
                 }
               },
@@ -52,7 +52,7 @@
                 "id": "Role",
                 "path": "oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
                 }
               },
@@ -60,13 +60,13 @@
                 "id": "Handler",
                 "path": "oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
+                  "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProvider",
               "version": "0.0.0"
             }
           },
@@ -82,19 +82,19 @@
                     "id": "Default",
                     "path": "oidc-provider-integ-test/Clients/Resource/Default",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CustomResource",
+                  "fqn": "aws-cdk-lib.CustomResource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.OpenIdConnectProvider",
+              "fqn": "aws-cdk-lib.aws_iam.OpenIdConnectProvider",
               "version": "0.0.0"
             }
           },
@@ -110,19 +110,19 @@
                     "id": "Default",
                     "path": "oidc-provider-integ-test/Thumbprints/Resource/Default",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
+                      "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CustomResource",
+                  "fqn": "aws-cdk-lib.CustomResource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-iam.OpenIdConnectProvider",
+              "fqn": "aws-cdk-lib.aws_iam.OpenIdConnectProvider",
               "version": "0.0.0"
             }
           },
@@ -130,7 +130,7 @@
             "id": "NoClientsThumbprints",
             "path": "oidc-provider-integ-test/NoClientsThumbprints",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -138,7 +138,7 @@
             "id": "ClientsThumbprints",
             "path": "oidc-provider-integ-test/ClientsThumbprints",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -146,7 +146,7 @@
             "id": "ThumbprintsThumbprints",
             "path": "oidc-provider-integ-test/ThumbprintsThumbprints",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -154,7 +154,7 @@
             "id": "BootstrapVersion",
             "path": "oidc-provider-integ-test/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -162,13 +162,13 @@
             "id": "CheckBootstrapVersion",
             "path": "oidc-provider-integ-test/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -185,7 +185,7 @@
                 "path": "iodc-provider-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.249"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -196,7 +196,7 @@
                     "id": "BootstrapVersion",
                     "path": "iodc-provider-test/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -204,25 +204,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "iodc-provider-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -231,12 +231,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.249"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

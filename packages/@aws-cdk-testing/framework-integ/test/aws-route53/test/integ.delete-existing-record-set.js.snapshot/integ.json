@@ -1,14 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "35.0.0",
   "testCases": {
-    "integ.delete-existing-record-set": {
+    "Rooute53DeleteExistingRecordSetInteg/DefaultTest": {
       "stacks": [
         "cdk-route53-integ-delete-existing-record-set"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "Rooute53DeleteExistingRecordSetInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "Rooute53DeleteExistingRecordSetIntegDefaultTestDeployAssert62638412"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

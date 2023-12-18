@@ -1,6 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
-import { ARecord, CaaAmazonRecord, CnameRecord, PrivateHostedZone, PublicHostedZone, RecordTarget, TxtRecord } from 'aws-cdk-lib/aws-route53';
+import { ARecord, CaaAmazonRecord, CnameRecord, Continent, GeoLocation, PrivateHostedZone, PublicHostedZone, RecordTarget, TxtRecord } from 'aws-cdk-lib/aws-route53';
 
 const app = new cdk.App();
 
@@ -45,6 +45,40 @@ new ARecord(stack, 'A', {
   zone: privateZone,
   recordName: 'test',
   target: RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.8'),
+});
+
+new ARecord(stack, 'GeoLocationContinent', {
+  zone: privateZone,
+  recordName: 'geolocation',
+  target: RecordTarget.fromIpAddresses('1.2.3.0', '5.6.7.0'),
+  geoLocation: GeoLocation.continent(Continent.EUROPE),
+});
+
+new ARecord(stack, 'GeoLocationCountry', {
+  zone: privateZone,
+  recordName: 'geolocation',
+  target: RecordTarget.fromIpAddresses('1.2.3.1', '5.6.7.1'),
+  geoLocation: GeoLocation.country('DE'),
+});
+
+new ARecord(stack, 'GeoLocationSubDividion', {
+  zone: privateZone,
+  recordName: 'geolocation',
+  target: RecordTarget.fromIpAddresses('1.2.3.2', '5.6.7.2'),
+  geoLocation: GeoLocation.subdivision('WA'),
+});
+
+new ARecord(stack, 'GeoLocationSubDividionUA', {
+  zone: privateZone,
+  target: RecordTarget.fromIpAddresses('1.2.3.4', '5.6.7.4'),
+  geoLocation: GeoLocation.subdivision('30', 'UA'), // Ukraine, Kyiv
+});
+
+new ARecord(stack, 'GeoLocationDefault', {
+  zone: privateZone,
+  recordName: 'geolocation',
+  target: RecordTarget.fromIpAddresses('1.2.3.3', '5.6.7.3'),
+  geoLocation: GeoLocation.default(),
 });
 
 new CaaAmazonRecord(stack, 'CaaAmazon', {

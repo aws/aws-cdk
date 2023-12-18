@@ -53,6 +53,9 @@
   "aws-aps": [
     "AWS::APS"
   ],
+  "aws-arczonalshift": [
+    "AWS::ARCZonalShift"
+  ],
   "aws-athena": [
     "AWS::Athena"
   ],
@@ -91,6 +94,9 @@
   ],
   "aws-chatbot": [
     "AWS::Chatbot"
+  ],
+  "aws-cleanrooms": [
+    "AWS::CleanRooms"
   ],
   "aws-cloud9": [
     "AWS::Cloud9"
@@ -239,6 +245,9 @@
   "aws-emrserverless": [
     "AWS::EMRServerless"
   ],
+  "aws-entityresolution": [
+    "AWS::EntityResolution"
+  ],
   "aws-events": [
     "AWS::Events"
   ],
@@ -289,6 +298,9 @@
   ],
   "aws-guardduty": [
     "AWS::GuardDuty"
+  ],
+  "aws-healthimaging": [
+    "AWS::HealthImaging"
   ],
   "aws-healthlake": [
     "AWS::HealthLake"
@@ -429,6 +441,9 @@
   "aws-mediapackage": [
     "AWS::MediaPackage"
   ],
+  "aws-mediapackagev2": [
+    "AWS::MediaPackageV2"
+  ],
   "aws-mediastore": [
     "AWS::MediaStore"
   ],
@@ -482,6 +497,9 @@
   ],
   "aws-panorama": [
     "AWS::Panorama"
+  ],
+  "aws-pcaconnectorad": [
+    "AWS::PCAConnectorAD"
   ],
   "aws-personalize": [
     "AWS::Personalize"
@@ -554,6 +572,9 @@
   ],
   "aws-s3": [
     "AWS::S3"
+  ],
+  "aws-s3express": [
+    "AWS::S3Express"
   ],
   "aws-s3objectlambda": [
     "AWS::S3ObjectLambda"
@@ -636,6 +657,9 @@
   "aws-transfer": [
     "AWS::Transfer"
   ],
+  "aws-verifiedpermissions": [
+    "AWS::VerifiedPermissions"
+  ],
   "aws-voiceid": [
     "AWS::VoiceID"
   ],
@@ -656,6 +680,12 @@
   ],
   "aws-workspaces": [
     "AWS::WorkSpaces"
+  ],
+  "aws-workspacesthinclient": [
+    "AWS::WorkSpacesThinClient"
+  ],
+  "aws-workspacesweb": [
+    "AWS::WorkSpacesWeb"
   ],
   "aws-xray": [
     "AWS::XRay"

@@ -4,7 +4,6 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "alwaysStrict": true,
-    "charset": "utf8",
     "declaration": true,
     "experimentalDecorators": true,
     "incremental": true,

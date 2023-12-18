@@ -5,7 +5,7 @@ open %name.PascalCased%
 let main _ =
     let app = App(null)
 
-    %name.PascalCased%Stack(app, "%name.PascalCased%Stack", StackProps()) |> ignore
+    %name.PascalCased%Stack(app, "%stackname%", StackProps()) |> ignore
 
     app.Synth() |> ignore
     0

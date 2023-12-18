@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct, Node } from 'constructs';
 import { toCloudFormation } from './util';
@@ -2008,6 +2009,32 @@ describe('stack', () => {
     expect(artifact.terminationProtection).toEqual(true);
   });
 
+  test('Set termination protection to true with setter', () => {
+    // if the root is an app, invoke "synth" to avoid double synthesis
+    const app = new App();
+    const stack = new Stack(app, 'Stack', {});
+
+    stack.terminationProtection = true;
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+
+    expect(artifact.terminationProtection).toEqual(true);
+  });
+
+  test('Set termination protection to false with setter', () => {
+    // if the root is an app, invoke "synth" to avoid double synthesis
+    const app = new App();
+    const stack = new Stack(app, 'Stack', { terminationProtection: true });
+
+    stack.terminationProtection = false;
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+
+    expect(artifact.terminationProtection).toEqual(false);
+  });
+
   test('context can be set on a stack using a LegacySynthesizer', () => {
     // WHEN
     const stack = new Stack(undefined, undefined, {
@@ -2103,6 +2130,49 @@ describe('stack', () => {
         env: envConfig,
       });
     }).toThrowError('Region of stack environment must be a \'string\' but received \'number\'');
+  });
+
+  test('indent templates when suppressTemplateIndentation is not set', () => {
+    const app = new App();
+
+    const stack = new Stack(app, 'Stack');
+    new CfnResource(stack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+    const templateData = fs.readFileSync(artifact.templateFullPath, 'utf-8');
+
+    expect(templateData).toMatch(/^{\n \"Resources\": {\n  \"MyResource\": {\n   \"Type\": \"MyResourceType\"\n  }\n }/);
+  });
+
+  test('do not indent templates when suppressTemplateIndentation is true', () => {
+    const app = new App();
+
+    const stack = new Stack(app, 'Stack', { suppressTemplateIndentation: true });
+    new CfnResource(stack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+    const templateData = fs.readFileSync(artifact.templateFullPath, 'utf-8');
+
+    expect(templateData).toMatch(/^{\"Resources\":{\"MyResource\":{\"Type\":\"MyResourceType\"}}/);
+  });
+
+  test('do not indent templates when @aws-cdk/core:suppressTemplateIndentation is true', () => {
+    const app = new App({
+      context: {
+        '@aws-cdk/core:suppressTemplateIndentation': true,
+      },
+    });
+
+    const stack = new Stack(app, 'Stack');
+    new CfnResource(stack, 'MyResource', { type: 'MyResourceType' });
+
+    const assembly = app.synth();
+    const artifact = assembly.getStackArtifact(stack.artifactId);
+    const templateData = fs.readFileSync(artifact.templateFullPath, 'utf-8');
+
+    expect(templateData).toMatch(/^{\"Resources\":{\"MyResource\":{\"Type\":\"MyResourceType\"}}/);
   });
 });
 

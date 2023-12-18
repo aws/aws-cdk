@@ -18,9 +18,6 @@
   "VpcPublicSubnet1Subnet5C2D37C4": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -44,21 +41,24 @@
       "Key": "Name",
       "Value": "PipelinesFileSystemLocations/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet1RouteTable6C95E38E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "PipelinesFileSystemLocations/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet1RouteTableAssociation97140677": {
@@ -75,12 +75,12 @@
   "VpcPublicSubnet1DefaultRoute3DA9E72A": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
     }
    },
    "DependsOn": [
@@ -102,14 +102,14 @@
   "VpcPublicSubnet1NATGateway4D7517AA": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet1EIPD7E02669",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
     },
     "Tags": [
      {
@@ -126,9 +126,6 @@
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -152,21 +149,24 @@
       "Key": "Name",
       "Value": "PipelinesFileSystemLocations/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet2RouteTable94F7E489": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "PipelinesFileSystemLocations/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
@@ -183,12 +183,12 @@
   "VpcPublicSubnet2DefaultRoute97F91067": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
     }
    },
    "DependsOn": [
@@ -210,14 +210,14 @@
   "VpcPublicSubnet2NATGateway9182C01D": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet2Subnet691E08A3"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet2EIP3C605A87",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet2Subnet691E08A3"
     },
     "Tags": [
      {
@@ -234,9 +234,6 @@
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -260,21 +257,24 @@
       "Key": "Name",
       "Value": "PipelinesFileSystemLocations/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet1RouteTableB2C5B500": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "PipelinesFileSystemLocations/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
@@ -291,21 +291,18 @@
   "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
     }
    }
   },
   "VpcPrivateSubnet2Subnet3788AAA1": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -329,21 +326,24 @@
       "Key": "Name",
       "Value": "PipelinesFileSystemLocations/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet2RouteTableA678073B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "PipelinesFileSystemLocations/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
@@ -360,12 +360,12 @@
   "VpcPrivateSubnet2DefaultRoute060D2087": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
     }
    }
   },
@@ -383,11 +383,11 @@
   "VpcVPCGWBF912B6E": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "InternetGatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
     }
    }
   },
@@ -416,7 +416,8 @@
        "Action": [
         "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*"
+        "s3:List*",
+        "s3:PutBucketPolicy"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -503,18 +504,18 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "40aa87cdf43c4095cec18bc443965f22ab2f8c1ace47e482a0ba4e35d83b0cc9.zip"
+     "S3Key": "2ec8ad9e91dcd6e7ad6a5c84ffc6c9c05c408aca3b26ceb2816d81043e6c4dc3.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
-    "Handler": "__entrypoint__.handler",
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
       "Arn"
      ]
     },
-    "Runtime": "nodejs16.x",
+    "Runtime": "nodejs18.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -770,6 +771,13 @@
   "Pipeline9850B417": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
+    "ArtifactStore": {
+     "Location": {
+      "Ref": "PipelineArtifactsBucketAEA9A052"
+     },
+     "Type": "S3"
+    },
+    "RestartExecutionOnUpdate": true,
     "RoleArn": {
      "Fn::GetAtt": [
       "PipelineRoleB27FAA37",
@@ -950,14 +958,7 @@
       ],
       "Name": "Beta"
      }
-    ],
-    "ArtifactStore": {
-     "Location": {
-      "Ref": "PipelineArtifactsBucketAEA9A052"
-     },
-     "Type": "S3"
-    },
-    "RestartExecutionOnUpdate": true
+    ]
    },
    "DependsOn": [
     "PipelineRoleDefaultPolicy7BDC1ABB",
@@ -1336,28 +1337,18 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
-    "Environment": {
-     "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:6.0",
-     "ImagePullCredentialsType": "CODEBUILD",
-     "PrivilegedMode": true,
-     "Type": "LINUX_CONTAINER"
-    },
-    "ServiceRole": {
-     "Fn::GetAtt": [
-      "PipelineBuildSynthCdkBuildProjectRole231EEA2A",
-      "Arn"
-     ]
-    },
-    "Source": {
-     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"mkdir cdk.out\",\n        \"touch cdk.out/dummy\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"base-directory\": \"cdk.out\",\n    \"files\": \"**/*\"\n  }\n}",
-     "Type": "CODEPIPELINE"
-    },
     "Cache": {
      "Type": "NO_CACHE"
     },
     "Description": "Pipeline step PipelinesFileSystemLocations/Pipeline/Build/Synth",
     "EncryptionKey": "alias/aws/s3",
+    "Environment": {
+     "ComputeType": "BUILD_GENERAL1_SMALL",
+     "Image": "aws/codebuild/standard:7.0",
+     "ImagePullCredentialsType": "CODEBUILD",
+     "PrivilegedMode": true,
+     "Type": "LINUX_CONTAINER"
+    },
     "FileSystemLocations": [
      {
       "Identifier": "myidentifier",
@@ -1378,6 +1369,16 @@
       "Type": "EFS"
      }
     ],
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "PipelineBuildSynthCdkBuildProjectRole231EEA2A",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"mkdir cdk.out\",\n        \"touch cdk.out/dummy\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"base-directory\": \"cdk.out\",\n    \"files\": \"**/*\"\n  }\n}",
+     "Type": "CODEPIPELINE"
+    },
     "VpcConfig": {
      "SecurityGroupIds": [
       {
@@ -1745,28 +1746,18 @@
     "Artifacts": {
      "Type": "CODEPIPELINE"
     },
-    "Environment": {
-     "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:6.0",
-     "ImagePullCredentialsType": "CODEBUILD",
-     "PrivilegedMode": true,
-     "Type": "LINUX_CONTAINER"
-    },
-    "ServiceRole": {
-     "Fn::GetAtt": [
-      "PipelineAssetsFileRole59943A77",
-      "Arn"
-     ]
-    },
-    "Source": {
-     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@2\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-PipelinesFileSystemLocations-Beta/PipelinesFileSystemLocationsBetaStack18199ECAE.assets.json\\\" --verbose publish \\\"8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5:current_account-current_region\\\"\"\n      ]\n    }\n  }\n}",
-     "Type": "CODEPIPELINE"
-    },
     "Cache": {
      "Type": "NO_CACHE"
     },
     "Description": "Pipeline step PipelinesFileSystemLocations/Pipeline/Assets/FileAsset1",
     "EncryptionKey": "alias/aws/s3",
+    "Environment": {
+     "ComputeType": "BUILD_GENERAL1_SMALL",
+     "Image": "aws/codebuild/standard:7.0",
+     "ImagePullCredentialsType": "CODEBUILD",
+     "PrivilegedMode": true,
+     "Type": "LINUX_CONTAINER"
+    },
     "FileSystemLocations": [
      {
       "Identifier": "myidentifier",
@@ -1787,6 +1778,16 @@
       "Type": "EFS"
      }
     ],
+    "ServiceRole": {
+     "Fn::GetAtt": [
+      "PipelineAssetsFileRole59943A77",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@2\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-PipelinesFileSystemLocations-Beta/PipelinesFileSystemLocationsBetaStack18199ECAE.assets.json\\\" --verbose publish \\\"8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5:current_account-current_region\\\"\"\n      ]\n    }\n  }\n}",
+     "Type": "CODEPIPELINE"
+    },
     "VpcConfig": {
      "SecurityGroupIds": [
       {
@@ -1840,109 +1841,6 @@
       "Ref": "PipelineAssetsFileRole59943A77"
      }
     ]
-   }
-  }
- },
- "Mappings": {
-  "DefaultCrNodeVersionMap": {
-   "af-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs16.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs16.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs16.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs16.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs16.x"
-   },
-   "me-central-1": {
-    "value": "nodejs16.x"
-   },
-   "me-south-1": {
-    "value": "nodejs16.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-east-2": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs16.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs14.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs14.x"
-   },
-   "us-west-1": {
-    "value": "nodejs16.x"
-   },
-   "us-west-2": {
-    "value": "nodejs16.x"
    }
   }
  },

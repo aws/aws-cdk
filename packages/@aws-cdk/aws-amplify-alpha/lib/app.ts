@@ -1,6 +1,6 @@
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { IResource, Lazy, Resource, SecretValue } from 'aws-cdk-lib';
+import { IResource, Lazy, Resource, SecretValue } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnApp } from 'aws-cdk-lib/aws-amplify';
 import { BasicAuth } from './basic-auth';
@@ -158,6 +158,15 @@ export interface AppProps {
    * @default - a new role is created
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Indicates the hosting platform to use. Set to WEB for static site
+   * generated (SSG) apps (i.e. a Create React App or Gatsby) and WEB_COMPUTE
+   * for server side rendered (SSR) apps (i.e. NextJS).
+   *
+   * @default Platform.WEB
+   */
+  readonly platform?: Platform;
 }
 
 /**
@@ -248,6 +257,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
       oauthToken: sourceCodeProviderOptions?.oauthToken?.unsafeUnwrap(), // Safe usage
       repository: sourceCodeProviderOptions?.repository,
       customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders) : undefined,
+      platform: props.platform || Platform.WEB,
     });
 
     this.appId = app.attrAppId;
@@ -527,4 +537,20 @@ function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[]): str
   }
 
   return `${yaml.join('\n')}\n`;
+}
+
+/**
+ * Available hosting platforms to use on the App.
+ */
+export enum Platform {
+  /**
+   * WEB - Used to indicate that the app is hosted using only static assets.
+   */
+  WEB = 'WEB',
+
+  /**
+   * WEB_COMPUTE - Used to indicate the app is hosted using a combination of
+   * server side rendered and static assets.
+   */
+  WEB_COMPUTE = 'WEB_COMPUTE',
 }

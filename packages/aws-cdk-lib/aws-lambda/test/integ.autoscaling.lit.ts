@@ -15,7 +15,7 @@ class TestStack extends cdk.Stack {
     const fn = new lambda.Function(this, 'MyLambda', {
       code: new lambda.InlineCode('exports.handler = async () => { console.log(\'hello world\'); };'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     const version = fn.currentVersion;

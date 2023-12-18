@@ -122,15 +122,9 @@
   "myapiv1toysGET7348114D": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "GET",
-    "ResourceId": {
-     "Ref": "myapiv1toysA55FCBC4"
-    },
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
     "ApiKeyRequired": true,
     "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -157,38 +151,44 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "myapiv1toysA55FCBC4"
+    },
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
     }
    }
   },
   "myapiv1toysPOST55128058": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "POST",
+    "Integration": {
+     "Type": "MOCK"
+    },
     "ResourceId": {
      "Ref": "myapiv1toysA55FCBC4"
     },
     "RestApiId": {
      "Ref": "myapi4C7BF186"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "Type": "MOCK"
     }
    }
   },
   "myapiv1toysPUT59AFBBC2": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "PUT",
+    "Integration": {
+     "Type": "MOCK"
+    },
     "ResourceId": {
      "Ref": "myapiv1toysA55FCBC4"
     },
     "RestApiId": {
      "Ref": "myapi4C7BF186"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "Type": "MOCK"
     }
    }
   },
@@ -207,16 +207,16 @@
   "myapiv1appliancesGET8FE872EC": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
+    "AuthorizationType": "NONE",
     "HttpMethod": "GET",
+    "Integration": {
+     "Type": "MOCK"
+    },
     "ResourceId": {
      "Ref": "myapiv1appliances507FEFF4"
     },
     "RestApiId": {
      "Ref": "myapi4C7BF186"
-    },
-    "AuthorizationType": "NONE",
-    "Integration": {
-     "Type": "MOCK"
     }
    }
   },
@@ -313,14 +313,8 @@
   "myapiv1booksGETC6B996D0": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "GET",
-    "ResourceId": {
-     "Ref": "myapiv1books1D4BE6C1"
-    },
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -347,6 +341,12 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "myapiv1books1D4BE6C1"
+    },
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
     }
    }
   },
@@ -431,14 +431,8 @@
   "myapiv1booksPOST53E2832E": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "POST",
-    "ResourceId": {
-     "Ref": "myapiv1books1D4BE6C1"
-    },
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -465,6 +459,12 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "myapiv1books1D4BE6C1"
+    },
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
     }
    }
   },
@@ -520,10 +520,10 @@
   "myapiDeployment92F2CB492c49d8fa05ada8b5cddee1ce76138bd0": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "beta stage",
     "RestApiId": {
      "Ref": "myapi4C7BF186"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "myapiv1appliancesGET8FE872EC",
@@ -543,9 +543,6 @@
   "myapiDeploymentStagebeta96434BEB": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
     "CacheClusterEnabled": true,
     "CacheClusterSize": "0.5",
     "DeploymentId": {
@@ -566,6 +563,9 @@
       "ResourcePath": "/~1api~1appliances"
      }
     ],
+    "RestApiId": {
+     "Ref": "myapi4C7BF186"
+    },
     "StageName": "beta"
    },
    "DependsOn": [
@@ -667,14 +667,14 @@
     "Code": {
      "ZipFile": "exports.handler = function handlerCode(event, _, callback) {\n            return callback(undefined, {\n                isBase64Encoded: false,\n                statusCode: 200,\n                headers: { 'content-type': 'application/json' },\n                body: JSON.stringify(event),\n            });\n        }"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "MyHandlerServiceRoleFFA06653",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MyHandlerServiceRoleFFA06653"

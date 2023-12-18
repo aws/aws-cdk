@@ -39,7 +39,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.3.0"
                 }
               }
             },
@@ -268,7 +268,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.3.0"
             }
           },
           "Bucket2": {
@@ -313,7 +313,8 @@
                               "Action": [
                                 "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*"
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -396,20 +397,12 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
-            }
-          },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "sqs-bucket-notifications/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -461,6 +454,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                       "aws:cdk:cloudformation:props": {
+                        "description": "Created by sqs-bucket-notifications/EncryptedQueue",
                         "keyPolicy": {
                           "Statement": [
                             {
@@ -522,8 +516,7 @@
                             }
                           ],
                           "Version": "2012-10-17"
-                        },
-                        "description": "Created by sqs-bucket-notifications/EncryptedQueue"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -645,7 +638,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -683,27 +676,27 @@
                 "path": "SQSBucketNotificationsTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallSQSpurgeQueue": {
-                    "id": "AwsApiCallSQSpurgeQueue",
-                    "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue",
+                  "AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4": {
+                    "id": "AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4",
+                    "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue/SdkProvider",
+                        "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue/SdkProvider/AssertionsProvider",
+                            "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -714,11 +707,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue/Default",
+                        "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue/Default/Default",
+                            "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -767,23 +760,23 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.3.0"
                     }
                   },
-                  "AwsApiCallS3putObject": {
-                    "id": "AwsApiCallS3putObject",
-                    "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObject",
+                  "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f": {
+                    "id": "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f",
+                    "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObject/SdkProvider",
+                        "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObject/SdkProvider/AssertionsProvider",
+                            "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -794,11 +787,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObject/Default",
+                        "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObject/Default/Default",
+                            "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -816,20 +809,20 @@
                       "version": "0.0.0"
                     }
                   },
-                  "AwsApiCallSQSreceiveMessage": {
-                    "id": "AwsApiCallSQSreceiveMessage",
-                    "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage",
+                  "AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7": {
+                    "id": "AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7",
+                    "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/SdkProvider",
+                        "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/SdkProvider/AssertionsProvider",
+                            "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -840,11 +833,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/Default",
+                        "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/Default/Default",
+                            "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -858,7 +851,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/AssertionResults",
+                        "path": "SQSBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage2339d0007bf8ec3f84ba0d037203c1f7/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -909,7 +902,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.3.0"
         }
       }
     },

@@ -520,12 +520,12 @@ describe('User Pool', () => {
 
     const fn1 = new lambda.Function(stack, 'fn1', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
     });
     const fn2 = new lambda.Function(stack, 'fn2', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
     });
 
@@ -2114,7 +2114,7 @@ function fooFunction(scope: Construct, name: string): lambda.IFunction {
   return new lambda.Function(scope, name, {
     functionName: name,
     code: lambda.Code.fromInline('foo'),
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.handler',
   });
 }

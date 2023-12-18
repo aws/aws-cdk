@@ -1,11 +1,14 @@
 /* eslint-disable-next-line import/no-unresolved */
 import type * as AWSLambda from 'aws-lambda';
 
-const mockExecuteStatement = jest.fn(() => ({ promise: jest.fn(() => ({ Id: 'statementId' })) }));
-jest.mock('aws-sdk/clients/redshiftdata', () => class {
-  executeStatement = mockExecuteStatement;
-  describeStatement = () => ({ promise: jest.fn(() => ({ Status: 'FINISHED' })) });
-});
+const mockExecuteStatement = jest.fn(async () => ({ Id: 'statementId' }));
+jest.mock('@aws-sdk/client-redshift-data', () => ({
+  RedshiftData: class {
+    executeStatement = mockExecuteStatement;
+    describeStatement = jest.fn(async () => ({ Status: 'FINISHED' }));
+  },
+}));
+
 import { Column, ColumnEncoding, TableDistStyle, TableSortStyle } from '../../lib';
 import { handler as manageTable } from '../../lib/private/database-query-provider/table';
 import { TableAndClusterProps } from '../../lib/private/database-query-provider/types';
@@ -17,7 +20,9 @@ const tableColumns = [{ name: 'col1', dataType: 'varchar(1)' }];
 const clusterName = 'clusterName';
 const adminUserArn = 'adminUserArn';
 const databaseName = 'databaseName';
-const physicalResourceId = 'PhysicalResourceId';
+const physicalResourceId = 'clusterName:databaseName:tableNamePrefix:111111111111';
+const stackId = 'arn:aws:cloudformation:us-east-1:788445345501:stack/aws-cdk-redshift-cluster-database/e782bf70-b8f4-11ed-8c6a-111111111111';
+const stackIdTruncated = '111111111111';
 const resourceProperties: ResourcePropertiesType = {
   useColumnIds: true,
   tableName: {
@@ -32,12 +37,11 @@ const resourceProperties: ResourcePropertiesType = {
   ServiceToken: '',
 };
 const requestId = 'requestId';
-const requestIdTruncated = 'requestI';
 const genericEvent: AWSLambda.CloudFormationCustomResourceEventCommon = {
   ResourceProperties: resourceProperties,
   ServiceToken: '',
   ResponseURL: '',
-  StackId: '',
+  StackId: stackId,
   RequestId: requestId,
   LogicalResourceId: '',
   ResourceType: '',
@@ -57,10 +61,10 @@ describe('create', () => {
     const event = baseEvent;
 
     await expect(manageTable(resourceProperties, event)).resolves.toEqual({
-      PhysicalResourceId: `${tableNamePrefix}${requestIdTruncated}`,
+      PhysicalResourceId: 'clusterName:databaseName:tableNamePrefix:111111111111',
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1))`,
+      Sql: `CREATE TABLE ${tableNamePrefix}${stackIdTruncated} (col1 varchar(1))`,
     }));
   });
 
@@ -75,7 +79,7 @@ describe('create', () => {
     };
 
     await expect(manageTable(newResourceProperties, event)).resolves.toEqual({
-      PhysicalResourceId: tableNamePrefix,
+      PhysicalResourceId: 'clusterName:databaseName:tableNamePrefix:111111111111',
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `CREATE TABLE ${tableNamePrefix} (col1 varchar(1))`,
@@ -93,7 +97,7 @@ describe('create', () => {
     await manageTable(newResourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1)) DISTSTYLE KEY DISTKEY(col1)`,
+      Sql: `CREATE TABLE ${tableNamePrefix}${stackIdTruncated} (col1 varchar(1)) DISTSTYLE KEY DISTKEY(col1)`,
     }));
   });
 
@@ -112,7 +116,7 @@ describe('create', () => {
     await manageTable(newResourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1),col2 varchar(1),col3 varchar(1)) COMPOUND SORTKEY(col1,col3)`,
+      Sql: `CREATE TABLE ${tableNamePrefix}${stackIdTruncated} (col1 varchar(1),col2 varchar(1),col3 varchar(1)) COMPOUND SORTKEY(col1,col3)`,
     }));
   });
 
@@ -132,7 +136,7 @@ describe('create', () => {
     await manageTable(newResourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(4),col2 float,col3 float) DISTSTYLE KEY DISTKEY(col1) COMPOUND SORTKEY(col2,col3)`,
+      Sql: `CREATE TABLE ${tableNamePrefix}${stackIdTruncated} (col1 varchar(4),col2 float,col3 float) DISTSTYLE KEY DISTKEY(col1) COMPOUND SORTKEY(col2,col3)`,
     }));
   });
 
@@ -146,7 +150,7 @@ describe('create', () => {
     await manageTable(newResourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `COMMENT ON TABLE ${tableNamePrefix}${requestIdTruncated} IS 'table comment'`,
+      Sql: `COMMENT ON TABLE ${tableNamePrefix}${stackIdTruncated} IS 'table comment'`,
     }));
   });
 });
@@ -164,7 +168,7 @@ describe('delete', () => {
     await manageTable(resourceProperties, event);
 
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `DROP TABLE ${physicalResourceId}`,
+      Sql: `DROP TABLE ${tableNamePrefix}${stackIdTruncated}`,
     }));
   });
 });
@@ -184,12 +188,12 @@ describe('update', () => {
       clusterName: newClusterName,
     };
 
-    await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
+    await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       ClusterIdentifier: newClusterName,
-      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${tableNamePrefix}${requestIdTruncated}`)),
+      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${tableNamePrefix}${stackIdTruncated}`)),
     }));
   });
 
@@ -213,31 +217,120 @@ describe('update', () => {
       databaseName: newDatabaseName,
     };
 
-    await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
+    await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Database: newDatabaseName,
-      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${tableNamePrefix}${requestIdTruncated}`)),
+      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${tableNamePrefix}${stackIdTruncated}`)),
     }));
   });
 
-  test('replaces if table name changes', async () => {
-    const newTableNamePrefix = 'newTableNamePrefix';
-    const newResourceProperties = {
-      ...resourceProperties,
-      tableName: {
-        ...resourceProperties.tableName,
-        prefix: newTableNamePrefix,
-      },
-    };
+  describe('table name', () => {
+    test('does not replace if PhysicalResourceId is old format', async () => {
+      const newResourceProperties = {
+        ...resourceProperties,
+        PhysicalResourceId: 'newTableName',
+        tableName: {
+          ...resourceProperties.tableName,
+          prefix: 'newTableName',
+          generateSuffix: 'false',
+        },
+      };
 
-    await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
-      PhysicalResourceId: physicalResourceId,
+      const newEvent = {
+        ...event,
+        PhysicalResourceId: 'newTableName',
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableName: {
+            ...event.OldResourceProperties.tableName,
+            generateSuffix: 'false',
+          },
+        },
+      };
+
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: 'newTableName',
+      });
+      expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} RENAME TO newTableName`,
+      }));
     });
-    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: expect.stringMatching(new RegExp(`CREATE TABLE ${newTableNamePrefix}${requestIdTruncated}`)),
-    }));
+
+    test('does not replace if table name changes', async () => {
+      const newResourceProperties = {
+        ...resourceProperties,
+        tableName: {
+          ...resourceProperties.tableName,
+          prefix: 'newTableName',
+          generateSuffix: 'false',
+        },
+      };
+
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableName: {
+            ...event.OldResourceProperties.tableName,
+            generateSuffix: 'false',
+          },
+        },
+      };
+
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${tableNamePrefix} RENAME TO newTableName`,
+      }));
+    });
+
+    test('does not replace if table name added', async () => {
+      const newResourceProperties = {
+        ...resourceProperties,
+        tableName: {
+          prefix: 'newTable',
+          generateSuffix: 'false',
+        },
+      };
+
+      await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} RENAME TO newTable`,
+      }));
+    });
+
+    test('does not replace if table name removed', async () => {
+      const newResourceProperties = {
+        ...resourceProperties,
+        tableName: {
+          prefix: 'Table',
+          generateSuffix: 'true',
+        },
+      };
+
+      const newEvent = {
+        ...event,
+        OldResourceProperties: {
+          ...event.OldResourceProperties,
+          tableName: {
+            ...event.OldResourceProperties.tableName,
+            generateSuffix: 'false',
+          },
+        },
+      };
+
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
+        PhysicalResourceId: physicalResourceId,
+      });
+      expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+        Sql: `ALTER TABLE ${tableNamePrefix} RENAME TO Table${stackIdTruncated}`,
+      }));
+    });
   });
 
   test('does not replace if table columns removed', async () => {
@@ -250,7 +343,7 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `ALTER TABLE ${physicalResourceId} DROP COLUMN col1`,
+      Sql: expect.stringMatching(new RegExp(`ALTER TABLE ${newResourceProperties.tableName.prefix}.+ DROP COLUMN col1`)),
     }));
   });
 
@@ -267,7 +360,7 @@ describe('update', () => {
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `ALTER TABLE ${physicalResourceId} ADD ${newTableColumnName} ${newTableColumnDataType}`,
+      Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} ADD ${newTableColumnName} ${newTableColumnDataType}`,
     }));
   });
 
@@ -294,7 +387,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} RENAME COLUMN col1 TO ${newTableColumnName}`,
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} RENAME COLUMN col1 TO ${newTableColumnName}`,
       }));
     });
 
@@ -319,7 +412,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} RENAME COLUMN col1 TO col1`,
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} RENAME COLUMN col1 TO col1`,
       }));
     });
   });
@@ -331,11 +424,11 @@ describe('update', () => {
         distStyle: TableDistStyle.EVEN,
       };
 
-      await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
+      await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1)) DISTSTYLE EVEN`,
+        Sql: `CREATE TABLE ${tableNamePrefix}${stackIdTruncated} (col1 varchar(1)) DISTSTYLE EVEN`,
       }));
     });
 
@@ -351,11 +444,11 @@ describe('update', () => {
         ...resourceProperties,
       };
 
-      await expect(manageTable(newResourceProperties, newEvent)).resolves.not.toMatchObject({
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1))`,
+        Sql: `CREATE TABLE ${tableNamePrefix}${stackIdTruncated} (col1 varchar(1))`,
       }));
     });
 
@@ -377,25 +470,25 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER DISTSTYLE ${newDistStyle}`,
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} ALTER DISTSTYLE ${newDistStyle}`,
       }));
     });
 
-    test('replaces if distKey is added', async () => {
+    test('adds key without creating table if distKey is added', async () => {
       const newResourceProperties: ResourcePropertiesType = {
         ...resourceProperties,
         tableColumns: [{ name: 'col1', dataType: 'varchar(1)', distKey: true }],
       };
 
-      await expect(manageTable(newResourceProperties, event)).resolves.not.toMatchObject({
+      await expect(manageTable(newResourceProperties, event)).resolves.toMatchObject({
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1)) DISTKEY(col1)`,
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} ALTER DISTSTYLE KEY DISTKEY col1`,
       }));
     });
 
-    test('replaces if distKey is removed', async () => {
+    test('removes key without replacing table if distKey is removed', async () => {
       const newEvent: AWSLambda.CloudFormationCustomResourceEvent = {
         ...event,
         OldResourceProperties: {
@@ -407,11 +500,11 @@ describe('update', () => {
         ...resourceProperties,
       };
 
-      await expect(manageTable(newResourceProperties, newEvent)).resolves.not.toMatchObject({
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1))`,
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} ALTER DISTSTYLE AUTO`,
       }));
     });
 
@@ -439,7 +532,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER DISTKEY ${newDistKey}`,
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} ALTER DISTKEY ${newDistKey}`,
       }));
     });
   });
@@ -469,11 +562,11 @@ describe('update', () => {
         sortStyle: TableSortStyle.INTERLEAVED,
       };
 
-      await expect(manageTable(newResourceProperties, newEvent)).resolves.not.toMatchObject({
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1),col2 varchar(1)) INTERLEAVED SORTKEY(col2)`,
+        Sql: `CREATE TABLE ${tableNamePrefix}${stackIdTruncated} (col1 varchar(1),col2 varchar(1)) INTERLEAVED SORTKEY(col2)`,
       }));
     });
 
@@ -492,11 +585,11 @@ describe('update', () => {
         sortStyle: TableSortStyle.INTERLEAVED,
       };
 
-      await expect(manageTable(newResourceProperties, newEvent)).resolves.not.toMatchObject({
+      await expect(manageTable(newResourceProperties, newEvent)).resolves.toMatchObject({
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1),col2 varchar(1)) INTERLEAVED SORTKEY(col1)`,
+        Sql: `CREATE TABLE ${tableNamePrefix}${stackIdTruncated} (col1 varchar(1),col2 varchar(1)) INTERLEAVED SORTKEY(col1)`,
       }));
     });
 
@@ -519,7 +612,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER COMPOUND SORTKEY(col2)`,
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} ALTER COMPOUND SORTKEY(col2)`,
       }));
     });
 
@@ -542,7 +635,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER COMPOUND SORTKEY(col1)`,
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} ALTER COMPOUND SORTKEY(col1)`,
       }));
     });
 
@@ -565,7 +658,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER SORTKEY AUTO`,
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} ALTER SORTKEY AUTO`,
       }));
     });
   });
@@ -582,7 +675,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `COMMENT ON TABLE ${physicalResourceId} IS '${newComment}'`,
+        Sql: `COMMENT ON TABLE ${tableNamePrefix}${stackIdTruncated} IS '${newComment}'`,
       }));
     });
 
@@ -602,7 +695,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `COMMENT ON TABLE ${physicalResourceId} IS NULL`,
+        Sql: `COMMENT ON TABLE ${tableNamePrefix}${stackIdTruncated} IS NULL`,
       }));
     });
   });
@@ -619,7 +712,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `COMMENT ON COLUMN ${physicalResourceId}.col1 IS '${newComment}'`,
+        Sql: `COMMENT ON COLUMN ${tableNamePrefix}${stackIdTruncated}.col1 IS '${newComment}'`,
       }));
     });
 
@@ -636,7 +729,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `COMMENT ON COLUMN ${physicalResourceId}.col1 IS NULL`,
+        Sql: `COMMENT ON COLUMN ${tableNamePrefix}${stackIdTruncated}.col1 IS NULL`,
       }));
     });
   });
@@ -652,7 +745,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER COLUMN col1 ENCODE RAW`,
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} ALTER COLUMN col1 ENCODE RAW`,
       }));
     });
 
@@ -672,7 +765,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER COLUMN col1 ENCODE AUTO`,
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} ALTER COLUMN col1 ENCODE AUTO`,
       }));
     });
 
@@ -694,7 +787,7 @@ describe('update', () => {
         PhysicalResourceId: physicalResourceId,
       });
       expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-        Sql: `ALTER TABLE ${physicalResourceId} ALTER COLUMN col1 ENCODE RAW, ALTER COLUMN col2 ENCODE RAW`,
+        Sql: `ALTER TABLE ${tableNamePrefix}${stackIdTruncated} ALTER COLUMN col1 ENCODE RAW, ALTER COLUMN col2 ENCODE RAW`,
       }));
     });
   });

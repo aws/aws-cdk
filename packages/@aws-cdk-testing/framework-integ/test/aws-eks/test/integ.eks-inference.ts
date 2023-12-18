@@ -25,13 +25,20 @@ class EksClusterInferenceStack extends Stack {
       instanceType: new ec2.InstanceType('inf1.2xlarge'),
       minCapacity: 1,
     });
+
+    cluster.addAutoScalingGroupCapacity('Inference2Instances', {
+      instanceType: new ec2.InstanceType('inf2.xlarge'),
+      minCapacity: 1,
+    });
   }
 }
 
 const app = new App();
-const stack = new EksClusterInferenceStack(app, 'aws-cdk-eks-cluster-inference-test');
-new integ.IntegTest(app, 'aws-cdk-eks-cluster-interence', {
+const stack = new EksClusterInferenceStack(app, 'aws-cdk-eks-cluster-inference');
+new integ.IntegTest(app, 'aws-cdk-eks-cluster-interence-integ', {
   testCases: [stack],
+  // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
+  diffAssets: false,
   cdkCommandOptions: {
     deploy: {
       args: {

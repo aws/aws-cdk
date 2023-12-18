@@ -1,37 +1,13 @@
-import * as fs from 'fs';
-import * as path from 'path';
 import { Construct } from 'constructs';
-import * as fse from 'fs-extra';
-import * as cxapi from '../../../cx-api';
-import { FactName } from '../../../region-info';
-import { AssetStaging } from '../asset-staging';
-import { FileAssetPackaging } from '../assets';
-import { CfnResource } from '../cfn-resource';
-import { Duration } from '../duration';
-import { FileSystem } from '../fs';
-import { PolicySynthesizer, getPrecreatedRoleConfig } from '../helpers-internal';
-import { Lazy } from '../lazy';
-import { Size } from '../size';
+import { CustomResourceProviderBase } from './custom-resource-provider-base';
+import { CustomResourceProviderOptions } from './shared';
 import { Stack } from '../stack';
-import { Token } from '../token';
-
-const ENTRYPOINT_FILENAME = '__entrypoint__';
-const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
-
-/**
- * The lambda runtime used by default for aws-cdk vended custom resources. Can change
- * based on region.
- */
-export function builtInCustomResourceProviderNodeRuntime(scope: Construct): CustomResourceProviderRuntime {
-  const runtimeName = Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, 'nodejs16.x');
-  return Object.values(CustomResourceProviderRuntime).find(value => value === runtimeName) ?? CustomResourceProviderRuntime.NODEJS_16_X;
-}
 
 /**
  * Initialization properties for `CustomResourceProvider`.
  *
  */
-export interface CustomResourceProviderProps {
+export interface CustomResourceProviderProps extends CustomResourceProviderOptions {
   /**
    * A local file system directory with the provider's code. The code will be
    * bundled into a zip asset and wired to the provider's AWS Lambda function.
@@ -42,59 +18,6 @@ export interface CustomResourceProviderProps {
    * The AWS Lambda runtime and version to use for the provider.
    */
   readonly runtime: CustomResourceProviderRuntime;
-
-  /**
-   * A set of IAM policy statements to include in the inline policy of the
-   * provider's lambda function.
-   *
-   * **Please note**: these are direct IAM JSON policy blobs, *not* `iam.PolicyStatement`
-   * objects like you will see in the rest of the CDK.
-   *
-   * @default - no additional inline policy
-   *
-   * @example
-   * const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
-   *   codeDirectory: `${__dirname}/my-handler`,
-   *   runtime: CustomResourceProviderRuntime.NODEJS_14_X,
-   *   policyStatements: [
-   *     {
-   *       Effect: 'Allow',
-   *       Action: 's3:PutObject*',
-   *       Resource: '*',
-   *     }
-   *   ],
-   * });
-   */
-  readonly policyStatements?: any[];
-
-  /**
-   * AWS Lambda timeout for the provider.
-   *
-   * @default Duration.minutes(15)
-   */
-  readonly timeout?: Duration;
-
-  /**
-   * The amount of memory that your function has access to. Increasing the
-   * function's memory also increases its CPU allocation.
-   *
-   * @default Size.mebibytes(128)
-   */
-  readonly memorySize?: Size;
-
-  /**
-   * Key-value pairs that are passed to Lambda as Environment
-   *
-   * @default - No environment variables.
-   */
-  readonly environment?: { [key: string]: string };
-
-  /**
-   * A description of the function.
-   *
-   * @default - No description.
-   */
-  readonly description?: string;
 }
 
 /**
@@ -104,18 +27,19 @@ export interface CustomResourceProviderProps {
 export enum CustomResourceProviderRuntime {
   /**
    * Node.js 12.x
+   * @deprecated Use latest version
    */
   NODEJS_12_X = 'nodejs12.x',
 
   /**
    * Node.js 12.x
-   *
-   * @deprecated Use `NODEJS_14_X`
+   * @deprecated Use latest version
    */
   NODEJS_12 = 'deprecated_nodejs12.x',
 
   /**
    * Node.js 14.x
+   * @deprecated Use latest version
    */
   NODEJS_14_X = 'nodejs14.x',
 
@@ -153,7 +77,7 @@ export enum CustomResourceProviderRuntime {
  * in that module a read, regardless of whether you end up using the Provider
  * class in there or this one.
  */
-export class CustomResourceProvider extends Construct {
+export class CustomResourceProvider extends CustomResourceProviderBase {
   /**
    * Returns a stack-level singleton ARN (service token) for the custom resource
    * provider.
@@ -186,212 +110,14 @@ export class CustomResourceProvider extends Construct {
     const stack = Stack.of(scope);
     const provider = stack.node.tryFindChild(id) as CustomResourceProvider
       ?? new CustomResourceProvider(stack, id, props);
-
     return provider;
   }
 
-  /**
-   * The ARN of the provider's AWS Lambda function which should be used as the
-   * `serviceToken` when defining a custom resource.
-   *
-   * @example
-   * declare const myProvider: CustomResourceProvider;
-   *
-   * new CustomResource(this, 'MyCustomResource', {
-   *   serviceToken: myProvider.serviceToken,
-   *   properties: {
-   *     myPropertyOne: 'one',
-   *     myPropertyTwo: 'two',
-   *   },
-   * });
-   */
-  public readonly serviceToken: string;
-
-  /**
-   * The ARN of the provider's AWS Lambda function role.
-   */
-  public readonly roleArn: string;
-
-  /**
-   * The hash of the lambda code backing this provider. Can be used to trigger updates
-   * on code changes, even when the properties of a custom resource remain unchanged.
-   */
-  public readonly codeHash: string;
-
-  private policyStatements?: any[];
-  private _role?: CfnResource;
-
   protected constructor(scope: Construct, id: string, props: CustomResourceProviderProps) {
-    super(scope, id);
-
-    const stack = Stack.of(scope);
-
-    // verify we have an index file there
-    if (!fs.existsSync(path.join(props.codeDirectory, 'index.js'))) {
-      throw new Error(`cannot find ${props.codeDirectory}/index.js`);
-    }
-
-    const stagingDirectory = FileSystem.mkdtemp('cdk-custom-resource');
-    fse.copySync(props.codeDirectory, stagingDirectory, { filter: (src, _dest) => !src.endsWith('.ts') });
-    fs.copyFileSync(ENTRYPOINT_NODEJS_SOURCE, path.join(stagingDirectory, `${ENTRYPOINT_FILENAME}.js`));
-
-    const staging = new AssetStaging(this, 'Staging', {
-      sourcePath: stagingDirectory,
+    super(scope, id, {
+      ...props,
+      runtimeName: customResourceProviderRuntimeToString(props.runtime),
     });
-
-    const assetFileName = staging.relativeStagedPath(stack);
-
-    const asset = stack.synthesizer.addFileAsset({
-      fileName: assetFileName,
-      sourceHash: staging.assetHash,
-      packaging: FileAssetPackaging.ZIP_DIRECTORY,
-    });
-
-    if (props.policyStatements) {
-      for (const statement of props.policyStatements) {
-        this.addToRolePolicy(statement);
-      }
-    }
-
-    const config = getPrecreatedRoleConfig(this, `${this.node.path}/Role`);
-    const assumeRolePolicyDoc = [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }];
-    const managedPolicyArn = 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole';
-
-    // need to initialize this attribute, but there should never be an instance
-    // where config.enabled=true && config.preventSynthesis=true
-    this.roleArn = '';
-    if (config.enabled) {
-      // gives policyStatements a chance to resolve
-      this.node.addValidation({
-        validate: () => {
-          PolicySynthesizer.getOrCreate(this).addRole(`${this.node.path}/Role`, {
-            missing: !config.precreatedRoleName,
-            roleName: config.precreatedRoleName ?? id+'Role',
-            managedPolicies: [{ managedPolicyArn: managedPolicyArn }],
-            policyStatements: this.policyStatements ?? [],
-            assumeRolePolicy: assumeRolePolicyDoc as any,
-          });
-          return [];
-        },
-      });
-      this.roleArn = Stack.of(this).formatArn({
-        region: '',
-        service: 'iam',
-        resource: 'role',
-        resourceName: config.precreatedRoleName,
-      });
-    }
-    if (!config.preventSynthesis) {
-      this._role = new CfnResource(this, 'Role', {
-        type: 'AWS::IAM::Role',
-        properties: {
-          AssumeRolePolicyDocument: {
-            Version: '2012-10-17',
-            Statement: assumeRolePolicyDoc,
-          },
-          ManagedPolicyArns: [
-            { 'Fn::Sub': managedPolicyArn },
-          ],
-          Policies: Lazy.any({ produce: () => this.renderPolicies() }),
-        },
-      });
-      this.roleArn = Token.asString(this._role.getAtt('Arn'));
-    }
-
-    const timeout = props.timeout ?? Duration.minutes(15);
-    const memory = props.memorySize ?? Size.mebibytes(128);
-
-    const handler = new CfnResource(this, 'Handler', {
-      type: 'AWS::Lambda::Function',
-      properties: {
-        Code: {
-          S3Bucket: asset.bucketName,
-          S3Key: asset.objectKey,
-        },
-        Timeout: timeout.toSeconds(),
-        MemorySize: memory.toMebibytes(),
-        Handler: `${ENTRYPOINT_FILENAME}.handler`,
-        Role: this.roleArn,
-        Runtime: customResourceProviderRuntimeToString(props.runtime),
-        Environment: this.renderEnvironmentVariables(props.environment),
-        Description: props.description ?? undefined,
-      },
-    });
-
-    if (this._role) {
-      handler.addDependency(this._role);
-    }
-
-    if (this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
-      handler.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PATH_KEY, assetFileName);
-      handler.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY, 'Code');
-    }
-
-    this.serviceToken = Token.asString(handler.getAtt('Arn'));
-    this.codeHash = staging.assetHash;
-  }
-
-  /**
-   * Add an IAM policy statement to the inline policy of the
-   * provider's lambda function's role.
-   *
-   * **Please note**: this is a direct IAM JSON policy blob, *not* a `iam.PolicyStatement`
-   * object like you will see in the rest of the CDK.
-   *
-   *
-   * @example
-   * declare const myProvider: CustomResourceProvider;
-   *
-   * myProvider.addToRolePolicy({
-   *   Effect: 'Allow',
-   *   Action: 's3:GetObject',
-   *   Resource: '*',
-   * });
-   */
-  public addToRolePolicy(statement: any): void {
-    if (!this.policyStatements) {
-      this.policyStatements = [];
-    }
-    this.policyStatements.push(statement);
-  }
-
-  private renderPolicies() {
-    if (!this.policyStatements) {
-      return undefined;
-    }
-
-    const policies = [{
-      PolicyName: 'Inline',
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: this.policyStatements,
-      },
-    }];
-
-    return policies;
-  }
-
-  private renderEnvironmentVariables(env?: { [key: string]: string }) {
-    if (!env || Object.keys(env).length === 0) {
-      return undefined;
-    }
-
-    env = { ...env }; // Copy
-
-    // Always use regional endpoints
-    env.AWS_STS_REGIONAL_ENDPOINTS = 'regional';
-
-    // Sort environment so the hash of the function used to create
-    // `currentVersion` is not affected by key order (this is how lambda does
-    // it)
-    const variables: { [key: string]: string } = {};
-    const keys = Object.keys(env).sort();
-
-    for (const key of keys) {
-      variables[key] = env[key];
-    }
-
-    return { Variables: variables };
   }
 }
 

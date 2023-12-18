@@ -281,6 +281,26 @@ describe('vpc', () => {
       Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 0);
 
     });
+
+    test('with createInternetGateway: false, the VPC should not have an IGW nor NAT Gateways', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'TheVPC', {
+        createInternetGateway: false,
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'Public',
+          },
+          {
+            subnetType: SubnetType.PRIVATE_ISOLATED,
+            name: 'Isolated',
+          },
+        ],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::InternetGateway', 0);
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::NatGateway', 0);
+    });
+
     test('with private subnets and custom networkAcl.', () => {
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'TheVPC', {
@@ -1649,6 +1669,23 @@ describe('vpc', () => {
         },
       });
     });
+
+    test('with networkAclName, adds Name tag with the name', () => {
+      // GIVEN
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', { ipAddresses: IpAddresses.cidr('192.168.0.0/16') });
+
+      // WHEN
+      new NetworkAcl(stack, 'ACL', {
+        vpc,
+        networkAclName: 'CustomNetworkAclName',
+      });
+
+      Template.fromStack(stack).hasResource('AWS::EC2::NetworkAcl', hasTags([{
+        Key: 'Name',
+        Value: 'CustomNetworkAclName',
+      }]));
+    });
   });
 
   describe('When creating a VPC with a custom CIDR range', () => {
@@ -1891,7 +1928,7 @@ describe('vpc', () => {
         subnetIds: { 'Fn::Split': [',', { 'Fn::ImportValue': 'myPublicSubnetIds' }] },
       });
 
-      Annotations.fromStack(stack).hasWarning('/TestStack/VPC', "fromVpcAttributes: 'availabilityZones' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead.");
+      Annotations.fromStack(stack).hasWarning('/TestStack/VPC', "fromVpcAttributes: 'availabilityZones' is a list token: the imported VPC will not work with constructs that require a list of subnets at synthesis time. Use 'Vpc.fromLookup()' or 'Fn.importListValue' instead. [ack: @aws-cdk/aws-ec2:vpcAttributeIsListTokenavailabilityZones]");
     });
 
     test('fromVpcAttributes using fixed-length list tokens', () => {
@@ -2127,7 +2164,6 @@ describe('vpc', () => {
       // WHEN
       // We want to place this endpoint in the same subnets as these IPv4
       // address.
-      // WHEN
       new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
         vpc,
         service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
@@ -2222,6 +2258,63 @@ describe('vpc', () => {
       const expected = vpc.publicSubnets.filter(s => s.ipv4CidrBlock.endsWith('/20'));
       expect(subnetIds).toEqual(expected.map(s => s.subnetId));
 
+    });
+
+    test('can filter by CIDR Range', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // IP space is split into 6 pieces, one public/one private per AZ
+      const vpc = new Vpc(stack, 'VPC', {
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
+        maxAzs: 3,
+      });
+
+      // WHEN
+      // We want to place this endpoint in subnets that are within a given CIDR range
+      new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
+        vpc,
+        service: new InterfaceVpcEndpointService('com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc', 443),
+        subnets: {
+          subnetFilters: [SubnetFilter.byCidrRanges(['10.0.0.0/16'])],
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.vpce.us-east-1.vpce-svc-uuddlrlrbastrtsvc',
+        SubnetIds: [
+          {
+            Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+          },
+          {
+            Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+          },
+          {
+            Ref: 'VPCPrivateSubnet3Subnet3EDCD457',
+          },
+        ],
+      });
+
+    });
+
+    test('can filter by CIDR Range if CIDR is associated with VPC', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // IP space is split into 6 pieces, one public/one private per AZ
+      const vpc = new Vpc(stack, 'VPC', {
+        ipAddresses: IpAddresses.cidr('10.0.0.0/16'),
+        maxAzs: 3,
+      });
+
+      // WHEN
+      const subnets = vpc.selectSubnets({
+        subnetFilters: [SubnetFilter.byCidrRanges(['100.64.0.0/16'])],
+      });
+
+      // THEN
+      expect(subnets.subnetIds.length).toEqual(0);
     });
 
     test('tests router types', () => {

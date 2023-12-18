@@ -1,5 +1,4 @@
 import { EOL } from 'os';
-import * as path from 'path';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
@@ -18,9 +17,9 @@ import {
   Token,
   TokenComparison,
   CustomResource,
-  CustomResourceProvider,
-  builtInCustomResourceProviderNodeRuntime,
+  Aws,
 } from '../../core';
+import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
@@ -89,7 +88,7 @@ export interface IRepository extends IResource {
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
-   * Gran tthe given identity permissions to read images in this repository.
+   * Grant the given identity permissions to read images in this repository.
    */
   grantRead(grantee: iam.IGrantable): iam.Grant;
 
@@ -97,6 +96,11 @@ export interface IRepository extends IResource {
    * Grant the given identity permissions to pull images in this repository.
    */
   grantPull(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to push images in this repository.
+   */
+  grantPush(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant the given identity permissions to pull and push images to this repository.
@@ -146,6 +150,22 @@ export interface IRepository extends IResource {
  * Base class for ECR repository. Reused between imported repositories and owned repositories.
  */
 export abstract class RepositoryBase extends Resource implements IRepository {
+
+  private readonly REPO_PULL_ACTIONS: string[] = [
+    'ecr:BatchCheckLayerAvailability',
+    'ecr:GetDownloadUrlForLayer',
+    'ecr:BatchGetImage',
+  ];
+
+  // https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-push.html#image-push-iam
+  private readonly REPO_PUSH_ACTIONS: string[] = [
+    'ecr:CompleteLayerUpload',
+    'ecr:UploadLayerPart',
+    'ecr:InitiateLayerUpload',
+    'ecr:BatchCheckLayerAvailability',
+    'ecr:PutImage',
+  ];
+
   /**
    * The name of the repository
    */
@@ -361,8 +381,23 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Grant the given identity permissions to use the images in this repository
    */
   public grantPull(grantee: iam.IGrantable) {
-    const ret = this.grant(grantee, 'ecr:BatchCheckLayerAvailability', 'ecr:GetDownloadUrlForLayer', 'ecr:BatchGetImage');
+    const ret = this.grant(grantee, ...this.REPO_PULL_ACTIONS);
 
+    iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['ecr:GetAuthorizationToken'],
+      resourceArns: ['*'],
+      scope: this,
+    });
+
+    return ret;
+  }
+
+  /**
+   * Grant the given identity permissions to use the images in this repository
+   */
+  public grantPush(grantee: iam.IGrantable) {
+    const ret = this.grant(grantee, ...this.REPO_PUSH_ACTIONS);
     iam.Grant.addToPrincipal({
       grantee,
       actions: ['ecr:GetAuthorizationToken'],
@@ -377,13 +412,18 @@ export abstract class RepositoryBase extends Resource implements IRepository {
    * Grant the given identity permissions to pull and push images to this repository.
    */
   public grantPullPush(grantee: iam.IGrantable) {
-    this.grantPull(grantee);
-    return this.grant(grantee,
-      'ecr:PutImage',
-      'ecr:InitiateLayerUpload',
-      'ecr:UploadLayerPart',
-      'ecr:CompleteLayerUpload',
+    const ret = this.grant(grantee,
+      ...this.REPO_PULL_ACTIONS,
+      ...this.REPO_PUSH_ACTIONS,
     );
+    iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['ecr:GetAuthorizationToken'],
+      resourceArns: ['*'],
+      scope: this,
+    });
+
+    return ret;
   }
 
   /**
@@ -451,7 +491,11 @@ export interface OnImageScanCompletedOptions extends events.OnEventOptions {
 
 export interface RepositoryProps {
   /**
-   * Name for this repository
+   * Name for this repository.
+   *
+   * The repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, and forward slashes.
+   *
+   * > If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.
    *
    * @default Automatically generated name.
    */
@@ -630,7 +674,7 @@ export class Repository extends RepositoryBase {
     }
     const isPatternMatch = /^(?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*$/.test(repositoryName);
     if (!isPatternMatch) {
-      errors.push('Repository name must follow the specified pattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*');
+      errors.push('Repository name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes');
     }
 
     if (errors.length > 0) {
@@ -663,13 +707,6 @@ export class Repository extends RepositoryBase {
     });
     this._resource = resource;
 
-    if (props.autoDeleteImages) {
-      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
-        throw new Error('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
-      }
-      this.enableAutoDeleteImages();
-    }
-
     resource.applyRemovalPolicy(props.removalPolicy);
 
     this.registryId = props.lifecycleRegistryId;
@@ -684,6 +721,13 @@ export class Repository extends RepositoryBase {
       resourceName: this.physicalName,
     });
 
+    if (props.autoDeleteImages) {
+      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
+        throw new Error('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
+      }
+      this.enableAutoDeleteImages();
+    }
+
     this.node.addValidation({ validate: () => this.policyDocument?.validateForResourcePolicy() ?? [] });
   }
 
@@ -696,7 +740,7 @@ export class Repository extends RepositoryBase {
    */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (statement.resources.length) {
-      Annotations.of(this).addWarning('ECR resource policy does not allow resource statements.');
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecr:noResourceStatements', 'ECR resource policy does not allow resource statements.');
     }
     if (this.policyDocument === undefined) {
       this.policyDocument = new iam.PolicyDocument();
@@ -816,31 +860,37 @@ export class Repository extends RepositoryBase {
   }
 
   private enableAutoDeleteImages() {
-    // Use a iam policy to allow the custom resource to list & delete
-    // images in the repository and the ability to get all repositories to find the arn needed on delete.
-    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, 'auto-delete-images-handler'),
-      runtime: builtInCustomResourceProviderNodeRuntime(this),
+    const firstTime = Stack.of(this).node.tryFindChild(`${AUTO_DELETE_IMAGES_RESOURCE_TYPE}CustomResourceProvider`) === undefined;
+    const provider = AutoDeleteImagesProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
+      useCfnResponseWrapper: false,
       description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
-      policyStatements: [
-        {
-          Effect: 'Allow',
-          Action: [
-            'ecr:BatchDeleteImage',
-            'ecr:DescribeRepositories',
-            'ecr:ListImages',
-            'ecr:ListTagsForResource',
-          ],
-          Resource: [this._resource.attrArn],
-        },
-      ],
     });
+
+    if (firstTime) {
+      // Use a iam policy to allow the custom resource to list & delete
+      // images in the repository and the ability to get all repositories to find the arn needed on delete.
+      provider.addToRolePolicy({
+        Effect: 'Allow',
+        Action: [
+          'ecr:BatchDeleteImage',
+          'ecr:DescribeRepositories',
+          'ecr:ListImages',
+          'ecr:ListTagsForResource',
+        ],
+        Resource: [`arn:${Aws.PARTITION}:ecr:${Stack.of(this).region}:${Stack.of(this).account}:repository/*`],
+        Condition: {
+          StringEquals: {
+            ['ecr:ResourceTag/' + AUTO_DELETE_IMAGES_TAG]: 'true',
+          },
+        },
+      });
+    }
 
     const customResource = new CustomResource(this, 'AutoDeleteImagesCustomResource', {
       resourceType: AUTO_DELETE_IMAGES_RESOURCE_TYPE,
       serviceToken: provider.serviceToken,
       properties: {
-        RepositoryName: Lazy.any({ produce: () => this.repositoryName }),
+        RepositoryName: this.repositoryName,
       },
     });
     customResource.node.addDependency(this);
@@ -887,7 +937,7 @@ function renderLifecycleRule(rule: LifecycleRule) {
 /**
  * Select images based on counts
  */
-const enum CountType {
+enum CountType {
   /**
    * Set a limit on the number of images in your repository
    */

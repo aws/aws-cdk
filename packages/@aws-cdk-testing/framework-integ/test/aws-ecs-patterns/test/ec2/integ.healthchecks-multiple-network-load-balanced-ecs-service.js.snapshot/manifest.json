@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "32.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-ecs-integ-nlb-healthchecks.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b8deab280c1f5656d6ea2a95438a42fd20239e491556d069c17c85f53c2d3c46.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/460a0b8d4989f665efc27a1e63f215c996a3a5b06947e2aefabb5f815a98d6d4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -183,100 +177,58 @@
             "data": "ClusterEB0386A7"
           }
         ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/Resource": [
+        "/aws-ecs-integ-nlb-healthchecks/Cluster/Cluster": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A"
+            "data": "Cluster3DA9CCBA"
           }
         ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceRole/Resource": [
+        "/aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroupSG/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupInstanceRole9A14B384"
+            "data": "MyAutoScalingGroupSGEBE6954A"
           }
         ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceRole/DefaultPolicy/Resource": [
+        "/aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy06157A81"
+            "data": "MyAutoScalingGroupInstanceRoleDFBF3134"
           }
         ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceProfile": [
+        "/aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/InstanceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55"
+            "data": "MyAutoScalingGroupInstanceRoleDefaultPolicyD7C4BACE"
           }
         ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LaunchConfig": [
+        "/aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466"
+            "data": "MyAutoScalingGroupInstanceProfile729989CC"
           }
         ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/ASG": [
+        "/aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupASG0F98E147"
+            "data": "MyAutoScalingGroupLaunchTemplate9D9A040D"
           }
         ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/Resource": [
+        "/aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/ASG": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1"
-          }
-        ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy221F6E5E"
-          }
-        ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionFE918865"
-          }
-        ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/AllowInvoke:awsecsintegnlbhealthchecksClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9374BCF8": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegnlbhealthchecksClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9374BCF8D73113EF"
-          }
-        ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic3B6438EC"
-          }
-        ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB"
-          }
-        ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663"
-          }
-        ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyFFFD6EA5"
-          }
-        ],
-        "/aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHook4A9A4325"
+            "data": "MyAutoScalingGroupASG1686ADA7"
           }
         ],
         "/aws-ecs-integ-nlb-healthchecks/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-ecs-integ-nlb-healthchecks/MyProvider/MyProvider": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProvider82D075B0"
           }
         ],
         "/aws-ecs-integ-nlb-healthchecks/myService/lb1/Resource": [
@@ -315,10 +267,10 @@
             "data": "myServicelb2listener2AA6970EB"
           }
         ],
-        "/aws-ecs-integ-nlb-healthchecks/myService/lb2/listener2/ECSTargetGroupweb90Group/Resource": [
+        "/aws-ecs-integ-nlb-healthchecks/myService/lb2/listener2/ECSTargetGroupweb80Group/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServicelb2listener2ECSTargetGroupweb90Group6841F924"
+            "data": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
           }
         ],
         "/aws-ecs-integ-nlb-healthchecks/myService/LoadBalancerDNSlb2": [
@@ -374,6 +326,15 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "MyAutoScalingGroupLaunchTemplateProfile12A2031E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAutoScalingGroupLaunchTemplateProfile12A2031E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-ecs-integ-nlb-healthchecks"
@@ -424,6 +385,12 @@
         ]
       },
       "displayName": "Integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

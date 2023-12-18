@@ -1500,6 +1500,133 @@ test('if any source has markers then all sources have markers', () => {
   });
 });
 
+test('DeployTimeSubstitutedFile can be used to add substitutions in a file', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const deployment = new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+    source: path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
+    destinationBucket: bucket,
+    substitutions: {
+      testMethod: 'changedTestMethodSuccess',
+      mock: 'changedMockTypeSuccess',
+    },
+  });
+
+  const result = app.synth();
+  const content = readDataFile(result, deployment.objectKey);
+  expect(content).not.toContain('testMethod');
+  expect(content).toContain('changedTestMethodSuccess');
+  expect(content).not.toContain('mock');
+  expect(content).toContain('changedMockTypeSuccess');
+});
+
+test('DeployTimeSubstitutedFile throws error when source file path is invalid', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  expect(() => {
+    new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+      source: path.join(__dirname, 'non-existant-file.yaml'),
+      destinationBucket: bucket,
+      substitutions: {
+        testMethod: 'changedTestMethodSuccess',
+        mock: 'changedMockTypeSuccess',
+      },
+    });
+  }).toThrow(`No file found at 'source' path ${path.join(__dirname, 'non-existant-file.yaml')}`);
+});
+
+test('DeployTimeSubstitutedFile does not make substitutions when no substitutions are passed in', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const originalFileData = readFileSync(path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'), 'utf8');
+
+  const deployment = new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+    source: path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
+    destinationBucket: bucket,
+    substitutions: { },
+  });
+
+  const result = app.synth();
+  const assetFileFromOutput = readDataFile(result, deployment.objectKey);
+  expect(originalFileData).toStrictEqual(assetFileFromOutput);
+});
+
+test('DeployTimeSubstitutedFile does not substitute nested variables', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const originalFileData = readFileSync(path.join(__dirname, 'file-substitution-test', 'sample-definition-nested-vars.yaml'), 'utf8');
+
+  const deployment = new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+    source: path.join(__dirname, 'file-substitution-test', 'sample-definition-nested-vars.yaml'),
+    destinationBucket: bucket,
+    substitutions: {
+      foo: 'replacement1',
+      bar: 'replacement2',
+    },
+  });
+
+  const result = app.synth();
+  const assetFileFromOutput = readDataFile(result, deployment.objectKey);
+  expect(originalFileData).not.toStrictEqual(assetFileFromOutput);
+  expect(assetFileFromOutput).toContain('{{ replacement1 }}');
+  expect(assetFileFromOutput).toContain('{{ foo replacement2 }}');
+});
+
+test('DeployTimeSubstitutedFile does not substitute nested variables', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const originalFileData = readFileSync(path.join(__dirname, 'file-substitution-test', 'sample-definition-nested-vars.yaml'), 'utf8');
+
+  const deployment = new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+    source: path.join(__dirname, 'file-substitution-test', 'sample-definition-nested-vars.yaml'),
+    destinationBucket: bucket,
+    substitutions: {
+      foo: 'replacement1',
+      bar: 'replacement2',
+    },
+  });
+
+  const result = app.synth();
+  const assetFileFromOutput = readDataFile(result, deployment.objectKey);
+  expect(originalFileData).not.toStrictEqual(assetFileFromOutput);
+  expect(assetFileFromOutput).toContain('{{ replacement1 }}');
+  expect(assetFileFromOutput).toContain('{{ foo replacement2 }}');
+});
+
+test('DeployTimeSubstitutedFile does not double substitute already replaced variables', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const originalFileData = readFileSync(path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'), 'utf8');
+
+  const deployment = new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+    source: path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
+    destinationBucket: bucket,
+    substitutions: {
+      foo: 'bar',
+      bar: 'zee',
+    },
+  });
+
+  const result = app.synth();
+  const assetFileFromOutput = readDataFile(result, deployment.objectKey);
+  expect(originalFileData).not.toStrictEqual(assetFileFromOutput);
+  expect(assetFileFromOutput).toContain('bar');
+  expect(assetFileFromOutput).not.toContain('foo');
+  expect(assetFileFromOutput).not.toContain('zee');
+});
+
 function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
   const assetDirs = readdirSync(casm.directory).filter(f => f.startsWith('asset.'));
   for (const dir of assetDirs) {
@@ -1511,3 +1638,33 @@ function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
 
   throw new Error(`File ${relativePath} not found in any of the assets of the assembly`);
 }
+
+test('DeployTimeSubstitutedFile allows custom role to be supplied', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  const existingRole = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('lambda.amazon.com'),
+  });
+
+  new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+    source: path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
+    destinationBucket: bucket,
+    substitutions: {
+      testMethod: 'changedTestMethodSuccess',
+      mock: 'changedMockTypeSuccess',
+    },
+    role: existingRole,
+  });
+
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Role: {
+      'Fn::GetAtt': [
+        'Role1ABCC5F0',
+        'Arn',
+      ],
+    },
+  });
+});

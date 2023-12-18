@@ -131,14 +131,14 @@
                     "code": {
                       "zipFile": "exports.handler = async function handler(event) {\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    return { event };\n}"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "FServiceRole3AC82EE1",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -156,15 +156,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Lambda::EventSourceMapping",
                       "aws:cdk:cloudformation:props": {
-                        "functionName": {
-                          "Ref": "FC4345940"
-                        },
                         "batchSize": 100,
                         "eventSourceArn": {
                           "Fn::GetAtt": [
                             "S509448A1",
                             "Arn"
                           ]
+                        },
+                        "functionName": {
+                          "Ref": "FC4345940"
                         },
                         "startingPosition": "AT_TIMESTAMP",
                         "startingPositionTimestamp": 1655237653
@@ -267,7 +267,7 @@
                 "path": "AtTimestamp/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -313,7 +313,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },

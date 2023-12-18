@@ -30,11 +30,29 @@ describe('WorkGraph', () => {
 
       actionedAssets.push(x.id);
     },
-    buildAsset: async({ id }: AssetBuildNode) => {
-      actionedAssets.push(id);
+    buildAsset: async(x: AssetBuildNode) => {
+      const errorMessage = x.parentStack.displayName;
+      const timeout = Number(x.parentStack.stackName) || 0;
+
+      await sleep(timeout);
+
+      if (errorMessage) {
+        throw Error(errorMessage);
+      }
+
+      actionedAssets.push(x.id);
     },
-    publishAsset: async({ id }: AssetPublishNode) => {
-      actionedAssets.push(id);
+    publishAsset: async(x: AssetPublishNode) => {
+      const errorMessage = x.parentStack.displayName;
+      const timeout = Number(x.parentStack.stackName) || 0;
+
+      await sleep(timeout);
+
+      if (errorMessage) {
+        throw Error(errorMessage);
+      }
+
+      actionedAssets.push(x.id);
     },
   };
 
@@ -252,11 +270,11 @@ describe('WorkGraph', () => {
   // Failure Concurrency
   test.each([
     // Concurrency 1
-    { scenario: 'A (error)', concurrency: 1, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }]), expectedError: 'A', expectedStacks: [] },
-    { scenario: 'A (error), B', concurrency: 1, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }, { id: 'B', type: 'stack' }]), expectedError: 'A', expectedStacks: [] },
-    { scenario: 'A, B (error)', concurrency: 1, toDeploy: createArtifacts([{ id: 'A', type: 'stack' }, { id: 'B', type: 'stack', displayName: 'B' }]), expectedError: 'B', expectedStacks: ['A'] },
-    { scenario: 'A (error) -> B', concurrency: 1, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }, { id: 'B', type: 'stack', stackDependencies: ['A'] }]), expectedError: 'A', expectedStacks: [] },
-    { scenario: '[unsorted] A (error) -> B', concurrency: 1, toDeploy: createArtifacts([{ id: 'B', type: 'stack', stackDependencies: ['A'] }, { id: 'A', type: 'stack', displayName: 'A' }]), expectedError: 'A', expectedStacks: [] },
+    { scenario: 'A (error)', concurrency: 1, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }]), expectedError: 'A', expected: [] },
+    { scenario: 'A (error), B', concurrency: 1, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }, { id: 'B', type: 'stack' }]), expectedError: 'A', expected: [] },
+    { scenario: 'A, B (error)', concurrency: 1, toDeploy: createArtifacts([{ id: 'A', type: 'stack' }, { id: 'B', type: 'stack', displayName: 'B' }]), expectedError: 'B', expected: ['A'] },
+    { scenario: 'A (error) -> B', concurrency: 1, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }, { id: 'B', type: 'stack', stackDependencies: ['A'] }]), expectedError: 'A', expected: [] },
+    { scenario: '[unsorted] A (error) -> B', concurrency: 1, toDeploy: createArtifacts([{ id: 'B', type: 'stack', stackDependencies: ['A'] }, { id: 'A', type: 'stack', displayName: 'A' }]), expectedError: 'A', expected: [] },
     {
       scenario: 'A (error) -> B, C -> D',
       concurrency: 1,
@@ -267,7 +285,7 @@ describe('WorkGraph', () => {
         { id: 'D', type: 'stack', stackDependencies: ['C'] },
       ]),
       expectedError: 'A',
-      expectedStacks: [],
+      expected: [],
     },
     {
       scenario: 'A -> B, C (error) -> D',
@@ -279,15 +297,36 @@ describe('WorkGraph', () => {
         { id: 'D', type: 'stack', stackDependencies: ['C'] },
       ]),
       expectedError: 'C',
-      expectedStacks: ['A'],
+      expected: ['A'],
+    },
+    // With assets
+    {
+      scenario: 'A -> b (asset build error)',
+      concurrency: 1,
+      toDeploy: createArtifacts([
+        { id: 'A', type: 'stack', assetDependencies: ['b'] },
+        { id: 'b', type: 'asset', displayName: 'build-b' },
+      ]),
+      expectedError: 'build-b',
+      expected: [],
+    },
+    {
+      scenario: 'A -> b (asset publish error)',
+      concurrency: 1,
+      toDeploy: createArtifacts([
+        { id: 'A', type: 'stack', assetDependencies: ['b'] },
+        { id: 'b', type: 'asset', displayName: 'publish-b' },
+      ]),
+      expectedError: 'publish-b',
+      expected: ['b-build'],
     },
 
     // Concurrency 2
-    { scenario: 'A (error)', concurrency: 2, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }]), expectedError: 'A', expectedStacks: [] },
-    { scenario: 'A (error), B', concurrency: 2, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }, { id: 'B', type: 'stack' }]), expectedError: 'A', expectedStacks: ['B'] },
-    { scenario: 'A, B (error)', concurrency: 2, toDeploy: createArtifacts([{ id: 'A', type: 'stack' }, { id: 'B', type: 'stack', displayName: 'B' }]), expectedError: 'B', expectedStacks: ['A'] },
-    { scenario: 'A (error) -> B', concurrency: 2, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }, { id: 'B', type: 'stack', stackDependencies: ['A'] }]), expectedError: 'A', expectedStacks: [] },
-    { scenario: '[unsorted] A (error) -> B', concurrency: 2, toDeploy: createArtifacts([{ id: 'B', type: 'stack', stackDependencies: ['A'] }, { id: 'A', type: 'stack', displayName: 'A' }]), expectedError: 'A', expectedStacks: [] },
+    { scenario: 'A (error)', concurrency: 2, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }]), expectedError: 'A', expected: [] },
+    { scenario: 'A (error), B', concurrency: 2, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }, { id: 'B', type: 'stack' }]), expectedError: 'A', expected: ['B'] },
+    { scenario: 'A, B (error)', concurrency: 2, toDeploy: createArtifacts([{ id: 'A', type: 'stack' }, { id: 'B', type: 'stack', displayName: 'B' }]), expectedError: 'B', expected: ['A'] },
+    { scenario: 'A (error) -> B', concurrency: 2, toDeploy: createArtifacts([{ id: 'A', type: 'stack', displayName: 'A' }, { id: 'B', type: 'stack', stackDependencies: ['A'] }]), expectedError: 'A', expected: [] },
+    { scenario: '[unsorted] A (error) -> B', concurrency: 2, toDeploy: createArtifacts([{ id: 'B', type: 'stack', stackDependencies: ['A'] }, { id: 'A', type: 'stack', displayName: 'A' }]), expectedError: 'A', expected: [] },
     {
       scenario: 'A (error) -> B, C -> D',
       concurrency: 2,
@@ -298,7 +337,7 @@ describe('WorkGraph', () => {
         { id: 'D', type: 'stack', stackDependencies: ['C'] },
       ]),
       expectedError: 'A',
-      expectedStacks: ['C'],
+      expected: ['C'],
     },
     {
       scenario: 'A -> B, C (error) -> D',
@@ -310,15 +349,38 @@ describe('WorkGraph', () => {
         { id: 'D', type: 'stack', stackDependencies: ['C'] },
       ]),
       expectedError: 'C',
-      expectedStacks: ['A', 'B'],
+      expected: ['A', 'B'],
     },
-  ])('Failure - Concurrency: $concurrency - $scenario', async ({ concurrency, expectedError, toDeploy, expectedStacks }) => {
+    // With assets
+    {
+      scenario: 'A -> b (asset build error), C',
+      concurrency: 2,
+      toDeploy: createArtifacts([
+        { id: 'A', type: 'stack', assetDependencies: ['b'] },
+        { id: 'b', type: 'asset', displayName: 'build-b' },
+        { id: 'C', type: 'stack' },
+      ]),
+      expectedError: 'build-b',
+      expected: ['C'],
+    },
+    {
+      scenario: 'A -> b (asset publish error), C',
+      concurrency: 2,
+      toDeploy: createArtifacts([
+        { id: 'A', type: 'stack', assetDependencies: ['b'] },
+        { id: 'b', type: 'asset', displayName: 'publish-b' },
+        { id: 'C', type: 'stack' },
+      ]),
+      expectedError: 'publish-b',
+      expected: ['b-build', 'C'],
+    },
+  ])('Failure - Concurrency: $concurrency - $scenario', async ({ concurrency, expectedError, toDeploy, expected }) => {
     const graph = new WorkGraph();
     addTestArtifactsToGraph(toDeploy, graph);
 
     await expect(graph.doParallel(concurrency, callbacks)).rejects.toThrowError(expectedError);
 
-    expect(actionedAssets).toStrictEqual(expectedStacks);
+    expect(actionedAssets).toStrictEqual(expected);
   });
 
   // Failure Graph Circular Dependencies
@@ -393,7 +455,11 @@ function addTestArtifactsToGraph(toDeploy: TestArtifact[], graph: WorkGraph) {
           asset: DUMMY,
           assetManifest: DUMMY,
           assetManifestArtifact: DUMMY,
-          parentStack: DUMMY,
+          parentStack: {
+            // We're smuggling information here so that the set of callbacks can do some appropriate action
+            stackName: node.name, // Used to smuggle sleep duration
+            displayName: node.displayName?.includes('build') ? node.displayName : undefined, // Used to smuggle exception triggers
+          } as any,
           dependencies: new Set([...node.stackDependencies ?? [], ...(node.assetDependencies ?? []).map(x => `${x}-publish`)]),
         });
         graph.addNodes({
@@ -403,7 +469,11 @@ function addTestArtifactsToGraph(toDeploy: TestArtifact[], graph: WorkGraph) {
           asset: DUMMY,
           assetManifest: DUMMY,
           assetManifestArtifact: DUMMY,
-          parentStack: DUMMY,
+          parentStack: {
+            // We're smuggling information here so that the set of callbacks can do some appropriate action
+            stackName: node.name, // Used to smuggle sleep duration
+            displayName: node.displayName?.includes('publish') ? node.displayName : undefined, // Used to smuggle exception triggers
+          } as any,
           dependencies: new Set([`${node.id}-build`]),
         });
         break;

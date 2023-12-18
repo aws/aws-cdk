@@ -3,7 +3,9 @@ import type * as AWSLambda from 'aws-lambda';
 
 const username = 'username';
 const tableName = 'tableName';
-const tablePrivileges = [{ tableName, actions: ['INSERT', 'SELECT'] }];
+const tableId = 'tableId';
+const actions = ['INSERT', 'SELECT'];
+const tablePrivileges = [{ tableId, tableName, actions }];
 const clusterName = 'clusterName';
 const adminUserArn = 'adminUserArn';
 const databaseName = 'databaseName';
@@ -27,11 +29,16 @@ const genericEvent: AWSLambda.CloudFormationCustomResourceEventCommon = {
   ResourceType: '',
 };
 
-const mockExecuteStatement = jest.fn(() => ({ promise: jest.fn(() => ({ Id: 'statementId' })) }));
-jest.mock('aws-sdk/clients/redshiftdata', () => class {
-  executeStatement = mockExecuteStatement;
-  describeStatement = () => ({ promise: jest.fn(() => ({ Status: 'FINISHED' })) });
+const mockExecuteStatement = jest.fn(async () => ({ Id: 'statementId' }));
+jest.mock('@aws-sdk/client-redshift-data', () => {
+  return {
+    RedshiftData: class {
+      executeStatement = mockExecuteStatement;
+      describeStatement = jest.fn(async () => ({ Status: 'FINISHED' }));
+    },
+  };
 });
+
 import { handler as managePrivileges } from '../../lib/private/database-query-provider/privileges';
 
 beforeEach(() => {
@@ -142,22 +149,99 @@ describe('update', () => {
     }));
   });
 
-  test('does not replace when privileges change', async () => {
+  test('does not replace when table name is changed', async () => {
     const newTableName = 'newTableName';
-    const newTablePrivileges = [{ tableName: newTableName, actions: ['DROP'] }];
+    const newTablePrivileges = [{ tableId, tableName: newTableName, actions }];
     const newResourceProperties = {
       ...resourceProperties,
       tablePrivileges: newTablePrivileges,
     };
 
+    // Checking if the table resource has not been recreated
     await expect(managePrivileges(newResourceProperties, event)).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
+    // Upon a table name change, Redshift maintains the same table priviliges as before.
+    // The name of the table has changed, a new table has not been created.
+    // Therefore 'REVOKE' statements should not be used.
+    expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `REVOKE INSERT, SELECT ON ${newTableName} FROM ${username}`,
+    }));
+    // Likewise, here the table name has changed, so the current priviliges will still be intact.
+    expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringMatching(new RegExp(`.+ ON ${tableName} TO ${username}`)),
+    }));
+  });
+
+  test('does not replace when table actions are changed', async () => {
+    const newTablePrivileges = [{ tableId, tableName, actions: ['DROP'] }];
+    const newResourceProperties = {
+      ...resourceProperties,
+      tablePrivileges: newTablePrivileges,
+    };
+
+    // Checking if the table resource has not been recreated
+    await expect(managePrivileges(newResourceProperties, event)).resolves.toMatchObject({
+      PhysicalResourceId: physicalResourceId,
+    });
+    // Old actions are REVOKED, as they are not included in the list
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
       Sql: `REVOKE INSERT, SELECT ON ${tableName} FROM ${username}`,
     }));
+    // New actions are GRANTED, as they are included in the list
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `GRANT DROP ON ${newTableName} TO ${username}`,
+      Sql: `GRANT DROP ON ${tableName} TO ${username}`,
+    }));
+  });
+
+  test('does not replace when table id is changed', async () => {
+    const newTableId = 'newTableId';
+    const newTablePrivileges = [{ tableId: newTableId, tableName, actions }];
+    const newResourceProperties = {
+      ...resourceProperties,
+      tablePrivileges: newTablePrivileges,
+    };
+
+    // Checking if the table resource has not been recreated, we are not changing on table id either.
+    // Due to the construct only needing to be changed on a new user, not a new table
+    await expect(managePrivileges(newResourceProperties, event)).resolves.toMatchObject({
+      PhysicalResourceId: physicalResourceId,
+    });
+    // Upon removal of the old table, the priviliges will also be revoked automatically,
+    // as the table no longer exists.
+    // Calling REVOKE statments on a non-existing table will throw errors by Redshift
+    expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringMatching(new RegExp(`REVOKE .+ ON ${tableName} FROM ${username}`)),
+    }));
+    // Adds the permissions onto the newly created table
+    expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringMatching(new RegExp(`GRANT .+ ON ${tableName} TO ${username}`)),
+    }));
+  });
+
+  test('does not replace when table id is appended', async () => {
+    const newTablePrivileges = [{ tableId: 'newTableId', tableName, actions }];
+    const newResourceProperties = {
+      ...resourceProperties,
+      tablePrivileges: newTablePrivileges,
+    };
+
+    const newEvent = {
+      ...event,
+      OldResourceProperties: {
+        ...event.OldResourceProperties,
+        tablePrivileges: [{ tableName, actions }],
+      },
+    };
+
+    // Checking if the table resource has not been recreated
+    await expect(managePrivileges(newResourceProperties, newEvent)).resolves.toMatchObject({
+      PhysicalResourceId: physicalResourceId,
+    });
+    // Upon initial deployment from non table id usage to table id usage,
+    // permissions would not need to be granted/revoked, as the table should already exist
+    expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringMatching(new RegExp(`.+ ON ${tableName} FROM ${username}`)),
     }));
   });
 });

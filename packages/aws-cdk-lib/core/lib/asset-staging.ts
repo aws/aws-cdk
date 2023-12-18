@@ -167,6 +167,7 @@ export class AssetStaging extends Construct {
     this.sourcePath = path.resolve(props.sourcePath);
     this.fingerprintOptions = {
       ...props,
+      exclude: ['.is_custom_resource', ...props.exclude ?? []],
       extraHash: props.extraHash || salt ? `${props.extraHash ?? ''}${salt ?? ''}` : undefined,
     };
 
@@ -353,7 +354,7 @@ export class AssetStaging extends Construct {
       assetHash,
       stagedPath,
       packaging: bundledAsset.packaging,
-      isArchive: true, // bundling always produces an archive
+      isArchive: bundlingOutputType !== BundlingOutput.SINGLE_FILE,
     };
   }
 
@@ -558,7 +559,7 @@ function sortObject(object: { [key: string]: any }): { [key: string]: any } {
 /**
  * Returns the single archive file of a directory or undefined
  */
-function singleArchiveFile(directory: string): string | undefined {
+function findSingleFile(directory: string, archiveOnly: boolean): string | undefined {
   if (!fs.existsSync(directory)) {
     throw new Error(`Directory ${directory} does not exist.`);
   }
@@ -571,7 +572,7 @@ function singleArchiveFile(directory: string): string | undefined {
   if (content.length === 1) {
     const file = path.join(directory, content[0]);
     const extension = getExtension(content[0]).toLowerCase();
-    if (fs.statSync(file).isFile() && ARCHIVE_EXTENSIONS.includes(extension)) {
+    if (fs.statSync(file).isFile() && (!archiveOnly || ARCHIVE_EXTENSIONS.includes(extension))) {
       return file;
     }
   }
@@ -590,7 +591,7 @@ interface BundledAsset {
  * and the type of output.
  */
 function determineBundledAsset(bundleDir: string, outputType: BundlingOutput): BundledAsset {
-  const archiveFile = singleArchiveFile(bundleDir);
+  const archiveFile = findSingleFile(bundleDir, outputType !== BundlingOutput.SINGLE_FILE);
 
   // auto-discover means that if there is an archive file, we take it as the
   // bundle, otherwise, we will archive here.
@@ -602,8 +603,9 @@ function determineBundledAsset(bundleDir: string, outputType: BundlingOutput): B
     case BundlingOutput.NOT_ARCHIVED:
       return { path: bundleDir, packaging: FileAssetPackaging.ZIP_DIRECTORY };
     case BundlingOutput.ARCHIVED:
+    case BundlingOutput.SINGLE_FILE:
       if (!archiveFile) {
-        throw new Error('Bundling output directory is expected to include only a single archive file when `output` is set to `ARCHIVED`');
+        throw new Error('Bundling output directory is expected to include only a single file when `output` is set to `ARCHIVED` or `SINGLE_FILE`');
       }
       return { path: archiveFile, packaging: FileAssetPackaging.FILE, extension: getExtension(archiveFile) };
   }

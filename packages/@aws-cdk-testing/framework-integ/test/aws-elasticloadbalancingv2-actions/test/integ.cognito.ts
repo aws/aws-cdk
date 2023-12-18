@@ -175,11 +175,11 @@ class CognitoStack extends Stack {
  *
 */
 const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_ZONE_ID;
-if (!hostedZoneId) throw new Error('For this test you must provide your own HostedZoneId as an env var "HOSTED_ZONE_ID"');
+if (!hostedZoneId) throw new Error('For this test you must provide your own HostedZoneId as an env var "HOSTED_ZONE_ID". See framework-integ/README.md for details.');
 const hostedZoneName = process.env.CDK_INTEG_HOSTED_ZONE_NAME ?? process.env.HOSTED_ZONE_NAME;
-if (!hostedZoneName) throw new Error('For this test you must provide your own HostedZoneName as an env var "HOSTED_ZONE_NAME"');
+if (!hostedZoneName) throw new Error('For this test you must provide your own HostedZoneName as an env var "HOSTED_ZONE_NAME". See framework-integ/README.md for details.');
 const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
-if (!domainName) throw new Error('For this test you must provide your own Domain Name as an env var "DOMAIN_NAME"');
+if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
 
 const app = new App();
 const testCase = new CognitoStack(app, 'integ-cognito', {
@@ -189,6 +189,7 @@ const testCase = new CognitoStack(app, 'integ-cognito', {
 });
 const test = new integ.IntegTest(app, 'integ-test-cognito', {
   testCases: [testCase],
+  diffAssets: true,
 });
 const testUser = new CognitoUser(testCase, 'User', {
   userPool: testCase.userPool,

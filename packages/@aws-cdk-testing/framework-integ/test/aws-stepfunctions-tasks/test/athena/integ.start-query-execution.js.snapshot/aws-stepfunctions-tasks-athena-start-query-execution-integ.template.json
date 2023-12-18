@@ -99,7 +99,7 @@
           {
            "Ref": "AWS::Partition"
           },
-          ":s3:::query-results-bucket/folder"
+          ":s3:::query-results-bucket/folder/*"
          ]
         ]
        }
@@ -224,12 +224,6 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "StateMachineRoleB840431D",
-      "Arn"
-     ]
-    },
     "DefinitionString": {
      "Fn::Join": [
       "",
@@ -238,8 +232,14 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::athena:startQueryExecution\",\"Parameters\":{\"QueryString.$\":\"$.queryString\",\"QueryExecutionContext\":{\"Database\":\"mydatabase\"},\"ResultConfiguration\":{\"EncryptionConfiguration\":{\"EncryptionOption\":\"SSE_S3\"},\"OutputLocation\":\"s3://query-results-bucket/folder/\"}}}},\"TimeoutSeconds\":30}"
+       ":states:::athena:startQueryExecution\",\"Parameters\":{\"QueryString.$\":\"$.queryString\",\"QueryExecutionContext\":{\"Database\":\"mydatabase\"},\"ResultConfiguration\":{\"EncryptionConfiguration\":{\"EncryptionOption\":\"SSE_S3\"},\"OutputLocation\":\"s3://query-results-bucket/folder/\"},\"ExecutionParameters\":[\"param1\",\"param2\"]}}},\"TimeoutSeconds\":30}"
       ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
      ]
     }
    },

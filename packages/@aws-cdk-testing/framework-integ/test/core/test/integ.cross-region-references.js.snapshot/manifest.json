@@ -1,0 +1,204 @@
+{
+  "version": "35.0.0",
+  "artifacts": {
+    "CrossRegionRefProducerInteg.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CrossRegionRefProducerInteg.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CrossRegionRefProducerInteg": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "CrossRegionRefProducerInteg.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/cff9a3a9a23e72775cbf604df7f7fbec62081da512cbae8b74f5b33c6b7d637c.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CrossRegionRefProducerInteg.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CrossRegionRefProducerInteg.assets"
+      ],
+      "metadata": {
+        "/CrossRegionRefProducerInteg/SomeParameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SomeParameterB1EDD45B"
+          }
+        ],
+        "/CrossRegionRefProducerInteg/ExportsWriteruseast2828FA26B/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsWriteruseast2828FA26B86FBEFA7"
+          }
+        ],
+        "/CrossRegionRefProducerInteg/Custom::CrossRegionExportWriterCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1"
+          }
+        ],
+        "/CrossRegionRefProducerInteg/Custom::CrossRegionExportWriterCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A"
+          }
+        ],
+        "/CrossRegionRefProducerInteg/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CrossRegionRefProducerInteg/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CrossRegionRefProducerInteg"
+    },
+    "CrossRegionRefConsumerInteg.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CrossRegionRefConsumerInteg.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CrossRegionRefConsumerInteg": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-2",
+      "properties": {
+        "templateFile": "CrossRegionRefConsumerInteg.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/913a42d8cb8372f606f6440fbdaa1f1bf061e584cb1fc8b0329a7793a9677e96.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CrossRegionRefConsumerInteg.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-2",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CrossRegionRefProducerInteg",
+        "CrossRegionRefConsumerInteg.assets"
+      ],
+      "metadata": {
+        "/CrossRegionRefConsumerInteg/SomeParameterMirrored/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SomeParameterMirroredE2D8F3B8"
+          }
+        ],
+        "/CrossRegionRefConsumerInteg/ExportsReader/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsReader8B249524"
+          }
+        ],
+        "/CrossRegionRefConsumerInteg/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
+          }
+        ],
+        "/CrossRegionRefConsumerInteg/Custom::CrossRegionExportReaderCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68"
+          }
+        ],
+        "/CrossRegionRefConsumerInteg/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CrossRegionRefConsumerInteg/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CrossRegionRefConsumerInteg"
+    },
+    "CrossRegionSSMReferenceTestDefaultTestDeployAssert2460BCA3.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CrossRegionSSMReferenceTestDefaultTestDeployAssert2460BCA3.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CrossRegionSSMReferenceTestDefaultTestDeployAssert2460BCA3": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CrossRegionSSMReferenceTestDefaultTestDeployAssert2460BCA3.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CrossRegionSSMReferenceTestDefaultTestDeployAssert2460BCA3.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CrossRegionSSMReferenceTestDefaultTestDeployAssert2460BCA3.assets"
+      ],
+      "metadata": {
+        "/CrossRegionSSMReferenceTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CrossRegionSSMReferenceTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CrossRegionSSMReferenceTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

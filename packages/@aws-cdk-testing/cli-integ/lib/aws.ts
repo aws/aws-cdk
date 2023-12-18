@@ -129,6 +129,7 @@ async function awsCall<
   Svc extends AWS.Service,
   Calls extends ServiceCalls<Svc>,
   Call extends keyof Calls,
+// eslint-disable-next-line @typescript-eslint/no-shadow
 >(ctor: new (config: any) => Svc, config: any, call: Call, request: First<Calls[Call]>): Promise<Second<Calls[Call]>> {
   const cfn = new ctor(config);
   const response = ((cfn as any)[call] as any)(request);
@@ -156,6 +157,7 @@ type AwsCaller<A> = <B extends keyof ServiceCalls<A>>(call: B, request: First<Se
  * }
  * ```
  */
+// eslint-disable-next-line @typescript-eslint/no-shadow
 function makeAwsCaller<A extends AWS.Service>(ctor: new (config: any) => A, config: any): AwsCaller<A> {
   return <B extends keyof ServiceCalls<A>>(call: B, request: First<ServiceCalls<A>[B]>): Promise<Second<ServiceCalls<A>[B]>> => {
     return awsCall(ctor, config, call, request);

@@ -5,7 +5,6 @@ import * as iam from '../../aws-iam';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { ArnFormat } from '../../core';
-import { FactName } from '../../region-info';
 
 /**
  * Construction properties for a LogRetention.
@@ -55,13 +54,14 @@ export interface LogRetentionRetryOptions {
   /**
    * The maximum amount of retries.
    *
-   * @default 3 (AWS SDK default)
+   * @default 5
    */
   readonly maxRetries?: number;
   /**
    * The base duration to use in the exponential backoff for operation retries.
    *
-   * @default Duration.millis(100) (AWS SDK default)
+   * @deprecated Unused since the upgrade to AWS SDK v3, which uses a different retry strategy
+   * @default - none, not used anymore
    */
   readonly base?: cdk.Duration;
 }
@@ -92,7 +92,7 @@ export class LogRetention extends Construct {
     }
 
     // Need to use a CfnResource here to prevent lerna dependency cycles
-    // @aws-cdk/aws-cloudformation -> @aws-cdk/aws-lambda -> @aws-cdk/aws-cloudformation
+    // aws-cdk-lib/aws-cloudformation -> aws-cdk-lib/aws-lambda -> aws-cdk-lib/aws-cloudformation
     const retryOptions = props.logRetentionRetryOptions;
     const resource = new cdk.CfnResource(this, 'Resource', {
       type: 'Custom::LogRetention',
@@ -102,7 +102,6 @@ export class LogRetention extends Construct {
         LogGroupRegion: props.logGroupRegion,
         SdkRetry: retryOptions ? {
           maxRetries: retryOptions.maxRetries,
-          base: retryOptions.base?.toMilliseconds(),
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
         RemovalPolicy: props.removalPolicy,
@@ -123,7 +122,7 @@ export class LogRetention extends Construct {
 
   /**
    * Helper method to ensure that only one instance of LogRetentionFunction resources are in the stack mimicking the
-   * behaviour of @aws-cdk/aws-lambda's SingletonFunction to prevent circular dependencies
+   * behaviour of aws-cdk-lib/aws-lambda's SingletonFunction to prevent circular dependencies
    */
   private ensureSingletonLogRetentionFunction(props: LogRetentionProps) {
     const functionLogicalId = 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a';
@@ -149,7 +148,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
     super(scope, id);
 
     const asset = new s3_assets.Asset(this, 'Code', {
-      path: path.join(__dirname, 'log-retention-provider'),
+      path: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-logs', 'log-retention-handler'),
     });
 
     const role = props.role || new iam.Role(this, 'ServiceRole', {
@@ -171,7 +170,8 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
       type: 'AWS::Lambda::Function',
       properties: {
         Handler: 'index.handler',
-        Runtime: cdk.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, 'nodejs16.x'), // Equivalent to Runtime.NODEJS_16_X
+        Runtime: 'nodejs18.x',
+        Timeout: cdk.Duration.minutes(15).toSeconds(),
         Code: {
           S3Bucket: asset.s3BucketName,
           S3Key: asset.s3ObjectKey,

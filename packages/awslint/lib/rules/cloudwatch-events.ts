@@ -17,8 +17,8 @@ export class EventsReflection extends ConstructReflection {
   }
 }
 
-const ON_EVENT_OPTIONS_FQN = '@aws-cdk/aws-events.OnEventOptions';
-const EVENT_RULE_FQN = '@aws-cdk/aws-events.Rule';
+const ON_EVENT_OPTIONS_FQN = 'aws-cdk-lib.aws_events.OnEventOptions';
+const EVENT_RULE_FQN = 'aws-cdk-lib.aws_events.Rule';
 
 eventsLinter.add({
   code: 'events-in-interface',

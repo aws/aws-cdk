@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-cdk-ses-receipt": {
         "id": "aws-cdk-ses-receipt",
         "path": "aws-cdk-ses-receipt",
@@ -28,7 +20,7 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ses.CfnReceiptRuleSet",
+                  "fqn": "aws-cdk-lib.aws_ses.CfnReceiptRuleSet",
                   "version": "0.0.0"
                 }
               },
@@ -40,7 +32,7 @@
                     "id": "Function",
                     "path": "aws-cdk-ses-receipt/RuleSet/DropSpam/Function",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-lambda.SingletonFunction",
+                      "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0"
                     }
                   },
@@ -77,19 +69,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ses.CfnReceiptRule",
+                          "fqn": "aws-cdk-lib.aws_ses.CfnReceiptRule",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ses.ReceiptRule",
+                      "fqn": "aws-cdk-lib.aws_ses.ReceiptRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ses.DropSpamReceiptRule",
+                  "fqn": "aws-cdk-lib.aws_ses.DropSpamReceiptRule",
                   "version": "0.0.0"
                 }
               },
@@ -103,6 +95,9 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SES::ReceiptRule",
                       "aws:cdk:cloudformation:props": {
+                        "after": {
+                          "Ref": "RuleSetDropSpamRule5809F51B"
+                        },
                         "rule": {
                           "enabled": true,
                           "name": "FirstRule",
@@ -114,20 +109,17 @@
                         },
                         "ruleSetName": {
                           "Ref": "RuleSetE30C6C48"
-                        },
-                        "after": {
-                          "Ref": "RuleSetDropSpamRule5809F51B"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ses.CfnReceiptRule",
+                      "fqn": "aws-cdk-lib.aws_ses.CfnReceiptRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ses.ReceiptRule",
+                  "fqn": "aws-cdk-lib.aws_ses.ReceiptRule",
                   "version": "0.0.0"
                 }
               },
@@ -141,31 +133,31 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SES::ReceiptRule",
                       "aws:cdk:cloudformation:props": {
+                        "after": {
+                          "Ref": "RuleSetFirstRule0A27C8CC"
+                        },
                         "rule": {
                           "enabled": true
                         },
                         "ruleSetName": {
                           "Ref": "RuleSetE30C6C48"
-                        },
-                        "after": {
-                          "Ref": "RuleSetFirstRule0A27C8CC"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ses.CfnReceiptRule",
+                      "fqn": "aws-cdk-lib.aws_ses.CfnReceiptRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ses.ReceiptRule",
+                  "fqn": "aws-cdk-lib.aws_ses.ReceiptRule",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ses.ReceiptRuleSet",
+              "fqn": "aws-cdk-lib.aws_ses.ReceiptRuleSet",
               "version": "0.0.0"
             }
           },
@@ -177,6 +169,14 @@
                 "id": "ServiceRole",
                 "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/ServiceRole/Resource",
@@ -212,13 +212,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -230,21 +230,21 @@
                     "id": "Stage",
                     "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
                     "path": "aws-cdk-ses-receipt/SingletonLambda224e77f9a32e4b4dac32983477abba16/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               },
@@ -258,20 +258,20 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34.zip"
+                      "s3Key": "19044c50ec489a0413f51a8e60d6272e5746e9b5a0356ed15c12de97c3ca93ec.zip"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "SingletonLambda224e77f9a32e4b4dac32983477abba16ServiceRole3037F5B4",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               },
@@ -295,13 +295,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -328,13 +328,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ses.CfnReceiptFilter",
+                      "fqn": "aws-cdk-lib.aws_ses.CfnReceiptFilter",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ses.ReceiptFilter",
+                  "fqn": "aws-cdk-lib.aws_ses.ReceiptFilter",
                   "version": "0.0.0"
                 }
               },
@@ -357,32 +357,110 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ses.CfnReceiptFilter",
+                      "fqn": "aws-cdk-lib.aws_ses.CfnReceiptFilter",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ses.ReceiptFilter",
+                  "fqn": "aws-cdk-lib.aws_ses.ReceiptFilter",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ses.AllowListReceiptFilter",
+              "fqn": "aws-cdk-lib.aws_ses.AllowListReceiptFilter",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-ses-receipt/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-ses-receipt/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "cdk-ses-receipt-integ": {
+        "id": "cdk-ses-receipt-integ",
+        "path": "cdk-ses-receipt-integ",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-ses-receipt-integ/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-ses-receipt-integ/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-ses-receipt-integ/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-ses-receipt-integ/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-ses-receipt-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

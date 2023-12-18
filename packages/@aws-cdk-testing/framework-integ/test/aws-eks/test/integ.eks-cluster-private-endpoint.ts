@@ -47,6 +47,8 @@ const app = new App();
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-private-endpoint-test');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-private-endpoint', {
   testCases: [stack],
+  // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
+  diffAssets: false,
 });
 
 app.synth();

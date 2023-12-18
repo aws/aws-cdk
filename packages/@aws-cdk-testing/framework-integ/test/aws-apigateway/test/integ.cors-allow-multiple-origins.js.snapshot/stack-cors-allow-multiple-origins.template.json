@@ -1,0 +1,378 @@
+{
+ "Resources": {
+  "corsapitest8682546E": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "cors-api-test"
+   }
+  },
+  "corsapitestDeployment2BF1633A506e17bacbb92c0f9e65d8c89b158b9c": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "corsapitest8682546E"
+    }
+   },
+   "DependsOn": [
+    "corsapitestmyresourceGET844C52EA",
+    "corsapitestmyresourceOPTIONSD5275318",
+    "corsapitestmyresource73D41BDD",
+    "corsapitestOPTIONS15560589"
+   ]
+  },
+  "corsapitestDeploymentStageprod8F31F2AB": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "corsapitestDeployment2BF1633A506e17bacbb92c0f9e65d8c89b158b9c"
+    },
+    "RestApiId": {
+     "Ref": "corsapitest8682546E"
+    },
+    "StageName": "prod"
+   }
+  },
+  "corsapitestOPTIONS15560589": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
+        "method.response.header.Vary": "'Origin'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "ResponseTemplates": {
+        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\")\n  #set($origin = $input.params().header.get(\"origin\"))\n#end\n#if($origin == \"https://twitch.tv\" || $origin == \"https://aws.amazon.com\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Vary": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "corsapitest8682546E",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "corsapitest8682546E"
+    }
+   }
+  },
+  "corsapitestmyresource73D41BDD": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "corsapitest8682546E",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "my-resource",
+    "RestApiId": {
+     "Ref": "corsapitest8682546E"
+    }
+   }
+  },
+  "corsapitestmyresourceOPTIONSD5275318": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+        "method.response.header.Access-Control-Allow-Origin": "'https://amazon.com'",
+        "method.response.header.Vary": "'Origin'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "ResponseTemplates": {
+        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\")\n  #set($origin = $input.params().header.get(\"origin\"))\n#end\n#if($origin == \"https://twitch.tv\" || $origin == \"https://aws.amazon.com\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Vary": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "corsapitestmyresource73D41BDD"
+    },
+    "RestApiId": {
+     "Ref": "corsapitest8682546E"
+    }
+   }
+  },
+  "corsapitestmyresourceGETApiPermissionstackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresourceB82B6C26": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "handlerE1533BD5",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "corsapitest8682546E"
+       },
+       "/",
+       {
+        "Ref": "corsapitestDeploymentStageprod8F31F2AB"
+       },
+       "/GET/my-resource"
+      ]
+     ]
+    }
+   }
+  },
+  "corsapitestmyresourceGETApiPermissionTeststackcorsallowmultipleoriginscorsapitestC473FAE8GETmyresource29B41ABB": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "handlerE1533BD5",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "corsapitest8682546E"
+       },
+       "/test-invoke-stage/GET/my-resource"
+      ]
+     ]
+    }
+   }
+  },
+  "corsapitestmyresourceGET844C52EA": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:",
+        {
+         "Ref": "AWS::Region"
+        },
+        ":lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "handlerE1533BD5",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "corsapitestmyresource73D41BDD"
+    },
+    "RestApiId": {
+     "Ref": "corsapitest8682546E"
+    }
+   }
+  },
+  "handlerServiceRole187D5A5A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "handlerE1533BD5": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f.zip"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "handlerServiceRole187D5A5A",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "handlerServiceRole187D5A5A"
+   ]
+  }
+ },
+ "Outputs": {
+  "corsapitestEndpointE63606AE": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "corsapitest8682546E"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "corsapitestDeploymentStageprod8F31F2AB"
+      },
+      "/"
+     ]
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

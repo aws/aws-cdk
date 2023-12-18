@@ -1,10 +1,10 @@
 import { Construct } from 'constructs';
-import { IQueue, QueueAttributes, QueueBase } from './queue-base';
+import { IQueue, QueueAttributes, QueueBase, QueueEncryption } from './queue-base';
 import { CfnQueue } from './sqs.generated';
 import { validateProps } from './validate-props';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Duration, RemovalPolicy, Stack, Token, ArnFormat } from '../../core';
+import { Duration, RemovalPolicy, Stack, Token, ArnFormat, Annotations } from '../../core';
 
 /**
  * Properties for creating a new Queue
@@ -196,36 +196,6 @@ export interface DeadLetterQueue {
 }
 
 /**
- * What kind of encryption to apply to this queue
- */
-export enum QueueEncryption {
-  /**
-   * Messages in the queue are not encrypted
-   */
-  UNENCRYPTED = 'NONE',
-
-  /**
-   * Server-side KMS encryption with a KMS key managed by SQS.
-   */
-  KMS_MANAGED = 'KMS_MANAGED',
-
-  /**
-   * Server-side encryption with a KMS key managed by the user.
-   *
-   * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
-   */
-  KMS = 'KMS',
-
-  /**
-   * Server-side encryption key managed by SQS (SSE-SQS).
-   *
-   * To learn more about SSE-SQS on Amazon SQS, please visit the
-   * [Amazon SQS documentation](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html).
-   */
-  SQS_MANAGED = 'SQS_MANAGED'
-}
-
-/**
  * What kind of deduplication scope to apply
  */
 export enum DeduplicationScope {
@@ -286,6 +256,9 @@ export class Queue extends QueueBase {
         ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
         : undefined;
       public readonly fifo: boolean = this.determineFifo();
+      public readonly encryptionType = attrs.keyArn
+        ? QueueEncryption.KMS
+        : undefined;
 
       protected readonly autoCreatePolicy = false;
 
@@ -309,7 +282,9 @@ export class Queue extends QueueBase {
       }
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: attrs.queueArn,
+    });
   }
 
   /**
@@ -338,6 +313,11 @@ export class Queue extends QueueBase {
   public readonly fifo: boolean;
 
   /**
+   * Whether the contents of the queue are encrypted, and by what type of key.
+   */
+  public readonly encryptionType?: QueueEncryption;
+
+  /**
    * If this queue is configured with a dead-letter queue, this is the dead-letter queue settings.
    */
   public readonly deadLetterQueue?: DeadLetterQueue;
@@ -358,7 +338,7 @@ export class Queue extends QueueBase {
       }
       : undefined;
 
-    const { encryptionMasterKey, encryptionProps } = _determineEncryptionProps.call(this);
+    const { encryptionMasterKey, encryptionProps, encryptionType } = _determineEncryptionProps.call(this);
 
     const fifoProps = this.determineFifoProps(props);
     this.fifo = fifoProps.fifoQueue || false;
@@ -384,8 +364,13 @@ export class Queue extends QueueBase {
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueUrl = queue.ref;
     this.deadLetterQueue = props.deadLetterQueue;
+    this.encryptionType = encryptionType;
 
-    function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
+    function _determineEncryptionProps(this: Queue): {
+      encryptionProps: EncryptionProps,
+      encryptionMasterKey?: kms.IKey,
+      encryptionType: QueueEncryption | undefined
+    } {
       let encryption = props.encryption;
 
       if (encryption === QueueEncryption.SQS_MANAGED && props.encryptionMasterKey) {
@@ -393,15 +378,23 @@ export class Queue extends QueueBase {
       }
 
       if (encryption !== QueueEncryption.KMS && props.encryptionMasterKey) {
+        if (encryption !== undefined) {
+          Annotations.of(this).addWarningV2('@aws-cdk/aws-sqs:queueEncryptionChangedToKMS', [
+            `encryption: Automatically changed to QueueEncryption.KMS, was: QueueEncryption.${Object.keys(QueueEncryption)[Object.values(QueueEncryption).indexOf(encryption)]}`,
+            'When encryptionMasterKey is provided, always set `encryption: QueueEncryption.KMS`',
+          ].join('\n'));
+        }
+
         encryption = QueueEncryption.KMS; // KMS is implied by specifying an encryption key
       }
 
       if (!encryption) {
-        return { encryptionProps: {} };
+        return { encryptionProps: {}, encryptionType: encryption };
       }
 
       if (encryption === QueueEncryption.UNENCRYPTED) {
         return {
+          encryptionType: encryption,
           encryptionProps: {
             sqsManagedSseEnabled: false,
           },
@@ -410,6 +403,7 @@ export class Queue extends QueueBase {
 
       if (encryption === QueueEncryption.KMS_MANAGED) {
         return {
+          encryptionType: encryption,
           encryptionProps: {
             kmsMasterKeyId: 'alias/aws/sqs',
             kmsDataKeyReusePeriodSeconds: props.dataKeyReuse && props.dataKeyReuse.toSeconds(),
@@ -423,6 +417,7 @@ export class Queue extends QueueBase {
         });
 
         return {
+          encryptionType: encryption,
           encryptionMasterKey: masterKey,
           encryptionProps: {
             kmsMasterKeyId: masterKey.keyArn,
@@ -433,6 +428,7 @@ export class Queue extends QueueBase {
 
       if (encryption === QueueEncryption.SQS_MANAGED) {
         return {
+          encryptionType: encryption,
           encryptionProps: {
             sqsManagedSseEnabled: true,
           },

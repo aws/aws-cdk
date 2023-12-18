@@ -55,13 +55,13 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "corsapitestDeployment2BF1633A51392cbce1ac2785bd0e53063423e203": {
+  "corsapitestDeployment2BF1633A72d0197fd6797ee251232efbdce56b8a": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "corsapitest8682546E"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "corsapitesttwitchDELETEB4C94228",
@@ -74,11 +74,11 @@
   "corsapitestDeploymentStageprod8F31F2AB": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
+    "DeploymentId": {
+     "Ref": "corsapitestDeployment2BF1633A72d0197fd6797ee251232efbdce56b8a"
+    },
     "RestApiId": {
      "Ref": "corsapitest8682546E"
-    },
-    "DeploymentId": {
-     "Ref": "corsapitestDeployment2BF1633A51392cbce1ac2785bd0e53063423e203"
     },
     "StageName": "prod"
    },
@@ -182,14 +182,8 @@
   "corsapitesttwitchGET4270341B": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "GET",
-    "ResourceId": {
-     "Ref": "corsapitesttwitch0E3D1559"
-    },
-    "RestApiId": {
-     "Ref": "corsapitest8682546E"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -216,6 +210,12 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "corsapitesttwitch0E3D1559"
+    },
+    "RestApiId": {
+     "Ref": "corsapitest8682546E"
     }
    }
   },
@@ -300,14 +300,8 @@
   "corsapitesttwitchPOSTB52CFB02": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "POST",
-    "ResourceId": {
-     "Ref": "corsapitesttwitch0E3D1559"
-    },
-    "RestApiId": {
-     "Ref": "corsapitest8682546E"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -334,6 +328,12 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "corsapitesttwitch0E3D1559"
+    },
+    "RestApiId": {
+     "Ref": "corsapitest8682546E"
     }
    }
   },
@@ -418,14 +418,8 @@
   "corsapitesttwitchDELETEB4C94228": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "DELETE",
-    "ResourceId": {
-     "Ref": "corsapitesttwitch0E3D1559"
-    },
-    "RestApiId": {
-     "Ref": "corsapitest8682546E"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "DELETE",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -452,20 +446,21 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "corsapitesttwitch0E3D1559"
+    },
+    "RestApiId": {
+     "Ref": "corsapitest8682546E"
     }
    }
   },
   "corsapitesttwitchOPTIONSE5EEB527": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "OPTIONS",
-    "ResourceId": {
-     "Ref": "corsapitesttwitch0E3D1559"
-    },
-    "RestApiId": {
-     "Ref": "corsapitest8682546E"
-    },
+    "ApiKeyRequired": false,
     "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
     "Integration": {
      "IntegrationResponses": [
       {
@@ -476,7 +471,7 @@
         "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
        },
        "ResponseTemplates": {
-        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params().header.get(\"origin\")) #end\n#if($origin.matches(\"https://www.test-cors.org\"))\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\")\n  #set($origin = $input.params().header.get(\"origin\"))\n#end\n#if($origin == \"https://www.test-cors.org\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
        },
        "StatusCode": "204"
       }
@@ -496,7 +491,13 @@
       },
       "StatusCode": "204"
      }
-    ]
+    ],
+    "ResourceId": {
+     "Ref": "corsapitesttwitch0E3D1559"
+    },
+    "RestApiId": {
+     "Ref": "corsapitest8682546E"
+    }
    }
   },
   "handlerServiceRole187D5A5A": {
@@ -539,14 +540,14 @@
      },
      "S3Key": "c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "handlerServiceRole187D5A5A",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "handlerServiceRole187D5A5A"

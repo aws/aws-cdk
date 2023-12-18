@@ -40,11 +40,63 @@
      },
      "S3Key": "5017e4b2e278e32bc634202d075b7ed8961b0d784f75450f7918a6a4f6f7df4a.zip"
     },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "tshandlerServiceRole8876B8E7",
       "Arn"
      ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "tshandlerServiceRole8876B8E7"
+   ]
+  },
+  "tshandlerloglevelServiceRole8512BC45": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "tshandlerloglevel0D4E12A5": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "5017e4b2e278e32bc634202d075b7ed8961b0d784f75450f7918a6a4f6f7df4a.zip"
     },
     "Environment": {
      "Variables": {
@@ -52,10 +104,16 @@
      }
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Role": {
+     "Fn::GetAtt": [
+      "tshandlerloglevelServiceRole8512BC45",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
-    "tshandlerServiceRole8876B8E7"
+    "tshandlerloglevelServiceRole8512BC45"
    ]
   },
   "jshandlerServiceRole781AF366": {
@@ -96,13 +154,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6180c9978dfd12a00b82fe039bf88defd289ae4bfbcca5917f7f306a384f9eae.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "jshandlerServiceRole781AF366",
-      "Arn"
-     ]
+     "S3Key": "6c52cc5df44f0d18474ce4399377d62ee08c9b9cb11855fb95070dcd83a5a6ea.zip"
     },
     "Environment": {
      "Variables": {
@@ -110,7 +162,13 @@
      }
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Role": {
+     "Fn::GetAtt": [
+      "jshandlerServiceRole781AF366",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "jshandlerServiceRole781AF366"
@@ -134,9 +192,6 @@
   "VpcPublicSubnet1Subnet5C2D37C4": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -160,21 +215,24 @@
       "Key": "Name",
       "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet1RouteTable6C95E38E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet1RouteTableAssociation97140677": {
@@ -191,12 +249,12 @@
   "VpcPublicSubnet1DefaultRoute3DA9E72A": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
     }
    },
    "DependsOn": [
@@ -218,14 +276,14 @@
   "VpcPublicSubnet1NATGateway4D7517AA": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet1EIPD7E02669",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
     },
     "Tags": [
      {
@@ -242,9 +300,6 @@
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -268,21 +323,24 @@
       "Key": "Name",
       "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet2RouteTable94F7E489": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "cdk-integ-lambda-nodejs/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
@@ -299,12 +357,12 @@
   "VpcPublicSubnet2DefaultRoute97F91067": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
     }
    },
    "DependsOn": [
@@ -326,14 +384,14 @@
   "VpcPublicSubnet2NATGateway9182C01D": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet2Subnet691E08A3"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet2EIP3C605A87",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet2Subnet691E08A3"
     },
     "Tags": [
      {
@@ -350,9 +408,6 @@
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -376,21 +431,24 @@
       "Key": "Name",
       "Value": "cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet1RouteTableB2C5B500": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
@@ -407,21 +465,18 @@
   "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
     }
    }
   },
   "VpcPrivateSubnet2Subnet3788AAA1": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -445,21 +500,24 @@
       "Key": "Name",
       "Value": "cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet2RouteTableA678073B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
@@ -476,12 +534,12 @@
   "VpcPrivateSubnet2DefaultRoute060D2087": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
     }
    }
   },
@@ -499,11 +557,11 @@
   "VpcVPCGWBF912B6E": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "InternetGatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
     }
    }
   },
@@ -585,13 +643,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "382942a012a71461edc27c0448dc538344be5c159143f651b626408206e10d44.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "tshandlervpcServiceRoleF6D326A3",
-      "Arn"
-     ]
+     "S3Key": "5fd5332ac0f100f1845842d79d110a7cf0957bd31419a7aabaedf8d3043ddf09.zip"
     },
     "Environment": {
      "Variables": {
@@ -599,7 +651,13 @@
      }
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs14.x",
+    "Role": {
+     "Fn::GetAtt": [
+      "tshandlervpcServiceRoleF6D326A3",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
     "VpcConfig": {
      "SecurityGroupIds": [
       {
@@ -667,19 +725,19 @@
      },
      "S3Key": "5017e4b2e278e32bc634202d075b7ed8961b0d784f75450f7918a6a4f6f7df4a.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "tshandlercustomhandlernodotsServiceRole1775E15E",
-      "Arn"
-     ]
-    },
     "Environment": {
      "Variables": {
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
      }
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Role": {
+     "Fn::GetAtt": [
+      "tshandlercustomhandlernodotsServiceRole1775E15E",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "tshandlercustomhandlernodotsServiceRole1775E15E"
@@ -723,13 +781,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a33898f49e24c41ff9be236439c418d30e576c5f57763097162d9ec4245216ce.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "tshandlercustomhandlerdotsServiceRole0575D3CB",
-      "Arn"
-     ]
+     "S3Key": "e13d2f4e26b1586fe7e2b9f1ce013083dfee5fffc377061fa1489449fd8b0cc8.zip"
     },
     "Environment": {
      "Variables": {
@@ -751,7 +803,13 @@
       ]
      }
     ],
-    "Runtime": "nodejs14.x"
+    "Role": {
+     "Fn::GetAtt": [
+      "tshandlercustomhandlerdotsServiceRole0575D3CB",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "tshandlercustomhandlerdotsServiceRole0575D3CB"

@@ -78,14 +78,14 @@
                     "code": {
                       "zipFile": "exports.handler = async function handler(event) {\n    console.log('event:', JSON.stringify(event, undefined, 2));\n    return { event };\n}"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "FServiceRole3AC82EE1",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -141,7 +141,8 @@
                               "Action": [
                                 "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*"
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -224,7 +225,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.3.0"
                 }
               },
               "AllowBucketNotificationsTolambdaeventsources3F74160805": {
@@ -260,14 +261,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
-            }
-          },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "lambda-event-source-s3/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -416,7 +409,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -441,12 +434,66 @@
           "version": "0.0.0"
         }
       },
+      "LambdaEventSourceS3Integ": {
+        "id": "LambdaEventSourceS3Integ",
+        "path": "LambdaEventSourceS3Integ",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "LambdaEventSourceS3Integ/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "LambdaEventSourceS3Integ/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "LambdaEventSourceS3Integ/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "LambdaEventSourceS3Integ/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "LambdaEventSourceS3Integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
       "Tree": {
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.3.0"
         }
       }
     },

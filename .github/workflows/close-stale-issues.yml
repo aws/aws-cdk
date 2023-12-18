@@ -8,6 +8,8 @@ on:
 
 jobs:
   cleanup:
+    # this workflow will always fail in forks; bail if this isn't running in the upstream
+    if: github.repository == 'aws/aws-cdk'
     permissions:
       issues: write
       contents: read

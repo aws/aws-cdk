@@ -342,6 +342,44 @@
               "version": "0.0.0"
             }
           },
+          "Delivery Stream No Source Or Encryption Key": {
+            "id": "Delivery Stream No Source Or Encryption Key",
+            "path": "aws-cdk-firehose-delivery-stream/Delivery Stream No Source Or Encryption Key",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-firehose-delivery-stream/Delivery Stream No Source Or Encryption Key/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
+                  "aws:cdk:cloudformation:props": {
+                    "deliveryStreamType": "DirectPut",
+                    "extendedS3DestinationConfiguration": {
+                      "bucketArn": {
+                        "Fn::GetAtt": [
+                          "Bucket83908E77",
+                          "Arn"
+                        ]
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "Role1ABCC5F0",
+                          "Arn"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisfirehose.CfnDeliveryStream",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-kinesisfirehose-alpha.DeliveryStream",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-cdk-firehose-delivery-stream/BootstrapVersion",
@@ -369,7 +407,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.70"
         }
       }
     },

@@ -3,12 +3,19 @@ import { Token } from '../../../core';
 import { Condition } from '../condition';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import { CatchProps, Errors, IChainable, INextable, RetryProps } from '../types';
+import { CatchProps, Errors, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
 
 /**
  * Properties shared by all states
  */
 export interface StateProps {
+  /**
+   * Optional name for this state
+   *
+   * @default - The construct ID will be used as state name
+   */
+  readonly stateName?: string;
+
   /**
    * A comment describing this state
    *
@@ -155,6 +162,7 @@ export abstract class State extends Construct implements IChainable {
   // features are shared by a couple of states, and it becomes cumbersome to
   // slice it out across all states. This is not great design, but it is
   // pragmatic!
+  protected readonly stateName?: string;
   protected readonly comment?: string;
   protected readonly inputPath?: string;
   protected readonly parameters?: object;
@@ -163,6 +171,8 @@ export abstract class State extends Construct implements IChainable {
   protected readonly resultSelector?: object;
   protected readonly branches: StateGraph[] = [];
   protected iteration?: StateGraph;
+  protected processor?: StateGraph;
+  protected processorConfig?: ProcessorConfig;
   protected defaultChoice?: State;
 
   /**
@@ -194,6 +204,7 @@ export abstract class State extends Construct implements IChainable {
 
     this.startState = this;
 
+    this.stateName = props.stateName;
     this.comment = props.comment;
     this.inputPath = props.inputPath;
     this.parameters = props.parameters;
@@ -219,7 +230,7 @@ export abstract class State extends Construct implements IChainable {
    * Tokenized string that evaluates to the state's ID
    */
   public get stateId(): string {
-    return this.prefixes.concat(this.id).join('');
+    return this.prefixes.concat(this.stateName? this.stateName: this.id).join('');
   }
 
   /**
@@ -259,6 +270,9 @@ export abstract class State extends Construct implements IChainable {
     }
     if (!!this.iteration) {
       this.iteration.registerSuperGraph(this.containingGraph);
+    }
+    if (!!this.processor) {
+      this.processor.registerSuperGraph(this.containingGraph);
     }
   }
 
@@ -318,8 +332,8 @@ export abstract class State extends Construct implements IChainable {
   /**
    * Add a choice branch to this state
    */
-  protected addChoice(condition: Condition, next: State) {
-    this.choices.push({ condition, next });
+  protected addChoice(condition: Condition, next: State, options?: ChoiceTransitionOptions) {
+    this.choices.push({ condition, next, ...options });
     next.startState.addIncoming(this);
     if (this.containingGraph) {
       next.startState.bindToGraph(this.containingGraph);
@@ -327,7 +341,7 @@ export abstract class State extends Construct implements IChainable {
   }
 
   /**
-   * Add a paralle branch to this state
+   * Add a parallel branch to this state
    */
   protected addBranch(branch: StateGraph) {
     this.branches.push(branch);
@@ -343,6 +357,17 @@ export abstract class State extends Construct implements IChainable {
     this.iteration = iteration;
     if (this.containingGraph) {
       iteration.registerSuperGraph(this.containingGraph);
+    }
+  }
+
+  /**
+   * Add a item processor to this state
+   */
+  protected addItemProcessor(processor: StateGraph, config: ProcessorConfig = {}) {
+    this.processor = processor;
+    this.processorConfig = config;
+    if (this.containingGraph) {
+      processor.registerSuperGraph(this.containingGraph);
     }
   }
 
@@ -402,9 +427,7 @@ export abstract class State extends Construct implements IChainable {
    * Render map iterator in ASL JSON format
    */
   protected renderIterator(): any {
-    if (!this.iteration) {
-      throw new Error('Iterator must not be undefined !');
-    }
+    if (!this.iteration) return undefined;
     return {
       Iterator: this.iteration.toGraphJson(),
     };
@@ -427,6 +450,40 @@ export abstract class State extends Construct implements IChainable {
     return FieldUtils.renderObject({
       ResultSelector: this.resultSelector,
     });
+  }
+
+  /**
+   * Render ItemProcessor in ASL JSON format
+   */
+  protected renderItemProcessor(): any {
+    if (!this.processor) return undefined;
+    return {
+      ItemProcessor: {
+        ...this.renderProcessorConfig(),
+        ...this.processor.toGraphJson(),
+      },
+    };
+  }
+
+  /**
+   * Render ProcessorConfig in ASL JSON format
+   */
+  private renderProcessorConfig() {
+    const mode = this.processorConfig?.mode?.toString() ?? ProcessorMode.INLINE;
+    if (mode === ProcessorMode.INLINE) {
+      return {
+        ProcessorConfig: {
+          Mode: mode,
+        },
+      };
+    }
+    const executionType = this.processorConfig?.executionType?.toString();
+    return {
+      ProcessorConfig: {
+        Mode: mode,
+        ExecutionType: executionType,
+      },
+    };
   }
 
   /**
@@ -479,7 +536,7 @@ export interface FindStateOptions {
 /**
  * A Choice Transition
  */
-interface ChoiceTransition {
+interface ChoiceTransition extends ChoiceTransitionOptions {
   /**
    * State to transition to
    */
@@ -492,12 +549,25 @@ interface ChoiceTransition {
 }
 
 /**
+ * Options for Choice Transition
+ */
+export interface ChoiceTransitionOptions {
+  /**
+   * An optional description for the choice transition
+   *
+   * @default No comment
+   */
+  readonly comment?: string;
+}
+
+/**
  * Render a choice transition
  */
 function renderChoice(c: ChoiceTransition) {
   return {
     ...c.condition.renderCondition(),
     Next: c.next.stateId,
+    Comment: c.comment,
   };
 }
 
@@ -525,6 +595,8 @@ function renderRetry(retry: RetryProps) {
     IntervalSeconds: retry.interval && retry.interval.toSeconds(),
     MaxAttempts: retry.maxAttempts,
     BackoffRate: retry.backoffRate,
+    MaxDelaySeconds: retry.maxDelay && retry.maxDelay.toSeconds(),
+    JitterStrategy: retry.jitterStrategy,
   };
 }
 
@@ -574,7 +646,7 @@ export function renderList<T>(xs: T[], mapFn: (x: T) => any, sortFn?: (a: T, b: 
 }
 
 /**
- * Render JSON path, respecting the special value DISCARD
+ * Render JSON path, respecting the special value JsonPath.DISCARD
  */
 export function renderJsonPath(jsonPath?: string): undefined | null | string {
   if (jsonPath === undefined) { return undefined; }

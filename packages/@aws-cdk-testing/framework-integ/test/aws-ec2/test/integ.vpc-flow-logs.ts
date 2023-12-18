@@ -65,6 +65,7 @@ class TestStack extends Stack {
 
     new FlowLog(this, 'FlowLogsCW', {
       resourceType: FlowLogResourceType.fromVpc(vpc),
+      flowLogName: 'CustomFlowLogName',
     });
 
     vpc.addFlowLog('FlowLogsS3', {
@@ -125,6 +126,7 @@ const integ = new IntegTest(app, 'FlowLogs', {
     featureFlagTest,
     new DependencyTestStack(app, 'DependencyTestStack'),
   ],
+  diffAssets: true,
 });
 
 const objects = integ.assertions.awsApiCall('S3', 'listObjectsV2', {

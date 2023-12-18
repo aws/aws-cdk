@@ -18,7 +18,7 @@ There are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/
 > An experimental construct library for this service is available in preview. Since it is not stable yet, it is distributed
 > as a separate package so that you can pin its version independently of the rest of the CDK. See the package:
 >
-> <span class="package-reference">@aws-cdk/aws-apigatewayv2-alpha</span>
+> <span class="package-reference">aws-cdk-lib/aws-apigatewayv2</span>
 
 <!--BEGIN CFNONLY DISCLAIMER-->
 

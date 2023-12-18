@@ -5,9 +5,9 @@ import { Mode } from './aws-auth/credentials';
 import { ISDK } from './aws-auth/sdk';
 import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
 import { deployStack, DeployStackResult, destroyStack, makeBodyParameterAndUpload, DeploymentMethod } from './deploy-stack';
+import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
 import { HotswapMode } from './hotswap/common';
-import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate } from './nested-stack-helpers';
-import { ToolkitInfo } from './toolkit-info';
+import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, flattenNestedStackNames, TemplateWithNestedStackCount } from './nested-stack-helpers';
 import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { replaceEnvPlaceholders } from './util/placeholders';
@@ -38,6 +38,11 @@ export interface PreparedSdkWithLookupRoleForEnvironment {
    * the default credentials (not the assume role credentials)
    */
   readonly didAssumeRole: boolean;
+
+  /**
+   * An object for accessing the bootstrap resources in this environment
+   */
+  readonly envResources: EnvironmentResources;
 }
 
 export interface DeployStackOptions {
@@ -256,6 +261,7 @@ export interface StackExistsOptions {
 
 export interface DeploymentsProps {
   sdkProvider: SdkProvider;
+  readonly toolkitStackName?: string;
   readonly quiet?: boolean;
 }
 
@@ -280,6 +286,11 @@ export interface PreparedSdkForEnvironment {
    * @default - no execution role is used
    */
   readonly cloudFormationRoleArn?: string;
+
+  /**
+   * Access class for environmental resources to help the deployment
+   */
+  readonly envResources: EnvironmentResources;
 }
 
 /**
@@ -289,20 +300,25 @@ export interface PreparedSdkForEnvironment {
  */
 export class Deployments {
   private readonly sdkProvider: SdkProvider;
-  private readonly toolkitInfoCache = new Map<string, ToolkitInfo>();
   private readonly sdkCache = new Map<string, SdkForEnvironment>();
   private readonly publisherCache = new Map<AssetManifest, cdk_assets.AssetPublishing>();
+  private readonly environmentResources: EnvironmentResourcesRegistry;
 
   constructor(private readonly props: DeploymentsProps) {
     this.sdkProvider = props.sdkProvider;
+    this.environmentResources = new EnvironmentResourcesRegistry(props.toolkitStackName);
   }
 
   public async readCurrentTemplateWithNestedStacks(
     rootStackArtifact: cxapi.CloudFormationStackArtifact,
     retrieveProcessedTemplate: boolean = false,
-  ): Promise<Template> {
+  ): Promise<TemplateWithNestedStackCount> {
     const sdk = (await this.prepareSdkWithLookupOrDeployRole(rootStackArtifact)).stackSdk;
-    return (await loadCurrentTemplateWithNestedStacks(rootStackArtifact, sdk, retrieveProcessedTemplate)).deployedTemplate;
+    const templateWithNestedStacks = await loadCurrentTemplateWithNestedStacks(rootStackArtifact, sdk, retrieveProcessedTemplate);
+    return {
+      deployedTemplate: templateWithNestedStacks.deployedTemplate,
+      nestedStackCount: flattenNestedStackNames(templateWithNestedStacks.nestedStackNames).length,
+    };
   }
 
   public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
@@ -313,21 +329,18 @@ export class Deployments {
 
   public async resourceIdentifierSummaries(
     stackArtifact: cxapi.CloudFormationStackArtifact,
-    toolkitStackName?: string,
   ): Promise<ResourceIdentifierSummaries> {
     debug(`Retrieving template summary for stack ${stackArtifact.displayName}.`);
     // Currently, needs to use `deploy-role` since it may need to read templates in the staging
     // bucket which have been encrypted with a KMS key (and lookup-role may not read encrypted things)
-    const { stackSdk, resolvedEnvironment } = await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
+    const { stackSdk, resolvedEnvironment, envResources } = await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
     const cfn = stackSdk.cloudFormation();
-
-    const toolkitInfo = await this.lookupToolkit(resolvedEnvironment, stackSdk, toolkitStackName);
 
     // Upload the template, if necessary, before passing it to CFN
     const cfnParam = await makeBodyParameterAndUpload(
       stackArtifact,
       resolvedEnvironment,
-      toolkitInfo,
+      envResources,
       this.sdkProvider,
       stackSdk);
 
@@ -351,16 +364,19 @@ export class Deployments {
       };
     }
 
-    const { stackSdk, resolvedEnvironment, cloudFormationRoleArn } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
-
-    const toolkitInfo = await this.lookupToolkit(resolvedEnvironment, stackSdk, options.toolkitStackName);
+    const {
+      stackSdk,
+      resolvedEnvironment,
+      cloudFormationRoleArn,
+      envResources,
+    } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
 
     // Do a verification of the bootstrap stack version
     await this.validateBootstrapStackVersion(
       options.stack.stackName,
       options.stack.requiresBootstrapStackVersion,
       options.stack.bootstrapStackVersionSsmParameter,
-      toolkitInfo);
+      envResources);
 
     return deployStack({
       stack: options.stack,
@@ -372,7 +388,7 @@ export class Deployments {
       sdkProvider: this.sdkProvider,
       roleArn: cloudFormationRoleArn,
       reuseAssets: options.reuseAssets,
-      toolkitInfo,
+      envResources,
       tags: options.tags,
       deploymentMethod,
       force: options.force,
@@ -416,6 +432,7 @@ export class Deployments {
         return {
           resolvedEnvironment: result.resolvedEnvironment,
           stackSdk: result.sdk,
+          envResources: result.envResources,
         };
       }
     } catch { }
@@ -460,6 +477,7 @@ export class Deployments {
       stackSdk: stackSdk.sdk,
       resolvedEnvironment,
       cloudFormationRoleArn: arns.cloudFormationRoleArn,
+      envResources: this.environmentResources.for(resolvedEnvironment, stackSdk.sdk),
     };
   }
 
@@ -500,9 +518,11 @@ export class Deployments {
         assumeRoleExternalId: stack.lookupRole?.assumeRoleExternalId,
       });
 
+      const envResources = this.environmentResources.for(resolvedEnvironment, stackSdk.sdk);
+
       // if we succeed in assuming the lookup role, make sure we have the correct bootstrap stack version
       if (stackSdk.didAssumeRole && stack.lookupRole?.bootstrapStackVersionSsmParameter && stack.lookupRole.requiresBootstrapStackVersion) {
-        const version = await ToolkitInfo.versionFromSsmParameter(stackSdk.sdk, stack.lookupRole.bootstrapStackVersionSsmParameter);
+        const version = await envResources.versionFromSsmParameter(stack.lookupRole.bootstrapStackVersionSsmParameter);
         if (version < stack.lookupRole.requiresBootstrapStackVersion) {
           throw new Error(`Bootstrap stack version '${stack.lookupRole.requiresBootstrapStackVersion}' is required, found version '${version}'.`);
         }
@@ -511,7 +531,7 @@ export class Deployments {
       } else if (!stackSdk.didAssumeRole && stack.lookupRole?.requiresBootstrapStackVersion) {
         warning(upgradeMessage);
       }
-      return { ...stackSdk, resolvedEnvironment };
+      return { ...stackSdk, resolvedEnvironment, envResources };
     } catch (e: any) {
       debug(e);
       // only print out the warnings if the lookupRole exists AND there is a required
@@ -524,33 +544,18 @@ export class Deployments {
     }
   }
 
-  /**
-   * Look up the toolkit for a given environment, using a given SDK
-   */
-  public async lookupToolkit(resolvedEnvironment: cxapi.Environment, sdk: ISDK, toolkitStackName?: string) {
-    const key = `${resolvedEnvironment.account}:${resolvedEnvironment.region}:${toolkitStackName}`;
-    const existing = this.toolkitInfoCache.get(key);
-    if (existing) {
-      return existing;
-    }
-    const ret = await ToolkitInfo.lookup(resolvedEnvironment, sdk, toolkitStackName);
-    this.toolkitInfoCache.set(key, ret);
-    return ret;
-  }
-
   private async prepareAndValidateAssets(asset: cxapi.AssetManifestArtifact, options: AssetOptions) {
-    const { stackSdk, resolvedEnvironment } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
-    const toolkitInfo = await this.lookupToolkit(resolvedEnvironment, stackSdk, options.toolkitStackName);
-    const stackEnv = await this.sdkProvider.resolveEnvironment(options.stack.environment);
+    const { envResources } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
+
     await this.validateBootstrapStackVersion(
       options.stack.stackName,
       asset.requiresBootstrapStackVersion,
       asset.bootstrapStackVersionSsmParameter,
-      toolkitInfo);
+      envResources);
 
     const manifest = AssetManifest.fromFile(asset.file);
 
-    return { manifest, stackEnv };
+    return { manifest, stackEnv: envResources.environment };
   }
 
   /**
@@ -578,17 +583,19 @@ export class Deployments {
    */
   // eslint-disable-next-line max-len
   public async buildSingleAsset(assetArtifact: cxapi.AssetManifestArtifact, assetManifest: AssetManifest, asset: IManifestEntry, options: BuildStackAssetsOptions) {
-    const { stackSdk, resolvedEnvironment: stackEnv } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
-    const toolkitInfo = await this.lookupToolkit(stackEnv, stackSdk, options.toolkitStackName);
+    const { resolvedEnvironment, envResources } = await this.prepareSdkFor(options.stack, options.roleArn, Mode.ForWriting);
 
     await this.validateBootstrapStackVersion(
       options.stack.stackName,
       assetArtifact.requiresBootstrapStackVersion,
       assetArtifact.bootstrapStackVersionSsmParameter,
-      toolkitInfo);
+      envResources);
 
-    const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
+    const publisher = this.cachedPublisher(assetManifest, resolvedEnvironment, options.stackName);
     await publisher.buildEntry(asset);
+    if (publisher.hasFailures) {
+      throw new Error(`Failed to build asset ${asset.id}`);
+    }
   }
 
   /**
@@ -601,6 +608,9 @@ export class Deployments {
     // No need to validate anymore, we already did that during build
     const publisher = this.cachedPublisher(assetManifest, stackEnv, options.stackName);
     await publisher.publishEntry(asset);
+    if (publisher.hasFailures) {
+      throw new Error(`Failed to publish asset ${asset.id}`);
+    }
   }
 
   /**
@@ -614,17 +624,17 @@ export class Deployments {
 
   /**
    * Validate that the bootstrap stack has the right version for this stack
+   *
+   * Call into envResources.validateVersion, but prepend the stack name in case of failure.
    */
   private async validateBootstrapStackVersion(
     stackName: string,
     requiresBootstrapStackVersion: number | undefined,
     bootstrapStackVersionSsmParameter: string | undefined,
-    toolkitInfo: ToolkitInfo) {
-
-    if (requiresBootstrapStackVersion === undefined) { return; }
+    envResources: EnvironmentResources) {
 
     try {
-      await toolkitInfo.validateVersion(requiresBootstrapStackVersion, bootstrapStackVersionSsmParameter);
+      await envResources.validateVersion(requiresBootstrapStackVersion, bootstrapStackVersionSsmParameter);
     } catch (e: any) {
       throw new Error(`${stackName}: ${e.message}`);
     }

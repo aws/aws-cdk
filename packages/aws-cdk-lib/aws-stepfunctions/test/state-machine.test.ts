@@ -7,7 +7,7 @@ import * as cdk from '../../core';
 import * as sfn from '../lib';
 
 describe('State Machine', () => {
-  test('Instantiate Default State Machine', () => {
+  test('Instantiate Default State Machine with deprecated definition', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -15,6 +15,66 @@ describe('State Machine', () => {
     new sfn.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
       definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      StateMachineName: 'MyStateMachine',
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
+    });
+  }),
+
+  test('Instantiate Default State Machine with string definition', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromString('{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      StateMachineName: 'MyStateMachine',
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}}}',
+    });
+  }),
+
+  test('Instantiate fails with old and new definition specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // FAIL
+    expect(() => {
+      new sfn.StateMachine(stack, 'MyStateMachine', {
+        stateMachineName: 'MyStateMachine',
+        definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+        definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass2'))),
+      });
+    }).toThrowError('Cannot specify definition and definitionBody at the same time');
+  }),
+
+  test('Instantiate fails with no definition specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // FAIL
+    expect(() => {
+      new sfn.StateMachine(stack, 'MyStateMachine', {
+        stateMachineName: 'MyStateMachine',
+      });
+    }).toThrowError('You need to specify either definition or definitionBody');
+  }),
+
+  test('Instantiate Default State Machine', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
     });
 
     // THEN
@@ -31,7 +91,7 @@ describe('State Machine', () => {
     // WHEN
     new sfn.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
-      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       stateMachineType: sfn.StateMachineType.STANDARD,
     });
 
@@ -44,7 +104,7 @@ describe('State Machine', () => {
 
   }),
 
-  test('Instantiate Express State Machine', () => {
+  test('Instantiate Standard State Machine With Comment', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -52,6 +112,27 @@ describe('State Machine', () => {
     new sfn.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
       definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+      stateMachineType: sfn.StateMachineType.STANDARD,
+      comment: 'zorp',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      StateMachineName: 'MyStateMachine',
+      StateMachineType: 'STANDARD',
+      DefinitionString: '{"StartAt":"Pass","States":{"Pass":{"Type":"Pass","End":true}},"Comment":"zorp"}',
+    });
+
+  }),
+
+  test('Instantiate Express State Machine', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       stateMachineType: sfn.StateMachineType.EXPRESS,
     });
 
@@ -72,7 +153,7 @@ describe('State Machine', () => {
     const createStateMachine = (name: string) => {
       new sfn.StateMachine(stack, name + 'StateMachine', {
         stateMachineName: name,
-        definition: sfn.Chain.start(new sfn.Pass(stack, name + 'Pass')),
+        definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, name + 'Pass'))),
         stateMachineType: sfn.StateMachineType.EXPRESS,
       });
     };
@@ -98,7 +179,7 @@ describe('State Machine', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const newStateMachine = new sfn.StateMachine(stack, 'dummyStateMachineToken', {
-      definition: sfn.Chain.start(new sfn.Pass(stack, 'dummyStateMachineTokenPass')),
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'dummyStateMachineTokenPass'))),
     });
 
     // WHEN
@@ -109,7 +190,7 @@ describe('State Machine', () => {
     expect(() => {
       new sfn.StateMachine(stack, 'TokenTest-StateMachine', {
         stateMachineName: nameContainingToken,
-        definition: sfn.Chain.start(new sfn.Pass(stack, 'TokenTest-StateMachinePass')),
+        definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'TokenTest-StateMachinePass'))),
         stateMachineType: sfn.StateMachineType.EXPRESS,
       });
     }).not.toThrow();
@@ -117,7 +198,7 @@ describe('State Machine', () => {
     expect(() => {
       new sfn.StateMachine(stack, 'ValidNameTest-StateMachine', {
         stateMachineName: validName,
-        definition: sfn.Chain.start(new sfn.Pass(stack, 'ValidNameTest-StateMachinePass')),
+        definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'ValidNameTest-StateMachinePass'))),
         stateMachineType: sfn.StateMachineType.EXPRESS,
       });
     }).not.toThrow();
@@ -131,7 +212,7 @@ describe('State Machine', () => {
     const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
 
     new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       logs: {
         destination: logGroup,
         level: sfn.LogLevel.FATAL,
@@ -188,7 +269,7 @@ describe('State Machine', () => {
 
     // WHEN
     new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
       tracingEnabled: true,
     });
 
@@ -229,7 +310,7 @@ describe('State Machine', () => {
 
     // WHEN
     const sm = new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new sfn.Pass(stack, 'Pass'))),
     });
     const bucket = new s3.Bucket(stack, 'MyBucket');
     bucket.grantRead(sm);
@@ -289,7 +370,7 @@ describe('State Machine', () => {
 
     // WHEN
     new sfn.StateMachine(stateMachineStack, 'MyStateMachine', {
-      definition: new FakeTask(stateMachineStack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRole(role) } }),
+      definitionBody: sfn.DefinitionBody.fromChainable(new FakeTask(stateMachineStack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRole(role) } })),
     });
 
     // THEN
@@ -346,7 +427,7 @@ describe('State Machine', () => {
     // WHEN
     const role = iam.Role.fromRoleName(stack, 'Role', 'example-role');
     new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRole(role) } }),
+      definitionBody: sfn.DefinitionBody.fromChainable(new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRole(role) } })),
     });
 
     // THEN
@@ -410,7 +491,7 @@ describe('State Machine', () => {
 
     // WHEN
     new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRoleArnJsonPath('$.RoleArn') } }),
+      definitionBody: sfn.DefinitionBody.fromChainable(new FakeTask(stack, 'fakeTask', { credentials: { role: sfn.TaskRole.fromRoleArnJsonPath('$.RoleArn') } })),
     });
 
     // THEN
@@ -510,13 +591,65 @@ describe('State Machine', () => {
 
     // WHEN
     new sfn.StateMachine(stack, 'MyStateMachine', {
-      definition: new sfn.Pass(stack, 'Pass'),
+      definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(stack, 'Pass')),
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
     // THEN
     Template.fromStack(stack).hasResource('AWS::StepFunctions::StateMachine', {
       DeletionPolicy: 'Retain',
+    });
+  });
+
+  test('stateMachineRevisionId property uses attribute reference', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(stack, 'Pass')),
+    });
+
+    new sfn.CfnStateMachineVersion(stack, 'MyStateMachineVersion', {
+      stateMachineRevisionId: stateMachine.stateMachineRevisionId,
+      stateMachineArn: stateMachine.stateMachineArn,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachineVersion', {
+      StateMachineArn: { Ref: 'MyStateMachine6C968CA5' },
+      StateMachineRevisionId: { 'Fn::GetAtt': ['MyStateMachine6C968CA5', 'StateMachineRevisionId'] },
+    });
+  });
+
+  test('comments rendered properly', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const choice = new sfn.Choice(stack, 'choice', {
+      comment: 'nebraska',
+    });
+    const success = new sfn.Succeed(stack, 'success');
+    choice.when(sfn.Condition.isPresent('$.success'), success, {
+      comment: 'london',
+    });
+    choice.otherwise(success);
+
+    // WHEN
+    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definitionBody: sfn.DefinitionBody.fromChainable(choice),
+    });
+
+    new sfn.CfnStateMachineVersion(stack, 'MyStateMachineVersion', {
+      stateMachineRevisionId: stateMachine.stateMachineRevisionId,
+      stateMachineArn: stateMachine.stateMachineArn,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: '{"StartAt":"choice","States":{"choice":{"Type":"Choice","Comment":"nebraska","Choices":[{"Variable":"$.success","IsPresent":true,"Next":"success","Comment":"london"}],"Default":"success"},"success":{"Type":"Succeed"}}}',
     });
   });
 });

@@ -1,4 +1,4 @@
-import { CloudAssembly } from '../../cx-api';
+import { CloudArtifact, CloudAssembly, SynthesisMessageLevel } from '../../cx-api';
 import { Stack } from '../lib';
 import { CDK_DEBUG } from '../lib/debug';
 import { synthesize } from '../lib/private/synthesis';
@@ -35,13 +35,12 @@ export function restoreStackTraceColection(previousValue: string | undefined): v
 export function getWarnings(casm: CloudAssembly) {
   const result = new Array<{ path: string, message: string }>();
   for (const stack of Object.values(casm.manifest.artifacts ?? {})) {
-    for (const [path, md] of Object.entries(stack.metadata ?? {})) {
-      for (const x of md) {
-        if (x.type === 'aws:cdk:warning') {
-          result.push({ path, message: x.data as string });
-        }
+    const artifact = CloudArtifact.fromManifest(casm, 'art', stack);
+    artifact?.messages.forEach(message => {
+      if (message.level === SynthesisMessageLevel.WARNING) {
+        result.push({ path: message.id, message: message.entry.data as string });
       }
-    }
+    });
   }
   return result;
 }

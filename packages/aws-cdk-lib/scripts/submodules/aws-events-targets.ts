@@ -4,9 +4,9 @@
  */
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { ModuleMap } from '@aws-cdk/cfn2ts';
 import * as sdkMetadata from 'aws-sdk/apis/metadata.json';
 import * as packageInfo from 'aws-sdk/package.json';
+import { ModuleMap } from '../codegen';
 
 export default async function awsEventsTargets(_moduleMap: ModuleMap, outPath: string) {
   fs.writeFileSync(

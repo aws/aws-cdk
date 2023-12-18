@@ -20,8 +20,8 @@
                     "id": "ImportServiceRole",
                     "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -59,13 +59,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -77,21 +77,21 @@
                     "id": "Stage",
                     "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
                     "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               },
@@ -105,13 +105,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "8df6c4f7f61921e6f88f328521b8a71aef10b045b77847bd61cfe75cf3a64c32.zip"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "tsdecoratorhandlerServiceRole61E9E52C",
-                        "Arn"
-                      ]
+                      "s3Key": "2344c8450ec3c069ed98fedf1714f33c31b9f3c8e0d295ea361224732e1fef37.zip"
                     },
                     "environment": {
                       "variables": {
@@ -119,17 +113,23 @@
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs16.x"
+                    "role": {
+                      "Fn::GetAtt": [
+                        "tsdecoratorhandlerServiceRole61E9E52C",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda-nodejs.NodejsFunction",
+              "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
               "version": "0.0.0"
             }
           },
@@ -145,8 +145,8 @@
                     "id": "ImportServiceRole",
                     "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -184,13 +184,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -202,21 +202,21 @@
                     "id": "Stage",
                     "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
                     "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               },
@@ -230,13 +230,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "8df6c4f7f61921e6f88f328521b8a71aef10b045b77847bd61cfe75cf3a64c32.zip"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "tsdecoratorhandlertsconfigServiceRoleC4AE481E",
-                        "Arn"
-                      ]
+                      "s3Key": "112c693f98d7e411850f8d441167216bdfe392567d99a11e03b6cd921e36398b.zip"
                     },
                     "environment": {
                       "variables": {
@@ -244,17 +238,23 @@
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs16.x"
+                    "role": {
+                      "Fn::GetAtt": [
+                        "tsdecoratorhandlertsconfigServiceRoleC4AE481E",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda-nodejs.NodejsFunction",
+              "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
               "version": "0.0.0"
             }
           },
@@ -262,22 +262,22 @@
             "id": "BootstrapVersion",
             "path": "cdk-integ-compilations-lambda-nodejs/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "cdk-integ-compilations-lambda-nodejs/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "Tree": {
@@ -285,13 +285,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.270"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

@@ -1,10 +1,11 @@
 {
-  "version": "31.0.0",
+  "version": "35.0.0",
   "testCases": {
     "integ-test/DefaultTest": {
       "stacks": [
         "integ-restrict-default-sg"
       ],
+      "diffAssets": true,
       "assertionStack": "integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "integtestDefaultTestDeployAssert24D5C536"
     }

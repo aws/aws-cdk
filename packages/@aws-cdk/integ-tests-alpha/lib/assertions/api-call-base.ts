@@ -1,4 +1,4 @@
-import { CustomResource, Reference } from 'aws-cdk-lib';
+import { CustomResource, Reference } from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
 import { ExpectedResult } from './common';
 import { AssertionsProvider } from './providers';
@@ -125,6 +125,7 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
   protected expectedResult?: string;
   protected flattenResponse: string = 'false';
   protected stateMachineArn?: string;
+  protected outputPaths: string[] | undefined;
 
   public abstract readonly provider: AssertionsProvider;
 
@@ -134,11 +135,13 @@ export abstract class ApiCallBase extends Construct implements IApiCall {
   }
 
   public getAtt(attributeName: string): Reference {
+    (this.outputPaths ??= []).push(attributeName);
     this.flattenResponse = 'true';
     return this.apiCallResource.getAtt(`apiCallResponse.${attributeName}`);
   }
 
   public getAttString(attributeName: string): string {
+    (this.outputPaths ??= []).push(attributeName);
     this.flattenResponse = 'true';
     return this.apiCallResource.getAttString(`apiCallResponse.${attributeName}`);
   }

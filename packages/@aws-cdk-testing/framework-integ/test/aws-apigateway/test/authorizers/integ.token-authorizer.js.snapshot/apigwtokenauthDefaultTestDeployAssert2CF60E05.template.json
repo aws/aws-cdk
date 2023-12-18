@@ -11,15 +11,24 @@
     },
     "service": "Lambda",
     "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":{\"$StringLike\":\"200\"}}}",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"statusCode\":200}}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "TokenAuthorizerInteg:ExportsOutputRefInvokeFunctionC517E46D32C855B5"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "TokenAuthorizerInteg:ExportsOutputRefInvokeFunctionC517E46D32C855B5"
+        },
+        "\""
+       ]
+      ]
      },
-     "Payload": "{\"method\":\"GET\",\"authorization\":\"allow\"}"
+     "Payload": "\"{\\\"method\\\":\\\"GET\\\",\\\"authorization\\\":\\\"allow\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1670026030165"
+    "salt": "1694443541803"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -194,12 +203,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "382ba2a8fd0a13f6782aec5543e465f988f5c100f35ed20f90cd96b8ee53f674.zip"
+     "S3Key": "77997674c0a10fbb65169124ad6c0d7a664b6162ad44f9abfa22fd006b33f754.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -222,15 +231,24 @@
     },
     "service": "Lambda",
     "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":{\"$StringLike\":\"User is not authorized to access this resource with an explicit deny\"}}}",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"body\":{\"$StringLike\":\"User is not authorized to access this resource with an explicit deny\"}}}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "TokenAuthorizerInteg:ExportsOutputRefInvokeFunctionC517E46D32C855B5"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "TokenAuthorizerInteg:ExportsOutputRefInvokeFunctionC517E46D32C855B5"
+        },
+        "\""
+       ]
+      ]
      },
-     "Payload": "{\"method\":\"GET\",\"authorization\":\"deny\"}"
+     "Payload": "\"{\\\"method\\\":\\\"GET\\\",\\\"authorization\\\":\\\"deny\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1670026030166"
+    "salt": "1694443541805"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -261,15 +279,24 @@
     },
     "service": "Lambda",
     "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":{\"$StringLike\":\"204\"}}}",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"statusCode\":204}}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "TokenAuthorizerInteg:ExportsOutputRefInvokeFunctionC517E46D32C855B5"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "TokenAuthorizerInteg:ExportsOutputRefInvokeFunctionC517E46D32C855B5"
+        },
+        "\""
+       ]
+      ]
      },
-     "Payload": "{\"method\":\"OPTIONS\"}"
+     "Payload": "\"{\\\"method\\\":\\\"OPTIONS\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1670026030167"
+    "salt": "1694443541806"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

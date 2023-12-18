@@ -133,7 +133,7 @@ describeDeprecated('scheduled action', () => {
     });
 
     // THEN
-    Annotations.fromStack(stack).hasWarning('/Default/ASG/ScheduledActionScaleOutInTheMorning', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead.");
+    Annotations.fromStack(stack).hasWarning('/Default/ASG/ScheduledActionScaleOutInTheMorning', "cron: If you don't pass 'minute', by default the event runs every minute. Pass 'minute: '*'' if that's what you intend, or 'minute: 0' to run once per hour instead. [ack: @aws-cdk/aws-autoscaling:scheduleDefaultRunsEveryMinute]");
   });
 
   test('scheduled scaling shows no warning when minute is * in cron', () => {
@@ -167,6 +167,61 @@ describeDeprecated('scheduled action', () => {
     });
 
     expect(action.scheduledActionName).toBeDefined();
+  });
+
+  test('scheduled scaling shows no warning when day is specified and weekDay is undefined in cron', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const asg = makeAutoScalingGroup(stack);
+
+    // WHEN
+    asg.scaleOnSchedule('ScaleOutInTheMorning', {
+      schedule: autoscaling.Schedule.cron({
+        minute: '0/10',
+        day: '1',
+      }),
+      minCapacity: 10,
+    });
+
+    // THEN
+    const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
+    expect(annotations.length).toBe(0);
+  });
+
+  test('scheduled scaling shows no warning when weekDay is specified and day is undefined in cron', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const asg = makeAutoScalingGroup(stack);
+
+    // WHEN
+    asg.scaleOnSchedule('ScaleOutInTheMorning', {
+      schedule: autoscaling.Schedule.cron({
+        minute: '0/10',
+        weekDay: 'MON-SUN',
+      }),
+      minCapacity: 10,
+    });
+
+    // THEN
+    const annotations = Annotations.fromStack(stack).findWarning('*', Match.anyValue());
+    expect(annotations.length).toBe(0);
+  });
+
+  test('throws when both day and weekDay are specified in cron', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const asg = makeAutoScalingGroup(stack);
+
+    // WHEN
+    // THEN
+    expect(() => asg.scaleOnSchedule('ScaleOutInTheMorning', {
+      schedule: autoscaling.Schedule.cron({
+        minute: '0/10',
+        day: '1',
+        weekDay: 'MON-SUN',
+      }),
+      minCapacity: 10,
+    })).toThrowError(/Cannot supply both \'day\' and \'weekDay\', use at most one/);
   });
 });
 

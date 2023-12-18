@@ -8,26 +8,16 @@ export function calculateFunctionHash(fn: LambdaFunction, additional: string = '
   const stack = Stack.of(fn);
 
   const functionResource = fn.node.defaultChild as CfnResource;
-
-  // render the cloudformation resource from this function
-  const config = stack.resolve((functionResource as any)._toCloudFormation());
-  // config is of the shape: { Resources: { LogicalId: { Type: 'Function', Properties: { ... } }}}
-  const resources = config.Resources;
-  const resourceKeys = Object.keys(resources);
-  if (resourceKeys.length !== 1) {
-    throw new Error(`Expected one rendered CloudFormation resource but found ${resourceKeys.length}`);
-  }
-  const logicalId = resourceKeys[0];
-  const properties = resources[logicalId].Properties;
+  const { properties, template, logicalId } = resolveSingleResourceProperties(stack, functionResource);
 
   let stringifiedConfig;
   if (FeatureFlags.of(fn).isEnabled(LAMBDA_RECOGNIZE_VERSION_PROPS)) {
-    const updatedProps = sortProperties(filterUsefulKeys(properties));
+    const updatedProps = sortFunctionProperties(filterUsefulKeys(properties));
     stringifiedConfig = JSON.stringify(updatedProps);
   } else {
-    const sorted = sortProperties(properties);
-    config.Resources[logicalId].Properties = sorted;
-    stringifiedConfig = JSON.stringify(config);
+    const sorted = sortFunctionProperties(properties);
+    template.Resources[logicalId].Properties = sorted;
+    stringifiedConfig = JSON.stringify(template);
   }
 
   if (FeatureFlags.of(fn).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
@@ -79,6 +69,7 @@ export const VERSION_LOCKED: { [key: string]: boolean } = {
   Timeout: true,
   TracingConfig: true,
   VpcConfig: true,
+  LoggingConfig: true,
 
   // not locked to the version
   CodeSigningConfigArn: false,
@@ -103,26 +94,6 @@ function filterUsefulKeys(properties: any) {
   return ret;
 }
 
-function sortProperties(properties: any) {
-  const ret: any = {};
-  // We take all required properties in the order that they were historically,
-  // to make sure the hash we calculate is stable.
-  // There cannot be more required properties added in the future,
-  // as that would be a backwards-incompatible change.
-  const requiredProperties = ['Code', 'Handler', 'Role', 'Runtime'];
-  for (const requiredProperty of requiredProperties) {
-    ret[requiredProperty] = properties[requiredProperty];
-  }
-  // then, add all of the non-required properties,
-  // in the original order
-  for (const property of Object.keys(properties)) {
-    if (requiredProperties.indexOf(property) === -1) {
-      ret[property] = properties[property];
-    }
-  }
-  return ret;
-}
-
 function calculateLayersHash(layers: ILayerVersion[]): string {
   const layerConfig: {[key: string]: any } = {};
   for (const layer of layers) {
@@ -143,17 +114,95 @@ function calculateLayersHash(layers: ILayerVersion[]): string {
       }
       continue;
     }
-    const config = stack.resolve((layerResource as any)._toCloudFormation());
-    const resources = config.Resources;
-    const resourceKeys = Object.keys(resources);
-    if (resourceKeys.length !== 1) {
-      throw new Error(`Expected one rendered CloudFormation resource but found ${resourceKeys.length}`);
-    }
-    const logicalId = resourceKeys[0];
-    const properties = resources[logicalId].Properties;
+
+    const { properties } = resolveSingleResourceProperties(stack, layerResource);
+
     // all properties require replacement, so they are all version locked.
-    layerConfig[layer.node.id] = properties;
+    layerConfig[layer.node.id] = sortLayerVersionProperties(properties);
   }
 
   return md5hash(JSON.stringify(layerConfig));
+}
+
+/**
+ * Sort properties in an object according to a sort order of known keys
+ *
+ * Any additional keys are added at the end, but also sorted.
+ *
+ * We only sort one level deep, because we rely on the fact that everything
+ * that needs to be sorted happens to be sorted by the codegen already, and
+ * we explicitly rely on some objects NOT being sorted.
+ */
+class PropertySort {
+  constructor(private readonly knownKeysOrder: string[]) {
+  }
+
+  public sortObject(properties: any): any {
+    const ret: any = {};
+
+    // Scratch-off set for keys we don't know about yet
+    const unusedKeys = new Set(Object.keys(properties));
+    for (const prop of this.knownKeysOrder) {
+      ret[prop] = properties[prop];
+      unusedKeys.delete(prop);
+    }
+
+    for (const prop of Array.from(unusedKeys).sort()) {
+      ret[prop] = properties[prop];
+    }
+
+    return ret;
+  }
+}
+
+/**
+ * Sort properties in a stable order, even as we switch to new codegen
+ *
+ * <=2.87.0, we used to generate properties in the order that they occurred in
+ * the CloudFormation spec. >= 2.88.0, we switched to a new spec source, which
+ * sorts the properties lexicographically. The order change changed the hash,
+ * even though the properties themselves have not changed.
+ *
+ * We now have a set of properties with the sort order <=2.87.0, and add any
+ * additional properties later on, but also sort them.
+ *
+ * We should be making sure that the orderings for all subobjects
+ * between 2.87.0 and 2.88.0 are the same, but fortunately all the subobjects
+ * were already in lexicographic order in <=2.87.0 so we only need to sort some
+ * top-level properties on the resource.
+ *
+ * We also can't deep-sort everything, because for backwards compatibility
+ * reasons we have a test that ensures that environment variables are not
+ * lexicographically sorted, but emitted in the order they are added in source
+ * code, so for now we rely on the codegen being lexicographically sorted.
+ */
+function sortFunctionProperties(properties: any) {
+  return new PropertySort([
+    // <= 2.87 explicitly fixed order
+    'Code', 'Handler', 'Role', 'Runtime',
+    // <= 2.87 implicitly fixed order
+    'Architectures', 'CodeSigningConfigArn', 'DeadLetterConfig', 'Description', 'Environment',
+    'EphemeralStorage', 'FileSystemConfigs', 'FunctionName', 'ImageConfig', 'KmsKeyArn', 'Layers',
+    'MemorySize', 'PackageType', 'ReservedConcurrentExecutions', 'RuntimeManagementConfig', 'SnapStart',
+    'Tags', 'Timeout', 'TracingConfig', 'VpcConfig',
+  ]).sortObject(properties);
+}
+
+function sortLayerVersionProperties(properties: any) {
+  return new PropertySort([
+    // <=2.87.0 implicit sort order
+    'Content', 'CompatibleArchitectures', 'CompatibleRuntimes', 'Description',
+    'LayerName', 'LicenseInfo',
+  ]).sortObject(properties);
+}
+
+function resolveSingleResourceProperties(stack: Stack, res: CfnResource): any {
+  const template = stack.resolve(res._toCloudFormation());
+  const resources = template.Resources;
+  const resourceKeys = Object.keys(resources);
+  if (resourceKeys.length !== 1) {
+    throw new Error(`Expected one rendered CloudFormation resource but found ${resourceKeys.length}`);
+  }
+  const logicalId = resourceKeys[0];
+  return { properties: resources[logicalId].Properties, template, logicalId };
 }

@@ -1,5 +1,5 @@
-import * as core from 'aws-cdk-lib';
-import { Lazy, Names } from 'aws-cdk-lib';
+import * as core from 'aws-cdk-lib/core';
+import { Lazy, Names } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnPlaybackKeyPair } from 'aws-cdk-lib/aws-ivs';
 

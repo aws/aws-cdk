@@ -1,6 +1,6 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as sfn from '../../aws-stepfunctions';
-import { StateMachine } from '../../aws-stepfunctions';
+import { StateMachine, DefinitionBody } from '../../aws-stepfunctions';
 import * as cdk from '../../core';
 import * as apigw from '../lib';
 import { StepFunctionsIntegration } from '../lib';
@@ -82,7 +82,7 @@ describe('Step Functions api', () => {
     const api = new apigw.RestApi(stack, 'Api');
     const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
       stateMachineType: sfn.StateMachineType.EXPRESS,
-      definition: new sfn.Pass(stack, 'Pass'),
+      definitionBody: DefinitionBody.fromChainable(new sfn.Pass(stack, 'Pass')),
     });
 
     // WHEN
@@ -157,6 +157,23 @@ describe('Step Functions api', () => {
     });
   });
 
+  test('default method responses are not created when useDefaultMethodResponses is false', () => {
+    //GIVEN
+    const { stack, stateMachine } = givenSetup();
+
+    //WHEN
+    new apigw.StepFunctionsRestApi(stack, 'StepFunctionsRestApi', {
+      stateMachine: stateMachine,
+      useDefaultMethodResponses: false,
+    });
+
+    //THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      HttpMethod: 'ANY',
+      MethodResponses: Match.absent(),
+    });
+  });
+
   test('fails if options.defaultIntegration is set', () => {
     //GIVEN
     const { stack, stateMachine } = givenSetup();
@@ -180,7 +197,7 @@ describe('Step Functions api', () => {
     });
 
     const stateMachine: sfn.IStateMachine = new StateMachine(stack, 'StateMachine', {
-      definition: passTask,
+      definitionBody: DefinitionBody.fromChainable(passTask),
       stateMachineType: sfn.StateMachineType.STANDARD,
     });
 
@@ -199,14 +216,14 @@ function givenSetup() {
   });
 
   const stateMachine: sfn.IStateMachine = new StateMachine(stack, 'StateMachine', {
-    definition: passTask,
+    definitionBody: DefinitionBody.fromChainable(passTask),
     stateMachineType: sfn.StateMachineType.EXPRESS,
   });
 
   return { stack, stateMachine };
 }
 
-function whenCondition(stack:cdk.Stack, stateMachine: sfn.IStateMachine) {
+function whenCondition(stack: cdk.Stack, stateMachine: sfn.IStateMachine) {
   const api = new apigw.StepFunctionsRestApi(stack, 'StepFunctionsRestApi', { stateMachine: stateMachine });
   return api;
 }

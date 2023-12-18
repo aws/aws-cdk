@@ -30,7 +30,7 @@ enables organizations to create and manage repositories of applications and asso
   - [Sharing an application](#sharing-an-application)
   - [Sharing an attribute group](#sharing-an-attribute-group)
 
-The `@aws-cdk/aws-servicecatalogappregistry` package contains resources that enable users to automate governance and management of their AWS resources at scale.
+The `@aws-cdk/aws-servicecatalogappregistry-alpha` package contains resources that enable users to automate governance and management of their AWS resources at scale.
 
 ```ts nofixture
 import * as appreg from '@aws-cdk/aws-servicecatalogappregistry-alpha';

@@ -437,7 +437,7 @@ export class CdkPipeline extends Construct {
         const depAction = stackActions.find(s => s.stackArtifactId === depId);
 
         if (depAction === undefined) {
-          Annotations.of(this).addWarning(`Stack '${stackAction.stackName}' depends on stack ` +
+          Annotations.of(this).addWarningV2('@aws-cdk/pipelines:dependencyOnNonPipelineStack', `Stack '${stackAction.stackName}' depends on stack ` +
             `'${depId}', but that dependency is not deployed through the pipeline!`);
         } else if (!(depAction.executeRunOrder < stackAction.prepareRunOrder)) {
           yield `Stack '${stackAction.stackName}' depends on stack ` +

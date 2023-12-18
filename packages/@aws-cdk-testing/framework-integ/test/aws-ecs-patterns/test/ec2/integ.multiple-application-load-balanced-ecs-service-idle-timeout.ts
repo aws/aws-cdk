@@ -5,11 +5,12 @@ import { ApplicationProtocol, SslPolicy } from 'aws-cdk-lib/aws-elasticloadbalan
 import { PublicHostedZone } from 'aws-cdk-lib/aws-route53';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-
 import { ApplicationMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
+import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from 'aws-cdk-lib/cx-api';
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ-alb-idle-timeout');
+stack.node.setContext(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE, false);
 const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const zone = new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
 const cluster = new Cluster(stack, 'Cluster', { vpc });
@@ -26,7 +27,7 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
   loadBalancers: [
     {
       name: 'lb',
-      idleTimeout: Duration.seconds(400),
+      idleTimeout: Duration.seconds(5),
       domainName: 'api.example.com',
       domainZone: zone,
       listeners: [
@@ -40,7 +41,7 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
     },
     {
       name: 'lb2',
-      idleTimeout: Duration.seconds(400),
+      idleTimeout: Duration.seconds(500),
       domainName: 'frontend.example.com',
       domainZone: zone,
       listeners: [

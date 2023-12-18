@@ -1,0 +1,203 @@
+{
+  "version": "35.0.0",
+  "artifacts": {
+    "aws-cdk-scheduler-schedule.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-scheduler-schedule.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-scheduler-schedule": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-scheduler-schedule.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7c2f669a6fc34b993d394fcc754d832f1fb720665c9db5146c9856a595ddaac2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-scheduler-schedule.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-scheduler-schedule.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-scheduler-schedule/Function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FunctionServiceRole675BB04A"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/Function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Function76856677"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Role1ABCC5F0"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RoleDefaultPolicy5FFB7DAB"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/NamedGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamedGroupA3ABC879"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/UnnamedGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UnnamedGroupBE3E48EE"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/DefaultSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DefaultSchedule597B0B2C"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/NamedGroupSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamedGroupScheduleD7EEFEBC"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/UnnamedGroupSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UnnamedGroupSchedule19260E9B"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/DisabledSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DisabledScheduleA1DF7F0F"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/TargetOverrideSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TargetOverrideScheduleFF8CB184"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/AllSchedulerErrorsAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AllSchedulerErrorsAlarmA3246F8C"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/ScheduleKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduleKey7E6B3A92"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/CustomerKmsSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomerKmsSchedule12B1FEFE"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/UseFlexibleTimeWindow/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UseFlexibleTimeWindowBF55D3ED"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/ScheduleWithTimeFrame/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduleWithTimeFrameC1C8BDCC"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-scheduler-schedule"
+    },
+    "integtestscheduleDefaultTestDeployAssert24CB3896.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtestscheduleDefaultTestDeployAssert24CB3896.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integtestscheduleDefaultTestDeployAssert24CB3896": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtestscheduleDefaultTestDeployAssert24CB3896.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtestscheduleDefaultTestDeployAssert24CB3896.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integtestscheduleDefaultTestDeployAssert24CB3896.assets"
+      ],
+      "metadata": {
+        "/integtest-schedule/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integtest-schedule/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integtest-schedule/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

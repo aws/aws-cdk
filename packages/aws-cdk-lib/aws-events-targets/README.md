@@ -7,23 +7,23 @@ to the `rule.addTarget()` method.
 
 Currently supported are:
 
-* [Start a CodeBuild build](#start-a-codebuild-build)
-* [Start a CodePipeline pipeline](#start-a-codepipeline-pipeline)
-* Run an ECS task
-* [Invoke a Lambda function](#invoke-a-lambda-function)
-* [Invoke a API Gateway REST API](#invoke-an-api-gateway-rest-api)
-* Publish a message to an SNS topic
-* Send a message to an SQS queue
-* [Start a StepFunctions state machine](#start-a-stepfunctions-state-machine)
-* [Queue a Batch job](#queue-a-batch-job)
-* Make an AWS API call
-* Put a record to a Kinesis stream
-* [Log an event into a LogGroup](#log-an-event-into-a-loggroup)
-* Put a record to a Kinesis Data Firehose stream
-* [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
-* [Send an event to EventBridge API Destination](#invoke-an-api-destination)
+- [Event Targets for Amazon EventBridge](#event-targets-for-amazon-eventbridge)
+  - [Event retry policy and using dead-letter queues](#event-retry-policy-and-using-dead-letter-queues)
+  - [Invoke a Lambda function](#invoke-a-lambda-function)
+  - [Log an event into a LogGroup](#log-an-event-into-a-loggroup)
+  - [Start a CodeBuild build](#start-a-codebuild-build)
+  - [Start a CodePipeline pipeline](#start-a-codepipeline-pipeline)
+  - [Start a StepFunctions state machine](#start-a-stepfunctions-state-machine)
+  - [Queue a Batch job](#queue-a-batch-job)
+  - [Invoke an API Gateway REST API](#invoke-an-api-gateway-rest-api)
+  - [Invoke an API Destination](#invoke-an-api-destination)
+  - [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
+  - [Run an ECS Task](#run-an-ecs-task)
+    - [Tagging Tasks](#tagging-tasks)
+    - [Assign public IP addresses to tasks](#assign-public-ip-addresses-to-tasks)
+    - [Enable Amazon ECS Exec for ECS Task](#enable-amazon-ecs-exec-for-ecs-task)
 
-See the README of the `@aws-cdk/aws-events` library for more information on
+See the README of the `aws-cdk-lib/aws-events` library for more information on
 EventBridge.
 
 ## Event retry policy and using dead-letter queues
@@ -43,7 +43,7 @@ triggered for every events from `aws.ec2` source. You can optionally attach a
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 const fn = new lambda.Function(this, 'MyFunc', {
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`exports.handler = handler.toString()`),
 });
@@ -215,7 +215,7 @@ to the target.
 ```ts
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import * as batch from '@aws-cdk/aws-batch-alpha';
+import * as batch from 'aws-cdk-lib/aws-batch';
 import { ContainerImage } from 'aws-cdk-lib/aws-ecs';
 
 declare const vpc: ec2.Vpc;
@@ -278,7 +278,7 @@ const rule = new events.Rule(this, 'Rule', {
 
 const fn = new lambda.Function( this, 'MyFunc', {
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   code: lambda.Code.fromInline( 'exports.handler = e => {}' ),
 } );
 
@@ -365,38 +365,70 @@ can use the `tags` array. Both of these fields can be used together or separatel
 to set tags on the triggered task.
 
 ```ts
-import * as ecs from "aws-cdk-lib/aws-ecs"
-declare const cluster: ecs.ICluster
-declare const taskDefinition: ecs.TaskDefinition
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.TaskDefinition;
 
 const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.rate(cdk.Duration.hours(1)),
 });
 
 rule.addTarget(
-  new targets.EcsTask( {
-      cluster: cluster,
-      taskDefinition: taskDefinition,
-      propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
-      tags: [
-        {
-          key: 'my-tag',
-          value: 'my-tag-value',
-        },
-      ],
-    })
+  new targets.EcsTask({
+    cluster: cluster,
+    taskDefinition: taskDefinition,
+    propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+    tags: [
+      {
+        key: 'my-tag',
+        value: 'my-tag-value',
+      },
+    ],
+  }),
 );
 ```
 
-### enable Amazon ECS Exec for ECS Task
+### Assign public IP addresses to tasks
 
-If you use Amazon ECS Exec, you can run commands in or get a shell to a container running on an Amazon EC2 instance or on AWS Fargate. 
+You can set the `assignPublicIp` flag to assign public IP addresses to tasks.
+If you want to detach the public IP address from the task, you have to set the flag `false`.
+You can specify the flag `true` only when the launch type is set to FARGATE.
 
 ```ts
-import * as ecs from "aws-cdk-lib/aws-ecs"
-declare const cluster: ecs.ICluster
-declare const taskDefinition: ecs.TaskDefinition
-declare const rule: events.Rule
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(
+  new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    assignPublicIp: true,
+    subnetSelection: { subnetType: ec2.SubnetType.PUBLIC },
+  }),
+);
+```
+
+### Enable Amazon ECS Exec for ECS Task
+
+If you use Amazon ECS Exec, you can run commands in or get a shell to a container running on an Amazon EC2 instance or on AWS Fargate.
+
+```ts
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
 
 rule.addTarget(new targets.EcsTask({
   cluster,

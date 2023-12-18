@@ -96,6 +96,34 @@ test('can make and use a Generic SSM image', () => {
   expect(details.osType).toEqual(ec2.OperatingSystemType.LINUX);
 });
 
+test('can make and use a SSM resolve image', () => {
+  // WHEN
+  const image = new ec2.ResolveSsmParameterAtLaunchImage('testParam');
+
+  // THEN
+  const details = image.getImage(stack);
+  expect(details.imageId).toEqual('resolve:ssm:testParam');
+  expect(details.osType).toEqual(ec2.OperatingSystemType.LINUX);
+});
+
+test('can make and use a SSM resolve image with parameter version', () => {
+  // WHEN
+  const image = new ec2.ResolveSsmParameterAtLaunchImage('testParam', { parameterVersion: '2' });
+
+  // THEN
+  const details = image.getImage(stack);
+  expect(details.imageId).toEqual('resolve:ssm:testParam:2');
+});
+
+test('can make and use a SSM resolve image with resolveSsmParameterAtLaunch', () => {
+  // WHEN
+  const image = ec2.MachineImage.resolveSsmParameterAtLaunch('testParam', { parameterVersion: '2' });
+
+  // THEN
+  const details = image.getImage(stack);
+  expect(details.imageId).toEqual('resolve:ssm:testParam:2');
+});
+
 test('WindowsImage retains userdata if given', () => {
   // WHEN
   const ud = ec2.UserData.forWindows();
@@ -233,7 +261,7 @@ test('throw error if storage param is set for Amazon Linux 2022', () => {
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
       storage: ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
     }).getImage(stack).imageId;
-  }).toThrow(/Storage parameter does not exist in smm parameter name for Amazon Linux 2022./);
+  }).toThrow(/Storage parameter does not exist in SSM parameter name for Amazon Linux 2022./);
 });
 
 test('throw error if virtualization param is set for Amazon Linux 2022', () => {
@@ -243,7 +271,7 @@ test('throw error if virtualization param is set for Amazon Linux 2022', () => {
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
       virtualization: ec2.AmazonLinuxVirt.HVM,
     }).getImage(stack).imageId;
-  }).toThrow(/Virtualization parameter does not exist in smm parameter name for Amazon Linux 2022./);
+  }).toThrow(/Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2022./);
 });
 
 test('cached lookups of Amazon Linux 2022 with kernel 5.x', () => {
@@ -376,6 +404,35 @@ describe('latest amazon linux', () => {
       },
     ]);
   });
+
+  test('AmazonLinuxImage with AMAZON_LINUX_2023', () => {
+    // WHEN
+    new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 }).getImage(stack);
+
+    // THEN
+    Template.fromStack(stack).hasParameter('*', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64',
+    });
+  });
+});
+
+test('throw error if storage param is set for Amazon Linux 2023', () => {
+  expect(() => {
+    new ec2.AmazonLinuxImage({
+      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
+      storage: ec2.AmazonLinuxStorage.GENERAL_PURPOSE,
+    }).getImage(stack);
+  }).toThrow(/Storage parameter does not exist in SSM parameter name for Amazon Linux 2023./);
+});
+
+test('throw error if virtualization param is set for Amazon Linux 2023', () => {
+  expect(() => {
+    new ec2.AmazonLinuxImage({
+      generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
+      virtualization: ec2.AmazonLinuxVirt.HVM,
+    }).getImage(stack);
+  }).toThrow(/Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2023./);
 });
 
 function isWindowsUserData(ud: ec2.UserData) {

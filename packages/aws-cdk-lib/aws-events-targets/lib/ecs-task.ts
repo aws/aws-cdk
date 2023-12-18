@@ -97,6 +97,14 @@ export interface EcsTaskProps extends TargetBaseProps {
   readonly platformVersion?: ecs.FargatePlatformVersion;
 
   /**
+   * Specifies whether the task's elastic network interface receives a public IP address.
+   * You can specify true only when LaunchType is set to FARGATE.
+   *
+   * @default - true if the subnet type is PUBLIC, otherwise false
+   */
+  readonly assignPublicIp?: boolean;
+
+  /**
     * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
     *
     * @default - Tags will not be propagated
@@ -144,6 +152,7 @@ export class EcsTask implements events.IRuleTarget {
   private readonly taskCount: number;
   private readonly role: iam.IRole;
   private readonly platformVersion?: ecs.FargatePlatformVersion;
+  private readonly assignPublicIp?: boolean;
   private readonly propagateTags?: ecs.PropagatedTagSource;
   private readonly tags?: Tag[];
   private readonly enableExecuteCommand?: boolean;
@@ -157,6 +166,7 @@ export class EcsTask implements events.IRuleTarget {
     this.taskDefinition = props.taskDefinition;
     this.taskCount = props.taskCount ?? 1;
     this.platformVersion = props.platformVersion;
+    this.assignPublicIp = props.assignPublicIp;
     this.enableExecuteCommand = props.enableExecuteCommand;
 
     const propagateTagsValidValues = [ecs.PropagatedTagSource.TASK_DEFINITION, ecs.PropagatedTagSource.NONE];
@@ -175,7 +185,7 @@ export class EcsTask implements events.IRuleTarget {
     // Security groups are only configurable with the "awsvpc" network mode.
     if (this.taskDefinition.networkMode !== ecs.NetworkMode.AWS_VPC) {
       if (props.securityGroup !== undefined || props.securityGroups !== undefined) {
-        cdk.Annotations.of(this.taskDefinition).addWarning('security groups are ignored when network mode is not awsvpc');
+        cdk.Annotations.of(this.taskDefinition).addWarningV2('@aws-cdk/aws-events-targets:ecsTaskSecurityGroupIgnored', 'security groups are ignored when network mode is not awsvpc');
       }
       return;
     }
@@ -212,14 +222,24 @@ export class EcsTask implements events.IRuleTarget {
     const enableExecuteCommand = this.enableExecuteCommand;
 
     const subnetSelection = this.props.subnetSelection || { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS };
-    const assignPublicIp = subnetSelection.subnetType === ec2.SubnetType.PUBLIC ? 'ENABLED' : 'DISABLED';
+
+    // throw an error if assignPublicIp is true and the subnet type is not PUBLIC
+    if (this.assignPublicIp && subnetSelection.subnetType !== ec2.SubnetType.PUBLIC) {
+      throw new Error('assignPublicIp should be set to true only for PUBLIC subnets');
+    }
+
+    const assignPublicIp = (this.assignPublicIp ?? subnetSelection.subnetType === ec2.SubnetType.PUBLIC) ? 'ENABLED' : 'DISABLED';
+    const launchType = this.taskDefinition.isEc2Compatible ? 'EC2' : 'FARGATE';
+    if (assignPublicIp === 'ENABLED' && launchType !== 'FARGATE') {
+      throw new Error('assignPublicIp is only supported for FARGATE tasks');
+    };
 
     const baseEcsParameters = { taskCount, taskDefinitionArn, propagateTags, tagList, enableExecuteCommand };
 
     const ecsParameters: events.CfnRule.EcsParametersProperty = this.taskDefinition.networkMode === ecs.NetworkMode.AWS_VPC
       ? {
         ...baseEcsParameters,
-        launchType: this.taskDefinition.isEc2Compatible ? 'EC2' : 'FARGATE',
+        launchType,
         platformVersion: this.platformVersion,
         networkConfiguration: {
           awsVpcConfiguration: {

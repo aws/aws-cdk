@@ -1,9 +1,9 @@
 {
-  "version": "22.0.0",
+  "version": "35.0.0",
   "testCases": {
     "integ.bucket-notifications": {
       "stacks": [
-        "lambda-bucket-notifications"
+        "cdk-integ-lambda-bucket-notifications"
       ],
       "diffAssets": false,
       "stackUpdateWorkflow": true

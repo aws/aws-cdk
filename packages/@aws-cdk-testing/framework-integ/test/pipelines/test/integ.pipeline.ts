@@ -5,6 +5,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, CfnResource, DefaultStackSynthesizer, RemovalPolicy, Stack, StackProps, Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as cdkp from 'aws-cdk-lib/pipelines';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class MyStage extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {
@@ -81,7 +82,14 @@ const app = new App({
     '@aws-cdk/core:newStyleStackSynthesis': 'true',
   },
 });
-new CdkpipelinesDemoPipelineStack(app, 'PipelineStack', {
+
+const stack = new CdkpipelinesDemoPipelineStack(app, 'PipelineStack', {
   synthesizer: new DefaultStackSynthesizer(),
 });
+
+new IntegTest(app, 'PipelineStackTest', {
+  testCases: [stack],
+  diffAssets: true,
+});
+
 app.synth();

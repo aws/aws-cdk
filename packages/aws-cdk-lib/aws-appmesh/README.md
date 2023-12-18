@@ -233,7 +233,7 @@ const node = new appmesh.VirtualNode(this, 'node', {
 
 By using a key-value pair indexed signature, you can specify json key pairs to customize the log entry pattern. You can also use text format as below. You can only specify one of these 2 formats.
 
-```ts
+```text
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout', appmesh.LoggingFormat.fromText('test_pattern')),
 ```
 
@@ -673,6 +673,26 @@ router.addRoute('route-grpc-retry', {
 });
 ```
 
+Add a gRPC route that matches based on port:
+
+```ts
+declare const router: appmesh.VirtualRouter;
+declare const node: appmesh.VirtualNode;
+
+router.addRoute('route-grpc-port', {
+  routeSpec: appmesh.RouteSpec.grpc({
+    weightedTargets: [
+      {
+        virtualNode: node,
+      },
+    ],
+    match: {
+      port: 1234,
+    },
+  }),
+});
+```
+
 Add a gRPC route with timeout:
 
 ```ts
@@ -779,7 +799,7 @@ gateway.addGatewayRoute('gateway-route-http', {
 });
 ```
 
-For gRPC-based gateway routes, the `match` field can be used to match on service name, host name, and metadata.
+For gRPC-based gateway routes, the `match` field can be used to match on service name, host name, port and metadata.
 
 ```ts
 declare const gateway: appmesh.VirtualGateway;

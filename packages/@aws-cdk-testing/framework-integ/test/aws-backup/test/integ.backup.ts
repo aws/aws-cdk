@@ -1,6 +1,6 @@
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as efs from 'aws-cdk-lib/aws-efs';
-import { App, Duration, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import { App, Duration, RemovalPolicy, Stack, StackProps, CfnParameter } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as backup from 'aws-cdk-lib/aws-backup';
 
@@ -31,6 +31,17 @@ class TestStack extends Stack {
         minRetention: Duration.days(5),
       },
     });
+
+    const env = new CfnParameter(this, 'Env', { type: 'String', description: 'Env', default: 'test' });
+
+    new backup.BackupVault(this, 'ThirdVault', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      backupVaultName: `backupVault-${env.valueAsString}`,
+      lockConfiguration: {
+        minRetention: Duration.days(5),
+      },
+    });
+
     const plan = backup.BackupPlan.dailyWeeklyMonthly5YearRetention(this, 'Plan', vault);
 
     plan.addSelection('Selection', {
@@ -46,6 +57,9 @@ class TestStack extends Stack {
         moveToColdStorageAfter: Duration.days(30),
         deleteAfter: Duration.days(120),
       }],
+      recoveryPointTags: {
+        stage: 'prod',
+      },
     }));
   }
 }

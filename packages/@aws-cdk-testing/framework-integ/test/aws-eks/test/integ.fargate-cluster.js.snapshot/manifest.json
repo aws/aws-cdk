@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-eks-fargate-cluster-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d71b84674ad43bf94df137d2c2dfb35b70476c47f2e6e5ab75a9b7336c1340dc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f552253314292d7b90971a5cdd5e2a3d057666faa9889f02f5397cade59b7e26.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -417,16 +417,16 @@
             "data": "awscdkeksfargateclustertestawscdkawseksKubectlProviderframeworkonEvent33B2ACA4Arn"
           }
         ],
-        "/aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn"
-          }
-        ],
         "/aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestKubectlLayer821D4586Ref": [
           {
             "type": "aws:cdk:logicalId",
             "data": "referencetoawscdkeksfargateclustertestKubectlLayer821D4586Ref"
+          }
+        ],
+        "/aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawscdkeksfargateclustertestFargateClusterKubectlHandlerRole4192664CArn"
           }
         ],
         "/aws-cdk-eks-fargate-cluster-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksfargateclustertestFargateClusterDefaultVpcPrivateSubnet1Subnet0278E6BCRef": [

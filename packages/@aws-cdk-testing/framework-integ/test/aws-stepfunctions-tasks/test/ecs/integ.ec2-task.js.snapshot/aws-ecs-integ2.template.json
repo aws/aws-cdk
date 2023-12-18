@@ -507,38 +507,79 @@
     ]
    }
   },
-  "FargateClusterDefaultAutoScalingGroupLaunchConfig57306899": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "FargateClusterDefaultAutoScalingGroupLaunchTemplate7BE88B5A": {
+   "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "t2.micro",
-    "IamInstanceProfile": {
-     "Ref": "FargateClusterDefaultAutoScalingGroupInstanceProfile2C0FEF3B"
-    },
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "FargateClusterDefaultAutoScalingGroupInstanceSecurityGroup42AF8A40",
-       "GroupId"
-      ]
-     }
-    ],
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "",
-       [
-        "#!/bin/bash\necho ECS_CLUSTER=",
-        {
-         "Ref": "FargateCluster7CCD5F93"
-        },
-        " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "FargateClusterDefaultAutoScalingGroupInstanceProfile2C0FEF3B",
+        "Arn"
        ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t2.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "FargateClusterDefaultAutoScalingGroupInstanceSecurityGroup42AF8A40",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "#!/bin/bash\necho ECS_CLUSTER=",
+         {
+          "Ref": "FargateCluster7CCD5F93"
+         },
+         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LaunchTemplate"
+       }
       ]
      }
-    }
+    ]
    },
    "DependsOn": [
     "FargateClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy3BD78F3E",
@@ -550,8 +591,16 @@
    "Properties": {
     "MaxSize": "1",
     "MinSize": "1",
-    "LaunchConfigurationName": {
-     "Ref": "FargateClusterDefaultAutoScalingGroupLaunchConfig57306899"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "FargateClusterDefaultAutoScalingGroupLaunchTemplate7BE88B5A"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "FargateClusterDefaultAutoScalingGroupLaunchTemplate7BE88B5A",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "Tags": [
      {

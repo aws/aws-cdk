@@ -507,38 +507,79 @@
     ]
    }
   },
-  "EcsClustergravitonclusterLaunchConfig64183B57": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "EcsClustergravitonclusterLaunchTemplate46854EA7": {
+   "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "c6g.large",
-    "IamInstanceProfile": {
-     "Ref": "EcsClustergravitonclusterInstanceProfileD1BBFAAE"
-    },
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "EcsClustergravitonclusterInstanceSecurityGroup0187E9BB",
-       "GroupId"
-      ]
-     }
-    ],
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "",
-       [
-        "#!/bin/bash\necho ECS_CLUSTER=",
-        {
-         "Ref": "EcsCluster97242B84"
-        },
-        " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "EcsClustergravitonclusterInstanceProfileD1BBFAAE",
+        "Arn"
        ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2arm64recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "c6g.large",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "EcsClustergravitonclusterInstanceSecurityGroup0187E9BB",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ/EcsCluster/graviton-cluster/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ/EcsCluster/graviton-cluster/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "#!/bin/bash\necho ECS_CLUSTER=",
+         {
+          "Ref": "EcsCluster97242B84"
+         },
+         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-ecs-integ/EcsCluster/graviton-cluster/LaunchTemplate"
+       }
       ]
      }
-    }
+    ]
    },
    "DependsOn": [
     "EcsClustergravitonclusterInstanceRoleDefaultPolicyB89DB33F",
@@ -550,8 +591,16 @@
    "Properties": {
     "MaxSize": "2",
     "MinSize": "2",
-    "LaunchConfigurationName": {
-     "Ref": "EcsClustergravitonclusterLaunchConfig64183B57"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "EcsClustergravitonclusterLaunchTemplate46854EA7"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "EcsClustergravitonclusterLaunchTemplate46854EA7",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "Tags": [
      {

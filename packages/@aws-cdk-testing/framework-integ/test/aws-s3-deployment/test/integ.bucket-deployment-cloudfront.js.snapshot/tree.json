@@ -54,7 +54,8 @@
                               "Action": [
                                 "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*"
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -125,14 +126,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
-            }
-          },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "test-bucket-deployments-1/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -280,7 +273,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "68b22621fff135f9e3f225bad7ff80fdf2f45c3d9910af601206a0d9b279933a.zip"
+                          "s3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -571,13 +564,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "9eb41a5505d37607ac419321497a4f8c21cf0ee1f9b4a6b29aa04301aea5c7fd.zip"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
-                        "Arn"
-                      ]
+                      "s3Key": "e976a796f036a5efbf44b99e44cfb5a961df08d8dbf7cd37e60bf216fb982a00.zip"
                     },
                     "environment": {
                       "variables": {
@@ -590,6 +577,12 @@
                         "Ref": "DeployWithInvalidationAwsCliLayerDEDD5787"
                       }
                     ],
+                    "role": {
+                      "Fn::GetAtt": [
+                        "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "python3.9",
                     "timeout": 900
                   }
@@ -627,12 +620,66 @@
           "version": "0.0.0"
         }
       },
+      "TestBucketDeploymentInteg": {
+        "id": "TestBucketDeploymentInteg",
+        "path": "TestBucketDeploymentInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "TestBucketDeploymentInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "TestBucketDeploymentInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "TestBucketDeploymentInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "TestBucketDeploymentInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "TestBucketDeploymentInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
       "Tree": {
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.3.0"
         }
       }
     },

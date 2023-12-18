@@ -13,12 +13,21 @@
     "api": "getObject",
     "parameters": {
      "Bucket": {
-      "Fn::ImportValue": "aws-cdk-codepipeline-s3-deploy:ExportsOutputRefDeployBucket67E2C076D8DEC04D"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-codepipeline-s3-deploy:ExportsOutputRefDeployBucket67E2C076D8DEC04D"
+        },
+        "\""
+       ]
+      ]
      },
-     "Key": "key"
+     "Key": "\"key\""
     },
     "flattenResponse": "false",
-    "salt": "1684406090555"
+    "salt": "1695401301509"
    },
    "DependsOn": [
     "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
@@ -120,12 +129,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
+     "S3Key": "63ae5d5f48d3638501e722718b99b5f2fddb9ab73a15d7cb607215a500df19e1.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -150,13 +159,22 @@
     "api": "putObject",
     "parameters": {
      "Bucket": {
-      "Fn::ImportValue": "aws-cdk-codepipeline-s3-deploy:ExportsOutputRefPipelineBucketB967BD35BAE6E881"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-codepipeline-s3-deploy:ExportsOutputRefPipelineBucketB967BD35BAE6E881"
+        },
+        "\""
+       ]
+      ]
      },
-     "Key": "key",
-     "Body": "HelloWorld"
+     "Key": "\"key\"",
+     "Body": "\"HelloWorld\""
     },
     "flattenResponse": "false",
-    "salt": "1684406090555"
+    "salt": "1695401301510"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -178,11 +196,20 @@
     },
     "parameters": {
      "name": {
-      "Fn::ImportValue": "aws-cdk-codepipeline-s3-deploy:ExportsOutputRefPipelineC660917DEB540586"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-codepipeline-s3-deploy:ExportsOutputRefPipelineC660917DEB540586"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1684406090556"
+    "salt": "1695401301510"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -348,12 +375,12 @@
   "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
+     "S3Key": "63ae5d5f48d3638501e722718b99b5f2fddb9ab73a15d7cb607215a500df19e1.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -390,12 +417,12 @@
   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
+     "S3Key": "63ae5d5f48d3638501e722718b99b5f2fddb9ab73a15d7cb607215a500df19e1.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",

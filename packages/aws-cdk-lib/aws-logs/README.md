@@ -108,6 +108,7 @@ below) and supply the intended destination:
 
 ```ts
 import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
+
 declare const fn: lambda.Function;
 declare const logGroup: logs.LogGroup;
 
@@ -115,6 +116,7 @@ new logs.SubscriptionFilter(this, 'Subscription', {
   logGroup,
   destination: new destinations.LambdaDestination(fn),
   filterPattern: logs.FilterPattern.allTerms("ERROR", "MainThread"),
+  filterName: 'ErrorInMainThread',
 });
 ```
 
@@ -349,31 +351,30 @@ Each policy may consist of a log group, S3 bucket, and/or Firehose delivery stre
 Example:
 
 ```ts
-import { Bucket } from '@aws-cdk/aws-s3';
-import { LogGroup } from '@aws-cdk/logs';
-import * as kinesisfirehose from '@aws-cdk/aws-kinesisfirehose';
+import * as kinesisfirehose from '@aws-cdk/aws-kinesisfirehose-alpha';
+import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
 
-
-const logGroupDestination = new LogGroup(this, 'LogGroupLambdaAudit', {
+const logGroupDestination = new logs.LogGroup(this, 'LogGroupLambdaAudit', {
   logGroupName: 'auditDestinationForCDK',
 });
 
-const s3Destination = new Bucket(this, 'audit-bucket-id');
+const bucket = new s3.Bucket(this, 'audit-bucket');
+const s3Destination = new destinations.S3Bucket(bucket);
 
-const deliveryStream = new firehose.DeliveryStream(this, 'Delivery Stream', {
+const deliveryStream = new kinesisfirehose.DeliveryStream(this, 'Delivery Stream', {
   destinations: [s3Destination],
 });
 
-const dataProtectionPolicy = new DataProtectionPolicy({
+const dataProtectionPolicy = new logs.DataProtectionPolicy({
   name: 'data protection policy',
   description: 'policy description',
-  identifiers: [DataIdentifier.DRIVERSLICENSE_US, new DataIdentifier('EmailAddress')],
+  identifiers: [logs.DataIdentifier.DRIVERSLICENSE_US, new logs.DataIdentifier('EmailAddress')],
   logGroupAuditDestination: logGroupDestination,
-  s3BucketAuditDestination: s3Destination,
-  deliveryStreamAuditDestination: deliveryStream.deliveryStreamName,
+  s3BucketAuditDestination: bucket,
+  deliveryStreamNameAuditDestination: deliveryStream.deliveryStreamName,
 });
 
-new LogGroup(this, 'LogGroupLambda', {
+new logs.LogGroup(this, 'LogGroupLambda', {
   logGroupName: 'cdkIntegLogGroup',
   dataProtectionPolicy: dataProtectionPolicy,
 });

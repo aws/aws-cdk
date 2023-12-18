@@ -50,6 +50,8 @@ export abstract class MachineImage {
    * deployment. Be aware this will cause your instances to be replaced when a
    * new version of the image becomes available. Do not store stateful information
    * on the instance if you are using this image.
+   *
+   * @deprecated - use latestAmazonLinux2023() instead
    */
   public static latestAmazonLinux2022(props?: AmazonLinux2022ImageSsmParameterProps): IMachineImage {
     return new AmazonLinux2022ImageSsmParameter({
@@ -157,6 +159,21 @@ export abstract class MachineImage {
   }
 
   /**
+   * An image specified in SSM parameter store that will be resolved at instance launch time.
+   *
+   * The AMI ID will be resolved at instance launch time.
+   *
+   * @param parameterName The name of SSM parameter containing the AMI ID
+   * @param options The parameter image options
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/using-systems-manager-parameters.html
+   *
+   */
+  public static resolveSsmParameterAtLaunch(parameterName: string, options?: SsmParameterImageOptions): IMachineImage {
+    return new ResolveSsmParameterAtLaunchImage(parameterName, options);
+  }
+
+  /**
    * Look up a shared Machine Image using DescribeImages
    *
    * The most recent, available, launchable image matching the given filter
@@ -176,7 +193,7 @@ export abstract class MachineImage {
 }
 
 /**
- * Select the image based on a given SSM parameter
+ * Select the image based on a given SSM parameter at deployment time of the CloudFormation Stack.
  *
  * This Machine Image automatically updates to the latest version on every
  * deployment. Be aware this will cause your instances to be replaced when a
@@ -208,6 +225,40 @@ export class GenericSSMParameterImage implements IMachineImage {
       imageId: ami,
       osType: this.os,
       userData: this.userData ?? (this.os === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
+    };
+  }
+}
+
+/**
+ * Select the image based on a given SSM parameter at instance launch time.
+ *
+ * This Machine Image comes with an imageId as `resolve:ssm:parameter-name` or `resolve:ssm:parameter-name:version` format
+ * as described in the document:
+ *
+ * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/using-systems-manager-parameters.html
+ *
+ * The AMI ID would be selected at instance launch time.
+ */
+export class ResolveSsmParameterAtLaunchImage implements IMachineImage {
+  /**
+   * Name of the SSM parameter we're looking up
+   */
+  public readonly parameterName: string;
+
+  constructor(parameterName: string, private readonly props: SsmParameterImageOptions = {}) {
+    this.parameterName = parameterName;
+  }
+
+  /**
+   * Return the image to use in the given context
+   */
+  public getImage(_: Construct): MachineImageConfig {
+    const versionString = this.props.parameterVersion ? `:${this.props.parameterVersion}` : '';
+    const osType = this.props.os ?? OperatingSystemType.LINUX;
+    return {
+      imageId: `resolve:ssm:${this.parameterName}${versionString}`,
+      osType,
+      userData: this.props.userData ?? (osType === OperatingSystemType.WINDOWS ? UserData.forWindows() : UserData.forLinux()),
     };
   }
 }
@@ -250,10 +301,17 @@ export interface SsmParameterImageOptions {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * The version of the SSM parameter.
+   *
+   * @default no version specified.
+   */
+  readonly parameterVersion?: string;
 }
 
 /**
- * Select the image based on a given SSM parameter
+ * Select the image based on a given SSM parameter at deployment time of the CloudFormation Stack.
  *
  * This Machine Image automatically updates to the latest version on every
  * deployment. Be aware this will cause your instances to be replaced when a
@@ -428,10 +486,18 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
     if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2022) {
       kernel = AmazonLinuxKernel.KERNEL5_X;
       if (props && props.storage) {
-        throw new Error('Storage parameter does not exist in smm parameter name for Amazon Linux 2022.');
+        throw new Error('Storage parameter does not exist in SSM parameter name for Amazon Linux 2022.');
       }
       if (props && props.virtualization) {
-        throw new Error('Virtualization parameter does not exist in smm parameter name for Amazon Linux 2022.');
+        throw new Error('Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2022.');
+      }
+    } else if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2023) {
+      kernel = AmazonLinuxKernel.KERNEL6_1;
+      if (props && props.storage) {
+        throw new Error('Storage parameter does not exist in SSM parameter name for Amazon Linux 2023.');
+      }
+      if (props && props.virtualization) {
+        throw new Error('Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2023.');
       }
     } else {
       virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
@@ -479,9 +545,15 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
  */
 export enum AmazonLinuxKernel {
   /**
-   * Standard edition
+   * Kernel version 5.10
    */
   KERNEL5_X = 'kernel-5.10',
+
+  /**
+   * Kernel version 6.1
+   */
+  KERNEL6_1 = 'kernel-6.1',
+
 }
 
 /**

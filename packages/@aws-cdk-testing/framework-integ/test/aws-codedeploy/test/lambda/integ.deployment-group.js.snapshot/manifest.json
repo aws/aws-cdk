@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-codedeploy-lambda.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/209ced6e70ec9b3c3a5387896ca7c4942afced90ed5eb6045cc8f392776ae7ce.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/65305c61e1aca727f106c284b6b259b0d7cab3627a034743bf5a33934707247f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -48,7 +48,7 @@
         "/aws-cdk-codedeploy-lambda/Handler/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HandlerCurrentVersion93FB80BF4a6a6623436a0664df4549c4c809c243"
+            "data": "HandlerCurrentVersion93FB80BF7274e06dc68914926264fc8b4f358f0a"
           }
         ],
         "/aws-cdk-codedeploy-lambda/Alias/Resource": [
@@ -157,6 +157,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "HandlerCurrentVersion93FB80BF0f5df27a50bce6b85c420e4972b73360": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HandlerCurrentVersion93FB80BF0f5df27a50bce6b85c420e4972b73360",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

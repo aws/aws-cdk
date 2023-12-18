@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "34.0.0",
   "testCases": {
-    "integ.aws-api": {
+    "aws-api-integ/DefaultTest": {
       "stacks": [
         "aws-cdk-aws-api-target-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "aws-api-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awsapiintegDefaultTestDeployAssertBB35B14E"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

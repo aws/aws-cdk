@@ -20,9 +20,6 @@
   "VpcfoobarSubnet1Subnet77A7FDC6": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -46,7 +43,10 @@
       "Key": "Name",
       "Value": "aws-cdk-redshift-cluster-update/Vpc/foobarSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -54,15 +54,15 @@
   "VpcfoobarSubnet1RouteTableAF4E5874": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-redshift-cluster-update/Vpc/foobarSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -83,9 +83,6 @@
   "VpcfoobarSubnet2Subnet85B013AD": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -109,7 +106,10 @@
       "Key": "Name",
       "Value": "aws-cdk-redshift-cluster-update/Vpc/foobarSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -117,15 +117,15 @@
   "VpcfoobarSubnet2RouteTable5127598D": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-redshift-cluster-update/Vpc/foobarSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -226,20 +226,17 @@
   "ClusterEB0386A7": {
    "Type": "AWS::Redshift::Cluster",
    "Properties": {
+    "AllowVersionUpgrade": true,
+    "AutomatedSnapshotRetentionPeriod": 1,
+    "ClusterParameterGroupName": {
+     "Ref": "ParameterGroup5E32DECB"
+    },
+    "ClusterSubnetGroupName": {
+     "Ref": "ClusterSubnetsDCFA5CB7"
+    },
     "ClusterType": "multi-node",
     "DBName": "default_db",
-    "MasterUsername": {
-     "Fn::Join": [
-      "",
-      [
-       "{{resolve:secretsmanager:",
-       {
-        "Ref": "ClusterSecret6368BD0F"
-       },
-       ":SecretString:username::}}"
-      ]
-     ]
-    },
+    "Encrypted": true,
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -252,16 +249,19 @@
       ]
      ]
     },
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "ClusterSecret6368BD0F"
+       },
+       ":SecretString:username::}}"
+      ]
+     ]
+    },
     "NodeType": "dc2.large",
-    "AllowVersionUpgrade": true,
-    "AutomatedSnapshotRetentionPeriod": 1,
-    "ClusterParameterGroupName": {
-     "Ref": "ParameterGroup5E32DECB"
-    },
-    "ClusterSubnetGroupName": {
-     "Ref": "ClusterSubnetsDCFA5CB7"
-    },
-    "Encrypted": true,
     "NumberOfNodes": 2,
     "PubliclyAccessible": false,
     "VpcSecurityGroupIds": [
@@ -360,13 +360,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "ClusterResourceProviderframeworkonEventServiceRoleD686A5EE",
-      "Arn"
-     ]
+     "S3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-update/Cluster/ResourceProvider)",
     "Environment": {
@@ -380,7 +374,13 @@
      }
     },
     "Handler": "framework.onEvent",
-    "Runtime": "nodejs14.x",
+    "Role": {
+     "Fn::GetAtt": [
+      "ClusterResourceProviderframeworkonEventServiceRoleD686A5EE",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -500,16 +500,16 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f24dbc80501234c95b4f320adc2d30c202d44977defc11a763044e044c699487.zip"
+     "S3Key": "ee4fd508abceff33b2eb40d478daa3c4050865ba44eadbb24ac42fb53689da48.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "SingletonLambda511e207f13df4b8bb632c32b30b65ac2ServiceRole4BDC9525",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs16.x",
+    "Runtime": "nodejs18.x",
     "Timeout": 900
    },
    "DependsOn": [

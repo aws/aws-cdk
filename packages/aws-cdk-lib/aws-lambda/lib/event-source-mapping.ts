@@ -250,6 +250,13 @@ export interface EventSourceMappingOptions {
    * @default - none
    */
   readonly filters?: Array<{[key: string]: any}>
+
+  /**
+   * Check if support S3 onfailure destination(ODF). Currently only MSK and self managed kafka event support S3 ODF
+   *
+   * @default false
+   */
+  readonly supportS3OnFailureDestination?: boolean;
 }
 
 /**
@@ -285,7 +292,7 @@ export interface IEventSourceMapping extends cdk.IResource {
  * Usually, you won't need to define the mapping yourself. This will usually be done by
  * event sources. For example, to add an SQS event source to a function:
  *
- *    import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
+ *    import { SqsEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
  *    lambda.addEventSource(new SqsEventSource(sqs));
  *
  * The `SqsEventSource` class will automatically create the mapping, and will also
@@ -338,7 +345,7 @@ export class EventSourceMapping extends cdk.Resource implements IEventSourceMapp
       throw new Error(`maxBatchingWindow cannot be over 300 seconds, got ${props.maxBatchingWindow.toSeconds()}`);
     }
 
-    if (props.maxConcurrency && (props.maxConcurrency < 2 || props.maxConcurrency > 1000)) {
+    if (props.maxConcurrency && !cdk.Token.isUnresolved(props.maxConcurrency) && (props.maxConcurrency < 2 || props.maxConcurrency > 1000)) {
       throw new Error('maxConcurrency must be between 2 and 1000 concurrent instances');
     }
 

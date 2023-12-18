@@ -3,7 +3,6 @@
 
 name: PR Linter
 on:
-  # Necessary to have sufficient permissions to write to the PR
   pull_request_target:
     types:
       - labeled
@@ -12,20 +11,67 @@ on:
       - opened
       - synchronize
       - reopened
+  workflow_run:
+    workflows: [PR Linter Trigger]
+    types:
+      - completed
   status:
 
 jobs:
+  download-if-workflow-run:
+    runs-on: ubuntu-latest
+    outputs:
+      pr_number: ${{ steps.pr_output.outputs.pr_number }}
+      pr_sha: ${{ steps.pr_output.outputs.pr_sha }}
+    # if conditions on all individual steps because subsequent jobs depend on this job
+    # and we cannot skip it entirely
+    steps:
+      - name: 'Download artifact'
+        if: github.event_name == 'workflow_run'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "pr_info"
+            })[0];
+            let download = await github.rest.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/pr_info.zip`, Buffer.from(download.data));
+      - name: 'Unzip artifact'
+        if: github.event_name == 'workflow_run'
+        run: unzip pr_info.zip
+
+      - name: 'Make GitHub output'
+        if: github.event_name == 'workflow_run'
+        id: 'pr_output'
+        run: |
+          echo "cat pr_number"
+          echo "pr_number=$(cat pr_number)" >> "$GITHUB_OUTPUT"
+          echo "cat pr_sha"
+          echo "pr_sha=$(cat pr_sha)" >> "$GITHUB_OUTPUT"
+
   validate-pr:
+    # Necessary to have sufficient permissions to write to the PR
     permissions:
       contents: read
       pull-requests: write
       statuses: read
       issues: read
     runs-on: ubuntu-latest
+    needs: download-if-workflow-run
     steps:
-
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install & Build prlint
         run: yarn install --frozen-lockfile && cd tools/@aws-cdk/prlint && yarn build+test
@@ -34,4 +80,7 @@ jobs:
         uses: ./tools/@aws-cdk/prlint
         env:
           GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          # PR_NUMBER and PR_SHA is empty if triggered by pull_request_target, since we already have that info
+          PR_NUMBER: ${{ needs.download-if-workflow-run.outputs.pr_number }}
+          PR_SHA: ${{ needs.download-if-workflow-run.outputs.pr_sha }}
           REPO_ROOT: ${{ github.workspace }}

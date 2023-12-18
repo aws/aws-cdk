@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "singlevaluewidget-with-period/DefaultTest": {
+      "stacks": [
+        "aws-cdk-cloudwatch-singlevaluewidget-period-integ"
+      ],
+      "assertionStack": "singlevaluewidget-with-period/DefaultTest/DeployAssert",
+      "assertionStackName": "singlevaluewidgetwithperiodDefaultTestDeployAssert48DEBCE0"
+    }
+  }
+}

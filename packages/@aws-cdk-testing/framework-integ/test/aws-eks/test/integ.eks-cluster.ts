@@ -7,7 +7,7 @@ import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { App, CfnOutput, Duration, Token, Fn, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-24';
+import * as kplus from 'cdk8s-plus-27';
 import * as constructs from 'constructs';
 import * as hello from './hello-k8s';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
@@ -131,6 +131,16 @@ class EksClusterStack extends Stack {
       repository: 'https://helm.nginx.com/stable',
       namespace: 'nginx',
       wait: true,
+      release: 'nginx-ingress',
+      // https://github.com/nginxinc/helm-charts/tree/master/stable
+      version: '0.17.1',
+      values: {
+        controller: {
+          service: {
+            create: false,
+          },
+        },
+      },
       createNamespace: false,
       timeout: Duration.minutes(15),
     });
@@ -162,6 +172,8 @@ class EksClusterStack extends Stack {
     // deploy the Kubernetes dashboard through a helm chart
     this.cluster.addHelmChart('dashboard', {
       chart: 'kubernetes-dashboard',
+      // https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard
+      version: '6.0.8',
       repository: 'https://kubernetes.github.io/dashboard/',
     });
   }
@@ -199,6 +211,8 @@ class EksClusterStack extends Stack {
     this.cluster.addNodegroupCapacity('extra-ng', {
       instanceTypes: [new ec2.InstanceType('t3.small')],
       minSize: 1,
+      maxSize: 4,
+      maxUnavailable: 3,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
     });
@@ -248,6 +262,7 @@ class EksClusterStack extends Stack {
     this.cluster.addNodegroupCapacity('extra-ng-arm', {
       instanceTypes: [new ec2.InstanceType('m6g.medium')],
       minSize: 1,
+      maxUnavailablePercentage: 33,
       // reusing the default capacity nodegroup instance role when available
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
     });
@@ -311,7 +326,7 @@ class EksClusterStack extends Stack {
 }
 
 // this test uses both the bottlerocket image and the inf1 instance, which are only supported in these
-// regions. see https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-eks#bottlerocket
+// regions. see https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-eks#bottlerocket
 // and https://aws.amazon.com/about-aws/whats-new/2019/12/introducing-amazon-ec2-inf1-instances-high-performance-and-the-lowest-cost-machine-learning-inference-in-the-cloud/
 const supportedRegions = [
   'us-east-1',
@@ -322,7 +337,7 @@ const app = new App();
 
 // since the EKS optimized AMI is hard-coded here based on the region,
 // we need to actually pass in a specific region.
-const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-test', {
+const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster', {
   env: { region: 'us-east-1' },
 });
 
@@ -341,8 +356,10 @@ if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
 
 }
 
-new integ.IntegTest(app, 'aws-cdk-eks-cluster', {
+new integ.IntegTest(app, 'aws-cdk-eks-cluster-integ', {
   testCases: [stack],
+  // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
+  diffAssets: false,
   cdkCommandOptions: {
     deploy: {
       args: {

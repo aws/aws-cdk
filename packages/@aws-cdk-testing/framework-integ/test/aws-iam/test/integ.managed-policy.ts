@@ -27,6 +27,12 @@ const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
 role.grantAssumeRole(policy.grantPrincipal);
 Grant.addToPrincipal({ actions: ['iam:*'], resourceArns: [role.roleArn], grantee: policy2 });
 
+policy.attachToRole(role);
+
+// Idempotent with imported roles, see https://github.com/aws/aws-cdk/issues/28101
+const importedRole = Role.fromRoleArn(stack, 'ImportedRole', role.roleArn);
+policy.attachToRole(importedRole);
+
 new IntegTest(app, 'ManagedPolicyInteg', {
   testCases: [stack],
 });

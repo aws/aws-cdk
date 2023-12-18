@@ -1,34 +1,16 @@
-import * as path from 'path';
 import { Construct } from 'constructs';
 import { IAliasRecordTarget } from './alias-record-target';
+import { GeoLocation } from './geo-location';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
-import { builtInCustomResourceProviderNodeRuntime, CustomResource, CustomResourceProvider, Duration, IResource, RemovalPolicy, Resource, Token } from '../../core';
+import { CustomResource, Duration, IResource, RemovalPolicy, Resource, Token } from '../../core';
+import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
+import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
 
 const CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE = 'Custom::CrossAccountZoneDelegation';
 const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSet';
-
-/**
- * Context key to control whether to use the regional STS endpoint, instead of the global one
- *
- * There is only exactly one use case where you want to turn this on. If:
- *
- * - you are building an AWS service; AND
- * - would like to your own Global Service Principal in the trust policy of the delegation role; AND
- * - the target account is opted in in the same region as well
- *
- * Then you can turn this on. For all other use cases, the global endpoint is preferable:
- *
- * - if you are a regular customer, your trust policy would be in terms of account ids or
- *   organization ids, or ARNs, not Service Principals, so you don't care about this behavior.
- * - if the target account is not opted in as well, the AssumeRole call would fail
- *
- * Because this configuration option is so rare, turn it into a context setting instead
- * of a publicly available prop.
- */
-const USE_REGIONAL_STS_ENDPOINT_CONTEXT_KEY = '@aws-cdk/aws-route53:useRegionalStsEndpoint';
 
 /**
  * A record set
@@ -156,6 +138,11 @@ export interface RecordSetOptions {
   readonly zone: IHostedZone;
 
   /**
+   * The geographical origin for this record to return DNS records based on the user's location.
+   */
+  readonly geoLocation?: GeoLocation;
+
+  /**
    * The subdomain name for this record. This should be relative to the zone root name.
    *
    * For example, if you want to create a record for acme.example.com, specify
@@ -270,22 +257,25 @@ export class RecordSet extends Resource implements IRecordSet {
       aliasTarget: props.target.aliasTarget && props.target.aliasTarget.bind(this, props.zone),
       ttl,
       comment: props.comment,
+      geoLocation: props.geoLocation ? {
+        continentCode: props.geoLocation.continentCode,
+        countryCode: props.geoLocation.countryCode,
+        subdivisionCode: props.geoLocation.subdivisionCode,
+      } : undefined,
+      setIdentifier: props.geoLocation ? this.configureSetIdentifer(props.geoLocation) : undefined,
     });
 
     this.domainName = recordSet.ref;
 
     if (props.deleteExisting) {
       // Delete existing record before creating the new one
-      const provider = CustomResourceProvider.getOrCreateProvider(this, DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE, {
-        codeDirectory: path.join(__dirname, 'delete-existing-record-set-handler'),
-        runtime: builtInCustomResourceProviderNodeRuntime(this),
+      const provider = DeleteExistingRecordSetProvider.getOrCreateProvider(this, DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE, {
         policyStatements: [{ // IAM permissions for all providers
           Effect: 'Allow',
           Action: 'route53:GetChange',
           Resource: '*',
         }],
       });
-
       // Add to the singleton policy for this specific provider
       provider.addToRolePolicy({
         Effect: 'Allow',
@@ -316,6 +306,20 @@ export class RecordSet extends Resource implements IRecordSet {
 
       recordSet.node.addDependency(customResource);
     }
+  }
+
+  private configureSetIdentifer(props: GeoLocation): string | undefined {
+    let identifier = 'GEO';
+    if (props.continentCode) {
+      identifier = identifier.concat('_CONTINENT_', props.continentCode);
+    }
+    if (props.countryCode) {
+      identifier = identifier.concat('_COUNTRY_', props.countryCode);
+    }
+    if (props.subdivisionCode) {
+      identifier = identifier.concat('_SUBDIVISION_', props.subdivisionCode);
+    }
+    return identifier;
   }
 }
 
@@ -767,10 +771,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
       throw Error('Only one of parentHostedZoneName and parentHostedZoneId is supported');
     }
 
-    const provider = CustomResourceProvider.getOrCreateProvider(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, 'cross-account-zone-delegation-handler'),
-      runtime: builtInCustomResourceProviderNodeRuntime(this),
-    });
+    const provider = CrossAccountZoneDelegationProvider.getOrCreateProvider(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE);
 
     const role = iam.Role.fromRoleArn(this, 'cross-account-zone-delegation-handler-role', provider.roleArn);
 
@@ -779,8 +780,6 @@ export class CrossAccountZoneDelegationRecord extends Construct {
       actions: ['sts:AssumeRole'],
       resources: [props.delegationRole.roleArn],
     }));
-
-    const useRegionalStsEndpoint = this.node.tryGetContext(USE_REGIONAL_STS_ENDPOINT_CONTEXT_KEY);
 
     const customResource = new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
       resourceType: CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE,
@@ -793,7 +792,6 @@ export class CrossAccountZoneDelegationRecord extends Construct {
         DelegatedZoneName: props.delegatedZone.zoneName,
         DelegatedZoneNameServers: props.delegatedZone.hostedZoneNameServers!,
         TTL: (props.ttl || Duration.days(2)).toSeconds(),
-        UseRegionalStsEndpoint: useRegionalStsEndpoint ? 'true' : undefined,
       },
     });
 

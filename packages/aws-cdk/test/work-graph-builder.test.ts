@@ -3,6 +3,9 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudAssemblyBuilder } from '@aws-cdk/cx-api';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { expect } from '@jest/globals';
+import { WorkGraph } from '../lib/util/work-graph';
 import { WorkGraphBuilder } from '../lib/util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode, WorkNode } from '../lib/util/work-graph-types';
 
@@ -14,6 +17,25 @@ beforeEach(() => {
 afterEach(() => {
   rootBuilder.delete();
 });
+
+function superset<A>(xs: A[]): Set<A> {
+  const ret = new Set(xs);
+  (ret as any).isSuperset = true;
+  return ret;
+}
+
+expect.addEqualityTesters([
+  function(exp: unknown, act: unknown): boolean | undefined {
+    if (exp instanceof Set && isIterable(act)) {
+      if ((exp as any).isSuperset) {
+        const actSet = new Set(act);
+        return Array.from(exp as any).every((x) => actSet.has(x));
+      }
+      return this.equals(Array.from(exp).sort(), Array.from(act).sort());
+    }
+    return undefined;
+  },
+]);
 
 describe('with some stacks and assets', () => {
   let assembly: cxapi.CloudAssembly;
@@ -27,34 +49,34 @@ describe('with some stacks and assets', () => {
 
     expect(assertableNode(graph.node('stack2'))).toEqual(expect.objectContaining({
       type: 'stack',
-      dependencies: expect.arrayContaining(['F1:D1-publish']),
-    } as StackNode));
+      dependencies: superset(['publish-F1-add54bdbcb']),
+    } as Partial<StackNode>));
   });
 
   test('asset publishing step depends on asset building step', () => {
     const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
 
-    expect(graph.node('F1:D1-publish')).toEqual(expect.objectContaining({
+    expect(graph.node('publish-F1-add54bdbcb')).toEqual(expect.objectContaining({
       type: 'asset-publish',
-      dependencies: new Set(['F1:D1-build']),
-    } as Partial<AssetPublishNode>));
+      dependencies: superset(['build-F1-a533139934']),
+    } satisfies Partial<AssetPublishNode>));
   });
 
   test('with prebuild off, asset building inherits dependencies from their parent stack', () => {
     const graph = new WorkGraphBuilder(false).build(assembly.artifacts);
 
-    expect(graph.node('F1:D1-build')).toEqual(expect.objectContaining({
+    expect(graph.node('build-F1-a533139934')).toEqual(expect.objectContaining({
       type: 'asset-build',
-      dependencies: new Set(['stack0', 'stack1']),
+      dependencies: superset(['stack0', 'stack1']),
     } as Partial<AssetBuildNode>));
   });
 
   test('with prebuild on, assets only have their own dependencies', () => {
     const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
 
-    expect(graph.node('F1:D1-build')).toEqual(expect.objectContaining({
+    expect(graph.node('build-F1-a533139934')).toEqual(expect.objectContaining({
       type: 'asset-build',
-      dependencies: new Set(['stack0']),
+      dependencies: superset(['stack0']),
     } as Partial<AssetBuildNode>));
   });
 });
@@ -83,13 +105,16 @@ test('can handle nested assemblies', async () => {
 
   let workDone = 0;
   const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
+
   await graph.doParallel(10, {
     deployStack: async () => { workDone += 1; },
     buildAsset: async () => { },
     publishAsset: async () => { workDone += 1; },
   });
 
-  expect(workDone).toEqual(8);
+  // The asset is shared between parent assembly and nested assembly, but the stacks will be deployed
+  // 3 stacks + 1 asset + 3 stacks (1 reused asset)
+  expect(workDone).toEqual(7);
 });
 
 test('dependencies on unselected artifacts are silently ignored', async () => {
@@ -109,7 +134,7 @@ test('dependencies on unselected artifacts are silently ignored', async () => {
   }));
 });
 
-test('assets with shared contents between dependant stacks', async () => {
+describe('tests that use assets', () => {
   const files = {
     // Referencing an existing file on disk is important here.
     // It means these two assets will have the same AssetManifest
@@ -121,36 +146,142 @@ test('assets with shared contents between dependant stacks', async () => {
       },
     },
   };
+  const environment = 'aws://11111/us-east-1';
 
-  addStack(rootBuilder, 'StackA', {
-    environment: 'aws://11111/us-east-1',
-    dependencies: ['StackA.assets'],
+  test('assets with shared contents between dependant stacks', async () => {
+    addStack(rootBuilder, 'StackA', {
+      environment: 'aws://11111/us-east-1',
+      dependencies: ['StackA.assets'],
+    });
+    addAssets(rootBuilder, 'StackA.assets', { files });
+
+    addStack(rootBuilder, 'StackB', {
+      environment: 'aws://11111/us-east-1',
+      dependencies: ['StackB.assets', 'StackA'],
+    });
+    addAssets(rootBuilder, 'StackB.assets', { files });
+
+    const assembly = rootBuilder.buildAssembly();
+
+    const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
+    const traversal = await traverseAndRecord(graph);
+
+    expect(traversal).toEqual([
+      expect.stringMatching(/^build-work-graph-builder.test.js-.*$/),
+      expect.stringMatching(/^publish-work-graph-builder.test.js-.*$/),
+      'StackA',
+      'StackB',
+    ]);
   });
-  addAssets(rootBuilder, 'StackA.assets', { files });
 
-  addStack(rootBuilder, 'StackB', {
-    environment: 'aws://11111/us-east-1',
-    dependencies: ['StackB.assets', 'StackA'],
+  test('a more complex way to make a cycle', async () => {
+    // A -> B -> C | A and C share an asset. The asset will have a dependency on B, that is not a *direct* reverse dependency, and will cause a cycle.
+    addStack(rootBuilder, 'StackA', { environment, dependencies: ['StackA.assets', 'StackB'] });
+    addAssets(rootBuilder, 'StackA.assets', { files });
+
+    addStack(rootBuilder, 'StackB', { environment, dependencies: ['StackC'] });
+
+    addStack(rootBuilder, 'StackC', { environment, dependencies: ['StackC.assets'] });
+    addAssets(rootBuilder, 'StackC.assets', { files });
+
+    const assembly = rootBuilder.buildAssembly();
+    const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
+
+    // THEN
+    expect(graph.findCycle()).toBeUndefined();
   });
-  addAssets(rootBuilder, 'StackB.assets', { files });
 
-  const assembly = rootBuilder.buildAssembly();
+  test('the same asset to different destinations is only built once', async () => {
+    addStack(rootBuilder, 'StackA', {
+      environment: 'aws://11111/us-east-1',
+      dependencies: ['StackA.assets'],
+    });
+    addAssets(rootBuilder, 'StackA.assets', {
+      files: {
+        abcdef: {
+          source: { path: __dirname },
+          destinations: {
+            D1: { bucketName: 'bucket1', objectKey: 'key' },
+            D2: { bucketName: 'bucket2', objectKey: 'key' },
+          },
+        },
+      },
+    });
 
-  const traversal: string[] = [];
-  const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
-  await graph.doParallel(1, {
-    deployStack: async (node) => { traversal.push(node.id); },
-    buildAsset: async (node) => { traversal.push(node.id); },
-    publishAsset: async (node) => { traversal.push(node.id); },
+    addStack(rootBuilder, 'StackB', {
+      environment: 'aws://11111/us-east-1',
+      dependencies: ['StackB.assets', 'StackA'],
+    });
+    addAssets(rootBuilder, 'StackB.assets', {
+      files: {
+        abcdef: {
+          source: { path: __dirname },
+          destinations: {
+            D3: { bucketName: 'bucket3', objectKey: 'key' },
+          },
+        },
+      },
+    });
+
+    const assembly = rootBuilder.buildAssembly();
+
+    const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
+    const traversal = await traverseAndRecord(graph);
+
+    expect(traversal).toEqual([
+      expect.stringMatching(/^build-abcdef-.*$/),
+      expect.stringMatching(/^publish-abcdef-.*$/),
+      expect.stringMatching(/^publish-abcdef-.*$/),
+      'StackA',
+      expect.stringMatching(/^publish-abcdef-.*$/),
+      'StackB',
+    ]);
   });
 
-  expect(traversal).toHaveLength(4); // 1 asset build, 1 asset publish, 2 stacks
-  expect(traversal).toEqual([
-    'work-graph-builder.test.js:D1-build',
-    'work-graph-builder.test.js:D1-publish',
-    'StackA',
-    'StackB',
-  ]);
+  test('different parameters for the same named definition are both published', async () => {
+    addStack(rootBuilder, 'StackA', {
+      environment: 'aws://11111/us-east-1',
+      dependencies: ['StackA.assets'],
+    });
+    addAssets(rootBuilder, 'StackA.assets', {
+      files: {
+        abcdef: {
+          source: { path: __dirname },
+          destinations: {
+            D: { bucketName: 'bucket1', objectKey: 'key' },
+          },
+        },
+      },
+    });
+
+    addStack(rootBuilder, 'StackB', {
+      environment: 'aws://11111/us-east-1',
+      dependencies: ['StackB.assets', 'StackA'],
+    });
+    addAssets(rootBuilder, 'StackB.assets', {
+      files: {
+        abcdef: {
+          source: { path: __dirname },
+          destinations: {
+            D: { bucketName: 'bucket2', objectKey: 'key' },
+          },
+        },
+      },
+    });
+
+    const assembly = rootBuilder.buildAssembly();
+
+    const graph = new WorkGraphBuilder(true).build(assembly.artifacts);
+    const traversal = await traverseAndRecord(graph);
+
+    expect(traversal).toEqual([
+      expect.stringMatching(/^build-abcdef-.*$/),
+      expect.stringMatching(/^publish-abcdef-.*$/),
+      'StackA',
+      expect.stringMatching(/^publish-abcdef-.*$/),
+      'StackB',
+    ]);
+  });
 });
 
 /**
@@ -230,4 +361,18 @@ function assertableNode<A extends WorkNode>(x: A) {
     ...x,
     dependencies: Array.from(x.dependencies),
   };
+}
+
+async function traverseAndRecord(graph: WorkGraph) {
+  const ret: string[] = [];
+  await graph.doParallel(1, {
+    deployStack: async (node) => { ret.push(node.id); },
+    buildAsset: async (node) => { ret.push(node.id); },
+    publishAsset: async (node) => { ret.push(node.id); },
+  });
+  return ret;
+}
+
+function isIterable(x: unknown): x is Iterable<any> {
+  return x && typeof x === 'object' && (x as any)[Symbol.iterator];
 }

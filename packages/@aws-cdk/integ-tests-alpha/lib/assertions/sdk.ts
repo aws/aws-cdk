@@ -1,4 +1,4 @@
-import { ArnFormat, CfnResource, CustomResource, Lazy, Stack, Aspects, CfnOutput } from 'aws-cdk-lib';
+import { ArnFormat, CfnResource, CustomResource, Lazy, Stack, Aspects, CfnOutput } from 'aws-cdk-lib/core';
 import { Construct, IConstruct } from 'constructs';
 import { ApiCallBase, IApiCall } from './api-call-base';
 import { ExpectedResult } from './common';
@@ -69,7 +69,6 @@ export class AwsApiCall extends ApiCallBase {
   private readonly name: string;
 
   private _assertAtPath?: string;
-  private _outputPaths?: string[];
   private readonly api: string;
   private readonly service: string;
 
@@ -81,7 +80,9 @@ export class AwsApiCall extends ApiCallBase {
     this.name = `${props.service}${props.api}`;
     this.api = props.api;
     this.service = props.service;
-    this._outputPaths = props.outputPaths;
+    if (props.outputPaths) {
+      this.outputPaths = [...props.outputPaths];
+    }
 
     this.apiCallResource = new CustomResource(this, 'Default', {
       serviceToken: this.provider.serviceToken,
@@ -93,7 +94,7 @@ export class AwsApiCall extends ApiCallBase {
         stateMachineArn: Lazy.string({ produce: () => this.stateMachineArn }),
         parameters: this.provider.encode(props.parameters),
         flattenResponse: Lazy.string({ produce: () => this.flattenResponse }),
-        outputPaths: Lazy.list({ produce: () => this._outputPaths }),
+        outputPaths: Lazy.list({ produce: () => this.outputPaths }),
         salt: Date.now().toString(),
       },
       resourceType: `${SDK_RESOURCE_TYPE_PREFIX}${this.name}`.substring(0, 60),
@@ -120,7 +121,7 @@ export class AwsApiCall extends ApiCallBase {
 
   public assertAtPath(path: string, expected: ExpectedResult): IApiCall {
     this._assertAtPath = path;
-    this._outputPaths = [path];
+    (this.outputPaths ??= []).push(path);
     this.expectedResult = expected.result;
     this.flattenResponse = 'true';
     return this;
@@ -155,7 +156,7 @@ export enum LogType {
 }
 
 /**
- * The type of invocation. Default is REQUEST_RESPONE
+ * The type of invocation. Default is REQUEST_RESPONSE
  */
 export enum InvocationType {
   /**
@@ -171,7 +172,7 @@ export enum InvocationType {
    * Keep the connection open until the function returns a response or times out.
    * The API response includes the function response and additional data.
    */
-  REQUEST_RESPONE = 'RequestResponse',
+  REQUEST_RESPONSE = 'RequestResponse',
 
   /**
    * Validate parameter values and verify that the user
@@ -192,7 +193,7 @@ export interface LambdaInvokeFunctionProps {
   /**
    * The type of invocation to use
    *
-   * @default InvocationType.REQUEST_RESPONE
+   * @default InvocationType.REQUEST_RESPONSE
    */
   readonly invocationType?: InvocationType;
 

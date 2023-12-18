@@ -25,6 +25,51 @@ describe('rules', () => {
     });
   });
 
+  test('ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays.', () => {
+    const stack = new Stack();
+    new Bucket(stack, 'Bucket', {
+      lifecycleRules: [{
+        expiration: Duration.days(30),
+        expiredObjectDeleteMarker: true,
+      }],
+    });
+
+    expect(() => {
+      Template.fromStack(stack).toJSON();
+    }).toThrow('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.');
+  });
+
+  test('ExpiredObjectDeleteMarker cannot be specified with ExpirationDate.', () => {
+    const stack = new Stack();
+    new Bucket(stack, 'Bucket', {
+      lifecycleRules: [{
+        expirationDate: new Date('2018-01-01'),
+        expiredObjectDeleteMarker: true,
+      }],
+    });
+
+    expect(() => {
+      Template.fromStack(stack).toJSON();
+    }).toThrow('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.');
+  });
+
+  test('ExpiredObjectDeleteMarker cannot be specified with TagFilters.', () => {
+    const stack = new Stack();
+    new Bucket(stack, 'Bucket', {
+      lifecycleRules: [{
+        tagFilters: [
+          { Key: 'tagname1', Value: 'tagvalue1' },
+          { Key: 'tagname2', Value: 'tagvalue2' },
+        ],
+        expiredObjectDeleteMarker: true,
+      }],
+    });
+
+    expect(() => {
+      Template.fromStack(stack).toJSON();
+    }).toThrow('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.');
+  });
+
   test('Can use addLifecycleRule() to add a lifecycle rule', () => {
     // GIVEN
     const stack = new Stack();
@@ -61,7 +106,7 @@ describe('rules', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
-          ExpirationDate: '2018-01-01T00:00:00',
+          ExpirationDate: '2018-01-01T00:00:00Z',
           Status: 'Enabled',
         }],
       },

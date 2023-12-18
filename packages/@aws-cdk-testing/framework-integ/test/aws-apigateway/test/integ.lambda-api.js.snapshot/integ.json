@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "32.0.0",
   "testCases": {
     "lambda-integration/DefaultTest": {
       "stacks": [
         "LambdaApiIntegrationOptionsStack"
       ],
-      "assertionStack": "lambda-integration/DefaultTest/DeployAssert"
+      "assertionStack": "lambda-integration/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaintegrationDefaultTestDeployAssertAC2ED705"
     }
   }
 }

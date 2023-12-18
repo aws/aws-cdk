@@ -11,13 +11,14 @@ import {
   Duration,
   NestedStack,
   Stack,
-} from 'aws-cdk-lib';
+} from 'aws-cdk-lib/core';
 import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { CfnBranch } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';
 import { BasicAuth } from './basic-auth';
 import { renderEnvironmentVariables } from './utils';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
 
 /**
  * A branch
@@ -232,10 +233,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
       this,
       'amplify-asset-deployment-on-event',
       {
-        entry: path.join(
-          __dirname,
-          'asset-deployment-handler/index.js',
-        ),
+        entry: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.js'),
         handler: 'onEvent',
         initialPolicy: [
           new iam.PolicyStatement({
@@ -248,6 +246,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
             ],
           }),
         ],
+        runtime: Runtime.NODEJS_18_X,
       },
     );
 
@@ -255,10 +254,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
       this,
       'amplify-asset-deployment-is-complete',
       {
-        entry: path.join(
-          __dirname,
-          'asset-deployment-handler/index.js',
-        ),
+        entry: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.js'),
         handler: 'isComplete',
         initialPolicy: [
           new iam.PolicyStatement({
@@ -266,6 +262,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
             actions: ['amplify:GetJob*'],
           }),
         ],
+        runtime: Runtime.NODEJS_18_X,
       },
     );
 

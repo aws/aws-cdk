@@ -50,7 +50,8 @@
                               "Action": [
                                 "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*"
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -167,14 +168,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "aws-cdk-cloudtrail-inshights-test/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "aws-cdk-cloudtrail-inshights-test/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -219,10 +212,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudTrail::Trail",
                   "aws:cdk:cloudformation:props": {
-                    "isLogging": true,
-                    "s3BucketName": {
-                      "Ref": "S3486F821D"
-                    },
                     "enableLogFileValidation": true,
                     "eventSelectors": [],
                     "includeGlobalServiceEvents": true,
@@ -234,7 +223,11 @@
                         "insightType": "ApiErrorRateInsight"
                       }
                     ],
-                    "isMultiRegionTrail": true
+                    "isLogging": true,
+                    "isMultiRegionTrail": true,
+                    "s3BucketName": {
+                      "Ref": "S3486F821D"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -283,7 +276,7 @@
                 "path": "aws-cdk-cloudtrail-inshights/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -329,7 +322,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },

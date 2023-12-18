@@ -4,7 +4,12 @@
    "Type": "AWS::ECS::Cluster",
    "Properties": {
     "ServiceConnectDefaults": {
-     "Namespace": "scorekeep.com"
+     "Namespace": {
+      "Fn::GetAtt": [
+       "EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F",
+       "Arn"
+      ]
+     }
     }
    }
   },
@@ -542,6 +547,11 @@
      "Ref": "EcsCluster97242B84"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -598,10 +608,16 @@
     "TaskDefinition": {
      "Ref": "TaskDef54694570"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   },
   "svcLogGroup25CAF347": {
    "Type": "AWS::Logs::LogGroup",
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -619,7 +635,103 @@
     "VpcId": {
      "Ref": "EcsClusterVpc779914AB"
     }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
+  },
+  "ns7AAD7A1A": {
+   "Type": "AWS::ServiceDiscovery::HttpNamespace",
+   "Properties": {
+    "Name": "whistler.com"
    }
+  },
+  "svctwoService5892185E": {
+   "Type": "AWS::ECS::Service",
+   "Properties": {
+    "Cluster": {
+     "Ref": "EcsCluster97242B84"
+    },
+    "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
+     "MaximumPercent": 200,
+     "MinimumHealthyPercent": 50
+    },
+    "EnableECSManagedTags": false,
+    "LaunchType": "FARGATE",
+    "NetworkConfiguration": {
+     "AwsvpcConfiguration": {
+      "AssignPublicIp": "DISABLED",
+      "SecurityGroups": [
+       {
+        "Fn::GetAtt": [
+         "svctwoSecurityGroup7B696927",
+         "GroupId"
+        ]
+       }
+      ],
+      "Subnets": [
+       {
+        "Ref": "EcsClusterVpcPrivateSubnet1SubnetFAB0E487"
+       },
+       {
+        "Ref": "EcsClusterVpcPrivateSubnet2SubnetC2B7B1BA"
+       }
+      ]
+     }
+    },
+    "ServiceConnectConfiguration": {
+     "Enabled": true,
+     "Namespace": {
+      "Fn::GetAtt": [
+       "ns7AAD7A1A",
+       "Arn"
+      ]
+     },
+     "Services": [
+      {
+       "ClientAliases": [
+        {
+         "DnsName": "api",
+         "Port": 80
+        }
+       ],
+       "PortName": "api"
+      }
+     ]
+    },
+    "TaskDefinition": {
+     "Ref": "TaskDef54694570"
+    }
+   },
+   "DependsOn": [
+    "ns7AAD7A1A",
+    "TaskDefTaskRole1EDB4A67"
+   ]
+  },
+  "svctwoSecurityGroup7B696927": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-ecs-service-connect/svc-two/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "EcsClusterVpc779914AB"
+    }
+   },
+   "DependsOn": [
+    "ns7AAD7A1A",
+    "TaskDefTaskRole1EDB4A67"
+   ]
   }
  },
  "Parameters": {

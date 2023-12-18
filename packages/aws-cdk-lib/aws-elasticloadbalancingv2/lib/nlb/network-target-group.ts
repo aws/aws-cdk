@@ -259,14 +259,6 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
       }
     }
 
-    if (healthCheck.healthyThresholdCount && healthCheck.unhealthyThresholdCount &&
-      healthCheck.healthyThresholdCount !== healthCheck.unhealthyThresholdCount) {
-      ret.push([
-        `Healthy and Unhealthy Threshold Counts must be the same: ${healthCheck.healthyThresholdCount}`,
-        `is not equal to ${healthCheck.unhealthyThresholdCount}.`,
-      ].join(' '));
-    }
-
     if (!healthCheck.protocol) {
       return ret;
     }
@@ -280,11 +272,17 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
         `Must be one of [${NLB_PATH_HEALTH_CHECK_PROTOCOLS.join(', ')}]`,
       ].join(' '));
     }
-    if (healthCheck.timeout && healthCheck.timeout.toSeconds() !== NLB_HEALTH_CHECK_TIMEOUTS[healthCheck.protocol]) {
-      ret.push([
-        'Custom health check timeouts are not supported for Network Load Balancer health checks.',
-        `Expected ${NLB_HEALTH_CHECK_TIMEOUTS[healthCheck.protocol]} seconds for ${healthCheck.protocol}, got ${healthCheck.timeout.toSeconds()}`,
-      ].join(' '));
+
+    const lowHealthCheckTimeout = 2;
+    const highHealthCheckTimeout = 120;
+    if (healthCheck.timeout) {
+      const timeoutSeconds = healthCheck.timeout.toSeconds();
+      if (timeoutSeconds < lowHealthCheckTimeout || timeoutSeconds > highHealthCheckTimeout) {
+        ret.push(`Health check timeout '${timeoutSeconds}' not supported. Must be a number between ${lowHealthCheckTimeout} and ${highHealthCheckTimeout}.`);
+      }
+      if (healthCheck.interval && healthCheck.interval.toSeconds() < timeoutSeconds) {
+        ret.push(`Health check timeout '${timeoutSeconds}' must not be greater than the interval '${healthCheck.interval.toSeconds()}'`);
+      }
     }
 
     return ret;
@@ -366,8 +364,3 @@ export interface INetworkLoadBalancerTarget {
 
 const NLB_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS, Protocol.TCP];
 const NLB_PATH_HEALTH_CHECK_PROTOCOLS = [Protocol.HTTP, Protocol.HTTPS];
-const NLB_HEALTH_CHECK_TIMEOUTS: { [protocol in Protocol]?: number } = {
-  [Protocol.HTTP]: 6,
-  [Protocol.HTTPS]: 10,
-  [Protocol.TCP]: 10,
-};

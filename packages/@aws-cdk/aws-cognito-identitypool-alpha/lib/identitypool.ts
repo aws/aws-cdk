@@ -14,7 +14,7 @@ import {
   Stack,
   ArnFormat,
   Lazy,
-} from 'aws-cdk-lib';
+} from 'aws-cdk-lib/core';
 import {
   Construct,
 } from 'constructs';

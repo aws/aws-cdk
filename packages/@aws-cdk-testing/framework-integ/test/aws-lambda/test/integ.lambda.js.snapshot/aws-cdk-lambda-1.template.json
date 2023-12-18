@@ -58,15 +58,15 @@
     "Code": {
      "ZipFile": "foo"
     },
+    "Description": "version-hash:328ef84696e962e6a3e0f3c7b7e62c5d",
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "MyLambdaServiceRole4539ECB6",
       "Arn"
      ]
     },
-    "Description": "version-hash:1786de9fc1bc4cb2fd5b64d612628c6f",
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
@@ -85,7 +85,7 @@
     }
    }
   },
-  "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629": {
+  "MyLambdaCurrentVersionE7A382CC9ce8e408346691aecad19aa25bc70350": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -101,7 +101,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "MyLambdaCurrentVersionE7A382CCac1a0c5f52d7e233eaf45e0c00b74629",
+      "MyLambdaCurrentVersionE7A382CC9ce8e408346691aecad19aa25bc70350",
       "Version"
      ]
     },
@@ -122,13 +122,13 @@
    "Type": "AWS::Lambda::Url",
    "Properties": {
     "AuthType": "NONE",
+    "Qualifier": "prod",
     "TargetFunctionArn": {
      "Fn::GetAtt": [
       "MyLambdaCCE802FB",
       "Arn"
      ]
-    },
-    "Qualifier": "prod"
+    }
    },
    "DependsOn": [
     "Alias325C5727"
@@ -141,9 +141,66 @@
     "FunctionName": {
      "Ref": "Alias325C5727"
     },
-    "Principal": "*",
-    "FunctionUrlAuthType": "NONE"
+    "FunctionUrlAuthType": "NONE",
+    "Principal": "*"
    }
+  },
+  "MySnapStartLambdaServiceRoleE0F04324": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "MySnapStartLambda8F562E6E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "a37d3ef54c18e7738fe5dc008504591bd3b1f14c6a09ee91eac6d55f7ca5ba5f.zip"
+    },
+    "Description": "version-hash:cb4acf3f2fee0dc7ef3d57cc9e3c231f",
+    "Handler": "example.Handler::handleRequest",
+    "Role": {
+     "Fn::GetAtt": [
+      "MySnapStartLambdaServiceRoleE0F04324",
+      "Arn"
+     ]
+    },
+    "Runtime": "java11",
+    "SnapStart": {
+     "ApplyOn": "PublishedVersions"
+    }
+   },
+   "DependsOn": [
+    "MySnapStartLambdaServiceRoleE0F04324"
+   ]
   }
  },
  "Parameters": {

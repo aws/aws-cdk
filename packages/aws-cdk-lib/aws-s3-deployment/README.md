@@ -330,19 +330,23 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
 ## Data with deploy-time values
 
 The content passed to `Source.data()`, `Source.jsonData()`, or `Source.yamlData()` can include
-references that will get resolved only during deployment.
+references that will get resolved only during deployment. Only a subset of CloudFormation functions
+are supported however, namely: Ref, Fn::GetAtt, Fn::Join, and Fn::Select (Fn::Split may be nested under Fn::Select).
 
 For example:
 
 ```ts
 import * as sns from 'aws-cdk-lib/aws-sns';
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 declare const destinationBucket: s3.Bucket;
 declare const topic: sns.Topic;
+declare const tg: elbv2.ApplicationTargetGroup;
 
 const appConfig = {
   topic_arn: topic.topicArn,
   base_url: 'https://my-endpoint',
+  lb_name: tg.firstLoadBalancerFullName,
 };
 
 new s3deploy.BucketDeployment(this, 'BucketDeployment', {
@@ -354,6 +358,40 @@ new s3deploy.BucketDeployment(this, 'BucketDeployment', {
 The value in `topic.topicArn` is a deploy-time value. It only gets resolved
 during deployment by placing a marker in the generated source file and
 substituting it when its deployed to the destination with the actual value.
+
+### Substitutions from Templated Files
+
+The `DeployTimeSubstitutedFile` construct allows you to specify substitutions
+to make from placeholders in a local file which will be resolved during deployment. This
+is especially useful in situations like creating an API from a spec file, where users might
+want to reference other CDK resources they have created.
+
+The syntax for template variables is `{{ variableName }}` in your local file. Then, you would 
+specify the substitutions in CDK like this:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const myLambdaFunction: lambda.Function;
+declare const destinationBucket: s3.Bucket;
+declare const role: iam.Role;
+
+new s3deploy.DeployTimeSubstitutedFile(this, 'MyFile', {
+  source: 'my-file.yaml',
+  destinationBucket: destinationBucket,
+  substitutions: {
+    variableName: myLambdaFunction.functionName,
+  },
+  role: role,
+});
+```
+
+Nested variables, like `{{ {{ foo }} }}` or `{{ foo {{ bar }} }}`, are not supported by this
+construct. In the first case of a single variable being is double nested `{{ {{ foo }} }}`, only 
+the `{{ foo }}` would be replaced by the substitution, and the extra brackets would remain in the file.
+In the second case of two nexted variables `{{ foo {{ bar }} }}`, only the `{{ bar }}` would be replaced
+in the file.
 
 ## Keep Files Zipped
 
@@ -397,8 +435,8 @@ new cdk.CfnOutput(this, 'ObjectKey', {
 ## Development
 
 The custom resource is implemented in Python 3.9 in order to be able to leverage
-the AWS CLI for "aws s3 sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
-unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/aws-s3-deployment/test/lambda).
+the AWS CLI for "aws s3 sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-s3-deployment/lib/lambda) and
+unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-s3-deployment/test/lambda).
 
 This package requires Python 3.9 during build time in order to create the custom
 resource Lambda bundle and test it. It also relies on a few bash scripts, so

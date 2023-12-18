@@ -8,6 +8,7 @@ import { App, Stack, RemovalPolicy } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult, Match } from '@aws-cdk/integ-tests-alpha';
 import * as constructs from 'constructs';
 import { LambdaDestination } from 'aws-cdk-lib/aws-logs-destinations';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class LambdaStack extends Stack {
 
@@ -19,7 +20,7 @@ class LambdaStack extends Stack {
     this.queue = new sqs.Queue(this, 'Queue');
 
     const fn = new lambda.Function(this, 'MyFunction', {
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`exports.handler = async (event) => {
         return 'success';
@@ -55,6 +56,7 @@ const stack = new LambdaStack(app, 'lambda-logssubscription-integ');
 
 const integ = new IntegTest(app, 'LambdaInteg', {
   testCases: [stack],
+  diffAssets: true,
 });
 
 const putEvents = integ.assertions.awsApiCall('EventBridge', 'putEvents', {

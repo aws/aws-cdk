@@ -1,10 +1,11 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
     "PipelineSecurityTest/DefaultTest": {
       "stacks": [
         "PipelineSecurityStack"
       ],
+      "diffAssets": true,
       "assertionStack": "PipelineSecurityTest/DefaultTest/DeployAssert",
       "assertionStackName": "PipelineSecurityTestDefaultTestDeployAssertEE246BCA"
     }

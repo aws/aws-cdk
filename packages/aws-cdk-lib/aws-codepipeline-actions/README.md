@@ -754,7 +754,7 @@ const lambdaCode = lambda.Code.fromCfnParameters();
 const func = new lambda.Function(this, 'Lambda', {
   code: lambdaCode,
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_14_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
 });
 // used to make sure each CDK synthesis produces a different Version
 const version = func.currentVersion;
@@ -857,9 +857,11 @@ Here's an example:
 To use an S3 Bucket as a deployment target in CodePipeline:
 
 ```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
 const sourceOutput = new codepipeline.Artifact();
 const targetBucket = new s3.Bucket(this, 'MyBucket');
-const key: kms.IKey = new kms.Key(stack, 'EnvVarEncryptKey', {
+const key: kms.IKey = new kms.Key(this, 'EnvVarEncryptKey', {
   description: 'sample key',
 });
 
@@ -1143,10 +1145,10 @@ Example:
 const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
   actionName: 'Lambda',
   lambda: new lambda.Function(this, 'Func', {
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     handler: 'index.handler',
     code: lambda.Code.fromInline(`
-        const AWS = require('aws-sdk');
+        const { CodePipeline } = require('@aws-sdk/client-codepipeline');
 
         exports.handler = async function(event, context) {
             const codepipeline = new AWS.CodePipeline();
@@ -1155,7 +1157,7 @@ const lambdaInvokeAction = new codepipeline_actions.LambdaInvokeAction({
                 outputVariables: {
                     MY_VAR: "some value",
                 },
-            }).promise();
+            });
         }
     `),
   }),

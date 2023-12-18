@@ -35,6 +35,21 @@ export interface IChainable {
 }
 
 /**
+ * Values allowed in the retrier JitterStrategy field
+ */
+export enum JitterType {
+  /**
+   * Calculates the delay to be a random number between 0 and the computed backoff for the given retry attempt count
+   */
+  FULL = 'FULL',
+
+  /**
+   * Calculates the delay to be the computed backoff for the given retry attempt count (equivalent to if Jitter was not declared - i.e. the default value)
+   */
+  NONE = 'NONE',
+}
+
+/**
  * Predefined error strings
  * Error names in Amazon States Language - https://states-language.net/spec.html#appendix-a
  * Error handling in Step Functions - https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html
@@ -122,6 +137,20 @@ export interface RetryProps {
   readonly maxAttempts?: number;
 
   /**
+   * Maximum limit on retry interval growth during exponential backoff.
+   *
+   * @default - No max delay
+   */
+  readonly maxDelay?: Duration;
+
+  /**
+   * Introduces a randomization over the retry interval.
+   *
+   * @default - No jitter strategy
+   */
+  readonly jitterStrategy?: JitterType;
+
+  /**
    * Multiplication for how much longer the wait interval gets on every retry
    *
    * @default 2
@@ -146,7 +175,7 @@ export interface CatchProps {
   /**
    * JSONPath expression to indicate where to inject the error data
    *
-   * May also be the special value DISCARD, which will cause the error
+   * May also be the special value JsonPath.DISCARD, which will cause the error
    * data to be discarded.
    *
    * @default $
@@ -155,6 +184,58 @@ export interface CatchProps {
 }
 
 /**
+ * Mode of the Map workflow.
+ */
+export enum ProcessorMode {
+  /**
+   * Inline Map mode.
+   */
+  INLINE = 'INLINE',
+
+  /**
+   * Distributed Map mode.
+   */
+  DISTRIBUTED = 'DISTRIBUTED',
+}
+
+/**
+ * Execution type for the Map workflow.
+ */
+export enum ProcessorType {
+  /**
+   * Standard execution type.
+   */
+  STANDARD = 'STANDARD',
+
+  /**
+   * Express execution type.
+   */
+  EXPRESS = 'EXPRESS',
+}
+
+/**
+ * Specifies the configuration for the processor Map state.
+ */
+export interface ProcessorConfig {
+  /**
+   * Specifies the execution mode for the Map workflow.
+   *
+   * @default - ProcessorMode.INLINE
+   */
+  readonly mode?: ProcessorMode;
+
+  /**
+   * Specifies the execution type for the Map workflow.
+   *
+   * You must provide this field if you specified `DISTRIBUTED` for the `mode` sub-field.
+   *
+   * @default - no execution type
+   */
+  readonly executionType?: ProcessorType;
+}
+
+/**
  * Special string value to discard state input, output or result
+ * @deprecated use JsonPath.DISCARD
  */
 export const DISCARD = 'DISCARD';

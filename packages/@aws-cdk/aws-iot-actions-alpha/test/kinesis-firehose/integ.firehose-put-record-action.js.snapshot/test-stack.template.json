@@ -77,23 +77,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MyStreamServiceRole8C50608A": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "firehose.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
   "MyStreamS3DestinationRole5E0BA960": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -249,7 +232,7 @@
     "FirehoseCidrBlock": "13.232.67.32/27"
    },
    "ap-south-2": {
-    "FirehoseCidrBlock": "18.60.192.128/27/27"
+    "FirehoseCidrBlock": "18.60.192.128/27"
    },
    "ap-southeast-1": {
     "FirehoseCidrBlock": "13.228.64.192/27"
@@ -259,6 +242,9 @@
    },
    "ap-southeast-3": {
     "FirehoseCidrBlock": "108.136.221.64/27"
+   },
+   "ap-southeast-4": {
+    "FirehoseCidrBlock": "16.50.161.128/27"
    },
    "ca-central-1": {
     "FirehoseCidrBlock": "35.183.92.128/27"
@@ -292,6 +278,12 @@
    },
    "eu-west-3": {
     "FirehoseCidrBlock": "35.180.1.96/27"
+   },
+   "il-central-1": {
+    "FirehoseCidrBlock": "51.16.102.0/27"
+   },
+   "me-central-1": {
+    "FirehoseCidrBlock": "3.28.159.32/27"
    },
    "me-south-1": {
     "FirehoseCidrBlock": "15.185.91.0/27"

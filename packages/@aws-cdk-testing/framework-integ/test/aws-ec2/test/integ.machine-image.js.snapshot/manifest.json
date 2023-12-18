@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "integ-ec2-machine-image-test.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-ec2-machine-image-test.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/09b19c98d056dc3ddd9d9852de04232c8c27cdfbb4aa83797c6f9e1e118068d5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b002645f95f6a2b0670b702b8ebd2f5e504cadb0469d1de92f091adf7f3c1855.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -261,36 +262,6 @@
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/integ-ec2-machine-image-test/al2022/InstanceSecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "al2022InstanceSecurityGroupD2B46A06"
-          }
-        ],
-        "/integ-ec2-machine-image-test/al2022/InstanceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "al2022InstanceRole6711C818"
-          }
-        ],
-        "/integ-ec2-machine-image-test/al2022/InstanceProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "al2022InstanceProfileAA7ED3DD"
-          }
-        ],
-        "/integ-ec2-machine-image-test/al2022/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "al20225AC492C0"
-          }
-        ],
-        "/integ-ec2-machine-image-test/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2022-ami-kernel-5.15-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2022amikernel515x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
-          }
-        ],
         "/integ-ec2-machine-image-test/al2023/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -321,6 +292,84 @@
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
+        "/integ-ec2-machine-image-test/al2023WithMinimalAMI/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "al2023WithMinimalAMIInstanceSecurityGroupBD2FA3C4"
+          }
+        ],
+        "/integ-ec2-machine-image-test/al2023WithMinimalAMI/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "al2023WithMinimalAMIInstanceRoleD28B1D5E"
+          }
+        ],
+        "/integ-ec2-machine-image-test/al2023WithMinimalAMI/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "al2023WithMinimalAMIInstanceProfile3DC008CC"
+          }
+        ],
+        "/integ-ec2-machine-image-test/al2023WithMinimalAMI/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "al2023WithMinimalAMI03A043A1"
+          }
+        ],
+        "/integ-ec2-machine-image-test/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-minimal-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amiminimalkernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/integ-ec2-machine-image-test/AmiParameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AmiParameter"
+          }
+        ],
+        "/integ-ec2-machine-image-test/ssm-resolve-instance/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ssmresolveinstanceInstanceSecurityGroupEACCDB27"
+          }
+        ],
+        "/integ-ec2-machine-image-test/ssm-resolve-instance/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ssmresolveinstanceInstanceRoleCC771AEF"
+          }
+        ],
+        "/integ-ec2-machine-image-test/ssm-resolve-instance/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ssmresolveinstanceInstanceProfileAD70EB72"
+          }
+        ],
+        "/integ-ec2-machine-image-test/ssm-resolve-instance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ssmresolveinstanceDC2C8573"
+          }
+        ],
+        "/integ-ec2-machine-image-test/LT/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LTC4631592"
+          }
+        ],
+        "/integ-ec2-machine-image-test/ASG": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
+          }
+        ],
+        "/integ-ec2-machine-image-test/ASG/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASG46ED3070"
+          }
+        ],
         "/integ-ec2-machine-image-test/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -349,6 +398,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integtestDefaultTestDeployAssert24D5C536.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

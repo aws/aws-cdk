@@ -20,8 +20,8 @@
                     "id": "ImportServiceRole",
                     "path": "cdk-integ-lambda-nodejs-dependencies/external/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -59,13 +59,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -77,21 +77,21 @@
                     "id": "Stage",
                     "path": "cdk-integ-lambda-nodejs-dependencies/external/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
                     "path": "cdk-integ-lambda-nodejs-dependencies/external/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               },
@@ -105,13 +105,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "50a8879346510e33e69a511e29d588e7b2d2b477b6989a4db677027bb8605b9f.zip"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "externalServiceRole85A00A90",
-                        "Arn"
-                      ]
+                      "s3Key": "c7937690d1d588b8d91f5f71328142498813c7e04ad7f0da1bb807f0e7ee29a1.zip"
                     },
                     "environment": {
                       "variables": {
@@ -119,17 +113,23 @@
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs16.x"
+                    "role": {
+                      "Fn::GetAtt": [
+                        "externalServiceRole85A00A90",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda-nodejs.NodejsFunction",
+              "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
               "version": "0.0.0"
             }
           },
@@ -141,36 +141,36 @@
                 "id": "Output{\"Ref\":\"external068F12D1\"}",
                 "path": "cdk-integ-lambda-nodejs-dependencies/Exports/Output{\"Ref\":\"external068F12D1\"}",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "cdk-integ-lambda-nodejs-dependencies/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "cdk-integ-lambda-nodejs-dependencies/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3": {
@@ -189,8 +189,8 @@
                     "id": "ImportServiceRole",
                     "path": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/external-sdk-v3/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -228,13 +228,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -246,21 +246,21 @@
                     "id": "Stage",
                     "path": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/external-sdk-v3/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
                     "path": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/external-sdk-v3/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               },
@@ -274,13 +274,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "17aca8d66b8002777cc23fe0985e380297b38bc1a82600d6f78c38ada6902d96.zip"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "externalsdkv3ServiceRole9C835365",
-                        "Arn"
-                      ]
+                      "s3Key": "f3b52c9ad5bbed49f33611a5c250aeacc78f264984e08b98abc221300022e69c.zip"
                     },
                     "environment": {
                       "variables": {
@@ -288,17 +282,23 @@
                       }
                     },
                     "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "externalsdkv3ServiceRole9C835365",
+                        "Arn"
+                      ]
+                    },
                     "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda-nodejs.NodejsFunction",
+              "fqn": "aws-cdk-lib.aws_lambda_nodejs.NodejsFunction",
               "version": "0.0.0"
             }
           },
@@ -310,36 +310,36 @@
                 "id": "Output{\"Ref\":\"externalsdkv3B69F9D99\"}",
                 "path": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/Exports/Output{\"Ref\":\"externalsdkv3B69F9D99\"}",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "LambdaDependencies": {
@@ -355,7 +355,7 @@
                 "path": "LambdaDependencies/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -375,12 +375,12 @@
                             "path": "LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke5050b1f640cc49956b59f2a71febe95c/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.70"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
                           "version": "0.0.0"
                         }
                       },
@@ -392,35 +392,35 @@
                             "id": "Default",
                             "path": "LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke5050b1f640cc49956b59f2a71febe95c/Default/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
                         }
                       },
                       "Invoke": {
                         "id": "Invoke",
                         "path": "LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke5050b1f640cc49956b59f2a71febe95c/Invoke",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
                         }
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
                         "path": "LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke5050b1f640cc49956b59f2a71febe95c/AssertionResults",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
                       "version": "0.0.0"
                     }
                   },
@@ -432,30 +432,30 @@
                         "id": "Staging",
                         "path": "LambdaDependencies/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
                         }
                       },
                       "Role": {
                         "id": "Role",
                         "path": "LambdaDependencies/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
                         }
                       },
                       "Handler": {
                         "id": "Handler",
                         "path": "LambdaDependencies/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.70"
                     }
                   },
                   "LambdaInvoke7d0602e4b9f40ae057f935d874b5f971": {
@@ -471,12 +471,12 @@
                             "path": "LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke7d0602e4b9f40ae057f935d874b5f971/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.70"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
                           "version": "0.0.0"
                         }
                       },
@@ -488,35 +488,35 @@
                             "id": "Default",
                             "path": "LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke7d0602e4b9f40ae057f935d874b5f971/Default/Default",
                             "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
                         }
                       },
                       "Invoke": {
                         "id": "Invoke",
                         "path": "LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke7d0602e4b9f40ae057f935d874b5f971/Invoke",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
                         }
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
                         "path": "LambdaDependencies/DefaultTest/DeployAssert/LambdaInvoke7d0602e4b9f40ae057f935d874b5f971/AssertionResults",
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
                       "version": "0.0.0"
                     }
                   },
@@ -524,33 +524,33 @@
                     "id": "BootstrapVersion",
                     "path": "LambdaDependencies/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "LambdaDependencies/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -559,13 +559,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.270"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "appmesh-routes-port-matchers/DefaultTest": {
+      "stacks": [
+        "mesh-stack"
+      ],
+      "assertionStack": "appmesh-routes-port-matchers/DefaultTest/DeployAssert",
+      "assertionStackName": "appmeshroutesportmatchersDefaultTestDeployAssert40D7C50D"
+    }
+  }
+}

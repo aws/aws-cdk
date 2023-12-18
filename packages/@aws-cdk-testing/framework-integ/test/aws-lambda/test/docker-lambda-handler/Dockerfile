@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/nodejs:12
+FROM public.ecr.aws/lambda/nodejs:18
 ARG FUNCTION_DIR="/var/task"
 # Create function directory
 RUN mkdir -p ${FUNCTION_DIR}

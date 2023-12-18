@@ -28,7 +28,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -52,7 +52,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: 'nodejs14.x',
+        Runtime: lambda.Runtime.NODEJS_LATEST.name,
       },
       DependsOn: ['MyLambdaServiceRole4539ECB6'],
     });
@@ -63,7 +63,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       initialPolicy: [new iam.PolicyStatement({ actions: ['*'], resources: ['*'] })],
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -105,7 +105,7 @@ describe('function', () => {
         Code: { ZipFile: 'foo' },
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
-        Runtime: 'nodejs14.x',
+        Runtime: lambda.Runtime.NODEJS_LATEST.name,
       },
       DependsOn: ['MyLambdaServiceRoleDefaultPolicy5BBC6F68', 'MyLambdaServiceRole4539ECB6'],
     });
@@ -741,7 +741,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       functionName: 'OneFunctionToRuleThemAll',
       deadLetterQueueEnabled: true,
     });
@@ -809,7 +809,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs14.x',
+        Runtime: lambda.Runtime.NODEJS_LATEST.name,
         DeadLetterConfig: {
           TargetArn: {
             'Fn::GetAtt': [
@@ -833,7 +833,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       deadLetterQueueEnabled: true,
     });
 
@@ -859,7 +859,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       deadLetterQueueEnabled: false,
     });
 
@@ -874,7 +874,7 @@ describe('function', () => {
           'Arn',
         ],
       },
-      Runtime: 'nodejs14.x',
+      Runtime: lambda.Runtime.NODEJS_LATEST.name,
     });
   });
 
@@ -889,7 +889,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       deadLetterQueue: dlQueue,
     });
 
@@ -934,7 +934,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       deadLetterQueueEnabled: true,
       deadLetterQueue: dlQueue,
     });
@@ -980,7 +980,7 @@ describe('function', () => {
     expect(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       deadLetterQueueEnabled: false,
       deadLetterQueue: dlQueue,
     })).toThrow(/deadLetterQueue defined but deadLetterQueueEnabled explicitly set to false/);
@@ -994,7 +994,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       deadLetterTopic: dlTopic,
     });
 
@@ -1029,7 +1029,7 @@ describe('function', () => {
     expect(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       deadLetterQueueEnabled: false,
       deadLetterTopic: dlTopic,
     })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
@@ -1043,7 +1043,7 @@ describe('function', () => {
     expect(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       deadLetterQueueEnabled: true,
       deadLetterTopic: dlTopic,
     })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
@@ -1058,7 +1058,7 @@ describe('function', () => {
     expect(() => new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       deadLetterQueue: dlQueue,
       deadLetterTopic: dlTopic,
     })).toThrow(/deadLetterQueue and deadLetterTopic cannot be specified together at the same time/);
@@ -1070,7 +1070,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       tracing: lambda.Tracing.ACTIVE,
     });
 
@@ -1108,7 +1108,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs14.x',
+        Runtime: lambda.Runtime.NODEJS_LATEST.name,
         TracingConfig: {
           Mode: 'Active',
         },
@@ -1126,7 +1126,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       tracing: lambda.Tracing.PASS_THROUGH,
     });
 
@@ -1164,7 +1164,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs14.x',
+        Runtime: lambda.Runtime.NODEJS_LATEST.name,
         TracingConfig: {
           Mode: 'PassThrough',
         },
@@ -1182,7 +1182,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       tracing: lambda.Tracing.DISABLED,
     });
 
@@ -1200,7 +1200,7 @@ describe('function', () => {
             'Arn',
           ],
         },
-        Runtime: 'nodejs14.x',
+        Runtime: lambda.Runtime.NODEJS_LATEST.name,
       },
       DependsOn: [
         'MyLambdaServiceRole4539ECB6',
@@ -1234,7 +1234,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
       });
 
       // WHEN
@@ -1264,7 +1264,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
       });
       const service = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
@@ -1290,7 +1290,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
       });
       const account = new iam.AccountPrincipal('123456789012');
 
@@ -1316,7 +1316,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
       });
       const account = new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole');
 
@@ -1342,7 +1342,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
       });
       const org = new iam.OrganizationPrincipal('my-org-id');
 
@@ -1369,7 +1369,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
       });
       const service = new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com');
 
@@ -1398,7 +1398,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
       });
 
       // WHEN
@@ -1430,7 +1430,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'Function', {
         code: lambda.Code.fromInline('xxx'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
       });
 
       // WHEN
@@ -1525,13 +1525,118 @@ describe('function', () => {
     });
   });
 
+  describe('grantInvokeCompositePrincipal', () => {
+    test('adds iam:InvokeFunction for a CompositePrincipal (two accounts)', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const compositePrincipal = new iam.CompositePrincipal(
+        new iam.AccountPrincipal('1234'),
+        new iam.AccountPrincipal('5678'),
+      );
+
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // WHEN
+      fn.grantInvokeCompositePrincipal(compositePrincipal);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: '1234',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: '5678',
+      });
+    });
+
+    test('adds iam:InvokeFunction for a CompositePrincipal (multiple types)', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const compositePrincipal = new iam.CompositePrincipal(
+        new iam.AccountPrincipal('1234'),
+        new iam.ServicePrincipal('apigateway.amazonaws.com'),
+        new iam.ArnPrincipal('arn:aws:iam::123456789012:role/someRole'),
+        new iam.OrganizationPrincipal('my-org-id'),
+      );
+
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      // WHEN
+      fn.grantInvokeCompositePrincipal(compositePrincipal);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: '1234',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: 'apigateway.amazonaws.com',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: 'arn:aws:iam::123456789012:role/someRole',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'Function76856677',
+            'Arn',
+          ],
+        },
+        Principal: '*',
+        PrincipalOrgID: 'my-org-id',
+      });
+    });
+  });
+
   test('Can use metricErrors on a lambda Function', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // THEN
@@ -1550,7 +1655,7 @@ describe('function', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     let bindTarget;
@@ -1575,7 +1680,7 @@ describe('function', () => {
     const code = new lambda.S3Code(bucket, 'ObjectKey');
 
     const fn = new lambda.Function(stack, 'fn', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
       handler: 'index.main',
     });
@@ -1585,7 +1690,7 @@ describe('function', () => {
     // WHEN
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_LATEST],
     });
 
     fn.addLayers(layer);
@@ -1603,12 +1708,12 @@ describe('function', () => {
     const code = new lambda.S3Code(bucket, 'ObjectKey');
     const layer = new lambda.LayerVersion(stack, 'LayerVersion', {
       code,
-      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_LATEST],
     });
 
     // function with layer
     const fn = new lambda.Function(stack, 'fn', {
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
       handler: 'index.main',
       layers: [layer],
@@ -1636,16 +1741,18 @@ describe('function', () => {
     const stack = new cdk.Stack(undefined, 'TestStack');
     const layer = lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
-      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
+      compatibleRuntimes: [new lambda.Runtime('something2')],
     });
 
     // THEN
     expect(() => new lambda.Function(stack, 'Function', {
       layers: [layer],
-      runtime: lambda.Runtime.NODEJS_16_X,
+      runtime: new lambda.Runtime('something1', lambda.RuntimeFamily.NODEJS, {
+        supportsInlineCode: true,
+      }),
       code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
       handler: 'index.main',
-    })).toThrow(/nodejs16.x is not in \[nodejs14.x\]/);
+    })).toThrow(/something1 is not in \[something2\]/);
   });
 
   test('using more than 5 layers', () => {
@@ -1653,13 +1760,13 @@ describe('function', () => {
     const stack = new cdk.Stack(undefined, 'TestStack');
     const layers = new Array(6).fill(lambda.LayerVersion.fromLayerVersionAttributes(stack, 'TestLayer', {
       layerVersionArn: 'arn:aws:...',
-      compatibleRuntimes: [lambda.Runtime.NODEJS_14_X],
+      compatibleRuntimes: [lambda.Runtime.NODEJS_LATEST],
     }));
 
     // THEN
     expect(() => new lambda.Function(stack, 'Function', {
       layers,
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('exports.main = function() { console.log("DONE"); }'),
       handler: 'index.main',
     })).toThrow(/Unable to add layer:/);
@@ -1743,7 +1850,7 @@ describe('function', () => {
     // WHEN
     new lambda.Function(stack, 'fn', {
       code: lambda.Code.fromInline('boom'),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.bam',
       events: [
         new EventSource(),
@@ -1819,7 +1926,7 @@ describe('function', () => {
     new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       onFailure: {
         bind: () => ({ destination: 'on-failure-arn' }),
       },
@@ -1855,7 +1962,7 @@ describe('function', () => {
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       maxEventAge: cdk.Duration.hours(1),
     });
 
@@ -1889,7 +1996,7 @@ describe('function', () => {
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // WHEN
@@ -1918,7 +2025,7 @@ describe('function', () => {
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
     fn.addEnvironment('KEY', 'value', { removeInEdge: true });
 
@@ -1937,7 +2044,7 @@ describe('function', () => {
     const fn = new lambda.Function(stack, 'fn', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       environment: {
         KEY: 'value',
       },
@@ -2020,7 +2127,7 @@ describe('function', () => {
     // WHEN/THEN
     expect(() => new lambda.Function(stack, 'fn', {
       handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline(''),
     })).toThrow(/Lambda inline code cannot be empty/);
   });
@@ -2029,7 +2136,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('foo'),
     });
     const logGroup = fn.logGroup;
@@ -2047,7 +2154,7 @@ describe('function', () => {
 
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('foo'),
       deadLetterQueue: dlQueue,
     });
@@ -2069,7 +2176,7 @@ describe('function', () => {
 
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('foo'),
       deadLetterTopic: dlTopic,
     });
@@ -2086,7 +2193,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('foo'),
       deadLetterQueueEnabled: true,
     });
@@ -2103,7 +2210,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('foo'),
     });
     const deadLetterQueue = fn.deadLetterQueue;
@@ -2117,7 +2224,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
       handler: 'foo',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       code: lambda.Code.fromInline('foo'),
       logRetention: logs.RetentionDays.FIVE_DAYS,
     });
@@ -2144,7 +2251,7 @@ describe('function', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     const version1 = fn.latestVersion;
@@ -2172,7 +2279,7 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       environment: {
         SOME: 'Variable',
       },
@@ -2363,7 +2470,7 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
         environment: {
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
@@ -2381,7 +2488,7 @@ describe('function', () => {
       // WHEN
       const { timeout } = new lambda.Function(stack, 'MyFunction', {
         handler: 'foo',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         timeout: cdk.Duration.minutes(2),
       });
@@ -2397,7 +2504,7 @@ describe('function', () => {
       // WHEN
       const { timeout } = new lambda.Function(stack, 'MyFunction', {
         handler: 'foo',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
       });
 
@@ -2413,7 +2520,7 @@ describe('function', () => {
       const stack1 = new cdk.Stack();
       const fn1 = new lambda.Function(stack1, 'MyFunction', {
         handler: 'foo',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         environment: {
           FOO: 'bar',
@@ -2422,7 +2529,7 @@ describe('function', () => {
       const stack2 = new cdk.Stack();
       const fn2 = new lambda.Function(stack2, 'MyFunction', {
         handler: 'foo',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         environment: {
           FOO: 'bear',
@@ -2466,7 +2573,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyFunction', {
         vpc,
         handler: 'foo',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
       });
@@ -2521,7 +2628,7 @@ describe('function', () => {
       expect(() => {
         new lambda.Function(stack, 'MyFunction', {
           handler: 'foo',
-          runtime: lambda.Runtime.NODEJS_14_X,
+          runtime: lambda.Runtime.NODEJS_LATEST,
           code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
           filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
         });
@@ -2549,7 +2656,7 @@ describe('function', () => {
         vpc,
         handler: 'foo',
         securityGroups: [securityGroup],
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
       });
@@ -2713,7 +2820,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         codeSigningConfig,
       });
 
@@ -2747,7 +2854,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
 
       architectures: [lambda.Architecture.ARM_64],
@@ -2762,7 +2869,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
 
       architecture: lambda.Architecture.ARM_64,
@@ -2777,7 +2884,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     expect(() => new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
 
       architecture: lambda.Architecture.ARM_64,
@@ -2789,7 +2896,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     expect(() => new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
 
       architectures: [lambda.Architecture.X86_64, lambda.Architecture.ARM_64],
@@ -2800,7 +2907,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       architecture: lambda.Architecture.ARM_64,
     });
@@ -2811,7 +2918,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     expect(() => new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       functionName: 'a'.repeat(65),
     })).toThrow(/Function name can not be longer than 64 characters/);
@@ -2824,7 +2931,7 @@ describe('function', () => {
         new lambda.Function(stack, `foo${invalidChar}`, {
           code: new lambda.InlineCode('foo'),
           handler: 'index.handler',
-          runtime: lambda.Runtime.NODEJS_14_X,
+          runtime: lambda.Runtime.NODEJS_LATEST,
           functionName: `foo${invalidChar}`,
         });
       }).toThrow(/can contain only letters, numbers, hyphens, or underscores with no spaces./);
@@ -2840,7 +2947,7 @@ describe('function', () => {
       new lambda.Function(stack, 'foo', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         functionName: tokenizedFunctionName,
       });
     }).not.toThrow();
@@ -2850,7 +2957,7 @@ describe('function', () => {
     const stack = new cdk.Stack();
     expect(() => new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       description: 'a'.repeat(257),
     })).toThrow(/Function description can not be longer than 256 characters/);
@@ -2865,7 +2972,7 @@ describe('function', () => {
       new lambda.Function(stack, 'foo', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
         description: tokenizedFunctionDescription,
       });
     }).not.toThrow();
@@ -2878,7 +2985,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('hello()'),
         handler: 'index.hello',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
       });
 
       // WHEN
@@ -2902,7 +3009,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('hello()'),
         handler: 'index.hello',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
       });
 
       // WHEN
@@ -2951,7 +3058,7 @@ describe('function', () => {
       const fn = new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('hello()'),
         handler: 'index.hello',
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: lambda.Runtime.NODEJS_LATEST,
       });
       fn.addFunctionUrl();
 
@@ -2979,13 +3086,121 @@ describe('function', () => {
     });
   });
 
+  describe('SnapStart', () => {
+    test('set SnapStart to desired value', () => {
+      const stack = new cdk.Stack();
+      new lambda.CfnFunction(stack, 'MyLambda', {
+        code: {
+          zipFile: 'java11-test-function.zip',
+        },
+        functionName: 'MyCDK-SnapStart-Function',
+        handler: 'example.Handler::handleRequest',
+        role: 'testRole',
+        runtime: 'java11',
+        snapStart: { applyOn: 'PublishedVersions' },
+      });
+
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+        {
+          Code: { ZipFile: 'java11-test-function.zip' },
+          Handler: 'example.Handler::handleRequest',
+          Runtime: 'java11',
+          SnapStart: {
+            ApplyOn: 'PublishedVersions',
+          },
+        },
+      });
+    });
+
+    test('function using SnapStart', () => {
+      const stack = new cdk.Stack();
+      //WHEN
+      new lambda.Function(stack, 'MyLambda', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'example.Handler::handleRequest',
+        runtime: lambda.Runtime.JAVA_11,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      });
+
+      //THEN
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Properties:
+            {
+              Handler: 'example.Handler::handleRequest',
+              Runtime: 'java11',
+              SnapStart: {
+                ApplyOn: 'PublishedVersions',
+              },
+            },
+      });
+    });
+
+    test('runtime validation for snapStart', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'bar',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrowError('SnapStart currently not supported by runtime nodejs18.x');
+    });
+
+    test('arm64 validation for snapStart', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'example.Handler::handleRequest',
+        runtime: lambda.Runtime.JAVA_11,
+        architecture: lambda.Architecture.ARM_64,
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrowError('SnapStart is currently not supported on Arm_64');
+    });
+
+    test('EFS validation for snapStart', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        vpc,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'example.Handler::handleRequest',
+        runtime: lambda.Runtime.JAVA_11,
+        filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrowError('SnapStart is currently not supported using EFS');
+    });
+
+    test('arm64 validation for snapStart', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        handler: 'example.Handler::handleRequest',
+        runtime: lambda.Runtime.JAVA_11,
+        ephemeralStorageSize: Size.mebibytes(1024),
+        snapStart: lambda.SnapStartConf.ON_PUBLISHED_VERSIONS,
+      })).toThrowError('SnapStart is currently not supported using more than 512 MiB Ephemeral Storage');
+    });
+  });
+
   test('called twice for the same service principal but with different conditions', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('xxx'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
     const sourceArnA = 'some-arn-a';
     const sourceArnB = 'some-arn-b';
@@ -3059,22 +3274,65 @@ describe('function', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_19_0),
+        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_31_0),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-19-0:1'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-31-0:1'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-handler',
         },
       },
     });
+  });
+
+  test('adds ADOT instrumentation to a ZIP Lambda function for instrumentation', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Base', {
+      env: { account: '111111111111', region: 'us-west-2' },
+    });
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      adotInstrumentation: {
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_20_0_1),
+        execWrapper: lambda.AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-20-0:3'],
+      Environment: {
+        Variables: {
+          AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-instrument',
+        },
+      },
+    });
+  });
+
+  test('Adot Instrumentation errors out when not using INSTRUMENT_HANDLER', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new lambda.Function(stack, 'Fn1', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_10,
+      adotInstrumentation: {
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_20_0_1),
+        execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
+      },
+    })).toThrow(/Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER/);
   });
 
   test('adds ADOT instrumentation to a container image Lambda function', () => {
@@ -3090,7 +3348,7 @@ describe('function', () => {
         new lambda.DockerImageFunction(stack, 'MyLambda', {
           code: lambda.DockerImageCode.fromImageAsset(dockerLambdaHandlerPath),
           adotInstrumentation: {
-            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_19_0),
+            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_31_0),
             execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
           },
         }),
@@ -3103,7 +3361,7 @@ test('throws if ephemeral storage size is out of bound', () => {
   expect(() => new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     ephemeralStorageSize: Size.mebibytes(511),
   })).toThrow(/Ephemeral storage size must be between 512 and 10240 MB/);
 });
@@ -3113,7 +3371,7 @@ test('set ephemeral storage to desired size', () => {
   new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     ephemeralStorageSize: Size.mebibytes(1024),
   });
 
@@ -3122,7 +3380,7 @@ test('set ephemeral storage to desired size', () => {
     {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
-      Runtime: 'nodejs14.x',
+      Runtime: lambda.Runtime.NODEJS_LATEST.name,
       EphemeralStorage: {
         Size: 1024,
       },
@@ -3136,7 +3394,7 @@ test('ephemeral storage allows unresolved tokens', () => {
     new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'bar',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       ephemeralStorageSize: Size.mebibytes(Lazy.number({ produce: () => 1024 })),
     });
   }).not.toThrow();
@@ -3148,7 +3406,7 @@ test('FunctionVersionUpgrade adds new description to function', () => {
   new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.NODEJS_14_X,
+    runtime: lambda.Runtime.NODEJS_LATEST,
     description: 'my description',
   });
 
@@ -3159,8 +3417,8 @@ test('FunctionVersionUpgrade adds new description to function', () => {
     {
       Code: { ZipFile: 'foo' },
       Handler: 'bar',
-      Runtime: 'nodejs14.x',
-      Description: 'my description version-hash:54f18c47346ed84843c2dac547de81fa',
+      Runtime: lambda.Runtime.NODEJS_LATEST.name,
+      Description: Match.stringLikeRegexp('my description version-hash'),
     },
   });
 });
@@ -3177,29 +3435,237 @@ test('function using a reserved environment variable', () => {
   })).toThrow(/AWS_REGION environment variable is reserved/);
 });
 
-test('set SnapStart to desired value', () => {
-  const stack = new cdk.Stack();
-  new lambda.CfnFunction(stack, 'MyLambda', {
-    code: {
-      zipFile: 'java11-test-function.zip',
+test('test 2.87.0 version hash stability', () => {
+  const theRuntime = new lambda.Runtime('node99.x');
+  // GIVEN
+  const app = new cdk.App({
+    context: {
+      '@aws-cdk/aws-lambda:recognizeLayerVersion': true,
     },
-    functionName: 'MyCDK-SnapStart-Function',
-    handler: 'example.Handler::handleRequest',
-    role: 'testRole',
-    runtime: 'java11',
-    snapStart: { applyOn: 'PublishedVersions' },
+  });
+  const stack = new cdk.Stack(app, 'Stack');
+
+  // WHEN
+  const layer = new lambda.LayerVersion(stack, 'MyLayer', {
+    code: lambda.Code.fromAsset(path.join(__dirname, 'x.zip')),
+    compatibleRuntimes: [
+      theRuntime,
+    ],
   });
 
-  Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
-    Properties:
-    {
-      Code: { ZipFile: 'java11-test-function.zip' },
-      Handler: 'example.Handler::handleRequest',
-      Runtime: 'java11',
-      SnapStart: {
-        ApplyOn: 'PublishedVersions',
+  const role = new iam.Role(stack, 'MyRole', {
+    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    managedPolicies: [
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+      iam.ManagedPolicy.fromAwsManagedPolicyName('AWSXRayDaemonWriteAccess'),
+    ],
+  });
+
+  const lambdaFn = new lambda.Function(stack, 'MyLambda', {
+    runtime: theRuntime,
+    memorySize: 128,
+    handler: 'index.handler',
+    timeout: cdk.Duration.seconds(30),
+    environment: {
+      VARIABLE_1: 'ONE',
+    },
+    code: lambda.Code.fromAsset(path.join(__dirname, 'x.zip')),
+    role,
+    currentVersionOptions: {
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    },
+    layers: [
+      layer,
+    ],
+  });
+
+  new lambda.Alias(stack, 'MyAlias', {
+    aliasName: 'current',
+    version: lambdaFn.currentVersion,
+  });
+
+  // THEN
+  // Precalculated version hash using 2.87.0 version
+  Template.fromStack(stack).hasResource('AWS::Lambda::Alias', {
+    Properties: {
+      FunctionVersion: {
+        'Fn::GetAtt': [
+          'MyLambdaCurrentVersionE7A382CC36ba24a5a2aa206296d3e383129fd83a',
+          'Version',
+        ],
       },
     },
+  });
+});
+
+describe('VPC configuration', () => {
+  test('with both securityGroup and securityGroups', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroup,
+      securityGroups: [securityGroup],
+    })).toThrow(/Only one of the function props, securityGroup or securityGroups, is allowed/);
+  });
+
+  test('with allowAllOutbound and no VPC', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      allowAllOutbound: true,
+    })).toThrow(/Cannot configure 'allowAllOutbound' without configuring a VPC/);
+  });
+
+  test('with allowAllOutbound and no VPC', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      allowAllOutbound: true,
+    })).toThrow(/Cannot configure 'allowAllOutbound' without configuring a VPC/);
+  });
+
+  test('with securityGroup and no VPC', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroup,
+    })).toThrow(/Cannot configure 'securityGroup' without configuring a VPC/);
+  });
+
+  test('with securityGroups and no VPC', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroups: [securityGroup],
+    })).toThrow(/Cannot configure 'securityGroups' without configuring a VPC/);
+  });
+
+  test('with vpcSubnets and no VPC', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    })).toThrow(/Cannot configure 'vpcSubnets' without configuring a VPC/);
+  });
+
+  test('with securityGroup and allowAllOutbound', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroup,
+      allowAllOutbound: false,
+    })).toThrow(/Configure 'allowAllOutbound' directly on the supplied SecurityGroup./);
+  });
+
+  test('with securityGroups and allowAllOutbound', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroups: [securityGroup],
+      allowAllOutbound: false,
+    })).toThrow(/Configure 'allowAllOutbound' directly on the supplied SecurityGroups./);
+  });
+
+  test('with VPC and empty securityGroups creates a default security group', () => {
+    const stack = new cdk.Stack();
+
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    new lambda.Function(stack, 'MyLambda', {
+      vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroups: [],
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroup', 1);
+  });
+
+  test('with no VPC and empty securityGroups', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroups: [],
+    })).not.toThrow();
+  });
+
+  test('with empty securityGroups and allowAllOutbound', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      securityGroups: [],
+      allowAllOutbound: false,
+    })).not.toThrow();
   });
 });
 

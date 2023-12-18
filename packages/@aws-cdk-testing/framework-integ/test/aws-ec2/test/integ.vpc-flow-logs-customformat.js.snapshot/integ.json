@@ -1,10 +1,11 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "testCases": {
     "FlowLogs/DefaultTest": {
       "stacks": [
         "FlowLogsTestStack"
       ],
+      "diffAssets": true,
       "assertionStack": "FlowLogs/DefaultTest/DeployAssert",
       "assertionStackName": "FlowLogsDefaultTestDeployAssert6AFD1854"
     }

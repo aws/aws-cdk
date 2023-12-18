@@ -249,6 +249,21 @@
   "PipelineC660917D": {
    "Type": "AWS::CodePipeline::Pipeline",
    "Properties": {
+    "ArtifactStore": {
+     "EncryptionKey": {
+      "Id": {
+       "Fn::GetAtt": [
+        "PipelineArtifactsBucketEncryptionKey01D58D69",
+        "Arn"
+       ]
+      },
+      "Type": "KMS"
+     },
+     "Location": {
+      "Ref": "PipelineArtifactsBucket22248F97"
+     },
+     "Type": "S3"
+    },
     "RoleArn": {
      "Fn::GetAtt": [
       "PipelineRoleD68726F7",
@@ -272,7 +287,7 @@
            "Name"
           ]
          },
-         "BranchName": "master",
+         "BranchName": "main",
          "PollForSourceChanges": false
         },
         "Name": "CdkCode_Source",
@@ -303,7 +318,7 @@
            "Name"
           ]
          },
-         "BranchName": "master",
+         "BranchName": "main",
          "PollForSourceChanges": false
         },
         "Name": "LambdaCode_Source",
@@ -432,22 +447,7 @@
       ],
       "Name": "Deploy"
      }
-    ],
-    "ArtifactStore": {
-     "EncryptionKey": {
-      "Id": {
-       "Fn::GetAtt": [
-        "PipelineArtifactsBucketEncryptionKey01D58D69",
-        "Arn"
-       ]
-      },
-      "Type": "KMS"
-     },
-     "Location": {
-      "Ref": "PipelineArtifactsBucket22248F97"
-     },
-     "Type": "S3"
-    }
+    ]
    },
    "DependsOn": [
     "PipelineRoleDefaultPolicyC7A05455",
@@ -1116,7 +1116,7 @@
        "referenceUpdated"
       ],
       "referenceName": [
-       "master"
+       "main"
       ]
      }
     },
@@ -1187,7 +1187,7 @@
        "referenceUpdated"
       ],
       "referenceName": [
-       "master"
+       "main"
       ]
      }
     },
@@ -1411,9 +1411,18 @@
     "Artifacts": {
      "Type": "NO_ARTIFACTS"
     },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": {
+     "Fn::GetAtt": [
+      "PipelineArtifactsBucketEncryptionKey01D58D69",
+      "Arn"
+     ]
+    },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/nodejs:10.1.0",
+     "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -1427,15 +1436,6 @@
     "Source": {
      "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": \"npm install\"\n    },\n    \"build\": {\n      \"commands\": [\n        \"npm run build\",\n        \"npm run cdk synth LambdaStack -- -o .\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"files\": \"LambdaStack.template.yaml\"\n  }\n}",
      "Type": "NO_SOURCE"
-    },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "EncryptionKey": {
-     "Fn::GetAtt": [
-      "PipelineArtifactsBucketEncryptionKey01D58D69",
-      "Arn"
-     ]
     }
    }
   },
@@ -1622,9 +1622,18 @@
     "Artifacts": {
      "Type": "NO_ARTIFACTS"
     },
+    "Cache": {
+     "Type": "NO_CACHE"
+    },
+    "EncryptionKey": {
+     "Fn::GetAtt": [
+      "PipelineArtifactsBucketEncryptionKey01D58D69",
+      "Arn"
+     ]
+    },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/nodejs:10.1.0",
+     "Image": "aws/codebuild/standard:7.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -1638,15 +1647,6 @@
     "Source": {
      "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": \"npm install\"\n    },\n    \"build\": {\n      \"commands\": \"npm run build\"\n    }\n  },\n  \"artifacts\": {\n    \"files\": [\n      \"index.js\",\n      \"node_modules/**/*\"\n    ]\n  }\n}",
      "Type": "NO_SOURCE"
-    },
-    "Cache": {
-     "Type": "NO_CACHE"
-    },
-    "EncryptionKey": {
-     "Fn::GetAtt": [
-      "PipelineArtifactsBucketEncryptionKey01D58D69",
-      "Arn"
-     ]
     }
    }
   }

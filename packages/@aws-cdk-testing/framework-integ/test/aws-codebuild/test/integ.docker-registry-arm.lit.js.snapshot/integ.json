@@ -1,0 +1,13 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "codebuild-arm-docker-registry/DefaultTest": {
+      "stacks": [
+        "test-codebuild-arm-docker-registry"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "codebuild-arm-docker-registry/DefaultTest/DeployAssert",
+      "assertionStackName": "codebuildarmdockerregistryDefaultTestDeployAssert69FB8AA0"
+    }
+  }
+}

@@ -11,6 +11,7 @@ import { print, warning } from './logging';
  * @param newTemplate the new/target state of the stack.
  * @param strict      do not filter out AWS::CDK::Metadata
  * @param context     lines of context to use in arbitrary JSON diff
+ * @param quiet       silences \'There were no differences\' messages
  *
  * @returns the count of differences that were rendered.
  */
@@ -19,9 +20,21 @@ export function printStackDiff(
   newTemplate: cxapi.CloudFormationStackArtifact,
   strict: boolean,
   context: number,
+  quiet: boolean,
   stream?: cfnDiff.FormatStream): number {
 
-  const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+  let diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+
+  // detect and filter out mangled characters from the diff
+  let filteredChangesCount = 0;
+  if (diff.differenceCount && !strict) {
+    const mangledNewTemplate = JSON.parse(cfnDiff.mangleLikeCloudFormation(JSON.stringify(newTemplate.template)));
+    const mangledDiff = cfnDiff.diffTemplate(oldTemplate, mangledNewTemplate);
+    filteredChangesCount = Math.max(0, diff.differenceCount - mangledDiff.differenceCount);
+    if (filteredChangesCount > 0) {
+      diff = mangledDiff;
+    }
+  }
 
   // filter out 'AWS::CDK::Metadata' resources from the template
   if (diff.resources && !strict) {
@@ -38,8 +51,11 @@ export function printStackDiff(
       ...logicalIdMapFromTemplate(oldTemplate),
       ...buildLogicalToPathMap(newTemplate),
     }, context);
-  } else {
+  } else if (!quiet) {
     print(chalk.green('There were no differences'));
+  }
+  if (filteredChangesCount > 0) {
+    print(chalk.yellow(`Omitted ${filteredChangesCount} changes because they are likely mangled non-ASCII characters. Use --strict to print them.`));
   }
 
   return diff.differenceCount;

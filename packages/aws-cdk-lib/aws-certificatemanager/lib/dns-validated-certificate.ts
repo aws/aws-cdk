@@ -1,13 +1,11 @@
-import * as path from 'path';
 import { Construct } from 'constructs';
 import { CertificateProps, ICertificate } from './certificate';
 import { CertificateBase } from './certificate-base';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
 import * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { Token } from '../../core';
-import { builtInCustomResourceNodeRuntime } from '../../custom-resources';
+import { CertificateRequestCertificateRequestFunction } from '../../custom-resource-handlers/dist/aws-certificatemanager/certificate-request-provider.generated';
 
 /**
  * Properties to create a DNS validated certificate managed by AWS Certificate Manager
@@ -107,10 +105,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
       certificateTransparencyLoggingPreference = props.transparencyLoggingEnabled ? 'ENABLED' : 'DISABLED';
     }
 
-    const requestorFunction = new lambda.Function(this, 'CertificateRequestorFunction', {
-      code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'lambda-packages', 'dns_validated_certificate_handler', 'lib')),
-      handler: 'index.certificateRequestHandler',
-      runtime: builtInCustomResourceNodeRuntime(this),
+    const requestorFunction = new CertificateRequestCertificateRequestFunction(this, 'CertificateRequestorFunction', {
       timeout: cdk.Duration.minutes(15),
       role: props.customResourceRole,
     });

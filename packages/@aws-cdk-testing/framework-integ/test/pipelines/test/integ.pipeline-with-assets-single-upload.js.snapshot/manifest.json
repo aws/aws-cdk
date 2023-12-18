@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "assembly-PipelineStack-PreProd": {
       "type": "cdk:cloud-assembly",
@@ -21,10 +21,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "PipelineStack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eb7f88de55c0ec684424a8df0ed43f71b38cca0c34449df840b7f68d5653108c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/43caf9136315e61fa26a475c78206c27c9939b8372973c0475b3e1da9a410c64.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -56,12 +57,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SourceBucketAutoDeleteObjectsCustomResourceC68FC040"
-          }
-        ],
-        "/PipelineStack/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
           }
         ],
         "/PipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
@@ -252,6 +247,54 @@
         ]
       },
       "displayName": "PipelineStack"
+    },
+    "PipelineStackTestDefaultTestDeployAssertBC780F98.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PipelineStackTestDefaultTestDeployAssertBC780F98.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PipelineStackTestDefaultTestDeployAssertBC780F98": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "PipelineStackTestDefaultTestDeployAssertBC780F98.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PipelineStackTestDefaultTestDeployAssertBC780F98.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "PipelineStackTestDefaultTestDeployAssertBC780F98.assets"
+      ],
+      "metadata": {
+        "/PipelineStackTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/PipelineStackTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "PipelineStackTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

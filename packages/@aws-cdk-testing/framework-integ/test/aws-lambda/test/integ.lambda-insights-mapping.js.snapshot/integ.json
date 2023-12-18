@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "34.0.0",
   "testCases": {
     "integ.lambda-insights-mapping": {
       "stacks": [

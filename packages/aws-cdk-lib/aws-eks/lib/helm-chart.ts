@@ -108,9 +108,20 @@ export class HelmChart extends Construct {
    * The CloudFormation resource type.
    */
   public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-HelmChart';
+  public readonly chart?: string;
+  public readonly repository?: string;
+  public readonly version?: string;
+  public readonly chartAsset?: Asset;
 
   constructor(scope: Construct, id: string, props: HelmChartProps) {
     super(scope, id);
+
+    // Exposing these properties is done for convenience
+    // For more details see issue #26678
+    this.chart = props.chart;
+    this.repository = props.repository;
+    this.version = props.version;
+    this.chartAsset = props.chartAsset;
 
     const stack = Stack.of(this);
 
@@ -121,11 +132,11 @@ export class HelmChart extends Construct {
       throw new Error('Helm chart timeout cannot be higher than 15 minutes.');
     }
 
-    if (!props.chart && !props.chartAsset) {
+    if (!this.chart && !this.chartAsset) {
       throw new Error("Either 'chart' or 'chartAsset' must be specified to install a helm chart");
     }
 
-    if (props.chartAsset && (props.repository || props.version)) {
+    if (this.chartAsset && (this.repository || this.version)) {
       throw new Error(
         "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'",
       );
@@ -138,7 +149,7 @@ export class HelmChart extends Construct {
     // default to not skip crd installation
     const skipCrds = props.skipCrds ?? false;
 
-    props.chartAsset?.grantRead(provider.handlerRole);
+    this.chartAsset?.grantRead(provider.handlerRole);
 
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
@@ -147,14 +158,14 @@ export class HelmChart extends Construct {
         ClusterName: props.cluster.clusterName,
         RoleArn: provider.roleArn, // TODO: bake into the provider's environment
         Release: props.release ?? Names.uniqueId(this).slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
-        Chart: props.chart,
-        ChartAssetURL: props.chartAsset?.s3ObjectUrl,
-        Version: props.version,
+        Chart: this.chart,
+        ChartAssetURL: this.chartAsset?.s3ObjectUrl,
+        Version: this.version,
         Wait: wait || undefined, // props are stringified so we encode “false” as undefined
         Timeout: timeout ? `${timeout.toString()}s` : undefined, // Helm v3 expects duration instead of integer
         Values: (props.values ? stack.toJsonString(props.values) : undefined),
         Namespace: props.namespace ?? 'default',
-        Repository: props.repository,
+        Repository: this.repository,
         CreateNamespace: createNamespace || undefined,
         SkipCrds: skipCrds || undefined,
       },

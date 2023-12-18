@@ -1,0 +1,58 @@
+# Request a deployment to the test pipeline
+
+name: request-cli-integ-test
+on:
+  pull_request_target: {}
+
+jobs:
+  cli-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      any-changed-files: ${{ steps.changed-cli-files.outputs.cli_any_changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Find changed cli files
+        id: changed-cli-files
+        uses: tj-actions/changed-files@94549999469dbfa032becf298d95c87a14c34394
+        with:
+          base_sha: ${{ github.event.pull_request.base.sha }}
+          files_yaml: |
+            cli:
+              - packages/aws-cdk/bin/**
+              - packages/aws-cdk/lib/**
+              - packages/aws-cdk/test/**
+  submit-to-test-pipeline:
+    environment: test-pipeline
+    needs: cli-changes
+    if: needs.cli-changes.outputs.any-changed-files == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Needs to run with PROJEN_GITHUB_TOKEN because we need permissions to force push the branch
+          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Submit to test-pipeline
+        run: |
+          git config --global user.name 'aws-cdk-automation'
+          git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
+          git push --force --atomic https://github.com/${{ github.repository }}.git FETCH_HEAD:test-main-pipeline
+      - name: Explain next steps
+        uses: thollander/actions-comment-pull-request@1d3973dc4b8e1399c0620d3f2b1aa5e795465308
+        with:
+          message: |
+            :arrow_right: **PR build request submitted to `test-main-pipeline`** :arrow_left:
+
+            A maintainer must now check the pipeline and add the `pr-linter/cli-integ-tested` label once the pipeline succeeds.
+          comment_tag: request-cli-integ-test
+          mode: recreate
+          # Post as our automation user
+          GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}

@@ -1,5 +1,6 @@
 import { Template } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
+import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as cloudmap from '../../../aws-servicediscovery';
@@ -201,6 +202,39 @@ describe('external service', () => {
       ],
     });
 
+  });
+
+  test('with deployment alarms', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    addDefaultCapacityProvider(cluster, stack, vpc);
+    const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
+
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+    new ecs.ExternalService(stack, 'ExternalService', {
+      cluster,
+      taskDefinition,
+      deploymentAlarms: {
+        alarmNames: [myAlarm.alarmName],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        Alarms: {
+          Enable: true,
+          Rollback: true,
+          AlarmNames: [myAlarm.alarmName],
+        },
+      },
+    });
   });
 
   test('throws when task definition is not External compatible', () => {
@@ -519,7 +553,8 @@ describe('external service', () => {
 
   test('add warning to annotations if circuitBreaker is specified with a non-ECS DeploymentControllerType', () => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     addDefaultCapacityProvider(cluster, stack, vpc);
@@ -538,10 +573,12 @@ describe('external service', () => {
       },
       circuitBreaker: { rollback: true },
     });
+    app.synth();
 
     // THEN
-    expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
-    expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
-
+    expect(service.node.metadata.map((m) => m.data)).toEqual([
+      'taskDefinition and launchType are blanked out when using external deployment controller. [ack: @aws-cdk/aws-ecs:externalDeploymentController]',
+      'Deployment circuit breaker requires the ECS deployment controller.',
+    ]);
   });
 });

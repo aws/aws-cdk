@@ -37,14 +37,14 @@
     "Code": {
      "ZipFile": "foo"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "myfnServiceRole7822DC24",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "myfnServiceRole7822DC24"
@@ -201,14 +201,8 @@
   "lambdarestapiproxyANYC900233F": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "ANY",
-    "ResourceId": {
-     "Ref": "lambdarestapiproxyB0E963B7"
-    },
-    "RestApiId": {
-     "Ref": "lambdarestapiF559E4F2"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -235,6 +229,12 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Ref": "lambdarestapiproxyB0E963B7"
+    },
+    "RestApiId": {
+     "Ref": "lambdarestapiF559E4F2"
     }
    }
   },
@@ -319,17 +319,8 @@
   "lambdarestapiANYB9BB3FB2": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "ANY",
-    "ResourceId": {
-     "Fn::GetAtt": [
-      "lambdarestapiF559E4F2",
-      "RootResourceId"
-     ]
-    },
-    "RestApiId": {
-     "Ref": "lambdarestapiF559E4F2"
-    },
     "AuthorizationType": "NONE",
+    "HttpMethod": "ANY",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -356,6 +347,15 @@
        ]
       ]
      }
+    },
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "lambdarestapiF559E4F2",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "lambdarestapiF559E4F2"
     }
    }
   },
@@ -374,11 +374,11 @@
   "stage0661E4AC": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
-    "RestApiId": {
-     "Ref": "lambdarestapiF559E4F2"
-    },
     "DeploymentId": {
      "Ref": "deployment3338197541aef5f15bf9a60b10e06fdbe72854f4"
+    },
+    "RestApiId": {
+     "Ref": "lambdarestapiF559E4F2"
     },
     "StageName": "prod"
    },

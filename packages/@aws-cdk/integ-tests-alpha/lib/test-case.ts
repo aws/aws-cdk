@@ -1,5 +1,5 @@
 import { IntegManifest, Manifest, TestCase, TestOptions } from 'aws-cdk-lib/cloud-assembly-schema';
-import { attachCustomSynthesis, ISynthesisSession, Stack, StackProps } from 'aws-cdk-lib';
+import { attachCustomSynthesis, ISynthesisSession, Stack, StackProps } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IDeployAssert } from './assertions';
 import { DeployAssert } from './assertions/private/deploy-assert';

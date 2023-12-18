@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { ArtifactType } from '../../../cloud-assembly-schema';
 import * as cxapi from '../../../cx-api';
-import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack } from '../../lib';
+import { App, Aws, CfnResource, ContextProvider, DefaultStackSynthesizer, FileAssetPackaging, Stack, NestedStack } from '../../lib';
 import { ISynthesisSession } from '../../lib/stack-synthesizers/types';
 import { evaluateCFN } from '../evaluate-cfn';
 
@@ -15,6 +15,7 @@ const CFN_CONTEXT = {
 describe('new style synthesis', () => {
   let app: App;
   let stack: Stack;
+  let nestedStack: NestedStack;
 
   beforeEach(() => {
     app = new App({
@@ -187,8 +188,27 @@ describe('new style synthesis', () => {
 
   });
 
+  test('nested Stack uses the lookup role ARN of the parent stack', () => {
+    // GIVEN
+    const myapp = new App();
+    const mystack = new Stack(myapp, 'mystack', {
+      synthesizer: new DefaultStackSynthesizer({
+        generateBootstrapVersionRule: false,
+      }),
+      env: {
+        account: '111111111111', region: 'us-east-1',
+      },
+    });
+    nestedStack = new NestedStack(mystack, 'nestedStack');
+
+    // THEN
+    expect(nestedStack.synthesizer.lookupRole).toEqual('arn:${AWS::Partition}:iam::111111111111:role/cdk-hnb659fds-lookup-role-111111111111-us-east-1');
+
+  });
+
   test('add file asset', () => {
     // WHEN
+    const ext = __filename.match(/\.([tj]s)$/)?.[1];
     const location = stack.synthesizer.addFileAsset({
       fileName: __filename,
       packaging: FileAssetPackaging.FILE,
@@ -197,7 +217,7 @@ describe('new style synthesis', () => {
 
     // THEN - we have a fixed asset location with region placeholders
     expect(evalCFN(location.bucketName)).toEqual('cdk-hnb659fds-assets-the_account-the_region');
-    expect(evalCFN(location.s3Url)).toEqual('https://s3.the_region.domain.aws/cdk-hnb659fds-assets-the_account-the_region/abcdef.js');
+    expect(evalCFN(location.s3Url)).toEqual(`https://s3.the_region.domain.aws/cdk-hnb659fds-assets-the_account-the_region/abcdef.${ext}`);
 
     // THEN - object key contains source hash somewhere
     expect(location.objectKey.indexOf('abcdef')).toBeGreaterThan(-1);
@@ -295,6 +315,7 @@ describe('new style synthesis', () => {
       }),
     });
 
+    const ext = __filename.match(/\.([tj]s)$/)?.[1];
     mystack.synthesizer.addFileAsset({
       fileName: __filename,
       packaging: FileAssetPackaging.FILE,
@@ -312,7 +333,7 @@ describe('new style synthesis', () => {
 
     expect(manifest.files?.['file-asset-hash']?.destinations?.['current_account-current_region']).toEqual({
       bucketName: 'file-asset-bucket',
-      objectKey: 'file-asset-hash.js',
+      objectKey: `file-asset-hash.${ext}`,
       assumeRoleArn: 'file:role:arn',
       assumeRoleExternalId: 'file-external-id',
     });
@@ -377,7 +398,7 @@ describe('new style synthesis', () => {
     // THEN
     expect(manifest.files?.['file-asset-hash-with-prefix']?.destinations?.['current_account-current_region']).toEqual({
       bucketName: 'file-asset-bucket',
-      objectKey: '000000000000/file-asset-hash-with-prefix.js',
+      objectKey: '000000000000/file-asset-hash-with-prefix.ts',
       assumeRoleArn: 'file:role:arn',
       assumeRoleExternalId: 'file-external-id',
     });

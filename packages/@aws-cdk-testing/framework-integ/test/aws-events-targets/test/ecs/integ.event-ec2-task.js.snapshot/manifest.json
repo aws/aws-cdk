@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "32.0.0",
   "artifacts": {
     "aws-ecs-integ-ecs.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/07b921a20dfe7af7de139cb4595c2f46d90f9625f61d13cff19dffca84918cd7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4a78384a01994e654d09b7284f2044646eea91d2630aa956128e0fbed5377569.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -141,10 +141,10 @@
             "data": "EcsClusterDefaultAutoScalingGroupInstanceProfile2CE606B3"
           }
         ],
-        "/aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup/LaunchConfig": [
+        "/aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterDefaultAutoScalingGroupLaunchConfigB7E376C1"
+            "data": "EcsClusterDefaultAutoScalingGroupLaunchTemplate3719972A"
           }
         ],
         "/aws-ecs-integ-ecs/EcsCluster/DefaultAutoScalingGroup/ASG": [
@@ -283,6 +283,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterDefaultAutoScalingGroupLaunchTemplateProfile45668F20",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

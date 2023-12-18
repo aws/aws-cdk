@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { ISecurityGroup, SubnetSelection } from '../../../aws-ec2';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
-import { FeatureFlags } from '../../../core';
+import { FeatureFlags, Token } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { ApplicationLoadBalancedServiceBase, ApplicationLoadBalancedServiceBaseProps } from '../base/application-load-balanced-service-base';
 import { FargateServiceBaseProps } from '../base/fargate-service-base';
@@ -96,6 +96,19 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       throw new Error('You must specify one of: taskDefinition or image');
     }
 
+    this.validateHealthyPercentage('minHealthyPercent', props.minHealthyPercent);
+    this.validateHealthyPercentage('maxHealthyPercent', props.maxHealthyPercent);
+
+    if (
+      props.minHealthyPercent &&
+      !Token.isUnresolved(props.minHealthyPercent) &&
+      props.maxHealthyPercent &&
+      !Token.isUnresolved(props.maxHealthyPercent) &&
+      props.minHealthyPercent >= props.maxHealthyPercent
+    ) {
+      throw new Error('Minimum healthy percent must be less than maximum healthy percent.');
+    }
+
     const desiredCount = FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
 
     this.service = new FargateService(this, 'Service', {
@@ -119,5 +132,15 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       capacityProviderStrategies: props.capacityProviderStrategies,
     });
     this.addServiceAsTarget(this.service);
+  }
+
+  /**
+   * Throws an error if the specified percent is not an integer or negative.
+   */
+  private validateHealthyPercentage(name: string, value?: number) {
+    if (value === undefined || Token.isUnresolved(value)) { return; }
+    if (!Number.isInteger(value) || value < 0) {
+      throw new Error(`${name}: Must be a non-negative integer; received ${value}`);
+    }
   }
 }

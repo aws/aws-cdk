@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "aws-cdk-eks-helm-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b05f700c4d52e603bc984cb38b0adf9480615524dbc17f04379a40327f3f3292.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e720fcc86c71da31db0c98ed64b9c4fef841d30c8cfa275ad7b6d9ccdf0cc201.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -447,16 +447,16 @@
             "data": "awscdkekshelmtestawscdkawseksKubectlProviderframeworkonEvent9D93C644Arn"
           }
         ],
-        "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestClusterKubectlHandlerRoleF7B0B227Arn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "referencetoawscdkekshelmtestClusterKubectlHandlerRoleF7B0B227Arn"
-          }
-        ],
         "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestKubectlLayer2638D675Ref": [
           {
             "type": "aws:cdk:logicalId",
             "data": "referencetoawscdkekshelmtestKubectlLayer2638D675Ref"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestClusterKubectlHandlerRoleF7B0B227Arn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetoawscdkekshelmtestClusterKubectlHandlerRoleF7B0B227Arn"
           }
         ],
         "/aws-cdk-eks-helm-test/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkekshelmtestVpcPrivateSubnet1Subnet3D2B5C0BRef": [

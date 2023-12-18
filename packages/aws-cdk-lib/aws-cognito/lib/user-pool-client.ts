@@ -222,7 +222,7 @@ export interface UserPoolClientOptions {
   /**
    * The set of OAuth authentication flows to enable on the client
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html
-   * @default - all auth flows disabled
+   * @default - If you don't specify a value, your user client supports ALLOW_REFRESH_TOKEN_AUTH, ALLOW_USER_SRP_AUTH, and ALLOW_CUSTOM_AUTH.
    */
   readonly authFlows?: AuthFlow;
 

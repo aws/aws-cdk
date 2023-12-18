@@ -24,7 +24,7 @@ describe('State Machine Resources', () => {
 
     // WHEN
     new stepfunctions.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
     });
 
     // THEN
@@ -59,7 +59,7 @@ describe('State Machine Resources', () => {
 
     // WHEN
     new stepfunctions.StateMachine(stack, 'SM', {
-      definition: para,
+      definitionBody: stepfunctions.DefinitionBody.fromChainable(para),
     });
 
     // THEN
@@ -74,6 +74,25 @@ describe('State Machine Resources', () => {
           },
         ],
       },
+    });
+  }),
+
+  test('Fail should render ErrorPath / CausePath correctly', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fail = new stepfunctions.Fail(stack, 'Fail', {
+      errorPath: stepfunctions.JsonPath.stringAt('$.error'),
+      causePath: stepfunctions.JsonPath.stringAt('$.cause'),
+    });
+
+    // WHEN
+    const failState = stack.resolve(fail.toStateJson());
+
+    // THEN
+    expect(failState).toStrictEqual({
+      CausePath: '$.cause',
+      ErrorPath: '$.error',
+      Type: 'Fail',
     });
   }),
 
@@ -107,13 +126,13 @@ describe('State Machine Resources', () => {
       Catch: undefined,
       InputPath: '$',
       Parameters:
-             {
-               'input.$': '$',
-               'stringArgument': 'inital-task',
-               'numberArgument': 123,
-               'booleanArgument': true,
-               'arrayArgument': ['a', 'b', 'c'],
-             },
+        {
+          'input.$': '$',
+          'stringArgument': 'inital-task',
+          'numberArgument': 123,
+          'booleanArgument': true,
+          'arrayArgument': ['a', 'b', 'c'],
+        },
       OutputPath: '$.state',
       Type: 'Task',
       Comment: undefined,
@@ -153,10 +172,10 @@ describe('State Machine Resources', () => {
       Catch: undefined,
       InputPath: '$',
       Parameters:
-             {
-               a: 'aa',
-               b: 'bb',
-             },
+        {
+          a: 'aa',
+          b: 'bb',
+        },
       OutputPath: '$.state',
       Type: 'Task',
       Comment: undefined,
@@ -172,7 +191,7 @@ describe('State Machine Resources', () => {
     const stack = new cdk.Stack();
     const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definition: task,
+      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
     });
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -201,7 +220,7 @@ describe('State Machine Resources', () => {
     const stack = new cdk.Stack();
     const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definition: task,
+      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
       stateMachineType: stepfunctions.StateMachineType.EXPRESS,
     });
     const role = new iam.Role(stack, 'Role', {
@@ -231,7 +250,7 @@ describe('State Machine Resources', () => {
     const stack = new cdk.Stack();
     const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definition: task,
+      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
     });
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -317,7 +336,7 @@ describe('State Machine Resources', () => {
     const stack = new cdk.Stack();
     const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definition: task,
+      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
     });
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -351,7 +370,7 @@ describe('State Machine Resources', () => {
     const stack = new cdk.Stack();
     const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definition: task,
+      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
     });
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -412,7 +431,7 @@ describe('State Machine Resources', () => {
     const stack = new cdk.Stack();
     const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definition: task,
+      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
     });
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -623,6 +642,7 @@ describe('State Machine Resources', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Pass(stack, 'Pass', {
+      stateName: 'my-pass-state',
       inputPath: '$',
       outputPath: '$.state',
       parameters: {
@@ -643,13 +663,13 @@ describe('State Machine Resources', () => {
       InputPath: '$',
       OutputPath: '$.state',
       Parameters:
-             {
-               'input.$': '$',
-               'stringArgument': 'inital-task',
-               'numberArgument': 123,
-               'booleanArgument': true,
-               'arrayArgument': ['a', 'b', 'c'],
-             },
+        {
+          'input.$': '$',
+          'stringArgument': 'inital-task',
+          'numberArgument': 123,
+          'booleanArgument': true,
+          'arrayArgument': ['a', 'b', 'c'],
+        },
       Type: 'Pass',
       Comment: undefined,
       Result: undefined,
@@ -673,7 +693,7 @@ describe('State Machine Resources', () => {
     expect(taskState).toEqual({
       End: true,
       Parameters:
-      { 'input.$': '$.myField' },
+          { 'input.$': '$.myField' },
       Type: 'Pass',
     });
   }),
@@ -690,7 +710,7 @@ describe('State Machine Resources', () => {
       ],
     });
     new stepfunctions.StateMachine(stack, 'StateMachine', {
-      definition: task,
+      definitionBody: stepfunctions.DefinitionBody.fromChainable(task),
     });
 
     // THEN

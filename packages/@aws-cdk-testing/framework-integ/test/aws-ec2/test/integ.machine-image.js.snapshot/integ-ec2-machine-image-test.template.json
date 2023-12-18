@@ -18,9 +18,6 @@
   "VpcPublicSubnet1Subnet5C2D37C4": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": "test-region-1a",
     "CidrBlock": "10.0.0.0/19",
     "MapPublicIpOnLaunch": true,
@@ -37,21 +34,24 @@
       "Key": "Name",
       "Value": "integ-ec2-machine-image-test/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet1RouteTable6C95E38E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-ec2-machine-image-test/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet1RouteTableAssociation97140677": {
@@ -68,12 +68,12 @@
   "VpcPublicSubnet1DefaultRoute3DA9E72A": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
     }
    },
    "DependsOn": [
@@ -95,14 +95,14 @@
   "VpcPublicSubnet1NATGateway4D7517AA": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet1EIPD7E02669",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
     },
     "Tags": [
      {
@@ -119,9 +119,6 @@
   "VpcPublicSubnet2Subnet691E08A3": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": "test-region-1b",
     "CidrBlock": "10.0.32.0/19",
     "MapPublicIpOnLaunch": true,
@@ -138,21 +135,24 @@
       "Key": "Name",
       "Value": "integ-ec2-machine-image-test/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet2RouteTable94F7E489": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-ec2-machine-image-test/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
@@ -169,12 +169,12 @@
   "VpcPublicSubnet2DefaultRoute97F91067": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet2RouteTable94F7E489"
     }
    },
    "DependsOn": [
@@ -196,14 +196,14 @@
   "VpcPublicSubnet2NATGateway9182C01D": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet2Subnet691E08A3"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet2EIP3C605A87",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet2Subnet691E08A3"
     },
     "Tags": [
      {
@@ -220,9 +220,6 @@
   "VpcPublicSubnet3SubnetBE12F0B6": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": "test-region-1c",
     "CidrBlock": "10.0.64.0/19",
     "MapPublicIpOnLaunch": true,
@@ -239,21 +236,24 @@
       "Key": "Name",
       "Value": "integ-ec2-machine-image-test/Vpc/PublicSubnet3"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet3RouteTable93458DBB": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-ec2-machine-image-test/Vpc/PublicSubnet3"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPublicSubnet3RouteTableAssociation1F1EDF02": {
@@ -270,12 +270,12 @@
   "VpcPublicSubnet3DefaultRoute4697774F": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPublicSubnet3RouteTable93458DBB"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPublicSubnet3RouteTable93458DBB"
     }
    },
    "DependsOn": [
@@ -297,14 +297,14 @@
   "VpcPublicSubnet3NATGateway7640CD1D": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "VpcPublicSubnet3SubnetBE12F0B6"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "VpcPublicSubnet3EIP3A666A23",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "VpcPublicSubnet3SubnetBE12F0B6"
     },
     "Tags": [
      {
@@ -321,9 +321,6 @@
   "VpcPrivateSubnet1Subnet536B997A": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": "test-region-1a",
     "CidrBlock": "10.0.96.0/19",
     "MapPublicIpOnLaunch": false,
@@ -340,21 +337,24 @@
       "Key": "Name",
       "Value": "integ-ec2-machine-image-test/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet1RouteTableB2C5B500": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-ec2-machine-image-test/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
@@ -371,21 +371,18 @@
   "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
     }
    }
   },
   "VpcPrivateSubnet2Subnet3788AAA1": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": "test-region-1b",
     "CidrBlock": "10.0.128.0/19",
     "MapPublicIpOnLaunch": false,
@@ -402,21 +399,24 @@
       "Key": "Name",
       "Value": "integ-ec2-machine-image-test/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet2RouteTableA678073B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-ec2-machine-image-test/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
@@ -433,21 +433,18 @@
   "VpcPrivateSubnet2DefaultRoute060D2087": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet2RouteTableA678073B"
     }
    }
   },
   "VpcPrivateSubnet3SubnetF258B56E": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "AvailabilityZone": "test-region-1c",
     "CidrBlock": "10.0.160.0/19",
     "MapPublicIpOnLaunch": false,
@@ -464,21 +461,24 @@
       "Key": "Name",
       "Value": "integ-ec2-machine-image-test/Vpc/PrivateSubnet3"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet3RouteTableD98824C7": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "integ-ec2-machine-image-test/Vpc/PrivateSubnet3"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
    }
   },
   "VpcPrivateSubnet3RouteTableAssociation16BDDC43": {
@@ -495,12 +495,12 @@
   "VpcPrivateSubnet3DefaultRoute94B74F0D": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "VpcPrivateSubnet3RouteTableD98824C7"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "VpcPublicSubnet3NATGateway7640CD1D"
+    },
+    "RouteTableId": {
+     "Ref": "VpcPrivateSubnet3RouteTableD98824C7"
     }
    }
   },
@@ -518,11 +518,11 @@
   "VpcVPCGWBF912B6E": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    },
     "InternetGatewayId": {
      "Ref": "VpcIGWD7BA715C"
+    },
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
     }
    }
   },
@@ -617,97 +617,6 @@
     "amzn2InstanceRole3F1DBBD2"
    ]
   },
-  "al2022InstanceSecurityGroupD2B46A06": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "integ-ec2-machine-image-test/al2022/InstanceSecurityGroup",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "integ-ec2-machine-image-test/al2022"
-     }
-    ],
-    "VpcId": {
-     "Ref": "Vpc8378EB38"
-    }
-   }
-  },
-  "al2022InstanceRole6711C818": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ec2.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "integ-ec2-machine-image-test/al2022"
-     }
-    ]
-   }
-  },
-  "al2022InstanceProfileAA7ED3DD": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     {
-      "Ref": "al2022InstanceRole6711C818"
-     }
-    ]
-   }
-  },
-  "al20225AC492C0": {
-   "Type": "AWS::EC2::Instance",
-   "Properties": {
-    "AvailabilityZone": "test-region-1a",
-    "IamInstanceProfile": {
-     "Ref": "al2022InstanceProfileAA7ED3DD"
-    },
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2022amikernel515x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "t3.nano",
-    "SecurityGroupIds": [
-     {
-      "Fn::GetAtt": [
-       "al2022InstanceSecurityGroupD2B46A06",
-       "GroupId"
-      ]
-     }
-    ],
-    "SubnetId": {
-     "Ref": "VpcPrivateSubnet1Subnet536B997A"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "integ-ec2-machine-image-test/al2022"
-     }
-    ],
-    "UserData": {
-     "Fn::Base64": "#!/bin/bash"
-    }
-   },
-   "DependsOn": [
-    "al2022InstanceRole6711C818"
-   ]
-  },
   "al2023InstanceSecurityGroupB018A9BC": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
@@ -798,6 +707,303 @@
    "DependsOn": [
     "al2023InstanceRoleECC2D6DD"
    ]
+  },
+  "al2023WithMinimalAMIInstanceSecurityGroupBD2FA3C4": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "integ-ec2-machine-image-test/al2023WithMinimalAMI/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ec2-machine-image-test/al2023WithMinimalAMI"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "al2023WithMinimalAMIInstanceRoleD28B1D5E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ec2-machine-image-test/al2023WithMinimalAMI"
+     }
+    ]
+   }
+  },
+  "al2023WithMinimalAMIInstanceProfile3DC008CC": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "al2023WithMinimalAMIInstanceRoleD28B1D5E"
+     }
+    ]
+   }
+  },
+  "al2023WithMinimalAMI03A043A1": {
+   "Type": "AWS::EC2::Instance",
+   "Properties": {
+    "AvailabilityZone": "test-region-1a",
+    "IamInstanceProfile": {
+     "Ref": "al2023WithMinimalAMIInstanceProfile3DC008CC"
+    },
+    "ImageId": {
+     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amiminimalkernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+    },
+    "InstanceType": "t3.nano",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "al2023WithMinimalAMIInstanceSecurityGroupBD2FA3C4",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": {
+     "Ref": "VpcPrivateSubnet1Subnet536B997A"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ec2-machine-image-test/al2023WithMinimalAMI"
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": "#!/bin/bash"
+    }
+   },
+   "DependsOn": [
+    "al2023WithMinimalAMIInstanceRoleD28B1D5E"
+   ]
+  },
+  "AmiParameter": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "DataType": "aws:ec2:image",
+    "Name": "IntegTestAmi",
+    "Type": "String",
+    "Value": "ami-06ca3ca175f37dd66"
+   }
+  },
+  "ssmresolveinstanceInstanceSecurityGroupEACCDB27": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "integ-ec2-machine-image-test/ssm-resolve-instance/InstanceSecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ec2-machine-image-test/ssm-resolve-instance"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   },
+   "DependsOn": [
+    "AmiParameter"
+   ]
+  },
+  "ssmresolveinstanceInstanceRoleCC771AEF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ec2-machine-image-test/ssm-resolve-instance"
+     }
+    ]
+   },
+   "DependsOn": [
+    "AmiParameter"
+   ]
+  },
+  "ssmresolveinstanceInstanceProfileAD70EB72": {
+   "Type": "AWS::IAM::InstanceProfile",
+   "Properties": {
+    "Roles": [
+     {
+      "Ref": "ssmresolveinstanceInstanceRoleCC771AEF"
+     }
+    ]
+   },
+   "DependsOn": [
+    "AmiParameter"
+   ]
+  },
+  "ssmresolveinstanceDC2C8573": {
+   "Type": "AWS::EC2::Instance",
+   "Properties": {
+    "AvailabilityZone": "test-region-1a",
+    "IamInstanceProfile": {
+     "Ref": "ssmresolveinstanceInstanceProfileAD70EB72"
+    },
+    "ImageId": {
+     "Fn::Join": [
+      "",
+      [
+       "resolve:ssm:",
+       {
+        "Ref": "AmiParameter"
+       }
+      ]
+     ]
+    },
+    "InstanceType": "t3.nano",
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "ssmresolveinstanceInstanceSecurityGroupEACCDB27",
+       "GroupId"
+      ]
+     }
+    ],
+    "SubnetId": {
+     "Ref": "VpcPrivateSubnet1Subnet536B997A"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "integ-ec2-machine-image-test/ssm-resolve-instance"
+     }
+    ],
+    "UserData": {
+     "Fn::Base64": "#!/bin/bash"
+    }
+   },
+   "DependsOn": [
+    "AmiParameter",
+    "ssmresolveinstanceInstanceRoleCC771AEF"
+   ]
+  },
+  "LTC4631592": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "ImageId": {
+      "Fn::Join": [
+       "",
+       [
+        "resolve:ssm:",
+        {
+         "Ref": "AmiParameter"
+        }
+       ]
+      ]
+     },
+     "InstanceType": "t3.nano",
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "integ-ec2-machine-image-test/LT"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "integ-ec2-machine-image-test/LT"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "integ-ec2-machine-image-test/LT"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "ASG46ED3070": {
+   "Type": "AWS::AutoScaling::AutoScalingGroup",
+   "Properties": {
+    "DesiredCapacity": "1",
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "LTC4631592"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "LTC4631592",
+       "LatestVersionNumber"
+      ]
+     }
+    },
+    "MaxSize": "1",
+    "MinSize": "1",
+    "VPCZoneIdentifier": [
+     {
+      "Ref": "VpcPrivateSubnet1Subnet536B997A"
+     },
+     {
+      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+     },
+     {
+      "Ref": "VpcPrivateSubnet3SubnetF258B56E"
+     }
+    ]
+   },
+   "UpdatePolicy": {
+    "AutoScalingScheduledAction": {
+     "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
   }
  },
  "Parameters": {
@@ -805,13 +1011,13 @@
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
    "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2"
   },
-  "SsmParameterValueawsserviceamiamazonlinuxlatestal2022amikernel515x8664C96584B6F00A464EAD1953AFF4B05118Parameter": {
-   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-   "Default": "/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.15-x86_64"
-  },
   "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
    "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
+  },
+  "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amiminimalkernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-6.1-x86_64"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

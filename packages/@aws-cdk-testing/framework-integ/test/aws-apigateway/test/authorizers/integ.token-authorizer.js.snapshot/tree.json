@@ -20,7 +20,7 @@
                     "id": "ImportServiceRole",
                     "path": "TokenAuthorizerInteg/MyAuthorizerFunction/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -59,13 +59,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -77,7 +77,7 @@
                     "id": "Stage",
                     "path": "TokenAuthorizerInteg/MyAuthorizerFunction/Code/Stage",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
+                      "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
                     }
                   },
@@ -85,13 +85,13 @@
                     "id": "AssetBucket",
                     "path": "TokenAuthorizerInteg/MyAuthorizerFunction/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               },
@@ -105,20 +105,20 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3.zip"
+                      "s3Key": "6ef24b26328dec9135be0bd32fff8f588f9a4564f32df911d1de82cfb78183f0.zip"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "MyAuthorizerFunctionServiceRole8A34C19E",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               },
@@ -166,13 +166,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -186,11 +186,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Authorizer",
                   "aws:cdk:cloudformation:props": {
-                    "name": "TokenAuthorizerIntegMyAuthorizer793B1D5F",
-                    "restApiId": {
-                      "Ref": "MyRestApi2D1F47A9"
-                    },
-                    "type": "TOKEN",
                     "authorizerUri": {
                       "Fn::Join": [
                         "",
@@ -240,17 +235,22 @@
                         ]
                       ]
                     },
-                    "identitySource": "method.request.header.Authorization"
+                    "identitySource": "method.request.header.Authorization",
+                    "name": "TokenAuthorizerIntegMyAuthorizer793B1D5F",
+                    "restApiId": {
+                      "Ref": "MyRestApi2D1F47A9"
+                    },
+                    "type": "TOKEN"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.CfnAuthorizer",
+                  "fqn": "aws-cdk-lib.aws_apigateway.CfnAuthorizer",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigateway.TokenAuthorizer",
+              "fqn": "aws-cdk-lib.aws_apigateway.TokenAuthorizer",
               "version": "0.0.0"
             }
           },
@@ -268,7 +268,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.CfnRestApi",
+                  "fqn": "aws-cdk-lib.aws_apigateway.CfnRestApi",
                   "version": "0.0.0"
                 }
               },
@@ -280,7 +280,7 @@
                     "id": "ImportCloudWatchRole",
                     "path": "TokenAuthorizerInteg/MyRestApi/CloudWatchRole/ImportCloudWatchRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -319,13 +319,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -344,7 +344,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.CfnAccount",
+                  "fqn": "aws-cdk-lib.aws_apigateway.CfnAccount",
                   "version": "0.0.0"
                 }
               },
@@ -358,20 +358,20 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
                       "aws:cdk:cloudformation:props": {
+                        "description": "Automatically created by the RestApi construct",
                         "restApiId": {
                           "Ref": "MyRestApi2D1F47A9"
-                        },
-                        "description": "Automatically created by the RestApi construct"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigateway.CfnDeployment",
+                      "fqn": "aws-cdk-lib.aws_apigateway.CfnDeployment",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.Deployment",
+                  "fqn": "aws-cdk-lib.aws_apigateway.Deployment",
                   "version": "0.0.0"
                 }
               },
@@ -385,23 +385,23 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                       "aws:cdk:cloudformation:props": {
+                        "deploymentId": {
+                          "Ref": "MyRestApiDeploymentB555B582e0e53f2547b469b538202de55968eaf0"
+                        },
                         "restApiId": {
                           "Ref": "MyRestApi2D1F47A9"
-                        },
-                        "deploymentId": {
-                          "Ref": "MyRestApiDeploymentB555B5822d29e7cc325d84a3264c658c75a9d43a"
                         },
                         "stageName": "prod"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigateway.CfnStage",
+                      "fqn": "aws-cdk-lib.aws_apigateway.CfnStage",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.Stage",
+                  "fqn": "aws-cdk-lib.aws_apigateway.Stage",
                   "version": "0.0.0"
                 }
               },
@@ -409,7 +409,7 @@
                 "id": "Endpoint",
                 "path": "TokenAuthorizerInteg/MyRestApi/Endpoint",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               },
@@ -427,17 +427,9 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                           "aws:cdk:cloudformation:props": {
-                            "httpMethod": "OPTIONS",
-                            "resourceId": {
-                              "Fn::GetAtt": [
-                                "MyRestApi2D1F47A9",
-                                "RootResourceId"
-                              ]
-                            },
-                            "restApiId": {
-                              "Ref": "MyRestApi2D1F47A9"
-                            },
+                            "apiKeyRequired": false,
                             "authorizationType": "NONE",
+                            "httpMethod": "OPTIONS",
                             "integration": {
                               "type": "MOCK",
                               "requestTemplates": {
@@ -463,17 +455,26 @@
                                   "method.response.header.Access-Control-Allow-Methods": true
                                 }
                               }
-                            ]
+                            ],
+                            "resourceId": {
+                              "Fn::GetAtt": [
+                                "MyRestApi2D1F47A9",
+                                "RootResourceId"
+                              ]
+                            },
+                            "restApiId": {
+                              "Ref": "MyRestApi2D1F47A9"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                          "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigateway.Method",
+                      "fqn": "aws-cdk-lib.aws_apigateway.Method",
                       "version": "0.0.0"
                     }
                   },
@@ -487,20 +488,11 @@
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                           "aws:cdk:cloudformation:props": {
-                            "httpMethod": "ANY",
-                            "resourceId": {
-                              "Fn::GetAtt": [
-                                "MyRestApi2D1F47A9",
-                                "RootResourceId"
-                              ]
-                            },
-                            "restApiId": {
-                              "Ref": "MyRestApi2D1F47A9"
-                            },
                             "authorizationType": "CUSTOM",
                             "authorizerId": {
                               "Ref": "MyAuthorizer6575980E"
                             },
+                            "httpMethod": "ANY",
                             "integration": {
                               "type": "MOCK",
                               "requestTemplates": {
@@ -517,29 +509,38 @@
                               {
                                 "statusCode": "200"
                               }
-                            ]
+                            ],
+                            "resourceId": {
+                              "Fn::GetAtt": [
+                                "MyRestApi2D1F47A9",
+                                "RootResourceId"
+                              ]
+                            },
+                            "restApiId": {
+                              "Ref": "MyRestApi2D1F47A9"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                          "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigateway.Method",
+                      "fqn": "aws-cdk-lib.aws_apigateway.Method",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.ResourceBase",
+                  "fqn": "aws-cdk-lib.aws_apigateway.ResourceBase",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigateway.RestApi",
+              "fqn": "aws-cdk-lib.aws_apigateway.RestApi",
               "version": "0.0.0"
             }
           },
@@ -555,7 +556,7 @@
                     "id": "ImportServiceRole",
                     "path": "TokenAuthorizerInteg/InvokeFunction/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -594,13 +595,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -636,26 +637,26 @@
                         ]
                       }
                     },
+                    "handler": "index.handler",
+                    "memorySize": 250,
                     "role": {
                       "Fn::GetAtt": [
                         "InvokeFunctionServiceRole3B980FD2",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "memorySize": 250,
-                    "runtime": "nodejs16.x",
+                    "runtime": "nodejs18.x",
                     "timeout": 10
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
               "version": "0.0.0"
             }
           },
@@ -667,21 +668,21 @@
                 "id": "Output{\"Ref\":\"InvokeFunctionC517E46D\"}",
                 "path": "TokenAuthorizerInteg/Exports/Output{\"Ref\":\"InvokeFunctionC517E46D\"}",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.168"
+              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "TokenAuthorizerInteg/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -689,13 +690,13 @@
             "id": "CheckBootstrapVersion",
             "path": "TokenAuthorizerInteg/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -712,7 +713,7 @@
                 "path": "apigw-token-auth/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.168"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -732,12 +733,12 @@
                             "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke3deec958b1e945795e38da5fc2f86753/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.168"
+                              "version": "10.2.70"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
                           "version": "0.0.0"
                         }
                       },
@@ -749,13 +750,13 @@
                             "id": "Default",
                             "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke3deec958b1e945795e38da5fc2f86753/Default/Default",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
+                              "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CustomResource",
+                          "fqn": "aws-cdk-lib.CustomResource",
                           "version": "0.0.0"
                         }
                       },
@@ -763,7 +764,7 @@
                         "id": "Invoke",
                         "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke3deec958b1e945795e38da5fc2f86753/Invoke",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       },
@@ -771,13 +772,13 @@
                         "id": "AssertionResults",
                         "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke3deec958b1e945795e38da5fc2f86753/AssertionResults",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
                       "version": "0.0.0"
                     }
                   },
@@ -789,7 +790,7 @@
                         "id": "Staging",
                         "path": "apigw-token-auth/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
                         }
                       },
@@ -797,7 +798,7 @@
                         "id": "Role",
                         "path": "apigw-token-auth/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       },
@@ -805,14 +806,14 @@
                         "id": "Handler",
                         "path": "apigw-token-auth/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.168"
+                      "version": "10.2.70"
                     }
                   },
                   "LambdaInvoke8e1b9f979f2329abf1ed6574d33d391a": {
@@ -828,12 +829,12 @@
                             "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke8e1b9f979f2329abf1ed6574d33d391a/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.168"
+                              "version": "10.2.70"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
                           "version": "0.0.0"
                         }
                       },
@@ -845,13 +846,13 @@
                             "id": "Default",
                             "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke8e1b9f979f2329abf1ed6574d33d391a/Default/Default",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
+                              "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CustomResource",
+                          "fqn": "aws-cdk-lib.CustomResource",
                           "version": "0.0.0"
                         }
                       },
@@ -859,7 +860,7 @@
                         "id": "Invoke",
                         "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke8e1b9f979f2329abf1ed6574d33d391a/Invoke",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       },
@@ -867,13 +868,13 @@
                         "id": "AssertionResults",
                         "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke8e1b9f979f2329abf1ed6574d33d391a/AssertionResults",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
                       "version": "0.0.0"
                     }
                   },
@@ -890,12 +891,12 @@
                             "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke0532e3d95b2a56b147278c621e5800c4/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.168"
+                              "version": "10.2.70"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
                           "version": "0.0.0"
                         }
                       },
@@ -907,13 +908,13 @@
                             "id": "Default",
                             "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke0532e3d95b2a56b147278c621e5800c4/Default/Default",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
+                              "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CustomResource",
+                          "fqn": "aws-cdk-lib.CustomResource",
                           "version": "0.0.0"
                         }
                       },
@@ -921,7 +922,7 @@
                         "id": "Invoke",
                         "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke0532e3d95b2a56b147278c621e5800c4/Invoke",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       },
@@ -929,13 +930,13 @@
                         "id": "AssertionResults",
                         "path": "apigw-token-auth/DefaultTest/DeployAssert/LambdaInvoke0532e3d95b2a56b147278c621e5800c4/AssertionResults",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/integ-tests.LambdaInvokeFunction",
+                      "fqn": "@aws-cdk/integ-tests-alpha.LambdaInvokeFunction",
                       "version": "0.0.0"
                     }
                   },
@@ -943,7 +944,7 @@
                     "id": "BootstrapVersion",
                     "path": "apigw-token-auth/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -951,25 +952,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "apigw-token-auth/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -978,12 +979,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.168"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

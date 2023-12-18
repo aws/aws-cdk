@@ -50,7 +50,8 @@
                               "Action": [
                                 "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*"
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -121,14 +122,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
-            }
-          },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -208,7 +201,8 @@
                               "Action": [
                                 "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*"
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -431,27 +425,19 @@
                       },
                       "s3Key": "f634c102f4aa6cdd9b6c00b836e98f2d5c03e65b02bd9efa16f83a2f348f149f.zip"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "DataProcessorFunctionServiceRole12E05500",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": {
-                      "Fn::FindInMap": [
-                        "DefaultCrNodeVersionMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "value"
+                    "role": {
+                      "Fn::GetAtt": [
+                        "DataProcessorFunctionServiceRole12E05500",
+                        "Arn"
                       ]
                     },
+                    "runtime": "nodejs18.x",
                     "timeout": 60
                   }
                 },
@@ -572,49 +558,6 @@
             "id": "Delivery Stream",
             "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream",
             "children": {
-              "Service Role": {
-                "id": "Service Role",
-                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/Service Role",
-                "children": {
-                  "ImportService Role": {
-                    "id": "ImportService Role",
-                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/Service Role/ImportService Role",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/Service Role/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "firehose.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
               "S3 Destination Role": {
                 "id": "S3 Destination Role",
                 "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Delivery Stream/S3 Destination Role",
@@ -1045,7 +988,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.70"
         }
       }
     },

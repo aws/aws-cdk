@@ -8,6 +8,14 @@
         "id": "synthesize-default-resources",
         "path": "synthesize-default-resources",
         "children": {
+          "UsingAppStagingSynthesizer--synthesize-default-resources": {
+            "id": "UsingAppStagingSynthesizer--synthesize-default-resources",
+            "path": "synthesize-default-resources/UsingAppStagingSynthesizer--synthesize-default-resources",
+            "constructInfo": {
+              "fqn": "@aws-cdk/app-staging-synthesizer-alpha.UsingAppStagingSynthesizer",
+              "version": "0.0.0"
+            }
+          },
           "lambda-s3": {
             "id": "lambda-s3",
             "path": "synthesize-default-resources/lambda-s3",
@@ -103,136 +111,18 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": {
-                        "Fn::Sub": "cdk-default-resources-staging-${AWS::AccountId}-${AWS::Region}"
+                        "Fn::Sub": "cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}"
                       },
                       "s3Key": "deploy-time/68539effc3f7ad46fff9765606c2a01b7f7965833643ab37e62799f19a37f650.zip"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "lambdas3ServiceRoleC9EDE33A",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "python3.10"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
-            }
-          },
-          "lambda-ecr-1": {
-            "id": "lambda-ecr-1",
-            "path": "synthesize-default-resources/lambda-ecr-1",
-            "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "synthesize-default-resources/lambda-ecr-1/ServiceRole",
-                "children": {
-                  "ImportServiceRole": {
-                    "id": "ImportServiceRole",
-                    "path": "synthesize-default-resources/lambda-ecr-1/ServiceRole/ImportServiceRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "synthesize-default-resources/lambda-ecr-1/ServiceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "AssetImage": {
-                "id": "AssetImage",
-                "path": "synthesize-default-resources/lambda-ecr-1/AssetImage",
-                "children": {
-                  "Staging": {
-                    "id": "Staging",
-                    "path": "synthesize-default-resources/lambda-ecr-1/AssetImage/Staging",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Repository": {
-                    "id": "Repository",
-                    "path": "synthesize-default-resources/lambda-ecr-1/AssetImage/Repository",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ecr_assets.DockerImageAsset",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "synthesize-default-resources/lambda-ecr-1/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                  "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "imageUri": {
-                        "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/default-resources/ecr-asset:16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
-                      }
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "lambdaecr1ServiceRoleA6BBC49F",
-                        "Arn"
-                      ]
-                    },
-                    "packageType": "Image"
                   }
                 },
                 "constructInfo": {
@@ -341,16 +231,16 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "imageUri": {
-                        "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/default-resources/ecr-asset:16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
+                        "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/default-resourcesmax/ecr-asset/1:16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
                       }
                     },
+                    "packageType": "Image",
                     "role": {
                       "Fn::GetAtt": [
                         "lambdaecr1copyServiceRole2A9FAF5F",
                         "Arn"
                       ]
-                    },
-                    "packageType": "Image"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -364,17 +254,17 @@
               "version": "0.0.0"
             }
           },
-          "lambda-ecr-2": {
-            "id": "lambda-ecr-2",
-            "path": "synthesize-default-resources/lambda-ecr-2",
+          "lambda-ecr-two": {
+            "id": "lambda-ecr-two",
+            "path": "synthesize-default-resources/lambda-ecr-two",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "synthesize-default-resources/lambda-ecr-2/ServiceRole",
+                "path": "synthesize-default-resources/lambda-ecr-two/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "synthesize-default-resources/lambda-ecr-2/ServiceRole/ImportServiceRole",
+                    "path": "synthesize-default-resources/lambda-ecr-two/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -382,7 +272,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "synthesize-default-resources/lambda-ecr-2/ServiceRole/Resource",
+                    "path": "synthesize-default-resources/lambda-ecr-two/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -427,11 +317,11 @@
               },
               "AssetImage": {
                 "id": "AssetImage",
-                "path": "synthesize-default-resources/lambda-ecr-2/AssetImage",
+                "path": "synthesize-default-resources/lambda-ecr-two/AssetImage",
                 "children": {
                   "Staging": {
                     "id": "Staging",
-                    "path": "synthesize-default-resources/lambda-ecr-2/AssetImage/Staging",
+                    "path": "synthesize-default-resources/lambda-ecr-two/AssetImage/Staging",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -439,7 +329,7 @@
                   },
                   "Repository": {
                     "id": "Repository",
-                    "path": "synthesize-default-resources/lambda-ecr-2/AssetImage/Repository",
+                    "path": "synthesize-default-resources/lambda-ecr-two/AssetImage/Repository",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
                       "version": "0.0.0"
@@ -453,22 +343,22 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "synthesize-default-resources/lambda-ecr-2/Resource",
+                "path": "synthesize-default-resources/lambda-ecr-two/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "imageUri": {
-                        "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/default-resources/ecr-asset-2:16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
+                        "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/default-resourcesmax/ecr-asset-2:16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
                       }
                     },
+                    "packageType": "Image",
                     "role": {
                       "Fn::GetAtt": [
-                        "lambdaecr2ServiceRole2EA363D2",
+                        "lambdaecrtwoServiceRole13E37F90",
                         "Arn"
                       ]
-                    },
-                    "packageType": "Image"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -488,17 +378,17 @@
           "version": "0.0.0"
         }
       },
-      "StagingStack-default-resources-ACCOUNT-REGION": {
-        "id": "StagingStack-default-resources-ACCOUNT-REGION",
-        "path": "StagingStack-default-resources-ACCOUNT-REGION",
+      "StagingStack-default-resourcesmax-ACCOUNT-REGION": {
+        "id": "StagingStack-default-resourcesmax-ACCOUNT-REGION",
+        "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION",
         "children": {
           "CdkFileRole": {
             "id": "CdkFileRole",
-            "path": "StagingStack-default-resources-ACCOUNT-REGION/CdkFileRole",
+            "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole",
             "children": {
               "ImportCdkFileRole": {
                 "id": "ImportCdkFileRole",
-                "path": "StagingStack-default-resources-ACCOUNT-REGION/CdkFileRole/ImportCdkFileRole",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/ImportCdkFileRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -506,7 +396,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "StagingStack-default-resources-ACCOUNT-REGION/CdkFileRole/Resource",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -541,7 +431,7 @@
                       "Fn::Join": [
                         "",
                         [
-                          "cdk-default-resources-file-role-",
+                          "cdk-default-resourcesmax-file-role-",
                           {
                             "Ref": "AWS::Region"
                           }
@@ -557,11 +447,11 @@
               },
               "DefaultPolicy": {
                 "id": "DefaultPolicy",
-                "path": "StagingStack-default-resources-ACCOUNT-REGION/CdkFileRole/DefaultPolicy",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/DefaultPolicy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "StagingStack-default-resources-ACCOUNT-REGION/CdkFileRole/DefaultPolicy/Resource",
+                    "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/DefaultPolicy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
@@ -650,11 +540,11 @@
           },
           "BucketKey": {
             "id": "BucketKey",
-            "path": "StagingStack-default-resources-ACCOUNT-REGION/BucketKey",
+            "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "StagingStack-default-resources-ACCOUNT-REGION/BucketKey/Resource",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                   "aws:cdk:cloudformation:props": {
@@ -733,15 +623,15 @@
               },
               "Alias": {
                 "id": "Alias",
-                "path": "StagingStack-default-resources-ACCOUNT-REGION/BucketKey/Alias",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Alias",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "StagingStack-default-resources-ACCOUNT-REGION/BucketKey/Alias/Resource",
+                    "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Alias/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
                       "aws:cdk:cloudformation:props": {
-                        "aliasName": "alias/cdk-default-resources-staging",
+                        "aliasName": "alias/cdk-default-resourcesmax-staging",
                         "targetKeyId": {
                           "Fn::GetAtt": [
                             "BucketKey7092080A",
@@ -769,11 +659,11 @@
           },
           "CdkStagingBucket": {
             "id": "CdkStagingBucket",
-            "path": "StagingStack-default-resources-ACCOUNT-REGION/CdkStagingBucket",
+            "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "StagingStack-default-resources-ACCOUNT-REGION/CdkStagingBucket/Resource",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -796,7 +686,7 @@
                       "Fn::Join": [
                         "",
                         [
-                          "cdk-default-resources-staging-",
+                          "cdk-default-resourcesmax-staging-",
                           {
                             "Ref": "AWS::AccountId"
                           },
@@ -822,6 +712,12 @@
                         }
                       ]
                     },
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-objects",
+                        "value": "true"
+                      }
+                    ],
                     "versioningConfiguration": {
                       "status": "Enabled"
                     }
@@ -834,11 +730,11 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "StagingStack-default-resources-ACCOUNT-REGION/CdkStagingBucket/Policy",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "StagingStack-default-resources-ACCOUNT-REGION/CdkStagingBucket/Policy/Resource",
+                    "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
@@ -857,6 +753,45 @@
                               "Effect": "Deny",
                               "Principal": {
                                 "AWS": "*"
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "CdkStagingBucket1636058C",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "CdkStagingBucket1636058C",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Action": [
+                                "s3:DeleteObject*",
+                                "s3:GetBucket*",
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                                    "Arn"
+                                  ]
+                                }
                               },
                               "Resource": [
                                 {
@@ -951,6 +886,24 @@
                   "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
                   "version": "0.0.0"
                 }
+              },
+              "AutoDeleteObjectsCustomResource": {
+                "id": "AutoDeleteObjectsCustomResource",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/AutoDeleteObjectsCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/AutoDeleteObjectsCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -958,13 +911,39 @@
               "version": "0.0.0"
             }
           },
+          "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
+            "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
           "CdkImageRole": {
             "id": "CdkImageRole",
-            "path": "StagingStack-default-resources-ACCOUNT-REGION/CdkImageRole",
+            "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkImageRole",
             "children": {
               "ImportCdkImageRole": {
                 "id": "ImportCdkImageRole",
-                "path": "StagingStack-default-resources-ACCOUNT-REGION/CdkImageRole/ImportCdkImageRole",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkImageRole/ImportCdkImageRole",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -972,7 +951,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "StagingStack-default-resources-ACCOUNT-REGION/CdkImageRole/Resource",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkImageRole/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -1007,7 +986,7 @@
                       "Fn::Join": [
                         "",
                         [
-                          "cdk-default-resources-image-role-",
+                          "cdk-default-resourcesmax-image-role-",
                           {
                             "Ref": "AWS::Region"
                           }
@@ -1023,11 +1002,11 @@
               },
               "DefaultPolicy": {
                 "id": "DefaultPolicy",
-                "path": "StagingStack-default-resources-ACCOUNT-REGION/CdkImageRole/DefaultPolicy",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkImageRole/DefaultPolicy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "StagingStack-default-resources-ACCOUNT-REGION/CdkImageRole/DefaultPolicy/Resource",
+                    "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkImageRole/DefaultPolicy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                       "aws:cdk:cloudformation:props": {
@@ -1049,13 +1028,13 @@
                               "Resource": [
                                 {
                                   "Fn::GetAtt": [
-                                    "defaultresourcesecrasset2FBE6B8A9",
+                                    "defaultresourcesmaxecrasset13112F7F9",
                                     "Arn"
                                   ]
                                 },
                                 {
                                   "Fn::GetAtt": [
-                                    "defaultresourcesecrasset9191BD6E",
+                                    "defaultresourcesmaxecrasset2904B88A7",
                                     "Arn"
                                   ]
                                 }
@@ -1094,24 +1073,49 @@
               "version": "0.0.0"
             }
           },
-          "default-resources--ecr-asset": {
-            "id": "default-resources--ecr-asset",
-            "path": "StagingStack-default-resources-ACCOUNT-REGION/default-resources--ecr-asset",
+          "default-resourcesmax--ecr-asset--1": {
+            "id": "default-resourcesmax--ecr-asset--1",
+            "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset--1",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "StagingStack-default-resources-ACCOUNT-REGION/default-resources--ecr-asset/Resource",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset--1/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
                   "aws:cdk:cloudformation:props": {
+                    "imageTagMutability": "IMMUTABLE",
                     "lifecyclePolicy": {
-                      "lifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions and keep the specified number of latest versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
+                      "lifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
                     },
-                    "repositoryName": "default-resources/ecr-asset"
+                    "repositoryName": "default-resourcesmax/ecr-asset/1",
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-images",
+                        "value": "true"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ecr.CfnRepository",
+                  "version": "0.0.0"
+                }
+              },
+              "AutoDeleteImagesCustomResource": {
+                "id": "AutoDeleteImagesCustomResource",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset--1/AutoDeleteImagesCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset--1/AutoDeleteImagesCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
                   "version": "0.0.0"
                 }
               }
@@ -1121,24 +1125,75 @@
               "version": "0.0.0"
             }
           },
-          "default-resources--ecr-asset-2": {
-            "id": "default-resources--ecr-asset-2",
-            "path": "StagingStack-default-resources-ACCOUNT-REGION/default-resources--ecr-asset-2",
+          "Custom::ECRAutoDeleteImagesCustomResourceProvider": {
+            "id": "Custom::ECRAutoDeleteImagesCustomResourceProvider",
+            "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::ECRAutoDeleteImagesCustomResourceProvider",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::ECRAutoDeleteImagesCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::ECRAutoDeleteImagesCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "version": "0.0.0"
+            }
+          },
+          "default-resourcesmax--ecr-asset-2": {
+            "id": "default-resourcesmax--ecr-asset-2",
+            "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset-2",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "StagingStack-default-resources-ACCOUNT-REGION/default-resources--ecr-asset-2/Resource",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset-2/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
                   "aws:cdk:cloudformation:props": {
+                    "imageTagMutability": "IMMUTABLE",
                     "lifecyclePolicy": {
-                      "lifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions and keep the specified number of latest versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
+                      "lifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
                     },
-                    "repositoryName": "default-resources/ecr-asset-2"
+                    "repositoryName": "default-resourcesmax/ecr-asset-2",
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-images",
+                        "value": "true"
+                      }
+                    ]
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ecr.CfnRepository",
+                  "version": "0.0.0"
+                }
+              },
+              "AutoDeleteImagesCustomResource": {
+                "id": "AutoDeleteImagesCustomResource",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset-2/AutoDeleteImagesCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset-2/AutoDeleteImagesCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
                   "version": "0.0.0"
                 }
               }
@@ -1150,7 +1205,7 @@
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
+          "fqn": "@aws-cdk/app-staging-synthesizer-alpha.DefaultStagingStack",
           "version": "0.0.0"
         }
       },
@@ -1167,7 +1222,7 @@
                 "path": "integ-tests/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -1213,7 +1268,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.2.70"
         }
       }
     },

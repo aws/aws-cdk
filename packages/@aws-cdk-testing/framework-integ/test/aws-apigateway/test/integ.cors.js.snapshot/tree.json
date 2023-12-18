@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "cors-twitch-test": {
         "id": "cors-twitch-test",
         "path": "cors-twitch-test",
@@ -30,7 +22,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.CfnRestApi",
+                  "fqn": "aws-cdk-lib.aws_apigateway.CfnRestApi",
                   "version": "0.0.0"
                 }
               },
@@ -38,6 +30,14 @@
                 "id": "CloudWatchRole",
                 "path": "cors-twitch-test/cors-api-test/CloudWatchRole",
                 "children": {
+                  "ImportCloudWatchRole": {
+                    "id": "ImportCloudWatchRole",
+                    "path": "cors-twitch-test/cors-api-test/CloudWatchRole/ImportCloudWatchRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "cors-twitch-test/cors-api-test/CloudWatchRole/Resource",
@@ -73,13 +73,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -98,7 +98,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.CfnAccount",
+                  "fqn": "aws-cdk-lib.aws_apigateway.CfnAccount",
                   "version": "0.0.0"
                 }
               },
@@ -112,20 +112,20 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
                       "aws:cdk:cloudformation:props": {
+                        "description": "Automatically created by the RestApi construct",
                         "restApiId": {
                           "Ref": "corsapitest8682546E"
-                        },
-                        "description": "Automatically created by the RestApi construct"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigateway.CfnDeployment",
+                      "fqn": "aws-cdk-lib.aws_apigateway.CfnDeployment",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.Deployment",
+                  "fqn": "aws-cdk-lib.aws_apigateway.Deployment",
                   "version": "0.0.0"
                 }
               },
@@ -139,23 +139,23 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                       "aws:cdk:cloudformation:props": {
+                        "deploymentId": {
+                          "Ref": "corsapitestDeployment2BF1633A72d0197fd6797ee251232efbdce56b8a"
+                        },
                         "restApiId": {
                           "Ref": "corsapitest8682546E"
-                        },
-                        "deploymentId": {
-                          "Ref": "corsapitestDeployment2BF1633A51392cbce1ac2785bd0e53063423e203"
                         },
                         "stageName": "prod"
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigateway.CfnStage",
+                      "fqn": "aws-cdk-lib.aws_apigateway.CfnStage",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.Stage",
+                  "fqn": "aws-cdk-lib.aws_apigateway.Stage",
                   "version": "0.0.0"
                 }
               },
@@ -163,8 +163,8 @@
                 "id": "Endpoint",
                 "path": "cors-twitch-test/cors-api-test/Endpoint",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
                 }
               },
               "Default": {
@@ -194,7 +194,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-apigateway.CfnResource",
+                          "fqn": "aws-cdk-lib.aws_apigateway.CfnResource",
                           "version": "0.0.0"
                         }
                       },
@@ -247,7 +247,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                               "version": "0.0.0"
                             }
                           },
@@ -292,7 +292,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                               "version": "0.0.0"
                             }
                           },
@@ -302,14 +302,8 @@
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                               "aws:cdk:cloudformation:props": {
-                                "httpMethod": "GET",
-                                "resourceId": {
-                                  "Ref": "corsapitesttwitch0E3D1559"
-                                },
-                                "restApiId": {
-                                  "Ref": "corsapitest8682546E"
-                                },
                                 "authorizationType": "NONE",
+                                "httpMethod": "GET",
                                 "integration": {
                                   "type": "AWS_PROXY",
                                   "uri": {
@@ -336,17 +330,23 @@
                                     ]
                                   },
                                   "integrationHttpMethod": "POST"
+                                },
+                                "resourceId": {
+                                  "Ref": "corsapitesttwitch0E3D1559"
+                                },
+                                "restApiId": {
+                                  "Ref": "corsapitest8682546E"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-apigateway.Method",
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
                           "version": "0.0.0"
                         }
                       },
@@ -399,7 +399,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                               "version": "0.0.0"
                             }
                           },
@@ -444,7 +444,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                               "version": "0.0.0"
                             }
                           },
@@ -454,14 +454,8 @@
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                               "aws:cdk:cloudformation:props": {
-                                "httpMethod": "POST",
-                                "resourceId": {
-                                  "Ref": "corsapitesttwitch0E3D1559"
-                                },
-                                "restApiId": {
-                                  "Ref": "corsapitest8682546E"
-                                },
                                 "authorizationType": "NONE",
+                                "httpMethod": "POST",
                                 "integration": {
                                   "type": "AWS_PROXY",
                                   "uri": {
@@ -488,17 +482,23 @@
                                     ]
                                   },
                                   "integrationHttpMethod": "POST"
+                                },
+                                "resourceId": {
+                                  "Ref": "corsapitesttwitch0E3D1559"
+                                },
+                                "restApiId": {
+                                  "Ref": "corsapitest8682546E"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-apigateway.Method",
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
                           "version": "0.0.0"
                         }
                       },
@@ -551,7 +551,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                               "version": "0.0.0"
                             }
                           },
@@ -596,7 +596,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-lambda.CfnPermission",
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                               "version": "0.0.0"
                             }
                           },
@@ -606,14 +606,8 @@
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                               "aws:cdk:cloudformation:props": {
-                                "httpMethod": "DELETE",
-                                "resourceId": {
-                                  "Ref": "corsapitesttwitch0E3D1559"
-                                },
-                                "restApiId": {
-                                  "Ref": "corsapitest8682546E"
-                                },
                                 "authorizationType": "NONE",
+                                "httpMethod": "DELETE",
                                 "integration": {
                                   "type": "AWS_PROXY",
                                   "uri": {
@@ -640,17 +634,23 @@
                                     ]
                                   },
                                   "integrationHttpMethod": "POST"
+                                },
+                                "resourceId": {
+                                  "Ref": "corsapitesttwitch0E3D1559"
+                                },
+                                "restApiId": {
+                                  "Ref": "corsapitest8682546E"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-apigateway.Method",
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
                           "version": "0.0.0"
                         }
                       },
@@ -664,14 +664,9 @@
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                               "aws:cdk:cloudformation:props": {
-                                "httpMethod": "OPTIONS",
-                                "resourceId": {
-                                  "Ref": "corsapitesttwitch0E3D1559"
-                                },
-                                "restApiId": {
-                                  "Ref": "corsapitest8682546E"
-                                },
+                                "apiKeyRequired": false,
                                 "authorizationType": "NONE",
+                                "httpMethod": "OPTIONS",
                                 "integration": {
                                   "type": "MOCK",
                                   "requestTemplates": {
@@ -687,7 +682,7 @@
                                         "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
                                       },
                                       "responseTemplates": {
-                                        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\") #set($origin = $input.params().header.get(\"origin\")) #end\n#if($origin.matches(\"https://www.test-cors.org\"))\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
+                                        "application/json": "#set($origin = $input.params().header.get(\"Origin\"))\n#if($origin == \"\")\n  #set($origin = $input.params().header.get(\"origin\"))\n#end\n#if($origin == \"https://www.test-cors.org\")\n  #set($context.responseOverride.header.Access-Control-Allow-Origin = $origin)\n#end"
                                       }
                                     }
                                   ]
@@ -702,35 +697,41 @@
                                       "method.response.header.Access-Control-Allow-Methods": true
                                     }
                                   }
-                                ]
+                                ],
+                                "resourceId": {
+                                  "Ref": "corsapitesttwitch0E3D1559"
+                                },
+                                "restApiId": {
+                                  "Ref": "corsapitest8682546E"
+                                }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-apigateway.CfnMethod",
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-apigateway.Method",
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-apigateway.Resource",
+                      "fqn": "aws-cdk-lib.aws_apigateway.Resource",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-apigateway.ResourceBase",
+                  "fqn": "aws-cdk-lib.aws_apigateway.ResourceBase",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-apigateway.RestApi",
+              "fqn": "aws-cdk-lib.aws_apigateway.RestApi",
               "version": "0.0.0"
             }
           },
@@ -742,6 +743,14 @@
                 "id": "ServiceRole",
                 "path": "cors-twitch-test/handler/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "cors-twitch-test/handler/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "cors-twitch-test/handler/ServiceRole/Resource",
@@ -777,13 +786,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -795,21 +804,21 @@
                     "id": "Stage",
                     "path": "cors-twitch-test/handler/Code/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
                     "path": "cors-twitch-test/handler/Code/AssetBucket",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.BucketBase",
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3-assets.Asset",
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
               },
@@ -825,31 +834,47 @@
                       },
                       "s3Key": "c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f.zip"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "handlerServiceRole187D5A5A",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-lambda.CfnFunction",
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-lambda.Function",
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cors-twitch-test/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cors-twitch-test/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "cors": {
@@ -865,33 +890,59 @@
                 "path": "cors/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "cors/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cors/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cors/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

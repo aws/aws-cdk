@@ -771,7 +771,7 @@ const validationReport = (data: ValidationReportData[]) => {
         expect.stringMatching(new RegExp(`Plugin: ${d.pluginName}`)),
         expect.stringMatching(new RegExp(`Version: ${d.version ?? 'N/A'}`)),
         expect.stringMatching(new RegExp(`Status: ${d.status}`)),
-        expect.stringMatching(new RegExp('\(Violations\)')),
+        expect.stringMatching(new RegExp('\\(Violations\\)')),
         title,
         ...d.severity ? [expect.stringMatching(new RegExp(`Severity: ${d.severity}`))] : [],
         expect.stringMatching(new RegExp('  Occurrences:')),

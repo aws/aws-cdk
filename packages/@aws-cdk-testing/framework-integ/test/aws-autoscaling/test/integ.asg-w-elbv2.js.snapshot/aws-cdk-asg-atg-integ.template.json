@@ -572,27 +572,68 @@
     ]
    }
   },
-  "AsgLaunchConfig6D4F96BB": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "AsgLaunchTemplate6027899F": {
+   "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "AsgInstanceProfileBCEDB827",
+        "Arn"
+       ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t3.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "AsgInstanceSecurityGroupC53F1492",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-asg-atg-integ/Asg/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-asg-atg-integ/Asg/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
     },
-    "InstanceType": "t3.micro",
-    "IamInstanceProfile": {
-     "Ref": "AsgInstanceProfileBCEDB827"
-    },
-    "SecurityGroups": [
+    "TagSpecifications": [
      {
-      "Fn::GetAtt": [
-       "AsgInstanceSecurityGroupC53F1492",
-       "GroupId"
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-asg-atg-integ/Asg/LaunchTemplate"
+       }
       ]
      }
-    ],
-    "UserData": {
-     "Fn::Base64": "#!/bin/bash"
-    }
+    ]
    },
    "DependsOn": [
     "AsgInstanceRole7946982D"
@@ -603,8 +644,16 @@
    "Properties": {
     "MaxSize": "1",
     "MinSize": "1",
-    "LaunchConfigurationName": {
-     "Ref": "AsgLaunchConfig6D4F96BB"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "AsgLaunchTemplate6027899F"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "AsgLaunchTemplate6027899F",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "Tags": [
      {

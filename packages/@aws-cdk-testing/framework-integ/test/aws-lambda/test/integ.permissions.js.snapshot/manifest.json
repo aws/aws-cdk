@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "34.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "lambda-permissions.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "lambda-permissions.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f189cb5ef6ca8751f98c7dbbfdfb7dac59c18d9bb287a62e9b01d4fb43156f7e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4a7337dac9cfd962c6206c10044011cbcfe4c604459c5eada3df438eb578f341.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -63,6 +58,36 @@
             "data": "MyLambdaInvoke138AF9IJcZORjZNKCKShZMMuVQwCnUkbFqMoQf5of0C1F7DFD8"
           }
         ],
+        "/lambda-permissions/MyLambda/FunctionUrl/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaFunctionUrlC2055677"
+          }
+        ],
+        "/lambda-permissions/MyLambda/InvokeSz2P2C4jO--iX4AmIs1ANCq2qfq8PhgVeKtRAVyAkFmM=": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaInvokeSz2P2C4jOiX4AmIs1ANCq2qfq8PhgVeKtRAVyAkFmM7C8BE4B5"
+          }
+        ],
+        "/lambda-permissions/MyLambda/InvokeFcyXBRX02EWa52GlF+ECQiCzDt0fdRUDi4mo4foC5aU=": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaInvokeFcyXBRX02EWa52GlFECQiCzDt0fdRUDi4mo4foC5aU41318F58"
+          }
+        ],
+        "/lambda-permissions/MyRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRoleF48FFE04"
+          }
+        ],
+        "/lambda-permissions/MyRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRoleDefaultPolicyA36BE1DD"
+          }
+        ],
         "/lambda-permissions/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -74,9 +99,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "MyLambdaInvokemcfVL7pJA0SB0Bm8yGhELN3cZ1c8fYqVoNxjNP4pYCE95D85164": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaInvokemcfVL7pJA0SB0Bm8yGhELN3cZ1c8fYqVoNxjNP4pYCE95D85164",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "lambda-permissions"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

@@ -14,11 +14,20 @@
     "expected": "{\"$ObjectLike\":{\"StatusCode\":200,\"ExecutedVersion\":\"$LATEST\",\"Payload\":\"null\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "cdk-integ-lambda-nodejs-dependencies:ExportsOutputRefexternal068F12D12C72A375"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "cdk-integ-lambda-nodejs-dependencies:ExportsOutputRefexternal068F12D12C72A375"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1680011320828"
+    "salt": "1694459209732"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -153,12 +162,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "92ec9d050245fd270cf2b0df478b31f140ba820c3407e964246946bcea933a19.zip"
+     "S3Key": "77997674c0a10fbb65169124ad6c0d7a664b6162ad44f9abfa22fd006b33f754.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -184,11 +193,20 @@
     "expected": "{\"$ObjectLike\":{\"StatusCode\":200,\"ExecutedVersion\":\"$LATEST\",\"Payload\":\"null\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3:ExportsOutputRefexternalsdkv3B69F9D996ACDF2E7"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "cdk-integ-lambda-nodejs-dependencies-for-sdk-v3:ExportsOutputRefexternalsdkv3B69F9D996ACDF2E7"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1680011320828"
+    "salt": "1694459209733"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

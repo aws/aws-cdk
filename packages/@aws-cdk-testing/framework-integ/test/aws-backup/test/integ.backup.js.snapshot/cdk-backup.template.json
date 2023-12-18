@@ -3,16 +3,16 @@
   "TableCD117FA1": {
    "Type": "AWS::DynamoDB::Table",
    "Properties": {
-    "KeySchema": [
-     {
-      "AttributeName": "id",
-      "KeyType": "HASH"
-     }
-    ],
     "AttributeDefinitions": [
      {
       "AttributeName": "id",
       "AttributeType": "S"
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
      }
     ],
     "ProvisionedThroughput": {
@@ -43,6 +43,27 @@
    "Type": "AWS::Backup::BackupVault",
    "Properties": {
     "BackupVaultName": "cdkbackupSecondaryVaultA01C2A0E",
+    "LockConfiguration": {
+     "MinRetentionDays": 5
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ThirdVault3441C01E": {
+   "Type": "AWS::Backup::BackupVault",
+   "Properties": {
+    "BackupVaultName": {
+     "Fn::Join": [
+      "",
+      [
+       "backupVault-",
+       {
+        "Ref": "Env"
+       }
+      ]
+     ]
+    },
     "LockConfiguration": {
      "MinRetentionDays": 5
     }
@@ -111,6 +132,9 @@
          }
         }
        ],
+       "RecoveryPointTags": {
+        "stage": "prod"
+       },
        "RuleName": "PlanRule3",
        "TargetBackupVault": {
         "Fn::GetAtt": [
@@ -231,6 +255,11 @@
   }
  },
  "Parameters": {
+  "Env": {
+   "Type": "String",
+   "Default": "test",
+   "Description": "Env"
+  },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "/cdk-bootstrap/hnb659fds/version",

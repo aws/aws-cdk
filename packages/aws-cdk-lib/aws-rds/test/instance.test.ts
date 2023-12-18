@@ -531,7 +531,7 @@ describe('instance', () => {
     const fn = new lambda.Function(stack, 'Function', {
       code: lambda.Code.fromInline('dummy'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
     });
 
     // WHEN
@@ -782,7 +782,7 @@ describe('instance', () => {
         ],
       },
       RotationRules: {
-        AutomaticallyAfterDays: 30,
+        ScheduleExpression: 'rate(30 days)',
       },
     });
   });
@@ -810,7 +810,7 @@ describe('instance', () => {
         ],
       },
       RotationRules: {
-        AutomaticallyAfterDays: 30,
+        ScheduleExpression: 'rate(30 days)',
       },
     });
 
@@ -858,7 +858,7 @@ describe('instance', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       RotationRules: {
-        AutomaticallyAfterDays: 15,
+        ScheduleExpression: 'rate(15 days)',
       },
     });
 
@@ -921,7 +921,7 @@ describe('instance', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       RotationRules: {
-        AutomaticallyAfterDays: 15,
+        ScheduleExpression: 'rate(15 days)',
       },
     });
 
@@ -1190,6 +1190,59 @@ describe('instance', () => {
                   ],
                 },
                 '/my-user',
+              ],
+            ],
+          },
+        }],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('createGrant - creates IAM policy and enables IAM auth on instance with secret credentials without passing dbUser', () => {
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      vpc,
+      engine: rds.DatabaseInstanceEngine.postgres({
+        version: rds.PostgresEngineVersion.VER_14,
+      }),
+      credentials: rds.Credentials.fromGeneratedSecret('dbuser'),
+    });
+    const role = new Role(stack, 'DBRole', {
+      assumedBy: new AccountPrincipal(stack.account),
+    });
+    instance.grantConnect(role);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: 'rds-db:connect',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':rds-db:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':dbuser:',
+                {
+                  'Fn::GetAtt': [
+                    'InstanceC1063A87',
+                    'DbiResourceId',
+                  ],
+                },
+                '/{{resolve:secretsmanager:',
+                { Ref: 'InstanceSecretAttachment83BEE581' },
+                ':SecretString:username::}}',
               ],
             ],
           },
@@ -1861,6 +1914,19 @@ describe('instance', () => {
       StorageType: 'gp3',
       StorageThroughput: 500,
       Iops: 4000,
+    });
+  });
+
+  test('with CA certificate', () => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+      vpc,
+      caCertificate: rds.CaCertificate.RDS_CA_RDS2048_G1,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      CACertificateIdentifier: 'rds-ca-rsa2048-g1',
     });
   });
 

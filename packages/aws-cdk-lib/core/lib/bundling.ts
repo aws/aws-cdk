@@ -1,6 +1,7 @@
 import { spawnSync } from 'child_process';
 import * as crypto from 'crypto';
 import { isAbsolute, join } from 'path';
+import { DockerCacheOption } from './assets';
 import { FileSystem } from './fs';
 import { dockerExec } from './private/asset-staging';
 import { quiet, reset } from './private/jsii-deprecated';
@@ -133,6 +134,15 @@ export interface BundlingOptions {
    * @default - BundlingFileAccess.BIND_MOUNT
    */
   readonly bundlingFileAccess?: BundlingFileAccess;
+
+  /**
+   * Platform to build for. _Requires Docker Buildx_.
+   *
+   * Specify this property to build images on a specific platform.
+   *
+   * @default - no platform specified (the current machine architecture will be used)
+   */
+  readonly platform?: string;
 }
 
 /**
@@ -158,6 +168,15 @@ export enum BundlingOutput {
    * it will be used as the bundle output as-is. Otherwise, all the files in the bundling output directory will be zipped.
    */
   AUTO_DISCOVER = 'auto-discover',
+
+  /**
+   * The bundling output directory includes a single file which
+   * will be used as the final bundle. If the output directory does not
+   * include exactly a single file, bundling will fail.
+   *
+   * Similar to ARCHIVED but for non-archive files
+   */
+  SINGLE_FILE = 'single-file',
 }
 
 /**
@@ -221,7 +240,7 @@ export class BundlingDockerImage {
   }
 
   /** @param image The Docker image */
-  protected constructor(public readonly image: string, private readonly _imageHash?: string) {}
+  protected constructor(public readonly image: string, private readonly _imageHash?: string) { }
 
   /**
    * Provides a stable representation of this image for JSON serialization.
@@ -255,6 +274,9 @@ export class BundlingDockerImage {
         : [],
       ...options.network
         ? ['--network', options.network]
+        : [],
+      ...options.platform
+        ? ['--platform', options.platform]
         : [],
       ...options.user
         ? ['-u', options.user]
@@ -334,6 +356,8 @@ export class DockerImage extends BundlingDockerImage {
       ...(options.file ? ['-f', join(path, options.file)] : []),
       ...(options.platform ? ['--platform', options.platform] : []),
       ...(options.targetStage ? ['--target', options.targetStage] : []),
+      ...(options.cacheFrom ? [...options.cacheFrom.map(cacheFrom => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()] : []),
+      ...(options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       path,
     ];
@@ -356,6 +380,14 @@ export class DockerImage extends BundlingDockerImage {
    */
   public static override fromRegistry(image: string) {
     return new DockerImage(image);
+  }
+
+  private static cacheOptionToFlag(option: DockerCacheOption): string {
+    let flag = `type=${option.type}`;
+    if (option.params) {
+      flag += ',' + Object.entries(option.params).map(([k, v]) => `${k}=${v}`).join(',');
+    }
+    return flag;
   }
 
   /** The Docker image */
@@ -535,6 +567,15 @@ export interface DockerRunOptions {
    * @default - no networking options
    */
   readonly network?: string;
+
+  /**
+   * Set platform if server is multi-platform capable. _Requires Docker Engine API v1.38+_.
+   *
+   * Example value: `linux/amd64`
+   *
+   * @default - no platform specified
+   */
+  readonly platform?: string;
 }
 
 /**
@@ -572,13 +613,27 @@ export interface DockerBuildOptions {
    * @default - Build all stages defined in the Dockerfile
    */
   readonly targetStage?: string;
+
+  /**
+   * Cache from options to pass to the `docker build` command.
+   *
+   * @default - no cache from args are passed
+   */
+  readonly cacheFrom?: DockerCacheOption[];
+
+  /**
+   * Cache to options to pass to the `docker build` command.
+   *
+   * @default - no cache to args are passed
+   */
+  readonly cacheTo?: DockerCacheOption;
 }
 
 function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
 }
 
-function isSeLinux() : boolean {
+function isSeLinux(): boolean {
   if (process.platform != 'linux') {
     return false;
   }

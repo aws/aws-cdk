@@ -1,0 +1,19 @@
+{
+  "version": "35.0.0",
+  "files": {
+    "02bbe1ffe7441a077ae005cb5c2021e9fa0695eaf317fee128db4b28b2919512": {
+      "source": {
+        "path": "aws-appconfig-extension.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "02bbe1ffe7441a077ae005cb5c2021e9fa0695eaf317fee128db4b28b2919512.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

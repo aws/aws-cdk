@@ -25,6 +25,7 @@ tsconfig.json
 !lib/main.js
 !lib/bridge.js
 !lib/setup-sandbox.js
+!lib/api/bootstrap/bootstrap-template.yaml
 !*.d.ts
 !*.lit.ts
 !rosetta/
@@ -34,3 +35,4 @@ tsconfig.json
 !build-info.json
 !NOTICE
 !THIRD_PARTY_LICENSES
+!db.json.gz

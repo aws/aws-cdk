@@ -1,11 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "32.0.0",
   "testCases": {
     "circuitBreakerAlbFargateTest/DefaultTest": {
       "stacks": [
         "aws-ecs-integ-circuit-breaker"
       ],
-      "assertionStack": "circuitBreakerAlbFargateTest/DefaultTest/DeployAssert"
+      "assertionStack": "circuitBreakerAlbFargateTest/DefaultTest/DeployAssert",
+      "assertionStackName": "circuitBreakerAlbFargateTestDefaultTestDeployAssert8EB02B4E"
     }
   }
 }

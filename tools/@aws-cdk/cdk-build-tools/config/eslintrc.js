@@ -73,7 +73,6 @@ module.exports = {
           '**/test/**', // --> Unit tests
         ],
         optionalDependencies: false, // Disallow importing optional dependencies (those shouldn't be in use in the project)
-        peerDependencies: false, // Disallow importing peer dependencies (that aren't also direct dependencies)
       },
     ],
 
@@ -214,5 +213,7 @@ module.exports = {
     "jest/valid-expect": "off", // expect from '@aws-cdk/assert' can take a second argument
     "jest/valid-title": "off", // A little over-zealous with test('test foo') being an error.
     "jest/no-identical-title": "off", // TEMPORARY - Disabling this until https://github.com/jest-community/eslint-plugin-jest/issues/836 is resolved
+    'jest/no-disabled-tests': 'error', // Skipped tests are easily missed in PR reviews
+    'jest/no-focused-tests': 'error', // Focused tests are easily missed in PR reviews
   },
 };

@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "34.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-autoscaling-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-autoscaling-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/99e70b7a67268130fc389482f3c110500bfc1dd6101f6db4a76977cd744fd113.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/16290299640e9e894410b38903232b2dc97bf7a58293d69991f5518f59025aee.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -195,10 +190,10 @@
             "data": "FleetInstanceProfileC6192A66"
           }
         ],
-        "/aws-cdk-autoscaling-integ/Fleet/LaunchConfig": [
+        "/aws-cdk-autoscaling-integ/Fleet/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FleetLaunchConfig59F79D36"
+            "data": "FleetLaunchTemplate3FC2FEAE"
           }
         ],
         "/aws-cdk-autoscaling-integ/Fleet/ASG": [
@@ -217,6 +212,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FleetScheduledActionScaleDownAtNight11A03803"
+          }
+        ],
+        "/aws-cdk-autoscaling-integ/Fleet/ScheduledActionScaleUpInTheDay/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetScheduledActionScaleUpInTheDay57AE2B79"
+          }
+        ],
+        "/aws-cdk-autoscaling-integ/Fleet/ScheduledActionScaleUpInTheWeekDay/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FleetScheduledActionScaleUpInTheWeekDay73B6B91B"
           }
         ],
         "/aws-cdk-autoscaling-integ/Fleet/ScalingPolicyKeepCPUReasonable/Resource": [
@@ -245,6 +252,12 @@
         ]
       },
       "displayName": "aws-cdk-autoscaling-integ"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

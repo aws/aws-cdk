@@ -50,7 +50,8 @@
                               "Action": [
                                 "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*"
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -121,14 +122,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
-            }
-          },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "PipelineStack/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -647,6 +640,22 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::CodePipeline::Pipeline",
                       "aws:cdk:cloudformation:props": {
+                        "artifactStore": {
+                          "type": "S3",
+                          "location": {
+                            "Ref": "PipelineArtifactsBucketAEA9A052"
+                          },
+                          "encryptionKey": {
+                            "type": "KMS",
+                            "id": {
+                              "Fn::GetAtt": [
+                                "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        },
+                        "restartExecutionOnUpdate": true,
                         "roleArn": {
                           "Fn::GetAtt": [
                             "PipelineRoleB27FAA37",
@@ -714,7 +723,7 @@
                                   "ProjectName": {
                                     "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
                                   },
-                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"51983b0b2e2ab480fd5d90c068e63373d8f0ab1a3a1da93ac53a82b8a296d34f\"}]"
+                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"7f66814704b7757367a6ec706823d271fb9c6fceda866eee4260d1e76b73967b\"}]"
                                 },
                                 "runOrder": 1,
                                 "roleArn": {
@@ -954,23 +963,7 @@
                               }
                             ]
                           }
-                        ],
-                        "artifactStore": {
-                          "type": "S3",
-                          "location": {
-                            "Ref": "PipelineArtifactsBucketAEA9A052"
-                          },
-                          "encryptionKey": {
-                            "type": "KMS",
-                            "id": {
-                              "Fn::GetAtt": [
-                                "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-                                "Arn"
-                              ]
-                            }
-                          }
-                        },
-                        "restartExecutionOnUpdate": true
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -1160,13 +1153,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.70"
                     }
                   },
                   "Build": {
@@ -1517,9 +1510,18 @@
                                     "artifacts": {
                                       "type": "CODEPIPELINE"
                                     },
+                                    "cache": {
+                                      "type": "NO_CACHE"
+                                    },
+                                    "encryptionKey": {
+                                      "Fn::GetAtt": [
+                                        "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+                                        "Arn"
+                                      ]
+                                    },
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:6.0",
+                                      "image": "aws/codebuild/standard:7.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL",
@@ -1531,6 +1533,7 @@
                                         }
                                       ]
                                     },
+                                    "name": "MyServicePipeline-synth",
                                     "serviceRole": {
                                       "Fn::GetAtt": [
                                         "PipelineBuildSynthCdkBuildProjectRole231EEA2A",
@@ -1540,17 +1543,7 @@
                                     "source": {
                                       "type": "CODEPIPELINE",
                                       "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"pre_build\": {\n      \"commands\": [\n        \"npm ci\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"npx cdk synth\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"secondary-artifacts\": {\n      \"CloudAsm\": {\n        \"base-directory\": \"cdk.out\",\n        \"files\": \"**/*\"\n      },\n      \"IntegTests\": {\n        \"base-directory\": \"test\",\n        \"files\": \"**/*\"\n      }\n    }\n  }\n}"
-                                    },
-                                    "cache": {
-                                      "type": "NO_CACHE"
-                                    },
-                                    "encryptionKey": {
-                                      "Fn::GetAtt": [
-                                        "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-                                        "Arn"
-                                      ]
-                                    },
-                                    "name": "MyServicePipeline-synth"
+                                    }
                                   }
                                 },
                                 "constructInfo": {
@@ -1567,13 +1560,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.70"
                     }
                   },
                   "UpdatePipeline": {
@@ -1693,13 +1686,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.70"
                     }
                   },
                   "PreProd": {
@@ -2043,9 +2036,18 @@
                                     "artifacts": {
                                       "type": "CODEPIPELINE"
                                     },
+                                    "cache": {
+                                      "type": "NO_CACHE"
+                                    },
+                                    "encryptionKey": {
+                                      "Fn::GetAtt": [
+                                        "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+                                        "Arn"
+                                      ]
+                                    },
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:6.0",
+                                      "image": "aws/codebuild/standard:7.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL"
@@ -2059,15 +2061,6 @@
                                     "source": {
                                       "type": "CODEPIPELINE",
                                       "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"set -eu\",\n        \"cat README.md\"\n      ]\n    }\n  }\n}"
-                                    },
-                                    "cache": {
-                                      "type": "NO_CACHE"
-                                    },
-                                    "encryptionKey": {
-                                      "Fn::GetAtt": [
-                                        "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-                                        "Arn"
-                                      ]
                                     }
                                   }
                                 },
@@ -2085,7 +2078,7 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.2.70"
                         }
                       },
                       "Stack.Deploy": {
@@ -2093,7 +2086,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/PreProd/Stack.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.2.70"
                         }
                       },
                       "Stack.Prepare": {
@@ -2101,13 +2094,13 @@
                         "path": "PipelineStack/Pipeline/Pipeline/PreProd/Stack.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.70"
                     }
                   },
                   "Assets": {
@@ -2119,7 +2112,7 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Assets/FileAsset1",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.2.70"
                         }
                       },
                       "FileAsset2": {
@@ -2127,13 +2120,13 @@
                         "path": "PipelineStack/Pipeline/Pipeline/Assets/FileAsset2",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.2.70"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.70"
                     }
                   }
                 },
@@ -2406,9 +2399,18 @@
                             "artifacts": {
                               "type": "CODEPIPELINE"
                             },
+                            "cache": {
+                              "type": "NO_CACHE"
+                            },
+                            "encryptionKey": {
+                              "Fn::GetAtt": [
+                                "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+                                "Arn"
+                              ]
+                            },
                             "environment": {
                               "type": "LINUX_CONTAINER",
-                              "image": "aws/codebuild/standard:6.0",
+                              "image": "aws/codebuild/standard:7.0",
                               "imagePullCredentialsType": "CODEBUILD",
                               "privilegedMode": false,
                               "computeType": "BUILD_GENERAL1_SMALL"
@@ -2422,15 +2424,6 @@
                             "source": {
                               "type": "CODEPIPELINE",
                               "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g aws-cdk@2\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk -a . deploy PipelineStack --require-approval=never --verbose\"\n      ]\n    }\n  }\n}"
-                            },
-                            "cache": {
-                              "type": "NO_CACHE"
-                            },
-                            "encryptionKey": {
-                              "Fn::GetAtt": [
-                                "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-                                "Arn"
-                              ]
                             }
                           }
                         },
@@ -2682,9 +2675,18 @@
                                 "artifacts": {
                                   "type": "CODEPIPELINE"
                                 },
+                                "cache": {
+                                  "type": "NO_CACHE"
+                                },
+                                "encryptionKey": {
+                                  "Fn::GetAtt": [
+                                    "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+                                    "Arn"
+                                  ]
+                                },
                                 "environment": {
                                   "type": "LINUX_CONTAINER",
-                                  "image": "aws/codebuild/standard:6.0",
+                                  "image": "aws/codebuild/standard:7.0",
                                   "imagePullCredentialsType": "CODEBUILD",
                                   "privilegedMode": false,
                                   "computeType": "BUILD_GENERAL1_SMALL"
@@ -2698,15 +2700,6 @@
                                 "source": {
                                   "type": "CODEPIPELINE",
                                   "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@2\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-PipelineStack-PreProd/PipelineStackPreProdStack65A0AD1F.assets.json\\\" --verbose publish \\\"8289faf53c7da377bb2b90615999171adef5e1d8f6b88810e5fef75e6ca09ba5:current_account-current_region\\\"\"\n      ]\n    }\n  }\n}"
-                                },
-                                "cache": {
-                                  "type": "NO_CACHE"
-                                },
-                                "encryptionKey": {
-                                  "Fn::GetAtt": [
-                                    "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-                                    "Arn"
-                                  ]
                                 }
                               }
                             },
@@ -2744,9 +2737,18 @@
                                 "artifacts": {
                                   "type": "CODEPIPELINE"
                                 },
+                                "cache": {
+                                  "type": "NO_CACHE"
+                                },
+                                "encryptionKey": {
+                                  "Fn::GetAtt": [
+                                    "PipelineArtifactsBucketEncryptionKeyF5BF0670",
+                                    "Arn"
+                                  ]
+                                },
                                 "environment": {
                                   "type": "LINUX_CONTAINER",
-                                  "image": "aws/codebuild/standard:6.0",
+                                  "image": "aws/codebuild/standard:7.0",
                                   "imagePullCredentialsType": "CODEBUILD",
                                   "privilegedMode": false,
                                   "computeType": "BUILD_GENERAL1_SMALL"
@@ -2760,15 +2762,6 @@
                                 "source": {
                                   "type": "CODEPIPELINE",
                                   "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@2\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-PipelineStack-PreProd/PipelineStackPreProdStack65A0AD1F.assets.json\\\" --verbose publish \\\"ac76997971c3f6ddf37120660003f1ced72b4fc58c498dfd99c78fa77e721e0e:current_account-current_region\\\"\"\n      ]\n    }\n  }\n}"
-                                },
-                                "cache": {
-                                  "type": "NO_CACHE"
-                                },
-                                "encryptionKey": {
-                                  "Fn::GetAtt": [
-                                    "PipelineArtifactsBucketEncryptionKeyF5BF0670",
-                                    "Arn"
-                                  ]
                                 }
                               }
                             },
@@ -2792,7 +2785,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.70"
                 }
               },
               "PreProd": {
@@ -2816,7 +2809,7 @@
                         "path": "PipelineStack/Pipeline/PreProd/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}/8389e75f-0810-4838-bf64-d6f85a95cf83",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.270"
+                          "version": "10.2.70"
                         }
                       }
                     },
@@ -2971,12 +2964,66 @@
           "version": "0.0.0"
         }
       },
+      "PipelineStackTest": {
+        "id": "PipelineStackTest",
+        "path": "PipelineStackTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "PipelineStackTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "PipelineStackTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "PipelineStackTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "PipelineStackTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "PipelineStackTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
       "Tree": {
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },

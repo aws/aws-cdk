@@ -12,6 +12,7 @@ const vpc = new ec2.Vpc(stack, 'MyVpc');
 
 const nacl1 = new ec2.NetworkAcl(stack, 'myNACL1', {
   vpc,
+  networkAclName: 'CustomNetworkAclName',
   subnetSelection: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
 });
 

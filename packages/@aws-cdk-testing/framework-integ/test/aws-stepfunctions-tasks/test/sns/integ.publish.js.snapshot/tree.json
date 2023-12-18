@@ -20,13 +20,13 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sns.CfnTopic",
+                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-sns.Topic",
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
               "version": "0.0.0"
             }
           },
@@ -42,7 +42,7 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
                   "version": "0.0.0"
                 }
               },
@@ -89,13 +89,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-sqs.CfnQueuePolicy",
+                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueuePolicy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sqs.QueuePolicy",
+                  "fqn": "aws-cdk-lib.aws_sqs.QueuePolicy",
                   "version": "0.0.0"
                 }
               },
@@ -109,32 +109,32 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                       "aws:cdk:cloudformation:props": {
-                        "protocol": "sqs",
-                        "topicArn": {
-                          "Ref": "cooltopic4736778A"
-                        },
                         "endpoint": {
                           "Fn::GetAtt": [
                             "showmethemessages8D16BBDB",
                             "Arn"
                           ]
+                        },
+                        "protocol": "sqs",
+                        "topicArn": {
+                          "Ref": "cooltopic4736778A"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-sns.CfnSubscription",
+                      "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sns.Subscription",
+                  "fqn": "aws-cdk-lib.aws_sns.Subscription",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-sqs.Queue",
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
               "version": "0.0.0"
             }
           },
@@ -142,7 +142,150 @@
             "id": "publish to SNS",
             "path": "aws-stepfunctions-tasks-sns-publish-integ/publish to SNS",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.SnsPublish",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.SnsPublish",
+              "version": "0.0.0"
+            }
+          },
+          "fifo-topic": {
+            "id": "fifo-topic",
+            "path": "aws-stepfunctions-tasks-sns-publish-integ/fifo-topic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-tasks-sns-publish-integ/fifo-topic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "fifoTopic": true,
+                    "topicName": "awsstepfunctionstaskssnspublishinteg-fifotopic-6FE667F7.fifo"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
+              "version": "0.0.0"
+            }
+          },
+          "fifo-queue": {
+            "id": "fifo-queue",
+            "path": "aws-stepfunctions-tasks-sns-publish-integ/fifo-queue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-tasks-sns-publish-integ/fifo-queue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {
+                    "fifoQueue": true
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "aws-stepfunctions-tasks-sns-publish-integ/fifo-queue/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-tasks-sns-publish-integ/fifo-queue/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Condition": {
+                                "ArnEquals": {
+                                  "aws:SourceArn": {
+                                    "Ref": "fifotopicA6114788"
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "sns.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "fifoqueue3F2573B3",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "queues": [
+                          {
+                            "Ref": "fifoqueue3F2573B3"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueuePolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.QueuePolicy",
+                  "version": "0.0.0"
+                }
+              },
+              "awsstepfunctionstaskssnspublishintegfifotopic6FE667F7": {
+                "id": "awsstepfunctionstaskssnspublishintegfifotopic6FE667F7",
+                "path": "aws-stepfunctions-tasks-sns-publish-integ/fifo-queue/awsstepfunctionstaskssnspublishintegfifotopic6FE667F7",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-tasks-sns-publish-integ/fifo-queue/awsstepfunctionstaskssnspublishintegfifotopic6FE667F7/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
+                      "aws:cdk:cloudformation:props": {
+                        "endpoint": {
+                          "Fn::GetAtt": [
+                            "fifoqueue3F2573B3",
+                            "Arn"
+                          ]
+                        },
+                        "protocol": "sqs",
+                        "topicArn": {
+                          "Ref": "fifotopicA6114788"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.Subscription",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
+          "publish to FIFO SNS": {
+            "id": "publish to FIFO SNS",
+            "path": "aws-stepfunctions-tasks-sns-publish-integ/publish to FIFO SNS",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.SnsPublish",
               "version": "0.0.0"
             }
           },
@@ -150,7 +293,7 @@
             "id": "Final step",
             "path": "aws-stepfunctions-tasks-sns-publish-integ/Final step",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Pass",
               "version": "0.0.0"
             }
           },
@@ -166,7 +309,7 @@
                     "id": "ImportRole",
                     "path": "aws-stepfunctions-tasks-sns-publish-integ/StateMachine/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -191,7 +334,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -210,9 +353,14 @@
                                 {
                                   "Action": "sns:Publish",
                                   "Effect": "Allow",
-                                  "Resource": {
-                                    "Ref": "cooltopic4736778A"
-                                  }
+                                  "Resource": [
+                                    {
+                                      "Ref": "cooltopic4736778A"
+                                    },
+                                    {
+                                      "Ref": "fifotopicA6114788"
+                                    }
+                                  ]
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -226,19 +374,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -248,17 +396,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
-                    "roleArn": {
-                      "Fn::GetAtt": [
-                        "StateMachineRoleB840431D",
-                        "Arn"
-                      ]
-                    },
                     "definitionString": {
                       "Fn::Join": [
                         "",
                         [
-                          "{\"StartAt\":\"publish to SNS\",\"States\":{\"publish to SNS\":{\"Next\":\"Final step\",\"Type\":\"Task\",\"Resource\":\"arn:",
+                          "{\"StartAt\":\"publish to SNS\",\"States\":{\"publish to SNS\":{\"Next\":\"publish to FIFO SNS\",\"Type\":\"Task\",\"Resource\":\"arn:",
                           {
                             "Ref": "AWS::Partition"
                           },
@@ -266,20 +408,34 @@
                           {
                             "Ref": "cooltopic4736778A"
                           },
-                          "\",\"Message\":\"sending message over\"}},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+                          "\",\"Message\":\"sending message over\"}},\"publish to FIFO SNS\":{\"Next\":\"Final step\",\"Type\":\"Task\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::sns:publish\",\"Parameters\":{\"TopicArn\":\"",
+                          {
+                            "Ref": "fifotopicA6114788"
+                          },
+                          "\",\"Message\":\"sending message over\",\"MessageDeduplicationId\":\"message-deduplication-id\",\"MessageGroupId\":\"message-group-id\"}},\"Final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
                         ]
+                      ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRoleB840431D",
+                        "Arn"
                       ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
               "version": "0.0.0"
             }
           },
@@ -287,7 +443,7 @@
             "id": "stateMachineArn",
             "path": "aws-stepfunctions-tasks-sns-publish-integ/stateMachineArn",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -295,7 +451,15 @@
             "id": "queueUrl",
             "path": "aws-stepfunctions-tasks-sns-publish-integ/queueUrl",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "fifoQueueUrl": {
+            "id": "fifoQueueUrl",
+            "path": "aws-stepfunctions-tasks-sns-publish-integ/fifoQueueUrl",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
@@ -303,7 +467,7 @@
             "id": "BootstrapVersion",
             "path": "aws-stepfunctions-tasks-sns-publish-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -311,13 +475,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-stepfunctions-tasks-sns-publish-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -326,12 +490,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.237"
+          "version": "10.2.70"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

@@ -1,8 +1,7 @@
 import * as path from 'path';
-import { Duration, CfnResource, AssetStaging, Stack, FileAssetPackaging, Token, Lazy, Reference } from 'aws-cdk-lib';
+import { Duration, CfnResource, AssetStaging, Stack, FileAssetPackaging, Token, Lazy, Reference } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-
-let SDK_METADATA: any = undefined;
+import { awsSdkToIamAction } from 'aws-cdk-lib/custom-resources/lib/helpers-internal';
 
 /**
  * Properties for a lambda function provider
@@ -79,7 +78,7 @@ class LambdaFunctionProvider extends Construct {
     const handler = new CfnResource(this, 'Handler', {
       type: 'AWS::Lambda::Function',
       properties: {
-        Runtime: 'nodejs14.x',
+        Runtime: 'nodejs18.x',
         Code: {
           S3Bucket: asset.bucketName,
           S3Key: asset.objectKey,
@@ -157,15 +156,8 @@ class SingletonFunction extends Construct {
    * Create a policy statement from a specific api call
    */
   public addPolicyStatementFromSdkCall(service: string, api: string, resources?: string[]): void {
-    if (SDK_METADATA === undefined) {
-      // eslint-disable-next-line
-      SDK_METADATA = require('./sdk-api-metadata.json');
-    }
-    const srv = service.toLowerCase();
-    const iamService = (SDK_METADATA[srv] && SDK_METADATA[srv].prefix) || srv;
-    const iamAction = api.charAt(0).toUpperCase() + api.slice(1);
     this.lambdaFunction.addPolicies([{
-      Action: [`${iamService}:${iamAction}`],
+      Action: [awsSdkToIamAction(service, api)],
       Effect: 'Allow',
       Resource: resources || ['*'],
     }]);
@@ -229,16 +221,18 @@ export class AssertionsProvider extends Construct {
     if (!obj) {
       return obj;
     }
-    return JSON.parse(JSON.stringify(obj), (_k, v) => {
-      switch (v) {
-        case true:
-          return 'TRUE:BOOLEAN';
-        case false:
-          return 'FALSE:BOOLEAN';
-        default:
-          return v;
+    return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, encodeValue(value)]));
+
+    function encodeValue(value: any): any {
+      if (ArrayBuffer.isView(value)) {
+        return {
+          $type: 'ArrayBufferView',
+          string: new TextDecoder().decode(value as Uint8Array),
+        };
       }
-    });
+
+      return JSON.stringify(value);
+    }
   }
 
   /**

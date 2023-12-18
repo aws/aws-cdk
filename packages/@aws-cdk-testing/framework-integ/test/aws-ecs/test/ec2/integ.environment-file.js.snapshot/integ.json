@@ -1,14 +1,13 @@
 {
-  "version": "31.0.0",
+  "version": "35.0.0",
   "testCases": {
-    "integ.environment-file": {
+    "Integ/DefaultTest": {
       "stacks": [
         "aws-ecs-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "diffAssets": true,
+      "assertionStack": "Integ/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

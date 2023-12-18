@@ -38,16 +38,16 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3.zip"
+     "S3Key": "6ef24b26328dec9135be0bd32fff8f588f9a4564f32df911d1de82cfb78183f0.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "MyAuthorizerFunctionServiceRole8A34C19E",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "MyAuthorizerFunctionServiceRole8A34C19E"
@@ -96,11 +96,7 @@
   "MyAuthorizer6575980E": {
    "Type": "AWS::ApiGateway::Authorizer",
    "Properties": {
-    "Name": "TokenAuthorizerIntegMyAuthorizer793B1D5F",
-    "RestApiId": {
-     "Ref": "MyRestApi2D1F47A9"
-    },
-    "Type": "TOKEN",
+    "AuthorizerResultTtlInSeconds": 600,
     "AuthorizerUri": {
      "Fn::Join": [
       "",
@@ -150,7 +146,12 @@
       ]
      ]
     },
-    "IdentitySource": "method.request.header.Authorization"
+    "IdentitySource": "method.request.header.Authorization",
+    "Name": "TokenAuthorizerIntegMyAuthorizer793B1D5F",
+    "RestApiId": {
+     "Ref": "MyRestApi2D1F47A9"
+    },
+    "Type": "TOKEN"
    }
   },
   "MyRestApi2D1F47A9": {
@@ -208,13 +209,13 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "MyRestApiDeploymentB555B5822d29e7cc325d84a3264c658c75a9d43a": {
+  "MyRestApiDeploymentB555B5827a9cde8f137f97e5aa74fca164d09d74": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
+    "Description": "Automatically created by the RestApi construct",
     "RestApiId": {
      "Ref": "MyRestApi2D1F47A9"
-    },
-    "Description": "Automatically created by the RestApi construct"
+    }
    },
    "DependsOn": [
     "MyAuthorizer6575980E",
@@ -225,11 +226,11 @@
   "MyRestApiDeploymentStageprodC33B8E5F": {
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
+    "DeploymentId": {
+     "Ref": "MyRestApiDeploymentB555B5827a9cde8f137f97e5aa74fca164d09d74"
+    },
     "RestApiId": {
      "Ref": "MyRestApi2D1F47A9"
-    },
-    "DeploymentId": {
-     "Ref": "MyRestApiDeploymentB555B5822d29e7cc325d84a3264c658c75a9d43a"
     },
     "StageName": "prod"
    },
@@ -240,17 +241,9 @@
   "MyRestApiOPTIONS43BD7BF4": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
-    "HttpMethod": "OPTIONS",
-    "ResourceId": {
-     "Fn::GetAtt": [
-      "MyRestApi2D1F47A9",
-      "RootResourceId"
-     ]
-    },
-    "RestApiId": {
-     "Ref": "MyRestApi2D1F47A9"
-    },
+    "ApiKeyRequired": false,
     "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
     "Integration": {
      "IntegrationResponses": [
       {
@@ -276,13 +269,7 @@
       },
       "StatusCode": "204"
      }
-    ]
-   }
-  },
-  "MyRestApiANY05143F93": {
-   "Type": "AWS::ApiGateway::Method",
-   "Properties": {
-    "HttpMethod": "ANY",
+    ],
     "ResourceId": {
      "Fn::GetAtt": [
       "MyRestApi2D1F47A9",
@@ -291,11 +278,17 @@
     },
     "RestApiId": {
      "Ref": "MyRestApi2D1F47A9"
-    },
+    }
+   }
+  },
+  "MyRestApiANY05143F93": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
     "AuthorizationType": "CUSTOM",
     "AuthorizerId": {
      "Ref": "MyAuthorizer6575980E"
     },
+    "HttpMethod": "ANY",
     "Integration": {
      "IntegrationResponses": [
       {
@@ -312,7 +305,16 @@
      {
       "StatusCode": "200"
      }
-    ]
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "MyRestApi2D1F47A9",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "MyRestApi2D1F47A9"
+    }
    }
   },
   "InvokeFunctionServiceRole3B980FD2": {
@@ -375,15 +377,15 @@
       ]
      }
     },
+    "Handler": "index.handler",
+    "MemorySize": 250,
     "Role": {
      "Fn::GetAtt": [
       "InvokeFunctionServiceRole3B980FD2",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "MemorySize": 250,
-    "Runtime": "nodejs16.x",
+    "Runtime": "nodejs18.x",
     "Timeout": 10
    },
    "DependsOn": [

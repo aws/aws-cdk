@@ -45,7 +45,7 @@ export class LogGroupResourcePolicy extends cr.AwsCustomResource {
         parameters: {
           policyName: policyName,
         },
-        ignoreErrorCodesMatching: '400',
+        ignoreErrorCodesMatching: 'ResourceNotFoundException',
       },
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
         // putResourcePolicy and deleteResourcePolicy don't support resource-level permissions. We must specify all resources ("*").

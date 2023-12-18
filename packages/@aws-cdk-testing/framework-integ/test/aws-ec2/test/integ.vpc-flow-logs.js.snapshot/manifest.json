@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "FlowLogsFeatureFlag.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "FlowLogsFeatureFlag.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4bdd03a7c8781568c1d29f2674ca4144f0edd176baa84942492304dbc3da8c8a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c39f7b631b3a1d9b4674008f811e6744819d574022c8dd4e077bece443ed3457.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -265,10 +266,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "FlowLogsTestStack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8568a6a9ff5d666ffe0ea5b92049831fbfa6746d61b9e79c9f1f6478b4fbd312.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/51ed11bf2a0e1496802fa667bfa8e30a4a08f4254583fb3a8e18cb0d6728d32b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -476,12 +478,6 @@
             "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
           }
         ],
-        "/FlowLogsTestStack/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
-          }
-        ],
         "/FlowLogsTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -522,10 +518,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "DependencyTestStack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4d63f337d33f9c9987ad3a5f6bee192fd4bc860e8cb662dcbeffb0d265920c47.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/63238388dc584a2bdd4039e5e0c3909e592bef5bb0dc68ae386a4bd58b0cb1e5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -691,12 +688,6 @@
             "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
           }
         ],
-        "/DependencyTestStack/DefaultCrNodeVersionMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultCrNodeVersionMap"
-          }
-        ],
         "/DependencyTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
@@ -737,10 +728,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "FlowLogsDefaultTestDeployAssert6AFD1854.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f61312bb8405522549746e0dca4ee9c9d141f5eb3cbb9b53d5f70920ca2d1566.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/92b56bc237e9d19855166cb3d0e53c5357bb16ff89fb8f11b6431b760e1685e1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -757,16 +749,16 @@
         "FlowLogsDefaultTestDeployAssert6AFD1854.assets"
       ],
       "metadata": {
-        "/FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/Default/Default": [
+        "/FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3listObjectsV2"
+            "data": "AwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062"
           }
         ],
-        "/FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/AssertionResults": [
+        "/FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallS3listObjectsV2"
+            "data": "AssertionResultsAwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062"
           }
         ],
         "/FlowLogs/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [

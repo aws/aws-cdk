@@ -45,9 +45,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -71,7 +68,10 @@
                             "key": "Name",
                             "value": "FlowLogsFeatureFlag/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -93,15 +93,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "FlowLogsFeatureFlag/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -134,12 +134,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
                         }
                       }
                     },
@@ -174,14 +174,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VPCPublicSubnet1EIP6AD938E8",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
                         },
                         "tags": [
                           {
@@ -212,9 +212,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -238,7 +235,10 @@
                             "key": "Name",
                             "value": "FlowLogsFeatureFlag/VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -260,15 +260,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "FlowLogsFeatureFlag/VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -301,12 +301,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
                         }
                       }
                     },
@@ -331,9 +331,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -357,7 +354,10 @@
                             "key": "Name",
                             "value": "FlowLogsFeatureFlag/VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -379,15 +379,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "FlowLogsFeatureFlag/VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -420,12 +420,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
                         }
                       }
                     },
@@ -450,9 +450,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -476,7 +473,10 @@
                             "key": "Name",
                             "value": "FlowLogsFeatureFlag/VPC/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -498,15 +498,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "FlowLogsFeatureFlag/VPC/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -539,12 +539,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
                         }
                       }
                     },
@@ -584,11 +584,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "VPCB9E5F0B4"
-                    },
                     "internetGatewayId": {
                       "Ref": "VPCIGWB7E252D3"
+                    },
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
                     }
                   }
                 },
@@ -614,7 +614,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "FlowLogsFeatureFlag/VPC"
+                                "value": "FlowLogsFeatureFlag/VPC/FlowLogsS3"
                               }
                             ]
                           }
@@ -767,10 +767,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::FlowLog",
                       "aws:cdk:cloudformation:props": {
-                        "resourceId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
-                        "resourceType": "VPC",
                         "logDestination": {
                           "Fn::GetAtt": [
                             "VPCFlowLogsS3BucketFB7DC2BE",
@@ -778,10 +774,14 @@
                           ]
                         },
                         "logDestinationType": "s3",
+                        "resourceId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
+                        "resourceType": "VPC",
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "FlowLogsFeatureFlag/VPC"
+                            "value": "FlowLogsFeatureFlag/VPC/FlowLogsS3"
                           }
                         ],
                         "trafficType": "ALL"
@@ -815,7 +815,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "FlowLogsFeatureFlag/VPC"
+                                "value": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions"
                               }
                             ]
                           }
@@ -968,10 +968,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::FlowLog",
                       "aws:cdk:cloudformation:props": {
-                        "resourceId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
-                        "resourceType": "VPC",
                         "destinationOptions": {
                           "fileFormat": "plain-text",
                           "perHourPartition": false,
@@ -984,10 +980,14 @@
                           ]
                         },
                         "logDestinationType": "s3",
+                        "resourceId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
+                        "resourceType": "VPC",
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "FlowLogsFeatureFlag/VPC"
+                            "value": "FlowLogsFeatureFlag/VPC/FlowLogsS3WithDestinationOptions"
                           }
                         ],
                         "trafficType": "ALL"
@@ -1033,7 +1033,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.70"
             }
           },
           "FlowLogsInstance": {
@@ -1280,9 +1280,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -1306,7 +1303,10 @@
                             "key": "Name",
                             "value": "FlowLogsTestStack/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1328,15 +1328,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "FlowLogsTestStack/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1369,12 +1369,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
                         }
                       }
                     },
@@ -1409,14 +1409,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VPCPublicSubnet1EIP6AD938E8",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
                         },
                         "tags": [
                           {
@@ -1447,9 +1447,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -1473,7 +1470,10 @@
                             "key": "Name",
                             "value": "FlowLogsTestStack/VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1495,15 +1495,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "FlowLogsTestStack/VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1536,12 +1536,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
                         }
                       }
                     },
@@ -1566,9 +1566,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -1592,7 +1589,10 @@
                             "key": "Name",
                             "value": "FlowLogsTestStack/VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1614,15 +1614,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "FlowLogsTestStack/VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1655,12 +1655,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
                         }
                       }
                     },
@@ -1685,9 +1685,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -1711,7 +1708,10 @@
                             "key": "Name",
                             "value": "FlowLogsTestStack/VPC/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1733,15 +1733,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "FlowLogsTestStack/VPC/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1774,12 +1774,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
                         }
                       }
                     },
@@ -1819,11 +1819,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "VPCB9E5F0B4"
-                    },
                     "internetGatewayId": {
                       "Ref": "VPCIGWB7E252D3"
+                    },
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
                     }
                   }
                 },
@@ -1849,7 +1849,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "FlowLogsTestStack/VPC"
+                                "value": "FlowLogsTestStack/VPC/FlowLogsS3"
                               }
                             ]
                           }
@@ -2002,10 +2002,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::FlowLog",
                       "aws:cdk:cloudformation:props": {
-                        "resourceId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
-                        "resourceType": "VPC",
                         "logDestination": {
                           "Fn::GetAtt": [
                             "VPCFlowLogsS3BucketFB7DC2BE",
@@ -2013,10 +2009,14 @@
                           ]
                         },
                         "logDestinationType": "s3",
+                        "resourceId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
+                        "resourceType": "VPC",
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "FlowLogsTestStack/VPC"
+                            "value": "FlowLogsTestStack/VPC/FlowLogsS3"
                           }
                         ],
                         "trafficType": "ALL"
@@ -2043,10 +2043,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::FlowLog",
                       "aws:cdk:cloudformation:props": {
-                        "resourceId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
-                        "resourceType": "VPC",
                         "logDestination": {
                           "Fn::Join": [
                             "",
@@ -2062,10 +2058,14 @@
                           ]
                         },
                         "logDestinationType": "s3",
+                        "resourceId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
+                        "resourceType": "VPC",
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "FlowLogsTestStack/VPC"
+                            "value": "FlowLogsTestStack/VPC/FlowLogsS3KeyPrefix"
                           }
                         ],
                         "trafficType": "ALL"
@@ -2121,7 +2121,13 @@
                             }
                           ],
                           "Version": "2012-10-17"
-                        }
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "CustomFlowLogName"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -2203,7 +2209,13 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                       "aws:cdk:cloudformation:props": {
-                        "retentionInDays": 731
+                        "retentionInDays": 731,
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "CustomFlowLogName"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
@@ -2223,10 +2235,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::FlowLog",
                   "aws:cdk:cloudformation:props": {
-                    "resourceId": {
-                      "Ref": "VPCB9E5F0B4"
-                    },
-                    "resourceType": "VPC",
                     "deliverLogsPermissionArn": {
                       "Fn::GetAtt": [
                         "FlowLogsCWIAMRole017AD736",
@@ -2237,6 +2245,16 @@
                     "logGroupName": {
                       "Ref": "FlowLogsCWLogGroup0398E8F8"
                     },
+                    "resourceId": {
+                      "Ref": "VPCB9E5F0B4"
+                    },
+                    "resourceType": "VPC",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "CustomFlowLogName"
+                      }
+                    ],
                     "trafficType": "ALL"
                   }
                 },
@@ -2293,7 +2311,8 @@
                               "Action": [
                                 "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*"
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -2487,14 +2506,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "FlowLogsTestStack/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "FlowLogsTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -2592,9 +2603,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -2618,7 +2626,10 @@
                             "key": "Name",
                             "value": "DependencyTestStack/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -2640,15 +2651,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "DependencyTestStack/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -2681,12 +2692,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
                         }
                       }
                     },
@@ -2721,14 +2732,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VPCPublicSubnet1EIP6AD938E8",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
                         },
                         "tags": [
                           {
@@ -2759,9 +2770,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -2785,7 +2793,10 @@
                             "key": "Name",
                             "value": "DependencyTestStack/VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -2807,15 +2818,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "DependencyTestStack/VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -2848,12 +2859,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
                         }
                       }
                     },
@@ -2878,9 +2889,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -2904,7 +2912,10 @@
                             "key": "Name",
                             "value": "DependencyTestStack/VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -2926,15 +2937,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "DependencyTestStack/VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -2967,12 +2978,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
                         }
                       }
                     },
@@ -2997,9 +3008,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -3023,7 +3031,10 @@
                             "key": "Name",
                             "value": "DependencyTestStack/VPC/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -3045,15 +3056,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "DependencyTestStack/VPC/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -3086,12 +3097,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
                         }
                       }
                     },
@@ -3131,11 +3142,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "VPCB9E5F0B4"
-                    },
                     "internetGatewayId": {
                       "Ref": "VPCIGWB7E252D3"
+                    },
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
                     }
                   }
                 },
@@ -3154,10 +3165,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::FlowLog",
                       "aws:cdk:cloudformation:props": {
-                        "resourceId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
-                        "resourceType": "VPC",
                         "logDestination": {
                           "Fn::Join": [
                             "",
@@ -3173,10 +3180,14 @@
                           ]
                         },
                         "logDestinationType": "s3",
+                        "resourceId": {
+                          "Ref": "VPCB9E5F0B4"
+                        },
+                        "resourceType": "VPC",
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "DependencyTestStack/VPC"
+                            "value": "DependencyTestStack/VPC/FlowLogS3"
                           }
                         ],
                         "trafficType": "ALL"
@@ -3241,7 +3252,8 @@
                               "Action": [
                                 "s3:DeleteObject*",
                                 "s3:GetBucket*",
-                                "s3:List*"
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
                               ],
                               "Effect": "Allow",
                               "Principal": {
@@ -3415,14 +3427,6 @@
               "version": "0.0.0"
             }
           },
-          "DefaultCrNodeVersionMap": {
-            "id": "DefaultCrNodeVersionMap",
-            "path": "DependencyTestStack/DefaultCrNodeVersionMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
-              "version": "0.0.0"
-            }
-          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "DependencyTestStack/Custom::S3AutoDeleteObjectsCustomResourceProvider",
@@ -3492,27 +3496,27 @@
                 "path": "FlowLogs/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "FlowLogs/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallS3listObjectsV2": {
-                    "id": "AwsApiCallS3listObjectsV2",
-                    "path": "FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2",
+                  "AwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062": {
+                    "id": "AwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062",
+                    "path": "FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/SdkProvider",
+                        "path": "FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/SdkProvider/AssertionsProvider",
+                            "path": "FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.70"
                             }
                           }
                         },
@@ -3523,11 +3527,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/Default",
+                        "path": "FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/Default/Default",
+                            "path": "FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -3541,7 +3545,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2/AssertionResults",
+                        "path": "FlowLogs/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2514d18a6e9074cf1c0ab0c9379420062/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -3584,7 +3588,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.70"
                     }
                   },
                   "BootstrapVersion": {
@@ -3626,7 +3630,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },

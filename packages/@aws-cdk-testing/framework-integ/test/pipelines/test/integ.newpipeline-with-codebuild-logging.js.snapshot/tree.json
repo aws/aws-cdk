@@ -404,7 +404,7 @@
                                   "ProjectName": {
                                     "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
                                   },
-                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"09deb76d97fe89f2ccd364ad1eedc7ebc7c010be6bf79da68c34f358446cd134\"}]"
+                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"9846e726ec481ed25679c0170187f40b4920586fd0e7314d24f56620d9f53f5b\"}]"
                                 },
                                 "runOrder": 1,
                                 "roleArn": {
@@ -436,7 +436,7 @@
                                   "ProjectName": {
                                     "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
                                   },
-                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"d481eb7e52fa70e98aa3e0e22b2f258bef28632bc13e90928d96c7e1479e3a2b\"}]"
+                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"167eef1378d6e6ad8c4c8da3461f900d6e066cd0916052ee812a8d94b87ad38c\"}]"
                                 },
                                 "runOrder": 1,
                                 "roleArn": {
@@ -2304,7 +2304,7 @@
                                     },
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:6.0",
+                                      "image": "aws/codebuild/standard:7.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL"
@@ -3098,7 +3098,7 @@
                             },
                             "environment": {
                               "type": "LINUX_CONTAINER",
-                              "image": "aws/codebuild/standard:6.0",
+                              "image": "aws/codebuild/standard:7.0",
                               "imagePullCredentialsType": "CODEBUILD",
                               "privilegedMode": false,
                               "computeType": "BUILD_GENERAL1_SMALL"

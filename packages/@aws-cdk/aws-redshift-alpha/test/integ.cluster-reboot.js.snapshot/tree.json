@@ -45,9 +45,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -71,7 +68,10 @@
                             "key": "Name",
                             "value": "aws-cdk-redshift-cluster-create/Vpc/foobarSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -93,15 +93,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-redshift-cluster-create/Vpc/foobarSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -144,9 +144,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -170,7 +167,10 @@
                             "key": "Name",
                             "value": "aws-cdk-redshift-cluster-create/Vpc/foobarSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -192,15 +192,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-redshift-cluster-create/Vpc/foobarSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -405,8 +405,17 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Redshift::Cluster",
                   "aws:cdk:cloudformation:props": {
+                    "allowVersionUpgrade": true,
+                    "automatedSnapshotRetentionPeriod": 1,
+                    "clusterParameterGroupName": {
+                      "Ref": "ParameterGroup5E32DECB"
+                    },
+                    "clusterSubnetGroupName": {
+                      "Ref": "ClusterSubnetsDCFA5CB7"
+                    },
                     "clusterType": "multi-node",
                     "dbName": "default_db",
+                    "encrypted": true,
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -432,15 +441,6 @@
                       ]
                     },
                     "nodeType": "dc2.large",
-                    "allowVersionUpgrade": true,
-                    "automatedSnapshotRetentionPeriod": 1,
-                    "clusterParameterGroupName": {
-                      "Ref": "ParameterGroup5E32DECB"
-                    },
-                    "clusterSubnetGroupName": {
-                      "Ref": "ClusterSubnetsDCFA5CB7"
-                    },
-                    "encrypted": true,
                     "numberOfNodes": 2,
                     "publiclyAccessible": false,
                     "vpcSecurityGroupIds": [
@@ -627,13 +627,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
-                            },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ClusterResourceProviderframeworkonEventServiceRoleD686A5EE",
-                                "Arn"
-                              ]
+                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-create/Cluster/ResourceProvider)",
                             "environment": {
@@ -647,7 +641,13 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ClusterResourceProviderframeworkonEventServiceRoleD686A5EE",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
@@ -855,16 +855,16 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "f24dbc80501234c95b4f320adc2d30c202d44977defc11a763044e044c699487.zip"
+                      "s3Key": "ee4fd508abceff33b2eb40d478daa3c4050865ba44eadbb24ac42fb53689da48.zip"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "SingletonLambda511e207f13df4b8bb632c32b30b65ac2ServiceRole4BDC9525",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs16.x",
+                    "runtime": "nodejs18.x",
                     "timeout": 900
                   }
                 },
@@ -942,9 +942,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -968,7 +965,10 @@
                             "key": "Name",
                             "value": "aws-cdk-redshift-cluster-update/Vpc/foobarSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -990,15 +990,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-redshift-cluster-update/Vpc/foobarSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1041,9 +1041,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -1067,7 +1064,10 @@
                             "key": "Name",
                             "value": "aws-cdk-redshift-cluster-update/Vpc/foobarSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1089,15 +1089,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-redshift-cluster-update/Vpc/foobarSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -1306,8 +1306,17 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Redshift::Cluster",
                   "aws:cdk:cloudformation:props": {
+                    "allowVersionUpgrade": true,
+                    "automatedSnapshotRetentionPeriod": 1,
+                    "clusterParameterGroupName": {
+                      "Ref": "ParameterGroup5E32DECB"
+                    },
+                    "clusterSubnetGroupName": {
+                      "Ref": "ClusterSubnetsDCFA5CB7"
+                    },
                     "clusterType": "multi-node",
                     "dbName": "default_db",
+                    "encrypted": true,
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -1333,15 +1342,6 @@
                       ]
                     },
                     "nodeType": "dc2.large",
-                    "allowVersionUpgrade": true,
-                    "automatedSnapshotRetentionPeriod": 1,
-                    "clusterParameterGroupName": {
-                      "Ref": "ParameterGroup5E32DECB"
-                    },
-                    "clusterSubnetGroupName": {
-                      "Ref": "ClusterSubnetsDCFA5CB7"
-                    },
-                    "encrypted": true,
                     "numberOfNodes": 2,
                     "publiclyAccessible": false,
                     "vpcSecurityGroupIds": [
@@ -1528,13 +1528,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "45017ac1fb5b50dac36a255c328b0fe125f18a8e6d3689e188eab5e3a1bf8146.zip"
-                            },
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ClusterResourceProviderframeworkonEventServiceRoleD686A5EE",
-                                "Arn"
-                              ]
+                              "s3Key": "d002370061965c69bc4caf15dddb5eccc9df318933ade6e4fa57cddb81c5abef.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-redshift-cluster-update/Cluster/ResourceProvider)",
                             "environment": {
@@ -1548,7 +1542,13 @@
                               }
                             },
                             "handler": "framework.onEvent",
-                            "runtime": "nodejs14.x",
+                            "role": {
+                              "Fn::GetAtt": [
+                                "ClusterResourceProviderframeworkonEventServiceRoleD686A5EE",
+                                "Arn"
+                              ]
+                            },
+                            "runtime": "nodejs18.x",
                             "timeout": 900
                           }
                         },
@@ -1756,16 +1756,16 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "f24dbc80501234c95b4f320adc2d30c202d44977defc11a763044e044c699487.zip"
+                      "s3Key": "ee4fd508abceff33b2eb40d478daa3c4050865ba44eadbb24ac42fb53689da48.zip"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "SingletonLambda511e207f13df4b8bb632c32b30b65ac2ServiceRole4BDC9525",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
-                    "runtime": "nodejs16.x",
+                    "runtime": "nodejs18.x",
                     "timeout": 900
                   }
                 },
@@ -1803,7 +1803,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "version": "10.2.70"
             }
           },
           "BootstrapVersion": {
@@ -1841,7 +1841,7 @@
                 "path": "aws-cdk-redshift-reboot-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -1861,7 +1861,7 @@
                             "path": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusters6bafd43948798e58841b1b8573ec604a/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.70"
                             }
                           }
                         },
@@ -1933,7 +1933,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.270"
+                      "version": "10.2.70"
                     }
                   },
                   "AwsApiCallRedshiftdescribeClusterParameters801759f1ed4aa244ea8caa72110acfce": {
@@ -1949,7 +1949,7 @@
                             "path": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters801759f1ed4aa244ea8caa72110acfce/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.70"
                             }
                           }
                         },
@@ -2003,7 +2003,7 @@
                             "path": "aws-cdk-redshift-reboot-test/DefaultTest/DeployAssert/AwsApiCallRedshiftdescribeClusterParameters484bd6887b66878d75dbc528712556c7/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.270"
+                              "version": "10.2.70"
                             }
                           }
                         },
@@ -2083,7 +2083,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.2.70"
         }
       }
     },

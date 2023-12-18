@@ -1,7 +1,7 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
-import * as cdk from 'aws-cdk-lib';
+import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 
 /**
@@ -10,29 +10,28 @@ import { Construct } from 'constructs';
  */
 export abstract class Content {
   /**
-     * Game content as an S3 object.
-     * @param bucket The S3 bucket
-     * @param key The object key
-     * @param objectVersion Optional S3 ob ject version
-     */
+   * Game content as an S3 object.
+   * @param bucket The S3 bucket
+   * @param key The object key
+   * @param objectVersion Optional S3 ob ject version
+   */
   public static fromBucket(bucket: s3.IBucket, key: string, objectVersion?: string): S3Content {
     return new S3Content(bucket, key, objectVersion);
   }
 
   /**
-     * Loads the game content from a local disk path.
-     *
-     * @param path Either a directory with the game content bundle or a .zip file
-     */
+   * Loads the game content from a local disk path.
+   *
+   * @param path Either a directory with the game content bundle or a .zip file
+   */
   public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetContent {
     return new AssetContent(path, options);
   }
 
   /**
-     * Called when the Build is initialized to allow this object to bind
-     */
+   * Called when the Build is initialized to allow this object to bind
+   */
   public abstract bind(scope: Construct, role: iam.IRole): ContentConfig;
-
 }
 
 /**
@@ -49,7 +48,6 @@ export interface ContentConfig {
  * Game content from an S3 archive.
  */
 export class S3Content extends Content {
-
   constructor(private readonly bucket: s3.IBucket, private key: string, private objectVersion?: string) {
     super();
     if (!bucket.bucketName) {

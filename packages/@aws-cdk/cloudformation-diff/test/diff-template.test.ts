@@ -1,3 +1,5 @@
+import * as fc from 'fast-check';
+import { arbitraryTemplate } from './test-arbitraries';
 import { diffTemplate, ResourceImpact } from '../lib/diff-template';
 
 const POLICY_DOCUMENT = { foo: 'Bar' }; // Obviously a fake one!
@@ -687,5 +689,15 @@ test('handles a resource changing its Type', () => {
     otherDiffs: {},
     propertyDiffs: {},
     resourceTypes: { newType: 'AWS::ApiGateway::RestApi', oldType: 'AWS::Serverless::Api' },
+  });
+});
+
+test('diffing any two arbitrary templates should not crash', () => {
+  // We're not interested in making sure we find the right differences here -- just
+  // that we're not crashing.
+  fc.assert(fc.property(arbitraryTemplate, arbitraryTemplate, (t1, t2) => {
+    diffTemplate(t1, t2);
+  }), {
+    // path: '1:0:0:0:3:0:1:1:1:1:1:1:1:1:1:1:1:1:1:2:1:1:1',
   });
 });

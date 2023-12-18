@@ -82,14 +82,14 @@
     "Code": {
      "ZipFile": "exports.handler = async (event) => {\n        if (event.status === 'OK') return 'success';\n        throw new Error('failure');\n      };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "SnsSqsServiceRole869866F7",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "SnsSqsServiceRoleDefaultPolicy82E7B09F",
@@ -99,10 +99,6 @@
   "SnsSqsEventInvokeConfigDC664368": {
    "Type": "AWS::Lambda::EventInvokeConfig",
    "Properties": {
-    "FunctionName": {
-     "Ref": "SnsSqsC4810B27"
-    },
-    "Qualifier": "$LATEST",
     "DestinationConfig": {
      "OnFailure": {
       "Destination": {
@@ -118,8 +114,12 @@
       }
      }
     },
+    "FunctionName": {
+     "Ref": "SnsSqsC4810B27"
+    },
     "MaximumEventAgeInSeconds": 10800,
-    "MaximumRetryAttempts": 1
+    "MaximumRetryAttempts": 1,
+    "Qualifier": "$LATEST"
    }
   },
   "SnsSqsVersionMySpecialVersion08136BD6": {
@@ -167,14 +167,14 @@
     "Code": {
      "ZipFile": "exports.handler = async (event) => {\n        console.log(event);\n      };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "OnSuccesServiceRole75E399CF",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "OnSuccesServiceRole75E399CF"
@@ -283,14 +283,14 @@
     "Code": {
      "ZipFile": "exports.handler = async (event) => {\n        if (event.status === 'OK') return 'success';\n        throw new Error('failure');\n      };"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "EventBusLambdaServiceRole9BC8901F",
       "Arn"
      ]
     },
-    "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs18.x"
    },
    "DependsOn": [
     "EventBusLambdaServiceRoleDefaultPolicy5BB7FEB6",
@@ -300,10 +300,6 @@
   "EventBusLambdaEventInvokeConfig52CF8B9B": {
    "Type": "AWS::Lambda::EventInvokeConfig",
    "Properties": {
-    "FunctionName": {
-     "Ref": "EventBusLambda4AA26499"
-    },
-    "Qualifier": "$LATEST",
     "DestinationConfig": {
      "OnFailure": {
       "Destination": {
@@ -335,7 +331,11 @@
        ]
       }
      }
-    }
+    },
+    "FunctionName": {
+     "Ref": "EventBusLambda4AA26499"
+    },
+    "Qualifier": "$LATEST"
    }
   },
   "MySpecialAliasC0F04207": {
@@ -356,22 +356,6 @@
   "MySpecialAliasEventInvokeConfig05FF4E2F": {
    "Type": "AWS::Lambda::EventInvokeConfig",
    "Properties": {
-    "FunctionName": {
-     "Ref": "SnsSqsC4810B27"
-    },
-    "Qualifier": {
-     "Fn::Select": [
-      7,
-      {
-       "Fn::Split": [
-        ":",
-        {
-         "Ref": "MySpecialAliasC0F04207"
-        }
-       ]
-      }
-     ]
-    },
     "DestinationConfig": {
      "OnFailure": {
       "Destination": {
@@ -387,8 +371,24 @@
       }
      }
     },
+    "FunctionName": {
+     "Ref": "SnsSqsC4810B27"
+    },
     "MaximumEventAgeInSeconds": 7200,
-    "MaximumRetryAttempts": 0
+    "MaximumRetryAttempts": 0,
+    "Qualifier": {
+     "Fn::Select": [
+      7,
+      {
+       "Fn::Split": [
+        ":",
+        {
+         "Ref": "MySpecialAliasC0F04207"
+        }
+       ]
+      }
+     ]
+    }
    }
   }
  },

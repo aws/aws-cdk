@@ -1,0 +1,13 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "CrossAccountCRTest/DefaultTest": {
+      "stacks": [
+        "cross-account-stack",
+        "cross-account-opt-in-stack"
+      ],
+      "assertionStack": "CrossAccountCRTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CrossAccountCRTestDefaultTestDeployAssert024923DB"
+    }
+  }
+}

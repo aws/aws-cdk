@@ -400,6 +400,8 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private readonly _cpu?: string;
 
+  private readonly _memory?: string;
+
   /**
    * Constructs a new instance of the TaskDefinition class.
    */
@@ -461,6 +463,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     this.runtimePlatform = props.runtimePlatform;
     this._cpu = props.cpu;
+    this._memory = props.memoryMiB;
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
@@ -587,7 +590,11 @@ export class TaskDefinition extends TaskDefinitionBase {
     if (this.networkMode === NetworkMode.BRIDGE || this.networkMode === NetworkMode.NAT) {
       return EPHEMERAL_PORT_RANGE;
     }
-    return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.containerPort) : ec2.Port.tcp(portMapping.containerPort);
+    if (portMapping.containerPort !== ContainerDefinition.CONTAINER_PORT_USE_RANGE) {
+      return portMapping.protocol === Protocol.UDP ? ec2.Port.udp(portMapping.containerPort) : ec2.Port.tcp(portMapping.containerPort);
+    }
+    const [startPort, endPort] = portMapping.containerPortRange!.split('-', 2).map(v => Number(v));
+    return portMapping.protocol === Protocol.UDP ? ec2.Port.udpRange(startPort, endPort) : ec2.Port.tcpRange(startPort, endPort);
   }
 
   /**
@@ -736,9 +743,11 @@ export class TaskDefinition extends TaskDefinitionBase {
       // EC2 mode validations
 
       // Container sizes
-      for (const container of this.containers) {
-        if (!container.memoryLimitSpecified) {
-          ret.push(`ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+      if (!this._memory) {
+        for (const container of this.containers) {
+          if (!container.memoryLimitSpecified) {
+            ret.push(`ECS Container ${container.containerName} must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified`);
+          }
         }
       }
     }
@@ -1224,4 +1233,34 @@ export function isFargateCompatible(compatibility: Compatibility): boolean {
  */
 export function isExternalCompatible(compatibility: Compatibility): boolean {
   return [Compatibility.EXTERNAL].includes(compatibility);
+}
+
+/**
+ * Represents revision of a task definition, either a specific numbered revision or
+ * the `latest` revision
+ */
+export class TaskDefinitionRevision {
+  /**
+   * The most recent revision of a task
+   */
+  public static readonly LATEST = new TaskDefinitionRevision('latest');
+
+  /**
+   * Specific revision of a task
+   */
+  public static of(revision: number) {
+    if (revision < 1) {
+      throw new Error(`A task definition revision must be 'latest' or a positive number, got ${revision}`);
+    }
+    return new TaskDefinitionRevision(revision.toString());
+  }
+
+  /**
+   * The string representation of this revision
+   */
+  public readonly revision: string;
+
+  private constructor(revision: string) {
+    this.revision = revision;
+  }
 }

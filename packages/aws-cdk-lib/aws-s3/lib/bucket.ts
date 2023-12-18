@@ -1,5 +1,4 @@
 import { EOL } from 'os';
-import * as path from 'path';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -13,7 +12,6 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import {
   CustomResource,
-  CustomResourceProvider,
   Duration,
   FeatureFlags,
   Fn,
@@ -27,9 +25,9 @@ import {
   Token,
   Tokenization,
   Annotations,
-  builtInCustomResourceProviderNodeRuntime,
 } from '../../core';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
+import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
 import * as regionInformation from '../../region-info';
 
@@ -184,7 +182,7 @@ export interface IBucket extends IResource {
    * of the bucket will also be granted to the same principal.
    *
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   grantRead(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
@@ -203,7 +201,7 @@ export interface IBucket extends IResource {
    * use the `grantPutAcl` method.
    *
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    * @param allowedActionPatterns Restrict the permissions to certain list of action patterns
    */
   grantWrite(identity: iam.IGrantable, objectsKeyPattern?: any, allowedActionPatterns?: string[]): iam.Grant;
@@ -214,7 +212,7 @@ export interface IBucket extends IResource {
    * If encryption is used, permission to use the key to encrypt the contents
    * of written files will also be granted to the same principal.
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   grantPut(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
@@ -235,7 +233,7 @@ export interface IBucket extends IResource {
    * in this bucket.
    *
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   grantDelete(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
@@ -255,7 +253,7 @@ export interface IBucket extends IResource {
    * use the `grantPutAcl` method.
    *
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   grantReadWrite(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
@@ -765,7 +763,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * of the bucket will also be granted to the same principal.
    *
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public grantRead(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
     return this.grant(identity, perms.BUCKET_READ_ACTIONS, perms.KEY_READ_ACTIONS,
@@ -786,7 +784,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * If encryption is used, permission to use the key to encrypt the contents
    * of written files will also be granted to the same principal.
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public grantPut(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
     return this.grant(identity, this.putActions, perms.KEY_WRITE_ACTIONS,
@@ -803,7 +801,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * in this bucket.
    *
    * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*'). Parameter type is `any` but `string` should be passed in.
    */
   public grantDelete(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
     return this.grant(identity, perms.BUCKET_DELETE_ACTIONS, [],
@@ -1250,6 +1248,7 @@ export interface Inventory {
   readonly enabled?: boolean;
   /**
    * The inventory configuration ID.
+   * Should be limited to 64 characters and can only contain letters, numbers, periods, dashes, and underscores.
    *
    * @default - generated ID.
    */
@@ -1344,18 +1343,18 @@ export interface BucketProps {
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
    * encryption key is not specified, a key will automatically be created.
    *
-   * @default - `Kms` if `encryptionKey` is specified, or `Managed` otherwise.
+   * @default - `KMS` if `encryptionKey` is specified, or `UNENCRYPTED` otherwise.
+   * But if `UNENCRYPTED` is specified, the bucket will be encrypted as `S3_MANAGED` automatically.
    */
   readonly encryption?: BucketEncryption;
 
   /**
    * External KMS key to use for bucket encryption.
    *
-   * The 'encryption' property must be either not specified or set to "Kms".
-   * An error will be emitted if encryption is set to "Unencrypted" or
-   * "Managed".
+   * The `encryption` property must be either not specified or set to `KMS` or `DSSE`.
+   * An error will be emitted if `encryption` is set to `UNENCRYPTED` or `S3_MANAGED`.
    *
-   * @default - If encryption is set to "Kms" and this property is undefined,
+   * @default - If `encryption` is set to `KMS` and this property is undefined,
    * a new KMS key will be created and associated with this bucket.
    */
   readonly encryptionKey?: kms.IKey;
@@ -1585,6 +1584,17 @@ export interface BucketProps {
    * @default No Intelligent Tiiering Configurations.
    */
   readonly intelligentTieringConfigurations?: IntelligentTieringConfiguration[];
+
+  /**
+  * Enforces minimum TLS version for requests.
+  *
+  * Requires `enforceSSL` to be enabled.
+  *
+  * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/amazon-s3-policy-keys.html#example-object-tls-version
+  *
+  * @default No minimum TLS version is enforced.
+  */
+  readonly minimumTLSVersion?: number;
 }
 
 /**
@@ -1879,6 +1889,9 @@ export class Bucket extends BucketBase {
     // Enforce AWS Foundational Security Best Practice
     if (props.enforceSSL) {
       this.enforceSSLStatement();
+      this.minimumTLSVersionStatement(props.minimumTLSVersion);
+    } else if (props.minimumTLSVersion) {
+      throw new Error('\'enforceSSL\' must be enabled for \'minimumTLSVersion\' to be applied');
     }
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
@@ -1893,7 +1906,7 @@ export class Bucket extends BucketBase {
     } else if (props.serverAccessLogsBucket) {
       // A `serverAccessLogsBucket` was provided but it is not a concrete `Bucket` and it
       // may not be possible to configure the ACLs or bucket policy as required.
-      Annotations.of(this).addWarning(
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-s3:accessLogsPolicyNotAdded',
         `Unable to add necessary logging permissions to imported target bucket: ${props.serverAccessLogsBucket}`,
       );
     }
@@ -1983,6 +1996,27 @@ export class Bucket extends BucketBase {
   }
 
   /**
+   * Adds an iam statement to allow requests with a minimum TLS
+   * version only.
+   */
+  private minimumTLSVersionStatement(minimumTLSVersion?: number) {
+    if (!minimumTLSVersion) return;
+    const statement = new iam.PolicyStatement({
+      actions: ['s3:*'],
+      conditions: {
+        NumericLessThan: { 's3:TlsVersion': minimumTLSVersion },
+      },
+      effect: iam.Effect.DENY,
+      resources: [
+        this.bucketArn,
+        this.arnForObjects('*'),
+      ],
+      principals: [new iam.AnyPrincipal()],
+    });
+    this.addToResourcePolicy(statement);
+  }
+
+  /**
    * Set up key properties and return the Bucket encryption property from the
    * user's configuration, according to the following table:
    *
@@ -2012,14 +2046,17 @@ export class Bucket extends BucketBase {
       encryptionType = props.encryptionKey ? BucketEncryption.KMS : BucketEncryption.UNENCRYPTED;
     }
 
-    // if encryption key is set, encryption must be set to KMS.
-    if (encryptionType !== BucketEncryption.KMS && props.encryptionKey) {
-      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+    // if encryption key is set, encryption must be set to KMS or DSSE.
+    if (encryptionType !== BucketEncryption.DSSE && encryptionType !== BucketEncryption.KMS && props.encryptionKey) {
+      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
     }
 
-    // if bucketKeyEnabled is set, encryption must be set to KMS.
-    if (props.bucketKeyEnabled && ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED].includes(encryptionType)) {
-      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+    // if bucketKeyEnabled is set, encryption must be set to KMS or DSSE.
+    if (
+      props.bucketKeyEnabled &&
+      ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE, BucketEncryption.DSSE_MANAGED].includes(encryptionType)
+    ) {
+      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
     }
 
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
@@ -2067,6 +2104,37 @@ export class Bucket extends BucketBase {
       return { bucketEncryption };
     }
 
+    if (encryptionType === BucketEncryption.DSSE) {
+      const encryptionKey = props.encryptionKey || new kms.Key(this, 'Key', {
+        description: `Created by ${this.node.path}`,
+      });
+
+      const bucketEncryption = {
+        serverSideEncryptionConfiguration: [
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: {
+              sseAlgorithm: 'aws:kms:dsse',
+              kmsMasterKeyId: encryptionKey.keyArn,
+            },
+          },
+        ],
+      };
+      return { encryptionKey, bucketEncryption };
+    }
+
+    if (encryptionType === BucketEncryption.DSSE_MANAGED) {
+      const bucketEncryption = {
+        serverSideEncryptionConfiguration: [
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: { sseAlgorithm: 'aws:kms:dsse' },
+          },
+        ],
+      };
+      return { bucketEncryption };
+    }
+
     throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
   }
 
@@ -2085,6 +2153,11 @@ export class Bucket extends BucketBase {
 
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled ?? true;
+      if ((rule.expiredObjectDeleteMarker)
+      && (rule.expiration || rule.expirationDate || self.parseTagFilters(rule.tagFilters))) {
+        // ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays, ExpirationDate, or TagFilters.
+        throw new Error('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.');
+      }
 
       const x: CfnBucket.RuleProperty = {
         // eslint-disable-next-line max-len
@@ -2124,8 +2197,12 @@ export class Bucket extends BucketBase {
     }
 
     // KMS_MANAGED can't be used for logging since the account can't access the logging service key - account can't read logs
-    if (!props.serverAccessLogsBucket && props.encryption === BucketEncryption.KMS_MANAGED) {
-      throw new Error('Default bucket encryption with KMS managed key is not supported for Server Access Logging target buckets');
+    if (
+      !props.serverAccessLogsBucket &&
+      props.encryption &&
+      [BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE_MANAGED].includes(props.encryption)
+    ) {
+      throw new Error('Default bucket encryption with KMS managed or DSSE managed key is not supported for Server Access Logging target buckets');
     }
 
     // When there is an encryption key exists for the server access logs bucket, grant permission to the S3 logging SP.
@@ -2275,7 +2352,7 @@ export class Bucket extends BucketBase {
     }
 
     const routingRules = props.websiteRoutingRules ? props.websiteRoutingRules.map<CfnBucket.RoutingRuleProperty>((rule) => {
-      if (rule.condition && !rule.condition.httpErrorCodeReturnedEquals && !rule.condition.keyPrefixEquals) {
+      if (rule.condition && rule.condition.httpErrorCodeReturnedEquals == null && rule.condition.keyPrefixEquals == null) {
         throw new Error('The condition property cannot be an empty object');
       }
 
@@ -2342,11 +2419,15 @@ export class Bucket extends BucketBase {
     if (!this.inventories || this.inventories.length === 0) {
       return undefined;
     }
+    const inventoryIdValidationRegex = /[^\w\.\-]/g;
 
     return this.inventories.map((inventory, index) => {
       const format = inventory.format ?? InventoryFormat.CSV;
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
-      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`;
+      if (inventory.inventoryId !== undefined && (inventory.inventoryId.length > 64 || inventoryIdValidationRegex.test(inventory.inventoryId))) {
+        throw new Error(`inventoryId should not exceed 64 characters and should not contain special characters except . and -, got ${inventory.inventoryId}`);
+      }
+      const id = inventory.inventoryId ?? `${this.node.id}Inventory${index}`.replace(inventoryIdValidationRegex, '').slice(-64);
 
       if (inventory.destination.bucket instanceof Bucket) {
         inventory.destination.bucket.addToResourcePolicy(new iam.PolicyStatement({
@@ -2383,9 +2464,8 @@ export class Bucket extends BucketBase {
   }
 
   private enableAutoDeleteObjects() {
-    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
-      runtime: builtInCustomResourceProviderNodeRuntime(this),
+    const provider = AutoDeleteObjectsProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
+      useCfnResponseWrapper: false,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 
@@ -2393,6 +2473,8 @@ export class Bucket extends BucketBase {
     // objects in the bucket
     this.addToResourcePolicy(new iam.PolicyStatement({
       actions: [
+        // prevent further PutObject calls
+        ...perms.BUCKET_PUT_POLICY_ACTIONS,
         // list objects
         ...perms.BUCKET_READ_METADATA_ACTIONS,
         ...perms.BUCKET_DELETE_ACTIONS, // and then delete them
@@ -2455,6 +2537,17 @@ export enum BucketEncryption {
    * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
    */
   KMS = 'KMS',
+
+  /**
+   * Double server-side KMS encryption with a master key managed by KMS.
+   */
+  DSSE_MANAGED = 'DSSE_MANAGED',
+
+  /**
+   * Double server-side encryption with a KMS key managed by the user.
+   * If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.
+   */
+  DSSE = 'DSSE',
 }
 
 /**

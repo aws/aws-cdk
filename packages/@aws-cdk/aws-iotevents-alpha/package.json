@@ -85,10 +85,9 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
-    "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^29.5.1",
-    "jest": "^29.5.0",
+    "@types/jest": "^29.5.11",
+    "jest": "^29.7.0",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0"
@@ -100,11 +99,6 @@
   },
   "engines": {
     "node": ">= 14.15.0"
-  },
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
   },
   "stability": "experimental",
   "maturity": "experimental",

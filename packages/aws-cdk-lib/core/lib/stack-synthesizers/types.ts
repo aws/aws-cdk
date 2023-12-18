@@ -14,6 +14,13 @@ export interface IStackSynthesizer {
   readonly bootstrapQualifier?: string;
 
   /**
+   * The role used to lookup for this stack
+   *
+   * @default - no role
+   */
+  readonly lookupRole?: string;
+
+  /**
    * Bind to the stack this environment is going to be used on
    *
    * Must be called before any of the other methods are called, and can only be called once.

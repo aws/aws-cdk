@@ -394,10 +394,24 @@
   "ClusterEB0386A7": {
    "Type": "AWS::ECS::Cluster"
   },
-  "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A": {
+  "Cluster3DA9CCBA": {
+   "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
+   "Properties": {
+    "CapacityProviders": [
+     {
+      "Ref": "MyProvider82D075B0"
+     }
+    ],
+    "Cluster": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "DefaultCapacityProviderStrategy": []
+   }
+  },
+  "MyAutoScalingGroupSGEBE6954A": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
+    "GroupDescription": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroupSG",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -405,10 +419,13 @@
       "IpProtocol": "-1"
      }
     ],
-    "Tags": [
+    "SecurityGroupIngress": [
      {
-      "Key": "Name",
-      "Value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup"
+      "CidrIp": "0.0.0.0/0",
+      "Description": "from 0.0.0.0/0:32768-65535",
+      "FromPort": 32768,
+      "IpProtocol": "tcp",
+      "ToPort": 65535
      }
     ],
     "VpcId": {
@@ -416,7 +433,7 @@
     }
    }
   },
-  "ClusterDefaultAutoScalingGroupInstanceRole9A14B384": {
+  "MyAutoScalingGroupInstanceRoleDFBF3134": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -434,12 +451,12 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup"
+      "Value": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup"
      }
     ]
    }
   },
-  "ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy06157A81": {
+  "MyAutoScalingGroupInstanceRoleDefaultPolicyD7C4BACE": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -489,75 +506,125 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy06157A81",
+    "PolicyName": "MyAutoScalingGroupInstanceRoleDefaultPolicyD7C4BACE",
     "Roles": [
      {
-      "Ref": "ClusterDefaultAutoScalingGroupInstanceRole9A14B384"
+      "Ref": "MyAutoScalingGroupInstanceRoleDFBF3134"
      }
     ]
    }
   },
-  "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55": {
+  "MyAutoScalingGroupInstanceProfile729989CC": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
      {
-      "Ref": "ClusterDefaultAutoScalingGroupInstanceRole9A14B384"
+      "Ref": "MyAutoScalingGroupInstanceRoleDFBF3134"
      }
     ]
    }
   },
-  "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "MyAutoScalingGroupLaunchTemplate9D9A040D": {
+   "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "t2.micro",
-    "IamInstanceProfile": {
-     "Ref": "ClusterDefaultAutoScalingGroupInstanceProfile2BB4FE55"
-    },
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "ClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236A",
-       "GroupId"
-      ]
-     }
-    ],
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "",
-       [
-        "#!/bin/bash\necho ECS_CLUSTER=",
-        {
-         "Ref": "ClusterEB0386A7"
-        },
-        " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "MyAutoScalingGroupInstanceProfile729989CC",
+        "Arn"
        ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t2.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "MyAutoScalingGroupSGEBE6954A",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "#!/bin/bash\necho ECS_CLUSTER=",
+         {
+          "Ref": "ClusterEB0386A7"
+         },
+         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/LaunchTemplate"
+       }
       ]
      }
-    }
+    ]
    },
    "DependsOn": [
-    "ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy06157A81",
-    "ClusterDefaultAutoScalingGroupInstanceRole9A14B384"
+    "MyAutoScalingGroupInstanceRoleDefaultPolicyD7C4BACE",
+    "MyAutoScalingGroupInstanceRoleDFBF3134"
    ]
   },
-  "ClusterDefaultAutoScalingGroupASG0F98E147": {
+  "MyAutoScalingGroupASG1686ADA7": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
    "Properties": {
     "MaxSize": "1",
     "MinSize": "1",
-    "LaunchConfigurationName": {
-     "Ref": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "MyAutoScalingGroupLaunchTemplate9D9A040D"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "MyAutoScalingGroupLaunchTemplate9D9A040D",
+       "LatestVersionNumber"
+      ]
+     }
     },
+    "NewInstancesProtectedFromScaleIn": true,
     "Tags": [
      {
       "Key": "Name",
       "PropagateAtLaunch": true,
-      "Value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup"
+      "Value": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup"
      }
     ],
     "VPCZoneIdentifier": [
@@ -570,283 +637,26 @@
     ]
    },
    "UpdatePolicy": {
-    "AutoScalingReplacingUpdate": {
-     "WillReplace": true
-    },
     "AutoScalingScheduledAction": {
      "IgnoreUnmodifiedGroupSizeProperties": true
     }
    }
   },
-  "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1": {
-   "Type": "AWS::IAM::Role",
+  "MyProvider82D075B0": {
+   "Type": "AWS::ECS::CapacityProvider",
    "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
+    "AutoScalingGroupProvider": {
+     "AutoScalingGroupArn": {
+      "Ref": "MyAutoScalingGroupASG1686ADA7"
+     },
+     "ManagedScaling": {
+      "Status": "ENABLED",
+      "TargetCapacity": 100
+     },
+     "ManagedTerminationProtection": "ENABLED"
     },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ],
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup"
-     }
-    ]
+    "Name": "my-capacity-provider"
    }
-  },
-  "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy221F6E5E": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "ec2:DescribeHosts",
-        "ec2:DescribeInstanceAttribute",
-        "ec2:DescribeInstanceStatus",
-        "ec2:DescribeInstances"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": "autoscaling:CompleteLifecycleAction",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":autoscaling:",
-          {
-           "Ref": "AWS::Region"
-          },
-          ":",
-          {
-           "Ref": "AWS::AccountId"
-          },
-          ":autoScalingGroup:*:autoScalingGroupName/",
-          {
-           "Ref": "ClusterDefaultAutoScalingGroupASG0F98E147"
-          }
-         ]
-        ]
-       }
-      },
-      {
-       "Action": [
-        "ecs:DescribeContainerInstances",
-        "ecs:DescribeTasks",
-        "ecs:ListTasks",
-        "ecs:UpdateContainerInstancesState"
-       ],
-       "Condition": {
-        "ArnEquals": {
-         "ecs:cluster": {
-          "Fn::GetAtt": [
-           "ClusterEB0386A7",
-           "Arn"
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Resource": "*"
-      },
-      {
-       "Action": [
-        "ecs:ListContainerInstances",
-        "ecs:SubmitContainerStateChange",
-        "ecs:SubmitTaskStateChange"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "ClusterEB0386A7",
-         "Arn"
-        ]
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy221F6E5E",
-    "Roles": [
-     {
-      "Ref": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1"
-     }
-    ]
-   }
-  },
-  "ClusterDefaultAutoScalingGroupDrainECSHookFunctionFE918865": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "ZipFile": "import boto3, json, os, time\n\necs = boto3.client('ecs')\nautoscaling = boto3.client('autoscaling')\n\n\ndef lambda_handler(event, context):\n  print(json.dumps(dict(event, ResponseURL='...')))\n  cluster = os.environ['CLUSTER']\n  snsTopicArn = event['Records'][0]['Sns']['TopicArn']\n  lifecycle_event = json.loads(event['Records'][0]['Sns']['Message'])\n  instance_id = lifecycle_event.get('EC2InstanceId')\n  if not instance_id:\n    print('Got event without EC2InstanceId: %s', json.dumps(dict(event, ResponseURL='...')))\n    return\n\n  instance_arn = container_instance_arn(cluster, instance_id)\n  print('Instance %s has container instance ARN %s' % (lifecycle_event['EC2InstanceId'], instance_arn))\n\n  if not instance_arn:\n    return\n\n  task_arns = container_instance_task_arns(cluster, instance_arn)\n\n  if task_arns:\n    print('Instance ARN %s has task ARNs %s' % (instance_arn, ', '.join(task_arns)))\n\n  while has_tasks(cluster, instance_arn, task_arns):\n    time.sleep(10)\n\n  try:\n    print('Terminating instance %s' % instance_id)\n    autoscaling.complete_lifecycle_action(\n        LifecycleActionResult='CONTINUE',\n        **pick(lifecycle_event, 'LifecycleHookName', 'LifecycleActionToken', 'AutoScalingGroupName'))\n  except Exception as e:\n    # Lifecycle action may have already completed.\n    print(str(e))\n\n\ndef container_instance_arn(cluster, instance_id):\n  \"\"\"Turn an instance ID into a container instance ARN.\"\"\"\n  arns = ecs.list_container_instances(cluster=cluster, filter='ec2InstanceId==' + instance_id)['containerInstanceArns']\n  if not arns:\n    return None\n  return arns[0]\n\ndef container_instance_task_arns(cluster, instance_arn):\n  \"\"\"Fetch tasks for a container instance ARN.\"\"\"\n  arns = ecs.list_tasks(cluster=cluster, containerInstance=instance_arn)['taskArns']\n  return arns\n\ndef has_tasks(cluster, instance_arn, task_arns):\n  \"\"\"Return True if the instance is running tasks for the given cluster.\"\"\"\n  instances = ecs.describe_container_instances(cluster=cluster, containerInstances=[instance_arn])['containerInstances']\n  if not instances:\n    return False\n  instance = instances[0]\n\n  if instance['status'] == 'ACTIVE':\n    # Start draining, then try again later\n    set_container_instance_to_draining(cluster, instance_arn)\n    return True\n\n  task_count = None\n\n  if task_arns:\n    # Fetch details for tasks running on the container instance\n    tasks = ecs.describe_tasks(cluster=cluster, tasks=task_arns)['tasks']\n    if tasks:\n      # Consider any non-stopped tasks as running\n      task_count = sum(task['lastStatus'] != 'STOPPED' for task in tasks) + instance['pendingTasksCount']\n\n  if not task_count:\n    # Fallback to instance task counts if detailed task information is unavailable\n    task_count = instance['runningTasksCount'] + instance['pendingTasksCount']\n\n  print('Instance %s has %s tasks' % (instance_arn, task_count))\n\n  return task_count > 0\n\ndef set_container_instance_to_draining(cluster, instance_arn):\n  ecs.update_container_instances_state(\n      cluster=cluster,\n      containerInstances=[instance_arn], status='DRAINING')\n\n\ndef pick(dct, *keys):\n  \"\"\"Pick a subset of a dict.\"\"\"\n  return {k: v for k, v in dct.items() if k in keys}\n"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1",
-      "Arn"
-     ]
-    },
-    "Environment": {
-     "Variables": {
-      "CLUSTER": {
-       "Ref": "ClusterEB0386A7"
-      }
-     }
-    },
-    "Handler": "index.lambda_handler",
-    "Runtime": "python3.9",
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup"
-     }
-    ],
-    "Timeout": 310
-   },
-   "DependsOn": [
-    "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy221F6E5E",
-    "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1"
-   ]
-  },
-  "ClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegnlbhealthchecksClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9374BCF8D73113EF": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "ClusterDefaultAutoScalingGroupDrainECSHookFunctionFE918865",
-      "Arn"
-     ]
-    },
-    "Principal": "sns.amazonaws.com",
-    "SourceArn": {
-     "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB"
-    }
-   }
-  },
-  "ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic3B6438EC": {
-   "Type": "AWS::SNS::Subscription",
-   "Properties": {
-    "Protocol": "lambda",
-    "TopicArn": {
-     "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB"
-    },
-    "Endpoint": {
-     "Fn::GetAtt": [
-      "ClusterDefaultAutoScalingGroupDrainECSHookFunctionFE918865",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB": {
-   "Type": "AWS::SNS::Topic",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup"
-     }
-    ]
-   }
-  },
-  "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "autoscaling.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup"
-     }
-    ]
-   }
-  },
-  "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyFFFD6EA5": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sns:Publish",
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyFFFD6EA5",
-    "Roles": [
-     {
-      "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663"
-     }
-    ]
-   }
-  },
-  "ClusterDefaultAutoScalingGroupLifecycleHookDrainHook4A9A4325": {
-   "Type": "AWS::AutoScaling::LifecycleHook",
-   "Properties": {
-    "AutoScalingGroupName": {
-     "Ref": "ClusterDefaultAutoScalingGroupASG0F98E147"
-    },
-    "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
-    "DefaultResult": "CONTINUE",
-    "HeartbeatTimeout": 300,
-    "NotificationTargetARN": {
-     "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB"
-    },
-    "RoleARN": {
-     "Fn::GetAtt": [
-      "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663",
-      "Arn"
-     ]
-    }
-   },
-   "DependsOn": [
-    "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyFFFD6EA5",
-    "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663"
-   ]
   },
   "myServicelb1FA8CBE12": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
@@ -937,7 +747,7 @@
     "DefaultActions": [
      {
       "TargetGroupArn": {
-       "Ref": "myServicelb2listener2ECSTargetGroupweb90Group6841F924"
+       "Ref": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
       },
       "Type": "forward"
      }
@@ -949,10 +759,10 @@
     "Protocol": "TCP"
    }
   },
-  "myServicelb2listener2ECSTargetGroupweb90Group6841F924": {
+  "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
-    "Port": 90,
+    "Port": 80,
     "Protocol": "TCP",
     "TargetType": "instance",
     "VpcId": {
@@ -1001,11 +811,6 @@
       "PortMappings": [
        {
         "ContainerPort": 80,
-        "HostPort": 0,
-        "Protocol": "tcp"
-       },
-       {
-        "ContainerPort": 90,
         "HostPort": 0,
         "Protocol": "tcp"
        }
@@ -1089,6 +894,11 @@
      "Ref": "ClusterEB0386A7"
     },
     "DeploymentConfiguration": {
+     "Alarms": {
+      "AlarmNames": [],
+      "Enable": false,
+      "Rollback": false
+     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -1105,9 +915,9 @@
      },
      {
       "ContainerName": "web",
-      "ContainerPort": 90,
+      "ContainerPort": 80,
       "TargetGroupArn": {
-       "Ref": "myServicelb2listener2ECSTargetGroupweb90Group6841F924"
+       "Ref": "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6"
       }
      }
     ],
@@ -1120,7 +930,8 @@
     "myServicelb1listener1ECSTargetGroupweb80GroupC3F9339A",
     "myServicelb1listener15ED0E805",
     "myServicelb2listener2ECSTargetGroupweb90Group6841F924",
-    "myServicelb2listener2AA6970EB"
+    "myServicelb2listener2AA6970EB",
+    "myServiceTaskDefTaskRole1C1DE6CC"
    ]
   }
  },

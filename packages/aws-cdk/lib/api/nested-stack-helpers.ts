@@ -15,6 +15,11 @@ export interface NestedStackNames {
   readonly nestedChildStackNames: { [logicalId: string]: NestedStackNames };
 }
 
+export interface TemplateWithNestedStackCount {
+  readonly deployedTemplate: Template;
+  readonly nestedStackCount: number;
+}
+
 /**
  * Reads the currently deployed template from CloudFormation and adds a
  * property, `NestedTemplate`, to any nested stacks that appear in either
@@ -38,6 +43,19 @@ export async function loadCurrentTemplateWithNestedStacks(
     deployedTemplate,
     nestedStackNames,
   };
+}
+
+export function flattenNestedStackNames(nestedStackNames: { [nestedStackLogicalId: string]: NestedStackNames }): string[] {
+  const nameList = [];
+  for (const key of Object.keys(nestedStackNames)) {
+    nameList.push(key);
+
+    if (Object.keys(nestedStackNames[key].nestedChildStackNames).length !== 0) {
+      flattenNestedStacksHelper(nestedStackNames[key].nestedChildStackNames, nameList);
+    }
+  }
+
+  return nameList;
 }
 
 /**
@@ -133,6 +151,16 @@ async function getNestedStackArn(
 
 function isCdkManagedNestedStack(stackResource: any): stackResource is NestedStackResource {
   return stackResource.Type === 'AWS::CloudFormation::Stack' && stackResource.Metadata && stackResource.Metadata['aws:asset:path'];
+}
+
+function flattenNestedStacksHelper(nestedStackNames: { [logicalId: string]: NestedStackNames }, nameList: string[]) {
+  for (const key of Object.keys(nestedStackNames)) {
+    nameList.push(key);
+
+    if (Object.keys(nestedStackNames[key].nestedChildStackNames).length !== 0) {
+      flattenNestedStacksHelper(nestedStackNames[key].nestedChildStackNames, nameList);
+    }
+  }
 }
 
 interface StackTemplates {

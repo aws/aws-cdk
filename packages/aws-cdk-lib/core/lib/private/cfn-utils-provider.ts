@@ -1,17 +1,14 @@
 import { Construct } from 'constructs';
 import { CfnUtilsResourceType } from './cfn-utils-provider/consts';
 import { CustomResource } from '../custom-resource';
-import { builtInCustomResourceProviderNodeRuntime, CustomResourceProvider } from '../custom-resource-provider';
+import { CfnUtilsProvider as _CfnUtilsProvider } from '../dist/core/cfn-utils-provider.generated';
 
 /**
  * A custom resource provider for CFN utilities such as `CfnJson`.
  */
 export class CfnUtilsProvider extends Construct {
   public static getOrCreate(scope: Construct) {
-    return CustomResourceProvider.getOrCreate(scope, 'AWSCDKCfnUtilsProvider', {
-      runtime: builtInCustomResourceProviderNodeRuntime(scope),
-      codeDirectory: `${__dirname}/cfn-utils-provider`,
-    });
+    return _CfnUtilsProvider.getOrCreate(scope, 'AWSCDKCfnUtilsProvider');
   }
 }
 

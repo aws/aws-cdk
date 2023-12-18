@@ -1,11 +1,13 @@
 {
   "enableLookups": true,
-  "version": "31.0.0",
+  "version": "35.0.0",
   "testCases": {
     "integ-product/DefaultTest": {
       "stacks": [
         "integ-servicecatalog-product"
       ],
+      "diffAssets": true,
+      "stackUpdateWorkflow": false,
       "assertionStack": "integ-product/DefaultTest/DeployAssert",
       "assertionStackName": "integproductDefaultTestDeployAssertEB23E2A9"
     }
