@@ -429,6 +429,15 @@ export enum OnDemandAllocationStrategy {
    * so on.
    */
   PRIORITIZED = 'prioritized',
+
+  /**
+   * This strategy uses the lowest-price instance types in each Availability Zone based on the current
+   * On-Demand instance price.
+   *
+   * To meet your desired capacity, you might receive On-Demand Instances of more than one instance type
+   * in each Availability Zone. This depends on how much capacity you request.
+   */
+  LOWEST_PRICE = 'lowest-price',
 }
 
 /**
