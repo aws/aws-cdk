@@ -855,7 +855,7 @@ export class CompositePrincipal extends PrincipalBase {
 
   public get policyFragment(): PrincipalPolicyFragment {
     // We only have a problem with conditions if we are trying to render composite
-    // princpals into a single statement (which is when `policyFragment` would get called)
+    // principals into a single statement (which is when `policyFragment` would get called)
     for (const p of this._principals) {
       const fragment = p.policyFragment;
       if (fragment.conditions && Object.keys(fragment.conditions).length > 0) {
