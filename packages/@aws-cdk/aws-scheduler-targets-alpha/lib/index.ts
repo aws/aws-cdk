@@ -1,4 +1,5 @@
 export * from './codebuild-start-build';
+export * from './codepipeline-start-pipeline-execution';
 export * from './event-bridge-put-events';
 export * from './inspector-start-assessment-run';
 export * from './kinesis-data-firehose-put-record';
