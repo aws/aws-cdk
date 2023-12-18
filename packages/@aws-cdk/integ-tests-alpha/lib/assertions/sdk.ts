@@ -250,6 +250,20 @@ export class LambdaInvokeFunction extends AwsApiCall {
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       resourceName: props.functionName,
     })]);
+
+    Aspects.of(this).add({
+      visit(node: IConstruct) {
+        if (node instanceof AwsApiCall) {
+          if (node.waiterProvider) {
+            node.waiterProvider.addPolicyStatementFromSdkCall('Lambda', 'invokeFunction', [stack.formatArn({
+              service: 'lambda',
+              resource: 'function',
+              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+              resourceName: props.functionName,
+            })]);
+          }
+        }
+      },
+    });
   }
 }
-

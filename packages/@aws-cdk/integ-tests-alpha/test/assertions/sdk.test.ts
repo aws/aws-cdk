@@ -266,6 +266,75 @@ describe('AwsApiCall', () => {
     });
   });
 
+  test('waitFor with invokeFunction', () => {
+    // GIVEN
+    const app = new App();
+    const deplossert = new DeployAssert(app);
+
+    // WHEN
+    deplossert.invokeFunction({
+      functionName: 'my-func',
+      invocationType: InvocationType.EVENT,
+      payload: JSON.stringify({ days: 1 }),
+    }).expect(
+      ExpectedResult.objectLike({ Key: 'Value' }),
+    ).waitForAssertions({
+      interval: Duration.seconds(30),
+      totalTimeout: Duration.minutes(90),
+    });
+
+    // THEN
+    const lambdaRole = Template.fromStack(
+      deplossert.scope,
+    ).findResources(
+      'AWS::IAM::Role',
+    ).SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB;
+    expect(lambdaRole).toEqual({
+      Type: 'AWS::IAM::Role',
+      Properties: {
+        AssumeRolePolicyDocument: expect.any(Object),
+        ManagedPolicyArns: expect.any(Array),
+        Policies: expect.arrayContaining([
+          {
+            PolicyName: 'Inline',
+            PolicyDocument: {
+              Version: '2012-10-17',
+              Statement: expect.arrayContaining([
+                {
+                  Action: ['lambda:InvokeFunction'],
+                  Effect: 'Allow',
+                  Resource: [
+                    {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          {
+                            Ref: 'AWS::Partition',
+                          },
+                          ':lambda:',
+                          {
+                            Ref: 'AWS::Region',
+                          },
+                          ':',
+                          {
+                            Ref: 'AWS::AccountId',
+                          },
+                          ':function:my-func',
+                        ],
+                      ],
+                    },
+                  ],
+                },
+              ]),
+            },
+          },
+        ]),
+      },
+    });
+    //TODO: check lambda invoke permission
+  });
+
   describe('get attribute', () => {
     test('getAttString', () => {
       // GIVEN
