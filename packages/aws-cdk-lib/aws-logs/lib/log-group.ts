@@ -236,7 +236,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       return new iam.ArnPrincipal(principal.principalAccount);
     }
 
-    if (principal instanceof iam.ArnPrincipal) {
+    if (principal instanceof iam.ArnPrincipal && principal.arn !== '*') {
       const parsedArn = Arn.split(principal.arn, ArnFormat.SLASH_RESOURCE_NAME);
       if (parsedArn.account) {
         return new iam.ArnPrincipal(parsedArn.account);
