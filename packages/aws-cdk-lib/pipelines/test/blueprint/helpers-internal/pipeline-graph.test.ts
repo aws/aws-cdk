@@ -116,9 +116,18 @@ describe('blueprint with wave and stage', () => {
 
   test('postPrepare and prepareNodes are added correctly inside stack graph', () => {
     // GIVEN
+    let blueprintWithAllPrepareNodesFirst: Blueprint;
+    beforeEach(() => {
+      blueprint = new Blueprint(app, 'Bp', {
+        synth: new cdkp.ShellStep('Synth', {
+          input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+          commands: ['build'],
+        }),
+      });
+    blueprintWithAllPrepareNodesFirst.addStage(new OneStackApp(app, 'CrossAccount', { env: { account: 'you' } }));
     const appWithExposedStacks = new AppWithExposedStacks(app, 'Gamma');
 
-    blueprint.waves[0].addStage(appWithExposedStacks, {
+    blueprintWithAllPrepareNodesFirst.waves[0].addStage(appWithExposedStacks, {
       postPrepare: [
         new cdkp.ManualApprovalStep('Step1'),
         // new cdkp.ManualApprovalStep('Step2'),
@@ -139,7 +148,7 @@ describe('blueprint with wave and stage', () => {
     });
 
     // WHEN
-    const graph = new PipelineGraph(blueprint).graph;
+    const graph = new PipelineGraph(blueprintWithAllPrepareNodesFirst).graph;
     // THEN
     expect(childrenAt(graph, 'Wave', 'Gamma', 'Stack1')).toEqual([
       'Prepare-Gamma-Stack1',
