@@ -14,7 +14,7 @@ class SimpleStack extends cdk.Stack {
       visibilityTimeout: cdk.Duration.seconds(300),
     });
     const role = new iam.Role(this, 'role', {
-      assumedBy: new iam.AnyPrincipal(),
+      assumedBy: new iam.AccountRootPrincipal(),
     });
     queue.grantConsumeMessages(role);
   }
