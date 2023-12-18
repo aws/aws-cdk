@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.115.0](https://github.com/aws/aws-cdk/compare/v2.114.1...v2.115.0) (2023-12-14)
+
+
+### Features
+
+* **eks:** support Bottlerocket Nvidia AMIs ([#28287](https://github.com/aws/aws-cdk/issues/28287)) ([6aa1b1b](https://github.com/aws/aws-cdk/commit/6aa1b1b02ab3782b0e6419f8d5a340663cb47c81)), closes [#28241](https://github.com/aws/aws-cdk/issues/28241)
+* **rds:** support RDS for MariaDB 10.11.6, 10.6.16, 10.5.23 and 10.4.32 ([#28345](https://github.com/aws/aws-cdk/issues/28345)) ([0347a19](https://github.com/aws/aws-cdk/commit/0347a19e49533971e4e57b7e04271dffc541ff92))
+* **rds:** support RDS for SQL Server 16.00.4095.4.v1 ([#28274](https://github.com/aws/aws-cdk/issues/28274)) ([7a22501](https://github.com/aws/aws-cdk/commit/7a22501d58912f777ae0a2ad1b48af2faeb6946b))
+* **stepfunctions-tasks:** runtime role in EmrAddStep  ([#27736](https://github.com/aws/aws-cdk/issues/27736)) ([314fbfa](https://github.com/aws/aws-cdk/commit/314fbfa34cf1207417ad590d6bb6a8742664a380)), closes [#27691](https://github.com/aws/aws-cdk/issues/27691)
+* **stepfunctions-tasks:** support for the Step Functions optimized integration for Bedrock InvokeModel API ([#28276](https://github.com/aws/aws-cdk/issues/28276)) ([f3dafa4](https://github.com/aws/aws-cdk/commit/f3dafa49ec900fc044384441a9163d7ed6a63dda))
+* update AWS Service Spec ([#28328](https://github.com/aws/aws-cdk/issues/28328)) ([15c7bb2](https://github.com/aws/aws-cdk/commit/15c7bb2908cff1ab8bebacacc09f26bbab6ec391))
+* **ROADMAP:** updates to public roadmap 🚀  ([#28302](https://github.com/aws/aws-cdk/issues/28302)) ([fe30921](https://github.com/aws/aws-cdk/commit/fe30921c358e535bf734c768fdfb64aca1c4c4ab))
+
+
+### Bug Fixes
+
+* **rds:** publiclyAccessible=false set on an instance is ignored when cluster is placed in a public subnet ([#28038](https://github.com/aws/aws-cdk/issues/28038)) ([569593c](https://github.com/aws/aws-cdk/commit/569593c78467404825beb277d75436bd32cdf0f9)), closes [#28037](https://github.com/aws/aws-cdk/issues/28037) [#28037](https://github.com/aws/aws-cdk/issues/28037)
+* **route53:** delete old NS records on cross-account delegation renaming ([#21249](https://github.com/aws/aws-cdk/issues/21249)) ([#27523](https://github.com/aws/aws-cdk/issues/27523)) ([448e2bd](https://github.com/aws/aws-cdk/commit/448e2bda5632621c057c2e448cd34cfec107b22e)), closes [#25285](https://github.com/aws/aws-cdk/issues/25285)
+* **stepfunctions-tasks:** missing tags & perms for emr cluster creation ([#28327](https://github.com/aws/aws-cdk/issues/28327)) ([14e5e50](https://github.com/aws/aws-cdk/commit/14e5e50e9e4a23ab7db5bbccf874e6a5fe731e34))
+* **stepfunctions-tasks:** state machine role is missing sagemaker:AddTags permission for SageMakerCreateTransformJob task ([#27264](https://github.com/aws/aws-cdk/issues/27264)) ([8ce0283](https://github.com/aws/aws-cdk/commit/8ce02838ba5033a6b35123a34e444c4f35350975)), closes [#26012](https://github.com/aws/aws-cdk/issues/26012)
+
 ## [2.114.1](https://github.com/aws/aws-cdk/compare/v2.114.0...v2.114.1) (2023-12-06)
 
 
