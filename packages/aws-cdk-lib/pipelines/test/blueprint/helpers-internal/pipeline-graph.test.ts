@@ -114,7 +114,6 @@ describe('blueprint with wave and stage', () => {
     ]);
   });
 
-
   test('postPrepare and prepareNodes are added correctly inside stack graph', () => {
     // GIVEN
     const appWithExposedStacks = new AppWithExposedStacks(app, 'Gamma');
@@ -141,7 +140,6 @@ describe('blueprint with wave and stage', () => {
 
     // WHEN
     const graph = new PipelineGraph(blueprint).graph;
-    console.log(graph);
     // THEN
     expect(childrenAt(graph, 'Wave', 'Gamma', 'Stack1')).toEqual([
       'Prepare-Gamma-Stack1',
@@ -152,7 +150,6 @@ describe('blueprint with wave and stage', () => {
 
     ]);
   });
-
 
   test('pre, changeSet, and post are added correctly inside stack graph', () => {
     // GIVEN

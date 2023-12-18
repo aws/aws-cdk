@@ -1,7 +1,7 @@
-import { Stack, Token } from '../../../core';
-import { StepOutput } from '../helpers-internal/step-output';
 import { FileSet, IFileSetProducer } from './file-set';
 import { StackOutputReference } from './shell-step';
+import { Stack, Token } from '../../../core';
+import { StepOutput } from '../helpers-internal/step-output';
 
 /**
  * A generic Step which can be added to a Pipeline

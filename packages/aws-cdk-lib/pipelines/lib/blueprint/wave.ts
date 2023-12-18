@@ -54,7 +54,6 @@ export class Wave {
    */
   public readonly stages: StageDeployment[] = [];
 
-
   constructor(
     /** Identifier for this Wave */
     public readonly id: string,
@@ -131,7 +130,6 @@ export interface AddStageOpts {
    * @default - No additional instructions
    */
   readonly stackSteps?: StackSteps[];
-
 
 }
 

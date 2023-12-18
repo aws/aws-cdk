@@ -1,12 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { Construct } from 'constructs';
 import * as fs from 'fs';
 import * as path from 'path';
+import { Construct } from 'constructs';
 import { Capture, Match, Template } from '../../../assertions';
 import { Stack, Stage, StageProps, Tags } from '../../../core';
 import { BucketStack, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, TestApp, behavior, stringLike } from '../testhelpers';
-
-
 
 let app: TestApp;
 let pipelineStack: Stack;
