@@ -247,6 +247,7 @@ export interface CodePipelineProps {
 
   /**
    * If all "prepare" step should be placed all together as the first actions within a stage/wave
+   * @default - False
    */
 
   readonly allPrepareNodesFirst?: boolean;
