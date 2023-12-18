@@ -223,12 +223,12 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       this.policy = new ResourcePolicy(this, 'Policy');
     }
     this.policy.document.addStatements(statement.copy({
-      principals: statement.principals.map(p => this.convertArnPrincpalToAccountId(p)),
+      principals: statement.principals.map(p => this.convertArnPrincipalToAccountId(p)),
     }));
     return { statementAdded: true, policyDependable: this.policy };
   }
 
-  private convertArnPrincpalToAccountId(principal: iam.IPrincipal) {
+  private convertArnPrincipalToAccountId(principal: iam.IPrincipal) {
     if (principal.principalAccount) {
       // we use ArnPrincipal here because the constructor inserts the argument
       // into the template without mutating it, which means that there is no
