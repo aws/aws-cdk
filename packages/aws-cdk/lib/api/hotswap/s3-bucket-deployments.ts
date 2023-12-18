@@ -1,4 +1,4 @@
-import { ChangeHotswapResult, HotswappableChangeCandidate, reportNonHotswappableResource } from './common';
+import { ChangeHotswapResult, HotswappableChangeCandidate } from './common';
 import { ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 
@@ -9,14 +9,11 @@ import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-templ
 export const REQUIRED_BY_CFN = 'required-to-be-present-by-cfn';
 
 export async function isHotswappableS3BucketDeploymentChange(
-  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  _logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
   // In old-style synthesis, the policy used by the lambda to copy assets Ref's the assets directly,
   // meaning that the changes made to the Policy are artifacts that can be safely ignored
   const ret: ChangeHotswapResult = [];
-  if (change.newValue.Type === 'AWS::IAM::Policy') {
-    return changeIsForS3DeployCustomResourcePolicy(logicalId, change, evaluateCfnTemplate);
-  }
 
   if (change.newValue.Type !== 'Custom::CDKBucketDeployment') {
     return [];
@@ -60,60 +57,54 @@ export async function isHotswappableS3BucketDeploymentChange(
   return ret;
 }
 
-async function changeIsForS3DeployCustomResourcePolicy(
+export async function skipChangeForS3DeployCustomResourcePolicy(
   iamPolicyLogicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
-): Promise<ChangeHotswapResult> {
-  const roles = change.newValue.Properties?.Roles;
-  if (!roles) {
-    return reportNonHotswappableResource(
-      change,
-      'This IAM Policy does not have have any Roles',
-    );
+): Promise<boolean> {
+  if (change.newValue.Type !== 'AWS::IAM::Policy') {
+    return false;
+  }
+  const roles: string[] = change.newValue.Properties?.Roles;
+
+  // If no roles are referenced, the policy is definitely not used for a S3Deployment
+  if (!roles || !roles.length) {
+    return false;
   }
 
+  // Check if every role this policy is referenced by is only used for a S3Deployment
   for (const role of roles) {
     const roleArn = await evaluateCfnTemplate.evaluateCfnExpression(role);
     const roleLogicalId = await evaluateCfnTemplate.findLogicalIdForPhysicalName(roleArn);
+
+    // We must assume this role is used for something else, because we can't check it
     if (!roleLogicalId) {
-      return reportNonHotswappableResource(
-        change,
-        `could not find logicalId for role with name '${roleArn}'`,
-      );
+      return false;
     }
 
-    const roleRefs = evaluateCfnTemplate.findReferencesTo(roleLogicalId);
-    for (const roleRef of roleRefs) {
+    // Find all interesting reference to the role
+    const roleRefs = evaluateCfnTemplate.findReferencesTo(roleLogicalId)
+      // we are not interested in the reference from the original policy - it always exists
+      .filter(roleRef => !(roleRef.Type == 'AWS::IAM::Policy' && roleRef.LogicalId === iamPolicyLogicalId));
+
+    // Check if the role is only used for S3Deployment
+    // We know this is the case, if S3Deployment -> Lambda -> Role is satisfied for every reference
+    // And we have at least one reference.
+    const isRoleOnlyForS3Deployment = roleRefs.length >= 1 && roleRefs.every(roleRef => {
       if (roleRef.Type === 'AWS::Lambda::Function') {
         const lambdaRefs = evaluateCfnTemplate.findReferencesTo(roleRef.LogicalId);
-        for (const lambdaRef of lambdaRefs) {
-          // If S3Deployment -> Lambda -> Role and IAM::Policy -> Role, then this IAM::Policy change is an
-          // artifact of old-style synthesis
-          if (lambdaRef.Type !== 'Custom::CDKBucketDeployment') {
-            return reportNonHotswappableResource(
-              change,
-              `found an AWS::IAM::Policy that has Role '${roleLogicalId}' that is referred to by AWS::Lambda::Function '${roleRef.LogicalId}' that is referred to by ${lambdaRef.Type} '${lambdaRef.LogicalId}', which does not have type 'Custom::CDKBucketDeployment'`,
-            );
-          }
-        }
-      } else if (roleRef.Type === 'AWS::IAM::Policy') {
-        if (roleRef.LogicalId !== iamPolicyLogicalId) {
-          return reportNonHotswappableResource(
-            change,
-            `found an AWS::IAM::Policy that has Role '${roleLogicalId}' that is referred to by AWS::IAM::Policy '${roleRef.LogicalId}' that is not the policy of the s3 bucket deployment`,
-          );
-        }
-      } else {
-        return reportNonHotswappableResource(
-          change,
-          `found a resource which refers to the role '${roleLogicalId}' that is not of type AWS::Lambda::Function or AWS::IAM::Policy, so the bucket deployment cannot be hotswapped`,
-        );
+        // Every reference must be to the custom resource and at least one reference must be present
+        return lambdaRefs.length >= 1 && lambdaRefs.every(lambdaRef => lambdaRef.Type === 'Custom::CDKBucketDeployment');
       }
+      return false;
+    });
+
+    // We have determined this role is used for something else, so we can't skip the change
+    if (!isRoleOnlyForS3Deployment) {
+      return false;
     }
   }
 
-  // this doesn't block the hotswap, but it also isn't a hotswappable change by itself. Return
-  // an empty change to signify this.
-  return [];
+  // We have checked that any use of this policy is only for S3Deployment and we can safely skip it
+  return true;
 }
 
 function stringifyObject(obj: any): any {

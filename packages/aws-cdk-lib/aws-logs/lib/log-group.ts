@@ -9,7 +9,7 @@ import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { Annotations, Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token } from '../../core';
 
 export interface ILogGroup extends iam.IResourceWithPolicy {
   /**
@@ -368,6 +368,21 @@ export enum RetentionDays {
 }
 
 /**
+ * Class of Log Group.
+ */
+export enum LogGroupClass {
+  /**
+   * Default class of logs services
+   */
+  STANDARD = 'STANDARD',
+
+  /**
+   * Class for reduced logs services
+   */
+  INFREQUENT_ACCESS = 'INFREQUENT_ACCESS',
+}
+
+/**
  * Properties for a LogGroup
  */
 export interface LogGroupProps {
@@ -400,6 +415,17 @@ export interface LogGroupProps {
    * @default RetentionDays.TWO_YEARS
    */
   readonly retention?: RetentionDays;
+
+  /**
+   * The class of the log group. Possible values are: STANDARD and INFREQUENT_ACCESS.
+   *
+   * INFREQUENT_ACCESS class provides customers a cost-effective way to consolidate
+   * logs which supports querying using Logs Insights. The logGroupClass property cannot
+   * be changed once the log group is created.
+   *
+   * @default LogGroupClass.STANDARD
+   */
+  readonly logGroupClass?: LogGroupClass;
 
   /**
    * Determine the removal policy of this log group.
@@ -476,8 +502,24 @@ export class LogGroup extends LogGroupBase {
       throw new Error(`retentionInDays must be positive, got ${retentionInDays}`);
     }
 
+    let logGroupClass = props.logGroupClass;
+    const stack = Stack.of(scope);
+    const logGroupClassUnsupportedRegions = [
+      'cn-north-1', // BJS
+      'cn-northwest-1', // ZHY
+      'us-iso-west-1', // APA
+      'us-iso-east-1', // DCA
+      'us-isob-east-1', // LCK
+      'us-gov-west-1', // PDT
+      'us-gov-east-1', // OSU
+    ];
+    if (logGroupClass !== undefined && !Token.isUnresolved(stack.region) && logGroupClassUnsupportedRegions.includes(stack.region)) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-logs:propertyNotSupported', `The LogGroupClass property is not supported in the following regions: ${logGroupClassUnsupportedRegions}`);
+    }
+
     const resource = new CfnLogGroup(this, 'Resource', {
       kmsKeyId: props.encryptionKey?.keyArn,
+      logGroupClass,
       logGroupName: this.physicalName,
       retentionInDays,
       dataProtectionPolicy: props.dataProtectionPolicy?._bind(this),
