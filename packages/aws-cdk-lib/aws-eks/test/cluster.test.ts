@@ -2210,6 +2210,41 @@ describe('cluster', () => {
       });
     });
 
+    test('inf1 instances are supported in addNodegroupCapacity', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+
+      // WHEN
+      cluster.addNodegroupCapacity('InferenceInstances', {
+        instanceTypes: [new ec2.InstanceType('inf1.2xlarge')],
+      });
+      const fileContents = fs.readFileSync(path.join(__dirname, '../lib', 'addons/neuron-device-plugin.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitized]),
+      });
+    });
+    test('inf2 instances are supported in addNodegroupCapacity', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+
+      // WHEN
+      cluster.addNodegroupCapacity('InferenceInstances', {
+        instanceTypes: [new ec2.InstanceType('inf2.xlarge')],
+      });
+      const fileContents = fs.readFileSync(path.join(__dirname, '../lib', 'addons/neuron-device-plugin.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitized]),
+      });
+    });
+
     test('kubectl resources are always created after all fargate profiles', () => {
       // GIVEN
       const { stack, app } = testFixture();
