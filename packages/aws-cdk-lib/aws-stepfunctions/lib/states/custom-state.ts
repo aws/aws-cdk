@@ -25,7 +25,7 @@ export class CustomState extends State implements IChainable, INextable {
   /**
    * Amazon States Language (JSON-based) definition of the state
    */
-  private readonly stateJson: { [key: string]: any};
+  private readonly stateJson: { [key: string]: any };
 
   constructor(scope: Construct, id: string, props: CustomStateProps) {
     super(scope, id, {});
@@ -60,6 +60,7 @@ export class CustomState extends State implements IChainable, INextable {
     return {
       ...this.renderNextEnd(),
       ...this.stateJson,
+      ...this.renderRetryCatch(),
     };
   }
 }

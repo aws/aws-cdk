@@ -33,6 +33,7 @@ describe('Custom State', () => {
     // THEN
     expect(customState.toStateJson()).toStrictEqual({
       ...stateJson,
+      ...{ Catch: undefined, Retry: undefined },
       End: true,
     });
   });
@@ -73,40 +74,50 @@ describe('Custom State', () => {
     );
   });
 
-  test('can add a catch state to thechain'), () => {
+  test('can add a catch state', () => {
+    // GIVEN
+    const failure = new sfn.Fail(stack, 'failed', {
+      error: 'DidNotWork',
+      cause: 'We got stuck',
+    });
+    const custom = new sfn.CustomState(stack, 'Custom', {
+      stateJson,
+    });
+    const chain = sfn.Chain.start(custom);
+
     // WHEN
-    const fail = new sfn.Fail(stack, 'MyFail', { error: 'DidNotWork', cause: 'HumanError' })
-    const definition = new sfn.CustomState(stack, 'Custom', {
-        stateJson,
-      }).addCatch(fail);
-  
+    custom.addCatch(failure);
+
     // THEN
-    expect(render(stack, definition)).toStrictEqual(
-    {
+    expect(render(stack, chain)).toStrictEqual(
+      {
         StartAt: 'Custom',
         States: {
-        'Custom': {
+          Custom: {
             Type: 'Task',
             Resource: 'arn:aws:states:::dynamodb:putItem',
             Parameters: {
-                TableName: 'MyTable',
-                Item: {
-                    id: {
-                        S: 'MyEntry',
-                    },
+              TableName: 'MyTable',
+              Item: {
+                id: {
+                  S: 'MyEntry',
                 },
+              },
             },
             ResultPath: null,
-            Catch: {
-                
-            }
-        },
-        'my-pass-state': {
-            Type: 'Pass',
+            Catch: [{
+              ErrorEquals: ['States.ALL'],
+              Next: 'failed',
+            }],
             End: true,
+          },
+          failed: {
+            Type: 'Fail',
+            Error: 'DidNotWork',
+            Cause: 'We got stuck',
+          },
         },
-        },
-    },
+      },
     );
-  };
+  });
 });
