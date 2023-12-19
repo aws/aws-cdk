@@ -3,6 +3,7 @@ import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 import { Construct } from 'constructs';
 import { IPipeEnrichment } from './enrichment';
+import { PipeLogConfigurationProperty } from './logs';
 import { IPipeSource } from './source';
 import { IPipeSourceFilter } from './sourceFilter';
 import { IPipeTarget } from './target';
@@ -95,6 +96,9 @@ export interface PipeProps {
    * @default - a new role will be created.
    */
   readonly role?: IRole;
+
+  readonly logConfiguration?: PipeLogConfigurationProperty ;
+
   /**
    * A description of the pipe displayed in the AWS console
    *
@@ -178,6 +182,7 @@ export class Pipe extends PipeBase {
       target: props.target.targetArn,
       targetParameters: props.target.targetParameters,
       desiredState: props.desiredState,
+      logConfiguration: props.logConfiguration,
       tags: props.tags,
     });
 
