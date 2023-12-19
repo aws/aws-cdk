@@ -429,7 +429,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
         }],
         ...(this.autoDeleteStagingAssets ? {
           removalPolicy: RemovalPolicy.DESTROY,
-          autoDeleteImages: true,
+          emptyOnDelete: true,
         } : {
           removalPolicy: RemovalPolicy.RETAIN,
         }),

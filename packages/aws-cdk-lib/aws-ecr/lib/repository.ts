@@ -565,8 +565,16 @@ export interface RepositoryProps {
    * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
    *
    * @default false
+   * @deprecated Use `emptyOnDelete` instead.
    */
   readonly autoDeleteImages?: boolean;
+
+  /**
+   * If true, deleting the repository force deletes the contents of the repository. If false, the repository must be empty before attempting to delete it.
+   *
+   * @default false
+   */
+  readonly emptyOnDelete?: boolean;
 }
 
 export interface RepositoryAttributes {
@@ -704,6 +712,7 @@ export class Repository extends RepositoryBase {
       imageScanningConfiguration: props.imageScanOnPush !== undefined ? { scanOnPush: props.imageScanOnPush } : undefined,
       imageTagMutability: props.imageTagMutability || undefined,
       encryptionConfiguration: this.parseEncryption(props),
+      emptyOnDelete: props.emptyOnDelete,
     });
     this._resource = resource;
 
@@ -721,7 +730,9 @@ export class Repository extends RepositoryBase {
       resourceName: this.physicalName,
     });
 
-    if (props.autoDeleteImages) {
+    if (props.emptyOnDelete && props.removalPolicy !== RemovalPolicy.DESTROY) {
+      throw new Error('Cannot use \'emptyOnDelete\' property on a repository without setting removal policy to \'DESTROY\'.');
+    } else if (props.emptyOnDelete == undefined && props.autoDeleteImages) {
       if (props.removalPolicy !== RemovalPolicy.DESTROY) {
         throw new Error('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
       }

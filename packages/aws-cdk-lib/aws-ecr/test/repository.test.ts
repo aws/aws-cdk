@@ -77,6 +77,28 @@ describe('repository', () => {
     });
   });
 
+  test('emptyOnDelete can be set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    new ecr.Repository(stack, 'Repo', { emptyOnDelete: true, removalPolicy: cdk.RemovalPolicy.DESTROY });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+      EmptyOnDelete: true,
+    });
+  });
+
+  test('emptyOnDelete requires \'RemovalPolicy.DESTROY\'', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect( () => {
+      new ecr.Repository(stack, 'Repo', { emptyOnDelete: true });
+    },
+    ).toThrow('Cannot use \'emptyOnDelete\' property on a repository without setting removal policy to \'DESTROY\'.');
+  });
+
   test('add day-based lifecycle policy', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -978,6 +1000,24 @@ describe('repository', () => {
   });
 
   describe('when auto delete images is set to true', () => {
+    test('it is ignored if emptyOnDelete is set', () => {
+      const stack = new cdk.Stack();
+
+      new ecr.Repository(stack, 'Repo1', {
+        autoDeleteImages: true,
+        emptyOnDelete: true,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+
+      new ecr.Repository(stack, 'Repo2', {
+        autoDeleteImages: true,
+        emptyOnDelete: false,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 0);
+    });
+
     test('permissions are correctly for multiple ecr repos', () => {
       const stack = new cdk.Stack();
       new ecr.Repository(stack, 'Repo1', {

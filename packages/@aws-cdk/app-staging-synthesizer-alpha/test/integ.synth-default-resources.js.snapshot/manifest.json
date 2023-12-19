@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "synthesize-default-resources.assets": {
       "type": "cdk:asset-manifest",
@@ -155,34 +155,46 @@
             "data": "defaultresourcesmaxecrasset13112F7F9"
           }
         ],
-        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset--1/AutoDeleteImagesCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "defaultresourcesmaxecrasset1AutoDeleteImagesCustomResource0FD7F0F5"
-          }
-        ],
-        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::ECRAutoDeleteImagesCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773"
-          }
-        ],
-        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::ECRAutoDeleteImagesCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030"
-          }
-        ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset-2/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "defaultresourcesmaxecrasset2904B88A7"
           }
         ],
-        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset-2/AutoDeleteImagesCustomResource/Default": [
+        "defaultresourcesmaxecrasset1AutoDeleteImagesCustomResource0FD7F0F5": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "defaultresourcesmaxecrasset2AutoDeleteImagesCustomResource708714C1"
+            "data": "defaultresourcesmaxecrasset1AutoDeleteImagesCustomResource0FD7F0F5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "defaultresourcesmaxecrasset2AutoDeleteImagesCustomResource708714C1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "defaultresourcesmaxecrasset2AutoDeleteImagesCustomResource708714C1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
