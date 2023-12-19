@@ -598,6 +598,10 @@ const custom = new sfn.CustomState(this, 'my custom task', {
   stateJson,
 });
 
+// catch errors with addCatch
+const errorHandler = new sfn.Pass(this, 'handle failure');
+custom.addCatch(errorHandler);
+
 const chain = sfn.Chain.start(custom)
   .next(finalStatus);
 
