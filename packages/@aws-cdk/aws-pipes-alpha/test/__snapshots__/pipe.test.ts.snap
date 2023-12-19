@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Pipe pipe is present 1`] = `
+exports[`Pipe pipe is present with props 1`] = `
 {
   "Parameters": {
     "BootstrapVersion": {
@@ -12,6 +12,8 @@ exports[`Pipe pipe is present 1`] = `
   "Resources": {
     "TestPipe330D553D": {
       "Properties": {
+        "Description": "test description",
+        "DesiredState": "RUNNING",
         "RoleArn": {
           "Fn::GetAtt": [
             "TestPipeRole0FD00B2B",
@@ -20,6 +22,9 @@ exports[`Pipe pipe is present 1`] = `
         },
         "Source": "source-arn",
         "SourceParameters": {},
+        "Tags": {
+          "key": "value",
+        },
         "Target": "target-arn",
         "TargetParameters": {},
       },

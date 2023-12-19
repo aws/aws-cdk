@@ -24,7 +24,7 @@ new Pipe(stack, 'Pipe', {
   },
 });
 
-const test = new IntegTest(app, 'integtest-schedule', {
+const test = new IntegTest(app, 'integtest-pipe-sqs-to-sqs', {
   testCases: [stack],
 });
 
@@ -46,5 +46,5 @@ putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage',
 })).waitForAssertions({
   totalTimeout: cdk.Duration.seconds(20),
 });
-
+// TODO add test for pipeName, pipeArn, pipeRole
 app.synth();
