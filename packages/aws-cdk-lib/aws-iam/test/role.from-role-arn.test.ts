@@ -78,7 +78,7 @@ describe('IAM Role.fromRoleArn', () => {
           expect(stack2PolicyNameCapture.asString()).toMatch(/PolicyRoleStack2ImportedRole.*/);
         });
 
-        test('Policy name is truncated to a maximum length of 128 characters when the original name exceeds this limit', () =>{
+        test('Policy name is truncated to a maximum length of 128 characters when the original name exceeds this limit', () => {
           const appWithFeatureFlag = new App({ context: { [IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
           const roleStack1 = new Stack(appWithFeatureFlag, 'RoleStack1');
 
