@@ -169,15 +169,15 @@ export class Pipe extends PipeBase {
 
     const resource = new CfnPipe(this, 'Resource', {
       name: props.name,
+      description: props.description,
+      roleArn: this.pipeRole.roleArn,
       source: props.source.sourceArn,
       sourceParameters: sourceParameters,
+      enrichment: props.enrichment?.enrichmentArn,
+      enrichmentParameters: props.enrichment?.enrichmentParameters,
       target: props.target.targetArn,
       targetParameters: props.target.targetParameters,
-      enrichment: props.enrichment?.enrichmentArn,
-      roleArn: this.pipeRole.roleArn,
-      description: props.description,
       desiredState: props.desiredState,
-      enrichmentParameters: props.enrichment?.enrichmentParameters,
       tags: props.tags,
     });
 
