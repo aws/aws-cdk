@@ -116,23 +116,14 @@ describe('blueprint with wave and stage', () => {
 
   test('postPrepare and prepareNodes are added correctly inside stack graph', () => {
     // GIVEN
-    let blueprintWithAllPrepareNodesFirst: Blueprint;
-    beforeEach(() => {
-      blueprintWithAllPrepareNodesFirst = new Blueprint(app, 'Bp', {
-        synth: new cdkp.ShellStep('Synth', {
-          input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
-          commands: ['build'],
-        }),
-      });
-      blueprintWithAllPrepareNodesFirst.addStage(new OneStackApp(app, 'CrossAccount', { env: { account: 'you' } }));
-      const appWithExposedStacks = new AppWithExposedStacks(app, 'Gamma');
+    const appWithExposedStacks = new AppWithExposedStacks(app, 'Gamma');
 
-      blueprintWithAllPrepareNodesFirst.waves[0].addStage(appWithExposedStacks, {
-        postPrepare: [
-          new cdkp.ManualApprovalStep('Step1'),
+    blueprint.waves[0].addStage(appWithExposedStacks, {
+      postPrepare: [
+        new cdkp.ManualApprovalStep('Step1'),
         // new cdkp.ManualApprovalStep('Step2'),
         // new cdkp.ManualApprovalStep('Step3'),
-        ],
+      ],
       // stackSteps: [
       //   {
       //     stack,
@@ -145,21 +136,19 @@ describe('blueprint with wave and stage', () => {
       //     post: [new cdkp.ManualApprovalStep('Post Approval')],
       //   },
       // ],
-      });
-
-      // WHEN
-      const graph = new PipelineGraph(blueprintWithAllPrepareNodesFirst).graph;
-      // THEN
-      expect(childrenAt(graph, 'Wave', 'Gamma', 'Stack1')).toEqual([
-        'Prepare-Gamma-Stack1',
-        'Step1',
-        'Step2',
-        'Step3',
-        'Deploy',
-
-      ]);
     });
 
+    // WHEN
+    const graph = new PipelineGraph(blueprint, { allPrepareNodesFirst: true }).graph;
+    // THEN
+    expect(childrenAt(graph, 'Wave', 'Gamma', 'Stack1')).toEqual([
+      'Prepare-Gamma-Stack1',
+      'Step1',
+      'Step2',
+      'Step3',
+      'Deploy',
+
+    ]);
   });
 
   test('pre, changeSet, and post are added correctly inside stack graph', () => {
