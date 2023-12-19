@@ -609,6 +609,31 @@ const service = new ecs.ExternalService(this, 'Service', {
 `Services` by default will create a security group if not provided.
 If you'd like to specify which security groups to use you can override the `securityGroups` property.
 
+By default, the service will use the revision of the passed task definition generated when the `TaskDefinition`
+is deployed by CloudFormation. However, this may not be desired if the revision is externally managed,
+for example through CodeDeploy.
+
+To set a specific revision number or the special `latest` revision, use the `taskDefinitionRevision` parameter:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+new ecs.ExternalService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  desiredCount: 5,
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.of(1)
+});
+
+new ecs.ExternalService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  desiredCount: 5,
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.LATEST
+});
+```
+
 ### Deployment circuit breaker and rollback
 
 Amazon ECS [deployment circuit breaker](https://aws.amazon.com/tw/blogs/containers/announcing-amazon-ecs-deployment-circuit-breaker/)
