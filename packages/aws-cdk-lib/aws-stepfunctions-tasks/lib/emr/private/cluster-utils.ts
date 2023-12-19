@@ -129,10 +129,8 @@ export function InstanceFleetProvisioningSpecificationsPropertyToJson(property: 
 
 /**
  * Render the OnDemandProvisioningSpecificationProperty to JSON
- *
- * @param property
  */
-function OnDemandProvisioningSpecificationPropertyToJson(property: EmrCreateCluster.OnDemandProvisioningSpecificationProperty | undefined) {
+function OnDemandProvisioningSpecificationPropertyToJson(property?: EmrCreateCluster.OnDemandProvisioningSpecificationProperty) {
   if (!property) {
     return undefined;
   }
@@ -143,10 +141,8 @@ function OnDemandProvisioningSpecificationPropertyToJson(property: EmrCreateClus
 
 /**
  * Render the SpotProvisioningSpecificationProperty to JSON
- *
- * @param property
  */
-function SpotProvisioningSpecificationPropertyToJson(property: EmrCreateCluster.SpotProvisioningSpecificationProperty | undefined) {
+function SpotProvisioningSpecificationPropertyToJson(property?: EmrCreateCluster.SpotProvisioningSpecificationProperty) {
   if (!property) {
     return undefined;
   }
