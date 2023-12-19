@@ -114,7 +114,9 @@ dedicated IP addresses that are reserved for your exclusive use.
 Use the `DedicatedIpPool` construct to create a pool of dedicated IP addresses:
 
 ```ts
-new ses.DedicatedIpPool(this, 'Pool');
+new ses.DedicatedIpPool(this, 'Pool', {
+  scalingMode: ses.ScalingMode.STANDARD,
+});
 ```
 
 The pool can then be used in a configuration set.
