@@ -611,6 +611,9 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
+The albController requires at least one nodegroup. If there's no `defaultCapacity` or available nodegroup for the cluster, 
+the albController deployment would fail.
+
 Querying the controller pods should look something like this:
 
 ```console
