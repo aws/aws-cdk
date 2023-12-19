@@ -1436,9 +1436,18 @@ export class Vpc extends VpcBase {
   private readonly resource: CfnVPC;
 
   /**
-   * The VPC protocol
+   * Indicates if IPv4 addresses will be used in the VPC.
+   *
+   * True for IPv4_ONLY and DUAL_STACK VPCs.
    */
-  private readonly vpcProtocol: VpcProtocol;
+  private readonly useIpv4: boolean;
+
+  /**
+   * Indicates if IPv6 addresses will be used in the VPC.
+   *
+   * True for DUAL_STACK VPCs.
+   */
+  private readonly useIpv6: boolean;
 
   /**
    * The provider of ip addresses
@@ -1485,10 +1494,13 @@ export class Vpc extends VpcBase {
       throw new Error('supply at most one of ipAddresses or cidr');
     }
 
-    this.vpcProtocol = props.vpcProtocol ?? VpcProtocol.IPV4_ONLY;
+    // this property can be set to false if an IPv6_ONLY VPC is implemented in the future
+    this.useIpv4 = true;
+
+    this.useIpv6 = props.vpcProtocol === VpcProtocol.DUAL_STACK;
 
     const ipv6OnlyProps: Array<keyof VpcProps> = ['ipv6AmazonProvidedCidrBlock'];
-    if (this.vpcProtocol === VpcProtocol.IPV4_ONLY) {
+    if (!this.useIpv6) {
       for (const prop of ipv6OnlyProps) {
         if (props[prop] !== undefined) {
           throw new Error(`${prop} can only be set if IPv6 is enabled. Set vpcProtocol to DUAL_STACK`);
@@ -1554,7 +1566,7 @@ export class Vpc extends VpcBase {
     const natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
 
     // TODO: make ipv6 cidr
-    if (this.vpcProtocol === VpcProtocol.DUAL_STACK) {
+    if (this.useIpv6) {
       this.ipv6CidrBlock = new CfnVPCCidrBlock(this, 'ipv6cidr', {
         vpcId: this.vpcId,
         amazonProvidedIpv6CidrBlock: props.ipv6AmazonProvidedCidrBlock ?? true,
@@ -1589,7 +1601,7 @@ export class Vpc extends VpcBase {
         publicSubnet.addDefaultInternetRoute(igw.ref, att);
 
         // configure IPv6 route if VPC is dual stack
-        if (this.vpcProtocol === VpcProtocol.DUAL_STACK) {
+        if (this.useIpv6) {
           publicSubnet.addRoute('DefaultRoute6', {
             routerType: RouterType.GATEWAY,
             routerId: this.internetGatewayId!,
@@ -1607,21 +1619,19 @@ export class Vpc extends VpcBase {
     }
 
     // Create an Egress Only Internet Gateway and attach it if necessary
-    if (this.vpcProtocol === VpcProtocol.DUAL_STACK) {
-      if (this.privateSubnets) {
-        const eigw = new CfnEgressOnlyInternetGateway(this, 'EIGW6', {
-          vpcId: this.vpcId,
-        });
+    if (this.useIpv6 && this.privateSubnets) {
+      const eigw = new CfnEgressOnlyInternetGateway(this, 'EIGW6', {
+        vpcId: this.vpcId,
+      });
 
-        (this.privateSubnets as PrivateSubnet[]).forEach(privateSubnet => {
-          privateSubnet.addRoute('DefaultRoute6', {
-            routerType: RouterType.EGRESS_ONLY_INTERNET_GATEWAY,
-            routerId: eigw.ref,
-            destinationIpv6CidrBlock: '::/0',
-            enablesInternetConnectivity: true,
-          });
+      (this.privateSubnets as PrivateSubnet[]).forEach(privateSubnet => {
+        privateSubnet.addRoute('DefaultRoute6', {
+          routerType: RouterType.EGRESS_ONLY_INTERNET_GATEWAY,
+          routerId: eigw.ref,
+          destinationIpv6CidrBlock: '::/0',
+          enablesInternetConnectivity: true,
         });
-      }
+      });
     }
 
     if (props.vpnGateway && this.publicSubnets.length === 0 && this.privateSubnets.length === 0 && this.isolatedSubnets.length === 0) {
@@ -1772,7 +1782,7 @@ export class Vpc extends VpcBase {
     }
 
     let subnetIpv6Cidrs: string[] = [];
-    if (this.vpcProtocol === VpcProtocol.DUAL_STACK && this.ipv6SelectedCidr !== undefined) {
+    if (this.useIpv6 && this.ipv6SelectedCidr !== undefined) {
       subnetIpv6Cidrs = Fn.cidr(this.ipv6SelectedCidr, allocatedSubnets.length, (128 - 64).toString());
     }
     this.createSubnetResources(requestedSubnets, allocatedSubnets, subnetIpv6Cidrs);
@@ -1792,7 +1802,7 @@ export class Vpc extends VpcBase {
         return;
       }
       let subnetProps: SubnetProps;
-      if (this.vpcProtocol === VpcProtocol.IPV4_ONLY) {
+      if (!this.useIpv6) {
         // mapPublicIpOnLaunch true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
         let mapPublicIpOnLaunch = false;
         if (subnetConfig.subnetType !== SubnetType.PUBLIC && subnetConfig.mapPublicIpOnLaunch !== undefined) {
@@ -1814,7 +1824,7 @@ export class Vpc extends VpcBase {
           mapPublicIpOnLaunch: mapPublicIpOnLaunch,
         };
 
-      } else if (this.vpcProtocol === VpcProtocol.DUAL_STACK) {
+      } else if (this.useIpv6) {
         let mapPublicIpOnLaunch = false;
         if (subnetConfig.subnetType !== SubnetType.PUBLIC && subnetConfig.mapPublicIpOnLaunch !== undefined) {
           throw new Error(`${subnetConfig.subnetType} subnet cannot include mapPublicIpOnLaunch parameter`);
