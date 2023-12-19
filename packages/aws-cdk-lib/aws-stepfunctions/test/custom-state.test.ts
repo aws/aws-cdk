@@ -72,4 +72,41 @@ describe('Custom State', () => {
       },
     );
   });
+
+  test('can add a catch state to thechain'), () => {
+    // WHEN
+    const fail = new sfn.Fail(stack, 'MyFail', { error: 'DidNotWork', cause: 'HumanError' })
+    const definition = new sfn.CustomState(stack, 'Custom', {
+        stateJson,
+      }).addCatch(fail);
+  
+    // THEN
+    expect(render(stack, definition)).toStrictEqual(
+    {
+        StartAt: 'Custom',
+        States: {
+        'Custom': {
+            Type: 'Task',
+            Resource: 'arn:aws:states:::dynamodb:putItem',
+            Parameters: {
+                TableName: 'MyTable',
+                Item: {
+                    id: {
+                        S: 'MyEntry',
+                    },
+                },
+            },
+            ResultPath: null,
+            Catch: {
+                
+            }
+        },
+        'my-pass-state': {
+            Type: 'Pass',
+            End: true,
+        },
+        },
+    },
+    );
+  };
 });
