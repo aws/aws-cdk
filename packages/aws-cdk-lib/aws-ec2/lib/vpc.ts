@@ -1126,15 +1126,6 @@ export interface VpcProps {
   readonly createInternetGateway?: boolean;
 
   /**
-   * This property is specific to dual stack VPCs.
-   *
-   * If set to false, then an EIGW will not be created.
-   *
-   * @default true - always create and configure EIGW
-   */
-  readonly ipv6CreateEgressOnlyInternetGateway?: boolean;
-
-  /**
    * The IPv6 CIDR block will be provided by Amazon unless set to false.
    *
    * @default true
@@ -1496,9 +1487,13 @@ export class Vpc extends VpcBase {
 
     this.vpcProtocol = props.vpcProtocol ?? VpcProtocol.IPV4_ONLY;
 
-    if ((props.ipv6CreateEgressOnlyInternetGateway !== undefined || props.ipv6AmazonProvidedCidrBlock !== undefined)
-        && this.vpcProtocol === VpcProtocol.IPV4_ONLY) {
-      throw new Error('Do not set IPv6 properties on IPv4-only VPCs');
+    const ipv6OnlyProps: Array<keyof VpcProps> = ['ipv6AmazonProvidedCidrBlock'];
+    if (this.vpcProtocol === VpcProtocol.IPV4_ONLY) {
+      for (const prop of ipv6OnlyProps) {
+        if (props[prop] !== undefined) {
+          throw new Error(`${prop} can only be set if IPv6 is enabled. Set vpcProtocol to DUAL_STACK`);
+        }
+      }
     }
 
     this.ipAddresses = props.ipAddresses ?? IpAddresses.cidr(cidrBlock);
@@ -1611,11 +1606,9 @@ export class Vpc extends VpcBase {
       }
     }
 
-    // need dual stack verification here
     // Create an Egress Only Internet Gateway and attach it if necessary
     if (this.vpcProtocol === VpcProtocol.DUAL_STACK) {
-      const createEigw = props.ipv6CreateEgressOnlyInternetGateway ?? true;
-      if (createEigw && this.privateSubnets) {
+      if (this.privateSubnets) {
         const eigw = new CfnEgressOnlyInternetGateway(this, 'EIGW6', {
           vpcId: this.vpcId,
         });
