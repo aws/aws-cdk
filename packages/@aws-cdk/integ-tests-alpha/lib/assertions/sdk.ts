@@ -251,18 +251,16 @@ export class LambdaInvokeFunction extends AwsApiCall {
       resourceName: props.functionName,
     })]);
 
-    // If using 'waitForAssertions', it is necessary to add permissions on the waiterProvider side.
+    // If using `waitForAssertions`, do the same for `waiterProvider` as above.
     Aspects.of(this).add({
       visit(node: IConstruct) {
-        if (node instanceof AwsApiCall) {
-          if (node.waiterProvider) {
-            node.waiterProvider.addPolicyStatementFromSdkCall('Lambda', 'invokeFunction', [stack.formatArn({
-              service: 'lambda',
-              resource: 'function',
-              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-              resourceName: props.functionName,
-            })]);
-          }
+        if (node instanceof AwsApiCall && node.waiterProvider) {
+          node.waiterProvider.addPolicyStatementFromSdkCall('Lambda', 'invokeFunction', [stack.formatArn({
+            service: 'lambda',
+            resource: 'function',
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+            resourceName: props.functionName,
+          })]);
         }
       },
     });
