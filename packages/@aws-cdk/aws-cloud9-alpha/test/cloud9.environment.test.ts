@@ -208,7 +208,9 @@ test.each([
 
 test.each([
   [ImageId.AMAZON_LINUX_2, 'amazonlinux-2-x86_64'],
+  [ImageId.AMAZON_LINUX_2023, 'amazonlinux-2023-x86_64'],
   [ImageId.UBUNTU_18_04, 'ubuntu-18.04-x86_64'],
+  [ImageId.UBUNTU_22_04, 'ubuntu-22.04-x86_64'],
 ])('has image ID property (%s)', (imageId, expected) => {
   new cloud9.Ec2Environment(stack, 'C9Env', {
     vpc,
