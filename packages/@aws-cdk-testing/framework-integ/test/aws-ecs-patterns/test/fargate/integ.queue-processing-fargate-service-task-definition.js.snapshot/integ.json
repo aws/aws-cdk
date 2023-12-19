@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "taskDefinitionQueueProcessingFargateServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-patterns-queue"
+      ],
+      "assertionStack": "taskDefinitionQueueProcessingFargateServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "taskDefinitionQueueProcessingFargateServiceTestDefaultTestDeployAssert406F467D"
+    }
+  }
+}
