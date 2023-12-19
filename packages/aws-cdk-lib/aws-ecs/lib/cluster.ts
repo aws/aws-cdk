@@ -451,8 +451,8 @@ export class Cluster extends Resource implements ICluster {
     this.configureAutoScalingGroup(provider.autoScalingGroup, {
       ...options,
       machineImageType: provider.machineImageType,
-      // Don't enable the instance-draining lifecycle hook if managed termination protection is enabled
-      taskDrainTime: provider.enableManagedTerminationProtection ? Duration.seconds(0) : options.taskDrainTime,
+      // Don't enable the instance-draining lifecycle hook if managed termination protection or managed draining is enabled
+      taskDrainTime: (provider.enableManagedTerminationProtection || provider.enableManagedDraining)? Duration.seconds(0) : options.taskDrainTime,
       canContainersAccessInstanceRole: options.canContainersAccessInstanceRole ?? provider.canContainersAccessInstanceRole,
     });
 
@@ -1168,6 +1168,13 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
   readonly enableManagedTerminationProtection?: boolean;
 
   /**
+   * PLACEHOLDER FOR DOC
+   *
+   * @default true
+   */
+  readonly enableManagedDraining?: boolean;
+
+  /**
    * Maximum scaling step size. In most cases this should be left alone.
    *
    * @default 1000
@@ -1219,6 +1226,11 @@ export class AsgCapacityProvider extends Construct {
   readonly enableManagedTerminationProtection?: boolean;
 
   /**
+   * Whether managed draining is enabled.
+   */
+  readonly enableManagedDraining?: boolean;
+
+  /**
    * Specifies whether the containers can access the container instance role.
    *
    * @default false
@@ -1231,6 +1243,12 @@ export class AsgCapacityProvider extends Construct {
     this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
     this.canContainersAccessInstanceRole = props.canContainersAccessInstanceRole;
     this.enableManagedTerminationProtection = props.enableManagedTerminationProtection ?? true;
+    this.enableManagedDraining = props.enableManagedDraining ?? undefined;
+
+    let managedDraining = undefined;
+    if (this.enableManagedDraining != undefined) {
+      managedDraining = this.enableManagedDraining ? 'ENABLED' : 'DISABLED';
+    }
 
     if (this.enableManagedTerminationProtection && props.enableManagedScaling === false) {
       throw new Error('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
@@ -1255,6 +1273,7 @@ export class AsgCapacityProvider extends Construct {
           minimumScalingStepSize: props.minimumScalingStepSize,
         },
         managedTerminationProtection: this.enableManagedTerminationProtection ? 'ENABLED' : 'DISABLED',
+        managedDraining: managedDraining,
       },
     });
 
