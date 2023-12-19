@@ -27,6 +27,7 @@ export * as aws_autoscaling from './aws-autoscaling';
 export * as aws_autoscaling_common from './aws-autoscaling-common';
 export * as aws_autoscaling_hooktargets from './aws-autoscaling-hooktargets';
 export * as aws_autoscalingplans from './aws-autoscalingplans';
+export * as aws_b2bi from './aws-b2bi';
 export * as aws_backup from './aws-backup';
 export * as aws_backupgateway from './aws-backupgateway';
 export * as aws_batch from './aws-batch';
