@@ -141,14 +141,18 @@ describe('blueprint with wave and stage', () => {
     // WHEN
     const graph = new PipelineGraph(blueprint, { allPrepareNodesFirst: true }).graph;
     // THEN
-    expect(childrenAt(graph, 'Wave', 'Gamma', 'Stack1')).toEqual([
+    // console.log(childrenAt(graph, 'Wave', 'Gamma'));
+    // console.log(childrenAt(graph, 'Wave', 'Gamma', 'Stack1'));
+    expect(childrenAt(graph, 'Wave', 'Gamma')).toEqual([
       'Prepare-Gamma-Stack1',
+      'Prepare-Gamma-Stack2',
+      'Prepare-Gamma-Stack3',
       'Step1',
-      'Step2',
-      'Step3',
-      'Deploy',
-
+      'Stack1',
+      'Stack2',
+      'Stack3',
     ]);
+
   });
 
   test('pre, changeSet, and post are added correctly inside stack graph', () => {
