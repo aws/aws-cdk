@@ -483,10 +483,10 @@ describe('AwsApiCall', () => {
     test('invokeFunction with waitForAssertions applies correct IAM policy to waiterProvider', () => {
       // GIVEN
       const app = new App();
-      const deplossert = new DeployAssert(app);
+      const deployAssert = new DeployAssert(app);
 
       // WHEN
-      deplossert.invokeFunction({
+      deployAssert.invokeFunction({
         functionName: 'my-func',
         invocationType: InvocationType.EVENT,
         payload: JSON.stringify({ days: 1 }),
@@ -499,7 +499,7 @@ describe('AwsApiCall', () => {
 
       // THEN
       const waiterProviderRole = Template.fromStack(
-        deplossert.scope,
+        deployAssert.scope,
       ).findResources(
         'AWS::IAM::Role',
       ).SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB;
