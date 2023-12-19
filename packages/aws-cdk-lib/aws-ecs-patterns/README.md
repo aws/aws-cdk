@@ -316,7 +316,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
 });
 ```
 
-To specify a custom target CPU utilization percentage for the scaling strategy use the  `cpuTargetUtilizationPercent` property
+To specify a custom target CPU utilization percentage for the scaling strategy use the  `cpuTargetUtilizationPercent` property:
 
 ```ts
 declare const cluster: ecs.Cluster;
