@@ -1197,7 +1197,7 @@ export interface SubnetConfiguration {
   /**
    * Controls if a public IPv4 address is associated to an instance at launch
    *
-   * @default true in Subnet.Public, false in Subnet.Private or Subnet.Isolated. Always false for dual stack VPC
+   * @default true in Subnet.Public of IPV4_ONLY VPCs, false otherwise
    */
   readonly mapPublicIpOnLaunch?: boolean;
 
@@ -1438,7 +1438,7 @@ export class Vpc extends VpcBase {
   /**
    * Indicates if IPv4 addresses will be used in the VPC.
    *
-   * True for IPv4_ONLY and DUAL_STACK VPCs.
+   * True for IPV4_ONLY and DUAL_STACK VPCs.
    */
   private readonly useIpv4: boolean;
 
