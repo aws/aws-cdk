@@ -2277,6 +2277,43 @@ test('add price-capacity-optimized', () => {
   });
 });
 
+test('add on-demand lowest-price allocation strategy', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+    launchTemplateId: 'test-lt-id',
+    versionNumber: '0',
+  });
+
+  new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+    mixedInstancesPolicy: {
+      launchTemplate: lt,
+      launchTemplateOverrides: [{
+        instanceType: new InstanceType('t4g.micro'),
+        launchTemplate: lt,
+        weightedCapacity: 9,
+      }],
+      instancesDistribution: {
+        onDemandAllocationStrategy: OnDemandAllocationStrategy.LOWEST_PRICE,
+        onDemandBaseCapacity: 1,
+        onDemandPercentageAboveBaseCapacity: 100,
+      },
+    },
+    vpc: mockVpc(stack),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+    MixedInstancesPolicy: {
+      InstancesDistribution: {
+        OnDemandAllocationStrategy: 'lowest-price',
+      },
+    },
+  });
+});
+
 test('ssm permissions adds right managed policy', () => {
   // GIVEN
   const stack = new cdk.Stack();
