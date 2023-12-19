@@ -1808,6 +1808,13 @@ export class Cluster extends ClusterBase {
    * @param options options for creating a new nodegroup
    */
   public addNodegroupCapacity(id: string, options?: NodegroupOptions): Nodegroup {
+    const hasInferentiaInstanceType = [
+      options?.instanceType,
+      ...options?.instanceTypes ?? [],
+    ].some(i => i && nodeTypeForInstanceType(i) === NodeType.INFERENTIA);
+    if (hasInferentiaInstanceType) {
+      this.addNeuronDevicePlugin();
+    }
     return new Nodegroup(this, `Nodegroup${id}`, {
       cluster: this,
       ...options,

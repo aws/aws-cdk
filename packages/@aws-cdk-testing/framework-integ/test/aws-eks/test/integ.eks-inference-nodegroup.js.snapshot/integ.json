@@ -1,0 +1,20 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "aws-cdk-eks-cluster-interence-nodegroup-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-inference-nodegroup"
+      ],
+      "diffAssets": false,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-cdk-eks-cluster-interence-nodegroup-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterinterencenodegroupintegDefaultTestDeployAssert694AC69B"
+    }
+  }
+}
