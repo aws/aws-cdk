@@ -3,7 +3,6 @@
 
 import { App, Fn, Stack, StackProps, Stage, StageProps } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 import { Construct } from 'constructs';
 
@@ -76,7 +75,6 @@ class PipelineStack extends Stack {
 
 }
 
-
 class AppStage extends Stage {
   public readonly stack1: Stack;
   public readonly stack2: Stack;
@@ -100,7 +98,6 @@ class AppStage extends Stage {
 //     super(scope, id, props);
 
 //     this.stack1 = new Stack(this, 'Stack1');
-
 
 //     // new sqs.Queue(this.stack2, 'OtherQueue', { deadLetterQueue: { queue: q1, maxReceiveCount: 1 } });
 //   }
@@ -129,15 +126,5 @@ const app = new App({
     '@aws-cdk/core:newStyleStackSynthesis': '1',
   },
 });
-
-
-const pipeStack = new PipelineStack(
-  app,
-  'PipelineStack',
-);
-
-new IntegTest(app, 'Integ', {
-  testCases: [pipeStack],
-});
+new PipelineStack(app, 'PipelineStack');
 app.synth();
-
