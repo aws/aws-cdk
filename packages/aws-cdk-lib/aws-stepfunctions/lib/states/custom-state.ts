@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { State } from './state';
 import { Chain } from '..';
-import { IChainable, INextable } from '../types';
+import { CatchProps, IChainable, INextable } from '../types';
 
 /**
  * Properties for defining a custom state definition
@@ -32,6 +32,17 @@ export class CustomState extends State implements IChainable, INextable {
 
     this.endStates = [this];
     this.stateJson = props.stateJson;
+  }
+
+  /**
+   * Add a recovery handler for this state
+   *
+   * When a particular error occurs, execution will continue at the error
+   * handler instead of failing the state machine execution.
+   */
+  public addCatch(handler: IChainable, props: CatchProps = {}): CustomState {
+    super._addCatch(handler.startState, props);
+    return this;
   }
 
   /**
