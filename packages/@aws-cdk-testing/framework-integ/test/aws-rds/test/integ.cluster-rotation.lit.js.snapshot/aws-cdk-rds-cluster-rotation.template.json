@@ -599,7 +599,7 @@
      ]
     },
     "RotationRules": {
-     "AutomaticallyAfterDays": 30
+     "ScheduleExpression": "rate(30 days)"
     },
     "SecretId": {
      "Ref": "DatabaseSecretAttachmentE5D1B020"
@@ -920,7 +920,7 @@
      ]
     },
     "RotationRules": {
-     "AutomaticallyAfterDays": 7
+     "ScheduleExpression": "rate(7 days)"
     },
     "SecretId": {
      "Ref": "CustomRotationOptionsSecretAttachment697A23BF"

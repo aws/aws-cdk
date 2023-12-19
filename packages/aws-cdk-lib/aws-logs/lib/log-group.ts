@@ -223,12 +223,12 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       this.policy = new ResourcePolicy(this, 'Policy');
     }
     this.policy.document.addStatements(statement.copy({
-      principals: statement.principals.map(p => this.convertArnPrincpalToAccountId(p)),
+      principals: statement.principals.map(p => this.convertArnPrincipalToAccountId(p)),
     }));
     return { statementAdded: true, policyDependable: this.policy };
   }
 
-  private convertArnPrincpalToAccountId(principal: iam.IPrincipal) {
+  private convertArnPrincipalToAccountId(principal: iam.IPrincipal) {
     if (principal.principalAccount) {
       // we use ArnPrincipal here because the constructor inserts the argument
       // into the template without mutating it, which means that there is no
@@ -236,7 +236,7 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
       return new iam.ArnPrincipal(principal.principalAccount);
     }
 
-    if (principal instanceof iam.ArnPrincipal) {
+    if (principal instanceof iam.ArnPrincipal && principal.arn !== '*') {
       const parsedArn = Arn.split(principal.arn, ArnFormat.SLASH_RESOURCE_NAME);
       if (parsedArn.account) {
         return new iam.ArnPrincipal(parsedArn.account);
@@ -419,8 +419,9 @@ export interface LogGroupProps {
   /**
    * The class of the log group. Possible values are: STANDARD and INFREQUENT_ACCESS.
    *
-   * INFREQUENT_ACCESS class provides customers a cost-effective way to
-   * consolidate logs which supports querying using Logs Insights.
+   * INFREQUENT_ACCESS class provides customers a cost-effective way to consolidate
+   * logs which supports querying using Logs Insights. The logGroupClass property cannot
+   * be changed once the log group is created.
    *
    * @default LogGroupClass.STANDARD
    */

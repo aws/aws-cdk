@@ -58,6 +58,7 @@
     "construct-ctor-props-optional:aws-cdk-lib.aws_stepfunctions.StateMachine",
     "props-no-arn-refs:aws-cdk-lib.aws_stepfunctions_tasks.BatchSubmitJobProps.jobDefinitionArn",
     "props-no-arn-refs:aws-cdk-lib.aws_stepfunctions_tasks.BatchSubmitJobProps.jobQueueArn",
+    "props-no-arn-refs:aws-cdk-lib.aws_stepfunctions_tasks.EmrAddStepProps.executionRoleArn",
     "props-no-cfn-types:aws-cdk-lib.cloudformation_include.CfnIncludeProps.loadNestedStacks",
     "construct-ctor-props-optional:aws-cdk-lib.custom_resources.AwsCustomResource",
     "props-physical-name:aws-cdk-lib.CustomResourceProps",

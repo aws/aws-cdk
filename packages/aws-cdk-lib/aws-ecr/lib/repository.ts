@@ -1,5 +1,4 @@
 import { EOL } from 'os';
-import * as path from 'path';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
 import { LifecycleRule, TagStatus } from './lifecycle';
@@ -18,10 +17,9 @@ import {
   Token,
   TokenComparison,
   CustomResource,
-  CustomResourceProvider,
-  CustomResourceProviderRuntime,
   Aws,
 } from '../../core';
+import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
 
 const AUTO_DELETE_IMAGES_RESOURCE_TYPE = 'Custom::ECRAutoDeleteImages';
 const AUTO_DELETE_IMAGES_TAG = 'aws-cdk:auto-delete-images';
@@ -567,8 +565,16 @@ export interface RepositoryProps {
    * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
    *
    * @default false
+   * @deprecated Use `emptyOnDelete` instead.
    */
   readonly autoDeleteImages?: boolean;
+
+  /**
+   * If true, deleting the repository force deletes the contents of the repository. If false, the repository must be empty before attempting to delete it.
+   *
+   * @default false
+   */
+  readonly emptyOnDelete?: boolean;
 }
 
 export interface RepositoryAttributes {
@@ -706,6 +712,7 @@ export class Repository extends RepositoryBase {
       imageScanningConfiguration: props.imageScanOnPush !== undefined ? { scanOnPush: props.imageScanOnPush } : undefined,
       imageTagMutability: props.imageTagMutability || undefined,
       encryptionConfiguration: this.parseEncryption(props),
+      emptyOnDelete: props.emptyOnDelete,
     });
     this._resource = resource;
 
@@ -723,7 +730,9 @@ export class Repository extends RepositoryBase {
       resourceName: this.physicalName,
     });
 
-    if (props.autoDeleteImages) {
+    if (props.emptyOnDelete && props.removalPolicy !== RemovalPolicy.DESTROY) {
+      throw new Error('Cannot use \'emptyOnDelete\' property on a repository without setting removal policy to \'DESTROY\'.');
+    } else if (props.emptyOnDelete == undefined && props.autoDeleteImages) {
       if (props.removalPolicy !== RemovalPolicy.DESTROY) {
         throw new Error('Cannot use \'autoDeleteImages\' property on a repository without setting removal policy to \'DESTROY\'.');
       }
@@ -863,10 +872,8 @@ export class Repository extends RepositoryBase {
 
   private enableAutoDeleteImages() {
     const firstTime = Stack.of(this).node.tryFindChild(`${AUTO_DELETE_IMAGES_RESOURCE_TYPE}CustomResourceProvider`) === undefined;
-    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-ecr', 'auto-delete-images-handler'),
+    const provider = AutoDeleteImagesProvider.getOrCreateProvider(this, AUTO_DELETE_IMAGES_RESOURCE_TYPE, {
       useCfnResponseWrapper: false,
-      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       description: `Lambda function for auto-deleting images in ${this.repositoryName} repository.`,
     });
 
