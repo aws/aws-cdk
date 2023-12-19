@@ -53,7 +53,7 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
         ? `${prefix}${Names.uniqueId(this)}`
         : prefix;
       if (defaultDefaultPolicyName.length > MAX_POLICY_NAME_LEN) {
-        defaultDefaultPolicyName = `Policy${Names.uniqueResourceName(this, { maxLength: MAX_POLICY_NAME_LEN - prefix.length })}`;
+        defaultDefaultPolicyName = `${prefix}${Names.uniqueResourceName(this, { maxLength: MAX_POLICY_NAME_LEN - prefix.length })}`;
       }
       const policyName = this.defaultPolicyName ?? defaultDefaultPolicyName;
       this.defaultPolicy = new Policy(this, policyName, useUniqueName ? { policyName } : undefined);
