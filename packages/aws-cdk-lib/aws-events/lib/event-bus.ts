@@ -309,8 +309,6 @@ export class EventBus extends EventBusBase {
    */
   public readonly eventSourceName?: string;
 
-  private policy?: EventBusPolicy;
-
   constructor(scope: Construct, id: string, props?: EventBusProps) {
     const { eventBusName, eventSourceName } = EventBus.eventBusProps(
       Lazy.string({ produce: () => Names.uniqueId(this) }),
@@ -343,18 +341,13 @@ export class EventBus extends EventBusBase {
       throw new Error('Event Bus policy statements must have a sid');
     }
 
-    if (this.policy) {
-      // The policy can contain only one statement
-      return { statementAdded: false };
-    }
-
-    this.policy = new EventBusPolicy(this, 'Policy', {
+    const policy = new EventBusPolicy(this, statement.sid, {
       eventBus: this,
       statement: statement.toJSON(),
       statementId: statement.sid,
     });
 
-    return { statementAdded: true, policyDependable: this.policy };
+    return { statementAdded: true, policyDependable: policy };
   }
 }
 
