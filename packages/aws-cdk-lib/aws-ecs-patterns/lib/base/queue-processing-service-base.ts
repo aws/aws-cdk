@@ -288,7 +288,6 @@ export abstract class QueueProcessingServiceBase extends Construct {
   /**
    * The scaling interval for autoscaling based off an SQS Queue size.
    */
-
   public readonly scalingSteps: ScalingInterval[];
 
   /**
@@ -299,13 +298,11 @@ export abstract class QueueProcessingServiceBase extends Construct {
   /**
    * Flag to disable CPU based auto scaling strategy on the service.
    */
-
   public readonly disableCpuBasedScaling: boolean;
 
   /**
    * The target CPU utilization percentage for CPU based scaling strategy when enabled.
    */
-
   public readonly cpuTargetUtilizationPercent: number;
 
   /**
