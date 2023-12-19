@@ -1602,12 +1602,7 @@ export class Vpc extends VpcBase {
 
         // configure IPv6 route if VPC is dual stack
         if (this.useIpv6) {
-          publicSubnet.addRoute('DefaultRoute6', {
-            routerType: RouterType.GATEWAY,
-            routerId: this.internetGatewayId!,
-            destinationIpv6CidrBlock: '::/0',
-            enablesInternetConnectivity: true,
-          });
+          publicSubnet.addIpv6DefaultInternetRoute(igw.ref);
         }
       });
 
@@ -2147,6 +2142,20 @@ export class Subnet extends Resource implements ISubnet {
     // Since the 'route' depends on the gateway attachment, just
     // depending on the route is enough.
     this._internetConnectivityEstablished.add(route);
+  }
+
+  /**
+   * Create a default IPv6 route that points to a passed IGW.
+   *
+   * @param gatewayId the logical ID (ref) of the gateway attached to your VPC
+   */
+  public addIpv6DefaultInternetRoute(gatewayId: string) {
+    this.addRoute('DefaultRoute6', {
+      routerType: RouterType.GATEWAY,
+      routerId: gatewayId,
+      destinationIpv6CidrBlock: '::/0',
+      enablesInternetConnectivity: true,
+    });
   }
 
   /**
