@@ -1445,7 +1445,7 @@ export class Vpc extends VpcBase {
   /**
    * Indicates if IPv6 addresses will be used in the VPC.
    *
-   * True for DUAL_STACK VPCs.
+   * True for DUAL_STACK VPCs. False for IPV4_ONLY VPCs.
    */
   private readonly useIpv6: boolean;
 
@@ -1495,7 +1495,11 @@ export class Vpc extends VpcBase {
     }
 
     // this property can be set to false if an IPv6_ONLY VPC is implemented in the future
-    this.useIpv4 = true;
+    this.useIpv4 = props.vpcProtocol === VpcProtocol.IPV4_ONLY || props.vpcProtocol === VpcProtocol.DUAL_STACK;
+    // use property to avoid lint errors
+    if (this.useIpv4) {
+      ; // pass
+    }
 
     this.useIpv6 = props.vpcProtocol === VpcProtocol.DUAL_STACK;
 
@@ -1783,6 +1787,26 @@ export class Vpc extends VpcBase {
     this.createSubnetResources(requestedSubnets, allocatedSubnets, subnetIpv6Cidrs);
   }
 
+  /**
+   * Defaults to true in Subnet.Public for IPV4_ONLY VPCs.
+   *
+   * Defaults to false in Subnet.Public for DUAL_STACK VPCs.
+   *
+   * Always defaults to false in non-public subnets and will error if set.
+   */
+  private calculateMapPublicIpOnLaunch(subnetConfig: SubnetConfiguration) {
+    if (subnetConfig.subnetType === SubnetType.PUBLIC) {
+      return (subnetConfig.mapPublicIpOnLaunch !== undefined)
+        ? subnetConfig.mapPublicIpOnLaunch
+        : !this.useIpv6; // changes default based on protocol of vpc
+    } else {
+      if (subnetConfig.mapPublicIpOnLaunch !== undefined) {
+        throw new Error(`${subnetConfig.subnetType} subnet cannot include mapPublicIpOnLaunch parameter`);
+      }
+      return false;
+    }
+  }
+
   private createSubnetResources(requestedSubnets: RequestedSubnet[], allocatedSubnets: AllocatedSubnet[], subnetIpv6Cidrs?: string[]) {
     allocatedSubnets.forEach((allocated, i) => {
 
@@ -1796,61 +1820,25 @@ export class Vpc extends VpcBase {
         // For reserved azs, do not create any resources
         return;
       }
-      let subnetProps: SubnetProps;
+
+      const ipv6OnlyProps: Array<keyof SubnetConfiguration> = ['ipv6AssignAddressOnCreation'];
       if (!this.useIpv6) {
-        // mapPublicIpOnLaunch true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
-        let mapPublicIpOnLaunch = false;
-        if (subnetConfig.subnetType !== SubnetType.PUBLIC && subnetConfig.mapPublicIpOnLaunch !== undefined) {
-          throw new Error(`${subnetConfig.subnetType} subnet cannot include mapPublicIpOnLaunch parameter`);
+        for (const prop of ipv6OnlyProps) {
+          if (subnetConfig[prop] !== undefined) {
+            throw new Error(`${prop} can only be set if IPv6 is enabled. Set vpcProtocol to DUAL_STACK`);
+          }
         }
-        if (subnetConfig.ipv6AssignAddressOnCreation !== undefined) {
-          throw new Error('Do not set IPv6 properties on IPv4-only VPCs. ipv6AssignAddressOnCreation was set in subnetConfig');
-        }
-        if (subnetConfig.subnetType === SubnetType.PUBLIC) {
-          mapPublicIpOnLaunch = (subnetConfig.mapPublicIpOnLaunch !== undefined)
-            ? subnetConfig.mapPublicIpOnLaunch
-            : true;
-        }
-
-        subnetProps = {
-          availabilityZone,
-          vpcId: this.vpcId,
-          cidrBlock: allocated.cidr,
-          mapPublicIpOnLaunch: mapPublicIpOnLaunch,
-        };
-
-      } else if (this.useIpv6) {
-        let mapPublicIpOnLaunch = false;
-        if (subnetConfig.subnetType !== SubnetType.PUBLIC && subnetConfig.mapPublicIpOnLaunch !== undefined) {
-          throw new Error(`${subnetConfig.subnetType} subnet cannot include mapPublicIpOnLaunch parameter`);
-        }
-        // default to false in dual stack VPC
-        if (subnetConfig.subnetType === SubnetType.PUBLIC) {
-          mapPublicIpOnLaunch = (subnetConfig.mapPublicIpOnLaunch !== undefined)
-            ? subnetConfig.mapPublicIpOnLaunch
-            : false;
-        }
-
-        if (subnetIpv6Cidrs !== undefined) {
-          const subnetIpv6Cidr = Fn.select(i, subnetIpv6Cidrs);
-
-          subnetProps = {
-            availabilityZone,
-            vpcId: this.vpcId,
-            cidrBlock: allocated.cidr,
-            mapPublicIpOnLaunch,
-            ipv6CidrBlock: subnetIpv6Cidr,
-            assignIpv6AddressOnCreation: subnetConfig.ipv6AssignAddressOnCreation,
-            dependantIpv6CidrBlock: this.ipv6CidrBlock,
-          };
-        } else {
-          throw new Error('IPv6 CIDRs undefined');
-        }
-
-      } else {
-        // where IPv6-only protocol configuration will go
-        return;
       }
+
+      const subnetProps = {
+        availabilityZone,
+        vpcId: this.vpcId,
+        cidrBlock: allocated.cidr,
+        mapPublicIpOnLaunch: this.calculateMapPublicIpOnLaunch(subnetConfig),
+        ipv6CidrBlock: subnetIpv6Cidrs !== undefined ? Fn.select(i, subnetIpv6Cidrs) : undefined,
+        assignIpv6AddressOnCreation: subnetConfig.ipv6AssignAddressOnCreation,
+        dependantIpv6CidrBlock: this.useIpv6 ? this.ipv6CidrBlock : undefined,
+      } satisfies SubnetProps;
 
       let subnet: Subnet;
       switch (subnetConfig.subnetType) {
