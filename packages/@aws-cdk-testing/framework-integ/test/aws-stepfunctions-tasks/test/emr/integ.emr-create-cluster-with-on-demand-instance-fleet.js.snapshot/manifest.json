@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "aws-cdk-emr-create-cluster-with-on-demand-instance-fleet.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cca9fe3bd73ac8b670efa08e7a96e84716e9944ea903363e01cd70c561defb5c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1c7efe54b4bb44b2dad35063f30caa8147d1ffa517df30671de3e84086a35826.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,6 +38,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "EmrCreateClusterServiceRole5251910D"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-with-on-demand-instance-fleet/EmrCreateCluster/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmrCreateClusterServiceRoleDefaultPolicyA8B4FA32"
           }
         ],
         "/aws-cdk-emr-create-cluster-with-on-demand-instance-fleet/EmrCreateCluster/InstanceRole/Resource": [
