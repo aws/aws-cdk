@@ -152,7 +152,7 @@ describe('repository', () => {
     // THEN
     expect(() => {
       repo.addLifecycleRule({ tagPatternList: ['abc*d*e*f*g*h'], maxImageCount: 1 });
-    }).toThrow(/A tag pattern cannot contain more than four wildcard characters \(\*\), tagPattern: abc\*d\*e\*f\*g\*h, counts: 5/);
+    }).toThrow(/A tag pattern cannot contain more than four wildcard characters \(\*\), pattern: abc\*d\*e\*f\*g\*h, counts: 5/);
   });
 
   test('image tag mutability can be set', () => {
