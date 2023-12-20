@@ -52,6 +52,12 @@
             "data": "MyUserDefaultPolicy7B897426"
           }
         ],
+        "/aws-ecr-integ-stack/RepoWithEmptyOnDelete/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RepoWithEmptyOnDeleteCA5C67FA"
+          }
+        ],
         "/aws-ecr-integ-stack/RepositoryURI": [
           {
             "type": "aws:cdk:logicalId",
