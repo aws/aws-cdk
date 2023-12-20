@@ -73,6 +73,7 @@ export class PythonFunction extends Function {
       code: Bundling.bundle({
         entry,
         runtime,
+        architecture: props.architecture,
         skip: !Stack.of(scope).bundlingRequired,
         ...props.bundling,
       }),
