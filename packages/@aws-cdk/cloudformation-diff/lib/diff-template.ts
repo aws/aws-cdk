@@ -212,13 +212,12 @@ function deepCopy(x: any): any {
 function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
   const replacements = findResourceReplacements(changeSet);
   diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
-    if (!replacements[logicalId] && !diff.resources.get(logicalId).otherChanges.DependsOn) {
-      diff.resources.remove(logicalId);
-      return;
-    }
-
     change.forEachDifference((type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {
       if (type === 'Property') {
+        if (!replacements[logicalId]) {
+          change.setPropertyChange(name, new types.PropertyDifference<any>(1, 1, { changeImpact: types.ResourceImpact.NO_CHANGE }));
+          return;
+        }
         switch (replacements[logicalId].propertiesReplaced[name]) {
           case 'Always':
             (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_REPLACE;
@@ -232,25 +231,12 @@ function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormati
           case undefined:
             change.setPropertyChange(name, new types.PropertyDifference<any>(1, 1, { changeImpact: types.ResourceImpact.NO_CHANGE }));
             break;
+          // otherwise, defer to the changeImpact from `diffTemplate`
         }
       } else if (type === 'Other') {
         switch (name) {
           case 'Metadata':
             change.setOtherChange('Metadata', new types.Difference<string>(value.newValue, value.newValue));
-            break;
-          case 'DependsOn':
-            let array = undefined;
-            let str = undefined;
-            if (Array.isArray(value.oldValue) && typeof value.newValue === 'string') {
-              array = value.oldValue;
-              str = value.newValue;
-            } else if (typeof value.oldValue === 'string' && Array.isArray(value.newValue)) {
-              str = value.oldValue;
-              array = value.newValue;
-            }
-            if (array && array.length === 1 && str) {
-              change.setOtherChange('DependsOn', new types.Difference<string>(str, array[0]));
-            }
             break;
         }
       }
@@ -290,6 +276,13 @@ function normalize(template: any) {
     for (const key of (Object.keys(template ?? {}))) {
       if (key === 'Fn::GetAtt' && typeof template[key] === 'string') {
         template[key] = template[key].split('.');
+        continue;
+      } else if (key === 'DependsOn') {
+        if (typeof template[key] === 'string') {
+          template[key] = [template[key]];
+        } else if (Array.isArray(template[key])) {
+          template[key] = template[key].sort();
+        }
         continue;
       }
 

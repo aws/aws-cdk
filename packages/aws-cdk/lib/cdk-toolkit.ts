@@ -15,7 +15,7 @@ import { Deployments } from './api/deployments';
 import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
-import { PrepareAndCreateDiffChangeSet } from './api/util/cloudformation';
+import { prepareAndCreateDiffChangeSet } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, validateSourceOptions } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
@@ -133,7 +133,7 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
 
-      const changeSet = options.changeSet ? await PrepareAndCreateDiffChangeSet({
+      const changeSet = options.changeSet ? await prepareAndCreateDiffChangeSet({
         stack: stacks.firstStack,
         uuid: uuid.v4(),
         willExecute: false,
@@ -159,7 +159,7 @@ export class CdkToolkit {
         const currentTemplate = templateWithNames.deployedTemplate;
         const nestedStackCount = templateWithNames.nestedStackCount;
 
-        const changeSet = options.changeSet ? await PrepareAndCreateDiffChangeSet({
+        const changeSet = options.changeSet ? await prepareAndCreateDiffChangeSet({
           stack,
           uuid: uuid.v4(),
           deployments: this.props.deployments,

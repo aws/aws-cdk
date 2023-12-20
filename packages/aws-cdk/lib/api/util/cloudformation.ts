@@ -303,7 +303,7 @@ export type CreateChangeSetOptions = {
   bodyParameter: TemplateBodyParameter;
 }
 
-export async function PrepareAndCreateDiffChangeSet(options: PrepareChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
+export async function prepareAndCreateDiffChangeSet(options: PrepareChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
   for (const resource of Object.values((options.stack.template.Resources ?? {}))) {
     if ((resource as any).Type === 'AWS::CloudFormation::Stack') {
       // eslint-disable-next-line no-console
