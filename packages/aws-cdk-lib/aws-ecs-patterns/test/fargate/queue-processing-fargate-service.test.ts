@@ -834,3 +834,89 @@ it('throws validation errors of the specific queue prop, when setting queue and 
     });
   }).toThrow(new Error('visibilityTimeout can be set only when queue is not set. Specify them in the QueueProps of the queue'));
 });
+
+test('test Fargate queue worker service construct - with task definition', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addAsgCapacityProvider(
+    new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }),
+  );
+
+  // WHEN
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
+    memoryLimitMiB: 1024,
+    cpu: 512,
+    ephemeralStorageGiB: 30,
+  });
+  taskDefinition.addContainer('QueueProcessingContainer', {
+    image: ecs.ContainerImage.fromRegistry('test'),
+  });
+
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    vpc,
+    taskDefinition,
+  });
+
+  // THEN - The separately created TaskDefinition is used. Memory is 1024, cpu is 512, and ephemeralStorage is 30
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    ContainerDefinitions: [
+      Match.objectLike({
+        Image: 'test',
+      }),
+    ],
+    Family: 'TaskDef',
+    Memory: '1024',
+    Cpu: '512',
+    EphemeralStorage: {
+      SizeInGiB: 30,
+    },
+    NetworkMode: 'awsvpc',
+    RequiresCompatibilities: ['FARGATE'],
+    TaskRoleArn: { 'Fn::GetAtt': ['TaskDefTaskRole1EDB4A67', 'Arn'] },
+  });
+});
+
+test('test Fargate queue worker service construct - with task definition and image', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+
+  // WHEN
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
+    memoryLimitMiB: 1024,
+    cpu: 512,
+    ephemeralStorageGiB: 30,
+  });
+  taskDefinition.addContainer('QueueProcessingContainer', {
+    image: ecs.ContainerImage.fromRegistry('test'),
+  });
+
+  expect(() => {
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+      vpc,
+      taskDefinition,
+      image: ecs.ContainerImage.fromRegistry('test'),
+    });
+  }).toThrow(new Error('You must specify only one of taskDefinition or image'));
+});
+
+test('test Fargate queue worker service construct - with no taskDefinition or image', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+
+  expect(() => {
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+      vpc,
+    });
+  }).toThrow(new Error('You must specify one of: taskDefinition or image'));
+});
+
