@@ -21,7 +21,7 @@ cluster.addCapacity('DefaultAutoScalingGroup', {
 new ecs.Ec2Service(stack, 'Ec2Service', {
   cluster,
   taskDefinition,
-  placementConstraints: []
+  placementConstraints: [],
 });
 
 new IntegTest(app, 'EmptyPlacementConstraints', {
