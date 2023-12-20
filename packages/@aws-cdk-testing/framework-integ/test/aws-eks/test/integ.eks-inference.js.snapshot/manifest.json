@@ -562,7 +562,13 @@
             "data": "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A"
           }
         ],
-        "/aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource": [
+        "/aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProviderwaiterstatemachineLogGroupDD693A98"
+          }
+        ],
+        "/aws-cdk-eks-cluster-inference-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Providerwaiterstatemachine5D4A9DF0"
