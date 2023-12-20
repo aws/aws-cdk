@@ -77,7 +77,8 @@ export interface WaiterStateMachineProps {
 
 /**
  * A very simple StateMachine construct highly customized to the provider framework.
- * This is so that this package does not need to depend on aws-stepfunctions module.
+ * We previously used `CfnResource` instead of `CfnStateMachine` to avoid depending
+ * on `aws-stepfunctions` module, but now it is okay.
  *
  * The state machine continuously calls the isCompleteHandler, until it succeeds or times out.
  * The handler is called `maxAttempts` times with an `interval` duration and a `backoffRate` rate.
@@ -151,6 +152,9 @@ export class WaiterStateMachine extends Construct {
   ): CfnStateMachine.LoggingConfigurationProperty | undefined {
     if (disableLogging) return undefined;
 
+    // You need to specify `*` in the Resource field because CloudWatch API actions, such as
+    // CreateLogDelivery and DescribeLogGroups, don't support Resource types defined by Amazon
+    // CloudWatch Logs.
     // https://docs.aws.amazon.com/step-functions/latest/dg/cw-logs.html#cloudwatch-iam-policy
     role.addToPrincipalPolicy(new PolicyStatement({
       actions: [
