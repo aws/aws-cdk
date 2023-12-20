@@ -778,10 +778,7 @@ export class Repository extends RepositoryBase {
     ) {
       throw new Error('TagStatus.Tagged requires the specification of a tagPrefixList or a tagPatternList');
     }
-    if (
-      (rule.tagStatus !== TagStatus.TAGGED && rule.tagPrefixList !== undefined)
-      || (rule.tagStatus !== TagStatus.TAGGED && rule.tagPatternList !== undefined)
-    ) {
+    if (rule.tagStatus !== TagStatus.TAGGED && (rule.tagPrefixList !== undefined || rule.tagPatternList !== undefined)) {
       throw new Error('tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged');
     }
     if (rule.tagPrefixList !== undefined && rule.tagPatternList !== undefined) {
