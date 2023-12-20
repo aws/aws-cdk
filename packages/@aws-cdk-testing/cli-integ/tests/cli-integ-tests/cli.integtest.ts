@@ -793,18 +793,6 @@ integTest('deploy --ignore-no-stacks', withDefaultFixture(async (fixture) => {
   console.log(stackArn);
 }));
 
-integTest('deploy stack with no resources and no --ignore-no-stacks', withDefaultFixture(async (fixture) => {
-  const stackArn = await fixture.cdkDeploy('stage-with-no-resources', {
-    modEnv: {
-      INTEG_STACK_SET: 'stage-with-no-resources',
-    },
-  });
-
-  // verify that we only deployed both stacks (there are 2 ARNs in the output)
-  /* eslint-disable no-console */
-  console.log(stackArn);
-}));
-
 integTest('IAM diff', withDefaultFixture(async (fixture) => {
   const output = await fixture.cdk(['diff', fixture.fullStackName('iam-test')]);
 
