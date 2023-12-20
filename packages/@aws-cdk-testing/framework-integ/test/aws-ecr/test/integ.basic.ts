@@ -8,6 +8,8 @@ const stack = new cdk.Stack(app, 'aws-ecr-integ-stack');
 
 const repo = new ecr.Repository(stack, 'Repo');
 repo.addLifecycleRule({ maxImageCount: 5 });
+repo.addLifecycleRule({ tagPrefixList: ['abc'], maxImageCount: 3 });
+repo.addLifecycleRule({ tagPatternList: ['abc*'], maxImageCount: 3 });
 repo.addToResourcePolicy(new iam.PolicyStatement({
   actions: ['ecr:GetDownloadUrlForLayer'],
   principals: [new iam.AnyPrincipal()],
