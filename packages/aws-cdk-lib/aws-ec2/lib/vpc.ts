@@ -1836,7 +1836,7 @@ export class Vpc extends VpcBase {
         cidrBlock: allocated.cidr,
         mapPublicIpOnLaunch: this.calculateMapPublicIpOnLaunch(subnetConfig),
         ipv6CidrBlock: subnetIpv6Cidrs !== undefined ? Fn.select(i, subnetIpv6Cidrs) : undefined,
-        assignIpv6AddressOnCreation: subnetConfig.ipv6AssignAddressOnCreation,
+        assignIpv6AddressOnCreation: this.useIpv6 ? subnetConfig.ipv6AssignAddressOnCreation ?? true : undefined,
         dependantIpv6CidrBlock: this.useIpv6 ? this.ipv6CidrBlock : undefined,
       } satisfies SubnetProps;
 
