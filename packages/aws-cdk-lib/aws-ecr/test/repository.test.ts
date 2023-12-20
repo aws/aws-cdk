@@ -49,7 +49,7 @@ describe('repository', () => {
     });
   });
 
-  test('tag-based lifecycle policy', () => {
+  test('tag-based lifecycle policy with tagPrefixList', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const repo = new ecr.Repository(stack, 'Repo');
@@ -64,6 +64,95 @@ describe('repository', () => {
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
       },
     });
+  });
+
+  test('tag-based lifecycle policy with tagPatternList', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    repo.addLifecycleRule({ tagPatternList: ['abc*'], maxImageCount: 1 });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+      LifecyclePolicy: {
+        // eslint-disable-next-line max-len
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPatternList":["abc*"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
+      },
+    });
+  });
+
+  test('both tagPrefixList and tagPatternList cannot be specified together', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // THEN
+    expect(() => {
+      repo.addLifecycleRule({ tagPrefixList: ['abc'], tagPatternList: ['abc*'], maxImageCount: 1 });
+    }).toThrow(/Both tagPrefixList and tagPatternList cannot be specified together/);
+  });
+
+  test('tagPrefixList can only be specified when tagStatus is set to Tagged', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // THEN
+    expect(() => {
+      repo.addLifecycleRule({ tagStatus: ecr.TagStatus.ANY, tagPrefixList: ['abc'], maxImageCount: 1 });
+    }).toThrow(/tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged/);
+  });
+
+  test('tagPatternList can only be specified when tagStatus is set to Tagged', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // THEN
+    expect(() => {
+      repo.addLifecycleRule({ tagStatus: ecr.TagStatus.ANY, tagPatternList: ['abc*'], maxImageCount: 1 });
+    }).toThrow(/tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged/);
+  });
+
+  test('TagStatus.Tagged requires the specification of a tagPrefixList or a tagPatternList', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // THEN
+    expect(() => {
+      repo.addLifecycleRule({ tagStatus: ecr.TagStatus.TAGGED, maxImageCount: 1 });
+    }).toThrow(/TagStatus.Tagged requires the specification of a tagPrefixList or a tagPatternList/);
+  });
+
+  test('A tag pattern can contain four wildcard characters', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // WHEN
+    repo.addLifecycleRule({ tagPatternList: ['abc*d*e*f*'], maxImageCount: 1 });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+      LifecyclePolicy: {
+        // eslint-disable-next-line max-len
+        LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPatternList":["abc*d*e*f*"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
+      },
+    });
+  });
+
+  test('A tag pattern cannot contain more than four wildcard characters', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const repo = new ecr.Repository(stack, 'Repo');
+
+    // THEN
+    expect(() => {
+      repo.addLifecycleRule({ tagPatternList: ['abc*d*e*f*g*h'], maxImageCount: 1 });
+    }).toThrow(/A tag pattern cannot contain more than four wildcard characters \(\*\), tagPattern: abc\*d\*e\*f\*g\*h, counts: 5/);
   });
 
   test('image tag mutability can be set', () => {
