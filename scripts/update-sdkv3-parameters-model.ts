@@ -339,7 +339,7 @@ function isNumber(shape: SmithyShape): boolean {
 }
 
 function isDate(shape: SmithyShape): boolean {
-  return isShape('timestamp')(shape)
+  return isShape('timestamp')(shape);
 }
 
 function sortByKey<A>(e1: [string, A], e2: [string, A]) {
