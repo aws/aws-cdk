@@ -786,9 +786,9 @@ export class Repository extends RepositoryBase {
     }
     if (rule.tagPatternList !== undefined) {
       rule.tagPatternList.forEach((pattern) => {
-        const splittedPatternLength = pattern.split('*').length;
-        if (splittedPatternLength > 5) {
-          throw new Error(`A tag pattern cannot contain more than four wildcard characters (*), pattern: ${pattern}, counts: ${splittedPatternLength - 1}`);
+        const splitPatternLength = pattern.split('*').length;
+        if (splitPatternLength > 5) {
+          throw new Error(`A tag pattern cannot contain more than four wildcard characters (*), pattern: ${pattern}, counts: ${splitPatternLength - 1}`);
         }
       });
     }
