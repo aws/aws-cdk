@@ -33,16 +33,32 @@ export interface LifecycleRule {
    * Only one rule is allowed to select untagged images, and it must
    * have the highest rulePriority.
    *
-   * @default TagStatus.Tagged if tagPrefixList is given, TagStatus.Any otherwise
+   * @default TagStatus.Tagged if tagPrefixList or tagPatternList is
+   * given, TagStatus.Any otherwise
    */
   readonly tagStatus?: TagStatus;
 
   /**
    * Select images that have ALL the given prefixes in their tag.
    *
+   * Both tagPrefixList and tagPatternList cannot be specified together.
+   *
    * Only if tagStatus == TagStatus.Tagged
    */
   readonly tagPrefixList?: string[];
+
+  /**
+   * Select images that have ALL the given patterns in their tag.
+   *
+   * There is a maximum limit of four wildcards (*) per string.
+   * For example, ["*test*1*2*3", "test*1*2*3*"] is valid but
+   * ["test*1*2*3*4*5*6"] is invalid.
+   *
+   * Both tagPrefixList and tagPatternList cannot be specified together.
+   *
+   * Only if tagStatus == TagStatus.Tagged
+   */
+  readonly tagPatternList?: string[];
 
   /**
    * The maximum number of images to retain

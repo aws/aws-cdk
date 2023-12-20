@@ -758,14 +758,31 @@ export class Repository extends RepositoryBase {
   public addLifecycleRule(rule: LifecycleRule) {
     // Validate rule here so users get errors at the expected location
     if (rule.tagStatus === undefined) {
-      rule = { ...rule, tagStatus: rule.tagPrefixList === undefined ? TagStatus.ANY : TagStatus.TAGGED };
+      rule = { ...rule, tagStatus: rule.tagPrefixList === undefined && rule.tagPatternList === undefined ? TagStatus.ANY : TagStatus.TAGGED };
     }
 
-    if (rule.tagStatus === TagStatus.TAGGED && (rule.tagPrefixList === undefined || rule.tagPrefixList.length === 0)) {
-      throw new Error('TagStatus.Tagged requires the specification of a tagPrefixList');
+    if (rule.tagStatus === TagStatus.TAGGED
+      && (rule.tagPrefixList === undefined || rule.tagPrefixList.length === 0)
+      && (rule.tagPatternList === undefined || rule.tagPatternList.length === 0)
+    ) {
+      throw new Error('TagStatus.Tagged requires the specification of a tagPrefixList or a tagPatternList');
     }
-    if (rule.tagStatus !== TagStatus.TAGGED && rule.tagPrefixList !== undefined) {
-      throw new Error('tagPrefixList can only be specified when tagStatus is set to Tagged');
+    if (
+      (rule.tagStatus !== TagStatus.TAGGED && rule.tagPrefixList !== undefined)
+      || (rule.tagStatus !== TagStatus.TAGGED && rule.tagPatternList !== undefined)
+    ) {
+      throw new Error('tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged');
+    }
+    if (rule.tagPrefixList !== undefined && rule.tagPatternList !== undefined) {
+      throw new Error('Both tagPrefixList and tagPatternList cannot be specified together');
+    }
+    if (rule.tagPatternList !== undefined) {
+      rule.tagPatternList.forEach((pattern) => {
+        const splittedPatternLength = pattern.split('*').length;
+        if (splittedPatternLength > 5) {
+          throw new Error(`A tag pattern cannot contain more than four wildcard characters (*), tagPattern: ${pattern}, counts: ${splittedPatternLength - 1}`);
+        }
+      });
     }
     if ((rule.maxImageAge !== undefined) === (rule.maxImageCount !== undefined)) {
       throw new Error(`Life cycle rule must contain exactly one of 'maxImageAge' and 'maxImageCount', got: ${JSON.stringify(rule)}`);
@@ -924,6 +941,7 @@ function renderLifecycleRule(rule: LifecycleRule) {
     selection: {
       tagStatus: rule.tagStatus || TagStatus.ANY,
       tagPrefixList: rule.tagPrefixList,
+      tagPatternList: rule.tagPatternList,
       countType: rule.maxImageAge !== undefined ? CountType.SINCE_IMAGE_PUSHED : CountType.IMAGE_COUNT_MORE_THAN,
       countNumber: rule.maxImageAge?.toDays() ?? rule.maxImageCount,
       countUnit: rule.maxImageAge !== undefined ? 'days' : undefined,
