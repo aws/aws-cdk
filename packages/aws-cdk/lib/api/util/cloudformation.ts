@@ -285,24 +285,38 @@ export async function waitForChangeSet(
 }
 
 export type PrepareChangeSetOptions = {
-  stack: cxapi.CloudFormationStackArtifact,
-  deployments: Deployments,
-  uuid: string,
-  willExecute: boolean,
-  sdkProvider: SdkProvider,
+  stack: cxapi.CloudFormationStackArtifact;
+  deployments: Deployments;
+  uuid: string;
+  willExecute: boolean;
+  sdkProvider: SdkProvider;
+  stream: NodeJS.WritableStream;
 }
 
 export type CreateChangeSetOptions = {
-  cfn: CloudFormation,
-  changeSetName: string,
-  willExecute: boolean,
-  exists: boolean,
-  uuid: string,
-  stack: cxapi.CloudFormationStackArtifact,
-  bodyParameter: TemplateBodyParameter,
+  cfn: CloudFormation;
+  changeSetName: string;
+  willExecute: boolean;
+  exists: boolean;
+  uuid: string;
+  stack: cxapi.CloudFormationStackArtifact;
+  bodyParameter: TemplateBodyParameter;
 }
 
-export async function prepareAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
+export async function PrepareAndCreateDiffChangeSet(options: PrepareChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
+  for (const resource of Object.values((options.stack.template.Resources ?? {}))) {
+    if ((resource as any).Type === 'AWS::CloudFormation::Stack') {
+      // eslint-disable-next-line no-console
+      debug('This stack contains one or more nested stacks, falling back to no change set diff...');
+
+      return undefined;
+    }
+  }
+
+  return prepareAndCreateChangeSet(options);
+}
+
+async function prepareAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
   try {
     const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
     const bodyParameter = await makeBodyParameterAndUpload(
@@ -315,6 +329,7 @@ export async function prepareAndCreateChangeSet(options: PrepareChangeSetOptions
     const cfn = preparedSdk.stackSdk.cloudFormation();
     const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
 
+    options.stream.write('Creating a change set, this may take a while...\n');
     return await createChangeSet({
       cfn,
       changeSetName: 'cdk-diff-change-set',
@@ -326,7 +341,7 @@ export async function prepareAndCreateChangeSet(options: PrepareChangeSetOptions
     });
   } catch (e: any) {
     // eslint-disable-next-line no-console
-    console.error(`Failed to create change set with error: ${e.message}, falling back to no changeset diff...`);
+    console.error(`Failed to create change set with error: '${e.message}', falling back to no change-set diff`);
 
     return undefined;
   }
@@ -350,7 +365,10 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<CloudFo
 
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   // Fetching all pages if we'll execute, so we can have the correct change count when monitoring.
-  return waitForChangeSet(options.cfn, options.stack.stackName, options.changeSetName, { fetchAll: options.willExecute });
+  const createdChangeSet = await waitForChangeSet(options.cfn, options.stack.stackName, options.changeSetName, { fetchAll: options.willExecute });
+  await cleanupOldChangeset(options.exists, options.changeSetName, options.stack.stackName, options.cfn);
+
+  return createdChangeSet;
 }
 
 export async function cleanupOldChangeset(exists: boolean, changeSetName: string, stackName: string, cfn: CloudFormation) {
