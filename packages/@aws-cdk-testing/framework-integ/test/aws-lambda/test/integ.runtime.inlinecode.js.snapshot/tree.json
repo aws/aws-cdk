@@ -78,13 +78,13 @@
                     "code": {
                       "zipFile": "def handler(event, context):\n  return \"success\""
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "PYTHON37ServiceRoleDE7E561E",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "python3.7"
                   }
                 },
@@ -177,13 +177,13 @@
                     "code": {
                       "zipFile": "def handler(event, context):\n  return \"success\""
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "PYTHON38ServiceRole3EA86BBE",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "python3.8"
                   }
                 },
@@ -276,13 +276,13 @@
                     "code": {
                       "zipFile": "def handler(event, context):\n  return \"success\""
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "PYTHON39ServiceRole53E964DF",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "python3.9"
                   }
                 },
@@ -375,13 +375,13 @@
                     "code": {
                       "zipFile": "def handler(event, context):\n  return \"success\""
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "PYTHON310ServiceRole65985CC8",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "python3.10"
                   }
                 },
@@ -399,6 +399,105 @@
           "PYTHON_3_10-functionName": {
             "id": "PYTHON_3_10-functionName",
             "path": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_10-functionName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "PYTHON_3_12": {
+            "id": "PYTHON_3_12",
+            "path": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "def handler(event, context):\n  return \"success\""
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "PYTHON312ServiceRoleBEB03378",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.12"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "PYTHON_3_12-functionName": {
+            "id": "PYTHON_3_12-functionName",
+            "path": "aws-cdk-lambda-runtime-inlinecode/PYTHON_3_12-functionName",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
@@ -474,13 +573,13 @@
                     "code": {
                       "zipFile": "exports.handler = async function(event) { return \"success\" }"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "NODEJS14XServiceRole4523ECDB",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "nodejs14.x"
                   }
                 },
@@ -573,13 +672,13 @@
                     "code": {
                       "zipFile": "exports.handler = async function(event) { return \"success\" }"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "NODEJS16XServiceRoleB9DAFDFD",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "nodejs16.x"
                   }
                 },
@@ -672,13 +771,13 @@
                     "code": {
                       "zipFile": "exports.handler = async function(event) { return \"success\" }"
                     },
+                    "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
                         "NODEJS18XServiceRole4D18036A",
                         "Arn"
                       ]
                     },
-                    "handler": "index.handler",
                     "runtime": "nodejs18.x"
                   }
                 },
@@ -696,6 +795,105 @@
           "NODEJS_18_X-functionName": {
             "id": "NODEJS_18_X-functionName",
             "path": "aws-cdk-lambda-runtime-inlinecode/NODEJS_18_X-functionName",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "NODEJS_20_X": {
+            "id": "NODEJS_20_X",
+            "path": "aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = async function(event) { return \"success\" }"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "NODEJS20XServiceRole188A4E38",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs20.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "NODEJS_20_X-functionName": {
+            "id": "NODEJS_20_X-functionName",
+            "path": "aws-cdk-lambda-runtime-inlinecode/NODEJS_20_X-functionName",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
@@ -728,7 +926,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.3.0"
         }
       }
     },

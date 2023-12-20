@@ -29,5 +29,8 @@ new lambda.Function(stack, 'OneYear', {
   logRetention: logs.RetentionDays.ONE_YEAR,
 });
 
-new IntegTest(app, 'LambdaLogRetentionInteg', { testCases: [stack] });
+new IntegTest(app, 'LambdaLogRetentionInteg', {
+  testCases: [stack],
+  diffAssets: true,
+});
 app.synth();

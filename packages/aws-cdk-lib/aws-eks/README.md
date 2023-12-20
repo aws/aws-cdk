@@ -63,12 +63,12 @@ This example defines an Amazon EKS cluster with the following configuration:
 * A Kubernetes pod with a container based on the [paulbouwer/hello-kubernetes](https://github.com/paulbouwer/hello-kubernetes) image.
 
 ```ts
-import { KubectlV27Layer } from '@aws-cdk/lambda-layer-kubectl-v27';
+import { KubectlV28Layer } from '@aws-cdk/lambda-layer-kubectl-v28';
 
 // provisioning a cluster
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_27,
-  kubectlLayer: new KubectlV27Layer(this, 'kubectl'),
+  version: eks.KubernetesVersion.V1_28,
+  kubectlLayer: new KubectlV28Layer(this, 'kubectl'),
 });
 
 // apply a kubernetes manifest to the cluster
@@ -134,7 +134,7 @@ Creating a new cluster is done using the `Cluster` or `FargateCluster` construct
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
 });
 ```
 
@@ -142,7 +142,7 @@ You can also use `FargateCluster` to provision a cluster that uses only fargate 
 
 ```ts
 new eks.FargateCluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
 });
 ```
 
@@ -166,7 +166,7 @@ At cluster instantiation time, you can customize the number of instances and the
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
   defaultCapacity: 5,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.SMALL),
 });
@@ -178,7 +178,7 @@ Additional customizations are available post instantiation. To apply them, set t
 
 ```ts
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
   defaultCapacity: 0,
 });
 
@@ -227,6 +227,10 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
+> **NOTE:** If you add instances with the inferentia (`inf1` or `inf2`) class the
+> [neuron plugin](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/containers/dlc-then-eks-devflow.html)
+> will be automatically installed in the kubernetes cluster.
+
 #### Node Groups with IPv6 Support
 
 Node groups are available with IPv6 configured networks.  For custom roles assigned to node groups additional permissions are necessary in order for pods to obtain an IPv6 address.  The default node role will include these permissions.
@@ -258,7 +262,7 @@ const eksClusterNodeGroupRole = new iam.Role(this, 'eksClusterNodeGroupRole', {
 });
 
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
   defaultCapacity: 0,
 });
 
@@ -401,7 +405,7 @@ The following code defines an Amazon EKS cluster with a default Fargate Profile 
 
 ```ts
 const cluster = new eks.FargateCluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
 });
 ```
 
@@ -478,7 +482,7 @@ You can also configure the cluster to use an auto-scaling group as the default c
 
 ```ts
 const cluster = new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
   defaultCapacityType: eks.DefaultCapacityType.EC2,
 });
 ```
@@ -558,6 +562,17 @@ For example, if the Amazon EKS cluster version is `1.17`, the Bottlerocket AMI v
 
 Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not supported when you create the `Bottlerocket` capacity.
 
+To create a Bottlerocket managed nodegroup with Nvidia-based EC2 instance types use the `BOTTLEROCKET_X86_64_NVIDIA` or
+`BOTTLEROCKET_ARM_64_NVIDIA` AMIs:
+
+```ts
+declare const cluster: eks.Cluster;
+cluster.addNodegroupCapacity('BottlerocketNvidiaNG', {
+  amiType: eks.NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA,
+  instanceTypes: [new ec2.InstanceType('g4dn.xlarge')],
+});
+```
+
 For more details about Bottlerocket, see [Bottlerocket FAQs](https://aws.amazon.com/bottlerocket/faqs/) and [Bottlerocket Open Source Blog](https://aws.amazon.com/blogs/opensource/announcing-the-general-availability-of-bottlerocket-an-open-source-linux-distribution-purpose-built-to-run-containers/).
 
 ### Endpoint Access
@@ -571,7 +586,7 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
   endpointAccess: eks.EndpointAccess.PRIVATE, // No access outside of your VPC.
 });
 ```
@@ -593,12 +608,15 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 
 ```ts
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_21,
+  version: eks.KubernetesVersion.V1_28,
   albController: {
-    version: eks.AlbControllerVersion.V2_4_1,
+    version: eks.AlbControllerVersion.V2_6_2,
   },
 });
 ```
+
+The `albController` requires `defaultCapacity` or at least one nodegroup. If there's no `defaultCapacity` or available
+nodegroup for the cluster, the `albController` deployment would fail.
 
 Querying the controller pods should look something like this:
 
@@ -633,7 +651,7 @@ You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properti
 declare const vpc: ec2.Vpc;
 
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
   vpc,
   vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
 });
@@ -680,7 +698,7 @@ You can configure the environment of the Cluster Handler functions by specifying
 ```ts
 declare const proxyInstanceSecurityGroup: ec2.SecurityGroup;
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
   clusterHandlerEnvironment: {
     https_proxy: 'http://proxy.myproxy.com',
   },
@@ -722,7 +740,7 @@ for (let subnet of subnets) {
 }
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
   vpc: vpc,
   ipFamily: eks.IpFamily.IP_V6,
   vpcSubnets: [{ subnets: vpc.publicSubnets }],
@@ -757,7 +775,7 @@ You can configure the environment of this function by specifying it at cluster i
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
   kubectlEnvironment: {
     'http_proxy': 'http://proxy.myproxy.com',
   },
@@ -777,11 +795,11 @@ Depending on which version of kubernetes you're targeting, you will need to use 
 the `@aws-cdk/lambda-layer-kubectl-vXY` packages.
 
 ```ts
-import { KubectlV27Layer } from '@aws-cdk/lambda-layer-kubectl-v27';
+import { KubectlV28Layer } from '@aws-cdk/lambda-layer-kubectl-v28';
 
 const cluster = new eks.Cluster(this, 'hello-eks', {
-  version: eks.KubernetesVersion.V1_27,
-  kubectlLayer: new KubectlV27Layer(this, 'kubectl'),
+  version: eks.KubernetesVersion.V1_28,
+  kubectlLayer: new KubectlV28Layer(this, 'kubectl'),
 });
 ```
 
@@ -816,7 +834,7 @@ const cluster1 = new eks.Cluster(this, 'MyCluster', {
   kubectlLayer: layer,
   vpc,
   clusterName: 'cluster-name',
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
 });
 
 // or
@@ -834,7 +852,7 @@ By default, the kubectl provider is configured with 1024MiB of memory. You can u
 ```ts
 new eks.Cluster(this, 'MyCluster', {
   kubectlMemory: Size.gibibytes(4),
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
 });
 
 // or
@@ -873,7 +891,7 @@ When you create a cluster, you can specify a `mastersRole`. The `Cluster` constr
 ```ts
 declare const role: iam.Role;
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
   mastersRole: role,
 });
 ```
@@ -923,7 +941,7 @@ You can use the `secretsEncryptionKey` to configure which key the cluster will u
 const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.Cluster(this, 'MyCluster', {
   secretsEncryptionKey: secretsKey,
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
 });
 ```
 
@@ -933,7 +951,7 @@ You can also use a similar configuration for running a cluster built using the F
 const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.FargateCluster(this, 'MyFargateCluster', {
   secretsEncryptionKey: secretsKey,
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
 });
 ```
 
@@ -977,7 +995,7 @@ To access the Kubernetes resources from the console, make sure your viewing prin
 in the `aws-auth` ConfigMap. Some options to consider:
 
 ```ts
-import { KubectlV27Layer } from '@aws-cdk/lambda-layer-kubectl-v27';
+import { KubectlV28Layer } from '@aws-cdk/lambda-layer-kubectl-v28';
 declare const cluster: eks.Cluster;
 declare const your_current_role: iam.Role;
 declare const vpc: ec2.Vpc;
@@ -997,7 +1015,7 @@ your_current_role.addToPolicy(new iam.PolicyStatement({
 
 ```ts
 // Option 2: create your custom mastersRole with scoped assumeBy arn as the Cluster prop. Switch to this role from the AWS console.
-import { KubectlV27Layer } from '@aws-cdk/lambda-layer-kubectl-v27';
+import { KubectlV28Layer } from '@aws-cdk/lambda-layer-kubectl-v28';
 declare const vpc: ec2.Vpc;
 
 const mastersRole = new iam.Role(this, 'MastersRole', {
@@ -1006,8 +1024,8 @@ const mastersRole = new iam.Role(this, 'MastersRole', {
 
 const cluster = new eks.Cluster(this, 'EksCluster', {
   vpc,
-  version: eks.KubernetesVersion.V1_27,
-  kubectlLayer: new KubectlV27Layer(this, 'KubectlLayer'),
+  version: eks.KubernetesVersion.V1_28,
+  kubectlLayer: new KubectlV28Layer(this, 'KubectlLayer'),
   mastersRole,
 });
 
@@ -1291,7 +1309,7 @@ when a cluster is defined:
 
 ```ts
 new eks.Cluster(this, 'MyCluster', {
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
   prune: false,
 });
 ```
@@ -1678,7 +1696,7 @@ property. For example:
 ```ts
 const cluster = new eks.Cluster(this, 'Cluster', {
   // ...
-  version: eks.KubernetesVersion.V1_27,
+  version: eks.KubernetesVersion.V1_28,
   clusterLogging: [
     eks.ClusterLoggingTypes.API,
     eks.ClusterLoggingTypes.AUTHENTICATOR,

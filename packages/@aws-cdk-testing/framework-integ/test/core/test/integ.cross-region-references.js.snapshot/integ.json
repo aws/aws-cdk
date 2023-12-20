@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "35.0.0",
   "testCases": {
     "CrossRegionSSMReferenceTest/DefaultTest": {
       "stacks": [
@@ -8,6 +8,7 @@
       "regions": [
         "us-east-2"
       ],
+      "diffAssets": true,
       "assertionStack": "CrossRegionSSMReferenceTest/DefaultTest/DeployAssert",
       "assertionStackName": "CrossRegionSSMReferenceTestDefaultTestDeployAssert2460BCA3"
     }

@@ -14,7 +14,8 @@
         "noFallthroughCasesInSwitch": true,
         "resolveJsonModule": true,
         "composite": true,
-        "incremental": true
+        "incremental": true,
+        "skipLibCheck": true,
     },
     "include": [
         "**/*.ts",
@@ -22,5 +23,7 @@
     ],
     "exclude": [
         "**/test/**/*.ts",
+        "dist",
+        "runtime-determiner",
     ],
 }

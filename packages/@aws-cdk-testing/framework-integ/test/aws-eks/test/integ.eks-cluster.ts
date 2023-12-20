@@ -7,7 +7,7 @@ import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { App, CfnOutput, Duration, Token, Fn, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-24';
+import * as kplus from 'cdk8s-plus-27';
 import * as constructs from 'constructs';
 import * as hello from './hello-k8s';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
@@ -337,7 +337,7 @@ const app = new App();
 
 // since the EKS optimized AMI is hard-coded here based on the region,
 // we need to actually pass in a specific region.
-const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-test', {
+const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster', {
   env: { region: 'us-east-1' },
 });
 
@@ -356,7 +356,7 @@ if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
 
 }
 
-new integ.IntegTest(app, 'aws-cdk-eks-cluster', {
+new integ.IntegTest(app, 'aws-cdk-eks-cluster-integ', {
   testCases: [stack],
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
   diffAssets: false,

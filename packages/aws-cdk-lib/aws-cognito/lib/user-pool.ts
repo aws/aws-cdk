@@ -518,34 +518,39 @@ export enum AdvancedSecurityMode {
  */
 export interface UserPoolProps {
   /**
-   * Name of the user pool
+   * Name of the user pool.
    *
-   * @default - automatically generated name by CloudFormation at deploy time
+   * @default - automatically generated name by CloudFormation at deploy time.
    */
   readonly userPoolName?: string;
 
   /**
-   * Whether self sign up should be enabled. This can be further configured via the `selfSignUp` property.
-   * @default false
+   * Whether self sign-up should be enabled.
+   * To configure self sign-up configuration use the `userVerification` property.
+   *
+   * @default - false
    */
   readonly selfSignUpEnabled?: boolean;
 
   /**
    * Configuration around users signing themselves up to the user pool.
    * Enable or disable self sign-up via the `selfSignUpEnabled` property.
-   * @default - see defaults in UserVerificationConfig
+   *
+   * @default - see defaults in UserVerificationConfig.
    */
   readonly userVerification?: UserVerificationConfig;
 
   /**
    * Configuration around admins signing up users into a user pool.
-   * @default - see defaults in UserInvitationConfig
+   *
+   * @default - see defaults in UserInvitationConfig.
    */
   readonly userInvitation?: UserInvitationConfig;
 
   /**
    * The IAM role that Cognito will assume while sending SMS messages.
-   * @default - a new IAM role is created
+   *
+   * @default - a new IAM role is created.
    */
   readonly smsRole?: IRole;
 
@@ -554,14 +559,16 @@ export interface UserPoolProps {
    * Learn more about ExternalId here - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html
    *
    * This property will be ignored if `smsRole` is not specified.
-   * @default - No external id will be configured
+   *
+   * @default - No external id will be configured.
    */
   readonly smsRoleExternalId?: string;
 
   /**
-   * The region to integrate with SNS to send SMS messages
+   * The region to integrate with SNS to send SMS messages.
    *
-   * This property will do nothing if SMS configuration is not configured
+   * This property will do nothing if SMS configuration is not configured.
+   *
    * @default - The same region as the user pool, with a few exceptions - https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-sms-settings.html#user-pool-sms-settings-first-time
    */
   readonly snsRegion?: string;
@@ -569,6 +576,7 @@ export interface UserPoolProps {
   /**
    * Setting this would explicitly enable or disable SMS role creation.
    * When left unspecified, CDK will determine based on other properties if a role is needed or not.
+   *
    * @default - CDK will determine based on other properties of the user pool if an SMS role should be created or not.
    */
   readonly enableSmsRole?: boolean;

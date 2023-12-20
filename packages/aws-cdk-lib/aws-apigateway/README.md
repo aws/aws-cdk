@@ -1218,10 +1218,10 @@ Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-log
 
 ```ts
 // production stage
-const prdLogGroup = new logs.LogGroup(this, "PrdLogs");
+const prodLogGroup = new logs.LogGroup(this, "PrdLogs");
 const api = new apigateway.RestApi(this, 'books', {
   deployOptions: {
-    accessLogDestination: new apigateway.LogGroupLogDestination(prdLogGroup),
+    accessLogDestination: new apigateway.LogGroupLogDestination(prodLogGroup),
     accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields(),
   },
 });
@@ -1307,6 +1307,34 @@ const api = new apigateway.RestApi(this, 'books', {
   }
 });
 ```
+
+To write access log files to a Firehose delivery stream destination use the `FirehoseLogDestination` class:
+
+```ts
+const destinationBucket = new s3.Bucket(this, 'Bucket');
+const deliveryStreamRole = new iam.Role(this, 'Role', {
+  assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
+});
+
+const stream = new firehose.CfnDeliveryStream(this, 'MyStream', {
+  deliveryStreamName: 'amazon-apigateway-delivery-stream',
+  s3DestinationConfiguration: {
+    bucketArn: destinationBucket.bucketArn,
+    roleArn: deliveryStreamRole.roleArn,
+  },
+});
+
+const api = new apigateway.RestApi(this, 'books', {
+  deployOptions: {
+    accessLogDestination: new apigateway.FirehoseLogDestination(stream),
+    accessLogFormat: apigateway.AccessLogFormat.jsonWithStandardFields(),
+  },
+});
+```
+
+**Note:** The delivery stream name must start with `amazon-apigateway-`.
+
+> Visit [Logging API calls to Kinesis Data Firehose](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-logging-to-kinesis.html) for more details.
 
 ## Cross Origin Resource Sharing (CORS)
 
@@ -1425,6 +1453,7 @@ const link = new apigateway.VpcLink(this, 'link', {
 
 const integration = new apigateway.Integration({
   type: apigateway.IntegrationType.HTTP_PROXY,
+  integrationHttpMethod: 'ANY',
   options: {
     connectionType: apigateway.ConnectionType.VPC_LINK,
     vpcLink: link,

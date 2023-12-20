@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "lambda-bucket-notifications": {
-        "id": "lambda-bucket-notifications",
-        "path": "lambda-bucket-notifications",
+      "cdk-integ-lambda-bucket-notifications": {
+        "id": "cdk-integ-lambda-bucket-notifications",
+        "path": "cdk-integ-lambda-bucket-notifications",
         "children": {
           "MyBucket": {
             "id": "MyBucket",
-            "path": "lambda-bucket-notifications/MyBucket",
+            "path": "cdk-integ-lambda-bucket-notifications/MyBucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "lambda-bucket-notifications/MyBucket/Resource",
+                "path": "cdk-integ-lambda-bucket-notifications/MyBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {}
@@ -26,11 +26,11 @@
               },
               "Notifications": {
                 "id": "Notifications",
-                "path": "lambda-bucket-notifications/MyBucket/Notifications",
+                "path": "cdk-integ-lambda-bucket-notifications/MyBucket/Notifications",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "lambda-bucket-notifications/MyBucket/Notifications/Resource",
+                    "path": "cdk-integ-lambda-bucket-notifications/MyBucket/Notifications/Resource",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -39,12 +39,12 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
-              "AllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C": {
-                "id": "AllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C",
-                "path": "lambda-bucket-notifications/MyBucket/AllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C",
+              "AllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1": {
+                "id": "AllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1",
+                "path": "cdk-integ-lambda-bucket-notifications/MyBucket/AllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -80,15 +80,15 @@
           },
           "MyFunction": {
             "id": "MyFunction",
-            "path": "lambda-bucket-notifications/MyFunction",
+            "path": "cdk-integ-lambda-bucket-notifications/MyFunction",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "lambda-bucket-notifications/MyFunction/ServiceRole",
+                "path": "cdk-integ-lambda-bucket-notifications/MyFunction/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "lambda-bucket-notifications/MyFunction/ServiceRole/ImportServiceRole",
+                    "path": "cdk-integ-lambda-bucket-notifications/MyFunction/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -96,7 +96,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "lambda-bucket-notifications/MyFunction/ServiceRole/Resource",
+                    "path": "cdk-integ-lambda-bucket-notifications/MyFunction/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -141,7 +141,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "lambda-bucket-notifications/MyFunction/Resource",
+                "path": "cdk-integ-lambda-bucket-notifications/MyFunction/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -171,11 +171,11 @@
           },
           "YourBucket": {
             "id": "YourBucket",
-            "path": "lambda-bucket-notifications/YourBucket",
+            "path": "cdk-integ-lambda-bucket-notifications/YourBucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "lambda-bucket-notifications/YourBucket/Resource",
+                "path": "cdk-integ-lambda-bucket-notifications/YourBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {}
@@ -187,11 +187,11 @@
               },
               "Notifications": {
                 "id": "Notifications",
-                "path": "lambda-bucket-notifications/YourBucket/Notifications",
+                "path": "cdk-integ-lambda-bucket-notifications/YourBucket/Notifications",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "lambda-bucket-notifications/YourBucket/Notifications/Resource",
+                    "path": "cdk-integ-lambda-bucket-notifications/YourBucket/Notifications/Resource",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -200,12 +200,12 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
-              "AllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C": {
-                "id": "AllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C",
-                "path": "lambda-bucket-notifications/YourBucket/AllowBucketNotificationsTolambdabucketnotificationsMyFunction4086861C",
+              "AllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1": {
+                "id": "AllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1",
+                "path": "cdk-integ-lambda-bucket-notifications/YourBucket/AllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -241,15 +241,15 @@
           },
           "BucketNotificationsHandler050a0587b7544547bf325f094a3db834": {
             "id": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834",
-            "path": "lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834",
+            "path": "cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role",
+                "path": "cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/ImportRole",
+                    "path": "cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -257,7 +257,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource",
+                    "path": "cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -296,11 +296,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy",
+                    "path": "cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource",
+                        "path": "cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -341,7 +341,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource",
+                "path": "cdk-integ-lambda-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -350,12 +350,12 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "lambda-bucket-notifications/BootstrapVersion",
+            "path": "cdk-integ-lambda-bucket-notifications/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -363,7 +363,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "lambda-bucket-notifications/CheckBootstrapVersion",
+            "path": "cdk-integ-lambda-bucket-notifications/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -380,7 +380,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

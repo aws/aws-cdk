@@ -28,11 +28,13 @@ export interface IApplication extends cdk.IResource {
 
   /**
    * The ID of the application.
+   * @attribute
    */
   readonly applicationId: string;
 
   /**
    * The Amazon Resource Name (ARN) of the application.
+   * @attribute
    */
   readonly applicationArn: string;
 
@@ -73,6 +75,9 @@ export interface IApplication extends cdk.IResource {
   get environments(): IEnvironment[];
 }
 
+/**
+ * Properties for the Application construct
+ */
 export interface ApplicationProps {
   /**
    * The name of the application.
@@ -312,11 +317,15 @@ export class Application extends ApplicationBase {
 
   /**
    * The ID of the application.
+   *
+   * @attribute
    */
   public readonly applicationId: string;
 
   /**
    * The Amazon Resource Name (ARN) of the application.
+   *
+   * @attribute
    */
   public readonly applicationArn: string;
 
@@ -343,7 +352,7 @@ export class Application extends ApplicationBase {
       resourceName: this.applicationId,
     });
 
-    this.extensible = new ExtensibleBase(scope, this.applicationArn, this.name);
+    this.extensible = new ExtensibleBase(this, this.applicationArn, this.name);
   }
 }
 

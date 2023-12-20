@@ -510,7 +510,7 @@ export interface DatabaseInstanceNewProps {
    * Indicates whether automated backups should be deleted or retained when
    * you delete a DB instance.
    *
-   * @default false
+   * @default true
    */
   readonly deleteAutomatedBackups?: boolean;
 
@@ -532,7 +532,7 @@ export interface DatabaseInstanceNewProps {
   /**
    * Whether to enable Performance Insights for the DB instance.
    *
-   * @default - false, unless ``performanceInsightRentention`` or ``performanceInsightEncryptionKey`` is set.
+   * @default - false, unless ``performanceInsightRetention`` or ``performanceInsightEncryptionKey`` is set.
    */
   readonly enablePerformanceInsights?: boolean;
 
@@ -702,9 +702,11 @@ export interface DatabaseInstanceNewProps {
   readonly s3ExportBuckets?: s3.IBucket[];
 
   /**
-   * Indicates whether the DB instance is an internet-facing instance.
+   * Indicates whether the DB instance is an internet-facing instance. If not specified,
+   * the instance's vpcSubnets will be used to determine if the instance is internet-facing
+   * or not.
    *
-   * @default - `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
+   * @default - `true` if the instance's `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise
    */
   readonly publiclyAccessible?: boolean;
 
@@ -839,6 +841,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       : props.instanceIdentifier;
 
     const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
+    const isInPublicSubnet = this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC;
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
@@ -872,7 +875,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
-      publiclyAccessible: props.publiclyAccessible ?? (this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC),
+      publiclyAccessible: props.publiclyAccessible ?? isInPublicSubnet,
       storageType,
       storageThroughput: props.storageThroughput,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
