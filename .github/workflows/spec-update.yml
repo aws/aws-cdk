@@ -100,12 +100,12 @@ jobs:
         continue-on-error: true
       - name: Create PR body file
         run: |-
-          echo 'Update AWS Service Spec packages to latest versions' >> PR.md
+          echo 'Updates the L1 CloudFormation resource definitions with the latest changes from `@aws-cdk/aws-service-spec`' >> PR.md
       - name: Add model changelog to PR body file
         if: steps.diff-db.outputs.diff-result
         run: |-
           echo '' >> PR.md
-          echo '**@aws-cdk/aws-service-spec changes:**' >> PR.md
+          echo '**L1 CloudFormation resource definition changes:**' >> PR.md
           echo '```' >> PR.md
           cat DIFF >> PR.md
           echo '```' >> PR.md
@@ -149,10 +149,10 @@ jobs:
           branch: automation/spec-update
           author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
           commit-message: |-
-            feat: update AWS Service Spec
-            Update AWS Service Spec packages to latest versions
+            feat: update L1 CloudFormation resource definitions
+            Updates the L1 CloudFormation resource definitions with the latest changes from `@aws-cdk/aws-service-spec`
           # Pull Request details
-          title: "feat: update AWS Service Spec"
+          title: "feat: update L1 CloudFormation resource definitions"
           body-path: ${{ runner.temp }}/PR.md
           labels: contribution/core,dependencies,auto-approve,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test
           team-reviewers: aws-cdk-team
