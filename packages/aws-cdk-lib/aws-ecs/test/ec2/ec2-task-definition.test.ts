@@ -1110,6 +1110,67 @@ describe('ec2 task definition', () => {
         }],
       });
     });
+
+    test('correctly sets env variables when using EC2 capacity provider with AWSVPC mode', () => {
+      // GIVEN AWS-VPC network mode
+      const stack = new cdk.Stack();
+      const taskDefiniton = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: ecs.NetworkMode.AWS_VPC,
+      });
+      taskDefiniton.addContainer('some-container', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+        environment: {
+          SOME_VARIABLE: 'some-value'
+        }
+      })
+
+      // THEN it should include the AWS_REGION env variable
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        NetworkMode: ecs.NetworkMode.AWS_VPC,
+        ContainerDefinitions: [{
+          Name: 'some-container',
+          Image: 'amazon/amazon-ecs-sample',
+          Memory: 512,
+          Environment: [{
+            Name: 'SOME_VARIABLE',
+            Value: 'some-value'
+          }, {
+            Name: 'AWS_REGION',
+            Value: {
+              Ref: 'AWS::Region'
+            }
+          }]
+        }]
+      });
+
+      // GIVEN HOST network mode
+      const anotherStack = new cdk.Stack();
+      const anotherTaskDefiniton = new ecs.Ec2TaskDefinition(anotherStack, 'Ec2TaskDef', {
+        networkMode: ecs.NetworkMode.HOST,
+      });
+      anotherTaskDefiniton.addContainer('some-container', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+        environment: {
+          SOME_VARIABLE: 'some-value'
+        }
+      })
+
+      // THEN it should add in any env variables
+      Template.fromStack(anotherStack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        NetworkMode: ecs.NetworkMode.HOST,
+        ContainerDefinitions: [{
+          Name: 'some-container',
+          Image: 'amazon/amazon-ecs-sample',
+          Memory: 512,
+          Environment: [{
+            Name: 'SOME_VARIABLE',
+            Value: 'some-value'
+          }]
+        }]
+      });
+    })
   });
 
   describe('setting inferenceAccelerators', () => {

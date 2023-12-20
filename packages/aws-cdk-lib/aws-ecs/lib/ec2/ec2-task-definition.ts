@@ -1,16 +1,18 @@
 import { Construct } from 'constructs';
+import { Stack } from '../../../core';
 import { ImportedTaskDefinition } from '../base/_imported-task-definition';
 import {
   CommonTaskDefinitionAttributes,
   CommonTaskDefinitionProps,
   Compatibility,
+  InferenceAccelerator,
   IpcMode,
   ITaskDefinition,
   NetworkMode,
   PidMode,
   TaskDefinition,
-  InferenceAccelerator,
 } from '../base/task-definition';
+import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition'
 import { PlacementConstraint } from '../placement';
 
 /**
@@ -83,7 +85,6 @@ export interface Ec2TaskDefinitionAttributes extends CommonTaskDefinitionAttribu
  * @resource AWS::ECS::TaskDefinition
  */
 export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinition {
-
   /**
    * Imports a task definition from the specified task definition ARN.
    */
@@ -128,6 +129,24 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
         constraint => constraint.toJson().map(constraintProperty => constraintProperty.type)).flat();
       throw new Error(`Invalid placement constraint(s): ${invalidConstraintTypes.join(', ')}. Only 'memberOf' is currently supported in the Ec2TaskDefinition class.`);
     }
+  }
+
+  /**
+   * Tasks running in AWSVPC networking mode requires an additional environment variable for the region to be sourced.
+   * This override adds in the additional environment variable as required
+   */
+  override addContainer(id: string, props: ContainerDefinitionOptions): ContainerDefinition {
+    if (this.networkMode === NetworkMode.AWS_VPC) {
+      return new ContainerDefinition(this, id, {
+        taskDefinition: this, ...props,
+        environment: {
+          ...props.environment,
+          AWS_REGION: Stack.of(this).region
+        }
+      });
+    }
+    // If network mode is not AWSVPC, then just add the container as normal
+    return new ContainerDefinition(this, id, {taskDefinition: this, ...props});
   }
 
   /**
