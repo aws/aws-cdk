@@ -568,3 +568,16 @@ it('throws validation errors of the specific queue prop, when setting queue and 
     });
   }).toThrow(new Error('visibilityTimeout can be set only when queue is not set. Specify them in the QueueProps of the queue'));
 });
+
+test('throws if image is undefined', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  // WHEN
+  expect(() => {
+    new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
+      cluster: new ecs.Cluster(stack, 'Cluster', { vpc }),
+      memoryLimitMiB: 512,
+    });
+  }).toThrow(new Error('image must be specified for EC2 queue processing service'));
+});
