@@ -52,7 +52,7 @@ Integrations are available at the `aws-apigatewayv2-integrations` module and mor
 As an early example, we have a website for a bookstore where the following code snippet configures a route `GET /books` with an HTTP proxy integration. All other HTTP method calls to `/books` route to a default lambda proxy for the bookstore.
 
 ```ts
-import { HttpUrlIntegration, HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpUrlIntegration, HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 const getBooksIntegration = new HttpUrlIntegration('GetBooksIntegration', 'https://get-books-proxy.example.com');
 
@@ -85,7 +85,7 @@ The `defaultIntegration` option while defining HTTP APIs lets you create a defau
 matched when a client reaches a route that is not explicitly defined.
 
 ```ts
-import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpUrlIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 new apigwv2.HttpApi(this, 'HttpProxyApi', {
   defaultIntegration: new HttpUrlIntegration('DefaultIntegration', 'https://example.com'),
@@ -153,7 +153,7 @@ custom domain to the `$default` stage of the API.
 
 ```ts
 import * as acm from 'aws-cdk-lib/aws-certificatemanager';
-import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 const domainName = 'example.com';
@@ -198,7 +198,7 @@ api.addStage('beta', {
 The same domain name can be associated with stages across different `HttpApi` as so -
 
 ```ts
-import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 declare const handler: lambda.Function;
 declare const dn: apigwv2.DomainName;
@@ -260,7 +260,7 @@ Instructions for configuring your trust store can be found [here](https://aws.am
 API Gateway supports multiple mechanisms for [controlling and managing access to your HTTP
 API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html) through authorizers.
 
-These authorizers can be found in the [APIGatewayV2-Authorizers](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-authorizers-readme.html) constructs library.
+These authorizers can be found in the [APIGatewayV2-Authorizers](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigatewayv2_authorizers-readme.html) constructs library.
 
 ### Metrics
 
@@ -294,7 +294,7 @@ The following code creates a `VpcLink` to a private VPC.
 ```ts
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elb from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { HttpAlbIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 const vpc = new ec2.Vpc(this, 'VPC');
 const alb = new elb.ApplicationLoadBalancer(this, 'AppLoadBalancer', { vpc });
@@ -323,7 +323,7 @@ Private integrations enable integrating an HTTP API route with private resources
 Amazon ECS container-based applications.  Using private integrations, resources in a VPC can be exposed for access by
 clients outside of the VPC.
 
-These integrations can be found in the [aws-apigatewayv2-integrations](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-integrations-readme.html) constructs library.
+These integrations can be found in the [aws-apigatewayv2-integrations](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigatewayv2_integrations-readme.html) constructs library.
 
 ## WebSocket API
 
@@ -344,7 +344,7 @@ Integrations are available in the `aws-apigatewayv2-integrations` module and mor
 To add the default WebSocket routes supported by API Gateway (`$connect`, `$disconnect` and `$default`), configure them as part of api props:
 
 ```ts
-import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 declare const connectHandler: lambda.Function;
 declare const disconnectHandler: lambda.Function;
@@ -377,7 +377,7 @@ const callbackURL = webSocketStage.callbackUrl;
 To add any other route:
 
 ```ts
-import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 declare const messageHandler: lambda.Function;
 const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
@@ -389,7 +389,7 @@ webSocketApi.addRoute('sendmessage', {
 To add a route that can return a result:
 
 ```ts
-import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 declare const messageHandler: lambda.Function;
 const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
@@ -428,7 +428,7 @@ webSocketApi.grantManageConnections(fn);
 
 API Gateway supports multiple mechanisms for [controlling and managing access to a WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-control-access.html) through authorizers.
 
-These authorizers can be found in the [APIGatewayV2-Authorizers](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-authorizers-readme.html) constructs library.
+These authorizers can be found in the [APIGatewayV2-Authorizers](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigatewayv2_authorizers-readme.html) constructs library.
 
 ### API Keys
 
