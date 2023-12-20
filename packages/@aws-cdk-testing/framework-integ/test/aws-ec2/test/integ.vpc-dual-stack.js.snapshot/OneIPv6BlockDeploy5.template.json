@@ -27,6 +27,7 @@
   "DualStackProtocolVpcPublicSubnet1Subnet833729C2": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
+    "AssignIpv6AddressOnCreation": true,
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -76,7 +77,10 @@
     "VpcId": {
      "Ref": "DualStackProtocolVpc85768F2C"
     }
-   }
+   },
+   "DependsOn": [
+    "DualStackProtocolVpcipv6cidr449C49CD"
+   ]
   },
   "DualStackProtocolVpcPublicSubnet1RouteTable9CB5AD97": {
    "Type": "AWS::EC2::RouteTable",
@@ -170,6 +174,7 @@
   "DualStackProtocolVpcPublicSubnet2Subnet67CC66F5": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
+    "AssignIpv6AddressOnCreation": true,
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -219,7 +224,10 @@
     "VpcId": {
      "Ref": "DualStackProtocolVpc85768F2C"
     }
-   }
+   },
+   "DependsOn": [
+    "DualStackProtocolVpcipv6cidr449C49CD"
+   ]
   },
   "DualStackProtocolVpcPublicSubnet2RouteTable08C51FD4": {
    "Type": "AWS::EC2::RouteTable",
@@ -313,6 +321,7 @@
   "DualStackProtocolVpcPrivateSubnet1Subnet9E9EAE3F": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
+    "AssignIpv6AddressOnCreation": true,
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -362,7 +371,10 @@
     "VpcId": {
      "Ref": "DualStackProtocolVpc85768F2C"
     }
-   }
+   },
+   "DependsOn": [
+    "DualStackProtocolVpcipv6cidr449C49CD"
+   ]
   },
   "DualStackProtocolVpcPrivateSubnet1RouteTable63AA1762": {
    "Type": "AWS::EC2::RouteTable",
@@ -416,6 +428,7 @@
   "DualStackProtocolVpcPrivateSubnet2Subnet9E59D50E": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
+    "AssignIpv6AddressOnCreation": true,
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -465,7 +478,10 @@
     "VpcId": {
      "Ref": "DualStackProtocolVpc85768F2C"
     }
-   }
+   },
+   "DependsOn": [
+    "DualStackProtocolVpcipv6cidr449C49CD"
+   ]
   },
   "DualStackProtocolVpcPrivateSubnet2RouteTableF8F882A5": {
    "Type": "AWS::EC2::RouteTable",
