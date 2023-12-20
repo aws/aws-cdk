@@ -58,6 +58,11 @@ export interface TopicProps {
   readonly loggingConfigs?: LoggingConfig[];
 }
 
+/**
+ * A logging configuration for delivery status of messages sent from SNS topic to subscribed endpoints.
+ *
+ * For more information, see [Amazon SNS message delivery status](https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html).
+ */
 export interface LoggingConfig {
   /**
    * Indicates one of the supported protocols for the SNS topic.
@@ -66,11 +71,15 @@ export interface LoggingConfig {
 
   /**
    * The IAM role to be used when logging failed message deliveries in Amazon CloudWatch.
+   *
+   * @default None
    */
   readonly failureFeedbackRole?: IRole;
 
   /**
    * The IAM role to be used when logging successful message deliveries in Amazon CloudWatch.
+   *
+   * @default None
    */
   readonly successFeedbackRole?: IRole;
 
@@ -78,10 +87,15 @@ export interface LoggingConfig {
    * The percentage of successful message deliveries to be logged in Amazon CloudWatch.
    *
    * Valid values are integer between 0-100
+   *
+   * @default None
    */
   readonly successFeedbackSampleRate?: number;
 }
 
+/**
+ * The type of supported protocol for delivery status logging.
+ */
 export enum LoggingProtocol {
   /**
    * HTTP
