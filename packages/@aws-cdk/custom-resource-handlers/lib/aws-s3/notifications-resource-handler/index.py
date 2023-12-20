@@ -6,7 +6,6 @@ import urllib.request
 s3 = boto3.client("s3")
 
 EVENTBRIDGE_CONFIGURATION = 'EventBridgeConfiguration'
-
 CONFIGURATION_TYPES = ["TopicConfigurations", "QueueConfigurations", "LambdaFunctionConfigurations"]
 
 def handler(event: dict, context):
@@ -14,18 +13,15 @@ def handler(event: dict, context):
   error_message = ""
   try:
     props = event["ResourceProperties"]
-    bucket = props["BucketName"]
     notification_configuration = props["NotificationConfiguration"]
-    request_type = event["RequestType"]
     managed = props.get('Managed', 'true').lower() == 'true'
     stack_id = event['StackId']
-
+    old = event.get("OldResourceProperties", {}).get("NotificationConfiguration", {})
     if managed:
-      config = handle_managed(request_type, notification_configuration)
+      config = handle_managed(event["RequestType"], notification_configuration)
     else:
-      config = handle_unmanaged(bucket, stack_id, request_type, notification_configuration)
-
-    put_bucket_notification_configuration(bucket, config)
+      config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old)
+    s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config)
   except Exception as e:
     logging.exception("Failed to put bucket notification configuration")
     response_status = "FAILED"
@@ -38,17 +34,31 @@ def handle_managed(request_type, notification_configuration):
     return {}
   return notification_configuration
 
-def handle_unmanaged(bucket, stack_id, request_type, notification_configuration):
+def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old):
+  def with_id(n):
+    n['Id'] = f"{stack_id}-{hash(json.dumps(n, sort_keys=True))}"
+    return n
+
   # find external notifications
-  external_notifications = find_external_notifications(bucket, stack_id)
+  external_notifications = {}
+  existing_notifications = s3.get_bucket_notification_configuration(Bucket=bucket)
+  for t in CONFIGURATION_TYPES:
+    if request_type == 'Update':
+        ids = [with_id(n) for n in old.get(t, [])]
+        old_incoming_ids = [n['Id'] for n in ids]
+        # if the notification was created by us, we know what id to expect so we can filter by it.
+        external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'] in old_incoming_ids]
+    elif request_type == 'Create':
+        # if this is a create event then all existing notifications are external
+        external_notifications[t] = [n for n in existing_notifications.get(t, [])]
+  # always treat EventBridge configuration as an external config if it already exists
+  # as there is no way to determine whether it's managed by us or not
+  if EVENTBRIDGE_CONFIGURATION in existing_notifications:
+    external_notifications[EVENTBRIDGE_CONFIGURATION] = existing_notifications[EVENTBRIDGE_CONFIGURATION]
 
   # if delete, that's all we need
   if request_type == 'Delete':
     return external_notifications
-
-  def with_id(notification):
-    notification['Id'] = f"{stack_id}-{hash(json.dumps(notification, sort_keys=True))}"
-    return notification
 
   # otherwise, merge external with incoming config and augment with id
   notifications = {}
@@ -64,27 +74,6 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration)
     notifications[EVENTBRIDGE_CONFIGURATION] = external_notifications[EVENTBRIDGE_CONFIGURATION]
 
   return notifications
-
-def find_external_notifications(bucket, stack_id):
-  existing_notifications = get_bucket_notification_configuration(bucket)
-  external_notifications = {}
-  for t in CONFIGURATION_TYPES:
-    # if the notification was created by us, we know what id to expect
-    # so we can filter by it.
-    external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'].startswith(f"{stack_id}-")]
-
-  # always treat EventBridge configuration as an external config if it already exists
-  # as there is no way to determine whether it's managed by us or not
-  if EVENTBRIDGE_CONFIGURATION in existing_notifications:
-    external_notifications[EVENTBRIDGE_CONFIGURATION] = existing_notifications[EVENTBRIDGE_CONFIGURATION]
-
-  return external_notifications
-
-def get_bucket_notification_configuration(bucket):
-  return s3.get_bucket_notification_configuration(Bucket=bucket)
-
-def put_bucket_notification_configuration(bucket, notification_configuration):
-  s3.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=notification_configuration)
 
 def submit_response(event: dict, context, response_status: str, error_message: str):
   response_body = json.dumps(
