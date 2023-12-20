@@ -50,6 +50,7 @@ Security and stability of the CDK is a top priority. If you think you’ve found
 ### L2 Abstractions
 * 🔍 [CloudFront Origin Access Control L2](https://github.com/aws/aws-cdk-rfcs/issues/491)
 * 🛠️ [Enabling IPv6 on Resources and VPCs](https://github.com/aws/aws-cdk/pull/28366)
+* 🔍 [Rewrite EKS L2](https://github.com/aws/aws-cdk-rfcs/issues/605) - drop the custom resource implementation in favor of the native L1.
 
 We are currently investigating other L2s to build out next. Feel free to create an RFC to request.
 
