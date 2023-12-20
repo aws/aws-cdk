@@ -1121,9 +1121,9 @@ describe('ec2 task definition', () => {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512,
         environment: {
-          SOME_VARIABLE: 'some-value'
-        }
-      })
+          SOME_VARIABLE: 'some-value',
+        },
+      });
 
       // THEN it should include the AWS_REGION env variable
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -1134,14 +1134,14 @@ describe('ec2 task definition', () => {
           Memory: 512,
           Environment: [{
             Name: 'SOME_VARIABLE',
-            Value: 'some-value'
+            Value: 'some-value',
           }, {
             Name: 'AWS_REGION',
             Value: {
-              Ref: 'AWS::Region'
-            }
-          }]
-        }]
+              Ref: 'AWS::Region',
+            },
+          }],
+        }],
       });
 
       // GIVEN HOST network mode
@@ -1153,9 +1153,9 @@ describe('ec2 task definition', () => {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512,
         environment: {
-          SOME_VARIABLE: 'some-value'
-        }
-      })
+          SOME_VARIABLE: 'some-value',
+        },
+      });
 
       // THEN it should add in any env variables
       Template.fromStack(anotherStack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -1166,11 +1166,11 @@ describe('ec2 task definition', () => {
           Memory: 512,
           Environment: [{
             Name: 'SOME_VARIABLE',
-            Value: 'some-value'
-          }]
-        }]
+            Value: 'some-value',
+          }],
+        }],
       });
-    })
+    });
   });
 
   describe('setting inferenceAccelerators', () => {

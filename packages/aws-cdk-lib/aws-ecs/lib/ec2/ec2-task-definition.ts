@@ -12,7 +12,7 @@ import {
   PidMode,
   TaskDefinition,
 } from '../base/task-definition';
-import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition'
+import { ContainerDefinition, ContainerDefinitionOptions } from '../container-definition';
 import { PlacementConstraint } from '../placement';
 
 /**
@@ -132,24 +132,6 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
   }
 
   /**
-   * Tasks running in AWSVPC networking mode requires an additional environment variable for the region to be sourced.
-   * This override adds in the additional environment variable as required
-   */
-  override addContainer(id: string, props: ContainerDefinitionOptions): ContainerDefinition {
-    if (this.networkMode === NetworkMode.AWS_VPC) {
-      return new ContainerDefinition(this, id, {
-        taskDefinition: this, ...props,
-        environment: {
-          ...props.environment,
-          AWS_REGION: Stack.of(this).region
-        }
-      });
-    }
-    // If network mode is not AWSVPC, then just add the container as normal
-    return new ContainerDefinition(this, id, {taskDefinition: this, ...props});
-  }
-
-  /**
    * Constructs a new instance of the Ec2TaskDefinition class.
    */
   constructor(scope: Construct, id: string, props: Ec2TaskDefinitionProps = {}) {
@@ -164,5 +146,24 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
 
     // Validate the placement constraints
     Ec2TaskDefinition.validatePlacementConstraints(props.placementConstraints ?? []);
+  }
+
+  /**
+   * Tasks running in AWSVPC networking mode requires an additional environment variable for the region to be sourced.
+   * This override adds in the additional environment variable as required
+   */
+  override addContainer(id: string, props: ContainerDefinitionOptions): ContainerDefinition {
+    if (this.networkMode === NetworkMode.AWS_VPC) {
+      return new ContainerDefinition(this, id, {
+        taskDefinition: this,
+        ...props,
+        environment: {
+          ...props.environment,
+          AWS_REGION: Stack.of(this).region,
+        },
+      });
+    }
+    // If network mode is not AWSVPC, then just add the container as normal
+    return new ContainerDefinition(this, id, { taskDefinition: this, ...props });
   }
 }
