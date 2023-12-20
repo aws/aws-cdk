@@ -41,7 +41,8 @@ export interface LifecycleRule {
   /**
    * Select images that have ALL the given prefixes in their tag.
    *
-   * Both tagPrefixList and tagPatternList cannot be specified together.
+   * Both tagPrefixList and tagPatternList cannot be specified
+   * together in a rule.
    *
    * Only if tagStatus == TagStatus.Tagged
    */
@@ -54,7 +55,8 @@ export interface LifecycleRule {
    * For example, ["*test*1*2*3", "test*1*2*3*"] is valid but
    * ["test*1*2*3*4*5*6"] is invalid.
    *
-   * Both tagPrefixList and tagPatternList cannot be specified together.
+   * Both tagPrefixList and tagPatternList cannot be specified
+   * together in a rule.
    *
    * Only if tagStatus == TagStatus.Tagged
    */

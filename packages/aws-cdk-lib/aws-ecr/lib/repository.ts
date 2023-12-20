@@ -774,7 +774,7 @@ export class Repository extends RepositoryBase {
       throw new Error('tagPrefixList and tagPatternList can only be specified when tagStatus is set to Tagged');
     }
     if (rule.tagPrefixList !== undefined && rule.tagPatternList !== undefined) {
-      throw new Error('Both tagPrefixList and tagPatternList cannot be specified together');
+      throw new Error('Both tagPrefixList and tagPatternList cannot be specified together in a rule');
     }
     if (rule.tagPatternList !== undefined) {
       rule.tagPatternList.forEach((pattern) => {

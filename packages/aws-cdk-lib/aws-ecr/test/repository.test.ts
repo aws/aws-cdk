@@ -83,7 +83,7 @@ describe('repository', () => {
     });
   });
 
-  test('both tagPrefixList and tagPatternList cannot be specified together', () => {
+  test('both tagPrefixList and tagPatternList cannot be specified together in a rule', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const repo = new ecr.Repository(stack, 'Repo');
@@ -91,7 +91,7 @@ describe('repository', () => {
     // THEN
     expect(() => {
       repo.addLifecycleRule({ tagPrefixList: ['abc'], tagPatternList: ['abc*'], maxImageCount: 1 });
-    }).toThrow(/Both tagPrefixList and tagPatternList cannot be specified together/);
+    }).toThrow(/Both tagPrefixList and tagPatternList cannot be specified together in a rule/);
   });
 
   test('tagPrefixList can only be specified when tagStatus is set to Tagged', () => {
