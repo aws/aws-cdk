@@ -215,7 +215,8 @@ function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormati
     change.forEachDifference((type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {
       if (type === 'Property') {
         if (!replacements[logicalId]) {
-          change.setPropertyChange(name, new types.PropertyDifference<any>(1, 1, { changeImpact: types.ResourceImpact.NO_CHANGE }));
+          (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.NO_CHANGE;
+          (value as types.PropertyDifference<any>).isDifferent = false;
           return;
         }
         switch (replacements[logicalId].propertiesReplaced[name]) {
@@ -229,7 +230,8 @@ function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormati
             (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.MAY_REPLACE;
             break;
           case undefined:
-            change.setPropertyChange(name, new types.PropertyDifference<any>(1, 1, { changeImpact: types.ResourceImpact.NO_CHANGE }));
+            (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.NO_CHANGE;
+            (value as types.PropertyDifference<any>).isDifferent = false;
             break;
           // otherwise, defer to the changeImpact from `diffTemplate`
         }

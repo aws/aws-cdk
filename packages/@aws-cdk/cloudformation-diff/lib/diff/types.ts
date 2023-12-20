@@ -305,7 +305,7 @@ export class Difference<ValueType> implements IDifference<ValueType> {
    *
    * isDifferent => (isUpdate | isRemoved | isUpdate)
    */
-  public readonly isDifferent: boolean;
+  public isDifferent: boolean;
 
   /**
    * @param oldValue the old value, cannot be equal (to the sense of +deepEqual+) to +newValue+.
