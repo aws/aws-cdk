@@ -33,6 +33,7 @@ Security and stability of the CDK is a top priority. If you think you’ve found
 * 🚀 [App Staging Synthesizer for Resource Isolation](https://aws.amazon.com/blogs/devops/enhancing-resource-isolation-in-aws-cdk-with-the-app-staging-synthesizer/) - This feature enhances resource isolation and cleanup control by creating separate staging resources for each application
 * 👂🏽 [CDK Refactoring](https://github.com/aws/aws-cdk-rfcs/issues/162) - We’re looking into providing built-in support for builder refactoring work.
 * 🛠️ [Understand deployment progress within CloudFormation](https://github.com/aws/aws-cdk-rfcs/issues/586) - This will help builders understand what CloudFormation is doing as deployments are in progress.
+* 🔍 [Garbage Collection for Assets](https://github.com/aws/aws-cdk-rfcs/issues/64) - Assets which are uploaded to the CDK's S3 bucket and ECR repository are never deleted. 
 
 ### Speed up development and testing 
 * 🚀 [Enable CloudFormation builders to migrate existing infrastructure to CDK](https://github.com/aws/aws-cdk/blob/6004a17c593728e36ad4f5c3dcdd578ff46fa9bb/packages/aws-cdk/README.md#cdk-migrate) - CloudFormation builders can now generate a CDK application using an existing CloudFormation template in JSON or YAML format using cdk migrate!
@@ -48,6 +49,7 @@ Security and stability of the CDK is a top priority. If you think you’ve found
 
 ### L2 Abstractions
 * 🔍 [CloudFront Origin Access Control L2](https://github.com/aws/aws-cdk-rfcs/issues/491)
+* 🛠️ [Enabling IPv6 on Resources and VPCs](https://github.com/aws/aws-cdk/pull/28366)
 
 We are currently investigating other L2s to build out next. Feel free to create an RFC to request.
 
