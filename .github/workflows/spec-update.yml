@@ -105,7 +105,7 @@ jobs:
         if: steps.diff-db.outputs.diff-result
         run: |-
           echo '' >> PR.md
-          echo '**L1 CloudFormation resource definitions changes:**' >> PR.md
+          echo '**L1 CloudFormation resource definition changes:**' >> PR.md
           echo '```' >> PR.md
           cat DIFF >> PR.md
           echo '```' >> PR.md
