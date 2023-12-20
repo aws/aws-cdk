@@ -15,6 +15,10 @@ const integ = new IntegTest(app, 'AssertionsTest', {
   testCases: [stack],
 });
 
+// In this test, we are verifying that when 'invokeFunction' is used in conjunction with 'waitForAssertions',
+// the invocation of the Lambda function is handled by the 'waiterProvider'.
+// We are specifically checking that the correct IAM policy is set for the 'waiterProvider' and,
+// that the Lambda function can be invoked correctly.
 integ.assertions.invokeFunction({
   functionName: targetFunc.functionName,
   invocationType: InvocationType.EVENT,

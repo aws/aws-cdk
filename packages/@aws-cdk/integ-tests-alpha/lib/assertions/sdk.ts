@@ -252,6 +252,7 @@ export class LambdaInvokeFunction extends AwsApiCall {
     })]);
 
     // If using `waitForAssertions`, do the same for `waiterProvider` as above.
+    // Aspects are used here because we do not know if the user is using `waitForAssertions` at this point.
     Aspects.of(this).add({
       visit(node: IConstruct) {
         if (node instanceof AwsApiCall && node.waiterProvider) {
