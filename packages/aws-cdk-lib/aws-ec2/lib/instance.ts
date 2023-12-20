@@ -5,6 +5,7 @@ import { CloudFormationInit } from './cfn-init';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
+import { IKeyPair } from './key-pair';
 import { IMachineImage, OperatingSystemType } from './machine-image';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -76,8 +77,16 @@ export interface InstanceProps {
    * Name of SSH keypair to grant access to instance
    *
    * @default - No SSH access will be possible.
+   * @deprecated - Use {@link keyPair} instead
    */
   readonly keyName?: string;
+
+  /**
+   * The SSH keypair to grant access to the instance.
+   *
+   * @default - No SSH access will be possible.
+   */
+  readonly keyPair?: IKeyPair;
 
   /**
    * Where to place the instance within the VPC
@@ -349,6 +358,10 @@ export class Instance extends Resource implements IInstance {
       throw new Error('Setting \'initOptions\' requires that \'init\' is also set');
     }
 
+    if (props.keyName && props.keyPair) {
+      throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+    }
+
     if (props.securityGroup) {
       this.securityGroup = props.securityGroup;
     } else {
@@ -415,9 +428,13 @@ export class Instance extends Resource implements IInstance {
         privateIpAddress: props.privateIpAddress,
       }] : undefined;
 
+    if (props.keyPair && !props.keyPair._isOsCompatible(imageConfig.osType)) {
+      throw new Error(`${props.keyPair.type} keys are not compatible with the chosen AMI`);
+    }
+
     // if network interfaces array is configured then subnetId, securityGroupIds,
     // and privateIpAddress are configured on the network interface level and
-    // there is no need to configure them on the instance leveleiifcbevnlbrbnrnjglvtebkufvkdlvlliiidflbibtf
+    // there is no need to configure them on the instance level
     this.instance = new CfnInstance(this, 'Resource', {
       imageId: imageConfig.imageId,
       keyName: props.keyName,
