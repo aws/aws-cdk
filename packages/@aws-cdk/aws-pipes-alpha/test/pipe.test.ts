@@ -478,7 +478,7 @@ describe('Pipe', () => {
         target,
         logLevel: LogLevel.INFO,
         logIncludeExecutionData: [IncludeExecutionData.ALL],
-        logDestination: [
+        logDestinations: [
           {
             parameters: {
               cloudwatchLogsLogDestination: {
@@ -533,7 +533,7 @@ describe('Pipe', () => {
         pipeName: 'TestPipe',
         source,
         target,
-        logDestination: [logDestination],
+        logDestinations: [logDestination],
       });
 
       // THEN

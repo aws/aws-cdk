@@ -107,7 +107,7 @@ export interface PipeProps {
    * Destinations for the logs.
    * @default - no logs
    */
-  readonly logDestination?: IPipeLogDestination[];
+  readonly logDestinations?: IPipeLogDestination[];
 
   /**
     * The level of logging detail to include.
@@ -223,7 +223,7 @@ export class Pipe extends PipeBase {
      * Logs setup
      */
     const logDestinationConfiguration: LogDestinationProperties[] = [];
-    props.logDestination?.forEach((destination) => {
+    props.logDestinations?.forEach((destination) => {
       logDestinationConfiguration.push(destination.parameters);
       destination.grantPush(this.pipeRole);
     });
@@ -233,7 +233,7 @@ export class Pipe extends PipeBase {
       includeExecutionData: props.logIncludeExecutionData || undefined,
     };
 
-    const mergedLogConfiguration = props.logDestination?.reduce((acc, destination) => {
+    const mergedLogConfiguration = props.logDestinations?.reduce((acc, destination) => {
       const config = destination.parameters;
       return { ...acc, ...config };
 
