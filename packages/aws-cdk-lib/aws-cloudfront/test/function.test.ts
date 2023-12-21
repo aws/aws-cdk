@@ -160,4 +160,32 @@ describe('CloudFront Function', () => {
       },
     });
   });
+
+  test('custom runtime testing', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'testregion' },
+    });
+    new Function(stack, 'CF2', {
+      code: FunctionCode.fromInline('code'),
+      runtime: FunctionRuntime.custom('cloudfront-js-2.0'),
+    });
+
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        CF2D7241DD7: {
+          Type: 'AWS::CloudFront::Function',
+          Properties: {
+            Name: 'testregionStackCF2CE3F783F',
+            AutoPublish: true,
+            FunctionCode: 'code',
+            FunctionConfig: {
+              Comment: 'testregionStackCF2CE3F783F',
+              Runtime: 'cloudfront-js-2.0',
+            },
+          },
+        },
+      },
+    });
+  });
 });
