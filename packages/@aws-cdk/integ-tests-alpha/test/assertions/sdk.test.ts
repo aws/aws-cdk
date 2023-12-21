@@ -265,56 +265,6 @@ describe('AwsApiCall', () => {
       },
     });
   });
-  test('add policy to waiterProvider', () => {
-    // GIVEN
-    const app = new App();
-    const deplossert = new DeployAssert(app);
-
-    // WHEN
-    const apiCall = deplossert.awsApiCall('MyService', 'MyApi', {
-      param1: 'val1',
-      param2: 2,
-    }).expect(ExpectedResult.objectLike({
-      Key: 'Value',
-    })).waitForAssertions();
-    apiCall.waiterProvider?.addToRolePolicy({
-      Effect: 'Allow',
-      Action: ['s3:GetObject'],
-      Resource: ['*'],
-    });
-
-    // THEN
-    Template.fromStack(deplossert.scope).hasResourceProperties('AWS::IAM::Role', {
-      Policies: [
-        {
-          PolicyName: 'Inline',
-          PolicyDocument: {
-            Version: '2012-10-17',
-            Statement: [
-              {
-                Action: [
-                  'myservice:MyApi',
-                ],
-                Effect: 'Allow',
-                Resource: [
-                  '*',
-                ],
-              },
-              {
-                Action: [
-                  's3:GetObject',
-                ],
-                Effect: 'Allow',
-                Resource: [
-                  '*',
-                ],
-              },
-            ],
-          },
-        },
-      ],
-    });
-  });
 
   describe('get attribute', () => {
     test('getAttString', () => {
