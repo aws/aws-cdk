@@ -21,6 +21,10 @@ import {
   Vpc,
   SubnetType,
   SecurityGroup,
+  WindowsImage,
+  WindowsVersion,
+  KeyPair,
+  KeyPairType,
 } from '../lib';
 
 let stack: Stack;
@@ -485,6 +489,35 @@ describe('instance', () => {
         LaunchTemplateName: stack.resolve(launchTemplate.launchTemplateName),
       },
     });
+  });
+
+  it('throws an error on incompatible Key Pair for operating system', () => {
+    // GIVEN
+    const keyPair = new KeyPair(stack, 'KeyPair', {
+      type: KeyPairType.ED25519,
+    });
+
+    // THEN
+    expect(() => new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new WindowsImage(WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE),
+      instanceType: new InstanceType('t2.micro'),
+      keyPair,
+    })).toThrow('ed25519 keys are not compatible with the chosen AMI');
+  });
+
+  it('throws an error if keyName and keyPair both provided', () => {
+    // GIVEN
+    const keyPair = new KeyPair(stack, 'KeyPair');
+
+    // THEN
+    expect(() => new Instance(stack, 'Instance', {
+      vpc,
+      instanceType: new InstanceType('t2.micro'),
+      machineImage: new AmazonLinuxImage(),
+      keyName: 'test-key-pair',
+      keyPair,
+    })).toThrow('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
   });
 
   describe('Detailed Monitoring', () => {

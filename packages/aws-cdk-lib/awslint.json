@@ -58,6 +58,7 @@
     "construct-ctor-props-optional:aws-cdk-lib.aws_stepfunctions.StateMachine",
     "props-no-arn-refs:aws-cdk-lib.aws_stepfunctions_tasks.BatchSubmitJobProps.jobDefinitionArn",
     "props-no-arn-refs:aws-cdk-lib.aws_stepfunctions_tasks.BatchSubmitJobProps.jobQueueArn",
+    "props-no-arn-refs:aws-cdk-lib.aws_stepfunctions_tasks.EmrAddStepProps.executionRoleArn",
     "props-no-cfn-types:aws-cdk-lib.cloudformation_include.CfnIncludeProps.loadNestedStacks",
     "construct-ctor-props-optional:aws-cdk-lib.custom_resources.AwsCustomResource",
     "props-physical-name:aws-cdk-lib.CustomResourceProps",
@@ -340,6 +341,7 @@
     "docs-public-apis:aws-cdk-lib.aws_elasticloadbalancing.LoadBalancer.loadBalancerSourceSecurityGroupOwnerAlias",
     "docs-public-apis:aws-cdk-lib.aws_elasticloadbalancing.LoadBalancer.addTarget",
     "docs-public-apis:aws-cdk-lib.aws_elasticloadbalancingv2.BaseLoadBalancer.loadBalancerSecurityGroups",
+    "docs-public-apis:aws-cdk-lib.aws_elasticloadbalancingv2.NetworkLoadBalancer.securityGroups",
     "docs-public-apis:aws-cdk-lib.aws_elasticloadbalancingv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes",
     "docs-public-apis:aws-cdk-lib.aws_elasticloadbalancingv2_targets.InstanceTarget",
     "docs-public-apis:aws-cdk-lib.aws_elasticloadbalancingv2_targets.LambdaTarget",
@@ -658,6 +660,7 @@
     "props-default-doc:aws-cdk-lib.aws_ecr.LifecycleRule.maxImageAge",
     "props-default-doc:aws-cdk-lib.aws_ecr.LifecycleRule.maxImageCount",
     "props-default-doc:aws-cdk-lib.aws_ecr.LifecycleRule.tagPrefixList",
+    "props-default-doc:aws-cdk-lib.aws_ecr.LifecycleRule.tagPatternList",
     "docs-public-apis:aws-cdk-lib.aws_ecr.RepositoryAttributes",
     "docs-public-apis:aws-cdk-lib.aws_ecr.RepositoryAttributes.repositoryArn",
     "docs-public-apis:aws-cdk-lib.aws_ecr.RepositoryAttributes.repositoryName",
@@ -885,6 +888,15 @@
     "props-physical-name:aws-cdk-lib.aws_apigateway.ResourceProps",
     "props-physical-name:aws-cdk-lib.aws_appsync.SourceApiAssociationProps",
     "docs-public-apis:aws-cdk-lib.aws_backup.Schedule",
-    "props-default-doc:aws-cdk-lib.aws_appsync.SourceApi.description"
+    "props-default-doc:aws-cdk-lib.aws_appsync.SourceApi.description",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.ApiMappingProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.HttpIntegrationProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.HttpRouteProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.WebSocketIntegrationProps",
+    "props-physical-name:aws-cdk-lib.aws_apigatewayv2.WebSocketRouteProps",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.WebSocketIntegration",
+    "from-method:aws-cdk-lib.aws_apigatewayv2.WebSocketRoute"
   ]
 }

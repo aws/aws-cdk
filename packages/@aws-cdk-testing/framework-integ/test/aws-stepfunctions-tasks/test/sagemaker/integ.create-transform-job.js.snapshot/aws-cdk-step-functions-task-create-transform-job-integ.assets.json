@@ -1,0 +1,19 @@
+{
+  "version": "35.0.0",
+  "files": {
+    "17277a722928df6f2a0ba8c8d5225ee786b3be9598d636e6411609b626e5a099": {
+      "source": {
+        "path": "aws-cdk-step-functions-task-create-transform-job-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "17277a722928df6f2a0ba8c8d5225ee786b3be9598d636e6411609b626e5a099.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
