@@ -50,6 +50,19 @@ export interface AwsApiCallProps extends AwsApiCallOptions { }
 export class AwsApiCall extends ApiCallBase {
   public readonly provider: AssertionsProvider;
 
+  /**
+   * access the AssertionsProvider for the waiter state machine.
+   * This can be used to add additional IAM policies
+   * the the provider role policy
+   *
+   * @example
+   * declare const apiCall: AwsApiCall;
+   * apiCall.waiterProvider?.addToRolePolicy({
+   *   Effect: 'Allow',
+   *   Action: ['s3:GetObject'],
+   *   Resource: ['*'],
+   * });
+   */
   public waiterProvider?: AssertionsProvider;
 
   protected readonly apiCallResource: CustomResource;
