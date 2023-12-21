@@ -1232,6 +1232,49 @@ and orphan the old bucket. You should manually delete the orphaned bucket
 after you are sure you have redeployed all CDK applications and there are no
 more references to the old asset bucket.
 
+## Considerations around Running at Scale
+
+If you are planning to run pipelines for more than a hundred repos
+deploying across multiple regions, then you will want to consider reusing
+both artifacts buckets and cross-region replication buckets.
+
+In a situation like this, you will want to have a separate CDK app / dedicatd repo which creates
+and managed the buckets which will be shared by the pipelines of all your other apps.
+Note that this app must NOT be using the shared buckets because of chicken & egg issues.
+
+The following code assumes you have created and are managing your buckets in the aforementioned
+separate cdk repo and are just importing them for use in one of your (many) pipelines.
+
+```typescript
+let sharedArtifactBucketArn: string;
+let sharedArtifactKeyArn: string;
+
+let sharedXRegionUsWest2BucketArn: string;
+let sharedXRegionUsWest2KeyArn: string;
+
+const artifactBucket = s3.Bucket.fromBucketAttributes(scope, 'bucketArn', {
+  bucketArn: sharedArtifactBucketArn,
+  encryptionKey: kms.Key.fromKeyArn(scope, 'keyArn', sharedArtifactKeyArn),
+});
+
+const usWest2Bucket = s3.Bucket.fromBucketAttributes(scope, 'us-west-2Bucket', {
+  bucketArn: sharedXRegionUsWest2BucketArn,
+  encryptionKey: kms.Key.fromKeyArn(scope, 'keyArn', sharedXRegionUsWest2KeyArn),
+});
+
+const crossRegionReplicationBuckets: Record<[key: string]: s3.IBucket> = {
+  'us-west-2': usWest2Bucket,
+  // Support for additional regions.
+}
+
+let otherProps: pipelines.CodePipelineProps;
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  ...otherProps,
+  // Use shared buckets.
+  artifactBucket,
+  crossRegionReplicationBuckets,
+});
+```
 ## Context Lookups
 
 You might be using CDK constructs that need to look up [runtime
