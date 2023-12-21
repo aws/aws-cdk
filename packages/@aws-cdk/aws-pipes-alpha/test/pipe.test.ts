@@ -2,7 +2,7 @@ import { App, Stack } from 'aws-cdk-lib';
 
 import { Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { DesiredState, IPipeEnrichment, IPipeSource, IPipeTarget, Pipe } from '../lib';
+import { DesiredState, IPipeEnrichment, IPipeSource, IPipeTarget, IncludeExecutionData, LogLevel, Pipe } from '../lib';
 
 describe('Pipe', () => {
   let stack: Stack;
@@ -428,6 +428,116 @@ describe('Pipe', () => {
       // THEN
       expect(pipe.pipeRole).toBeDefined();
       expect(pipe.pipeRole).toBe(role);
+    });
+
+    it('should use the imported role', () => {
+      // GIVEN
+      const source = {
+        grantRead: jest.fn(),
+        sourceArn: 'source-arn',
+        sourceParameters: {},
+      };
+      const target = {
+        grantPush: jest.fn(),
+        targetArn: 'target-arn',
+        targetParameters: {},
+      };
+      const role = Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/Role');
+      // WHEN
+      const pipe = new Pipe(stack, 'TestPipe', {
+        pipeName: 'TestPipe',
+        source,
+        target,
+        role,
+      });
+      // THEN
+      expect(pipe.pipeRole).toBeDefined();
+      expect(pipe.pipeRole).toBe(role);
+      expect(source.grantRead).toHaveBeenCalledWith(role);
+      expect(target.grantPush).toHaveBeenCalledWith(role);
+    });
+  });
+
+  describe('logs', () => {
+    it('should pass along log configuration', () => {
+      // GIVEN
+      const source = {
+        grantRead: () => { },
+        sourceArn: 'source-arn',
+        sourceParameters: {},
+      };
+      const target = {
+        grantPush: () => { },
+        targetArn: 'target-arn',
+        targetParameters: {},
+      };
+      // WHEN
+      new Pipe(stack, 'TestPipe', {
+        pipeName: 'TestPipe',
+        source,
+        target,
+        logLevel: LogLevel.INFO,
+        logIncludeExecutionData: [IncludeExecutionData.ALL],
+        logDestination: [
+          {
+            parameters: {
+              cloudwatchLogsLogDestination: {
+                logGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/events/pipes/TestPipe',
+              },
+            },
+            grantPush: () => { },
+          },
+        ],
+      });
+
+      const template = Template.fromStack(stack);
+
+      // THEN
+      template.hasResource('AWS::Pipes::Pipe', {
+        Properties: {
+          LogConfiguration: {
+            CloudwatchLogsLogDestination: {
+
+              LogGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/events/pipes/TestPipe',
+            },
+            Level: 'INFO',
+            IncludeExecutionData: ['ALL'],
+          },
+        },
+      },
+      );
+    } );
+
+    it('should call grantPush of the log destination with pipe role', () => {
+      // GIVEN
+      const source = {
+        grantRead: () => { },
+        sourceArn: 'source-arn',
+        sourceParameters: {},
+      };
+      const target = {
+        grantPush: () => { },
+        targetArn: 'target-arn',
+        targetParameters: {},
+      };
+      const logDestination = {
+        parameters: {
+          cloudwatchLogsLogDestination: {
+            logGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/events/pipes/TestPipe',
+          },
+        },
+        grantPush: jest.fn(),
+      };
+      // WHEN
+      const pipe = new Pipe(stack, 'TestPipe', {
+        pipeName: 'TestPipe',
+        source,
+        target,
+        logDestination: [logDestination],
+      });
+
+      // THEN
+      expect(logDestination.grantPush).toHaveBeenCalledWith(pipe.pipeRole);
     });
   });
 });

@@ -1,9 +1,9 @@
 import { IResource, Resource } from 'aws-cdk-lib';
 import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
+import { CfnPipe, CfnPipeProps } from 'aws-cdk-lib/aws-pipes';
 import { Construct } from 'constructs';
 import { IPipeEnrichment } from './enrichment';
-import { PipeLogConfigurationProperty } from './logs';
+import { IPipeLogDestination, IncludeExecutionData, LogDestinationProperties, LogLevel } from './logs';
 import { IPipeSource } from './source';
 import { IPipeSourceFilter } from './sourceFilter';
 import { IPipeTarget } from './target';
@@ -13,11 +13,11 @@ import { IPipeTarget } from './target';
  */
 export interface IPipe extends IResource {
   /**
- * The name of the pipe
- *
- * @attribute
- * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-name
- */
+   * The name of the pipe
+   *
+   * @attribute
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-name
+   */
   readonly pipeName: string;
 
   /**
@@ -55,6 +55,7 @@ export enum DesiredState {
    * The pipe should be running.
    */
   RUNNING = 'RUNNING',
+
   /**
    * The pipe should be stopped.
    * */
@@ -66,20 +67,24 @@ export interface PipeProps {
    * The source of the pipe
    */
   readonly source: IPipeSource;
+
   /**
    * The filter pattern for the pipe source
    * @default - no filter
    */
   readonly filter?: IPipeSourceFilter;
+
   /**
   * Enrichment step to enhance the data from the source before sending it to the target.
   * @default - no enrichment
   */
   readonly enrichment?: IPipeEnrichment;
+
   /**
    * The target of the pipe
    */
   readonly target: IPipeTarget;
+
   /**
   * Name of the pipe in the AWS console
   *
@@ -88,6 +93,7 @@ export interface PipeProps {
   * @default - automatically generated name
   */
   readonly name?: string;
+
   /**
    * The role used by the pipe which has permissions to read from the source and write to the target.
    * If an enriched target is used, the role also have permissions to call the enriched target.
@@ -97,7 +103,33 @@ export interface PipeProps {
    */
   readonly role?: IRole;
 
-  readonly logConfiguration?: PipeLogConfigurationProperty ;
+  /**
+   * Destinations for the logs.
+   * @default - no logs
+   */
+  readonly logDestination?: IPipeLogDestination[];
+
+  /**
+    * The level of logging detail to include.
+    *
+    * This applies to all log destinations for the pipe.
+    *
+    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-level
+    * @default - LogLevel.ERROR
+    */
+  readonly logLevel?: LogLevel
+
+  /**
+    * Whether the execution data (specifically, the `payload` , `awsRequest` , and `awsResponse` fields) is included in the log messages for this pipe.
+    *
+    * This applies to all log destinations for the pipe.
+    *
+    * For more information, see [Including execution data in logs](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html#eb-pipes-logs-execution-data) in the *Amazon EventBridge User Guide* .
+    *
+    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-includeexecutiondata
+    * @default - none
+    */
+  readonly logIncludeExecutionData?: IncludeExecutionData[]
 
   /**
    * A description of the pipe displayed in the AWS console
@@ -107,6 +139,7 @@ export interface PipeProps {
    * @default - no description
    */
   readonly description?: string;
+
   /**
    * The desired state of the pipe. If the state is set to STOPPED, the pipe will not process events.
    *
@@ -115,6 +148,7 @@ export interface PipeProps {
    * @default - DesiredState.RUNNING
    */
   readonly desiredState?: DesiredState;
+
   /**
    * `AWS::Pipes::Pipe.Tags`
    *
@@ -155,21 +189,59 @@ export class Pipe extends PipeBase {
       props.name;
     super(scope, id, { physicalName: pipeName });
 
+    /**
+     * Role setup
+     */
     this.pipeRole =
       props.role ||
       new Role(this, 'Role', {
         assumedBy: new ServicePrincipal('pipes.amazonaws.com'),
       });
 
+    /**
+      * Source setup
+      */
     const sourceParameters = {
       ...props.source.sourceParameters,
       filterCriteria: props.filter,
     };
+    props.source.grantRead(this.pipeRole);
+
+    /**
+     * Enrichment setup
+     */
     if (props.enrichment) {
       props.enrichment.grantInvoke(this.pipeRole);
     }
-    props.source.grantRead(this.pipeRole);
+
+    /**
+     * Target setup
+     */
     props.target.grantPush(this.pipeRole);
+
+    /**
+     * Logs setup
+     */
+    const logDestinationConfiguration: LogDestinationProperties[] = [];
+    props.logDestination?.forEach((destination) => {
+      logDestinationConfiguration.push(destination.parameters);
+      destination.grantPush(this.pipeRole);
+    });
+
+    const logConfiguration: CfnPipeProps['logConfiguration'] = {
+      level: props.logLevel || LogLevel.ERROR,
+      includeExecutionData: props.logIncludeExecutionData || undefined,
+    };
+
+    const mergedLogConfiguration = props.logDestination?.reduce((acc, destination) => {
+      const config = destination.parameters;
+      return { ...acc, ...config };
+
+    }, logConfiguration);
+
+    /**
+     * Pipe resource
+     */
 
     const resource = new CfnPipe(this, 'Resource', {
       name: props.name,
@@ -182,7 +254,7 @@ export class Pipe extends PipeBase {
       target: props.target.targetArn,
       targetParameters: props.target.targetParameters,
       desiredState: props.desiredState,
-      logConfiguration: props.logConfiguration,
+      logConfiguration: mergedLogConfiguration,
       tags: props.tags,
     });
 
