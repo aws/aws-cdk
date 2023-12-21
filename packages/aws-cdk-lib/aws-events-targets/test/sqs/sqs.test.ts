@@ -2,7 +2,8 @@ import { Match, Template } from '../../../assertions';
 import * as events from '../../../aws-events';
 import * as kms from '../../../aws-kms';
 import * as sqs from '../../../aws-sqs';
-import { App, Duration, Stack } from '../../../core';
+import * as ssm from '../../../aws-ssm';
+import { App, CustomResource, Duration, Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import * as targets from '../../lib';
 
@@ -396,6 +397,41 @@ test('specifying retry policy with 0 retryAttempts', () => {
         Id: 'Target0',
         RetryPolicy: {
           MaximumRetryAttempts: 0,
+        },
+      },
+    ],
+  });
+});
+
+test('dead letter queue is imported', () => {
+  const stack = new Stack();
+  const queue = new sqs.Queue(stack, 'MyQueue', { fifo: true });
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
+  });
+
+  const dlqArn = 'arn:aws:sqs:eu-west-1:444455556666:queue1';
+  const deadLetterQueue = sqs.Queue.fromQueueArn(stack, 'MyDeadLetterQueue', dlqArn);
+
+  // WHEN
+  rule.addTarget(new targets.SqsQueue(queue, {
+    deadLetterQueue,
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyQueueE6CA6235',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+        DeadLetterConfig: {
+          Arn: dlqArn,
         },
       },
     ],
