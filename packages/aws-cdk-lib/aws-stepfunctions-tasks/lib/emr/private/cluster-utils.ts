@@ -122,12 +122,35 @@ export function InstanceTypeConfigPropertyToJson(property: EmrCreateCluster.Inst
  */
 export function InstanceFleetProvisioningSpecificationsPropertyToJson(property: EmrCreateCluster.InstanceFleetProvisioningSpecificationsProperty) {
   return {
-    SpotSpecification: {
-      AllocationStrategy: cdk.stringToCloudFormation(property.spotSpecification.allocationStrategy),
-      BlockDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification.blockDurationMinutes),
-      TimeoutAction: cdk.stringToCloudFormation(property.spotSpecification.timeoutAction?.valueOf()),
-      TimeoutDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification.timeoutDurationMinutes),
-    },
+    OnDemandSpecification: OnDemandProvisioningSpecificationPropertyToJson(property.onDemandSpecification),
+    SpotSpecification: SpotProvisioningSpecificationPropertyToJson(property.spotSpecification),
+  };
+}
+
+/**
+ * Render the OnDemandProvisioningSpecificationProperty to JSON
+ */
+function OnDemandProvisioningSpecificationPropertyToJson(property?: EmrCreateCluster.OnDemandProvisioningSpecificationProperty) {
+  if (!property) {
+    return undefined;
+  }
+  return {
+    AllocationStrategy: cdk.stringToCloudFormation(property.allocationStrategy),
+  };
+}
+
+/**
+ * Render the SpotProvisioningSpecificationProperty to JSON
+ */
+function SpotProvisioningSpecificationPropertyToJson(property?: EmrCreateCluster.SpotProvisioningSpecificationProperty) {
+  if (!property) {
+    return undefined;
+  }
+  return {
+    AllocationStrategy: cdk.stringToCloudFormation(property.allocationStrategy),
+    BlockDurationMinutes: cdk.numberToCloudFormation(property.blockDurationMinutes),
+    TimeoutAction: cdk.stringToCloudFormation(property.timeoutAction?.valueOf()),
+    TimeoutDurationMinutes: cdk.numberToCloudFormation(property.timeoutDurationMinutes),
   };
 }
 
