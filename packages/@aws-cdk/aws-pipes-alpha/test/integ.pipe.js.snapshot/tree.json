@@ -52,6 +52,121 @@
               "version": "0.0.0"
             }
           },
+          "EnrichmentLambda": {
+            "id": "EnrichmentLambda",
+            "path": "aws-cdk-pipes/EnrichmentLambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-pipes/EnrichmentLambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-pipes/EnrichmentLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-pipes/EnrichmentLambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-pipes/EnrichmentLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = async (event) => { return event.map( record => ({...record, body: record.body + \"-enriched\"}) ) };"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "EnrichmentLambdaServiceRole72330D97",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "LogGroup": {
+            "id": "LogGroup",
+            "path": "aws-cdk-pipes/LogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-pipes/LogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "0.0.0"
+            }
+          },
           "Pipe": {
             "id": "Pipe",
             "path": "aws-cdk-pipes/Pipe",
@@ -122,6 +237,32 @@
                                   }
                                 },
                                 {
+                                  "Action": "lambda:InvokeFunction",
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "EnrichmentLambda3D6CE785",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "EnrichmentLambda3D6CE785",
+                                              "Arn"
+                                            ]
+                                          },
+                                          ":*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
                                   "Action": [
                                     "sqs:GetQueueAttributes",
                                     "sqs:GetQueueUrl",
@@ -131,6 +272,19 @@
                                   "Resource": {
                                     "Fn::GetAtt": [
                                       "TargetQueue08AD2B3C",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "LogGroupF5B46931",
                                       "Arn"
                                     ]
                                   }
@@ -169,6 +323,27 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Pipes::Pipe",
                   "aws:cdk:cloudformation:props": {
+                    "enrichment": {
+                      "Fn::GetAtt": [
+                        "EnrichmentLambda3D6CE785",
+                        "Arn"
+                      ]
+                    },
+                    "enrichmentParameters": {},
+                    "logConfiguration": {
+                      "level": "TRACE",
+                      "includeExecutionData": [
+                        "ALL"
+                      ],
+                      "cloudwatchLogsLogDestination": {
+                        "logGroupArn": {
+                          "Fn::GetAtt": [
+                            "LogGroupF5B46931",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
                     "roleArn": {
                       "Fn::GetAtt": [
                         "PipeRole7D4AFC73",
@@ -272,17 +447,17 @@
                 "id": "DeployAssert",
                 "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallSQSsendMessage5ff715c53afe5f80b5129268797a49e5": {
-                    "id": "AwsApiCallSQSsendMessage5ff715c53afe5f80b5129268797a49e5",
-                    "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage5ff715c53afe5f80b5129268797a49e5",
+                  "AwsApiCallSQSsendMessage74787a69cc6a321d2e928e73c176b2eb": {
+                    "id": "AwsApiCallSQSsendMessage74787a69cc6a321d2e928e73c176b2eb",
+                    "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage74787a69cc6a321d2e928e73c176b2eb",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage5ff715c53afe5f80b5129268797a49e5/SdkProvider",
+                        "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage74787a69cc6a321d2e928e73c176b2eb/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage5ff715c53afe5f80b5129268797a49e5/SdkProvider/AssertionsProvider",
+                            "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage74787a69cc6a321d2e928e73c176b2eb/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -296,11 +471,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage5ff715c53afe5f80b5129268797a49e5/Default",
+                        "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage74787a69cc6a321d2e928e73c176b2eb/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage5ff715c53afe5f80b5129268797a49e5/Default/Default",
+                            "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage74787a69cc6a321d2e928e73c176b2eb/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"

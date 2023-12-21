@@ -10,6 +10,64 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "EnrichmentLambdaServiceRole72330D97": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "EnrichmentLambda3D6CE785": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = async (event) => { return event.map( record => ({...record, body: record.body + \"-enriched\"}) ) };"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "EnrichmentLambdaServiceRole72330D97",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "EnrichmentLambdaServiceRole72330D97"
+   ]
+  },
+  "LogGroupF5B46931": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "PipeRole7D4AFC73": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -49,6 +107,32 @@
        }
       },
       {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "EnrichmentLambda3D6CE785",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "EnrichmentLambda3D6CE785",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
        "Action": [
         "sqs:GetQueueAttributes",
         "sqs:GetQueueUrl",
@@ -58,6 +142,19 @@
        "Resource": {
         "Fn::GetAtt": [
          "TargetQueue08AD2B3C",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "LogGroupF5B46931",
          "Arn"
         ]
        }
@@ -76,6 +173,27 @@
   "Pipe7793F8A1": {
    "Type": "AWS::Pipes::Pipe",
    "Properties": {
+    "Enrichment": {
+     "Fn::GetAtt": [
+      "EnrichmentLambda3D6CE785",
+      "Arn"
+     ]
+    },
+    "EnrichmentParameters": {},
+    "LogConfiguration": {
+     "CloudwatchLogsLogDestination": {
+      "LogGroupArn": {
+       "Fn::GetAtt": [
+        "LogGroupF5B46931",
+        "Arn"
+       ]
+      }
+     },
+     "IncludeExecutionData": [
+      "ALL"
+     ],
+     "Level": "TRACE"
+    },
     "RoleArn": {
      "Fn::GetAtt": [
       "PipeRole7D4AFC73",
