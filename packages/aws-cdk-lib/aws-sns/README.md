@@ -220,8 +220,6 @@ Amazon SNS provides support to log the delivery status of notification messages 
 Example with a delivery status logging configuration for SQS:
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 declare const role: iam.Role;
 const topic = new sns.Topic(this, 'MyTopic', {
   loggingConfigs: [
@@ -238,8 +236,6 @@ const topic = new sns.Topic(this, 'MyTopic', {
 A delivery status logging configuration can also be added to your topic by `addLoggingConfig` method:
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-
 declare const role: iam.Role;
 const topic = new sns.Topic(this, 'MyTopic');
 
