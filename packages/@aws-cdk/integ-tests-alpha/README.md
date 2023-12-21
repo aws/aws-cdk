@@ -522,3 +522,32 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
 });
 ```
 
+When `waitForAssertions()` is used for the `awsApiCall`, the actual API call is executed
+by the `waiterProvider` assertion provider.
+
+By default, the `AwsApiCall` construct will automatically add the correct IAM policies
+to allow the Lambda function to make the API call. It does this based on the `service`
+and `api` that is provided. In the above example the service is `SQS` and the api is
+`receiveMessage` so it will create a policy with `Action: 'sqs:ReceiveMessage`.
+
+There are some cases where the permissions do not exactly match the service/api call, for
+example the S3 `listObjectsV2` api. In these cases it is possible to add the correct policy
+by accessing the `waiterProvider` object.
+
+```ts
+declare const integ: IntegTest;
+
+const apiCall = integ.assertions.awsApiCall('S3', 'listObjectsV2', {
+  Bucket: 'mybucket',
+}).waitForAssertions({
+  totalTimeout: Duration.minutes(5),
+  interval: Duration.seconds(15),
+  backoffRate: 3,
+});
+
+apiCall.waiterProvider?.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['s3:GetObject', 's3:ListBucket'],
+  Resource: ['*'],
+});
+```
