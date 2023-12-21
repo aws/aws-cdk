@@ -11,6 +11,7 @@ import {
   MachineImage,
   Vpc,
 } from '../../lib';
+import { Vitest, vi } from 'vitest';
 
 describe('RequireImdsv2Aspect', () => {
   let app: cdk.App;
@@ -29,7 +30,7 @@ describe('RequireImdsv2Aspect', () => {
       suppressWarnings: true,
     });
     const errmsg = 'ERROR';
-    const visitMock = jest.spyOn(aspect, 'visit').mockImplementation((node) => {
+    const visitMock = vi.spyOn(aspect, 'visit').mockImplementation((node) => {
       // @ts-ignore
       aspect.warn(node, errmsg);
     });
