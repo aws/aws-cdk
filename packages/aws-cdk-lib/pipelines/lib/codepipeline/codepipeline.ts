@@ -244,6 +244,19 @@ export interface CodePipelineProps {
    * @default - A new S3 bucket will be created.
    */
   readonly artifactBucket?: s3.IBucket;
+  
+  /**
+   * A map of region to S3 bucket name used for cross-region CodePipeline.
+   * For every Action that you specify targeting a different region than the Pipeline itself,
+   * if you don't provide an explicit Bucket for that region using this property,
+   * the construct will automatically create a Stack containing an S3 Bucket in that region.
+   * 
+   * Passed directly through to the {@link cp.Pipeline}.
+   *
+   * @default - None.
+   */
+
+  readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket };
 }
 
 /**
@@ -440,6 +453,9 @@ export class CodePipeline extends PipelineBase {
       if (this.props.enableKeyRotation !== undefined) {
         throw new Error('Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'');
       }
+      if (this.props.crossRegionReplicationBuckets !== undefined) {
+        throw new Error('Cannot set \'crossRegionReplicationBuckets\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
       if (this.props.reuseCrossRegionSupportStacks !== undefined) {
         throw new Error('Cannot set \'reuseCrossRegionSupportStacks\' if an existing CodePipeline is given using \'codePipeline\'');
       }
@@ -455,6 +471,7 @@ export class CodePipeline extends PipelineBase {
       this._pipeline = new cp.Pipeline(this, 'Pipeline', {
         pipelineName: this.props.pipelineName,
         crossAccountKeys: this.props.crossAccountKeys ?? false,
+        crossRegionReplicationBuckets: this.props.crossRegionReplicationBuckets,
         reuseCrossRegionSupportStacks: this.props.reuseCrossRegionSupportStacks,
         // This is necessary to make self-mutation work (deployments are guaranteed
         // to happen only after the builds of the latest pipeline definition).
