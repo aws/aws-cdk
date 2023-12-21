@@ -1,15 +1,15 @@
 {
   "version": "35.0.0",
   "files": {
-    "db9ef4d632616698eb575a61885fbee99b7479aae25d14e8cd4c6774b50a5996": {
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
       "source": {
-        "path": "cdk-integ-secret-hosted-rotation.template.json",
+        "path": "EmrCreateClusterTestDefaultTestDeployAssert697DC891.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "db9ef4d632616698eb575a61885fbee99b7479aae25d14e8cd4c6774b50a5996.json",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
