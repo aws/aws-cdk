@@ -590,7 +590,12 @@ export class Cluster extends Resource implements ICluster {
    * @param keyPattern Task id pattern
    */
   public arnForTasks(keyPattern: string): string {
-    return `arn:${Stack.of(this).partition}:ecs:${Stack.of(this).region}:${Stack.of(this).account}:task/${this.clusterName}/${keyPattern}`;
+    return Stack.of(this).formatArn({
+      service: 'ecs',
+      resource: 'task',
+      resourceName: `${this.clusterName}/${keyPattern}`,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    });
   }
 
   private configureWindowsAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
