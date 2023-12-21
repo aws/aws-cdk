@@ -206,3 +206,45 @@ const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
   policyDocument,
 });
 ```
+
+## Delivery status logging
+
+Amazon SNS provides support to log the delivery status of notification messages sent to topics with the following Amazon SNS endpoints:
+
+- HTTP
+- Amazon Kinesis Data Firehose
+- AWS Lambda
+- Platform application endpoint
+- Amazon Simple Queue Service
+
+Example with a delivery status logging configuration for SQS:
+
+```ts
+declare const role: iam.Role;
+const topic = new sns.Topic(this, 'MyTopic', {
+  loggingConfigs: [
+    {
+      protocol: sns.LoggingProtocol.SQS,
+      failureFeedbackRole: role,
+      successFeedbackRole: role,
+      successFeedbackSampleRate: 50,
+    },
+  ],
+});
+```
+
+A delivery status logging configuration can also be added to your topic by `addLoggingConfig` method:
+
+```ts
+declare const role: iam.Role;
+const topic = new sns.Topic(this, 'MyTopic');
+
+topic.addLoggingConfig({
+  protocol: sns.LoggingProtocol.SQS,
+  failureFeedbackRole: role,
+  successFeedbackRole: role,
+  successFeedbackSampleRate: 50,
+});
+```
+
+Note that valid values for `successFeedbackSampleRate` are integer between 0-100.
