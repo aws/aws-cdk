@@ -2090,6 +2090,7 @@ describe('cluster', () => {
           TargetCapacity: 100,
         },
         ManagedTerminationProtection: 'ENABLED',
+        ManagedDraining: undefined,
       },
     });
 
@@ -2111,6 +2112,7 @@ describe('cluster', () => {
       autoScalingGroup,
       enableManagedScaling: false,
       enableManagedTerminationProtection: false,
+      enableManagedDraining: false,
     });
 
     // THEN
@@ -2121,6 +2123,7 @@ describe('cluster', () => {
         },
         ManagedScaling: Match.absent(),
         ManagedTerminationProtection: 'DISABLED',
+        ManagedDraining: 'DISABLED',
       },
     });
   });
@@ -2153,6 +2156,70 @@ describe('cluster', () => {
           TargetCapacity: 100,
         },
         ManagedTerminationProtection: 'DISABLED',
+      },
+    });
+  });
+
+  test('can disable Managed Draining for ASG capacity provider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedDraining: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+      AutoScalingGroupProvider: {
+        AutoScalingGroupArn: {
+          Ref: 'asgASG4D014670',
+        },
+        ManagedScaling: {
+          Status: 'ENABLED',
+          TargetCapacity: 100,
+        },
+        enableManagedDraining: 'DISABLED',
+      },
+    });
+  });
+
+  test('can enable Managed Draining for ASG capacity provider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedDraining: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+      AutoScalingGroupProvider: {
+        AutoScalingGroupArn: {
+          Ref: 'asgASG4D014670',
+        },
+        ManagedScaling: {
+          Status: 'ENABLED',
+          TargetCapacity: 100,
+        },
+        enableManagedDraining: 'ENABLED',
       },
     });
   });
