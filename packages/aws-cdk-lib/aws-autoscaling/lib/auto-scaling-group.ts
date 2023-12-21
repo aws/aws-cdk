@@ -701,10 +701,10 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * It represents the maximum percentage of the group that can be in service and healthy, or pending,
    * to support your workload when replacing instances.
    *
-   * Value range is 0 to 100. After it's set, both `minHealthPercentage` and `maxHealthPercentage` to
+   * Value range is 0 to 100. After it's set, both `minHealthyPercentage` and `maxHealthyPercentage` to
    * -1 will clear the previously set value.
    *
-   * Both or neither of `minHealthPercentage` and `maxHealthPercentage` must be specified, and the
+   * Both or neither of `minHealthyPercentage` and `maxHealthyPercentage` must be specified, and the
    * difference between them cannot be greater than 100. A large range increases the number of
    * instances that can be replaced at the same time.
    *
@@ -712,17 +712,17 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @default - No instance maintenance policy.
    */
-  readonly maxHealthPercentage?: number;
+  readonly maxHealthyPercentage?: number;
 
   /**
    * Specifies the lower threshold as a percentage of the desired capacity of the Auto Scaling group.
    * It represents the minimum percentage of the group to keep in service, healthy, and ready to use
    * to support your workload when replacing instances.
    *
-   * Value range is 0 to 100. After it's set, both `minHealthPercentage` and `maxHealthPercentage` to
+   * Value range is 0 to 100. After it's set, both `minHealthyPercentage` and `maxHealthyPercentage` to
    * -1 will clear the previously set value.
    *
-   * Both or neither of `minHealthPercentage` and `maxHealthPercentage` must be specified, and the
+   * Both or neither of `minHealthyPercentage` and `maxHealthyPercentage` must be specified, and the
    * difference between them cannot be greater than 100. A large range increases the number of
    * instances that can be replaced at the same time.
    *
@@ -730,7 +730,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    *
    * @default - No instance maintenance policy.
    */
-  readonly minHealthPercentage?: number;
+  readonly minHealthyPercentage?: number;
 }
 
 /**
@@ -1473,8 +1473,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
       instanceMaintenancePolicy: this.renderInstanceMaintenancePolicy(
-        props.maxHealthPercentage,
-        props.minHealthPercentage,
+        props.maxHealthyPercentage,
+        props.minHealthyPercentage,
       ),
       ...this.getLaunchSettings(launchConfig, props.launchTemplate ?? launchTemplateFromConfig, props.mixedInstancesPolicy),
     };
@@ -1891,34 +1891,28 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   }
 
   private renderInstanceMaintenancePolicy(
-    maxHealthPercentage?: number,
-    minHealthPercentage?: number,
+    maxHealthyPercentage?: number,
+    minHealthyPercentage?: number,
   ): CfnAutoScalingGroup.InstanceMaintenancePolicyProperty | undefined {
-    if (maxHealthPercentage === undefined && minHealthPercentage === undefined) return;
-    if (maxHealthPercentage === undefined || minHealthPercentage === undefined) {
-      throw new Error(`Both or neither of minHealthPercentage and maxHealthPercentage must be specified, got minHealthPercentage: ${minHealthPercentage} and maxHealthPercentage: ${maxHealthPercentage}`);
+    if (maxHealthyPercentage === undefined && minHealthyPercentage === undefined) return;
+    if (maxHealthyPercentage === undefined || minHealthyPercentage === undefined) {
+      throw new Error(`Both or neither of minHealthyPercentage and maxHealthyPercentage must be specified, got minHealthyPercentage: ${minHealthyPercentage} and maxHealthyPercentage: ${maxHealthyPercentage}`);
     }
-    if (maxHealthPercentage === -1 && minHealthPercentage === -1) {
-      return {
-        maxHealthyPercentage: maxHealthPercentage,
-        minHealthyPercentage: minHealthPercentage,
-      };
+    if ((minHealthyPercentage === -1 || maxHealthyPercentage === -1) && minHealthyPercentage !== maxHealthyPercentage) {
+      throw new Error(`Both minHealthyPercentage and maxHealthyPercentage must be -1 to clear the previously set value, got minHealthyPercentage: ${minHealthyPercentage} and maxHealthyPercentage: ${maxHealthyPercentage}`);
     }
-    if (minHealthPercentage === -1 || maxHealthPercentage === -1) {
-      throw new Error(`Both minHealthPercentage and maxHealthPercentage must be -1 to clear the previously set value, got minHealthPercentage: ${minHealthPercentage} and maxHealthPercentage: ${maxHealthPercentage}`);
+    if (maxHealthyPercentage !== -1 && (maxHealthyPercentage < 100 || maxHealthyPercentage > 200)) {
+      throw new Error(`maxHealthyPercentage must be between 100 and 200, or -1 to clear the previously set value, got ${maxHealthyPercentage}`);
     }
-    if (maxHealthPercentage < 100 || maxHealthPercentage > 200) {
-      throw new Error(`maxHealthPercentage must be between 100 and 200, or -1 to clear the previously set value, got ${maxHealthPercentage}`);
+    if (minHealthyPercentage !== -1 && (minHealthyPercentage < 0 || minHealthyPercentage > 100)) {
+      throw new Error(`minHealthyPercentage must be between 0 and 100, or -1 to clear the previously set value, got ${minHealthyPercentage}`);
     }
-    if (minHealthPercentage < 0 || minHealthPercentage > 100) {
-      throw new Error(`minHealthPercentage must be between 0 and 100, or -1 to clear the previously set value, got ${minHealthPercentage}`);
-    }
-    if (maxHealthPercentage - minHealthPercentage > 100) {
-      throw new Error(`The difference between minHealthPercentage and maxHealthPercentage cannot be greater than 100, got ${maxHealthPercentage - minHealthPercentage}`);
+    if (maxHealthyPercentage - minHealthyPercentage > 100) {
+      throw new Error(`The difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100, got ${maxHealthyPercentage - minHealthyPercentage}`);
     }
     return {
-      maxHealthyPercentage: maxHealthPercentage,
-      minHealthyPercentage: minHealthPercentage,
+      maxHealthyPercentage,
+      minHealthyPercentage,
     };
   }
 }
