@@ -31,7 +31,7 @@ jobs:
 
       # Upload the current db to be used later
       - name: Upload base database
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: db.base.json.gz
           path: node_modules/@aws-cdk/aws-service-spec/db.json.gz
@@ -49,7 +49,7 @@ jobs:
 
       # Now that we have updated the database, upload the new candidate db
       - name: Upload head database
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: db.head.json.gz
           path: node_modules/@aws-cdk/aws-service-spec/db.json.gz
@@ -69,7 +69,7 @@ jobs:
           git add .
           git diff --patch --staged > ${{ runner.temp }}/update-spec.patch
       - name: Upload Patch
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: update-spec.patch
           path: ${{ runner.temp }}/update-spec.patch
@@ -85,12 +85,12 @@ jobs:
       CI: "true"
     steps:
       - name: Download base database
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: db.base.json.gz
           path: base
       - name: Download head database
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: db.head.json.gz
           path: head
@@ -100,17 +100,17 @@ jobs:
         continue-on-error: true
       - name: Create PR body file
         run: |-
-          echo 'Update AWS Service Spec packages to latest versions' >> PR.md
+          echo 'Updates the L1 CloudFormation resource definitions with the latest changes from `@aws-cdk/aws-service-spec`' >> PR.md
       - name: Add model changelog to PR body file
         if: steps.diff-db.outputs.diff-result
         run: |-
           echo '' >> PR.md
-          echo '**@aws-cdk/aws-service-spec changes:**' >> PR.md
+          echo '**L1 CloudFormation resource definition changes:**' >> PR.md
           echo '```' >> PR.md
           cat DIFF >> PR.md
           echo '```' >> PR.md
       - name: Upload PR body file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: PR.md
           path: PR.md
@@ -128,7 +128,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Download patch
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: update-spec.patch
           path: ${{ runner.temp }}
@@ -137,7 +137,7 @@ jobs:
         run: '[ -s ${{ runner.temp }}/update-spec.patch ] && git apply ${{ runner.temp }}/update-spec.patch || echo "Empty patch. Skipping."'
 
       - name: Download PR body file
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: PR.md
           path: ${{ runner.temp }}
@@ -149,10 +149,10 @@ jobs:
           branch: automation/spec-update
           author: aws-cdk-automation <aws-cdk-automation@users.noreply.github.com>
           commit-message: |-
-            feat: update AWS Service Spec
-            Update AWS Service Spec packages to latest versions
+            feat: update L1 CloudFormation resource definitions
+            Updates the L1 CloudFormation resource definitions with the latest changes from `@aws-cdk/aws-service-spec`
           # Pull Request details
-          title: "feat: update AWS Service Spec"
+          title: "feat: update L1 CloudFormation resource definitions"
           body-path: ${{ runner.temp }}/PR.md
           labels: contribution/core,dependencies,auto-approve,pr-linter/exempt-integ-test,pr-linter/exempt-readme,pr-linter/exempt-test
           team-reviewers: aws-cdk-team

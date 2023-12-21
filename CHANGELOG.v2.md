@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.116.0](https://github.com/aws/aws-cdk/compare/v2.115.0...v2.116.0) (2023-12-21)
+
+
+### Features
+
+* **apigateway:** validate integrationHttpMethod with non-MOCK integration types ([#28316](https://github.com/aws/aws-cdk/issues/28316)) ([93cb6e4](https://github.com/aws/aws-cdk/commit/93cb6e4399fe0e2de67050f10920ec7a1eda34e1))
+* **ec2:** support creating key pairs ([#28138](https://github.com/aws/aws-cdk/issues/28138)) ([6b3caff](https://github.com/aws/aws-cdk/commit/6b3caff7ac4321ca79e70821991de041d33eaa7c)), closes [#5252](https://github.com/aws/aws-cdk/issues/5252)
+* **ecr:** Add emptyOnDelete CloudFormation property to Repository L2 construct ([#28233](https://github.com/aws/aws-cdk/issues/28233)) ([a175da8](https://github.com/aws/aws-cdk/commit/a175da8ec1f4d6149efdfe05749d77ae104842d4)), closes [#24572](https://github.com/aws/aws-cdk/issues/24572) [#28196](https://github.com/aws/aws-cdk/issues/28196)
+* **ecr:** tag pattern list for lifecycle policy ([#28432](https://github.com/aws/aws-cdk/issues/28432)) ([aa075cd](https://github.com/aws/aws-cdk/commit/aa075cd07a892e6c1d5243d5526e2c8658b98621))
+* **ecs:** log retention for FireLensLogDriver ([#28354](https://github.com/aws/aws-cdk/issues/28354)) ([52a5579](https://github.com/aws/aws-cdk/commit/52a5579aa52c88bb289a7a9677c35385763c8fff)), closes [/github.com/aws/aws-cdk/blob/db22b85c9b2a853aa2f830c182a340f0bcf95d1a/packages/aws-cdk-lib/aws-ecs/lib/base/task-definition.ts#L816](https://github.com/aws//github.com/aws/aws-cdk/blob/db22b85c9b2a853aa2f830c182a340f0bcf95d1a/packages/aws-cdk-lib/aws-ecs/lib/base/task-definition.ts/issues/L816) [/github.com/aws/aws-cdk/blob/db22b85c9b2a853aa2f830c182a340f0bcf95d1a/packages/aws-cdk-lib/aws-ecs/lib/firelens-log-router.ts#L170](https://github.com/aws//github.com/aws/aws-cdk/blob/db22b85c9b2a853aa2f830c182a340f0bcf95d1a/packages/aws-cdk-lib/aws-ecs/lib/firelens-log-router.ts/issues/L170) [#28258](https://github.com/aws/aws-cdk/issues/28258)
+* **ecs:** Support specifying revision of task definition ([#27036](https://github.com/aws/aws-cdk/issues/27036)) ([de0d77b](https://github.com/aws/aws-cdk/commit/de0d77b2075506f3c28e657fa072a0bffc8c734a)), closes [#26983](https://github.com/aws/aws-cdk/issues/26983)
+* **events:** add multiple event bus policies on a single event bus ([#27340](https://github.com/aws/aws-cdk/issues/27340)) ([4dde502](https://github.com/aws/aws-cdk/commit/4dde5021a4e69de0ca2e49226ef0d2cde76d4235)), closes [#24671](https://github.com/aws/aws-cdk/issues/24671)
+* **rds:** support aurora mysql 3.05.1 ([#28370](https://github.com/aws/aws-cdk/issues/28370)) ([986db38](https://github.com/aws/aws-cdk/commit/986db38842c901bfe50098b36d78d6e3a6befdf1))
+* **ses:** add scalingMode property to dedicated ip pool ([#28392](https://github.com/aws/aws-cdk/issues/28392)) ([c687778](https://github.com/aws/aws-cdk/commit/c6877788f7abd19b4dcc792d5fa73fc118410efd)), closes [#27418](https://github.com/aws/aws-cdk/issues/27418)
+* **sns:** delivery status logging configuration ([#28433](https://github.com/aws/aws-cdk/issues/28433)) ([36bb696](https://github.com/aws/aws-cdk/commit/36bb6967ad28a84b68e7b9ea5d5facadf0de4297)), closes [#21971](https://github.com/aws/aws-cdk/issues/21971)
+* **stepfunctions:** CustomState addCatch ([#28422](https://github.com/aws/aws-cdk/issues/28422)) ([cf923bc](https://github.com/aws/aws-cdk/commit/cf923bc4eacd3bb0efdc469708dc389a67d38bcc)), closes [#25798](https://github.com/aws/aws-cdk/issues/25798)
+* **stepfunctions:** support Map ItemProcessor ([#27913](https://github.com/aws/aws-cdk/issues/27913)) ([ac41730](https://github.com/aws/aws-cdk/commit/ac417301348f3bc2f0b7352c032802c2aff8d721)), closes [#27878](https://github.com/aws/aws-cdk/issues/27878)
+* **stepfunctions-tasks:** EMR createCluster command support OnDemandSpecification ([#27791](https://github.com/aws/aws-cdk/issues/27791)) ([73a5e74](https://github.com/aws/aws-cdk/commit/73a5e740e7556c8b59111ab4602125ac78a5364f)), closes [#27761](https://github.com/aws/aws-cdk/issues/27761)
+* implement code generated handler framework ([#28251](https://github.com/aws/aws-cdk/issues/28251)) ([1a9c30e](https://github.com/aws/aws-cdk/commit/1a9c30e55e58203bd0a61de82711cf10f1e04851)), closes [#27303](https://github.com/aws/aws-cdk/issues/27303)
+* update AWS Service Spec ([#28407](https://github.com/aws/aws-cdk/issues/28407)) ([fcb701c](https://github.com/aws/aws-cdk/commit/fcb701ceb7288be5307a0f9c12826a13d97251b7))
+
+
+### Bug Fixes
+
+* **core:** messages from `annotations.ts` can show up as `[object Object]` ([#28414](https://github.com/aws/aws-cdk/issues/28414)) ([3e6f10d](https://github.com/aws/aws-cdk/commit/3e6f10ddfdf93147f3d488de2965f7e263bd1713))
+* **custom-resources:** cannot set logging for state machine generated in CompleteHandler ([#27310](https://github.com/aws/aws-cdk/issues/27310)) ([bfeef00](https://github.com/aws/aws-cdk/commit/bfeef00c5e1d99415ff2135054e35acc5e9f6b93)), closes [#27283](https://github.com/aws/aws-cdk/issues/27283)
+* **ecs-patterns:** taskDefinition ignored by queueProcessingFargateService ([#28220](https://github.com/aws/aws-cdk/issues/28220)) ([5d6b8ee](https://github.com/aws/aws-cdk/commit/5d6b8eefc66d326325673bda2b86b72aa4579199)), closes [#27360](https://github.com/aws/aws-cdk/issues/27360)
+* **eks:** neuron plugin not added with addNodegroupCapacity() ([#27909](https://github.com/aws/aws-cdk/issues/27909)) ([b87212b](https://github.com/aws/aws-cdk/commit/b87212b9fe2064b97d8935db49e6d78e183c2fd8))
+* **events-targets:** imported sqs queue cannot be used as a rule dlq ([#28165](https://github.com/aws/aws-cdk/issues/28165)) ([#28285](https://github.com/aws/aws-cdk/issues/28285)) ([588b106](https://github.com/aws/aws-cdk/commit/588b1064c289295c5acce1b991ef8dcd7c8bec3f))
+* **iam:** importedRoleStackSafeDefaultPolicyName feature flag results in excessively long IAM policy names ([#27548](https://github.com/aws/aws-cdk/issues/27548)) ([4f88db6](https://github.com/aws/aws-cdk/commit/4f88db691652274eb1b3119c8b1dccb196b29928)), closes [#27409](https://github.com/aws/aws-cdk/issues/27409) [#24441](https://github.com/aws/aws-cdk/issues/24441)
+* **logs:** adding a resource policy statement with `AnyPrincipal` fails ([#27787](https://github.com/aws/aws-cdk/issues/27787)) ([0b2ba1c](https://github.com/aws/aws-cdk/commit/0b2ba1c5d807ce8dfc390ea3b0ca5a1e39636315)), closes [#27783](https://github.com/aws/aws-cdk/issues/27783)
+* **s3-notifications:** multiple notifications doesn't work ([#28132](https://github.com/aws/aws-cdk/issues/28132)) ([37be7b9](https://github.com/aws/aws-cdk/commit/37be7b9b5d2abe04aa5f632a7b78aed3e9c233d8))
+* **secretsmanager:** cannot set hourly rotation ([#28303](https://github.com/aws/aws-cdk/issues/28303)) ([09cb003](https://github.com/aws/aws-cdk/commit/09cb003fb917714c0dc88b47cd05893c2a816d45)), closes [#28261](https://github.com/aws/aws-cdk/issues/28261)
+* **secretsmanager:** hosted rotation with fromSecretNameV2() does not create correct iam policy ([#28379](https://github.com/aws/aws-cdk/issues/28379)) ([4ab5bb2](https://github.com/aws/aws-cdk/commit/4ab5bb2e9aab4cee4e8a2bcd81871254f2c3065f)), closes [#28308](https://github.com/aws/aws-cdk/issues/28308)
+
 ## [2.115.0](https://github.com/aws/aws-cdk/compare/v2.114.1...v2.115.0) (2023-12-14)
 
 
