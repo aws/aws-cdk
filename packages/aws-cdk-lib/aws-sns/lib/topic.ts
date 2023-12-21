@@ -51,7 +51,7 @@ export interface TopicProps {
   /**
    * The list of delivery status logging configurations for the topic.
    *
-   * For more information, see [Amazon SNS message delivery status](https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html).
+   * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html.
    *
    * @default None
    */
@@ -61,7 +61,7 @@ export interface TopicProps {
 /**
  * A logging configuration for delivery status of messages sent from SNS topic to subscribed endpoints.
  *
- * For more information, see [Amazon SNS message delivery status](https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html).
+ * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html.
  */
 export interface LoggingConfig {
   /**
