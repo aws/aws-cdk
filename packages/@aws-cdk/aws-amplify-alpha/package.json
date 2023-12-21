@@ -86,6 +86,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
+    "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-sdk/client-amplify": "3.451.0",
     "@aws-sdk/client-s3": "3.451.0",
     "@aws-sdk/s3-request-presigner": "3.451.0",

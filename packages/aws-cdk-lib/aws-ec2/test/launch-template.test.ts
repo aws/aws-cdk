@@ -23,6 +23,8 @@ import {
   EbsDeviceVolumeType,
   InstanceInitiatedShutdownBehavior,
   InstanceType,
+  KeyPair,
+  KeyPairType,
   LaunchTemplate,
   LaunchTemplateHttpTokens,
   OperatingSystemType,
@@ -587,6 +589,30 @@ describe('LaunchTemplate', () => {
         KeyName: 'TestKeyname',
       },
     });
+  });
+
+  it('throws an error on incompatible Key Pair for operating system', () => {
+    // GIVEN
+    const keyPair = new KeyPair(stack, 'KeyPair', {
+      type: KeyPairType.ED25519,
+    });
+
+    // THEN
+    expect(() => new LaunchTemplate(stack, 'Instance', {
+      machineImage: new WindowsImage(WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE),
+      keyPair,
+    })).toThrow('ed25519 keys are not compatible with the chosen AMI');
+  });
+
+  it('throws when keyName and keyPair are provided', () => {
+    // GIVEN
+    const keyPair = new KeyPair(stack, 'KeyPair');
+
+    // THEN
+    expect(() => new LaunchTemplate(stack, 'Instance', {
+      keyName: 'test-key-pair',
+      keyPair,
+    })).toThrow('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
   });
 
   test.each([

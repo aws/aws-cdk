@@ -167,6 +167,14 @@ repository.addLifecycleRule({ tagPrefixList: ['prod'], maxImageCount: 9999 });
 repository.addLifecycleRule({ maxImageAge: Duration.days(30) });
 ```
 
+When using `tagPatternList`, an image is successfully matched if it matches
+the wildcard filter.
+
+```ts
+declare const repository: ecr.Repository;
+repository.addLifecycleRule({ tagPatternList: ['prod*'], maxImageCount: 9999 });
+```
+
 ### Repository deletion
 
 When a repository is removed from a stack (or the stack is deleted), the ECR
@@ -176,12 +184,13 @@ policy is set to `RemovalPolicy.DESTROY`, the repository will be deleted as long
 as it does not contain any images.
 
 To override this and force all images to get deleted during repository deletion,
-enable the`autoDeleteImages` option.
+enable the `emptyOnDelete` option as well as setting the removal policy to 
+`RemovalPolicy.DESTROY`.
 
 ```ts
 const repository = new ecr.Repository(this, 'MyTempRepo', {
-  removalPolicy: RemovalPolicy.DESTROY,
-  autoDeleteImages: true,
+      removalPolicy: RemovalPolicy.DESTROY,
+      emptyOnDelete: true,
 });
 ```
 

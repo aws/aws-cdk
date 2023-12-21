@@ -1,5 +1,4 @@
 import * as crypto from 'crypto';
-import * as path from 'path';
 import { Construct } from 'constructs';
 import { Code } from './code';
 import { Runtime } from './runtime';
@@ -11,6 +10,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { AutoDeleteUnderlyingResourcesProvider } from '../../custom-resource-handlers/dist/aws-synthetics/auto-delete-underlying-resources-provider.generated';
 
 const AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE = 'Custom::SyntheticsAutoDeleteUnderlyingResources';
 const AUTO_DELETE_UNDERLYING_RESOURCES_TAG = 'aws-cdk:auto-delete-underlying-resources';
@@ -321,10 +321,8 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
   }
 
   private cleanupUnderlyingResources() {
-    const provider = cdk.CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-synthetics', 'auto-delete-underlying-resources-handler'),
+    const provider = AutoDeleteUnderlyingResourcesProvider.getOrCreateProvider(this, AUTO_DELETE_UNDERLYING_RESOURCES_RESOURCE_TYPE, {
       useCfnResponseWrapper: false,
-      runtime: cdk.CustomResourceProviderRuntime.NODEJS_18_X,
       description: `Lambda function for auto-deleting underlying resources created by ${this.canaryName}.`,
       policyStatements: [{
         Effect: 'Allow',

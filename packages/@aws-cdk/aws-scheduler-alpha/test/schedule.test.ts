@@ -4,7 +4,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { IScheduleTarget, Schedule, ScheduleTargetConfig } from '../lib';
+import { IScheduleTarget, Schedule, ScheduleTargetConfig, TimeWindow } from '../lib';
 import { ScheduleExpression } from '../lib/schedule-expression';
 
 class SomeLambdaTarget implements IScheduleTarget {
@@ -159,6 +159,60 @@ describe('Schedule', () => {
           end: new Date(end),
         });
       }).toThrow(`start must precede end, got start: ${start}, end: ${end}`);
+    });
+  });
+
+  describe('flexibleTimeWindow', () => {
+    test('flexibleTimeWindow mode is set to OFF by default', () => {
+      // WHEN
+      new Schedule(stack, 'TestSchedule', {
+        schedule: expr,
+        target: new SomeLambdaTarget(func, role),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
+        FlexibleTimeWindow: {
+          Mode: 'OFF',
+        },
+      });
+    });
+
+    test('flexibleTimeWindow mode can be set to FLEXIBLE', () => {
+      // WHEN
+      new Schedule(stack, 'TestSchedule', {
+        schedule: expr,
+        target: new SomeLambdaTarget(func, role),
+        timeWindow: TimeWindow.flexible(Duration.minutes(1440)),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Scheduler::Schedule', {
+        FlexibleTimeWindow: {
+          Mode: 'FLEXIBLE',
+          MaximumWindowInMinutes: 1440,
+        },
+      });
+    });
+
+    test('throw error when maximumWindowInMinutes is greater than 1440', () => {
+      expect(() => {
+        new Schedule(stack, 'TestSchedule', {
+          schedule: expr,
+          target: new SomeLambdaTarget(func, role),
+          timeWindow: TimeWindow.flexible(Duration.minutes(1441)),
+        });
+      }).toThrow('The provided duration must be between 1 minute and 1440 minutes, got 1441');
+    });
+
+    test('throw error when maximumWindowInMinutes is less than 1', () => {
+      expect(() => {
+        new Schedule(stack, 'TestSchedule', {
+          schedule: expr,
+          target: new SomeLambdaTarget(func, role),
+          timeWindow: TimeWindow.flexible(Duration.minutes(0)),
+        });
+      }).toThrow('The provided duration must be between 1 minute and 1440 minutes, got 0');
     });
   });
 });

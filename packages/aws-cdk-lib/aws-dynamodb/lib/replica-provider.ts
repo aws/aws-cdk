@@ -1,8 +1,8 @@
-import * as path from 'path';
 import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import { Aws, Duration, NestedStack, Stack } from '../../core';
+import { ReplicaOnEventFunction, ReplicaIsCompleteFunction } from '../../custom-resource-handlers/dist/aws-dynamodb/replica-provider.generated';
 import * as cr from '../../custom-resources';
 
 /**
@@ -55,21 +55,13 @@ export class ReplicaProvider extends NestedStack {
   private constructor(scope: Construct, id: string, props: ReplicaProviderProps) {
     super(scope, id);
 
-    const code = lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-dynamodb', 'replica-handler'));
-
     // Issues UpdateTable API calls
-    this.onEventHandler = new lambda.Function(this, 'OnEventHandler', {
-      code,
-      runtime: lambda.Runtime.NODEJS_18_X,
-      handler: 'index.onEventHandler',
+    this.onEventHandler = new ReplicaOnEventFunction(this, 'OnEventHandler', {
       timeout: Duration.minutes(5),
     });
 
     // Checks if table is back to `ACTIVE` state
-    this.isCompleteHandler = new lambda.Function(this, 'IsCompleteHandler', {
-      code,
-      runtime: lambda.Runtime.NODEJS_18_X,
-      handler: 'index.isCompleteHandler',
+    this.isCompleteHandler = new ReplicaIsCompleteFunction(this, 'IsCompleteHandler', {
       timeout: Duration.seconds(30),
     });
 

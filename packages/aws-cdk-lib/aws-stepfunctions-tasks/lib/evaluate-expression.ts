@@ -1,8 +1,8 @@
-import * as path from 'path';
 import { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
+import { EvalNodejsSingletonFunction } from '../../custom-resource-handlers/dist/aws-stepfunctions-tasks/eval-nodejs-provider.generated';
 
 /**
  * Properties for EvaluateExpression
@@ -116,13 +116,8 @@ function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
     throw new Error(`The runtime ${runtime?.name} is currently not supported.`);
   }
 
-  return new lambda.SingletonFunction(scope, 'EvalFunction', {
-    runtime: runtime ?? lambda.Runtime.NODEJS_18_X,
+  return new EvalNodejsSingletonFunction(scope, 'EvalFunction', {
     uuid,
-    handler: 'index.handler',
     lambdaPurpose,
-    code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-stepfunctions-tasks', 'eval-nodejs-handler'), {
-      exclude: ['*.ts'],
-    }),
   });
 }

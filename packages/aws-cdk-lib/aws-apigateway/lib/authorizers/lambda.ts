@@ -123,7 +123,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    */
   protected setupPermissions() {
     if (!this.role) {
-      this.addDefaultPermisionRole();
+      this.addDefaultPermissionRole();
     } else if (iam.Role.isRole(this.role)) {
       this.addLambdaInvokePermission(this.role);
     }
@@ -132,7 +132,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
   /**
    * Add Default Permission Role for handler
    */
-  private addDefaultPermisionRole() :void {
+  private addDefaultPermissionRole(): void {
     this.handler.addPermission(`${Names.uniqueId(this)}:Permissions`, {
       principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
       sourceArn: this.authorizerArn,
@@ -140,9 +140,9 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
   }
 
   /**
-   * Add Lambda Invoke Permission for LambdaAurhorizer's role
+   * Add Lambda Invoke Permission for Lambda Authorizer's role
    */
-  private addLambdaInvokePermission(role: iam.Role) :void {
+  private addLambdaInvokePermission(role: iam.Role): void {
     role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
       statements: [
         new iam.PolicyStatement({

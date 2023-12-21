@@ -8,6 +8,8 @@ const stack = new cdk.Stack(app, 'aws-ecr-integ-stack');
 
 const repo = new ecr.Repository(stack, 'Repo');
 repo.addLifecycleRule({ maxImageCount: 5 });
+repo.addLifecycleRule({ tagPrefixList: ['abc'], maxImageCount: 3 });
+repo.addLifecycleRule({ tagPatternList: ['abc*'], maxImageCount: 3 });
 repo.addToResourcePolicy(new iam.PolicyStatement({
   actions: ['ecr:GetDownloadUrlForLayer'],
   principals: [new iam.AnyPrincipal()],
@@ -16,6 +18,11 @@ repo.addToResourcePolicy(new iam.PolicyStatement({
 const user = new iam.User(stack, 'MyUser');
 repo.grantRead(user);
 repo.grantPullPush(user);
+
+new ecr.Repository(stack, 'RepoWithEmptyOnDelete', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  emptyOnDelete: true,
+});
 
 new cdk.CfnOutput(stack, 'RepositoryURI', {
   value: repo.repositoryUri,

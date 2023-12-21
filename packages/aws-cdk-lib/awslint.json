@@ -660,6 +660,7 @@
     "props-default-doc:aws-cdk-lib.aws_ecr.LifecycleRule.maxImageAge",
     "props-default-doc:aws-cdk-lib.aws_ecr.LifecycleRule.maxImageCount",
     "props-default-doc:aws-cdk-lib.aws_ecr.LifecycleRule.tagPrefixList",
+    "props-default-doc:aws-cdk-lib.aws_ecr.LifecycleRule.tagPatternList",
     "docs-public-apis:aws-cdk-lib.aws_ecr.RepositoryAttributes",
     "docs-public-apis:aws-cdk-lib.aws_ecr.RepositoryAttributes.repositoryArn",
     "docs-public-apis:aws-cdk-lib.aws_ecr.RepositoryAttributes.repositoryName",

@@ -90,6 +90,12 @@ new scheduler.Schedule(stack, 'CustomerKmsSchedule', {
   key,
 });
 
+new scheduler.Schedule(stack, 'UseFlexibleTimeWindow', {
+  schedule: expression,
+  target: target,
+  timeWindow: scheduler.TimeWindow.flexible(cdk.Duration.minutes(10)),
+});
+
 const currentYear = new Date().getFullYear();
 new scheduler.Schedule(stack, 'ScheduleWithTimeFrame', {
   schedule: expression,

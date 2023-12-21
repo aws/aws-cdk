@@ -1,5 +1,4 @@
 import { EOL } from 'os';
-import * as path from 'path';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -13,7 +12,6 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import {
   CustomResource,
-  CustomResourceProvider,
   Duration,
   FeatureFlags,
   Fn,
@@ -27,9 +25,9 @@ import {
   Token,
   Tokenization,
   Annotations,
-  CustomResourceProviderRuntime,
 } from '../../core';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
+import { AutoDeleteObjectsProvider } from '../../custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated';
 import * as cxapi from '../../cx-api';
 import * as regionInformation from '../../region-info';
 
@@ -2466,10 +2464,8 @@ export class Bucket extends BucketBase {
   }
 
   private enableAutoDeleteObjects() {
-    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
-      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-s3', 'auto-delete-objects-handler'),
+    const provider = AutoDeleteObjectsProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       useCfnResponseWrapper: false,
-      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
     });
 

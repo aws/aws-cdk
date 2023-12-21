@@ -180,7 +180,7 @@
                           ]
                         },
                         "rotationRules": {
-                          "automaticallyAfterDays": 30
+                          "scheduleExpression": "rate(4 hours)"
                         },
                         "secretId": {
                           "Ref": "SecretA720EF05"

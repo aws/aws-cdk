@@ -303,6 +303,7 @@ aws-eks/test/integ.eks-cluster-private-endpoint.js
 aws-eks/test/integ.eks-cluster.js
 aws-eks/test/integ.eks-helm-asset.js
 aws-eks/test/integ.eks-inference.js
+aws-eks/test/integ.eks-inference-nodegroup.js
 aws-eks/test/integ.eks-oidc-provider.js
 aws-eks/test/integ.eks-service-account-sdk-call.js
 aws-eks/test/integ.fargate-cluster.js

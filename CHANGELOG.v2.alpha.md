@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.116.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.115.0-alpha.0...v2.116.0-alpha.0) (2023-12-21)
+
+
+### Features
+
+* **scheduler:** flexible time windows ([#28098](https://github.com/aws/aws-cdk/issues/28098)) ([6554e48](https://github.com/aws/aws-cdk/commit/6554e48908662de31aa5dba4578007c857c2403d))
+* **scheduler-targets:** add CodePipeline as target for scheduler ([#27799](https://github.com/aws/aws-cdk/issues/27799)) ([8c44f32](https://github.com/aws/aws-cdk/commit/8c44f3298f6bd6d5b2b081eeef50296d6f716a2d)), closes [#27449](https://github.com/aws/aws-cdk/issues/27449)
+
+
+### Bug Fixes
+
+* **integ-tests:** apply correct IAM policy to waiterProvider ([#28424](https://github.com/aws/aws-cdk/issues/28424)) ([c488035](https://github.com/aws/aws-cdk/commit/c488035db893532c6aca97c59717a351539fa2ec)), closes [40aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts#L136](https://github.com/40aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts/issues/L136) [40aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts#L247](https://github.com/40aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts/issues/L247) [#27865](https://github.com/aws/aws-cdk/issues/27865)
+* **lambda-python-alpha:** pipenv lock -r is no longer supported ([#28317](https://github.com/aws/aws-cdk/issues/28317)) ([f85f486](https://github.com/aws/aws-cdk/commit/f85f486d34e51c4e5d6a8b68b16a35a14f431329)), closes [#28015](https://github.com/aws/aws-cdk/issues/28015) [/github.com/pypa/pipenv/blob/main/CHANGELOG.md#2022813-2022-08-13](https://github.com/aws//github.com/pypa/pipenv/blob/main/CHANGELOG.md/issues/2022813-2022-08-13) [#28015](https://github.com/aws/aws-cdk/issues/28015)
+
 ## [2.115.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.114.1-alpha.0...v2.115.0-alpha.0) (2023-12-14)
 
 

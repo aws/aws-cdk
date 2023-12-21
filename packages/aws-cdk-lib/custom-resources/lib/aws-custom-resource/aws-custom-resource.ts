@@ -1,11 +1,10 @@
-import * as path from 'path';
 import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
-import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { Annotations } from '../../../core';
+import { AwsCustomResourceSingletonFunction } from '../../../custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated';
 import * as cxapi from '../../../cx-api';
 import { awsSdkToIamAction } from '../helpers-internal/sdk-info';
 
@@ -446,10 +445,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
     this.props = props;
 
-    const provider = new lambda.SingletonFunction(this, 'Provider', {
-      code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'custom-resources', 'aws-custom-resource-handler')),
-      runtime: lambda.Runtime.NODEJS_18_X,
-      handler: 'index.handler',
+    const provider = new AwsCustomResourceSingletonFunction(this, 'Provider', {
       uuid: AwsCustomResource.PROVIDER_FUNCTION_UUID,
       lambdaPurpose: 'AWS',
       timeout: props.timeout || cdk.Duration.minutes(2),

@@ -1,16 +1,16 @@
-import * as path from 'path';
 import { Construct } from 'constructs';
 import { ExportReader } from './export-reader-provider';
 import { CrossRegionExports, SSM_EXPORT_PATH_PREFIX, ExportWriterCRProps } from './types';
 import { CfnDynamicReference, CfnDynamicReferenceService } from '../../cfn-dynamic-reference';
 import { CustomResource } from '../../custom-resource';
+import { CrossRegionSsmWriterProvider } from '../../dist/core/cross-region-ssm-writer-provider.generated';
 import { Lazy } from '../../lazy';
 import { Intrinsic } from '../../private/intrinsic';
 import { makeUniqueId } from '../../private/uniqueid';
 import { Reference } from '../../reference';
 import { Stack } from '../../stack';
 import { Token } from '../../token';
-import { CustomResourceProviderRuntime, CustomResourceProvider, CustomResourceProviderProps } from '../custom-resource-provider';
+import { CustomResourceProviderOptions } from '../shared';
 
 /**
  * Properties for an ExportWriter
@@ -28,18 +28,17 @@ export interface ExportWriterProps {
  * Create our own CustomResourceProvider so that we can add a single policy
  * with a list of ARNs instead of having to create a separate policy statement per ARN.
  */
-class CRProvider extends CustomResourceProvider {
-  public static getOrCreateProvider(scope: Construct, uniqueid: string, props: CustomResourceProviderProps): CRProvider {
+class CRProvider extends CrossRegionSsmWriterProvider {
+  public static getOrCreateProvider(scope: Construct, uniqueid: string, props?: CustomResourceProviderOptions): CRProvider {
     const id = `${uniqueid}CustomResourceProvider`;
     const stack = Stack.of(scope);
     const provider = stack.node.tryFindChild(id) as CRProvider
       ?? new CRProvider(stack, id, props);
-
     return provider;
   }
 
   private readonly resourceArns = new Set<string>();
-  constructor(scope: Construct, id: string, props: CustomResourceProviderProps) {
+  constructor(scope: Construct, id: string, props?: CustomResourceProviderOptions) {
     super(scope, id, props);
     this.addToRolePolicy({
       Effect: 'Allow',
@@ -99,10 +98,7 @@ export class ExportWriter extends Construct {
     const region = props.region ?? stack.region;
 
     const resourceType = 'Custom::CrossRegionExportWriter';
-    this.provider = CRProvider.getOrCreateProvider(this, resourceType, {
-      codeDirectory: path.join(__dirname, '..', '..', '..', '..', 'custom-resource-handlers', 'dist', 'core', 'cross-region-ssm-writer-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
-    });
+    this.provider = CRProvider.getOrCreateProvider(this, resourceType);
 
     this.addRegionToPolicy(region);
 

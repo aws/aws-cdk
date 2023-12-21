@@ -140,7 +140,11 @@ describe('method', () => {
   test('use default integration from api', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const defaultIntegration = new apigw.Integration({ type: apigw.IntegrationType.HTTP_PROXY, uri: 'https://amazon.com' });
+    const defaultIntegration = new apigw.Integration({
+      type: apigw.IntegrationType.HTTP_PROXY,
+      integrationHttpMethod: 'POST',
+      uri: 'https://amazon.com',
+    });
     const api = new apigw.RestApi(stack, 'test-api', {
       cloudWatchRole: false,
       deploy: false,
@@ -309,6 +313,7 @@ describe('method', () => {
     // WHEN
     api.root.addMethod('GET', new apigw.Integration({
       type: apigw.IntegrationType.AWS_PROXY,
+      integrationHttpMethod: 'GET',
       options: {
         credentialsRole: role,
       },
@@ -331,6 +336,7 @@ describe('method', () => {
     // WHEN
     api.root.addMethod('GET', new apigw.Integration({
       type: apigw.IntegrationType.AWS_PROXY,
+      integrationHttpMethod: 'GET',
       options: {
         credentialsPassthrough: true,
       },

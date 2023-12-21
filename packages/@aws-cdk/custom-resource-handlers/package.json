@@ -4,7 +4,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "build": "tsc -b && node scripts/minify-and-bundle-sources.js",
+    "build": "tsc -b && node scripts/generate.js",
     "integ": "integ-runner",
     "lint": "cdk-lint",
     "package": "cdk-package",
@@ -50,6 +50,7 @@
     "aws-sdk-client-mock": "^3.0.0",
     "aws-sdk-client-mock-jest": "^3.0.0",
     "aws-sdk-mock": "5.8.0",
+    "@cdklabs/typewriter": "^0.0.3",
     "jest": "^29.7.0",
     "sinon": "^9.2.4",
     "nock": "^13.4.0",

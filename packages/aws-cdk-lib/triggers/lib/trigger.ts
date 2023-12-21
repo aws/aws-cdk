@@ -1,7 +1,7 @@
-import { join } from 'path';
 import { Construct, IConstruct, Node } from 'constructs';
 import * as lambda from '../../aws-lambda';
-import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Duration } from '../../core';
+import { CustomResource, Duration } from '../../core';
+import { TriggerProvider } from '../../custom-resource-handlers/dist/triggers/trigger-provider.generated';
 
 /**
  * Interface for triggers.
@@ -114,10 +114,7 @@ export class Trigger extends Construct implements ITrigger {
   constructor(scope: Construct, id: string, props: TriggerProps) {
     super(scope, id);
 
-    const provider = CustomResourceProvider.getOrCreateProvider(this, 'AWSCDK.TriggerCustomResourceProvider', {
-      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
-      codeDirectory: join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'triggers', 'lambda'),
-    });
+    const provider = TriggerProvider.getOrCreateProvider(this, 'AWSCDK.TriggerCustomResourceProvider');
 
     provider.addToRolePolicy({
       Effect: 'Allow',

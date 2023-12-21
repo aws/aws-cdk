@@ -60,6 +60,21 @@ describe('', () => {
       expect(pipeline.pipelineName).toEqual('MyPipeline');
     });
 
+    test('imported pipeline has correct region and account', () => {
+      const stack = new cdk.Stack(new cdk.App(), 'Stack', {
+        env: {
+          region: 'eu-west-1',
+          account: '234567890123',
+        },
+      });
+
+      const pipeline = codepipeline.Pipeline.fromPipelineArn(stack, 'Pipeline',
+        'arn:aws:codepipeline:us-east-1:123456789012:MyPipeline');
+
+      expect(pipeline.env.region).toEqual('us-east-1');
+      expect(pipeline.env.account).toEqual('123456789012');
+    });
+
     describe('that is cross-region', () => {
       test('validates that source actions are in the same region as the pipeline', () => {
         const app = new cdk.App();

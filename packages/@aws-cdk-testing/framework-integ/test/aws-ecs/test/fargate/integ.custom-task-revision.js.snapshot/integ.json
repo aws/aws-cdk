@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "EcsCustomTaskRevision/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-custom-task-revision"
+      ],
+      "assertionStack": "EcsCustomTaskRevision/DefaultTest/DeployAssert",
+      "assertionStackName": "EcsCustomTaskRevisionDefaultTestDeployAssert0E9C7509"
+    }
+  }
+}
