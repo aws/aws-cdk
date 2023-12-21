@@ -9,8 +9,8 @@ import { WaiterStateMachineOptions } from './waiter-state-machine';
  */
 export interface IApiCall extends IConstruct {
   /**
-   * Access the AssertionsProvider. This can be used to add additional IAM policies
-   * to the provider role policy.
+   * access the AssertionsProvider. This can be used to add additional IAM policies
+   * the the provider role policy
    *
    * @example
    * declare const apiCall: AwsApiCall;
@@ -21,21 +21,6 @@ export interface IApiCall extends IConstruct {
    * });
    */
   readonly provider: AssertionsProvider;
-
-  /**
-   * Access the AssertionsProvider for the waiter state machine.
-   * This can be used to add additional IAM policies
-   * to the provider role policy.
-   *
-   * @example
-   * declare const apiCall: AwsApiCall;
-   * apiCall.waiterProvider?.addToRolePolicy({
-   *   Effect: 'Allow',
-   *   Action: ['s3:GetObject'],
-   *   Resource: ['*'],
-   * });
-   */
-  readonly waiterProvider?: AssertionsProvider;
 
   /**
    * Returns the value of an attribute of the custom resource of an arbitrary
