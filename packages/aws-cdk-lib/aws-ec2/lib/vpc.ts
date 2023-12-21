@@ -5,7 +5,7 @@ import {
   CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
   CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCCidrBlock, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
 } from './ec2.generated';
-import { AllocatedSubnet, IIpAddresses, RequestedSubnet, IpAddresses } from './ip-addresses';
+import { AllocatedSubnet, IIpAddresses, RequestedSubnet, IpAddresses, IIpv6IpAddresses, Ipv6IpAddresses } from './ip-addresses';
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { SubnetFilter } from './subnet';
@@ -1126,13 +1126,13 @@ export interface VpcProps {
   readonly createInternetGateway?: boolean;
 
   /**
-   * The IPv6 CIDR block will be provided by Amazon unless set to false.
+   * The Provider to use to allocate IPv6 Space to your VPC.
    *
-   * @default true
+   * Options include amazon provided CIDR block.
+   *
+   * @default Ipv6IpAddresses.amazonProvided
    */
-  readonly ipv6AmazonProvidedCidrBlock?: boolean;
-
-  //TODO: IPAM IPv6 property
+  readonly ipv6IpAddresses?: IIpv6IpAddresses;
 }
 
 /**
@@ -1454,6 +1454,8 @@ export class Vpc extends VpcBase {
    */
   private readonly ipAddresses: IIpAddresses;
 
+  private readonly ipv6IpAddresses?: IIpv6IpAddresses;
+
   private readonly ipv6CidrBlock?: CfnVPCCidrBlock;
 
   private readonly ipv6SelectedCidr?: string;
@@ -1503,7 +1505,7 @@ export class Vpc extends VpcBase {
 
     this.useIpv6 = props.vpcProtocol === VpcProtocol.DUAL_STACK;
 
-    const ipv6OnlyProps: Array<keyof VpcProps> = ['ipv6AmazonProvidedCidrBlock'];
+    const ipv6OnlyProps: Array<keyof VpcProps> = ['ipv6IpAddresses'];
     if (!this.useIpv6) {
       for (const prop of ipv6OnlyProps) {
         if (props[prop] !== undefined) {
@@ -1571,9 +1573,12 @@ export class Vpc extends VpcBase {
 
     // TODO: make ipv6 cidr
     if (this.useIpv6) {
+      this.ipv6IpAddresses = props.ipv6IpAddresses ?? Ipv6IpAddresses.amazonProvided();
+      //this.ipv6CidrBlock = this.ipv6IpAddresses.
+
       this.ipv6CidrBlock = new CfnVPCCidrBlock(this, 'ipv6cidr', {
         vpcId: this.vpcId,
-        amazonProvidedIpv6CidrBlock: props.ipv6AmazonProvidedCidrBlock ?? true,
+        amazonProvidedIpv6CidrBlock: this.ipv6IpAddresses.amazonProvided,
       });
 
       this.ipv6SelectedCidr = Fn.select(0, this.resource.attrIpv6CidrBlocks);

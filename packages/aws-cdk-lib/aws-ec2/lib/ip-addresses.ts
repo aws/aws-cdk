@@ -349,3 +349,23 @@ class Cidr implements IIpAddresses {
     };
   }
 }
+
+export class Ipv6IpAddresses {
+  public static amazonProvided(): IIpv6IpAddresses {
+    return new amazonProvided();
+  }
+
+  private constructor() { }
+}
+
+export interface IIpv6IpAddresses {
+  amazonProvided: boolean,
+}
+
+export class amazonProvided implements IIpv6IpAddresses {
+  amazonProvided: boolean;
+
+  constructor() {
+    this.amazonProvided = true;
+  }
+}
