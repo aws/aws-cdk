@@ -1473,8 +1473,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
       instanceMaintenancePolicy: this.renderInstanceMaintenancePolicy(
-        props.maxHealthyPercentage,
         props.minHealthyPercentage,
+        props.maxHealthyPercentage,
       ),
       ...this.getLaunchSettings(launchConfig, props.launchTemplate ?? launchTemplateFromConfig, props.mixedInstancesPolicy),
     };
@@ -1891,28 +1891,28 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   }
 
   private renderInstanceMaintenancePolicy(
-    maxHealthyPercentage?: number,
     minHealthyPercentage?: number,
+    maxHealthyPercentage?: number,
   ): CfnAutoScalingGroup.InstanceMaintenancePolicyProperty | undefined {
-    if (maxHealthyPercentage === undefined && minHealthyPercentage === undefined) return;
-    if (maxHealthyPercentage === undefined || minHealthyPercentage === undefined) {
+    if (minHealthyPercentage === undefined && maxHealthyPercentage === undefined) return;
+    if (minHealthyPercentage === undefined || maxHealthyPercentage === undefined) {
       throw new Error(`Both or neither of minHealthyPercentage and maxHealthyPercentage must be specified, got minHealthyPercentage: ${minHealthyPercentage} and maxHealthyPercentage: ${maxHealthyPercentage}`);
     }
     if ((minHealthyPercentage === -1 || maxHealthyPercentage === -1) && minHealthyPercentage !== maxHealthyPercentage) {
       throw new Error(`Both minHealthyPercentage and maxHealthyPercentage must be -1 to clear the previously set value, got minHealthyPercentage: ${minHealthyPercentage} and maxHealthyPercentage: ${maxHealthyPercentage}`);
     }
-    if (maxHealthyPercentage !== -1 && (maxHealthyPercentage < 100 || maxHealthyPercentage > 200)) {
-      throw new Error(`maxHealthyPercentage must be between 100 and 200, or -1 to clear the previously set value, got ${maxHealthyPercentage}`);
-    }
     if (minHealthyPercentage !== -1 && (minHealthyPercentage < 0 || minHealthyPercentage > 100)) {
       throw new Error(`minHealthyPercentage must be between 0 and 100, or -1 to clear the previously set value, got ${minHealthyPercentage}`);
+    }
+    if (maxHealthyPercentage !== -1 && (maxHealthyPercentage < 100 || maxHealthyPercentage > 200)) {
+      throw new Error(`maxHealthyPercentage must be between 100 and 200, or -1 to clear the previously set value, got ${maxHealthyPercentage}`);
     }
     if (maxHealthyPercentage - minHealthyPercentage > 100) {
       throw new Error(`The difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100, got ${maxHealthyPercentage - minHealthyPercentage}`);
     }
     return {
-      maxHealthyPercentage,
       minHealthyPercentage,
+      maxHealthyPercentage,
     };
   }
 }
