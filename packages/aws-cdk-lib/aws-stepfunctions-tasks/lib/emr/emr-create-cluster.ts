@@ -623,6 +623,36 @@ export namespace EmrCreateCluster {
   }
 
   /**
+   * On-Demand Allocation Strategies
+   *
+   * Specifies the strategy to use in launching On-Demand instance fleets. Currently, the only option is "lowest-price" (the default), which launches the lowest price first.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emr-instancefleetconfig-ondemandprovisioningspecification.html
+   *
+   */
+  export enum OnDemandAllocationStrategy {
+    /**
+     * Lowest-price, which launches instances from the lowest priced pool that has available capacity.
+     */
+    LOWEST_PRICE = 'lowest-price',
+  }
+
+  /**
+   * The launch specification for On-Demand Instances in the instance fleet, which determines the allocation strategy.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emr-instancefleetconfig-ondemandprovisioningspecification.html
+   *
+   */
+  export interface OnDemandProvisioningSpecificationProperty {
+    /**
+     * Specifies the strategy to use in launching On-Demand instance fleets.
+     *
+     * Currently, the only option is lowest-price (the default), which launches the lowest price first.
+     */
+    readonly allocationStrategy: OnDemandAllocationStrategy;
+  }
+
+  /**
    * Spot Timeout Actions
    *
    */
@@ -688,16 +718,31 @@ export namespace EmrCreateCluster {
   }
 
   /**
-   * The launch specification for Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior.
+   * The launch specification for On-Demand and Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior, and allocation strategy.
+   *
+   * The instance fleet configuration is available only in Amazon EMR releases 4.8.0 and later, excluding 5.0.x versions.
+   * On-Demand and Spot instance allocation strategies are available in Amazon EMR releases 5.12.1 and later.
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceFleetProvisioningSpecifications.html
    *
    */
   export interface InstanceFleetProvisioningSpecificationsProperty {
     /**
-     * The launch specification for Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior.
+     * The launch specification for On-Demand Instances in the instance fleet, which determines the allocation strategy.
+     *
+     * The instance fleet configuration is available only in Amazon EMR releases 4.8.0 and later, excluding 5.0.x versions.
+     * On-Demand Instances allocation strategy is available in Amazon EMR releases 5.12.1 and later.
+     *
+     * @default - no on-demand specification
      */
-    readonly spotSpecification: SpotProvisioningSpecificationProperty;
+    readonly onDemandSpecification?: OnDemandProvisioningSpecificationProperty;
+
+    /**
+     * The launch specification for Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior.
+     *
+     * @default - no spot specification
+     */
+    readonly spotSpecification?: SpotProvisioningSpecificationProperty;
   }
 
   /**
