@@ -431,9 +431,9 @@ test('dead letter queue is imported', () => {
         },
         Id: 'Target0',
         DeadLetterConfig: {
-          Arn: dlqArn
+          Arn: dlqArn,
         },
       },
     ],
-  })
+  });
 });
