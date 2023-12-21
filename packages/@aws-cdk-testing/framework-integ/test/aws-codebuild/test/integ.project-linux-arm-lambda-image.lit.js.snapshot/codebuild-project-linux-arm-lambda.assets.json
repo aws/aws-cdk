@@ -1,7 +1,7 @@
 {
   "version": "35.0.0",
   "files": {
-    "c8047eb67f6956238d68af9ef4d46b1df8f087f2cd0f372d13b3e58bcdf7b6d9": {
+    "d22a5603b85331c59da2a0d6139f292372f2dbbf64644ef5008424a9c138c149": {
       "source": {
         "path": "codebuild-project-linux-arm-lambda.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c8047eb67f6956238d68af9ef4d46b1df8f087f2cd0f372d13b3e58bcdf7b6d9.json",
+          "objectKey": "d22a5603b85331c59da2a0d6139f292372f2dbbf64644ef5008424a9c138c149.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

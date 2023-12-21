@@ -4,12 +4,19 @@ import { LinuxArmLambdaBuildImage, Project, BuildSpec, ComputeType } from 'aws-c
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class LinuxArmLambdaImageTestStack extends Stack {
+  public readonly project: Project;
+
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    new Project(this, 'MyProject', {
+    this.project = new Project(this, 'MyProject', {
       buildSpec: BuildSpec.fromObject({
         version: '0.2',
+        phases: {
+          build: {
+            commands: ['ls'],
+          },
+        },
       }),
       environment: {
         computeType: ComputeType.LAMBDA_1GB,
@@ -23,7 +30,12 @@ const app = new App();
 
 const codebuildLinuxLambda = new LinuxArmLambdaImageTestStack(app, 'codebuild-project-linux-arm-lambda');
 
-new IntegTest(app, 'linux-arm-lambda-codebuild', {
+const integ = new IntegTest(app, 'linux-arm-lambda-codebuild', {
   testCases: [codebuildLinuxLambda],
   stackUpdateWorkflow: true,
 });
+
+// Execute the `startBuild` API to confirm that the build can be done correctly using Lambda compute.
+integ.assertions.awsApiCall('CodeBuild', 'startBuild', {
+  projectName: codebuildLinuxLambda.project.projectName,
+}).waitForAssertions();
