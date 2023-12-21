@@ -1,28 +1,28 @@
 {
   "version": "35.0.0",
   "artifacts": {
-    "aws-ecr-integ-stack.assets": {
+    "aws-cdk-emr-create-cluster-with-on-demand-instance-fleet.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-ecr-integ-stack.assets.json",
+        "file": "aws-cdk-emr-create-cluster-with-on-demand-instance-fleet.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-ecr-integ-stack": {
+    "aws-cdk-emr-create-cluster-with-on-demand-instance-fleet": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-ecr-integ-stack.template.json",
+        "templateFile": "aws-cdk-emr-create-cluster-with-on-demand-instance-fleet.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/830646461dc1fed84d30409177199864dfe0b167864b2fcdca22f4b9aad8a063.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1c7efe54b4bb44b2dad35063f30caa8147d1ffa517df30671de3e84086a35826.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-ecr-integ-stack.assets"
+          "aws-cdk-emr-create-cluster-with-on-demand-instance-fleet.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,67 +31,79 @@
         }
       },
       "dependencies": [
-        "aws-ecr-integ-stack.assets"
+        "aws-cdk-emr-create-cluster-with-on-demand-instance-fleet.assets"
       ],
       "metadata": {
-        "/aws-ecr-integ-stack/Repo/Resource": [
+        "/aws-cdk-emr-create-cluster-with-on-demand-instance-fleet/EmrCreateCluster/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Repo02AC86CF"
+            "data": "EmrCreateClusterServiceRole5251910D"
           }
         ],
-        "/aws-ecr-integ-stack/MyUser/Resource": [
+        "/aws-cdk-emr-create-cluster-with-on-demand-instance-fleet/EmrCreateCluster/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyUserDC45028B"
+            "data": "EmrCreateClusterServiceRoleDefaultPolicyA8B4FA32"
           }
         ],
-        "/aws-ecr-integ-stack/MyUser/DefaultPolicy/Resource": [
+        "/aws-cdk-emr-create-cluster-with-on-demand-instance-fleet/EmrCreateCluster/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyUserDefaultPolicy7B897426"
+            "data": "EmrCreateClusterInstanceRoleC80466F5"
           }
         ],
-        "/aws-ecr-integ-stack/RepoWithEmptyOnDelete/Resource": [
+        "/aws-cdk-emr-create-cluster-with-on-demand-instance-fleet/EmrCreateCluster/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RepoWithEmptyOnDeleteCA5C67FA"
+            "data": "EmrCreateClusterInstanceProfileC1729180"
           }
         ],
-        "/aws-ecr-integ-stack/RepositoryURI": [
+        "/aws-cdk-emr-create-cluster-with-on-demand-instance-fleet/SM/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RepositoryURI"
+            "data": "SMRole49C19C48"
           }
         ],
-        "/aws-ecr-integ-stack/BootstrapVersion": [
+        "/aws-cdk-emr-create-cluster-with-on-demand-instance-fleet/SM/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SMRoleDefaultPolicy34CA15C7"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-with-on-demand-instance-fleet/SM/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SM934E715A"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-with-on-demand-instance-fleet/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-ecr-integ-stack/CheckBootstrapVersion": [
+        "/aws-cdk-emr-create-cluster-with-on-demand-instance-fleet/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-ecr-integ-stack"
+      "displayName": "aws-cdk-emr-create-cluster-with-on-demand-instance-fleet"
     },
-    "cdkecrintegtestbasicDefaultTestDeployAssert4F7FBFB4.assets": {
+    "EmrCreateClusterTestDefaultTestDeployAssert697DC891.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdkecrintegtestbasicDefaultTestDeployAssert4F7FBFB4.assets.json",
+        "file": "EmrCreateClusterTestDefaultTestDeployAssert697DC891.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdkecrintegtestbasicDefaultTestDeployAssert4F7FBFB4": {
+    "EmrCreateClusterTestDefaultTestDeployAssert697DC891": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdkecrintegtestbasicDefaultTestDeployAssert4F7FBFB4.template.json",
+        "templateFile": "EmrCreateClusterTestDefaultTestDeployAssert697DC891.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -100,7 +112,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdkecrintegtestbasicDefaultTestDeployAssert4F7FBFB4.assets"
+          "EmrCreateClusterTestDefaultTestDeployAssert697DC891.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -109,23 +121,23 @@
         }
       },
       "dependencies": [
-        "cdkecrintegtestbasicDefaultTestDeployAssert4F7FBFB4.assets"
+        "EmrCreateClusterTestDefaultTestDeployAssert697DC891.assets"
       ],
       "metadata": {
-        "/cdk-ecr-integ-test-basic/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/EmrCreateClusterTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-ecr-integ-test-basic/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/EmrCreateClusterTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cdk-ecr-integ-test-basic/DefaultTest/DeployAssert"
+      "displayName": "EmrCreateClusterTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
