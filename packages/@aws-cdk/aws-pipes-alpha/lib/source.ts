@@ -4,7 +4,7 @@ import { IResolvable } from 'aws-cdk-lib/core';
 /**
  * Source properties
  */
-export interface IPipeSourceProperties {
+export interface ISourceProperties {
   /**
    * `CfnPipe.PipeSourceParametersProperty.ActiveMQBrokerParameters`
    *
@@ -87,7 +87,7 @@ export interface IPipeSourceProperties {
 /**
  * Source interface
  */
-export interface IPipeSource {
+export interface ISource {
   /**
    * The ARN of the source resource.
    */
@@ -96,7 +96,7 @@ export interface IPipeSource {
   /**
    * The parameters required to set up a source for your pipe.
    */
-  sourceParameters?: IPipeSourceProperties;
+  sourceParameters?: ISourceProperties;
 
   /**
    * Grant the pipe role read access to the source.

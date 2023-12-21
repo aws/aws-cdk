@@ -3,7 +3,7 @@
  *
  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-event-filtering.html
  */
-export interface IPipeFilterPattern {
+export interface IFilterPattern {
   /**
    * Stringified version of the filter pattern
    */
@@ -13,21 +13,21 @@ export interface IPipeFilterPattern {
 /**
  * The collection of event patterns used to filter events.
  */
-export interface IPipeSourceFilter {
+export interface ISourceFilter {
   /**
    * Filters for the source.
    */
-  filters: IPipeFilterPattern[];
+  filters: IFilterPattern[];
 }
 
 /**
  * Generate a filter pattern from an input.
  */
-export class PipeGenericFilterPattern {
+export class GenericFilterPattern {
   /**
    * Generates a filter pattern from a JSON object.
    */
-  static fromJson(patternObject: Record<string, any>): IPipeFilterPattern {
+  static fromJson(patternObject: Record<string, any>): IFilterPattern {
     return { pattern: JSON.stringify(patternObject) };
   }
 }
@@ -35,13 +35,13 @@ export class PipeGenericFilterPattern {
 /**
  * The collection of event patterns used to filter events.
  */
-export class PipeSourceFilter implements IPipeSourceFilter {
+export class SourceFilter implements ISourceFilter {
   /**
    * Filters for the source.
    */
-  public filters: IPipeFilterPattern[];
+  public filters: IFilterPattern[];
 
-  constructor(filter: IPipeFilterPattern[]) {
+  constructor(filter: IFilterPattern[]) {
     this.filters = filter;
   }
 }

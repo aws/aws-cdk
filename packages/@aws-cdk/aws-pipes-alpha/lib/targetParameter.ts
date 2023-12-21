@@ -40,7 +40,7 @@ export enum PipeVariables {
 /**
  * Helper class to generate dynamic target parameters.
  */
-export class PipeTargetParameter {
+export class TargetParameter {
 
   /**
    * Target parameter based on a jsonPath expression from the incoming event.

@@ -133,7 +133,7 @@ export interface S3LogDestinationProperty {
 /**
  * Log destination base class.
  */
-export interface IPipeLogDestination {
+export interface ILogDestination {
   /**
    * Get the log destination configuration parameters.
    */

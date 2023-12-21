@@ -2,7 +2,7 @@ import { App, Stack } from 'aws-cdk-lib';
 
 import { Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { DesiredState, IPipeEnrichment, IPipeSource, IPipeTarget, IncludeExecutionData, LogLevel, Pipe } from '../lib';
+import { DesiredState, IEnrichment, ISource, ITarget, IncludeExecutionData, LogLevel, Pipe } from '../lib';
 
 describe('Pipe', () => {
   let stack: Stack;
@@ -65,7 +65,7 @@ describe('Pipe', () => {
 
     it('should pass parameters and arn', () => {
       // GIVEN
-      const source: IPipeSource = {
+      const source: ISource = {
         grantRead: () => { },
         sourceArn: 'source-arn',
         sourceParameters: {
@@ -234,7 +234,7 @@ describe('Pipe', () => {
         sourceArn: 'source-arn',
         sourceParameters: {},
       };
-      const target: IPipeTarget = {
+      const target: ITarget = {
         grantPush: () => { },
         targetArn: 'target-arn',
         targetParameters: {
@@ -280,7 +280,7 @@ describe('Pipe', () => {
         targetArn: 'target-arn',
         targetParameters: {},
       };
-      const enrichment: IPipeEnrichment = {
+      const enrichment: IEnrichment = {
         enrichmentArn: 'enrichment-arn',
         enrichmentParameters: {},
         grantInvoke: jest.fn(),
@@ -309,7 +309,7 @@ describe('Pipe', () => {
         targetArn: 'target-arn',
         targetParameters: {},
       };
-      const enrichment: IPipeEnrichment = {
+      const enrichment: IEnrichment = {
         enrichmentArn: 'enrichment-arn',
         enrichmentParameters: {
           inputTemplate: 'input-template',
@@ -376,7 +376,7 @@ describe('Pipe', () => {
         targetParameters: {},
       };
 
-      const enrichment: IPipeEnrichment = {
+      const enrichment: IEnrichment = {
         enrichmentArn: 'enrichment-arn',
         enrichmentParameters: {
           inputTemplate: 'input-template',

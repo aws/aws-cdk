@@ -2,11 +2,11 @@ import { IResource, Resource } from 'aws-cdk-lib';
 import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnPipe, CfnPipeProps } from 'aws-cdk-lib/aws-pipes';
 import { Construct } from 'constructs';
-import { IPipeEnrichment } from './enrichment';
-import { IPipeLogDestination, IncludeExecutionData, LogDestinationProperties, LogLevel } from './logs';
-import { IPipeSource } from './source';
-import { IPipeSourceFilter } from './sourceFilter';
-import { IPipeTarget } from './target';
+import { IEnrichment } from './enrichment';
+import { ILogDestination, IncludeExecutionData, LogDestinationProperties, LogLevel } from './logs';
+import { ISource } from './source';
+import { ISourceFilter } from './sourceFilter';
+import { ITarget } from './target';
 
 /**
  * Interface representing a created or an imported `Pipe`.
@@ -66,24 +66,24 @@ export interface PipeProps {
   /**
    * The source of the pipe
    */
-  readonly source: IPipeSource;
+  readonly source: ISource;
 
   /**
    * The filter pattern for the pipe source
    * @default - no filter
    */
-  readonly filter?: IPipeSourceFilter;
+  readonly filter?: ISourceFilter;
 
   /**
   * Enrichment step to enhance the data from the source before sending it to the target.
   * @default - no enrichment
   */
-  readonly enrichment?: IPipeEnrichment;
+  readonly enrichment?: IEnrichment;
 
   /**
    * The target of the pipe
    */
-  readonly target: IPipeTarget;
+  readonly target: ITarget;
 
   /**
   * Name of the pipe in the AWS console
@@ -107,7 +107,7 @@ export interface PipeProps {
    * Destinations for the logs.
    * @default - no logs
    */
-  readonly logDestinations?: IPipeLogDestination[];
+  readonly logDestinations?: ILogDestination[];
 
   /**
     * The level of logging detail to include.

@@ -14,7 +14,7 @@ type KeyValue = Record<string, string | reservedVariables>;
 type StaticJsonFlat = Record<string, StaticString | KeyValue>;
 type InputTransformJson = Record<string, StaticString | KeyValue | StaticJsonFlat>;
 
-type PipeInputTransformationValue = StaticString | InputTransformJson;
+type InputTransformationValue = StaticString | InputTransformJson;
 
 /**
  * Transform or replace the input event payload
@@ -29,19 +29,19 @@ export interface IInputTransformation {
 /**
  * Transform or replace the input event payload
  */
-export class PipeInputTransformation implements IInputTransformation {
+export class InputTransformation implements IInputTransformation {
   /**
    * Builds an input transformation from a JSON object.
    * @param inputTemplate
    * @returns
    */
-  static fromJson(inputTemplate: Record<string, any>): PipeInputTransformation {
-    return new PipeInputTransformation(inputTemplate);
+  static fromJson(inputTemplate: Record<string, any>): InputTransformation {
+    return new InputTransformation(inputTemplate);
   }
 
   inputTemplate: string;
 
-  constructor(inputTemplate: PipeInputTransformationValue) {
+  constructor(inputTemplate: InputTransformationValue) {
     this.inputTemplate = this.unquoteKeyPlaceholders(inputTemplate);
   }
 

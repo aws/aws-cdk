@@ -15,7 +15,7 @@ import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 /**
  * Target configuration.
  */
-export interface IPipeTarget {
+export interface ITarget {
   /**
    * The ARN of the target resource.
    */
