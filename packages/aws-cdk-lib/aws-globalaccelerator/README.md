@@ -53,6 +53,18 @@ listener.addEndpointGroup('Group2', {
 });
 ```
 
+### Create an Accelerator with IP addresses and IP address type
+
+```ts
+const accelerator = new globalaccelerator.Accelerator(this, 'Accelerator', {
+  ipAddresses: [
+    '1.1.1.1',
+    '2.2.2.2',
+  ],
+  ipAddressType: globalaccelerator.IpAddressType.IPV4,
+});
+```
+
 ## Concepts
 
 The **Accelerator** construct defines a Global Accelerator resource.
