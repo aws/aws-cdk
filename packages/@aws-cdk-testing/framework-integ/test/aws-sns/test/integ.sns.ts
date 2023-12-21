@@ -1,6 +1,7 @@
 import { Key } from 'aws-cdk-lib/aws-kms';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
-import { Topic } from 'aws-cdk-lib/aws-sns';
+import { LoggingProtocol, Topic } from 'aws-cdk-lib/aws-sns';
+import { ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 class SNSInteg extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
@@ -8,10 +9,36 @@ class SNSInteg extends Stack {
 
     const key = new Key(this, 'CustomKey');
 
-    new Topic(this, 'MyTopic', {
+    const topic = new Topic(this, 'MyTopic', {
       topicName: 'fooTopic',
       displayName: 'fooDisplayName',
       masterKey: key,
+    });
+
+    const feedbackRole = new Role(this, 'FeedbackRole', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    });
+    const deliveryLoggingPolicy = new ManagedPolicy(this, 'Policy', {
+      document: new PolicyDocument({
+        statements: [new PolicyStatement({
+          actions: [
+            'logs:CreateLogGroup',
+            'logs:CreateLogStream',
+            'logs:PutLogEvents',
+            'logs:PutMetricFilter',
+            'logs:PutRetentionPolicy',
+          ],
+          resources: ['*'],
+        })],
+      }),
+    });
+    deliveryLoggingPolicy.attachToRole(feedbackRole);
+
+    topic.addLoggingConfig({
+      protocol: LoggingProtocol.HTTP,
+      failureFeedbackRole: feedbackRole,
+      successFeedbackRole: feedbackRole,
+      successFeedbackSampleRate: 50,
     });
   }
 }
