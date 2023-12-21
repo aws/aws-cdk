@@ -348,6 +348,69 @@
      }
     }
    }
+  },
+  "UseFlexibleTimeWindowBF55D3ED": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "FlexibleTimeWindow": {
+     "MaximumWindowInMinutes": 10,
+     "Mode": "FLEXIBLE"
+    },
+    "ScheduleExpression": "rate(12 hours)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
+    "State": "ENABLED",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "Function76856677",
+       "Arn"
+      ]
+     },
+     "Input": "\"Input Text\"",
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 180,
+      "MaximumRetryAttempts": 3
+     },
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "Role1ABCC5F0",
+       "Arn"
+      ]
+     }
+    }
+   }
+  },
+  "ScheduleWithTimeFrameC1C8BDCC": {
+   "Type": "AWS::Scheduler::Schedule",
+   "Properties": {
+    "EndDate": "2025-10-01T00:00:00.000Z",
+    "FlexibleTimeWindow": {
+     "Mode": "OFF"
+    },
+    "ScheduleExpression": "rate(12 hours)",
+    "ScheduleExpressionTimezone": "Etc/UTC",
+    "StartDate": "2024-04-15T06:30:00.000Z",
+    "State": "ENABLED",
+    "Target": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "Function76856677",
+       "Arn"
+      ]
+     },
+     "Input": "\"Input Text\"",
+     "RetryPolicy": {
+      "MaximumEventAgeInSeconds": 180,
+      "MaximumRetryAttempts": 3
+     },
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "Role1ABCC5F0",
+       "Arn"
+      ]
+     }
+    }
+   }
   }
  },
  "Parameters": {

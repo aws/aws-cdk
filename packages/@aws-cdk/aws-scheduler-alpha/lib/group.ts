@@ -100,7 +100,7 @@ export interface IGroup extends IResource {
    *
    * @default - sum over 5 minutes
    */
-  metricSentToDLQTrunacted(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+  metricSentToDLQTruncated(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 
   /**
    * Grant the indicated permissions on this group to the given principal
@@ -224,7 +224,7 @@ abstract class GroupBase extends Resource implements IGroup {
    *
    * @default - sum over 5 minutes
    */
-  public metricSentToDLQTrunacted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metricSentToDLQTruncated(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('InvocationsSentToDeadLetterCount_Truncated_MessageSizeExceeded', props);
   }
 
