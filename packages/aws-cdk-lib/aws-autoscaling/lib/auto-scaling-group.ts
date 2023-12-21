@@ -692,36 +692,36 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * It represents the maximum percentage of the group that can be in service and healthy, or pending,
    * to support your workload when replacing instances.
    *
-   * Value range is 0 to 100. After it's set, both `maintenancePolicyMinHealthPercentage` and
-   * `maintenancePolicyMaxHealthPercentage` to -1 will clear the previously set value.
+   * Value range is 0 to 100. After it's set, both `minHealthPercentage` and `maxHealthPercentage` to
+   * -1 will clear the previously set value.
    *
-   * Both or neither of `maintenancePolicyMinHealthPercentage` and `maintenancePolicyMaxHealthPercentage`
-   * must be specified, and the difference between them cannot be greater than 100. A large range increases
-   * the number of instances that can be replaced at the same time.
+   * Both or neither of `minHealthPercentage` and `maxHealthPercentage` must be specified, and the
+   * difference between them cannot be greater than 100. A large range increases the number of
+   * instances that can be replaced at the same time.
    *
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-maintenance-policy.html
    *
    * @default - No instance maintenance policy.
    */
-  readonly maintenancePolicyMaxHealthPercentage?: number;
+  readonly maxHealthPercentage?: number;
 
   /**
    * Specifies the lower threshold as a percentage of the desired capacity of the Auto Scaling group.
    * It represents the minimum percentage of the group to keep in service, healthy, and ready to use
    * to support your workload when replacing instances.
    *
-   * Value range is 0 to 100. After it's set, both `maintenancePolicyMinHealthPercentage` and
-   * `maintenancePolicyMaxHealthPercentage` to -1 will clear the previously set value.
+   * Value range is 0 to 100. After it's set, both `minHealthPercentage` and `maxHealthPercentage` to
+   * -1 will clear the previously set value.
    *
-   * Both or neither of `maintenancePolicyMinHealthPercentage` and `maintenancePolicyMaxHealthPercentage`
-   * must be specified, and the difference between them cannot be greater than 100. A large range increases
-   * the number of instances that can be replaced at the same time.
+   * Both or neither of `minHealthPercentage` and `maxHealthPercentage` must be specified, and the
+   * difference between them cannot be greater than 100. A large range increases the number of
+   * instances that can be replaced at the same time.
    *
    * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-maintenance-policy.html
    *
    * @default - No instance maintenance policy.
    */
-  readonly maintenancePolicyMinHealthPercentage?: number;
+  readonly minHealthPercentage?: number;
 }
 
 /**
@@ -1464,8 +1464,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
       instanceMaintenancePolicy: this.renderInstanceMaintenancePolicy(
-        props.maintenancePolicyMaxHealthPercentage,
-        props.maintenancePolicyMinHealthPercentage,
+        props.maxHealthPercentage,
+        props.minHealthPercentage,
       ),
       ...this.getLaunchSettings(launchConfig, props.launchTemplate ?? launchTemplateFromConfig, props.mixedInstancesPolicy),
     };
@@ -1887,7 +1887,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   ): CfnAutoScalingGroup.InstanceMaintenancePolicyProperty | undefined {
     if (maxHealthPercentage === undefined && minHealthPercentage === undefined) return;
     if (maxHealthPercentage === undefined || minHealthPercentage === undefined) {
-      throw new Error(`Both or neither of maintenancePolicyMinHealthPercentage and maintenancePolicyMaxHealthPercentage must be specified, got maintenancePolicyMinHealthPercentage: ${minHealthPercentage} and maintenancePolicyMaxHealthPercentage: ${maxHealthPercentage}`);
+      throw new Error(`Both or neither of minHealthPercentage and maxHealthPercentage must be specified, got minHealthPercentage: ${minHealthPercentage} and maxHealthPercentage: ${maxHealthPercentage}`);
     }
     if (maxHealthPercentage === -1 && minHealthPercentage === -1) {
       return {
@@ -1896,16 +1896,16 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       };
     }
     if (minHealthPercentage === -1 || maxHealthPercentage === -1) {
-      throw new Error(`Both maintenancePolicyMinHealthPercentage and maintenancePolicyMaxHealthPercentage must be -1 to clear the previously set value, got maintenancePolicyMinHealthPercentage: ${minHealthPercentage} and maintenancePolicyMaxHealthPercentage: ${maxHealthPercentage}`);
+      throw new Error(`Both minHealthPercentage and maxHealthPercentage must be -1 to clear the previously set value, got minHealthPercentage: ${minHealthPercentage} and maxHealthPercentage: ${maxHealthPercentage}`);
     }
     if (maxHealthPercentage < 100 || maxHealthPercentage > 200) {
-      throw new Error(`maintenancePolicyMaxHealthPercentage must be between 100 and 200, or -1 to clear the previously set value, got ${maxHealthPercentage}`);
+      throw new Error(`maxHealthPercentage must be between 100 and 200, or -1 to clear the previously set value, got ${maxHealthPercentage}`);
     }
     if (minHealthPercentage < 0 || minHealthPercentage > 100) {
-      throw new Error(`maintenancePolicyMinHealthPercentage must be between 0 and 100, or -1 to clear the previously set value, got ${minHealthPercentage}`);
+      throw new Error(`minHealthPercentage must be between 0 and 100, or -1 to clear the previously set value, got ${minHealthPercentage}`);
     }
     if (maxHealthPercentage - minHealthPercentage > 100) {
-      throw new Error(`The difference between maintenancePolicyMinHealthPercentage and maintenancePolicyMaxHealthPercentage cannot be greater than 100, got ${maxHealthPercentage - minHealthPercentage}`);
+      throw new Error(`The difference between minHealthPercentage and maxHealthPercentage cannot be greater than 100, got ${maxHealthPercentage - minHealthPercentage}`);
     }
     return {
       maxHealthyPercentage: maxHealthPercentage,
