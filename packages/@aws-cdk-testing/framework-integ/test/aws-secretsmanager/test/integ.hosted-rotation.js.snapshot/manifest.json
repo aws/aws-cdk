@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "cdk-integ-secret-hosted-rotation.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdk-integ-secret-hosted-rotation.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/68111103cf6a45cb34025acaab5488606270170cf3e4bccee5883433fe58e704.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/db9ef4d632616698eb575a61885fbee99b7479aae25d14e8cd4c6774b50a5996.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -67,6 +68,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomSecretPolicy8E81D2EB"
+          }
+        ],
+        "/cdk-integ-secret-hosted-rotation/MySecret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySecret8FE80B51"
+          }
+        ],
+        "/cdk-integ-secret-hosted-rotation/MySecret/RotationSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySecretRotationSchedule673B961C"
+          }
+        ],
+        "/cdk-integ-secret-hosted-rotation/MySecret/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MySecretPolicyDAD0E682"
           }
         ],
         "/cdk-integ-secret-hosted-rotation/BootstrapVersion": [
