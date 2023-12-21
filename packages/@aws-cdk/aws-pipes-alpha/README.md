@@ -16,7 +16,6 @@
 
 <!--END STABILITY BANNER-->
 
-# EventBridge Pipes Construct Library
 
 EventBridge Pipes let you create source to target connections between several
 aws services. While transporting messages from a source to a target the messages
