@@ -14,6 +14,7 @@ export * from './untrusted-code-boundary-policy';
 export * from './linux-arm-build-image';
 export * from './linux-lambda-build-image';
 export * from './linux-arm-lambda-build-image';
+export * from './compute-type';
 
 // AWS::CodeBuild CloudFormation Resources:
 export * from './codebuild.generated';

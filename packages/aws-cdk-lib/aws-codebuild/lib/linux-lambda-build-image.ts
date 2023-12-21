@@ -1,6 +1,7 @@
 import { BuildSpec } from './build-spec';
+import { ComputeType } from './compute-type';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import { BuildEnvironment, ComputeType, IBuildImage, isLambdaComputeType } from './project';
+import { BuildEnvironment, IBuildImage, isLambdaComputeType } from './project';
 
 /**
  * Construction properties of `LinuxLambdaBuildImage`.
@@ -67,7 +68,7 @@ export class LinuxLambdaBuildImage implements IBuildImage {
 
     if (buildEnvironment.computeType && !isLambdaComputeType(buildEnvironment.computeType)) {
       errors.push([
-        'Lambda images only support ComputeTypes between',
+        'Lambda images only support Lambda ComputeTypes between',
         `'${ComputeType.LAMBDA_1GB}'`,
         'and',
         `'${ComputeType.LAMBDA_10GB}',`,

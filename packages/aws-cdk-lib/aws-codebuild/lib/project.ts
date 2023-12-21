@@ -5,7 +5,10 @@ import { Cache } from './cache';
 import { CodeBuildMetrics } from './codebuild-canned-metrics.generated';
 import { CfnProject } from './codebuild.generated';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
+import { ComputeType } from './compute-type';
 import { IFileSystemLocation } from './file-location';
+import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
+import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
 import { runScriptLinuxBuildSpec, S3_BUCKET_ENV, S3_KEY_ENV } from './private/run-script-linux-build-spec';
@@ -1575,21 +1578,6 @@ export class Project extends ProjectBase {
 }
 
 /**
- * Build machine compute type.
- */
-export enum ComputeType {
-  SMALL = 'BUILD_GENERAL1_SMALL',
-  MEDIUM = 'BUILD_GENERAL1_MEDIUM',
-  LARGE = 'BUILD_GENERAL1_LARGE',
-  X2_LARGE = 'BUILD_GENERAL1_2XLARGE',
-  LAMBDA_1GB = 'BUILD_LAMBDA_1GB',
-  LAMBDA_2GB = 'BUILD_LAMBDA_2GB',
-  LAMBDA_4GB = 'BUILD_LAMBDA_4GB',
-  LAMBDA_8GB = 'BUILD_LAMBDA_8GB',
-  LAMBDA_10GB = 'BUILD_LAMBDA_10GB',
-}
-
-/**
  * The type of principal CodeBuild will use to pull your build Docker image.
  */
 export enum ImagePullPrincipalType {
@@ -1752,12 +1740,6 @@ interface LinuxBuildImageProps {
 // Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
 // eslint-disable-next-line import/order
 import { LinuxArmBuildImage } from './linux-arm-build-image';
-
-// LinuxArmLambdaBuildImage and LinuxLambdaBuildImage reference ComputeType, so these imports should be placed below ComputeType.
-/* eslint-disable import/order */
-import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
-import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
-/* eslint-enable import/order */
 
 /**
  * A CodeBuild image running x86-64 Linux.
@@ -2233,11 +2215,6 @@ function isBindableBuildImage(x: unknown): x is IBindableBuildImage {
 }
 
 export function isLambdaComputeType(computeType: ComputeType): boolean {
-  return [
-    ComputeType.LAMBDA_1GB,
-    ComputeType.LAMBDA_2GB,
-    ComputeType.LAMBDA_4GB,
-    ComputeType.LAMBDA_8GB,
-    ComputeType.LAMBDA_10GB,
-  ].includes(computeType);
+  const lambdaComputeTypes = Object.values(ComputeType).filter(value => value.startsWith('BUILD_LAMBDA'));
+  return lambdaComputeTypes.includes(computeType);
 }
