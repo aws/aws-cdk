@@ -589,6 +589,65 @@ describe('hosted rotation', () => {
       },
     });
   });
+
+  test('the arn is used as it is when specifying masterSecret as an imported secret with full arn', () => {
+    // GIVEN
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const importedSecret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'MasterSecretImported', 'arn:aws:secretsmanager:us-east-1:123456789012:secret:MySecret-123456');
+
+    // WHEN
+    secret.addRotationSchedule('RotationSchedule', {
+      hostedRotation: secretsmanager.HostedRotation.postgreSqlMultiUser({
+        masterSecret: importedSecret,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'SecretA720EF05',
+      },
+      HostedRotationLambda: {
+        MasterSecretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:MySecret-123456',
+      },
+    });
+  });
+
+  test('the arn is used with -?????? when specifying masterSecret as an imported secret with partial arn', () => {
+    // GIVEN
+    const secret = new secretsmanager.Secret(stack, 'Secret');
+    const importedSecret = secretsmanager.Secret.fromSecretNameV2(stack, 'MasterSecretImported', 'MySecret');
+
+    // WHEN
+    secret.addRotationSchedule('RotationSchedule', {
+      hostedRotation: secretsmanager.HostedRotation.postgreSqlMultiUser({
+        masterSecret: importedSecret,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'SecretA720EF05',
+      },
+      HostedRotationLambda: {
+        MasterSecretArn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':secretsmanager:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':secret:MySecret-??????',
+            ],
+          ],
+        },
+      },
+    });
+  });
 });
 
 describe('manual rotations', () => {
