@@ -141,8 +141,8 @@ export function addToDeadLetterQueueResourcePolicy(rule: events.IRule, queue: sq
  * Whether two string probably contain the same environment dimension (region or account)
  *
  * Used to compare either accounts or regions on a best effort basis. If we cannot tell definitively
- * that the dimensions are in different environments, we will pass. 
- * 
+ * that the dimensions are in different environments, we will pass.
+ *
  * For example, returns true if both are unresolved (in which case both are expected to be
  * "current region" or "current account").
  *
