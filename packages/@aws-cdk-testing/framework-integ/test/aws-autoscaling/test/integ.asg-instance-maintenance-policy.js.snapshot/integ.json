@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "InstanceMaintenancePolicyTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-autoscaling-instance-maintenance-policy"
+      ],
+      "assertionStack": "InstanceMaintenancePolicyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "InstanceMaintenancePolicyTestDefaultTestDeployAssertD50B51FD"
+    }
+  }
+}
