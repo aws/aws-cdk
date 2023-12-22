@@ -3,7 +3,6 @@ import os
 import boto3
 
 QUEUE_NAME = os.environ.get('QUEUE_NAME')
-CONTAINER_HEALTH_CHECK_KEY = os.environ.get('CONTAINER_HEALTH_CHECK_KEY')
 print('QUEUE_NAME ' + QUEUE_NAME)
 
 if __name__ == '__main__':
@@ -22,11 +21,11 @@ if __name__ == '__main__':
                 entries = [{'Id': x['MessageId'], 'ReceiptHandle': x['ReceiptHandle']} for x in response['Messages']]
                 client.delete_message_batch(QueueUrl=queue_url, Entries=entries)
                 
-            os.environ[CONTAINER_HEALTH_CHECK_KEY] = '1'
-            print(os.environ[CONTAINER_HEALTH_CHECK_KEY])
+            with open('/tmp/health_status', 'w') as f:
+                f.write('1')
     except Exception as e:
-        print(e)
-        os.environ[CONTAINER_HEALTH_CHECK_KEY] = '0'
+        with open('/tmp/health_status', 'w') as f:
+            f.write('0')
         raise e
     
 
