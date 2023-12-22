@@ -303,12 +303,12 @@ export abstract class QueueProcessingServiceBase extends Construct {
   /**
    * Flag to disable CPU based auto scaling strategy on the service.
    */
-  readonly disableCpuBasedScaling: boolean;
+  private readonly disableCpuBasedScaling: boolean;
 
   /**
    * The target CPU utilization percentage for CPU based scaling strategy when enabled.
    */
-  readonly cpuTargetUtilizationPercent: number;
+  private readonly cpuTargetUtilizationPercent: number;
 
   /**
    * Constructs a new instance of the QueueProcessingServiceBase class.
