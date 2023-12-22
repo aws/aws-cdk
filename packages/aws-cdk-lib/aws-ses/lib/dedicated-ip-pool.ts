@@ -38,6 +38,10 @@ export interface DedicatedIpPoolProps {
   /**
    * A name for the dedicated IP pool.
    *
+   * The name must adhere to specific constraints: it can only include
+   * lowercase letters (a-z), numbers (0-9), underscores (_), and hyphens (-),
+   * and must not exceed 64 characters in length.
+   *
    * @default - a CloudFormation generated name
    */
   readonly dedicatedIpPoolName?: string;
@@ -73,6 +77,10 @@ export class DedicatedIpPool extends Resource implements IDedicatedIpPool {
     super(scope, id, {
       physicalName: props.dedicatedIpPoolName,
     });
+
+    if (props.dedicatedIpPoolName && !/^[a-z0-9_-]{0,64}$/.test(props.dedicatedIpPoolName)) {
+      throw new Error('Invalid dedicatedIpPoolName. The name must only include lowercase letters, numbers, underscores, hyphens, and must not exceed 64 characters.');
+    }
 
     const pool = new CfnDedicatedIpPool(this, 'Resource', {
       poolName: this.physicalName,
