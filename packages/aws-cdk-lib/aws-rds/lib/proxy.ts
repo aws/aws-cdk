@@ -490,9 +490,10 @@ export class DatabaseProxy extends DatabaseProxyBase
       connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props),
     });
 
-    // When a `ProxyTarget` is created by `DatabaseCluster.addProxy`,
-    // the `ProxyTarget` is created as a child of the `DatabaseCluster`,
-    // so if multiple `ProxyTarget` are created, using `node.addDependency` will cause circular dependencies.
+    // When a `DatabaseProxy` is created by `DatabaseCluster.addProxy`,
+    // the `DatabaseProxy` and `DBProxyTarget` are created as a child of the `DatabaseCluster`,
+    // so if multiple `DatabaseProxy` are created by `DatabaseCluster.addProxy`,
+    // using `node.addDependency` will cause circular dependencies.
     // To avoid this, use `CfnResource.addDependency` to add dependencies on `DatabaseCluster` and `DBInstance`.
     bindResult.dbClusters?.forEach((cluster) => {
       cluster.node.children.forEach((child) => {
