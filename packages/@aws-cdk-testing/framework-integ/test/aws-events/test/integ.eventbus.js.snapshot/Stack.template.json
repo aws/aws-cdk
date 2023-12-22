@@ -6,10 +6,9 @@
     "Name": "StackBusAA0A1E4B"
    }
   },
-  "BusPolicyCF00D793": {
+  "BusStatement1B4D0336C": {
    "Type": "AWS::Events::EventBusPolicy",
    "Properties": {
-    "StatementId": "123",
     "EventBusName": {
      "Ref": "BusEA82B648"
     },
@@ -21,7 +20,11 @@
        "Fn::Join": [
         "",
         [
-         "arn:aws:iam::",
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":iam::",
          {
           "Ref": "AWS::AccountId"
          },
@@ -36,8 +39,47 @@
        "Arn"
       ]
      },
-     "Sid": "123"
-    }
+     "Sid": "Statement1"
+    },
+    "StatementId": "Statement1"
+   }
+  },
+  "BusStatement2B5FB314B": {
+   "Type": "AWS::Events::EventBusPolicy",
+   "Properties": {
+    "EventBusName": {
+     "Ref": "BusEA82B648"
+    },
+    "Statement": {
+     "Action": "events:PutRule",
+     "Effect": "Allow",
+     "Principal": {
+      "AWS": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":iam::",
+         {
+          "Ref": "AWS::AccountId"
+         },
+         ":root"
+        ]
+       ]
+      }
+     },
+     "Resource": {
+      "Fn::GetAtt": [
+       "BusEA82B648",
+       "Arn"
+      ]
+     },
+     "Sid": "Statement2"
+    },
+    "StatementId": "Statement2"
    }
   }
  },
