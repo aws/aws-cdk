@@ -8,7 +8,6 @@ import { QueueProcessingFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-patterns-queue-health-check');
 const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
-const CONTAINER_HEALTH_CHECK = '0';
 
 new QueueProcessingFargateService(stack, 'HealthCheckQueueService', {
   vpc,
@@ -19,9 +18,6 @@ new QueueProcessingFargateService(stack, 'HealthCheckQueueService', {
     command: ['CMD-SHELL', 'cat /tmp/health_status | grep -q "1" || exit 1'],
     interval: Duration.seconds(10),
     retries: 10,
-  },
-  environment: {
-    CONTAINER_HEALTH_CHECK: CONTAINER_HEALTH_CHECK,
   },
 });
 

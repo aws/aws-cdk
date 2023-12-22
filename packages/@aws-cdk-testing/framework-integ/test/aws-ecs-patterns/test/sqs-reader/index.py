@@ -7,7 +7,7 @@ print('QUEUE_NAME ' + QUEUE_NAME)
 
 if __name__ == '__main__':
     try:
-        client = boto3.client('sqs', region_name='ap-southeast-2')
+        client = boto3.client('sqs')
         queue_url = client.get_queue_url(QueueName=QUEUE_NAME)['QueueUrl']
         print('queue_url ' + queue_url)
         while True:
