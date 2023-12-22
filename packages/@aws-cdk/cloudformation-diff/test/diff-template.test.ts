@@ -669,6 +669,57 @@ describe('changeset', () => {
     expect(differences.differenceCount).toBe(0);
   });
 
+  test('changeset does not overrides spec additions or deletions', () => {
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+          Properties: { BucketName: 'MagicBucket' },
+        },
+      },
+    };
+    const newTemplate = {
+      Resources: {
+        Queue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: { QueueName: 'MagicQueue' },
+        },
+      },
+    };
+
+    // WHEN
+    const differences = fullDiff(currentTemplate, newTemplate, {
+      Changes: [
+        {
+          ResourceChange: {
+            Action: 'Remove',
+            LogicalResourceId: 'Bucket',
+            ResourceType: 'AWS::S3::Bucket',
+            Details: [],
+          },
+        },
+        {
+          ResourceChange: {
+            Action: 'Add',
+            LogicalResourceId: 'Queue',
+            ResourceType: 'AWS::SQS::Queue',
+            Details: [],
+          },
+        },
+      ],
+    });
+
+    // A realistic changeset will include Additions and Removals, but this shows that we don't use the changeset to determine additions or removals
+    const emptyChangeSetDifferences = fullDiff(currentTemplate, newTemplate, {
+      Changes: [],
+    });
+
+    // THEN
+    expect(differences.differenceCount).toBe(2);
+    expect(emptyChangeSetDifferences.differenceCount).toBe(2);
+  });
+
   test('changeset replacements are respected', () => {
     // GIVEN
     const currentTemplate = {
