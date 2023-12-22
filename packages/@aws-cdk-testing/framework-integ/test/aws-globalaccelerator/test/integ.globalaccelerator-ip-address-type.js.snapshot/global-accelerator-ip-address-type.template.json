@@ -4,7 +4,8 @@
    "Type": "AWS::GlobalAccelerator::Accelerator",
    "Properties": {
     "Enabled": true,
-    "Name": "globalacceleratoruniquenameAccelerator519EC5EE"
+    "IpAddressType": "DUAL_STACK",
+    "Name": "acceleratorWithIpAddressType"
    }
   }
  },
