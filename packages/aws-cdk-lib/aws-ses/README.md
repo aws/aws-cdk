@@ -111,15 +111,19 @@ When you create a new Amazon SES account, your emails are sent from IP addresses
 Amazon SES users. For [an additional monthly charge](https://aws.amazon.com/ses/pricing/), you can lease
 dedicated IP addresses that are reserved for your exclusive use.
 
-Use the `DedicatedIpPool` construct to create a pool of dedicated IP addresses:
+Use the DedicatedIpPool construct to create a pool of dedicated IP addresses. When specifying a name for your dedicated IP pool, ensure that it adheres to the following naming convention:
+
+- The name must include only lowercase letters (a-z), numbers (0-9), underscores (_), and hyphens (-).
+- The name must not exceed 64 characters in length.
 
 ```ts
 new ses.DedicatedIpPool(this, 'Pool', {
+  dedicatedIpPoolName: 'mypool',
   scalingMode: ses.ScalingMode.STANDARD,
 });
 ```
 
-The pool can then be used in a configuration set.
+The pool can then be used in a configuration set. If the provided dedicatedIpPoolName does not follow the specified naming convention, an error will be thrown.
 
 ### Configuration sets
 
