@@ -492,7 +492,7 @@ export class DatabaseProxy extends DatabaseProxyBase
 
     // When a `ProxyTarget` is created by `DatabaseCluster.addProxy`,
     // the `ProxyTarget` is created as a child of the `DatabaseCluster`,
-    // so if multiple `ProxyTarget` are created, using `node.addDependency` will cause circular dependency.
+    // so if multiple `ProxyTarget` are created, using `node.addDependency` will cause circular dependencies.
     // To avoid this, use `CfnResource.addDependency` to add dependencies.
     bindResult.dbClusters?.forEach((cluster) => {
       cluster.node.children.forEach((child) => {
