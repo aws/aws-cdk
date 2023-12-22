@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Template } from 'aws-cdk-lib/assertions';
-import { Code, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Runtime, Architecture } from 'aws-cdk-lib/aws-lambda';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AssetHashType, DockerImage, Stack } from 'aws-cdk-lib';
 import { PythonFunction } from '../lib';
@@ -216,4 +216,18 @@ test('Do not skip bundling when stack requires it', () => {
   }));
 
   spy.mockRestore();
+});
+
+test('PythonFunction specifying architecture', () => {
+  new PythonFunction(stack, 'handler', {
+    entry: path.join(__dirname, 'lambda-handler'),
+    runtime: Runtime.PYTHON_3_11,
+    architecture: Architecture.ARM_64,
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(
+    expect.objectContaining({
+      architecture: Architecture.ARM_64,
+    }),
+  );
 });
