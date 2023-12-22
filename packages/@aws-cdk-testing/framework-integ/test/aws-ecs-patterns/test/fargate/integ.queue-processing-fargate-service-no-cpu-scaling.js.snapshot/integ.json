@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "noCpuScalingQueueProcessingFargateServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-patterns-queue-no-cpu-scaling"
+      ],
+      "assertionStack": "noCpuScalingQueueProcessingFargateServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "noCpuScalingQueueProcessingFargateServiceTestDefaultTestDeployAssertE4E4F855"
+    }
+  }
+}
