@@ -1617,5 +1617,3 @@ taskDefinition.addContainer('TheContainer', {
   }],
 });
 ```
-
-## Retrieve the task ARN which
