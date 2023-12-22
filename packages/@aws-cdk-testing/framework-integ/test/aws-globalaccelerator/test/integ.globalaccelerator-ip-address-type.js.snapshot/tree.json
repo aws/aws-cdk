@@ -4,68 +4,69 @@
     "id": "App",
     "path": "",
     "children": {
-      "global-accelerator-unique-name": {
-        "id": "global-accelerator-unique-name",
-        "path": "global-accelerator-unique-name",
+      "global-accelerator-ip-address-type": {
+        "id": "global-accelerator-ip-address-type",
+        "path": "global-accelerator-ip-address-type",
         "children": {
           "Accelerator": {
             "id": "Accelerator",
-            "path": "global-accelerator-unique-name/Accelerator",
+            "path": "global-accelerator-ip-address-type/Accelerator",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "global-accelerator-unique-name/Accelerator/Resource",
+                "path": "global-accelerator-ip-address-type/Accelerator/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::GlobalAccelerator::Accelerator",
                   "aws:cdk:cloudformation:props": {
                     "enabled": true,
-                    "name": "globalacceleratoruniquenameAccelerator519EC5EE"
+                    "ipAddressType": "DUAL_STACK",
+                    "name": "acceleratorWithIpAddressType"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_globalaccelerator.CfnAccelerator",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_globalaccelerator.Accelerator",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "global-accelerator-unique-name/BootstrapVersion",
+            "path": "global-accelerator-ip-address-type/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "global-accelerator-unique-name/CheckBootstrapVersion",
+            "path": "global-accelerator-ip-address-type/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
         }
       },
-      "GlobalAcceleratorUniqueName": {
-        "id": "GlobalAcceleratorUniqueName",
-        "path": "GlobalAcceleratorUniqueName",
+      "GlobalAcceleratorIpAddressType": {
+        "id": "GlobalAcceleratorIpAddressType",
+        "path": "GlobalAcceleratorIpAddressType",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "GlobalAcceleratorUniqueName/DefaultTest",
+            "path": "GlobalAcceleratorIpAddressType/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "GlobalAcceleratorUniqueName/DefaultTest/Default",
+                "path": "GlobalAcceleratorIpAddressType/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -73,28 +74,28 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "GlobalAcceleratorUniqueName/DefaultTest/DeployAssert",
+                "path": "GlobalAcceleratorIpAddressType/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "GlobalAcceleratorUniqueName/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "GlobalAcceleratorIpAddressType/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "GlobalAcceleratorUniqueName/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "GlobalAcceleratorIpAddressType/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
@@ -119,8 +120,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
     }
   }
 }
