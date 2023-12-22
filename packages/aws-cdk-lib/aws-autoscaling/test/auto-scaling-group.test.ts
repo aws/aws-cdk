@@ -1862,6 +1862,95 @@ describe('auto scaling group', () => {
     });
   });
 
+  test('Can specify InstanceRequirements', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+      launchTemplateId: 'test-lt-id',
+      versionNumber: '0',
+    });
+
+    new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+      mixedInstancesPolicy: {
+        launchTemplate: lt,
+        launchTemplateOverrides: [{
+          instanceRequirements: {
+            vCpuCount: { min: 4, max: 8 },
+            memoryMiB: { min: 16384 },
+            cpuManufacturers: ['intel'],
+          },
+          launchTemplate: lt,
+          weightedCapacity: 9,
+        }],
+      },
+      vpc: mockVpc(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      MixedInstancesPolicy: {
+        LaunchTemplate: {
+          LaunchTemplateSpecification: {
+            LaunchTemplateId: 'test-lt-id',
+            Version: '0',
+          },
+          Overrides: [
+            {
+              InstanceRequirements: {
+                VCpuCount: {
+                  Min: 4,
+                  Max: 8,
+                },
+                MemoryMiB: {
+                  Min: 16384,
+                },
+                CpuManufacturers: ['intel'],
+              },
+              LaunchTemplateSpecification: {
+                LaunchTemplateId: 'test-lt-id',
+                Version: '0',
+              },
+              WeightedCapacity: '9',
+            },
+          ],
+        },
+      },
+    });
+  });
+
+  test('Cannot specify InstanceRequirements and InstanceType at the same time', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+      launchTemplateId: 'test-lt-id',
+      versionNumber: '0',
+    });
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+        mixedInstancesPolicy: {
+          launchTemplate: lt,
+          launchTemplateOverrides: [{
+            instanceRequirements: {
+              vCpuCount: { min: 4, max: 8 },
+              memoryMiB: { min: 16384 },
+              cpuManufacturers: ['intel'],
+            },
+            instanceType: new InstanceType('t4g.micro'),
+            launchTemplate: lt,
+            weightedCapacity: 9,
+          }],
+        },
+        vpc: mockVpc(stack),
+      });
+    }).toThrow('\'InstanceRequirements\' can\'t be specified with \'InstanceType\'');
+  });
+
   test('Cannot specify both Launch Template and Launch Config', () => {
     // GIVEN
     const stack = new cdk.Stack();
