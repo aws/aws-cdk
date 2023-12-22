@@ -173,7 +173,7 @@ async function parseCommandLineArguments(args: string[]) {
       .option('concurrency', { type: 'number', desc: 'Maximum number of simultaneous deployments (dependency permitting) to execute.', default: 1, requiresArg: true })
       .option('asset-parallelism', { type: 'boolean', desc: 'Whether to build/publish assets in parallel' })
       .option('asset-prebuild', { type: 'boolean', desc: 'Whether to build all assets before deploying the first stack (useful for failing Docker builds)', default: true })
-      .option('ignore-no-stacks', { type: 'boolean', desc: 'Ignore the error message if the app contains no stacks', default: false }),
+      .option('ignore-no-stacks', { type: 'boolean', desc: 'Whether to deploy if the app contains no stacks', default: false }),
     )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })

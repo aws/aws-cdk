@@ -9,7 +9,8 @@ import { withTimeout } from './with-timeout';
 /**
  * Higher order function to execute a block with a CliLib Integration CDK app fixture
  */
-export function withCliLibIntegrationCdkApp<A extends TestContext & AwsContext>(block: (context: CliLibIntegrationTestFixture) => Promise<void>) {
+export function withCliLibNoStacksIntegrationCdkApp<A extends TestContext & AwsContext>
+(block: (context:CliLibNoStacksIntegrationTestFixture) => Promise<void>) {
   return async (context: A) => {
     const randy = context.randomString;
     const stackNamePrefix = `cdktest-${randy}`;
@@ -20,7 +21,7 @@ export function withCliLibIntegrationCdkApp<A extends TestContext & AwsContext>(
     context.log(` Region:         ${context.aws.region}\n`);
 
     await cloneDirectory(path.join(RESOURCES_DIR, 'cdk-apps', 'no-stack-app'), integTestDir, context.output);
-    const fixture = new CliLibIntegrationTestFixture(
+    const fixture = new CliLibNoStacksIntegrationTestFixture(
       integTestDir,
       stackNamePrefix,
       context.output,
@@ -94,11 +95,11 @@ function errorCausedByGoPkg(error: string) {
 /**
  * SAM Integration test fixture for CDK - SAM integration test cases
  */
-export function withCliLibFixture(block: (context: CliLibIntegrationTestFixture) => Promise<void>) {
-  return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, withCliLibIntegrationCdkApp(block)));
+export function withCliLibNoStacksFixture(block: (context: CliLibNoStacksIntegrationTestFixture) => Promise<void>) {
+  return withAws(withTimeout(DEFAULT_TEST_TIMEOUT_S, withCliLibNoStacksIntegrationCdkApp(block)));
 }
 
-export class CliLibIntegrationTestFixture extends TestFixture {
+export class CliLibNoStacksIntegrationTestFixture extends TestFixture {
   /**
    *
    */

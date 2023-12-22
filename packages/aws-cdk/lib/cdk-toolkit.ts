@@ -175,8 +175,8 @@ export class CdkToolkit {
     }
 
     const startSynthTime = new Date().getTime();
-    // eslint-disable-next-line max-len
-    const stackCollection = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly, options.ignoreNoStacks);
+    const stackCollection = await this.selectStacksForDeploy(options.selector, options.exclusively,
+      options.cacheCloudAssembly, options.ignoreNoStacks);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
     print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
 
@@ -731,8 +731,8 @@ export class CdkToolkit {
     return stacks;
   }
 
-  // eslint-disable-next-line max-len
-  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean, cacheCloudAssembly?: boolean, ignoreNoStacks?: boolean): Promise<StackCollection> {
+  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean,
+    cacheCloudAssembly?: boolean, ignoreNoStacks?: boolean): Promise<StackCollection> {
     const assembly = await this.assembly(cacheCloudAssembly);
     const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
@@ -1140,7 +1140,7 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
   readonly assetBuildTime?: AssetBuildTime;
 
   /**
-   * Ignore the error message if the app contains no stacks.
+   * Whether to deploy if the app contains no stacks.
    *
    * @default false
    */

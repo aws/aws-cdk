@@ -200,7 +200,7 @@ export interface DeployStackOptions {
   readonly assetParallelism?: boolean;
 
   /**
-   * Ignore the error message if the app contains no stacks.
+   * Whether to deploy if the app contains no stacks.
    *
    * @default false
    */

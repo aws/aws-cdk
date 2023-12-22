@@ -1,4 +1,4 @@
-import { integTest, withCliLibFixture } from '../../lib';
+import { integTest, withCliLibFixture, withCliLibNoStacksFixture } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -47,7 +47,7 @@ integTest('cli-lib deploy', withCliLibFixture(async (fixture) => {
   }
 }));
 
-integTest('cli-lib deploy no stack', withCliLibFixture(async (fixture) => {
+integTest('cli-lib deploy no stack', withCliLibNoStacksFixture(async (fixture) => {
   const stackName = fixture.fullStackName('no-stack-1');
 
   try {

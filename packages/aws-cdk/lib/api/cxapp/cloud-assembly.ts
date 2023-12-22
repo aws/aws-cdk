@@ -43,7 +43,7 @@ export interface SelectStacksOptions {
   defaultBehavior: DefaultSelection;
 
   /**
-   * Ignore the error message if the app contains no stacks.
+   * Whether to deploy if the app contains no stacks.
    *
    * @default false
    */
@@ -109,9 +109,8 @@ export class CloudAssembly {
     if (stacks.length === 0) {
       if (options.ignoreNoStacks) {
         return new StackCollection(this, []);
-      } else {
-        throw new Error('This app contains no stacks');
       }
+      throw new Error('This app contains no stacks');
     }
 
     if (allTopLevel) {
