@@ -16,6 +16,7 @@ coverage
 build-tools
 dist
 !custom-resource-handlers/dist/
+!core/lib/dist/
 scripts
 .LAST_BUILD
 .LAST_PACKAGE
@@ -30,8 +31,10 @@ tsconfig.json
 # exclude cdk artifacts
 **/cdk.out
 junit.xml
-
 !*.lit.ts
+
+# exclude additional documention
+core/adr/
 
 # keep class map for cloudformation-include
 !cloudformation-include/cfn-types-2-classes.json
