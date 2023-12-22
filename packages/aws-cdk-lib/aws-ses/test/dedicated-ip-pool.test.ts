@@ -32,5 +32,5 @@ test('dedicated IP pool with invalid name', () => {
   // THEN
   expect(() => new DedicatedIpPool(stack, 'Pool', {
     dedicatedIpPoolName: 'invalidName',
-  })).toThrow('Invalid dedicatedIpPoolName. The name must only include lowercase letters, numbers, underscores, hyphens, and must not exceed 64 characters.');
+  })).toThrow('Invalid dedicatedIpPoolName "invalidName". The name must only include lowercase letters, numbers, underscores, hyphens, and must not exceed 64 characters.');
 });
