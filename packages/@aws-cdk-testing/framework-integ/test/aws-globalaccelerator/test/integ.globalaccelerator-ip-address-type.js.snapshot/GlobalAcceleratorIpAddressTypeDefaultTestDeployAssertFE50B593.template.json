@@ -1,13 +1,4 @@
 {
- "Resources": {
-  "Accelerator8EB0B6B1": {
-   "Type": "AWS::GlobalAccelerator::Accelerator",
-   "Properties": {
-    "Enabled": true,
-    "Name": "globalacceleratoruniquenameAccelerator519EC5EE"
-   }
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
