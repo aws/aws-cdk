@@ -396,6 +396,8 @@ describe('proxy', () => {
         TargetGroupName: 'default',
       },
       DependsOn: [
+        'clusterInstance183584D40',
+        'clusterInstance23D1AD8B2',
         'cluster611F8AFF',
       ],
     });
@@ -429,6 +431,8 @@ describe('proxy', () => {
         TargetGroupName: 'default',
       },
       DependsOn: [
+        'clusterInstance183584D40',
+        'clusterInstance23D1AD8B2',
         'cluster611F8AFF',
       ],
     });
@@ -440,6 +444,8 @@ describe('proxy', () => {
         TargetGroupName: 'default',
       },
       DependsOn: [
+        'clusterInstance183584D40',
+        'clusterInstance23D1AD8B2',
         'cluster611F8AFF',
       ],
     });
