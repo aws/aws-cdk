@@ -1,10 +1,11 @@
 {
  "Resources": {
-  "Accelerator8EB0B6B1": {
-   "Type": "AWS::GlobalAccelerator::Accelerator",
+  "WebSocketApi34BCF99B": {
+   "Type": "AWS::ApiGatewayV2::Api",
    "Properties": {
-    "Enabled": true,
-    "Name": "globalacceleratoruniquenameAccelerator519EC5EE"
+    "Name": "WebSocketApi",
+    "ProtocolType": "WEBSOCKET",
+    "RouteSelectionExpression": "$request.body.action"
    }
   }
  },

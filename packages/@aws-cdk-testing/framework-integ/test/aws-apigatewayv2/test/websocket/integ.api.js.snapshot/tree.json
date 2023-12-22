@@ -4,38 +4,39 @@
     "id": "App",
     "path": "",
     "children": {
-      "global-accelerator-unique-name": {
-        "id": "global-accelerator-unique-name",
-        "path": "global-accelerator-unique-name",
+      "aws-cdk-aws-apigatewayv2": {
+        "id": "aws-cdk-aws-apigatewayv2",
+        "path": "aws-cdk-aws-apigatewayv2",
         "children": {
-          "Accelerator": {
-            "id": "Accelerator",
-            "path": "global-accelerator-unique-name/Accelerator",
+          "WebSocketApi": {
+            "id": "WebSocketApi",
+            "path": "aws-cdk-aws-apigatewayv2/WebSocketApi",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "global-accelerator-unique-name/Accelerator/Resource",
+                "path": "aws-cdk-aws-apigatewayv2/WebSocketApi/Resource",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::GlobalAccelerator::Accelerator",
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
                   "aws:cdk:cloudformation:props": {
-                    "enabled": true,
-                    "name": "globalacceleratoruniquenameAccelerator519EC5EE"
+                    "name": "WebSocketApi",
+                    "protocolType": "WEBSOCKET",
+                    "routeSelectionExpression": "$request.body.action"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_globalaccelerator.CfnAccelerator",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_globalaccelerator.Accelerator",
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketApi",
               "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "global-accelerator-unique-name/BootstrapVersion",
+            "path": "aws-cdk-aws-apigatewayv2/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -43,7 +44,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "global-accelerator-unique-name/CheckBootstrapVersion",
+            "path": "aws-cdk-aws-apigatewayv2/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -55,17 +56,17 @@
           "version": "0.0.0"
         }
       },
-      "GlobalAcceleratorUniqueName": {
-        "id": "GlobalAcceleratorUniqueName",
-        "path": "GlobalAcceleratorUniqueName",
+      "web-socket-api": {
+        "id": "web-socket-api",
+        "path": "web-socket-api",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "GlobalAcceleratorUniqueName/DefaultTest",
+            "path": "web-socket-api/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "GlobalAcceleratorUniqueName/DefaultTest/Default",
+                "path": "web-socket-api/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -73,11 +74,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "GlobalAcceleratorUniqueName/DefaultTest/DeployAssert",
+                "path": "web-socket-api/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "GlobalAcceleratorUniqueName/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "web-socket-api/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -85,7 +86,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "GlobalAcceleratorUniqueName/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "web-socket-api/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

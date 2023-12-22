@@ -1,15 +1,15 @@
 {
   "version": "35.0.0",
   "files": {
-    "c917d5a2b2e16b9e3cd0679e1dee0539129223bcca595b66788045cc8fc23e20": {
+    "f753b6c52b805082d600dd33b6be3b816c0954f254acf84347e2447774db5100": {
       "source": {
-        "path": "SNSInteg.template.json",
+        "path": "aws-cdk-aws-apigatewayv2.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c917d5a2b2e16b9e3cd0679e1dee0539129223bcca595b66788045cc8fc23e20.json",
+          "objectKey": "f753b6c52b805082d600dd33b6be3b816c0954f254acf84347e2447774db5100.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

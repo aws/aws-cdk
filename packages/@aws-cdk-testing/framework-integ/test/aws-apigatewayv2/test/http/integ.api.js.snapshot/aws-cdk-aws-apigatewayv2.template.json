@@ -1,10 +1,20 @@
 {
  "Resources": {
-  "Accelerator8EB0B6B1": {
-   "Type": "AWS::GlobalAccelerator::Accelerator",
+  "HttpApiF5A9A8A7": {
+   "Type": "AWS::ApiGatewayV2::Api",
    "Properties": {
-    "Enabled": true,
-    "Name": "globalacceleratoruniquenameAccelerator519EC5EE"
+    "Name": "HttpApi",
+    "ProtocolType": "HTTP"
+   }
+  },
+  "HttpApiDefaultStage3EEB07D6": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "HttpApiF5A9A8A7"
+    },
+    "AutoDeploy": true,
+    "StageName": "$default"
    }
   }
  },

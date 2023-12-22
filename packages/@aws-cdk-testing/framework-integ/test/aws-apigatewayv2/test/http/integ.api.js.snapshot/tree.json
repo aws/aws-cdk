@@ -4,38 +4,66 @@
     "id": "App",
     "path": "",
     "children": {
-      "global-accelerator-unique-name": {
-        "id": "global-accelerator-unique-name",
-        "path": "global-accelerator-unique-name",
+      "aws-cdk-aws-apigatewayv2": {
+        "id": "aws-cdk-aws-apigatewayv2",
+        "path": "aws-cdk-aws-apigatewayv2",
         "children": {
-          "Accelerator": {
-            "id": "Accelerator",
-            "path": "global-accelerator-unique-name/Accelerator",
+          "HttpApi": {
+            "id": "HttpApi",
+            "path": "aws-cdk-aws-apigatewayv2/HttpApi",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "global-accelerator-unique-name/Accelerator/Resource",
+                "path": "aws-cdk-aws-apigatewayv2/HttpApi/Resource",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::GlobalAccelerator::Accelerator",
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
                   "aws:cdk:cloudformation:props": {
-                    "enabled": true,
-                    "name": "globalacceleratoruniquenameAccelerator519EC5EE"
+                    "name": "HttpApi",
+                    "protocolType": "HTTP"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_globalaccelerator.CfnAccelerator",
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultStage": {
+                "id": "DefaultStage",
+                "path": "aws-cdk-aws-apigatewayv2/HttpApi/DefaultStage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-aws-apigatewayv2/HttpApi/DefaultStage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "HttpApiF5A9A8A7"
+                        },
+                        "autoDeploy": true,
+                        "stageName": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_globalaccelerator.Accelerator",
+              "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpApi",
               "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "global-accelerator-unique-name/BootstrapVersion",
+            "path": "aws-cdk-aws-apigatewayv2/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -43,7 +71,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "global-accelerator-unique-name/CheckBootstrapVersion",
+            "path": "aws-cdk-aws-apigatewayv2/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -55,17 +83,17 @@
           "version": "0.0.0"
         }
       },
-      "GlobalAcceleratorUniqueName": {
-        "id": "GlobalAcceleratorUniqueName",
-        "path": "GlobalAcceleratorUniqueName",
+      "http-api": {
+        "id": "http-api",
+        "path": "http-api",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "GlobalAcceleratorUniqueName/DefaultTest",
+            "path": "http-api/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "GlobalAcceleratorUniqueName/DefaultTest/Default",
+                "path": "http-api/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -73,11 +101,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "GlobalAcceleratorUniqueName/DefaultTest/DeployAssert",
+                "path": "http-api/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "GlobalAcceleratorUniqueName/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "http-api/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -85,7 +113,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "GlobalAcceleratorUniqueName/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "http-api/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
