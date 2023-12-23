@@ -1238,14 +1238,14 @@ If you are planning to run pipelines for more than a hundred repos
 deploying across multiple regions, then you will want to consider reusing
 both artifacts buckets and cross-region replication buckets.
 
-In a situation like this, you will want to have a separate CDK app / dedicatd repo which creates
+In a situation like this, you will want to have a separate CDK app / dedicated repo which creates
 and managed the buckets which will be shared by the pipelines of all your other apps.
 Note that this app must NOT be using the shared buckets because of chicken & egg issues.
 
 The following code assumes you have created and are managing your buckets in the aforementioned
 separate cdk repo and are just importing them for use in one of your (many) pipelines.
 
-```typescript
+```ts
 let sharedArtifactBucketArn: string;
 let sharedArtifactKeyArn: string;
 

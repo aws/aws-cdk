@@ -253,7 +253,7 @@ export interface CodePipelineProps {
    * 
    * Passed directly through to the {@link cp.Pipeline}.
    *
-   * @default - None.
+   * @default - no cross region replication buckets.
    */
 
   readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket };
