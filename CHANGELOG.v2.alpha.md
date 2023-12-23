@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.116.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.116.0-alpha.0...v2.116.1-alpha.0) (2023-12-22)
+
+## [2.116.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.115.0-alpha.0...v2.116.0-alpha.0) (2023-12-21)
+
+
+### Features
+
+* **scheduler:** flexible time windows ([#28098](https://github.com/aws/aws-cdk/issues/28098)) ([6554e48](https://github.com/aws/aws-cdk/commit/6554e48908662de31aa5dba4578007c857c2403d))
+* **scheduler-targets:** add CodePipeline as target for scheduler ([#27799](https://github.com/aws/aws-cdk/issues/27799)) ([8c44f32](https://github.com/aws/aws-cdk/commit/8c44f3298f6bd6d5b2b081eeef50296d6f716a2d)), closes [#27449](https://github.com/aws/aws-cdk/issues/27449)
+
+
+### Bug Fixes
+
+* **integ-tests:** apply correct IAM policy to waiterProvider ([#28424](https://github.com/aws/aws-cdk/issues/28424)) ([c488035](https://github.com/aws/aws-cdk/commit/c488035db893532c6aca97c59717a351539fa2ec)), closes [40aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts#L136](https://github.com/40aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts/issues/L136) [40aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts#L247](https://github.com/40aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts/issues/L247) [#27865](https://github.com/aws/aws-cdk/issues/27865)
+* **lambda-python-alpha:** pipenv lock -r is no longer supported ([#28317](https://github.com/aws/aws-cdk/issues/28317)) ([f85f486](https://github.com/aws/aws-cdk/commit/f85f486d34e51c4e5d6a8b68b16a35a14f431329)), closes [#28015](https://github.com/aws/aws-cdk/issues/28015) [/github.com/pypa/pipenv/blob/main/CHANGELOG.md#2022813-2022-08-13](https://github.com/aws//github.com/pypa/pipenv/blob/main/CHANGELOG.md/issues/2022813-2022-08-13) [#28015](https://github.com/aws/aws-cdk/issues/28015)
+
+## [2.115.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.114.1-alpha.0...v2.115.0-alpha.0) (2023-12-14)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **scheduler:** The typos in the Schedule and Group construct method names have been fixed, changing `metricSentToDLQTrunacted` to `metricSentToDLQTruncated` and `metricAllSentToDLQTrunacted` to `metricAllSentToDLQTruncated`.
+* **redshift:** Further updates of the Redshift table will fail for existing tables, if the table name is changed. Therefore, changing the table name for existing Redshift tables have been disabled.
+
+### Features
+
+* **appconfig-alpha:** add deploy method to configuration constructs ([#28269](https://github.com/aws/aws-cdk/issues/28269)) ([c723ef9](https://github.com/aws/aws-cdk/commit/c723ef913a73fa6a452042db926023d174e86dbf))
+* **cloud9-alpha:** support image ids for Amazon Linux 2023 and Ubuntu 22.04 ([#28346](https://github.com/aws/aws-cdk/issues/28346)) ([93681e0](https://github.com/aws/aws-cdk/commit/93681e07ad19c08f60eb2ee5748a2d55c6d2bc45)), closes [/docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-cloud9-environmentec2.html#cfn-cloud9-environmentec2](https://github.com/aws//docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-resource-cloud9-environmentec2.html/issues/cfn-cloud9-environmentec2)
+* **scheduler:** start and end time for schedule construct ([#28306](https://github.com/aws/aws-cdk/issues/28306)) ([0b4ab1d](https://github.com/aws/aws-cdk/commit/0b4ab1d0ba11b3536a2f7b02b537966de6ac0493)), closes [/github.com/aws/aws-cdk/pull/26819#discussion_r1301532299](https://github.com/aws//github.com/aws/aws-cdk/pull/26819/issues/discussion_r1301532299)
+
+
+### Bug Fixes
+
+* **appconfig-alpha:** extensions always create cdk diff ([#28264](https://github.com/aws/aws-cdk/issues/28264)) ([2075559](https://github.com/aws/aws-cdk/commit/207555919e0462686f6c434d1598e371687679c8)), closes [#27676](https://github.com/aws/aws-cdk/issues/27676)
+* **redshift:** tables were dropped on table name change ([#24308](https://github.com/aws/aws-cdk/issues/24308)) ([7ac237b](https://github.com/aws/aws-cdk/commit/7ac237b08c489883962d6b8023799d6c2c40cfba)), closes [#24246](https://github.com/aws/aws-cdk/issues/24246)
+* **scheduler:** typo in metricSentToDLQ... methods ([#28307](https://github.com/aws/aws-cdk/issues/28307)) ([8b91e10](https://github.com/aws/aws-cdk/commit/8b91e106e649e6a75b396f350dae9266770ad6cb))
+
 ## [2.114.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.114.0-alpha.0...v2.114.1-alpha.0) (2023-12-06)
 
 ## [2.114.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.113.0-alpha.0...v2.114.0-alpha.0) (2023-12-05)
