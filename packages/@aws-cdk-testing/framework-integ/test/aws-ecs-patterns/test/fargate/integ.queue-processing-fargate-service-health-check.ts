@@ -6,22 +6,22 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { QueueProcessingFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-patterns-queue-public');
+const stack = new Stack(app, 'aws-ecs-patterns-queue-health-check');
 const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 
-new QueueProcessingFargateService(stack, 'PublicQueueService', {
+new QueueProcessingFargateService(stack, 'HealthCheckQueueService', {
   vpc,
   memoryLimitMiB: 512,
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
   assignPublicIp: true,
   healthCheck: {
-    command: ['CMD-SHELL', 'curl -f http://localhost/ || exit 1'],
-    interval: Duration.seconds(6),
+    command: ['CMD-SHELL', 'cat /tmp/health_status | grep -q "1" || exit 1'],
+    interval: Duration.seconds(10),
     retries: 10,
   },
 });
 
-new integ.IntegTest(app, 'publicQueueProcessingFargateServiceTest', {
+new integ.IntegTest(app, 'healthCheckQueueProcessingFargateServiceTest', {
   testCases: [stack],
 });
 
