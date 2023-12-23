@@ -1783,11 +1783,16 @@ export class Vpc extends VpcBase {
       throw new Error('Incomplete Subnet Allocation; response array dose not equal input array');
     }
 
-    let subnetIpv6Cidrs: string[] = [];
-    if (this.useIpv6 && this.ipv6SelectedCidr !== undefined) {
-      subnetIpv6Cidrs = Fn.cidr(this.ipv6SelectedCidr, allocatedSubnets.length, (128 - 64).toString());
+    if (this.useIpv6) {
+      if (this.ipv6SelectedCidr === undefined) {
+        throw new Error('No IPv6 CIDR block associated with this VPC could be found');
+      }
+      const subnetIpv6Cidrs = Fn.cidr(this.ipv6SelectedCidr, allocatedSubnets.length, (128 - 64).toString());
+      allocatedSubnets.forEach((allocated, i) => {
+        allocated.ipv6Cidr = Fn.select(i, subnetIpv6Cidrs);
+      });
     }
-    this.createSubnetResources(requestedSubnets, allocatedSubnets, subnetIpv6Cidrs);
+    this.createSubnetResources(requestedSubnets, allocatedSubnets);
   }
 
   /**
@@ -1810,7 +1815,7 @@ export class Vpc extends VpcBase {
     }
   }
 
-  private createSubnetResources(requestedSubnets: RequestedSubnet[], allocatedSubnets: AllocatedSubnet[], subnetIpv6Cidrs?: string[]) {
+  private createSubnetResources(requestedSubnets: RequestedSubnet[], allocatedSubnets: AllocatedSubnet[]) {
     allocatedSubnets.forEach((allocated, i) => {
 
       const { configuration: subnetConfig, subnetConstructId, availabilityZone } = requestedSubnets[i];
@@ -1838,7 +1843,7 @@ export class Vpc extends VpcBase {
         vpcId: this.vpcId,
         cidrBlock: allocated.cidr,
         mapPublicIpOnLaunch: this.calculateMapPublicIpOnLaunch(subnetConfig),
-        ipv6CidrBlock: subnetIpv6Cidrs !== undefined ? Fn.select(i, subnetIpv6Cidrs) : undefined,
+        ipv6CidrBlock: allocated.ipv6Cidr,
         assignIpv6AddressOnCreation: this.useIpv6 ? subnetConfig.ipv6AssignAddressOnCreation ?? true : undefined,
         dependantIpv6CidrBlock: this.useIpv6 ? this.ipv6CidrBlock : undefined,
       } satisfies SubnetProps;

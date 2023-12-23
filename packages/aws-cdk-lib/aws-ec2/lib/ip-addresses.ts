@@ -147,6 +147,11 @@ export interface AllocatedSubnet {
    * Cidr Allocations for a Subnet
    */
   readonly cidr: string;
+
+  /**
+   * IPv6 Cidr Allocations for a Subnet
+   */
+  ipv6Cidr?: string;
 }
 
 /**
