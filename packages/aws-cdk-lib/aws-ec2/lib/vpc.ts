@@ -1571,17 +1571,20 @@ export class Vpc extends VpcBase {
     const natGatewayPlacement = props.natGatewaySubnets || { subnetType: SubnetType.PUBLIC };
     const natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
 
-    // TODO: make ipv6 cidr
     if (this.useIpv6) {
       this.ipv6IpAddresses = props.ipv6IpAddresses ?? Ipv6IpAddresses.amazonProvided();
       //this.ipv6CidrBlock = this.ipv6IpAddresses.
 
-      this.ipv6CidrBlock = new CfnVPCCidrBlock(this, 'ipv6cidr', {
-        vpcId: this.vpcId,
-        amazonProvidedIpv6CidrBlock: this.ipv6IpAddresses.amazonProvided,
-      });
+      if (this.ipv6IpAddresses.amazonProvided) {
+        // create the IPv6 CIDR block and associate it with the VPC
+        // create a dependency of the subnets on the CIDR block
+        this.ipv6CidrBlock = new CfnVPCCidrBlock(this, 'ipv6cidr', {
+          vpcId: this.vpcId,
+          amazonProvidedIpv6CidrBlock: this.ipv6IpAddresses.amazonProvided,
+        });
 
-      this.ipv6SelectedCidr = Fn.select(0, this.resource.attrIpv6CidrBlocks);
+        this.ipv6SelectedCidr = Fn.select(0, this.resource.attrIpv6CidrBlocks);
+      }
     }
 
     // Add tag here too?
@@ -1629,12 +1632,7 @@ export class Vpc extends VpcBase {
       });
 
       (this.privateSubnets as PrivateSubnet[]).forEach(privateSubnet => {
-        privateSubnet.addRoute('DefaultRoute6', {
-          routerType: RouterType.EGRESS_ONLY_INTERNET_GATEWAY,
-          routerId: eigw.ref,
-          destinationIpv6CidrBlock: '::/0',
-          enablesInternetConnectivity: true,
-        });
+        privateSubnet.addIpv6DefaultEgressOnlyInternetRoute(eigw.ref);
       });
     }
 
@@ -2145,6 +2143,20 @@ export class Subnet extends Resource implements ISubnet {
   public addIpv6DefaultInternetRoute(gatewayId: string) {
     this.addRoute('DefaultRoute6', {
       routerType: RouterType.GATEWAY,
+      routerId: gatewayId,
+      destinationIpv6CidrBlock: '::/0',
+      enablesInternetConnectivity: true,
+    });
+  }
+
+  /**
+   * Create a default IPv6 route that points to a passed EIGW.
+   *
+   * @param gatewayId the logical ID (ref) of the gateway attached to your VPC
+   */
+  public addIpv6DefaultEgressOnlyInternetRoute(gatewayId: string) {
+    this.addRoute('DefaultRoute6', {
+      routerType: RouterType.EGRESS_ONLY_INTERNET_GATEWAY,
       routerId: gatewayId,
       destinationIpv6CidrBlock: '::/0',
       enablesInternetConnectivity: true,
