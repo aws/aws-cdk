@@ -850,7 +850,7 @@
                           {
                             "essential": true,
                             "image": {
-                              "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:d3bdcfdd660bfe705ef686f270e773fc19d7c57af72814ab86e6e1c9ac2f7535"
+                              "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:205c5d917605ee59cc93dc29526bc4f73b315ae613cdfbc52b8179f388041a03"
                             },
                             "name": "QueueProcessingContainer",
                             "logConfiguration": {
@@ -866,10 +866,6 @@
                               }
                             },
                             "environment": [
-                              {
-                                "name": "CONTAINER_HEALTH_CHECK",
-                                "value": "0"
-                              },
                               {
                                 "name": "QUEUE_NAME",
                                 "value": {
