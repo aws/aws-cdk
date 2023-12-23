@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "web-socket-api/DefaultTest": {
+      "stacks": [
+        "aws-cdk-aws-apigatewayv2"
+      ],
+      "assertionStack": "web-socket-api/DefaultTest/DeployAssert",
+      "assertionStackName": "websocketapiDefaultTestDeployAssert230DE1C6"
+    }
+  }
+}

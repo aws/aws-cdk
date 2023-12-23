@@ -1,0 +1,379 @@
+{
+ "Resources": {
+  "AwsApiCallSQSpurgeQueue9dee3c309fd35c8e9de6a283d5a45696": {
+   "Type": "Custom::DeployAssert@SdkCallSQSpurgeQueue",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SQS",
+    "api": "purgeQueue",
+    "parameters": {
+     "QueueUrl": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-sqs-bucket-notifications:ExportsOutputRefIntegQueue16691AAFF77621FF1"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1701107110083"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "sqs:PurgeQueue"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "sqs:PurgeQueue"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:PutObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3:PutObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "sqs:ReceiveMessage"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "sqs:ReceiveMessage"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs18.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "4012e9468badb2b8e1a18d0513e222f2ad6246cf6ddc9f167fc9add9a48bb84e.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallSQSpurgeQueue3dbc33339559b3b0ad9846209312d812": {
+   "Type": "Custom::DeployAssert@SdkCallSQSpurgeQueue",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SQS",
+    "api": "purgeQueue",
+    "parameters": {
+     "QueueUrl": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-sqs-bucket-notifications:ExportsOutputRefIntegQueue2DA51259CC4A33DFB"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1701107110084"
+   },
+   "DependsOn": [
+    "AwsApiCallSQSpurgeQueue9dee3c309fd35c8e9de6a283d5a45696"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3putObjectba38728e762569a855acb7c5fc7c4adf": {
+   "Type": "Custom::DeployAssert@SdkCallS3putObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "putObject",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-sqs-bucket-notifications:ExportsOutputRefBucket12520700A8CDAA090"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"bucket1/image.png\"",
+     "Body": "\"Some content\""
+    },
+    "flattenResponse": "false",
+    "salt": "1701107110084"
+   },
+   "DependsOn": [
+    "AwsApiCallSQSpurgeQueue3dbc33339559b3b0ad9846209312d812"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallS3putObject6e450f6e95fe6d25da5bf5102c1ebad4": {
+   "Type": "Custom::DeployAssert@SdkCallS3putObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "putObject",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-sqs-bucket-notifications:ExportsOutputRefBucket12520700A8CDAA090"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"bucket2/image.png\"",
+     "Body": "\"Some content\""
+    },
+    "flattenResponse": "false",
+    "salt": "1701107110084"
+   },
+   "DependsOn": [
+    "AwsApiCallS3putObjectba38728e762569a855acb7c5fc7c4adf"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a": {
+   "Type": "Custom::DeployAssert@SdkCallSQSreceiveMessage",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SQS",
+    "api": "receiveMessage",
+    "expected": "{\"$StringLike\":\"bucket1/image\\\\.png\"}",
+    "actualPath": "Messages.0.Body.Records.0.s3.object.key",
+    "parameters": {
+     "QueueUrl": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-sqs-bucket-notifications:ExportsOutputRefIntegQueue16691AAFF77621FF1"
+        },
+        "\""
+       ]
+      ]
+     },
+     "WaitTimeSeconds": "20"
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Messages.0.Body.Records.0.s3.object.key"
+    ],
+    "salt": "1701107110084"
+   },
+   "DependsOn": [
+    "AwsApiCallS3putObject6e450f6e95fe6d25da5bf5102c1ebad4"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallSQSreceiveMessagea37e53065313eefe09c34224f0e93eb6": {
+   "Type": "Custom::DeployAssert@SdkCallSQSreceiveMessage",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SQS",
+    "api": "receiveMessage",
+    "expected": "{\"$StringLike\":\"bucket2/image\\\\.png\"}",
+    "actualPath": "Messages.0.Body.Records.0.s3.object.key",
+    "parameters": {
+     "QueueUrl": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-sqs-bucket-notifications:ExportsOutputRefIntegQueue2DA51259CC4A33DFB"
+        },
+        "\""
+       ]
+      ]
+     },
+     "WaitTimeSeconds": "20"
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "Messages.0.Body.Records.0.s3.object.key"
+    ],
+    "salt": "1701107110084"
+   },
+   "DependsOn": [
+    "AwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSQSreceiveMessage63f5d3aa78e2eb58880b181aacc3c74a",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallSQSreceiveMessagea37e53065313eefe09c34224f0e93eb6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSQSreceiveMessagea37e53065313eefe09c34224f0e93eb6",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

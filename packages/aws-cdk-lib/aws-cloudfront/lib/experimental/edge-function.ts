@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { Construct, Node } from 'constructs';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
@@ -8,14 +7,13 @@ import * as ssm from '../../../aws-ssm';
 import {
   CfnResource,
   CustomResource,
-  CustomResourceProvider,
-  CustomResourceProviderRuntime,
   Lazy,
   Resource,
   Stack,
   Stage,
   Token,
 } from '../../../core';
+import { CrossRegionStringParamReaderProvider } from '../../../custom-resource-handlers/dist/aws-cloudfront/cross-region-string-param-reader-provider.generated';
 
 /**
  * Properties for creating a Lambda@Edge function
@@ -199,9 +197,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     });
 
     const resourceType = 'Custom::CrossRegionStringParameterReader';
-    const serviceToken = CustomResourceProvider.getOrCreate(this, resourceType, {
-      codeDirectory: path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-cloudfront', 'edge-function'),
-      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+    const serviceToken = CrossRegionStringParamReaderProvider.getOrCreate(this, resourceType, {
       policyStatements: [{
         Effect: 'Allow',
         Resource: parameterArnPrefix,

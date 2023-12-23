@@ -38,6 +38,24 @@
   "MyTopic86869434": {
    "Type": "AWS::SNS::Topic",
    "Properties": {
+    "DeliveryStatusLogging": [
+     {
+      "FailureFeedbackRoleArn": {
+       "Fn::GetAtt": [
+        "FeedbackRoleCAF84E5C",
+        "Arn"
+       ]
+      },
+      "Protocol": "http/s",
+      "SuccessFeedbackRoleArn": {
+       "Fn::GetAtt": [
+        "FeedbackRoleCAF84E5C",
+        "Arn"
+       ]
+      },
+      "SuccessFeedbackSampleRate": "50"
+     }
+    ],
     "DisplayName": "fooDisplayName",
     "KmsMasterKeyId": {
      "Fn::GetAtt": [
@@ -46,6 +64,51 @@
      ]
     },
     "TopicName": "fooTopic"
+   }
+  },
+  "FeedbackRoleCAF84E5C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sns.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "Policy23B91518": {
+   "Type": "AWS::IAM::ManagedPolicy",
+   "Properties": {
+    "Description": "",
+    "Path": "/",
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:PutMetricFilter",
+        "logs:PutRetentionPolicy"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Roles": [
+     {
+      "Ref": "FeedbackRoleCAF84E5C"
+     }
+    ]
    }
   }
  },
