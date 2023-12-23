@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { Construct, Dependable, DependencyGroup, IConstruct, IDependable, Node } from 'constructs';
 import { ClientVpnEndpoint, ClientVpnEndpointOptions } from './client-vpn-endpoint';
 import {
@@ -17,8 +16,9 @@ import { EnableVpnGatewayOptions, VpnConnection, VpnConnectionOptions, VpnConnec
 import * as cxschema from '../../cloud-assembly-schema';
 import {
   Arn, Annotations, ContextProvider,
-  IResource, Lazy, Resource, Stack, Token, Tags, Names, CustomResourceProvider, CustomResourceProviderRuntime, CustomResource, FeatureFlags,
+  IResource, Lazy, Resource, Stack, Token, Tags, Names, CustomResource, FeatureFlags,
 } from '../../core';
+import { RestrictDefaultSgProvider } from '../../custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated';
 import * as cxapi from '../../cx-api';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from '../../cx-api';
 
@@ -1698,9 +1698,7 @@ export class Vpc extends VpcBase {
 
   private restrictDefaultSecurityGroup(): void {
     const id = 'Custom::VpcRestrictDefaultSG';
-    const provider = CustomResourceProvider.getOrCreateProvider(this, id, {
-      codeDirectory: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-ec2', 'restrict-default-security-group-handler'),
-      runtime: CustomResourceProviderRuntime.NODEJS_18_X,
+    const provider = RestrictDefaultSgProvider.getOrCreateProvider(this, id, {
       description: 'Lambda function for removing all inbound/outbound rules from the VPC default security group',
     });
     provider.addToRolePolicy({
