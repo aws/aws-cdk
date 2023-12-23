@@ -11,6 +11,7 @@ const exec = promisify(_exec);
 describe('Migrate Function Tests', () => {
   let sdkProvider: MockSdkProvider;
   let getTemplateMock: jest.Mock;
+  let describeStacksMock: jest.Mock;
   let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
 
   const testResourcePath = [__dirname, 'test-resources'];
@@ -20,10 +21,11 @@ describe('Migrate Function Tests', () => {
   const validTemplatePath = path.join(...templatePath, 's3-template.json');
   const validTemplate = readFromPath(validTemplatePath)!;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     sdkProvider = new MockSdkProvider();
     getTemplateMock = jest.fn();
-    cfnMocks = { getTemplate: getTemplateMock };
+    describeStacksMock = jest.fn();
+    cfnMocks = { getTemplate: getTemplateMock, describeStacks: describeStacksMock };
     sdkProvider.stubCloudFormation(cfnMocks as any);
   });
 
@@ -57,17 +59,40 @@ describe('Migrate Function Tests', () => {
   });
 
   test('readFromStack produces a string representation of the template retrieved from CloudFormation', async () => {
-    const template = fs.readFileSync(validTemplatePath);
-    getTemplateMock.mockImplementationOnce(() => ({
+    const template = fs.readFileSync(validTemplatePath, { encoding: 'utf-8' });
+    getTemplateMock.mockImplementation(() => ({
       TemplateBody: template,
     }));
 
-    expect(await readFromStack('this-one', sdkProvider, { account: 'num', region: 'here', name: 'hello-my-name-is-what...' })).toEqual(template);
+    describeStacksMock.mockImplementation(() => ({
+      Stacks: [
+        {
+          StackName: 'this-one',
+          StackStatus: 'CREATE_COMPLETE',
+        },
+      ],
+    }));
+
+    expect(await readFromStack('this-one', sdkProvider, { account: 'num', region: 'here', name: 'hello-my-name-is-what...' })).toEqual(JSON.stringify(JSON.parse(template)));
   });
 
   test('readFromStack throws error when no stack exists with the stack name in the account and region', async () => {
-    getTemplateMock.mockImplementationOnce(() => { throw new Error('No stack. This did not go well.'); });
-    await expect(() => readFromStack('that-one', sdkProvider, { account: 'num', region: 'here', name: 'hello-my-name-is-who...' })).rejects.toThrowError('No stack. This did not go well.');
+    describeStacksMock.mockImplementation(() => { throw new Error('No stack. This did not go well.'); });
+    await expect(() => readFromStack('that-one', sdkProvider, { account: 'num', region: 'here', name: 'hello-my-name-is-who...' })).rejects.toThrow('No stack. This did not go well.');
+  });
+
+  test('readFromStack throws error when stack exists but the status is not healthy', async () => {
+    describeStacksMock.mockImplementation(() => ({
+      Stacks: [
+        {
+          StackName: 'this-one',
+          StackStatus: 'CREATE_FAILED',
+          StackStatusReason: 'Something went wrong',
+        },
+      ],
+    }));
+
+    await expect(() => readFromStack('that-one', sdkProvider, { account: 'num', region: 'here', name: 'hello-my-name-is-chicka-chicka...' })).rejects.toThrow('Stack \'that-one\' in account num and region here has a status of \'CREATE_FAILED\' due to \'Something went wrong\'. The stack cannot be migrated until it is in a healthy state.');
   });
 
   test('setEnvironment sets account and region when provided', () => {
