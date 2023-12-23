@@ -307,6 +307,13 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @see https://docs.docker.com/build/cache/backends/
    */
   readonly cacheTo?: DockerCacheOption;
+
+  /**
+   * Disable the cache and pass `--no-cache` to the `docker build` command.
+   *
+   * @default - cache is used
+   */
+  readonly cacheDisabled?: boolean;
 }
 
 /**
@@ -410,6 +417,11 @@ export class DockerImageAsset extends Construct implements IAsset {
   private readonly dockerCacheTo?: DockerCacheOption;
 
   /**
+   * Disable the cache and pass `--no-cache` to the `docker build` command.
+   */
+  private readonly dockerCacheDisabled?: boolean;
+
+  /**
    * Docker target to build to
    */
   private readonly dockerBuildTarget?: string;
@@ -505,6 +517,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     this.dockerOutputs = props.outputs;
     this.dockerCacheFrom = props.cacheFrom;
     this.dockerCacheTo = props.cacheTo;
+    this.dockerCacheDisabled = props.cacheDisabled;
 
     const location = stack.synthesizer.addDockerImageAsset({
       directoryName: this.assetPath,
@@ -520,6 +533,7 @@ export class DockerImageAsset extends Construct implements IAsset {
       dockerOutputs: this.dockerOutputs,
       dockerCacheFrom: this.dockerCacheFrom,
       dockerCacheTo: this.dockerCacheTo,
+      dockerCacheDisabled: this.dockerCacheDisabled,
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
@@ -561,6 +575,7 @@ export class DockerImageAsset extends Construct implements IAsset {
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_OUTPUTS_KEY] = this.dockerOutputs;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_FROM_KEY] = this.dockerCacheFrom;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_TO_KEY] = this.dockerCacheTo;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_DISABLED_KEY] = this.dockerCacheDisabled;
   }
 
 }

@@ -51,6 +51,26 @@ describe('build cache', () => {
     });
   });
 
+  test('manifest contains cache disabled', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app);
+    const asset = new DockerImageAsset(stack, 'DockerImage6', {
+      directory: path.join(__dirname, 'demo-image'),
+      cacheDisabled: true,
+    });
+
+    // WHEN
+    const asm = app.synth();
+
+    // THEN
+    const manifestArtifact = getAssetManifest(asm);
+    const manifest = readAssetManifest(manifestArtifact);
+
+    expect(Object.keys(manifest.dockerImages ?? {}).length).toBe(1);
+    expect(manifest.dockerImages?.[asset.assetHash]?.source.cacheDisabled).toBeTruthy();
+  });
+
   test('manifest does not contain options when not specified', () => {
     // GIVEN
     const app = new App();
