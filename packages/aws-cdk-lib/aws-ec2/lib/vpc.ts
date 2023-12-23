@@ -1573,7 +1573,6 @@ export class Vpc extends VpcBase {
 
     if (this.useIpv6) {
       this.ipv6IpAddresses = props.ipv6IpAddresses ?? Ipv6IpAddresses.amazonProvided();
-      //this.ipv6CidrBlock = this.ipv6IpAddresses.
 
       if (this.ipv6IpAddresses.amazonProvided) {
         // create the IPv6 CIDR block and associate it with the VPC
@@ -1679,41 +1678,7 @@ export class Vpc extends VpcBase {
     if ((restrictFlag && props.restrictDefaultSecurityGroup !== false) || props.restrictDefaultSecurityGroup) {
       this.restrictDefaultSecurityGroup();
     }
-
-    /*
-    if (this.vpcProtocol === VpcProtocol.DUAL_STACK) {
-      this.configureDualStackIpv6(props);
-    }
-    */
   }
-
-  /**
-   * Configures IPv6 on subnets
-   */
-  /*
-  private configureDualStackIpv6(props: VpcProps) {
-    const ipv6Cidr = new CfnVPCCidrBlock(this, 'ipv6cidr', {
-      vpcId: this.vpcId,
-      amazonProvidedIpv6CidrBlock: props.ipv6AmazonProvidedCidrBlock ?? true,
-    });
-
-    const allSubnets = [...this.publicSubnets, ...this.privateSubnets, ...this.isolatedSubnets];
-    const numSubnets = allSubnets.length; //assumption that isolated subnets are included here
-    const vpc6cidr = Fn.select(0, this.vpcIpv6CidrBlocks);
-    const subnet6cidrs = Fn.cidr(vpc6cidr, numSubnets, (128 - 64).toString());
-
-    // associate an IPv6 block to each subnets
-    allSubnets.forEach((subnet, i) => {
-      const cidr6 = Fn.select(i, subnet6cidrs);
-
-      const cfnSubnet = subnet.node.defaultChild as CfnSubnet;
-      cfnSubnet.ipv6CidrBlock = cidr6;
-      cfnSubnet.assignIpv6AddressOnCreation = true;
-      cfnSubnet.mapPublicIpOnLaunch = false;
-      subnet.node.addDependency(ipv6Cidr);
-    });
-  }
-  */
 
   /**
    * Adds a new S3 gateway endpoint to this VPC
