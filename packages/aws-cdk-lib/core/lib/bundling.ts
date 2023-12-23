@@ -358,6 +358,7 @@ export class DockerImage extends BundlingDockerImage {
       ...(options.targetStage ? ['--target', options.targetStage] : []),
       ...(options.cacheFrom ? [...options.cacheFrom.map(cacheFrom => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()] : []),
       ...(options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : []),
+      ...(options.cacheDisabled ? ['--no-cache'] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
       path,
     ];
@@ -627,6 +628,13 @@ export interface DockerBuildOptions {
    * @default - no cache to args are passed
    */
   readonly cacheTo?: DockerCacheOption;
+
+  /**
+   * Disable the cache and pass `--no-cache` to the `docker build` command.
+   *
+   * @default - cache is used
+   */
+  readonly cacheDisabled?: boolean;
 }
 
 function flatten(x: string[][]) {
