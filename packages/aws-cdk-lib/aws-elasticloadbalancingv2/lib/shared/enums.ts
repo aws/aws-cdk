@@ -140,23 +140,43 @@ export enum SslPolicy {
   TLS13_13 = 'ELBSecurityPolicy-TLS13-1-3-2021-06',
 
   /**
-   * TLS1.3 only
+   * TLS 1.3 only with AES 128 and 256 GCM SHA ciphers
    */
   FIPS_TLS13_13 = 'ELBSecurityPolicy-TLS13-1-3-FIPS-2023-04',
 
   /**
-   * TLS1.2 and 1.3
+   * TLS 1.2 and 1.3 with AES and ECDHE GCM/SHA ciphers
    */
   FIPS_TLS13_12_RES = 'ELBSecurityPolicy-TLS13-1-2-Res-FIPS-2023-04',
 
   /**
-   * TLS1.2 and 1.3 and no SHA ciphers
+   * TLS 1.2 and 1.3 with ECDHE SHA/GCM ciphers, excluding SHA1 ciphers
    */
   FIPS_TLS13_12 = 'ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04',
+
+  /**
+   * TLS 1.2 and 1.3 with all ECDHE ciphers
+   */
   FIPS_TLS13_12_EXT0 = 'ELBSecurityPolicy-TLS13-1-2-Ext0-FIPS-2023-04',
+
+  /**
+   * TLS 1.2 and 1.3 with all AES and ECDHE ciphers excluding SHA1 ciphers
+   */
   FIPS_TLS13_12_EXT1 = 'ELBSecurityPolicy-TLS13-1-2-Ext1-FIPS-2023-04',
+
+  /**
+   * TLS 1.2 and 1.3 with all ciphers
+   */
   FIPS_TLS13_12_EXT2 = 'ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-2023-04',
+
+  /**
+   * TLS1.1 through 1.3 with all ciphers
+   */
   FIPS_TLS13_11 = 'ELBSecurityPolicy-TLS13-1-1-FIPS-2023-04',
+
+  /**
+   *  TLS1.0 through 1.3 with all ciphers
+   */
   FIPS_TLS13_10 = 'ELBSecurityPolicy-TLS13-1-0-FIPS-2023-04',
 
   /**
