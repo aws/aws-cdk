@@ -2090,7 +2090,6 @@ describe('cluster', () => {
           TargetCapacity: 100,
         },
         ManagedTerminationProtection: 'ENABLED',
-        ManagedDraining: undefined,
       },
     });
 
@@ -2183,11 +2182,11 @@ describe('cluster', () => {
         AutoScalingGroupArn: {
           Ref: 'asgASG4D014670',
         },
+        ManagedDraining: 'DISABLED',
         ManagedScaling: {
           Status: 'ENABLED',
           TargetCapacity: 100,
         },
-        enableManagedDraining: 'DISABLED',
       },
     });
   });
@@ -2215,11 +2214,11 @@ describe('cluster', () => {
         AutoScalingGroupArn: {
           Ref: 'asgASG4D014670',
         },
+        ManagedDraining: 'ENABLED',
         ManagedScaling: {
           Status: 'ENABLED',
           TargetCapacity: 100,
         },
-        enableManagedDraining: 'ENABLED',
       },
     });
   });

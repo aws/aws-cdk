@@ -1266,6 +1266,11 @@ Managed Termination Protection to work.
 > delete the Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-process-shutdown.html).
 > For other workarounds, see [this GitHub issue](https://github.com/aws/aws-cdk/issues/18179).
 
+[Need to confirm with Doc team]
+Additionally [Managed Draining](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html#managed-instance-draining) is enabled by default for new capacity providers to 
+gracefully terminate Amazon ECS instances. Setting `enableManagedDraining` to `true` will replace the instance-draining lifecycle hook
+created during addAsgCapacityProvider.
+
 ```ts
 declare const vpc: ec2.Vpc;
 

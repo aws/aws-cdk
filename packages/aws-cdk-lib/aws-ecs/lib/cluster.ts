@@ -1170,7 +1170,7 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
   /**
    * PLACEHOLDER FOR DOC
    *
-   * @default true
+   * @default null
    */
   readonly enableManagedDraining?: boolean;
 
