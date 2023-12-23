@@ -160,7 +160,7 @@ export interface IVpc extends IResource {
 }
 
 /**
- * The protocol of the Vpc
+ * The types of IP addresses provisioned in the VPC.
  */
 export enum VpcProtocol {
   /**
