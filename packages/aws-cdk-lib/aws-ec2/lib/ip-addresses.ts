@@ -5,12 +5,16 @@ import { Fn, Token } from '../../core';
 
 /**
  * An abstract Provider of IpAddresses
+ *
+ * Note this is specific to the IPv4 CIDR.
  */
 export class IpAddresses {
   /**
    * Used to provide local Ip Address Management services for your VPC
    *
    * VPC Cidr is supplied at creation and subnets are calculated locally
+   *
+   * Note this is specific to the IPv4 CIDR.
    *
    */
   public static cidr(cidrBlock: string): IIpAddresses {
@@ -22,6 +26,8 @@ export class IpAddresses {
    *
    * Uses VPC Cidr allocations from AWS IPAM
    *
+   * Note this is specific to the IPv4 CIDR.
+   *
    * @see https://docs.aws.amazon.com/vpc/latest/ipam/what-it-is-ipam.html
    */
   public static awsIpamAllocation(props: AwsIpamProps): IIpAddresses {
@@ -32,7 +38,9 @@ export class IpAddresses {
 }
 
 /**
- * Implementations for ip address management
+ * Implementations for ip address management.
+ *
+ * Note this is specific to the IPv4 CIDR.
  */
 export interface IIpAddresses {
   /**
@@ -144,12 +152,16 @@ export interface SubnetIpamOptions {
  */
 export interface AllocatedSubnet {
   /**
-   * Cidr Allocations for a Subnet
+   * IPv4 Cidr Allocations for a Subnet.
+   *
+   * Note this is specific to the IPv4 CIDR.
    */
   readonly cidr: string;
 
   /**
-   * IPv6 Cidr Allocations for a Subnet
+   * IPv6 Cidr Allocations for a Subnet.
+   *
+   * Note this is specific to the IPv6 CIDR.
    */
   ipv6Cidr?: string;
 }
@@ -355,7 +367,17 @@ class Cidr implements IIpAddresses {
   }
 }
 
+/**
+ * An abstract Provider of Ipv6IpAddresses.
+ *
+ * Note this is specific to the IPv6 CIDR.
+ */
 export class Ipv6IpAddresses {
+  /**
+   * Used for IPv6 address management with Amazon provided CIDRs.
+   *
+   * Note this is specific to the IPv6 CIDR.
+   */
   public static amazonProvided(): IIpv6IpAddresses {
     return new AmazonProvided();
   }
@@ -363,10 +385,20 @@ export class Ipv6IpAddresses {
   private constructor() { }
 }
 
+/**
+ * Implementations for IPv6 address management.
+ *
+ * Note this is specific to the IPv6 CIDR.
+ */
 export interface IIpv6IpAddresses {
   amazonProvided: boolean,
 }
 
+/**
+ * Implements integration with Amazon provided IPv6 CIDRs.
+ *
+ * Note this is specific to the IPv6 CIDR.
+ */
 export class AmazonProvided implements IIpv6IpAddresses {
   amazonProvided: boolean;
 

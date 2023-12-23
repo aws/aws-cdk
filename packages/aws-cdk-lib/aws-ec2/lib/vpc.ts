@@ -889,9 +889,11 @@ export interface VpcProps {
   readonly vpcProtocol?: VpcProtocol;
 
   /**
-   * The Provider to use to allocate IP Space to your VPC.
+   * The Provider to use to allocate IPv4 Space to your VPC.
    *
    * Options include static allocation or from a pool.
+   *
+   * Note this is specific to IPv4 addresses.
    *
    * @default ec2.IpAddresses.cidr
    */
@@ -1130,6 +1132,8 @@ export interface VpcProps {
    *
    * Options include amazon provided CIDR block.
    *
+   * Note this is specific to IPv6 addresses.
+   *
    * @default Ipv6IpAddresses.amazonProvided
    */
   readonly ipv6IpAddresses?: IIpv6IpAddresses;
@@ -1161,6 +1165,8 @@ export interface SubnetConfiguration {
    * will be equal to `2^(32 - cidrMask) - 2`.
    *
    * Valid values are `16--28`.
+   *
+   * Note this is specific to IPv4 addresses.
    *
    * @default - Available IP space is evenly divided across subnets.
    */
@@ -1197,6 +1203,8 @@ export interface SubnetConfiguration {
   /**
    * Controls if a public IPv4 address is associated to an instance at launch
    *
+   * Note this is specific to IPv4 addresses.
+   *
    * @default true in Subnet.Public of IPV4_ONLY VPCs, false otherwise
    */
   readonly mapPublicIpOnLaunch?: boolean;
@@ -1205,6 +1213,8 @@ export interface SubnetConfiguration {
    * This property is specific to dual stack VPCs.
    *
    * If set to false, then an IPv6 address will not be automatically assigned.
+   *
+   * Note this is specific to IPv6 addresses.
    *
    * @default true
    */
@@ -1241,6 +1251,8 @@ export class Vpc extends VpcBase {
    * The default CIDR range used when creating VPCs.
    * This can be overridden using VpcProps when creating a VPCNetwork resource.
    * e.g. new VpcResource(this, { cidr: '192.168.0.0./16' })
+   *
+   * Note this is specific to the IPv4 CIDR.
    */
   public static readonly DEFAULT_CIDR_RANGE: string = '10.0.0.0/16';
 
@@ -1450,14 +1462,25 @@ export class Vpc extends VpcBase {
   private readonly useIpv6: boolean;
 
   /**
-   * The provider of ip addresses
+   * The provider of ipv4 addresses
    */
   private readonly ipAddresses: IIpAddresses;
 
+  /**
+   * The provider of IPv6 addresses.
+   */
   private readonly ipv6IpAddresses?: IIpv6IpAddresses;
 
+  /**
+   * The IPv6 CIDR block CFN resource.
+   *
+   * Needed to create a dependency for the subnets.
+   */
   private readonly ipv6CidrBlock?: CfnVPCCidrBlock;
 
+  /**
+   * The IPv6 CIDR block string representation.
+   */
   private readonly ipv6SelectedCidr?: string;
 
   /**
