@@ -3,7 +3,7 @@
   "testCases": {
     "DualStackTesting/DefaultTest": {
       "stacks": [
-        "OneIPv6BlockDeploy5"
+        "DualStackVpc"
       ],
       "assertionStack": "DualStackTesting/DefaultTest/DeployAssert",
       "assertionStackName": "DualStackTestingDefaultTestDeployAssert8ACBFB2C"

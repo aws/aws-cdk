@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc"
+      "Value": "DualStackVpc/DualStackProtocolVpc"
      }
     ]
    }
@@ -71,7 +71,7 @@
      },
      {
       "Key": "Name",
-      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet1"
+      "Value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -88,7 +88,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet1"
+      "Value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -141,7 +141,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet1"
+      "Value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1"
      }
     ]
    }
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet1"
+      "Value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1"
      }
     ]
    },
@@ -218,7 +218,7 @@
      },
      {
       "Key": "Name",
-      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet2"
+      "Value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -235,7 +235,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet2"
+      "Value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -288,7 +288,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet2"
+      "Value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2"
      }
     ]
    }
@@ -308,7 +308,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PublicSubnet2"
+      "Value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2"
      }
     ]
    },
@@ -365,7 +365,7 @@
      },
      {
       "Key": "Name",
-      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PrivateSubnet1"
+      "Value": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -382,7 +382,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PrivateSubnet1"
+      "Value": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -472,7 +472,7 @@
      },
      {
       "Key": "Name",
-      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PrivateSubnet2"
+      "Value": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -489,7 +489,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc/PrivateSubnet2"
+      "Value": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -538,7 +538,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "OneIPv6BlockDeploy5/DualStackProtocolVpc"
+      "Value": "DualStackVpc/DualStackProtocolVpc"
      }
     ]
    }
