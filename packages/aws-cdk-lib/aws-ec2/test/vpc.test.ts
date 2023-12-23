@@ -2446,11 +2446,22 @@ describe('vpc', () => {
     });
   });
 
-  test('dual-stack', () => {
+  test('dual-stack default', () => {
+    // GIVEN
     const app = new App();
-    const stack1 = new Stack(app, 'Stack1');
-    const vpc = new Vpc(stack1, 'Vpc', {
+    const stack = new Stack(app, 'DualStackStack');
+
+    // WHEN
+    const vpc = new Vpc(stack, 'Vpc', {
       vpcProtocol: VpcProtocol.DUAL_STACK,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCCidrBlock', {
+      AmazonProvidedIpv6CidrBlock: true,
+      VpcId: {
+        Ref: Match.stringLikeRegexp('^Vpc.*'),
+      },
     });
   });
 });
