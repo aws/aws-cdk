@@ -791,6 +791,7 @@ integTest('deploy no stacks with --ignore-no-stacks', withDefaultFixture(async (
 }));
 
 integTest('deploy no stacks error', withDefaultFixture(async (fixture) => {
+  // empty array for stack names
   await expect(fixture.cdkDeploy([], {
     modEnv: {
       INTEG_STACK_SET: 'stage-with-no-stacks',
