@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.116.1](https://github.com/aws/aws-cdk/compare/v2.116.0...v2.116.1) (2023-12-22)
+
+
+### Bug Fixes
+
+* **core:** core constructs fail with `Error: Cannot find module '../dist/core/<file>.generated'` ([#28467](https://github.com/aws/aws-cdk/issues/28467)) ([e8be128](https://github.com/aws/aws-cdk/commit/e8be12836cdb73b74cd36e19e5cec52258304933)), closes [#28251](https://github.com/aws/aws-cdk/issues/28251) [#28465](https://github.com/aws/aws-cdk/issues/28465)
+
 ## [2.116.0](https://github.com/aws/aws-cdk/compare/v2.115.0...v2.116.0) (2023-12-21)
 
 
