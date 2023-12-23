@@ -1,4 +1,3 @@
-import { FieldSortProperty } from '../../../aws-quicksight/lib/quicksight.generated';
 /**
  * What kind of addresses to allocate to the load balancer
  */
