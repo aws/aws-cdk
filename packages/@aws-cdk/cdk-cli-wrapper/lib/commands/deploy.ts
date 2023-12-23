@@ -141,6 +141,13 @@ export interface DeployOptions extends DefaultCdkOptions {
    * @default 1
    */
   readonly concurrency?: number;
+
+  /**
+   * Whether to deploy if the app contains no stacks.
+   *
+   * @default false
+   */
+  readonly ignoreNoStacks?: boolean;
 }
 export type DeploymentMethod = 'direct' | 'change-set';
 

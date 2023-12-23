@@ -126,7 +126,7 @@ export interface DeployStackOptions {
    * The collection of extra parameters
    * (in addition to those used for assets)
    * to pass to the deployed template.
-   * Note that parameters with `undefined` or empty values will be ignored,
+   * Note that parameters with `undefined` or empty values will be d,
    * and not passed to the template.
    *
    * @default - no additional parameters will be passed to the template
@@ -205,13 +205,6 @@ export interface DeployStackOptions {
    * @default true To remain backward compatible.
    */
   readonly assetParallelism?: boolean;
-
-  /**
-   * Whether to deploy if the app contains no stacks.
-   *
-   * @default false
-   */
-  ignoreNoStacks?: boolean;
 }
 
 export type DeploymentMethod =

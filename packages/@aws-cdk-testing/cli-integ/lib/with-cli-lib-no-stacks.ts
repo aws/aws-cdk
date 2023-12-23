@@ -105,14 +105,16 @@ export class CliLibNoStacksIntegrationTestFixture extends TestFixture {
    */
   public async cdk(args: string[], options: CdkCliOptions = {}) {
     const action = args[0];
-    const stackName = args[1];
+    const ignoreNoStacks = args[1];
 
-    const cliOpts: Record<string, any> = {
-      stacks: stackName ? [stackName] : undefined,
-    };
+    const cliOpts: Record<string, any> = {};
 
     if (action === 'deploy') {
       cliOpts.requireApproval = options.neverRequireApproval ? 'never' : 'broadening';
+    }
+
+    if (ignoreNoStacks == '--ignore-no-stacks') {
+      cliOpts.ignoreNoStacks = true;
     }
 
     return this.shell(['node', '--input-type=module', `<<__EOS__
@@ -125,7 +127,6 @@ __EOS__`], {
       modEnv: {
         AWS_REGION: this.aws.region,
         AWS_DEFAULT_REGION: this.aws.region,
-        STACK_NAME_PREFIX: this.stackNamePrefix,
         PACKAGE_LAYOUT_VERSION: this.packages.majorVersion(),
         ...options.modEnv,
       },

@@ -403,8 +403,6 @@ class BuiltinLambdaStack extends cdk.Stack {
   }
 }
 
-class StackWithNoResources extends cdk.Stack {}
-
 const app = new cdk.App({
   context: {
     '@aws-cdk/core:assetHashSalt': process.env.CODEBUILD_BUILD_ID, // Force all assets to be unique, but consistent in one build
@@ -494,8 +492,7 @@ switch (stackSet) {
     stage.synth({ validateOnSynthesis: true });
     break;
 
-  case 'stage-with-no-resources':
-    new StackWithNoResources(app, `${stackPrefix}-stage-with-no-resources`);
+  case 'stage-with-no-stacks':
     break;
 
   default:

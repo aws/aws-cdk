@@ -1,4 +1,4 @@
-import { integTest, withCliLibFixture, withCliLibNoStacksFixture } from '../../lib';
+import { integTest, withCliLibFixture } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -39,28 +39,6 @@ integTest('cli-lib deploy', withCliLibFixture(async (fixture) => {
       StackName: stackName,
     });
     expect(expectedStack.StackResources?.length).toEqual(3);
-  } finally {
-    // delete the stack
-    await fixture.cdk(['destroy', stackName], {
-      captureStderr: false,
-    });
-  }
-}));
-
-integTest('cli-lib deploy no stack', withCliLibNoStacksFixture(async (fixture) => {
-  const stackName = fixture.fullStackName('no-stack-1');
-
-  try {
-    // deploy the stack
-    await fixture.cdk(['deploy', stackName], {
-      options: ['--ignore-no-stacks'],
-    });
-
-    // verify the number of resources in the stack
-    const expectedStack = await fixture.aws.cloudFormation('describeStackResources', {
-      StackName: stackName,
-    });
-    expect(expectedStack.StackResources?.length).toEqual(0);
   } finally {
     // delete the stack
     await fixture.cdk(['destroy', stackName], {

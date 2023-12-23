@@ -1,7 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture } from '../../lib';
+import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withCliLibNoStacksFixture } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -780,17 +780,22 @@ integTest('deploy stack without resource', withDefaultFixture(async (fixture) =>
     .rejects.toThrow('conditional-resource does not exist');
 }));
 
-integTest('deploy --ignore-no-stacks', withDefaultFixture(async (fixture) => {
-  const stackArn = await fixture.cdkDeploy('stage-with-no-resources', {
+integTest('deploy no stacks with --ignore-no-stacks', withDefaultFixture(async (fixture) => {
+  // empty array for stack names
+  await fixture.cdkDeploy([], {
     options: ['--ignore-no-stacks'],
     modEnv: {
-      INTEG_STACK_SET: 'stage-with-no-resources',
+      INTEG_STACK_SET: 'stage-with-no-stacks',
     },
   });
+}));
 
-  // verify that we only deployed both stacks (there are 2 ARNs in the output)
-  /* eslint-disable no-console */
-  console.log(stackArn);
+integTest('deploy no stacks error', withDefaultFixture(async (fixture) => {
+  await expect(fixture.cdkDeploy([], {
+    modEnv: {
+      INTEG_STACK_SET: 'stage-with-no-stacks',
+    },
+  })).rejects.toThrow('exited with error');
 }));
 
 integTest('IAM diff', withDefaultFixture(async (fixture) => {

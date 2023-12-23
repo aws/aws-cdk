@@ -89,6 +89,7 @@ test('deploy with all arguments', () => {
     versionReporting: true,
     usePreviousParameters: true,
     progress: StackActivityProgress.BAR,
+    ignoreNoStacks: true,
   });
 
   // THEN
@@ -129,6 +130,7 @@ test('deploy with all arguments', () => {
       '--previous-parameters',
       '--progress', 'bar',
       '--app',
+      '--ignore-no-stacks',
       'node bin/my-app.js',
       'test-stack1',
     ]),
