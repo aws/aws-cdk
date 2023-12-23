@@ -174,7 +174,6 @@ export class CdkCliWrapper implements ICdk {
       ...renderBooleanArg('previous-parameters', options.usePreviousParameters),
       ...renderBooleanArg('rollback', options.rollback),
       ...renderBooleanArg('staging', options.staging),
-      ...renderBooleanArg('ignore-no-stacks', options.ignoreNoStacks),
       ...options.reuseAssets ? renderArrayArg('--reuse-assets', options.reuseAssets) : [],
       ...options.notificationArns ? renderArrayArg('--notification-arns', options.notificationArns) : [],
       ...options.parameters ? renderMapArrayArg('--parameters', options.parameters) : [],

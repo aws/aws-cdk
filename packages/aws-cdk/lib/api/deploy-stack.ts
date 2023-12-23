@@ -126,7 +126,7 @@ export interface DeployStackOptions {
    * The collection of extra parameters
    * (in addition to those used for assets)
    * to pass to the deployed template.
-   * Note that parameters with `undefined` or empty values will be d,
+   * Note that parameters with `undefined` or empty values will be ignored,
    * and not passed to the template.
    *
    * @default - no additional parameters will be passed to the template
