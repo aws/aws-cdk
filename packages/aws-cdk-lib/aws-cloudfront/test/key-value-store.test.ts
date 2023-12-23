@@ -5,7 +5,6 @@ import { App, Stack } from '../../core';
 import { KeyValueStore, ImportSource } from '../lib';
 
 describe('Key Value Store', () => {
-
   test('minimal example', () => {
     // GIVEN
     const stack = new Stack();
@@ -120,5 +119,4 @@ describe('Key Value Store', () => {
     // THEN
     expect(() => store.keyValueStoreStatus).toThrow('Status is not available for imported Key Value Store');
   });
-
 });

@@ -162,7 +162,6 @@ export interface IKeyValueStore extends IResource {
  * @resource AWS::CloudFront::KeyValueStore
  */
 export class KeyValueStore extends Resource implements IKeyValueStore {
-
   /**
    * Import a Key Value Store using its ARN.
    */
