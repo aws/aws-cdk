@@ -167,6 +167,14 @@ repository.addLifecycleRule({ tagPrefixList: ['prod'], maxImageCount: 9999 });
 repository.addLifecycleRule({ maxImageAge: Duration.days(30) });
 ```
 
+When using `tagPatternList`, an image is successfully matched if it matches
+the wildcard filter.
+
+```ts
+declare const repository: ecr.Repository;
+repository.addLifecycleRule({ tagPatternList: ['prod*'], maxImageCount: 9999 });
+```
+
 ### Repository deletion
 
 When a repository is removed from a stack (or the stack is deleted), the ECR
