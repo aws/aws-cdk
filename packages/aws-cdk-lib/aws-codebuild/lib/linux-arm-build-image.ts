@@ -1,6 +1,7 @@
 import { BuildSpec } from './build-spec';
+import { ComputeType } from './compute-type';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import { BuildEnvironment, ComputeType, IBuildImage, ImagePullPrincipalType, DockerImageOptions } from './project';
+import { BuildEnvironment, IBuildImage, ImagePullPrincipalType, DockerImageOptions } from './project';
 import * as ecr from '../../aws-ecr';
 import * as secretsmanager from '../../aws-secretsmanager';
 
