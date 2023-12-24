@@ -1,7 +1,7 @@
-#!/usr/bin/env node
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import { IConstruct } from 'constructs';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 /* IPv6 workaround found here: https://github.com/aws/aws-cdk/issues/894 */
@@ -10,18 +10,8 @@ const valueOrDie = <T, C extends T = T>(value: T | undefined, err: Error): C => 
   return value as C;
 };
 
-/**
- * Integration test to deployability and use of dualstack ALB. Creates an ALB
- * with dualstack ipAddresType and an ipv6Block to add to VPC subnets. Main
- * test is for the inclusion of default IPv6 ingress rule.
- *
- * Stack Verification steps:
- * VPC is created with subnets that allow for IPv6 connection and then dualstack
- * ALB attaches a listener with dualstack that defaults IPv4/IPv6 ingress rule.
- *
- */
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-elbv2-integ');
+const stack = new cdk.Stack(app, 'aws-cdk-nlb-dualstack-internet-facing');
 
 const vpc = new ec2.Vpc(stack, 'VPC', {
   restrictDefaultSecurityGroup: false,
@@ -41,29 +31,30 @@ const ipv6Block = new ec2.CfnVPCCidrBlock(
 // public subnets.
 const internetGateway = valueOrDie<IConstruct, ec2.CfnInternetGateway>(
   vpc.node.children.find(c => c instanceof ec2.CfnInternetGateway),
-  new Error('Couldn\'t find an internet gateway'),
+  new Error('Couldnt find an internet gateway'),
 );
 
-const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
   vpc,
-  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
   internetFacing: true,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
 });
 
 const listener = lb.addListener('Listener', {
-  port: 80,
+  port: 443,
 });
 
-const group1 = listener.addTargets('Target', {
-  port: 80,
-  targets: [new elbv2.IpTarget('10.0.128.6')],
+const group = listener.addTargets('Target', {
+  port: 443,
+  targets: [new elbv2.IpTarget('10.0.1.1')],
 });
 
-const group2 = listener.addTargets('ConditionalTarget', {
-  priority: 10,
-  hostHeader: 'example.com',
-  port: 80,
-  targets: [new elbv2.IpTarget('10.0.128.5')],
+group.configureHealthCheck({
+  interval: cdk.Duration.seconds(250),
+  timeout: cdk.Duration.seconds(100),
+  protocol: elbv2.Protocol.TCP,
+  healthyThresholdCount: 5,
+  unhealthyThresholdCount: 2,
 });
 
 vpc.publicSubnets.forEach((subnet, idx) => {
@@ -96,26 +87,13 @@ vpc.publicSubnets.forEach((subnet, idx) => {
   // The subnet depends on the ipv6 cidr being allocated.
   cfnSubnet.addDependency(ipv6Block);
 
-  group1.node.addDependency(subnet);
-  group2.node.addDependency(subnet);
+  group.node.addDependency(subnet);
 });
 
-listener.addAction('action1', {
-  priority: 1,
-  conditions: [
-    elbv2.ListenerCondition.hostHeaders(['example.com']),
-  ],
-  action: elbv2.ListenerAction.fixedResponse(200, { messageBody: 'success' }),
-});
+// The target's security group must allow being routed by the LB and the clients.
 
-group1.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh1', {
-  threshold: 5,
-  evaluationPeriods: 2,
-});
-
-group2.metricTargetResponseTime().createAlarm(stack, 'ResponseTimeHigh2', {
-  threshold: 5,
-  evaluationPeriods: 2,
+new integ.IntegTest(app, 'NlbDualstackInternetFacingInteg', {
+  testCases: [stack],
 });
 
 app.synth();
