@@ -9,7 +9,7 @@ import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { Annotations, Arn, ArnFormat, RemovalPolicy, Resource, Stack, Token } from '../../core';
+import { Annotations, Arn, ArnFormat, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '../../core';
 
 export interface ILogGroup extends iam.IResourceWithPolicy {
   /**
@@ -491,7 +491,9 @@ export class LogGroup extends LogGroupBase {
 
   constructor(scope: Construct, id: string, props: LogGroupProps = {}) {
     super(scope, id, {
-      physicalName: props.logGroupName,
+      physicalName: props.logGroupName ?? Lazy.string({
+        produce: () => Names.uniqueResourceName(this, { maxLength: 512, allowedSpecialCharacters: '-_' }),
+      }),
     });
 
     let retentionInDays = props.retention;
@@ -547,8 +549,8 @@ export class LogGroup extends LogGroupBase {
         ],
         resources: ['*'],
         conditions: {
-          ArnLike: {
-            'kms:EncryptionContext:aws:logs:arn': `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:*`,
+          ArnEquals: {
+            'kms:EncryptionContext:aws:logs:arn': `arn:${this.stack.partition}:logs:${this.env.region}:${this.env.account}:log-group:${this.physicalName}`,
           },
         },
       }));

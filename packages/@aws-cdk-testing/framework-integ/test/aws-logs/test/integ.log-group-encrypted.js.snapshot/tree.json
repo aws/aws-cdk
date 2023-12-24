@@ -118,6 +118,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
+                    "logGroupName": "aws-cdk-log-group-encrypted-integLogGroupDECB5FC9",
                     "kmsKeyId": {
                       "Fn::GetAtt": [
                         "Key961B73FD",

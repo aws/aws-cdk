@@ -71,7 +71,7 @@ describe('log group', () => {
             },
           },
           Condition: {
-            ArnLike: {
+            ArnEquals: {
               'kms:EncryptionContext:aws:logs:arn': {
                 'Fn::Join': [
                   '',
@@ -88,7 +88,7 @@ describe('log group', () => {
                     {
                       Ref: 'AWS::AccountId',
                     },
-                    ':*',
+                    ':log-group:LogGroup',
                   ],
                 ],
               },

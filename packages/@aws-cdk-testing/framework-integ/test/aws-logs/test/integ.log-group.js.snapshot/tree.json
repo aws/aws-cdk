@@ -18,6 +18,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
+                    "logGroupName": "aws-cdk-log-group-integLogGroupLambdaAudit8AB75176",
                     "retentionInDays": 731
                   }
                 },
@@ -64,6 +65,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                   "aws:cdk:cloudformation:props": {
+                    "logGroupName": "aws-cdk-log-group-integLogGroupLambda9924FF7D",
                     "dataProtectionPolicy": {
                       "name": "policy-name",
                       "description": "policy description",

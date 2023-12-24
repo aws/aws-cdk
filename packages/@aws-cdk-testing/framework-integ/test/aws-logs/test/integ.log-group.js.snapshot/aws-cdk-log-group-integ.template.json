@@ -3,6 +3,7 @@
   "LogGroupLambdaAuditF8F47F46": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
+    "LogGroupName": "aws-cdk-log-group-integLogGroupLambdaAudit8AB75176",
     "RetentionInDays": 731
    },
    "UpdateReplacePolicy": "Retain",
@@ -16,6 +17,7 @@
   "LogGroupLambdaAC756C5B": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
+    "LogGroupName": "aws-cdk-log-group-integLogGroupLambda9924FF7D",
     "DataProtectionPolicy": {
      "name": "policy-name",
      "description": "policy description",

@@ -37,7 +37,7 @@
         "kms:ReEncrypt*"
        ],
        "Condition": {
-        "ArnLike": {
+        "ArnEquals": {
          "kms:EncryptionContext:aws:logs:arn": {
           "Fn::Join": [
            "",
@@ -54,7 +54,7 @@
             {
              "Ref": "AWS::AccountId"
             },
-            ":*"
+            ":log-group:aws-cdk-log-group-encrypted-integLogGroupDECB5FC9"
            ]
           ]
          }
@@ -87,6 +87,7 @@
   "LogGroupF5B46931": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
+    "LogGroupName": "aws-cdk-log-group-encrypted-integLogGroupDECB5FC9",
     "KmsKeyId": {
      "Fn::GetAtt": [
       "Key961B73FD",
