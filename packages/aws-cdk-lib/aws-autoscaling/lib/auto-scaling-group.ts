@@ -553,12 +553,13 @@ export interface LaunchTemplateOverrides {
   /**
    * The instance requirements. Amazon EC2 Auto Scaling uses your specified requirements to identify instance types.
    * Then, it uses your On-Demand and Spot allocation strategies to launch instances from these instance types.
+   *
    * You can specify up to four separate sets of instance requirements per Auto Scaling group.
    * This is useful for provisioning instances from different Amazon Machine Images (AMIs) in the same Auto Scaling group.
    * To do this, create the AMIs and create a new launch template for each AMI.
    * Then, create a compatible set of instance requirements for each launch template.
    *
-   * If you specify InstanceRequirements, you can't specify InstanceType.
+   * You must specify one of instanceRequirements or instanceType.
    *
    * @default - Do not override instance type
    */
@@ -567,6 +568,8 @@ export interface LaunchTemplateOverrides {
   /**
    * The instance type, such as m3.xlarge. You must use an instance type that is supported in your requested Region
    * and Availability Zones.
+   *
+   * You must specify one of instanceRequirements or instanceType.
    *
    * @default - Do not override instance type
    */
@@ -1828,7 +1831,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
                   throw new Error('You must specify either \'instanceRequirements\' or \'instanceType\'.');
                 }
                 if (override.instanceType && override.instanceRequirements) {
-                  throw new Error('\'InstanceRequirements\' can\'t be specified with \'InstanceType\'');
+                  throw new Error('You can specify either \'instanceRequirements\' or \'instanceType\', not both.');
                 }
                 return {
                   instanceType: override.instanceType?.toString(),

@@ -1948,7 +1948,7 @@ describe('auto scaling group', () => {
         },
         vpc: mockVpc(stack),
       });
-    }).toThrow('\'InstanceRequirements\' can\'t be specified with \'InstanceType\'');
+    }).toThrow('You can specify either \'instanceRequirements\' or \'instanceType\', not both.');
   });
 
   test('Should specify either InstanceRequirements or InstanceType', () => {

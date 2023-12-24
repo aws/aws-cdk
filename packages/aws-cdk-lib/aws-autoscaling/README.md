@@ -91,7 +91,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
-You can specify instance requirements in `InstanceRequirements`:
+You can specify instances requirements with the `instanceRequirements ` property:
 
 ```ts
 declare const vpc: ec2.Vpc;
