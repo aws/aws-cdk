@@ -40,4 +40,15 @@ alarm.addAlarmAction(
 );
 ```
 
+## Lambda Action Example
+
+```ts
+declare const alarm: cloudwatch.Alarm;
+declare const lambda: lambda.Function;
+
+alarm.addAlarmAction(
+  new actions.LambdaAction(lambda)
+);
+```
+
 See `aws-cdk-lib/aws-cloudwatch` for more information.

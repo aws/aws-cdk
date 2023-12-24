@@ -7,9 +7,9 @@ import { Stack } from '../../core';
  * Use an Lambda action as an Alarm action
  */
 export class LambdaAction implements cloudwatch.IAlarmAction {
-  private lambdaFunction: lambda.IAlias | lambda.IVersion
+  private lambdaFunction: lambda.IAlias | lambda.IVersion | lambda.IFunction
   constructor(
-    lambdaFunction: lambda.IAlias | lambda.IVersion,
+    lambdaFunction: lambda.IAlias | lambda.IVersion | lambda.IFunction,
   ) {
     this.lambdaFunction = lambdaFunction;
   }
@@ -36,7 +36,7 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
       };
     } else if ((this.lambdaFunction as lambda.IAlias).version) {
       return {
-        alarmActionArn: `arn:${Stack.of(this.lambdaFunction.stack).partition}:lambda:${Stack.of(this.lambdaFunction.stack).region}:${Stack.of(this.lambdaFunction.stack).account}:function:${this.lambdaFunction.functionName}:${(this.lambdaFunction as lambda.IAlias).version}`,
+        alarmActionArn: `arn:${Stack.of(this.lambdaFunction.stack).partition}:lambda:${Stack.of(this.lambdaFunction.stack).region}:${Stack.of(this.lambdaFunction.stack).account}:function:${this.lambdaFunction.functionName}:${(this.lambdaFunction as lambda.IVersion).version}`,
       };
     } else {
       return {
