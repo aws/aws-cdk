@@ -1824,6 +1824,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
                 if (override.weightedCapacity && Math.floor(override.weightedCapacity) !== override.weightedCapacity) {
                   throw new Error('Weight must be an integer');
                 }
+                if (!override.instanceType && !override.instanceRequirements) {
+                  throw new Error('You must specify either \'instanceRequirements\' or \'instanceType\'.');
+                }
                 if (override.instanceType && override.instanceRequirements) {
                   throw new Error('\'InstanceRequirements\' can\'t be specified with \'InstanceType\'');
                 }

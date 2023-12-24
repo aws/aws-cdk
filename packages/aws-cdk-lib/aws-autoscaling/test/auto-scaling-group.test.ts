@@ -1951,6 +1951,31 @@ describe('auto scaling group', () => {
     }).toThrow('\'InstanceRequirements\' can\'t be specified with \'InstanceType\'');
   });
 
+  test('Should specify either InstanceRequirements or InstanceType', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+      launchTemplateId: 'test-lt-id',
+      versionNumber: '0',
+    });
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+        mixedInstancesPolicy: {
+          launchTemplate: lt,
+          launchTemplateOverrides: [{
+            launchTemplate: lt,
+            weightedCapacity: 9,
+          }],
+        },
+        vpc: mockVpc(stack),
+      });
+    }).toThrow('You must specify either \'instanceRequirements\' or \'instanceType\'.');
+  });
+
   test('Cannot specify both Launch Template and Launch Config', () => {
     // GIVEN
     const stack = new cdk.Stack();
