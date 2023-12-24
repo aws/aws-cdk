@@ -437,7 +437,7 @@ export class Instance extends Resource implements IInstance {
     // there is no need to configure them on the instance level
     this.instance = new CfnInstance(this, 'Resource', {
       imageId: imageConfig.imageId,
-      keyName: props.keyName,
+      keyName: props.keyPair?.keyPairName,
       instanceType: props.instanceType.toString(),
       subnetId: networkInterfaces ? undefined : subnet.subnetId,
       securityGroupIds: networkInterfaces ? undefined : securityGroupsToken,
