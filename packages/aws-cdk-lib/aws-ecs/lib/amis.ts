@@ -298,8 +298,11 @@ export enum BottlerocketEcsVariant {
   /**
    * aws-ecs-1 variant
    */
-  AWS_ECS_1 = 'aws-ecs-1'
-
+  AWS_ECS_1 = 'aws-ecs-1',
+  /**
+   * aws-ecs-1-nvidia variant
+   */
+  AWS_ECS_1_NVIDIA = 'aws-ecs-1-nvidia',
 }
 
 /**
@@ -308,7 +311,6 @@ export enum BottlerocketEcsVariant {
 export interface BottleRocketImageProps {
   /**
    * The Amazon ECS variant to use.
-   * Only `aws-ecs-1` is currently available
    *
    * @default - BottlerocketEcsVariant.AWS_ECS_1
    */
