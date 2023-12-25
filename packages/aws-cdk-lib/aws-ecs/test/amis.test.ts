@@ -1,5 +1,3 @@
-import { Template } from '../../assertions';
-import { testFixtureNoVpc } from '../../aws-eks/test/util';
 import * as cdk from '../../core';
 import * as ecs from '../lib';
 
