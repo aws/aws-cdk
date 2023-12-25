@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "aws-ecs-integ-nvidia-bottlerocket-ami.assets": {
+    "aws-ecs-integ-bottlerocket-nvidia-ami.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-ecs-integ-nvidia-bottlerocket-ami.assets.json",
+        "file": "aws-ecs-integ-bottlerocket-nvidia-ami.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-ecs-integ-nvidia-bottlerocket-ami": {
+    "aws-ecs-integ-bottlerocket-nvidia-ami": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-ecs-integ-nvidia-bottlerocket-ami.template.json",
+        "templateFile": "aws-ecs-integ-bottlerocket-nvidia-ami.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/602e26b0cd1d9acf07d33ab9cf214ebcbfccb55ce2b48db80e802eb4c4ad6307.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/74efa183853b81974f787effec394bf0dd778a217e64ee9e08b13eebb968e69a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-ecs-integ-nvidia-bottlerocket-ami.assets"
+          "aws-ecs-integ-bottlerocket-nvidia-ami.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,277 +31,277 @@
         }
       },
       "dependencies": [
-        "aws-ecs-integ-nvidia-bottlerocket-ami.assets"
+        "aws-ecs-integ-bottlerocket-nvidia-ami.assets"
       ],
       "metadata": {
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet1/Subnet": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet1/RouteTable": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet1/DefaultRoute": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet1/EIP": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1EIPD7E02669"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet1/NATGateway": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet2/Subnet": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet2/RouteTable": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet2/DefaultRoute": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet2/EIP": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2EIP3C605A87"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet2/NATGateway": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2NATGateway9182C01D"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PrivateSubnet1/Subnet": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PrivateSubnet1/RouteTable": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PrivateSubnet2/Subnet": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2Subnet3788AAA1"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PrivateSubnet2/RouteTable": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableA678073B"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PrivateSubnet2/DefaultRoute": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/IGW": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIGWD7BA715C"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/VPCGW": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterEB0386A7"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/InstanceSecurityGroup/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterbottlerocketasgInstanceSecurityGroupE1EAEF75"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/InstanceRole/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterbottlerocketasgInstanceRoleD105ACA5"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/InstanceRole/DefaultPolicy/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/InstanceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterbottlerocketasgInstanceRoleDefaultPolicyBB6119DC"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/InstanceProfile": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterbottlerocketasgInstanceProfile424C4AC3"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/LaunchTemplate/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterbottlerocketasgLaunchTemplate45A2FA5C"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/ASG": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/ASG": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterbottlerocketasgASG5424825A"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/ServiceRole/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterbottlerocketasgDrainECSHookFunctionServiceRole91B0C3B3"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterbottlerocketasgDrainECSHookFunctionServiceRoleDefaultPolicyBD9C646C"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterbottlerocketasgDrainECSHookFunctionFEA27227"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/AllowInvoke:awsecsintegnvidiabottlerocketamiClusterbottlerocketasgLifecycleHookDrainHookTopic0F834B74": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/AllowInvoke:awsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopic46897984": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegnvidiabottlerocketamiClusterbottlerocketasgLifecycleHookDrainHookTopic0F834B74E5C20074"
+            "data": "ClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopic46897984C264A0A5"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/Topic/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/Topic/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterbottlerocketasgDrainECSHookFunctionTopicC875173C"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/Topic/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/Topic/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterbottlerocketasgLifecycleHookDrainHookTopic34DF3A02"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/Role/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterbottlerocketasgLifecycleHookDrainHookRole9E2A1D11"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterbottlerocketasgLifecycleHookDrainHookRoleDefaultPolicy2C98DD9A"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterbottlerocketasgLifecycleHookDrainHook00055B9D"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/SsmParameterValue:--aws--service--bottlerocket--aws-ecs-1--x86_64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/SsmParameterValue:--aws--service--bottlerocket--aws-ecs-1-nvidia--x86_64--latest--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsservicebottlerocketawsecs1nvidiax8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/BootstrapVersion": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-ecs-integ-nvidia-bottlerocket-ami/CheckBootstrapVersion": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-ecs-integ-nvidia-bottlerocket-ami"
+      "displayName": "aws-ecs-integ-bottlerocket-nvidia-ami"
     },
-    "awsecsnvidiabottlerocketamiDefaultTestDeployAssert738BB89C.assets": {
+    "awsecsbottlerocketnvidiaamiDefaultTestDeployAssert682D6B79.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "awsecsnvidiabottlerocketamiDefaultTestDeployAssert738BB89C.assets.json",
+        "file": "awsecsbottlerocketnvidiaamiDefaultTestDeployAssert682D6B79.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "awsecsnvidiabottlerocketamiDefaultTestDeployAssert738BB89C": {
+    "awsecsbottlerocketnvidiaamiDefaultTestDeployAssert682D6B79": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "awsecsnvidiabottlerocketamiDefaultTestDeployAssert738BB89C.template.json",
+        "templateFile": "awsecsbottlerocketnvidiaamiDefaultTestDeployAssert682D6B79.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -310,7 +310,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "awsecsnvidiabottlerocketamiDefaultTestDeployAssert738BB89C.assets"
+          "awsecsbottlerocketnvidiaamiDefaultTestDeployAssert682D6B79.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -319,23 +319,23 @@
         }
       },
       "dependencies": [
-        "awsecsnvidiabottlerocketamiDefaultTestDeployAssert738BB89C.assets"
+        "awsecsbottlerocketnvidiaamiDefaultTestDeployAssert682D6B79.assets"
       ],
       "metadata": {
-        "/aws-ecs-nvidia-bottlerocket-ami/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/aws-ecs-bottlerocket-nvidia-ami/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-ecs-nvidia-bottlerocket-ami/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/aws-ecs-bottlerocket-nvidia-ami/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-ecs-nvidia-bottlerocket-ami/DefaultTest/DeployAssert"
+      "displayName": "aws-ecs-bottlerocket-nvidia-ami/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

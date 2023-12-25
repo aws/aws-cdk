@@ -4,7 +4,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-integ-nvidia-bottlerocket-ami');
+const stack = new cdk.Stack(app, 'aws-ecs-integ-bottlerocket-nvidia-ami');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
@@ -19,7 +19,7 @@ cluster.addCapacity('bottlerocket-asg', {
   }),
 });
 
-new integ.IntegTest(app, 'aws-ecs-nvidia-bottlerocket-ami', {
+new integ.IntegTest(app, 'aws-ecs-bottlerocket-nvidia-ami', {
   testCases: [stack],
 });
 

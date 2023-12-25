@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Vpc"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Vpc"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PrivateSubnet1"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PrivateSubnet1"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PrivateSubnet2"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Vpc/PrivateSubnet2"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Vpc"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Vpc"
      }
     ]
    }
@@ -397,7 +397,7 @@
   "ClusterbottlerocketasgInstanceSecurityGroupE1EAEF75": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/InstanceSecurityGroup",
+    "GroupDescription": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -408,7 +408,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg"
      }
     ],
     "VpcId": {
@@ -460,7 +460,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg"
      }
     ]
    }
@@ -546,7 +546,7 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsservicebottlerocketawsecs1nvidiax8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceType": "c5.large",
      "Monitoring": {
@@ -566,7 +566,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/LaunchTemplate"
+         "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LaunchTemplate"
         }
        ]
       },
@@ -575,7 +575,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/LaunchTemplate"
+         "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LaunchTemplate"
         }
        ]
       }
@@ -601,7 +601,7 @@
       "Tags": [
        {
         "Key": "Name",
-        "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg/LaunchTemplate"
+        "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LaunchTemplate"
        }
       ]
      }
@@ -632,7 +632,7 @@
      {
       "Key": "Name",
       "PropagateAtLaunch": true,
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg"
      }
     ],
     "VPCZoneIdentifier": [
@@ -685,7 +685,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg"
      }
     ]
    }
@@ -801,7 +801,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg"
      }
     ],
     "Timeout": 310
@@ -811,7 +811,7 @@
     "ClusterbottlerocketasgDrainECSHookFunctionServiceRole91B0C3B3"
    ]
   },
-  "ClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegnvidiabottlerocketamiClusterbottlerocketasgLifecycleHookDrainHookTopic0F834B74E5C20074": {
+  "ClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopic46897984C264A0A5": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -848,7 +848,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg"
      }
     ]
    }
@@ -871,7 +871,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-nvidia-bottlerocket-ami/Cluster/bottlerocket-asg"
+      "Value": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg"
      }
     ]
    }
@@ -925,9 +925,9 @@
   }
  },
  "Parameters": {
-  "SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsservicebottlerocketawsecs1nvidiax8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-   "Default": "/aws/service/bottlerocket/aws-ecs-1/x86_64/latest/image_id"
+   "Default": "/aws/service/bottlerocket/aws-ecs-1-nvidia/x86_64/latest/image_id"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
