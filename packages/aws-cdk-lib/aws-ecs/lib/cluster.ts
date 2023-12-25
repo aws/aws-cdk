@@ -12,6 +12,7 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
 import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token } from '../../core';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -595,6 +596,21 @@ export class Cluster extends Resource implements ICluster {
       resource: 'task',
       resourceName: `${this.clusterName}/${keyPattern}`,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    });
+  }
+
+  /**
+  * Grants ECS Task Protection API permissions to the specified grantee.
+  * This method provides a streamlined way to assign the 'ecs:UpdateTaskProtection'
+  * permission, enabling the grantee to manage task protection in the ECS cluster.
+  *
+  * @param grantee - The entity (e.g., IAM role or user) to grant the permissions to.
+  */
+  public grantTaskProtection(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['ecs:UpdateTaskProtection'],
+      resourceArns: [this.arnForTasks('*')],
     });
   }
 
