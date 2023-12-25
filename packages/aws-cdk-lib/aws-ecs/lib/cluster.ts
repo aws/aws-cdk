@@ -12,7 +12,6 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
 import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token } from '../../core';
-import * as ecs from 'aws-cdk-lib/aws-ecs';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
