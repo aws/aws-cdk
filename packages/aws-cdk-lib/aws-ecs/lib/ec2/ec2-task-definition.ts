@@ -154,8 +154,7 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
    */
   override addContainer(id: string, props: ContainerDefinitionOptions): ContainerDefinition {
     if (this.networkMode === NetworkMode.AWS_VPC) {
-      return new ContainerDefinition(this, id, {
-        taskDefinition: this,
+      return super.addContainer(id, {
         ...props,
         environment: {
           ...props.environment,
@@ -164,6 +163,6 @@ export class Ec2TaskDefinition extends TaskDefinition implements IEc2TaskDefinit
       });
     }
     // If network mode is not AWSVPC, then just add the container as normal
-    return new ContainerDefinition(this, id, { taskDefinition: this, ...props });
+    return super.addContainer(id, props);
   }
 }
