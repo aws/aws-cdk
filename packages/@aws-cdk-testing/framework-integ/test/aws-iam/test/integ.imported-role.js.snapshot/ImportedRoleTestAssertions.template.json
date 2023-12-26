@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallIAMlistRolePolicies": {
+  "AwsApiCallIAMlistRolePoliciese15a421383f9698f4159fca8713990e6": {
    "Type": "Custom::DeployAssert@SdkCallIAMlistRolePolicies",
    "Properties": {
     "ServiceToken": {
@@ -11,18 +11,30 @@
     },
     "service": "IAM",
     "api": "listRolePolicies",
-    "expected": "{\"$StringLike\":\"^Policyintegiamimportedrole2Role.{8}$\"}",
-    "actualPath": "PolicyNames.1",
+    "expected": "{\"$StringLike\":\"^Policyintegiamimportedrole2Roley+.{8}$\"}",
+    "actualPath": "PolicyNames.3",
     "parameters": {
      "RoleName": {
-      "Fn::ImportValue": "integ-iam-imported-role-role-stack:ExportsOutputRefTestRole6C9272DF9DD89F08"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-iam-imported-role-role-stack:ExportsOutputRefTestRole6C9272DF9DD89F08"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "true",
     "outputPaths": [
-     "PolicyNames.1"
+     "PolicyNames.0",
+     "PolicyNames.1",
+     "PolicyNames.2",
+     "PolicyNames.3"
     ],
-    "salt": "1676338905652"
+    "salt": "1697413484207"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -71,12 +83,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "73c20a669c041469f7fc3fc03d574b093b5b97e7c716f76c1e8117e6163e4dc4.zip"
+     "S3Key": "c91921c142e824b74d06797a2be74eab5d0dd0453e753549f5182ac7a02f556b.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -90,10 +102,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallIAMlistRolePolicies": {
+  "AssertionResultsAwsApiCallIAMlistRolePoliciese15a421383f9698f4159fca8713990e6": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallIAMlistRolePolicies",
+     "AwsApiCallIAMlistRolePoliciese15a421383f9698f4159fca8713990e6",
      "assertion"
     ]
    }

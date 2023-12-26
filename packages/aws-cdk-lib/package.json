@@ -133,7 +133,7 @@
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.0.35",
+    "@aws-cdk/aws-service-spec": "^0.0.38",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -238,6 +238,7 @@
     "./aws-autoscaling-common": "./aws-autoscaling-common/index.js",
     "./aws-autoscaling-hooktargets": "./aws-autoscaling-hooktargets/index.js",
     "./aws-autoscalingplans": "./aws-autoscalingplans/index.js",
+    "./aws-b2bi": "./aws-b2bi/index.js",
     "./aws-backup": "./aws-backup/index.js",
     "./aws-backupgateway": "./aws-backupgateway/index.js",
     "./aws-batch": "./aws-batch/index.js",
@@ -385,6 +386,7 @@
     "./aws-msk": "./aws-msk/index.js",
     "./aws-mwaa": "./aws-mwaa/index.js",
     "./aws-neptune": "./aws-neptune/index.js",
+    "./aws-neptunegraph": "./aws-neptunegraph/index.js",
     "./aws-networkfirewall": "./aws-networkfirewall/index.js",
     "./aws-networkmanager": "./aws-networkmanager/index.js",
     "./aws-nimblestudio": "./aws-nimblestudio/index.js",
