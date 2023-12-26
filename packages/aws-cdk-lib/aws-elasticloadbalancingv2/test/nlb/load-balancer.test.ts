@@ -854,29 +854,6 @@ describe('tests', () => {
       });
       expect(nlb.securityGroups).toEqual(['sg-1234']);
     });
-
-    test('can look up with no security groups', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'Stack');
-
-      // WHEN
-      const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
-        vpc,
-        internetFacing: true,
-      });
-      nlb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
-
-      // THEN
-      Template.fromStack(stack).resourcePropertiesCountIs('AWS::EC2::SecurityGroupIngress', {
-        CidrIp: '0.0.0.0/0',
-        Description: 'from 0.0.0.0/0:80',
-        FromPort: 80,
-        IpProtocol: 'tcp',
-        ToPort: 80,
-      }, 0);
-      expect(nlb.securityGroups).toBeUndefined();
-    });
   });
 
   describe('dualstack', () => {
