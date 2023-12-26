@@ -186,6 +186,22 @@ const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider'
 cluster.addAsgCapacityProvider(capacityProvider);
 ```
 
+The following code retrieve the Amazon Resource Names (ARNs) of tasks that are a part of a specified ECS cluster.
+It's useful when you want to grant permissions to a task to access other AWS resources.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+const taskARNs = cluster.arnForTasks('*'); // arn:aws:ecs:<region>:<regionId>:task/<clusterName>/*
+
+// Grant the task permission to access other AWS resources
+taskDefinition.addToTaskRolePolicy(
+  new iam.PolicyStatement({
+    actions: ['ecs:UpdateTaskProtection'],
+    resources: [taskARNs],
+  })
+)
+```
 
 ### Bottlerocket
 

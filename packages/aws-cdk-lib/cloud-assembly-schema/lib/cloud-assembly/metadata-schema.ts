@@ -226,6 +226,13 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
    * @see https://docs.docker.com/build/cache/backends/
    */
   readonly cacheTo?: ContainerImageAssetCacheOption;
+
+  /**
+   * Disable the cache and pass `--no-cache` to the `docker build` command.
+   *
+   * @default - cache is used
+   */
+  readonly cacheDisabled?: boolean;
 }
 
 /**

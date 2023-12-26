@@ -122,6 +122,13 @@ export interface DockerImageSource {
    * @see https://docs.docker.com/build/cache/backends/
    */
   readonly cacheTo?: DockerCacheOption;
+
+  /**
+   * Disable the cache and pass `--no-cache` to the `docker build` command.
+   *
+   * @default - cache is used
+   */
+  readonly cacheDisabled?: boolean;
 }
 
 /**

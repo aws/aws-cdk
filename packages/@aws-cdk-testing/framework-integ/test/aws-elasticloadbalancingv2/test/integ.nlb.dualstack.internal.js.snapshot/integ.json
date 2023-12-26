@@ -1,0 +1,12 @@
+{
+  "version": "33.0.0",
+  "testCases": {
+    "NlbDualstackInternalInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-nlb-dualstack-internal"
+      ],
+      "assertionStack": "NlbDualstackInternalInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "NlbDualstackInternalIntegDefaultTestDeployAssertEEBE69CB"
+    }
+  }
+}

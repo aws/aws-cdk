@@ -487,6 +487,100 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
   });
 });
 
+test('test Fargate queue worker service construct - with cpu scaling strategy disabled', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+  const queue = new sqs.Queue(stack, 'fargate-test-queue', {
+    queueName: 'fargate-test-sqs-queue',
+  });
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 512,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    command: ['-c', '4', 'amazon.com'],
+    enableLogging: false,
+    environment: {
+      TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+      TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+    },
+    queue,
+    maxScalingCapacity: 5,
+    minHealthyPercent: 60,
+    maxHealthyPercent: 150,
+    serviceName: 'fargate-test-service',
+    family: 'fargate-task-family',
+    platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    circuitBreaker: { rollback: true },
+    disableCpuBasedScaling: true,
+  });
+
+  // THEN - No CPU target tracking policy is created
+  Template.fromStack(stack).resourcePropertiesCountIs('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    PolicyType: 'TargetTrackingScaling',
+  }, 0);
+});
+
+testDeprecated('test Fargate queue worker service construct - with custom cpu scaling target', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+  const queue = new sqs.Queue(stack, 'fargate-test-queue', {
+    queueName: 'fargate-test-sqs-queue',
+  });
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 512,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    command: ['-c', '4', 'amazon.com'],
+    enableLogging: false,
+    environment: {
+      TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+      TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+    },
+    queue,
+    maxScalingCapacity: 5,
+    minHealthyPercent: 60,
+    maxHealthyPercent: 150,
+    serviceName: 'fargate-test-service',
+    family: 'fargate-task-family',
+    platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    circuitBreaker: { rollback: true },
+    cpuTargetUtilizationPercent: 80,
+  });
+
+  // THEN - CPU target utilization set
+  Template.fromStack(stack). hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    PolicyType: 'TargetTrackingScaling',
+    TargetTrackingScalingPolicyConfiguration: {
+      PredefinedMetricSpecification: {
+        PredefinedMetricType: 'ECSServiceAverageCPUUtilization',
+      },
+      TargetValue: 80,
+    },
+  });
+});
+
 test('can set custom containerName', () => {
   // GIVEN
   const stack = new cdk.Stack();

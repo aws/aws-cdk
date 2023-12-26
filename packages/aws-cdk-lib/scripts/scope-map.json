@@ -465,6 +465,9 @@
   "aws-neptune": [
     "AWS::Neptune"
   ],
+  "aws-neptunegraph": [
+    "AWS::NeptuneGraph"
+  ],
   "aws-networkfirewall": [
     "AWS::NetworkFirewall"
   ],

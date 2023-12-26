@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "http-api/DefaultTest": {
+      "stacks": [
+        "aws-cdk-aws-apigatewayv2"
+      ],
+      "assertionStack": "http-api/DefaultTest/DeployAssert",
+      "assertionStackName": "httpapiDefaultTestDeployAssert77633A40"
+    }
+  }
+}

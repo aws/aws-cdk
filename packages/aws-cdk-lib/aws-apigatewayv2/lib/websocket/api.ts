@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { WebSocketRoute, WebSocketRouteOptions } from './route';
 import { CfnApi } from '.././index';
 import { Grant, IGrantable } from '../../../aws-iam';
-import { Stack } from '../../../core';
+import { ArnFormat, Stack, Token } from '../../../core';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 
@@ -186,6 +186,33 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
       grantee: identity,
       actions: ['execute-api:ManageConnections'],
       resourceArns: [`${arn}/*/*/@connections/*`],
+    });
+  }
+
+  /**
+   * Get the "execute-api" ARN.
+   * When 'ANY' is passed to the method, an ARN with the method set to '*' is obtained.
+   *
+   * @default - The default behavior applies when no specific method, path, or stage is provided.
+   * In this case, the ARN will cover all methods, all resources, and all stages of this API.
+   * Specifically, if 'method' is not specified, it defaults to '*', representing all methods.
+   * If 'path' is not specified, it defaults to '/*', representing all paths.
+   * If 'stage' is not specified, it also defaults to '*', representing all stages.
+   */
+  public arnForExecuteApi(method?: string, path?: string, stage?: string): string {
+    if (path && !Token.isUnresolved(path) && !path.startsWith('/')) {
+      throw new Error(`Path must start with '/': ${path}`);
+    }
+
+    if (method && method.toUpperCase() === 'ANY') {
+      method = '*';
+    }
+
+    return Stack.of(this).formatArn({
+      service: 'execute-api',
+      resource: this.apiId,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+      resourceName: `${stage ?? '*'}/${method ?? '*'}${path ?? '/*'}`,
     });
   }
 }

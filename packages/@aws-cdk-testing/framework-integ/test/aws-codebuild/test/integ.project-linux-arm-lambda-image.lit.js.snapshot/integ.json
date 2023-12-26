@@ -1,0 +1,13 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "linux-arm-lambda-codebuild/DefaultTest": {
+      "stacks": [
+        "codebuild-project-linux-arm-lambda"
+      ],
+      "stackUpdateWorkflow": true,
+      "assertionStack": "linux-arm-lambda-codebuild/DefaultTest/DeployAssert",
+      "assertionStackName": "linuxarmlambdacodebuildDefaultTestDeployAssert131511F5"
+    }
+  }
+}

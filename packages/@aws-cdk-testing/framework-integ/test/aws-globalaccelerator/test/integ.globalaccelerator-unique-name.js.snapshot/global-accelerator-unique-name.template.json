@@ -3,8 +3,8 @@
   "Accelerator8EB0B6B1": {
    "Type": "AWS::GlobalAccelerator::Accelerator",
    "Properties": {
-    "Name": "globalacceleratoruniquenameAccelerator519EC5EE",
-    "Enabled": true
+    "Enabled": true,
+    "Name": "globalacceleratoruniquenameAccelerator519EC5EE"
    }
   }
  },

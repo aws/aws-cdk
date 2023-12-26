@@ -13,6 +13,7 @@
   - [Metrics](#metrics)
   - [VPC Link](#vpc-link)
   - [Private Integration](#private-integration)
+  - [Generating ARN for Execute API](#generating-arn-for-execute-api)
 - [WebSocket API](#websocket-api)
   - [Manage Connections Permission](#manage-connections-permission)
   - [Managing access to WebSocket APIs](#managing-access-to-websocket-apis)
@@ -325,6 +326,19 @@ clients outside of the VPC.
 
 These integrations can be found in the [aws-apigatewayv2-integrations](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigatewayv2_integrations-readme.html) constructs library.
 
+### Generating ARN for Execute API
+
+The arnForExecuteApi function in AWS CDK is designed to generate Amazon Resource Names (ARNs) for Execute API operations. This is particularly useful when you need to create ARNs dynamically based on different parameters like HTTP method, API path, and stage.
+
+```ts
+const api = new apigwv2.HttpApi(this, 'my-api');
+const arn = api.arnForExecuteApi('GET', '/myApiPath', 'dev');
+```
+
+- Ensure that the path parameter, if provided, starts with '/'.
+- The 'ANY' method can be used for matching any HTTP methods not explicitly defined.
+- The function gracefully handles undefined parameters by using wildcards, making it flexible for various API configurations.
+
 ## WebSocket API
 
 A WebSocket API in API Gateway is a collection of WebSocket routes that are integrated with backend HTTP endpoints, 
@@ -404,6 +418,16 @@ To import an existing WebSocketApi:
 ```ts
 const webSocketApi = apigwv2.WebSocketApi.fromWebSocketApiAttributes(this, 'mywsapi', { webSocketId: 'api-1234' });
 ```
+
+To generate an ARN for Execute API:
+
+```ts
+const api = new apigwv2.WebSocketApi(this, 'mywsapi');
+const arn = api.arnForExecuteApi('GET', '/myApiPath', 'dev');
+```
+
+For a detailed explanation of this function, including usage and examples, please refer to the [Generating ARN for Execute API](#generating-arn-for-execute-api) section under HTTP API.
+
 
 ### Manage Connections Permission
 

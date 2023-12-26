@@ -872,6 +872,7 @@
   "myServiceLB168895E1": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
+    "Name": "LB",
     "LoadBalancerAttributes": [
      {
       "Key": "deletion_protection.enabled",

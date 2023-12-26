@@ -127,6 +127,17 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
 })
 ```
 
+You can optionally disable the cache:
+
+```ts
+import { DockerImageAsset, Platform } from 'aws-cdk-lib/aws-ecr-assets';
+
+const asset = new DockerImageAsset(this, 'MyBuildImage', {
+  directory: path.join(__dirname, 'my-image'),
+  cacheDisabled: true,
+})
+```
+
 ## Images from Tarball
 
 Images are loaded from a local tarball, uploaded to ECR by the CDK toolkit and/or your app's CI-CD pipeline, and can be

@@ -41,6 +41,21 @@ class TestStack extends Stack {
       value: functionWithExcludes.functionArn,
     });
 
+    const functionWithCustomPypi = new lambda.PythonFunction(this, 'my_handler_pypi', {
+      entry: path.join(__dirname, 'lambda-handler'),
+      runtime: Runtime.PYTHON_3_9,
+      bundling: {
+        environment: {
+          PIP_INDEX_URL: 'https://aws:SOME_SECRET_TOKEN@pypi.org/simple',
+        },
+      },
+    });
+    this.functionNames.push(functionWithCustomPypi.functionName);
+
+    new CfnOutput(this, 'functionWithCustomPypi', {
+      value: functionWithCustomPypi.functionArn,
+    });
+
   }
 }
 
