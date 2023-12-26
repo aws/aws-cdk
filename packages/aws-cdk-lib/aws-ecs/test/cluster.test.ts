@@ -2,6 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
@@ -1082,6 +1083,44 @@ describe('cluster', () => {
     });
     expect(cluster.defaultCloudMapNamespace).not.toBe(undefined);
     expect(cluster.defaultCloudMapNamespace!.namespaceName).toBe('foo');
+  });
+
+  test('arnForTasks returns a task arn from key pattern', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskIdPattern = '*';
+
+    // WHEN
+    const policyStatement = new iam.PolicyStatement({
+      resources: [cluster.arnForTasks(taskIdPattern)],
+      actions: ['ecs:RunTask'],
+      principals: [new iam.ServicePrincipal('ecs.amazonaws.com')],
+    });
+
+    // THEN
+    expect(stack.resolve(policyStatement.toStatementJson())).toEqual({
+      Action: 'ecs:RunTask',
+      Effect: 'Allow',
+      Principal: { Service: 'ecs.amazonaws.com' },
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ecs:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':task/',
+            { Ref: 'EcsCluster97242B84' },
+            `/${taskIdPattern}`,
+          ],
+        ],
+      },
+    });
   });
 
   /*
