@@ -173,6 +173,7 @@ export * as aws_memorydb from './aws-memorydb';
 export * as aws_msk from './aws-msk';
 export * as aws_mwaa from './aws-mwaa';
 export * as aws_neptune from './aws-neptune';
+export * as aws_neptunegraph from './aws-neptunegraph';
 export * as aws_networkfirewall from './aws-networkfirewall';
 export * as aws_networkmanager from './aws-networkmanager';
 export * as aws_nimblestudio from './aws-nimblestudio';
