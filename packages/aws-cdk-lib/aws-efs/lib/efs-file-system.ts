@@ -264,6 +264,13 @@ export interface FileSystemProps {
    * or set `@aws-cdk/aws-efs:denyAnonymousAccess` feature flag, otherwise true
    */
   readonly allowAnonymousAccess?: boolean;
+
+  /**
+   * For One Zone file systems, specify the AWS Availability Zone in which to create the file system.
+   *
+   * @default undefiend - The filesystem is deployed as regional.
+   */
+  readonly availabilityZoneName?: string;
 }
 
 /**
@@ -478,6 +485,10 @@ export class FileSystem extends FileSystemBase {
   constructor(scope: Construct, id: string, props: FileSystemProps) {
     super(scope, id);
 
+    if (props.performanceMode === PerformanceMode.MAX_IO && props.availabilityZoneName) {
+      throw new Error('AvailabilityZoneName is not supported for file systems with performanceMode MAX_IO');
+    }
+
     if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
       throw new Error('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED');
     }
@@ -531,6 +542,7 @@ export class FileSystem extends FileSystemBase {
           return this._fileSystemPolicy;
         },
       }),
+      availabilityZoneName: props.availabilityZoneName,
     });
     this._resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -549,7 +561,19 @@ export class FileSystem extends FileSystemBase {
       defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
     });
 
-    const subnets = props.vpc.selectSubnets(props.vpcSubnets ?? { onePerAz: true });
+    // When availabilityZoneName is specified, to avoid deployment failure, mountTarget should also be created only in the specified AZ.
+    let subnetSelection: ec2.SubnetSelection;
+    if (props.availabilityZoneName) {
+      subnetSelection = { availabilityZones: [props.availabilityZoneName] };
+      if (props.vpcSubnets) {
+        subnetSelection = { ...props.vpcSubnets, ...subnetSelection };
+      }
+    } else if (props.vpcSubnets) {
+      subnetSelection = props.vpcSubnets;
+    } else {
+      subnetSelection = { onePerAz: true };
+    }
+    const subnets = props.vpc.selectSubnets(subnetSelection);
 
     // We now have to create the mount target for each of the mentioned subnet
 
