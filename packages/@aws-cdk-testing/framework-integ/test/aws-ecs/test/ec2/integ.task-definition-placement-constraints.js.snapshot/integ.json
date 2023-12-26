@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "35.0.0",
   "testCases": {
     "aws-cdk-ecs-integration-test-stack/TaskDefinitionPlacementConstraints/DefaultTest": {
       "stacks": [

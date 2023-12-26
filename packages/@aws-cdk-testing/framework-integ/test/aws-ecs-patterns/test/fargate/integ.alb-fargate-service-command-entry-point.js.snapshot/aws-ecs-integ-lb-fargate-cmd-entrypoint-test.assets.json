@@ -1,7 +1,7 @@
 {
-  "version": "32.0.0",
+  "version": "35.0.0",
   "files": {
-    "bd5c4694c4fe13248b11699dfcee108b7c5a6835e60b9f68628928a30689fa29": {
+    "21085701b1ca92516cb37d3871770b666d5825699d6df157e7410a0e5314412d": {
       "source": {
         "path": "aws-ecs-integ-lb-fargate-cmd-entrypoint-test.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "bd5c4694c4fe13248b11699dfcee108b7c5a6835e60b9f68628928a30689fa29.json",
+          "objectKey": "21085701b1ca92516cb37d3871770b666d5825699d6df157e7410a0e5314412d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

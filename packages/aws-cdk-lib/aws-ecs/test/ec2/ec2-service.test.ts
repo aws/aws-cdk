@@ -2333,11 +2333,7 @@ describe('ec2 service', () => {
 
         Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
           DeploymentConfiguration: {
-            Alarms: {
-              Enable: false,
-              Rollback: false,
-              AlarmNames: [],
-            },
+            Alarms: Match.absent(),
           },
         });
       });

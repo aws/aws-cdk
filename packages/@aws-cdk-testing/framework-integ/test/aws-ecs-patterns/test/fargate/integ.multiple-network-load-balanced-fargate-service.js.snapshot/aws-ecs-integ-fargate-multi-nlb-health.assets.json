@@ -1,7 +1,7 @@
 {
-  "version": "32.0.0",
+  "version": "35.0.0",
   "files": {
-    "f87e5c2b347f100c7e4c56af6cc4d6e587c049b0e147a6e0f494466f3e0d4bd9": {
+    "0e7d7d54fafe209ee0c0963495767827cea99e6caa130b8e040841300d98bc4c": {
       "source": {
         "path": "aws-ecs-integ-fargate-multi-nlb-health.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f87e5c2b347f100c7e4c56af6cc4d6e587c049b0e147a6e0f494466f3e0d4bd9.json",
+          "objectKey": "0e7d7d54fafe209ee0c0963495767827cea99e6caa130b8e040841300d98bc4c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
