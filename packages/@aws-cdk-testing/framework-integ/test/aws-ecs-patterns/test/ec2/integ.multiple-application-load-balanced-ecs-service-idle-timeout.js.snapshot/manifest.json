@@ -192,7 +192,7 @@
         "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/from awsecsintegalbidletimeoutmyServicelbSecurityGroupDA02006B:32768-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegalbidletimeoutmyServicelbSecurityGroupDA02006B327686553535B38FF6"
+            "data": "ClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegalbidletimeoutmyServicelb1SecurityGroup378D68EF32768655356B9A3535"
           }
         ],
         "/aws-ecs-integ-alb-idle-timeout/Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/from awsecsintegalbidletimeoutmyServicelb2SecurityGroupE659E2B0:32768-65535": [
@@ -294,49 +294,49 @@
         "/aws-ecs-integ-alb-idle-timeout/myService/lb/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServicelb360A9ADD"
+            "data": "myServicelb1FA8CBE12"
           }
         ],
         "/aws-ecs-integ-alb-idle-timeout/myService/lb/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServicelbSecurityGroup97C897CA"
+            "data": "myServicelb1SecurityGroup342C51EA"
           }
         ],
         "/aws-ecs-integ-alb-idle-timeout/myService/lb/SecurityGroup/to awsecsintegalbidletimeoutClusterDefaultAutoScalingGroupInstanceSecurityGroup9C8FC9DE:32768-65535": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServicelbSecurityGrouptoawsecsintegalbidletimeoutClusterDefaultAutoScalingGroupInstanceSecurityGroup9C8FC9DE3276865535B06FECE0"
+            "data": "myServicelb1SecurityGrouptoawsecsintegalbidletimeoutClusterDefaultAutoScalingGroupInstanceSecurityGroup9C8FC9DE327686553594C8842C"
           }
         ],
         "/aws-ecs-integ-alb-idle-timeout/myService/lb/listener/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServicelblistener1D7944F2"
+            "data": "myServicelb1listener94ADDDDF"
           }
         ],
         "/aws-ecs-integ-alb-idle-timeout/myService/lb/listener/ECSTargetGroupweb80Group/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4"
+            "data": "myServicelb1listenerECSTargetGroupweb80Group6EDAD1E5"
           }
         ],
         "/aws-ecs-integ-alb-idle-timeout/myService/lb/listener/ECSTargetGroupweb90Group/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServicelblistenerECSTargetGroupweb90Group4AA47881"
+            "data": "myServicelb1listenerECSTargetGroupweb90Group392113A5"
           }
         ],
         "/aws-ecs-integ-alb-idle-timeout/myService/lb/listener/ECSTargetGroupweb90Rule/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServicelblistenerECSTargetGroupweb90Rule68215E8D"
+            "data": "myServicelb1listenerECSTargetGroupweb90Rule88D36BAE"
           }
         ],
         "/aws-ecs-integ-alb-idle-timeout/myService/DNSlb/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceDNSlb1E167074"
+            "data": "myServiceDNSlb1447CEC86"
           }
         ],
         "/aws-ecs-integ-alb-idle-timeout/myService/LoadBalancerDNSlb": [

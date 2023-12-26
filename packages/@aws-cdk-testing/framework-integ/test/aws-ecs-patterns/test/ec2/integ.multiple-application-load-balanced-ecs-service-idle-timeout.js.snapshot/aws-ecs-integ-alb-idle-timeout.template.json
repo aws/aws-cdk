@@ -422,7 +422,7 @@
     }
    }
   },
-  "ClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegalbidletimeoutmyServicelbSecurityGroupDA02006B327686553535B38FF6": {
+  "ClusterDefaultAutoScalingGroupInstanceSecurityGroupfromawsecsintegalbidletimeoutmyServicelb1SecurityGroup378D68EF32768655356B9A3535": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
     "IpProtocol": "tcp",
@@ -436,7 +436,7 @@
     },
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "myServicelbSecurityGroup97C897CA",
+      "myServicelb1SecurityGroup342C51EA",
       "GroupId"
      ]
     },
@@ -896,9 +896,10 @@
     "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663"
    ]
   },
-  "myServicelb360A9ADD": {
+  "myServicelb1FA8CBE12": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
+    "Name": "lb1",
     "LoadBalancerAttributes": [
      {
       "Key": "deletion_protection.enabled",
@@ -913,7 +914,7 @@
     "SecurityGroups": [
      {
       "Fn::GetAtt": [
-       "myServicelbSecurityGroup97C897CA",
+       "myServicelb1SecurityGroup342C51EA",
        "GroupId"
       ]
      }
@@ -935,10 +936,10 @@
     "VpcPublicSubnet2RouteTableAssociationDD5762D8"
    ]
   },
-  "myServicelbSecurityGroup97C897CA": {
+  "myServicelb1SecurityGroup342C51EA": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Automatically created Security Group for ELB awsecsintegalbidletimeoutmyServicelb9997A785",
+    "GroupDescription": "Automatically created Security Group for ELB awsecsintegalbidletimeoutmyServicelb1D1305870",
     "SecurityGroupIngress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -953,12 +954,12 @@
     }
    }
   },
-  "myServicelbSecurityGrouptoawsecsintegalbidletimeoutClusterDefaultAutoScalingGroupInstanceSecurityGroup9C8FC9DE3276865535B06FECE0": {
+  "myServicelb1SecurityGrouptoawsecsintegalbidletimeoutClusterDefaultAutoScalingGroupInstanceSecurityGroup9C8FC9DE327686553594C8842C": {
    "Type": "AWS::EC2::SecurityGroupEgress",
    "Properties": {
     "GroupId": {
      "Fn::GetAtt": [
-      "myServicelbSecurityGroup97C897CA",
+      "myServicelb1SecurityGroup342C51EA",
       "GroupId"
      ]
     },
@@ -974,19 +975,19 @@
     "ToPort": 65535
    }
   },
-  "myServicelblistener1D7944F2": {
+  "myServicelb1listener94ADDDDF": {
    "Type": "AWS::ElasticLoadBalancingV2::Listener",
    "Properties": {
     "DefaultActions": [
      {
       "TargetGroupArn": {
-       "Ref": "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4"
+       "Ref": "myServicelb1listenerECSTargetGroupweb80Group6EDAD1E5"
       },
       "Type": "forward"
      }
     ],
     "LoadBalancerArn": {
-     "Ref": "myServicelb360A9ADD"
+     "Ref": "myServicelb1FA8CBE12"
     },
     "Certificates": [
      {
@@ -998,7 +999,7 @@
     "SslPolicy": "ELBSecurityPolicy-TLS-1-2-Ext-2018-06"
    }
   },
-  "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4": {
+  "myServicelb1listenerECSTargetGroupweb80Group6EDAD1E5": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
     "Port": 80,
@@ -1015,7 +1016,7 @@
     }
    }
   },
-  "myServicelblistenerECSTargetGroupweb90Group4AA47881": {
+  "myServicelb1listenerECSTargetGroupweb90Group392113A5": {
    "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
    "Properties": {
     "Port": 80,
@@ -1032,13 +1033,13 @@
     }
    }
   },
-  "myServicelblistenerECSTargetGroupweb90Rule68215E8D": {
+  "myServicelb1listenerECSTargetGroupweb90Rule88D36BAE": {
    "Type": "AWS::ElasticLoadBalancingV2::ListenerRule",
    "Properties": {
     "Actions": [
      {
       "TargetGroupArn": {
-       "Ref": "myServicelblistenerECSTargetGroupweb90Group4AA47881"
+       "Ref": "myServicelb1listenerECSTargetGroupweb90Group392113A5"
       },
       "Type": "forward"
      }
@@ -1055,11 +1056,11 @@
     ],
     "Priority": 10,
     "ListenerArn": {
-     "Ref": "myServicelblistener1D7944F2"
+     "Ref": "myServicelb1listener94ADDDDF"
     }
    }
   },
-  "myServiceDNSlb1E167074": {
+  "myServiceDNSlb1447CEC86": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
     "Name": "api.example.com.",
@@ -1072,7 +1073,7 @@
         "dualstack.",
         {
          "Fn::GetAtt": [
-          "myServicelb360A9ADD",
+          "myServicelb1FA8CBE12",
           "DNSName"
          ]
         }
@@ -1081,7 +1082,7 @@
      },
      "HostedZoneId": {
       "Fn::GetAtt": [
-       "myServicelb360A9ADD",
+       "myServicelb1FA8CBE12",
        "CanonicalHostedZoneID"
       ]
      }
@@ -1094,6 +1095,7 @@
   "myServicelb2C84C7BCB": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
+    "Name": "lb2",
     "LoadBalancerAttributes": [
      {
       "Key": "deletion_protection.enabled",
@@ -1467,14 +1469,14 @@
       "ContainerName": "web",
       "ContainerPort": 80,
       "TargetGroupArn": {
-       "Ref": "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4"
+       "Ref": "myServicelb1listenerECSTargetGroupweb80Group6EDAD1E5"
       }
      },
      {
       "ContainerName": "web",
       "ContainerPort": 90,
       "TargetGroupArn": {
-       "Ref": "myServicelblistenerECSTargetGroupweb90Group4AA47881"
+       "Ref": "myServicelb1listenerECSTargetGroupweb90Group392113A5"
       }
      },
      {
@@ -1498,10 +1500,10 @@
     }
    },
    "DependsOn": [
-    "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4",
-    "myServicelblistenerECSTargetGroupweb90Group4AA47881",
-    "myServicelblistenerECSTargetGroupweb90Rule68215E8D",
-    "myServicelblistener1D7944F2",
+    "myServicelb1listenerECSTargetGroupweb80Group6EDAD1E5",
+    "myServicelb1listenerECSTargetGroupweb90Group392113A5",
+    "myServicelb1listenerECSTargetGroupweb90Rule88D36BAE",
+    "myServicelb1listener94ADDDDF",
     "myServicelb2listener2ECSTargetGroupweb443Group8FAB1268",
     "myServicelb2listener2ECSTargetGroupweb80Group0590BDE6",
     "myServicelb2listener2ECSTargetGroupweb80Rule2490715C",
@@ -1523,22 +1525,22 @@
   }
  },
  "Outputs": {
-  "myServiceLoadBalancerDNSlbDE816AD2": {
+  "myServiceLoadBalancerDNSlb1341EE21A": {
    "Value": {
     "Fn::GetAtt": [
-     "myServicelb360A9ADD",
+     "myServicelb1FA8CBE12",
      "DNSName"
     ]
    }
   },
-  "myServiceServiceURLlbhttps4348F098": {
+  "myServiceServiceURLlb1https6C9C5530": {
    "Value": {
     "Fn::Join": [
      "",
      [
       "https://",
       {
-       "Ref": "myServiceDNSlb1E167074"
+       "Ref": "myServiceDNSlb1447CEC86"
       }
      ]
     ]

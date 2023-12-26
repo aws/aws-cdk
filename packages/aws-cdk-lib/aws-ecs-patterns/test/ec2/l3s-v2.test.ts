@@ -275,6 +275,10 @@ describe('When Application Load Balancer', () => {
       }],
       SslPolicy: SslPolicy.TLS12_EXT,
     });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Name: 'lb',
+    });
   });
 
   test('able to pass pre-defined task definition', () => {
