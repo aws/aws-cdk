@@ -106,7 +106,7 @@ describe('Key Value Store', () => {
     // THEN
     expect(
       () => KeyValueStore.fromKeyValueStoreArn(stack, 'TestStore', 'arn:aws:cloudfront::123456789012:key-value-store'),
-    ).toThrow(/Invalid Key Store Arn:/);
+    ).toThrow(/Invalid Key Value Store Arn:/);
   });
 
   test('imported resource throws error when accessing status', () => {
