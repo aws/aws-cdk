@@ -139,7 +139,7 @@ export class AwsLogDriver extends LogDriver {
     // These policies are required for the Execution role to use awslogs driver.
     // In cases where `addToExecutionRolePolicy` is not implemented in some cases,
     // for example, when used from aws-batch construct,
-    // Use `obtainExecutionRole` instead of `addToExecutionRolePolicy` to grant policies to the Execution role.
+    // use `obtainExecutionRole` instead of `addToExecutionRolePolicy` to grant policies to the Execution role.
     // See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html#enable_awslogs
     const execRole = containerDefinition.taskDefinition.obtainExecutionRole();
     execRole.addToPrincipalPolicy(new iam.PolicyStatement({
