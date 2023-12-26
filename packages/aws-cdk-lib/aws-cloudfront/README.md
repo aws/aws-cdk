@@ -552,7 +552,7 @@ structure of this file, see [Creating a file of key value pairs](https://docs.aw
 
 ```ts
 const store = new cloudfront.KeyValueStore(this, 'KeyValueStore', {
-  name: 'KeyValueStore',
+  keyValueStoreName: 'KeyValueStore',
   source: cloudfront.ImportSource.fromAsset('path-to-data.json'),
 });
 ```
