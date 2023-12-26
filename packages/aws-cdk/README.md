@@ -409,7 +409,12 @@ To enable this feature only for a specific stack, use `--exclusively` flag.
 $ cdk deploy --import-existing-resources --exclusively StackName
 ```
 
-This parameter can only import resources that have custom names in templates. For more information, see [name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) in the AWS CloudFormation User Guide. To import resources that do not accept custom names, such as EC2 instances, use the `cdk import` instead. You can find more details [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_CreateChangeSet.html#API_CreateChangeSet_RequestParameters).
+This parameter can only import resources that have custom names in templates. 
+For more information, see [name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html). 
+To import resources that do not accept custom names, such as EC2 instances,
+use the `cdk import` instead. 
+Visit [Bringing existing resources into CloudFormation management](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import.html)
+for more details.
 
 #### Hotswap deployments for faster development
 
