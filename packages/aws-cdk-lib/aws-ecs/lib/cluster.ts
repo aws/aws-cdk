@@ -603,7 +603,7 @@ export class Cluster extends Resource implements ICluster {
   * This method provides a streamlined way to assign the 'ecs:UpdateTaskProtection'
   * permission, enabling the grantee to manage task protection in the ECS cluster.
   *
-  * @param grantee - The entity (e.g., IAM role or user) to grant the permissions to.
+  * @param grantee The entity (e.g., IAM role or user) to grant the permissions to.
   */
   public grantTaskProtection(grantee: iam.IGrantable): iam.Grant {
     return iam.Grant.addToPrincipal({
