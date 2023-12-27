@@ -1,12 +1,11 @@
-import * as path from 'path';
 import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
-import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
 import { TaskInput } from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import { RolePolicySingletonFunction } from '../../../custom-resource-handlers/dist/aws-stepfunctions-tasks/role-policy-provider.generated';
 import * as cr from '../../../custom-resources';
 import * as awscli from '../../../lambda-layer-awscli';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
@@ -350,11 +349,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
      * Commands available through CLI: https://awscli.amazonaws.com/v2/documentation/api/latest/reference/emr-containers/index.html
     */
     const cliLayer = new awscli.AwsCliLayer(this, 'awsclilayer');
-    const shellCliLambda = new lambda.SingletonFunction(this, 'Call Update-Role-Trust-Policy', {
+    const shellCliLambda = new RolePolicySingletonFunction(this, 'Call Update-Role-Trust-Policy', {
       uuid: '8693BB64-9689-44B6-9AAF-B0CC9EB8757C',
-      runtime: lambda.Runtime.PYTHON_3_9,
-      handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', '..', 'custom-resource-handlers', 'dist', 'aws-stepfunctions-tasks', 'role-policy-handler')),
       timeout: cdk.Duration.seconds(30),
       memorySize: 256,
       layers: [cliLayer],
