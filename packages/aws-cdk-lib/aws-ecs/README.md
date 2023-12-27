@@ -203,6 +203,19 @@ taskDefinition.addToTaskRolePolicy(
 )
 ```
 
+To manage task protection settings in an ECS cluster, you can use the `grantTaskProtection` method.
+This method grants the `ecs:UpdateTaskProtection` permission to a specified IAM entity.
+
+```ts
+// Assume 'cluster' is an instance of ecs.Cluster
+declare const cluster: ecs.Cluster;
+declare const taskRole: iam.Role;
+
+// Grant ECS Task Protection permissions to the role
+// Now 'taskRole' has the 'ecs:UpdateTaskProtection' permission on all tasks in the cluster
+cluster.grantTaskProtection(taskRole);
+```
+
 ### Bottlerocket
 
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open source operating system that is
