@@ -746,7 +746,7 @@
                             },
                             "sourceSecurityGroupId": {
                               "Fn::GetAtt": [
-                                "myServicelbSecurityGroup97C897CA",
+                                "myServicelb1SecurityGroup342C51EA",
                                 "GroupId"
                               ]
                             },
@@ -1523,7 +1523,7 @@
                         "securityGroups": [
                           {
                             "Fn::GetAtt": [
-                              "myServicelbSecurityGroup97C897CA",
+                              "myServicelb1SecurityGroup342C51EA",
                               "GroupId"
                             ]
                           }
@@ -1582,7 +1582,7 @@
                           "aws:cdk:cloudformation:props": {
                             "groupId": {
                               "Fn::GetAtt": [
-                                "myServicelbSecurityGroup97C897CA",
+                                "myServicelb1SecurityGroup342C51EA",
                                 "GroupId"
                               ]
                             },
@@ -1623,12 +1623,12 @@
                               {
                                 "type": "forward",
                                 "targetGroupArn": {
-                                  "Ref": "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4"
+                                  "Ref": "myServicelb1listenerECSTargetGroupweb80Group6EDAD1E5"
                                 }
                               }
                             ],
                             "loadBalancerArn": {
-                              "Ref": "myServicelb360A9ADD"
+                              "Ref": "myServicelb1FA8CBE12"
                             },
                             "certificates": [
                               {
@@ -1729,7 +1729,7 @@
                                   {
                                     "type": "forward",
                                     "targetGroupArn": {
-                                      "Ref": "myServicelblistenerECSTargetGroupweb90Group4AA47881"
+                                      "Ref": "myServicelb1listenerECSTargetGroupweb90Group392113A5"
                                     }
                                   }
                                 ],
@@ -1745,7 +1745,7 @@
                                 ],
                                 "priority": 10,
                                 "listenerArn": {
-                                  "Ref": "myServicelblistener1D7944F2"
+                                  "Ref": "myServicelb1listener94ADDDDF"
                                 }
                               }
                             },
@@ -1787,7 +1787,7 @@
                         "aliasTarget": {
                           "hostedZoneId": {
                             "Fn::GetAtt": [
-                              "myServicelb360A9ADD",
+                              "myServicelb1FA8CBE12",
                               "CanonicalHostedZoneID"
                             ]
                           },
@@ -1798,7 +1798,7 @@
                                 "dualstack.",
                                 {
                                   "Fn::GetAtt": [
-                                    "myServicelb360A9ADD",
+                                    "myServicelb1FA8CBE12",
                                     "DNSName"
                                   ]
                                 }
@@ -2496,14 +2496,14 @@
                         "loadBalancers": [
                           {
                             "targetGroupArn": {
-                              "Ref": "myServicelblistenerECSTargetGroupweb80Group4ADFE4C4"
+                              "Ref": "myServicelb1listenerECSTargetGroupweb80Group6EDAD1E5"
                             },
                             "containerName": "web",
                             "containerPort": 80
                           },
                           {
                             "targetGroupArn": {
-                              "Ref": "myServicelblistenerECSTargetGroupweb90Group4AA47881"
+                              "Ref": "myServicelb1listenerECSTargetGroupweb90Group392113A5"
                             },
                             "containerName": "web",
                             "containerPort": 90

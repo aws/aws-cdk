@@ -349,6 +349,28 @@ describe('Topic', () => {
     expect(imported.fifo).toEqual(true);
   });
 
+  test('sets account for imported topic env', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const imported = sns.Topic.fromTopicArn(stack, 'Imported', 'arn:aws:sns:us-west-2:123456789012:my-topic');
+
+    // THEN
+    expect(imported.env.account).toEqual('123456789012');
+  });
+
+  test('sets region for imported topic env', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const imported = sns.Topic.fromTopicArn(stack, 'Imported', 'arn:aws:sns:us-west-2:123456789012:my-topic');
+
+    // THEN
+    expect(imported.env.region).toEqual('us-west-2');
+  });
+
   test('test metrics', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -480,5 +502,110 @@ describe('Topic', () => {
       }],
     });
 
+  });
+
+  test('specify delivery status logging configuration through construct props', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const feedbackRole = new iam.Role(stack, 'feedbackRole', {
+      assumedBy: new iam.ServicePrincipal('sns.amazonaws.com'),
+    });
+
+    // WHEN
+    new sns.Topic(stack, 'MyTopic', {
+      loggingConfigs: [
+        {
+          protocol: sns.LoggingProtocol.SQS,
+          failureFeedbackRole: feedbackRole,
+          successFeedbackRole: feedbackRole,
+          successFeedbackSampleRate: 50,
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
+      'DeliveryStatusLogging': [{
+        'Protocol': 'sqs',
+        'SuccessFeedbackRoleArn': { 'Fn::GetAtt': ['feedbackRole2010903F', 'Arn'] },
+        'FailureFeedbackRoleArn': { 'Fn::GetAtt': ['feedbackRole2010903F', 'Arn'] },
+        'SuccessFeedbackSampleRate': '50',
+      }],
+    });
+  });
+
+  test('add delivery status logging configuration to a topic', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const feedbackRole = new iam.Role(stack, 'feedbackRole', {
+      assumedBy: new iam.ServicePrincipal('sns.amazonaws.com'),
+    });
+    const topic = new sns.Topic(stack, 'MyTopic');
+
+    // WHEN
+    topic.addLoggingConfig({
+      protocol: sns.LoggingProtocol.HTTP,
+      failureFeedbackRole: feedbackRole,
+      successFeedbackRole: feedbackRole,
+      successFeedbackSampleRate: 50,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
+      'DeliveryStatusLogging': [{
+        'Protocol': 'http/s',
+        'SuccessFeedbackRoleArn': { 'Fn::GetAtt': ['feedbackRole2010903F', 'Arn'] },
+        'FailureFeedbackRoleArn': { 'Fn::GetAtt': ['feedbackRole2010903F', 'Arn'] },
+        'SuccessFeedbackSampleRate': '50',
+      }],
+    });
+  });
+
+  test('fails if success feedback sample rate is outside the appropriate range', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const feedbackRole = new iam.Role(stack, 'feedbackRole', {
+      assumedBy: new iam.ServicePrincipal('sns.amazonaws.com'),
+    });
+
+    // WHEN
+    new sns.Topic(stack, 'MyTopic', {
+      loggingConfigs: [
+        {
+          protocol: sns.LoggingProtocol.SQS,
+          failureFeedbackRole: feedbackRole,
+          successFeedbackRole: feedbackRole,
+          successFeedbackSampleRate: 110,
+        },
+      ],
+    });
+
+    // THEN
+    expect(() => app.synth()).toThrow(/Success feedback sample rate must be an integer between 0 and 100/);
+  });
+
+  test('fails if success feedback sample rate is decimal', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'my-stack');
+    const feedbackRole = new iam.Role(stack, 'feedbackRole', {
+      assumedBy: new iam.ServicePrincipal('sns.amazonaws.com'),
+    });
+
+    // WHEN
+    new sns.Topic(stack, 'MyTopic', {
+      loggingConfigs: [
+        {
+          protocol: sns.LoggingProtocol.SQS,
+          failureFeedbackRole: feedbackRole,
+          successFeedbackRole: feedbackRole,
+          successFeedbackSampleRate: 50.4,
+        },
+      ],
+    });
+
+    // THEN
+    expect(() => app.synth()).toThrow(/Success feedback sample rate must be an integer between 0 and 100/);
   });
 });

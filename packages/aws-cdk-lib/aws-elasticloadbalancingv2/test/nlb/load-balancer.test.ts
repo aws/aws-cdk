@@ -653,6 +653,67 @@ describe('tests', () => {
     });
   });
 
+  test('Trivial construction: security groups', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const sg1 = new ec2.SecurityGroup(stack, 'SG1', { vpc });
+    const sg2 = new ec2.SecurityGroup(stack, 'SG2', { vpc });
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+      securityGroups: [sg1, sg2],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Subnets: [
+        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
+        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
+      ],
+      SecurityGroups: [
+        {
+          'Fn::GetAtt': [
+            stack.getLogicalId(sg1.node.findChild('Resource') as cdk.CfnElement),
+            'GroupId',
+          ],
+        },
+        {
+          'Fn::GetAtt': [
+            stack.getLogicalId(sg2.node.findChild('Resource') as cdk.CfnElement),
+            'GroupId',
+          ],
+        },
+      ],
+      Type: 'network',
+    });
+  });
+
+  test('Trivial construction: no security groups', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Subnets: [
+        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
+        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
+      ],
+      SecurityGroups: Match.absent(),
+    });
+  });
+
   describe('lookup', () => {
     test('Can look up a NetworkLoadBalancer', () => {
       // GIVEN
@@ -702,7 +763,7 @@ describe('tests', () => {
 
       // WHEN
       loadBalancer.addListener('listener', {
-        protocol: elbv2.Protocol.TCP_UDP,
+        protocol: elbv2.Protocol.TCP,
         port: 3000,
         defaultAction: elbv2.NetworkListenerAction.forward([targetGroup]),
       });
@@ -735,6 +796,114 @@ describe('tests', () => {
       expect(stack.resolve(metric.dimensions)).toEqual({
         LoadBalancer: 'network/my-load-balancer/50dc6c495c0c9188',
       });
+    });
+
+    test('can look up security groups', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+
+      // WHEN
+      const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+        securityGroups: [sg],
+      });
+
+      // THEN
+      expect(nlb.securityGroups).toEqual([`${sg.securityGroupId}`]);
+    });
+
+    test('can look up with no security groups', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+      });
+
+      // THEN
+      expect(nlb.securityGroups).toBeUndefined();
+    });
+  });
+
+  describe('dualstack', () => {
+    test('Can create internet-facing dualstack NetworkLoadBalancer', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internet-facing',
+        Type: 'network',
+        IpAddressType: 'dualstack',
+      });
+    });
+
+    test('Can create internal dualstack NetworkLoadBalancer', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internal',
+        Type: 'network',
+        IpAddressType: 'dualstack',
+      });
+    });
+
+    test('Cannot add UDP or TCP_UDP listeners to a dualstack network load balancer', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      const loadBalancer = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      const targetGroup = new elbv2.NetworkTargetGroup(stack, 'tg', {
+        vpc: loadBalancer.vpc,
+        port: 3000,
+      });
+
+      // THEN
+      expect(() => {
+        loadBalancer.addListener('listener', {
+          protocol: elbv2.Protocol.UDP,
+          port: 3000,
+          defaultAction: elbv2.NetworkListenerAction.forward([targetGroup]),
+        });
+      }).toThrow(/UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer/);
+
+      expect(() => {
+        loadBalancer.addListener('listener', {
+          protocol: elbv2.Protocol.TCP_UDP,
+          port: 3000,
+          defaultAction: elbv2.NetworkListenerAction.forward([targetGroup]),
+        });
+      }).toThrow(/UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer/);
     });
   });
 });

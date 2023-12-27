@@ -5,7 +5,10 @@ import { Cache } from './cache';
 import { CodeBuildMetrics } from './codebuild-canned-metrics.generated';
 import { CfnProject } from './codebuild.generated';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
+import { ComputeType } from './compute-type';
 import { IFileSystemLocation } from './file-location';
+import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
+import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
 import { NoArtifacts } from './no-artifacts';
 import { NoSource } from './no-source';
 import { runScriptLinuxBuildSpec, S3_BUCKET_ENV, S3_KEY_ENV } from './private/run-script-linux-build-spec';
@@ -43,6 +46,7 @@ export interface BuildEnvironmentCertificate {
    * The bucket where the certificate is
    */
   readonly bucket: s3.IBucket;
+
   /**
    * The full path and name of the key file
    */
@@ -774,7 +778,6 @@ export interface BindToCodePipelineOptions {
  * A representation of a CodeBuild Project.
  */
 export class Project extends ProjectBase {
-
   public static fromProjectArn(scope: Construct, id: string, projectArn: string): IProject {
     const parsedArn = Stack.of(scope).splitArn(projectArn, ArnFormat.SLASH_RESOURCE_NAME);
 
@@ -1334,13 +1337,17 @@ export class Project extends ProjectBase {
     const hasEnvironmentVars = Object.keys(vars).length > 0;
 
     const errors = this.buildImage.validate(env);
+
+    errors.push(...this.validateLambdaBuildImage(this.buildImage, props));
+
     if (errors.length > 0) {
       throw new Error('Invalid CodeBuild environment: ' + errors.join('\n'));
     }
 
-    const imagePullPrincipalType = this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
-      ? ImagePullPrincipalType.CODEBUILD
-      : ImagePullPrincipalType.SERVICE_ROLE;
+    const imagePullPrincipalType = this.isLambdaBuildImage(this.buildImage) ? undefined :
+      this.buildImage.imagePullPrincipalType === ImagePullPrincipalType.CODEBUILD
+        ? ImagePullPrincipalType.CODEBUILD
+        : ImagePullPrincipalType.SERVICE_ROLE;
     if (this.buildImage.repository) {
       if (imagePullPrincipalType === ImagePullPrincipalType.SERVICE_ROLE) {
         this.buildImage.repository.grantPull(this);
@@ -1542,16 +1549,32 @@ export class Project extends ProjectBase {
       throw new Error('Both source and artifacts must be set to CodePipeline');
     }
   }
-}
 
-/**
- * Build machine compute type.
- */
-export enum ComputeType {
-  SMALL = 'BUILD_GENERAL1_SMALL',
-  MEDIUM = 'BUILD_GENERAL1_MEDIUM',
-  LARGE = 'BUILD_GENERAL1_LARGE',
-  X2_LARGE = 'BUILD_GENERAL1_2XLARGE'
+  private isLambdaBuildImage(buildImage: IBuildImage): boolean {
+    return buildImage instanceof LinuxLambdaBuildImage || buildImage instanceof LinuxArmLambdaBuildImage;
+  }
+
+  /**
+   * Validates a Lambda build image given the project properties.
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/lambda.html#lambda.limitations
+   */
+  private validateLambdaBuildImage(buildImage: IBuildImage, props: ProjectProps): string[] {
+    if (!this.isLambdaBuildImage(buildImage)) return [];
+    const errors = [];
+    if (props.timeout) {
+      errors.push('Cannot specify timeout for Lambda compute');
+    }
+    if (props.queuedTimeout) {
+      errors.push('Cannot specify queuedTimeout for Lambda compute');
+    }
+    if (props.cache) {
+      errors.push('Cannot specify cache for Lambda compute');
+    }
+    if (props.badge) {
+      errors.push('Cannot enable badge for Lambda compute');
+    }
+    return errors;
+  }
 }
 
 /**
@@ -1715,7 +1738,7 @@ interface LinuxBuildImageProps {
 }
 
 // Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
-// eslint-disable-next-line no-duplicate-imports, import/order
+// eslint-disable-next-line import/order
 import { LinuxArmBuildImage } from './linux-arm-build-image';
 
 /**
@@ -1902,8 +1925,14 @@ export class LinuxBuildImage implements IBuildImage {
     this.repository = props.repository;
   }
 
-  public validate(_env: BuildEnvironment): string[] {
-    return [];
+  public validate(env: BuildEnvironment): string[] {
+    const errors = [];
+
+    if (env.computeType && isLambdaComputeType(env.computeType)) {
+      errors.push('x86-64 images do not support Lambda compute types');
+    }
+
+    return errors;
   }
 
   public runScriptBuildspec(entrypoint: string): BuildSpec {
@@ -1923,7 +1952,7 @@ export enum WindowsImageType {
   /**
    * The WINDOWS_SERVER_2019_CONTAINER environment type
    */
-  SERVER_2019 = 'WINDOWS_SERVER_2019_CONTAINER'
+  SERVER_2019 = 'WINDOWS_SERVER_2019_CONTAINER',
 }
 
 /**
@@ -1955,7 +1984,7 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * Corresponds to the standard CodeBuild image `aws/codebuild/windows-base:1.0`.
    *
-   * @deprecated `WindowsBuildImage.WINDOWS_BASE_2_0` should be used instead.
+   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0` should be used instead.
    */
   public static readonly WIN_SERVER_CORE_2016_BASE: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:1.0',
@@ -1965,6 +1994,8 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * The standard CodeBuild image `aws/codebuild/windows-base:2.0`, which is
    * based off Windows Server Core 2016.
+   *
+   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0` should be used instead.
    */
   public static readonly WINDOWS_BASE_2_0: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:2.0',
@@ -2065,11 +2096,20 @@ export class WindowsBuildImage implements IBuildImage {
   }
 
   public validate(buildEnvironment: BuildEnvironment): string[] {
-    const ret: string[] = [];
-    if (buildEnvironment.computeType === ComputeType.SMALL) {
-      ret.push('Windows images do not support the Small ComputeType');
+    const errors: string[] = [];
+
+    if (buildEnvironment.privileged) {
+      errors.push('Windows images do not support privileged mode');
     }
-    return ret;
+
+    if (buildEnvironment.computeType && isLambdaComputeType(buildEnvironment.computeType)) {
+      errors.push('Windows images do not support Lambda compute types');
+    }
+
+    if (buildEnvironment.computeType === ComputeType.SMALL || buildEnvironment.computeType === ComputeType.X2_LARGE) {
+      errors.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
+    }
+    return errors;
   }
 
   public runScriptBuildspec(entrypoint: string): BuildSpec {
@@ -2131,7 +2171,7 @@ export enum BuildEnvironmentVariableType {
   /**
    * An environment variable stored in AWS Secrets Manager.
    */
-  SECRETS_MANAGER = 'SECRETS_MANAGER'
+  SECRETS_MANAGER = 'SECRETS_MANAGER',
 }
 
 /**
@@ -2172,4 +2212,9 @@ export enum ProjectNotificationEvents {
 
 function isBindableBuildImage(x: unknown): x is IBindableBuildImage {
   return typeof x === 'object' && !!x && !!(x as any).bind;
+}
+
+export function isLambdaComputeType(computeType: ComputeType): boolean {
+  const lambdaComputeTypes = Object.values(ComputeType).filter(value => value.startsWith('BUILD_LAMBDA'));
+  return lambdaComputeTypes.includes(computeType);
 }

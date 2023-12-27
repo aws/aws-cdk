@@ -260,6 +260,9 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * If set to false, you must individually add traffic rules to allow the
    * Lambda to connect to network targets.
    *
+   * Do not specify this property if the `securityGroups` or `securityGroup` property is set.
+   * Instead, configure `allowAllOutbound` directly on the security group.
+   *
    * @default true
    */
   readonly allowAllOutbound?: boolean;
@@ -1085,6 +1088,10 @@ export class Function extends FunctionBase {
    * function and undefined if not.
    */
   private getLoggingConfig(props: FunctionProps): CfnFunction.LoggingConfigProperty | undefined {
+    if ((props.applicationLogLevel || props.systemLogLevel) && props.logFormat !== LogFormat.JSON) {
+      throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`);
+    }
+
     let loggingConfig: CfnFunction.LoggingConfigProperty;
     if (props.logFormat || props.logGroup) {
       loggingConfig = {

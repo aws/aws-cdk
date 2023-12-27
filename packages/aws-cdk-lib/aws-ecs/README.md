@@ -186,6 +186,35 @@ const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider'
 cluster.addAsgCapacityProvider(capacityProvider);
 ```
 
+The following code retrieve the Amazon Resource Names (ARNs) of tasks that are a part of a specified ECS cluster.
+It's useful when you want to grant permissions to a task to access other AWS resources.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+const taskARNs = cluster.arnForTasks('*'); // arn:aws:ecs:<region>:<regionId>:task/<clusterName>/*
+
+// Grant the task permission to access other AWS resources
+taskDefinition.addToTaskRolePolicy(
+  new iam.PolicyStatement({
+    actions: ['ecs:UpdateTaskProtection'],
+    resources: [taskARNs],
+  })
+)
+```
+
+To manage task protection settings in an ECS cluster, you can use the `grantTaskProtection` method.
+This method grants the `ecs:UpdateTaskProtection` permission to a specified IAM entity.
+
+```ts
+// Assume 'cluster' is an instance of ecs.Cluster
+declare const cluster: ecs.Cluster;
+declare const taskRole: iam.Role;
+
+// Grant ECS Task Protection permissions to the role
+// Now 'taskRole' has the 'ecs:UpdateTaskProtection' permission on all tasks in the cluster
+cluster.grantTaskProtection(taskRole);
+```
 
 ### Bottlerocket
 
@@ -203,6 +232,19 @@ cluster.addCapacity('bottlerocket-asg', {
   minCapacity: 2,
   instanceType: new ec2.InstanceType('c5.large'),
   machineImage: new ecs.BottleRocketImage(),
+});
+```
+
+You can also specify an NVIDIA-compatible AMI such as in this example:
+
+```ts
+declare const cluster: ecs.Cluster;
+
+cluster.addCapacity('bottlerocket-asg', {
+  instanceType: new ec2.InstanceType('p3.2xlarge'),
+  machineImage: new ecs.BottleRocketImage({
+      variant: ecs.BottlerocketEcsVariant.AWS_ECS_2_NVIDIA,
+  }),
 });
 ```
 
@@ -608,6 +650,31 @@ const service = new ecs.ExternalService(this, 'Service', {
 
 `Services` by default will create a security group if not provided.
 If you'd like to specify which security groups to use you can override the `securityGroups` property.
+
+By default, the service will use the revision of the passed task definition generated when the `TaskDefinition`
+is deployed by CloudFormation. However, this may not be desired if the revision is externally managed,
+for example through CodeDeploy.
+
+To set a specific revision number or the special `latest` revision, use the `taskDefinitionRevision` parameter:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+new ecs.ExternalService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  desiredCount: 5,
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.of(1)
+});
+
+new ecs.ExternalService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  desiredCount: 5,
+  taskDefinitionRevision: ecs.TaskDefinitionRevision.LATEST
+});
+```
 
 ### Deployment circuit breaker and rollback
 
@@ -1107,6 +1174,31 @@ taskDefinition.addContainer('TheContainer', {
 });
 ```
 
+When forwarding logs to CloudWatch Logs using Fluent Bit, you can set the retention period for the newly created Log Group by specifying the `log_retention_days` parameter.
+If a Fluent Bit container has not been added, CDK will automatically add it to the task definition, and the necessary IAM permissions will be added to the task role.
+If you are adding the Fluent Bit container manually, ensure to add the `logs:PutRetentionPolicy` policy to the task role.
+
+```ts
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: ecs.LogDrivers.firelens({
+    options: {
+      Name: 'cloudwatch',
+      region: 'us-west-2',
+      log_group_name: 'firelens-fluent-bit',
+      log_stream_prefix: 'from-fluent-bit',
+      auto_create_group: 'true',
+      log_retention_days: '1',
+    },
+  }),
+});
+```
+
+> Visit [Fluent Bit CloudWatch Configuration Parameters](https://docs.fluentbit.io/manual/pipeline/outputs/cloudwatch#configuration-parameters)
+for more details.
+
 ### Generic Log Driver
 
 A generic log driver object exists to provide a lower level abstraction of the log driver configuration.
@@ -1283,6 +1375,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
 
 const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
   autoScalingGroup,
+  instanceWarmupPeriod: 300,
 });
 cluster.addAsgCapacityProvider(capacityProvider);
 
