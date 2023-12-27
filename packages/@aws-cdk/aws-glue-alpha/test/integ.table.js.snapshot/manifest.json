@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-glue.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a0cca4ed21fb1c6d9b050e5fd7c8d857b13af8ef7b8cead40cd08d2e25fc892.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b91bf4cf21d2d51d240c781968ceabd5c521d572397afa2f3e8ed032b9dab278.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -105,6 +106,12 @@
             "data": "MyTableWithStorageDescriptorParametersTable1A347345"
           }
         ],
+        "/aws-cdk-glue/MyTableWithParameters/Table": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTableWithParametersTable39568AB8"
+          }
+        ],
         "/aws-cdk-glue/MyDeprecatedTable/Table": [
           {
             "type": "aws:cdk:logicalId",
@@ -146,24 +153,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "MyConnection5621880D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConnection5621880D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyTableWithCustomLocationTable43A19D42": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyTableWithCustomLocationTable43A19D42",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-glue"
@@ -181,6 +170,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "awscdkgluetableintegDefaultTestDeployAssert8BFB5B70.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
