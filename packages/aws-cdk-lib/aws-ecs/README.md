@@ -235,6 +235,19 @@ cluster.addCapacity('bottlerocket-asg', {
 });
 ```
 
+You can also specify an NVIDIA-compatible AMI such as in this example:
+
+```ts
+declare const cluster: ecs.Cluster;
+
+cluster.addCapacity('bottlerocket-asg', {
+  instanceType: new ec2.InstanceType('p3.2xlarge'),
+  machineImage: new ecs.BottleRocketImage({
+      variant: ecs.BottlerocketEcsVariant.AWS_ECS_2_NVIDIA,
+  }),
+});
+```
+
 ### ARM64 (Graviton) Instances
 
 To launch instances with ARM64 hardware, you can use the Amazon ECS-optimized
