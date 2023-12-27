@@ -167,7 +167,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     class Import extends Resource implements INetworkLoadBalancer {
       public readonly connections: ec2.Connections = new ec2.Connections({
         securityGroups: attrs.loadBalancerSecurityGroups?.map(
-          securityGroupId => ec2.SecurityGroup.fromSecurityGroupId(this, securityGroupId, securityGroupId),
+          (securityGroupId, index) => ec2.SecurityGroup.fromSecurityGroupId(this, `SecurityGroup-${index}`, securityGroupId),
         ),
       });
       public readonly loadBalancerArn = attrs.loadBalancerArn;
@@ -481,7 +481,9 @@ class LookedUpNetworkLoadBalancer extends Resource implements INetworkLoadBalanc
     this.metrics = new NetworkLoadBalancerMetrics(this, parseLoadBalancerFullName(props.loadBalancerArn));
     this.securityGroups = props.securityGroupIds;
     this.connections = new ec2.Connections({
-      securityGroups: props.securityGroupIds.map(securityGroupId => ec2.SecurityGroup.fromSecurityGroupId(this, securityGroupId, securityGroupId)),
+      securityGroups: props.securityGroupIds.map(
+        (securityGroupId, index) => ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${index}`, securityGroupId),
+      ),
     });
 
     if (props.ipAddressType === cxapi.LoadBalancerIpAddressType.IPV4) {
