@@ -124,6 +124,18 @@ new glue.S3Table(stack, 'MyTableWithStorageDescriptorParameters', {
   ],
 });
 
+new glue.S3Table(stack, 'MyTableWithParameters', {
+  database,
+  bucket,
+  tableName: 'table_with_parameters',
+  columns,
+  dataFormat: glue.DataFormat.JSON,
+  parameters: {
+    key1: 'val1',
+    key2: 'val2',
+  },
+});
+
 new glue.Table(stack, 'MyDeprecatedTable', {
   database,
   bucket,
