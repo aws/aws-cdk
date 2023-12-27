@@ -600,6 +600,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
       vpc: this.cluster.vpc,
       internetFacing,
       idleTimeout: idleTimeout,
+      loadBalancerName: name,
     };
 
     return new ApplicationLoadBalancer(this, name, lbProps);
