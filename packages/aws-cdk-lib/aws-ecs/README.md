@@ -228,7 +228,6 @@ You can also specify an NVIDIA-compatible AMI such as in this example:
 declare const cluster: ecs.Cluster;
 
 cluster.addCapacity('bottlerocket-asg', {
-  minCapacity: 2,
   instanceType: new ec2.InstanceType('p3.2xlarge'),
   machineImage: new ecs.BottleRocketImage({
       variant: ecs.BottlerocketEcsVariant.AWS_ECS_2_NVIDIA,
