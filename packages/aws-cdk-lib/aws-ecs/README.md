@@ -229,9 +229,9 @@ declare const cluster: ecs.Cluster;
 
 cluster.addCapacity('bottlerocket-asg', {
   minCapacity: 2,
-  instanceType: new ec2.InstanceType('c5.large'),
+  instanceType: new ec2.InstanceType('p3.2xlarge'),
   machineImage: new ecs.BottleRocketImage({
-      variant: ecs.BottlerocketEcsVariant.AWS_ECS_1_NVIDIA,
+      variant: ecs.BottlerocketEcsVariant.AWS_ECS_2_NVIDIA,
   }),
 });
 ```

@@ -15,8 +15,11 @@ cluster.addCapacity('bottlerocket-asg', {
   minCapacity: 2,
   instanceType: new ec2.InstanceType('p3.2xlarge'),
   machineImage: new ecs.BottleRocketImage({
-    variant: ecs.BottlerocketEcsVariant.AWS_ECS_1_NVIDIA,
+    variant: ecs.BottlerocketEcsVariant.AWS_ECS_2_NVIDIA,
   }),
+  vpcSubnets: {
+    availabilityZones: ['us-east-1c'],
+  },
 });
 
 new integ.IntegTest(app, 'aws-ecs-bottlerocket-nvidia-ami', {
