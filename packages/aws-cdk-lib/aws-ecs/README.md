@@ -203,7 +203,8 @@ taskDefinition.addToTaskRolePolicy(
 )
 ```
 
-The grantTaskProtection method simplifies the process of granting ECS Task Protection API permissions to a specified IAM entity. This is particularly useful for scenarios where you need to allow an IAM role or user to manage task protection settings in an ECS cluster. By using this method, you can efficiently assign the ecs:UpdateTaskProtection permission to the desired entity, ensuring it has the necessary rights to interact with task protection features.
+To manage task protection settings in an ECS cluster, you can use the `grantTaskProtection` method.
+This method grants the `ecs:UpdateTaskProtection` permission to a specified IAM entity.
 
 ```ts
 // Assume 'cluster' is an instance of ecs.Cluster
