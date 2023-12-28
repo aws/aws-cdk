@@ -551,12 +551,29 @@ export interface InstancesDistribution {
  */
 export interface LaunchTemplateOverrides {
   /**
-   * The instance type, such as m3.xlarge. You must use an instance type that is supported in your requested Region
-   * and Availability Zones.
+   * The instance requirements. Amazon EC2 Auto Scaling uses your specified requirements to identify instance types.
+   * Then, it uses your On-Demand and Spot allocation strategies to launch instances from these instance types.
+   *
+   * You can specify up to four separate sets of instance requirements per Auto Scaling group.
+   * This is useful for provisioning instances from different Amazon Machine Images (AMIs) in the same Auto Scaling group.
+   * To do this, create the AMIs and create a new launch template for each AMI.
+   * Then, create a compatible set of instance requirements for each launch template.
+   *
+   * You must specify one of instanceRequirements or instanceType.
    *
    * @default - Do not override instance type
    */
-  readonly instanceType: ec2.InstanceType,
+  readonly instanceRequirements?: CfnAutoScalingGroup.InstanceRequirementsProperty
+
+  /**
+   * The instance type, such as m3.xlarge. You must use an instance type that is supported in your requested Region
+   * and Availability Zones.
+   *
+   * You must specify one of instanceRequirements or instanceType.
+   *
+   * @default - Do not override instance type
+   */
+  readonly instanceType?: ec2.InstanceType,
 
   /**
    * Provides the launch template to be used when launching the instance type. For example, some instance types might
@@ -1850,11 +1867,18 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
                 if (override.weightedCapacity && Math.floor(override.weightedCapacity) !== override.weightedCapacity) {
                   throw new Error('Weight must be an integer');
                 }
+                if (!override.instanceType && !override.instanceRequirements) {
+                  throw new Error('You must specify either \'instanceRequirements\' or \'instanceType\'.');
+                }
+                if (override.instanceType && override.instanceRequirements) {
+                  throw new Error('You can specify either \'instanceRequirements\' or \'instanceType\', not both.');
+                }
                 return {
-                  instanceType: override.instanceType.toString(),
+                  instanceType: override.instanceType?.toString(),
                   launchTemplateSpecification: override.launchTemplate
                     ? this.convertILaunchTemplateToSpecification(override.launchTemplate)
                     : undefined,
+                  instanceRequirements: override.instanceRequirements,
                   weightedCapacity: override.weightedCapacity?.toString(),
                 };
               }),
