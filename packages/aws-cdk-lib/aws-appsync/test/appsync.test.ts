@@ -299,3 +299,18 @@ test('appsync fails when specifing schema and definition', () => {
     });
   }).toThrowError('You cannot specify both properties schema and definition.');
 });
+
+test('when introspectionConfig is set it should be used when creating the API', () => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'disabled-introspection', {
+    authorizationConfig: {},
+    name: 'disabled-introspection',
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    introspectionConfig: appsync.IntrospectionConfig.DISABLED,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+    IntrospectionConfig: 'DISABLED',
+  });
+});
