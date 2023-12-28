@@ -1,16 +1,27 @@
 {
  "Resources": {
+  "NlbByHardcodedArnSecurityGroup0from00000443BE5EDB93": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "CidrIp": "0.0.0.0/0",
+    "Description": "from 0.0.0.0/0:443",
+    "FromPort": 443,
+    "GroupId": "sg-123456789012",
+    "IpProtocol": "tcp",
+    "ToPort": 443
+   }
+  },
   "NlbByHardcodedArnAlarmFlowCount60A46641": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 1,
     "Dimensions": [
      {
       "Name": "LoadBalancer",
       "Value": "network/my-load-balancer/50dc6c495c0c9188"
      }
     ],
+    "EvaluationPeriods": 1,
     "MetricName": "ActiveFlowCount",
     "Namespace": "AWS/NetworkELB",
     "Period": 300,
@@ -18,11 +29,23 @@
     "Threshold": 0
    }
   },
+  "NlbByCfnOutputsFromAnotherStackOutsideCdkSecurityGroup0from0000044343E5A61F": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "CidrIp": "0.0.0.0/0",
+    "Description": "from 0.0.0.0/0:443",
+    "FromPort": 443,
+    "GroupId": {
+     "Fn::ImportValue": "SgId"
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 443
+   }
+  },
   "NlbByCfnOutputsFromAnotherStackOutsideCdkAlarmFlowCountD9A1D5AC": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 1,
     "Dimensions": [
      {
       "Name": "LoadBalancer",
@@ -76,6 +99,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 1,
     "MetricName": "ActiveFlowCount",
     "Namespace": "AWS/NetworkELB",
     "Period": 300,
@@ -87,7 +111,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 1,
     "Dimensions": [
      {
       "Name": "LoadBalancer",
@@ -141,6 +164,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 1,
     "MetricName": "ActiveFlowCount",
     "Namespace": "AWS/NetworkELB",
     "Period": 300,
@@ -152,7 +176,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 1,
     "Dimensions": [
      {
       "Name": "LoadBalancer",
@@ -163,6 +186,7 @@
       "Value": "targetgroup/my-target-group/50dc6c495c0c9188"
      }
     ],
+    "EvaluationPeriods": 1,
     "MetricName": "HealthyHostCount",
     "Namespace": "AWS/NetworkELB",
     "Period": 300,
@@ -174,7 +198,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 1,
     "Dimensions": [
      {
       "Name": "LoadBalancer",
@@ -244,6 +267,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 1,
     "MetricName": "HealthyHostCount",
     "Namespace": "AWS/NetworkELB",
     "Period": 300,
@@ -255,7 +279,6 @@
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-    "EvaluationPeriods": 1,
     "Dimensions": [
      {
       "Name": "LoadBalancer",
@@ -325,6 +348,7 @@
       }
      }
     ],
+    "EvaluationPeriods": 1,
     "MetricName": "HealthyHostCount",
     "Namespace": "AWS/NetworkELB",
     "Period": 300,
