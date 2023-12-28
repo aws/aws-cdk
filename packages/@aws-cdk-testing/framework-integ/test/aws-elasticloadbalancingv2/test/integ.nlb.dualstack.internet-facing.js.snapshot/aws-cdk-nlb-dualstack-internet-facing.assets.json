@@ -1,0 +1,19 @@
+{
+  "version": "33.0.0",
+  "files": {
+    "340dc1c060f1daf62cf98eb4d82d75935a5502bc0afbda44655c6bd160dc460a": {
+      "source": {
+        "path": "aws-cdk-nlb-dualstack-internet-facing.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "340dc1c060f1daf62cf98eb4d82d75935a5502bc0afbda44655c6bd160dc460a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
