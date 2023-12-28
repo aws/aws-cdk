@@ -81,6 +81,21 @@ export interface EmailIdentityProps {
    * @default MailFromBehaviorOnMxFailure.USE_DEFAULT_VALUE
    */
   readonly mailFromBehaviorOnMxFailure?: MailFromBehaviorOnMxFailure;
+
+  /**
+   * Whether to enable DMARC for the email identity
+   *
+   * @default false
+   */
+  readonly autoDmarc?: boolean;
+
+  /**
+   * The email address to receive DMARC reports.
+   * If not specified, defaults to 'dmarc-reports@' followed by the domain of the identity.
+   *
+   * @default `dmarc-reports@${props.identity.value}`
+   */
+  readonly dmarcReportEmail?: string;
 }
 
 /**
@@ -416,6 +431,16 @@ export class EmailIdentity extends Resource implements IEmailIdentity {
         zone: props.identity.hostedZone,
         recordName: props.mailFromDomain,
         values: ['v=spf1 include:amazonses.com ~all'],
+      });
+    }
+
+    if (props.autoDmarc && props.identity.hostedZone) {
+      const dmarcDomain = props.identity.value;
+      const dmarcReportEmail = props.dmarcReportEmail || `dmarc-reports@${dmarcDomain}`;
+      new route53.TxtRecord(this, 'DmarcTxtRecord', {
+        zone: props.identity.hostedZone,
+        recordName: '_dmarc.' + dmarcDomain,
+        values: [`v=DMARC1; p=none; rua=mailto:${dmarcReportEmail}`],
       });
     }
 

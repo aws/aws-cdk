@@ -1,0 +1,323 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdk-ses-email-identity-dmarc-integ": {
+        "id": "cdk-ses-email-identity-dmarc-integ",
+        "path": "cdk-ses-email-identity-dmarc-integ",
+        "children": {
+          "HostedZone": {
+            "id": "HostedZone",
+            "path": "cdk-ses-email-identity-dmarc-integ/HostedZone",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-email-identity-dmarc-integ/HostedZone/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "cdk.dev."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHostedZone",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.PublicHostedZone",
+              "version": "0.0.0"
+            }
+          },
+          "EmailIdentity": {
+            "id": "EmailIdentity",
+            "path": "cdk-ses-email-identity-dmarc-integ/EmailIdentity",
+            "children": {
+              "DkimDnsToken1": {
+                "id": "DkimDnsToken1",
+                "path": "cdk-ses-email-identity-dmarc-integ/EmailIdentity/DkimDnsToken1",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": {
+                      "Fn::GetAtt": [
+                        "EmailIdentity7187767D",
+                        "DkimDNSTokenName1"
+                      ]
+                    },
+                    "resourceRecords": [
+                      {
+                        "Fn::GetAtt": [
+                          "EmailIdentity7187767D",
+                          "DkimDNSTokenValue1"
+                        ]
+                      }
+                    ],
+                    "ttl": "1800",
+                    "type": "CNAME"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              },
+              "DkimDnsToken2": {
+                "id": "DkimDnsToken2",
+                "path": "cdk-ses-email-identity-dmarc-integ/EmailIdentity/DkimDnsToken2",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": {
+                      "Fn::GetAtt": [
+                        "EmailIdentity7187767D",
+                        "DkimDNSTokenName2"
+                      ]
+                    },
+                    "resourceRecords": [
+                      {
+                        "Fn::GetAtt": [
+                          "EmailIdentity7187767D",
+                          "DkimDNSTokenValue2"
+                        ]
+                      }
+                    ],
+                    "ttl": "1800",
+                    "type": "CNAME"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              },
+              "DkimDnsToken3": {
+                "id": "DkimDnsToken3",
+                "path": "cdk-ses-email-identity-dmarc-integ/EmailIdentity/DkimDnsToken3",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": {
+                      "Fn::GetAtt": [
+                        "EmailIdentity7187767D",
+                        "DkimDNSTokenName3"
+                      ]
+                    },
+                    "resourceRecords": [
+                      {
+                        "Fn::GetAtt": [
+                          "EmailIdentity7187767D",
+                          "DkimDNSTokenValue3"
+                        ]
+                      }
+                    ],
+                    "ttl": "1800",
+                    "type": "CNAME"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-email-identity-dmarc-integ/EmailIdentity/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::EmailIdentity",
+                  "aws:cdk:cloudformation:props": {
+                    "emailIdentity": "cdk.dev",
+                    "mailFromAttributes": {
+                      "mailFromDomain": "mail.cdk.dev"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ses.CfnEmailIdentity",
+                  "version": "0.0.0"
+                }
+              },
+              "MailFromMxRecord": {
+                "id": "MailFromMxRecord",
+                "path": "cdk-ses-email-identity-dmarc-integ/EmailIdentity/MailFromMxRecord",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-ses-email-identity-dmarc-integ/EmailIdentity/MailFromMxRecord/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                      "aws:cdk:cloudformation:props": {
+                        "hostedZoneId": {
+                          "Ref": "HostedZoneDB99F866"
+                        },
+                        "name": "mail.cdk.dev.",
+                        "resourceRecords": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "10 feedback-smtp.",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ".amazonses.com"
+                              ]
+                            ]
+                          }
+                        ],
+                        "ttl": "1800",
+                        "type": "MX"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.MxRecord",
+                  "version": "0.0.0"
+                }
+              },
+              "MailFromTxtRecord": {
+                "id": "MailFromTxtRecord",
+                "path": "cdk-ses-email-identity-dmarc-integ/EmailIdentity/MailFromTxtRecord",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-ses-email-identity-dmarc-integ/EmailIdentity/MailFromTxtRecord/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                      "aws:cdk:cloudformation:props": {
+                        "hostedZoneId": {
+                          "Ref": "HostedZoneDB99F866"
+                        },
+                        "name": "mail.cdk.dev.",
+                        "resourceRecords": [
+                          "\"v=spf1 include:amazonses.com ~all\""
+                        ],
+                        "ttl": "1800",
+                        "type": "TXT"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.TxtRecord",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ses.EmailIdentity",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-ses-email-identity-dmarc-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-ses-email-identity-dmarc-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "EmailIdentityDmarcInteg": {
+        "id": "EmailIdentityDmarcInteg",
+        "path": "EmailIdentityDmarcInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "EmailIdentityDmarcInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "EmailIdentityDmarcInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "EmailIdentityDmarcInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "EmailIdentityDmarcInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "EmailIdentityDmarcInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

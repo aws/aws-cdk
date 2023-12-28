@@ -210,6 +210,26 @@ for (const record of identity.dkimRecords) {
 }
 ```
 
+### DMARC (Domain-based Message Authentication, Reporting, and Conformance)
+
+DMARC is a protocol to prevent email spoofing, ensuring the authenticity of the email sender. By integrating DMARC with Amazon SES, you establish a policy for your domain's email sending and validate sender identities.
+
+The EmailIdentity construct in Amazon SES enables DMARC, automatically adding a TXT record for DMARC policy in your domain's DNS.
+
+To enable DMARC, use:
+
+```ts
+declare const myHostedZone: route53.IPublicHostedZone;
+
+new ses.EmailIdentity(this, 'Identity', {
+  identity: ses.Identity.publicHostedZone(myHostedZone),
+  autoDmarc: true,
+  dmarcReportEmail: 'dmarc-reports@yourdomain.com', // Optional
+});
+```
+
+While DMARC reports default to `dmarc-reports@domainname`, a custom email address can be specified via dmarcReportEmail.
+
 ### Virtual Deliverability Manager (VDM)
 
 Virtual Deliverability Manager is an Amazon SES feature that helps you enhance email deliverability,

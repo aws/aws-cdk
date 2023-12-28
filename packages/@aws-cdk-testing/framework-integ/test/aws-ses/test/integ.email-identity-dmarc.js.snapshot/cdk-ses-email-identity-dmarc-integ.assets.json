@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "d91859c61ae116490e84638b39db17824f4e5c788f2d1124febf783a82391226": {
+      "source": {
+        "path": "cdk-ses-email-identity-dmarc-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d91859c61ae116490e84638b39db17824f4e5c788f2d1124febf783a82391226.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
