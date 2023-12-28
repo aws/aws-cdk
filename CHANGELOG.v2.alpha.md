@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.117.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.116.1-alpha.0...v2.117.0-alpha.0) (2023-12-26)
+
+
+### Bug Fixes
+
+* **lambda-python-alpha:** bundling hash logic includes auth tokens in PIP urls, causing an unnecessary rebuild ([#27903](https://github.com/aws/aws-cdk/issues/27903)) ([00331a7](https://github.com/aws/aws-cdk/commit/00331a7292a3e60ea5ba3caf2a4fd4cca2fe7dc5)), closes [#27331](https://github.com/aws/aws-cdk/issues/27331)
+* **lambda-python-alpha:** use function architecture ([#18696](https://github.com/aws/aws-cdk/issues/18696)) ([#28449](https://github.com/aws/aws-cdk/issues/28449)) ([c724d27](https://github.com/aws/aws-cdk/commit/c724d277277c45b421dcd89ee1a6d4b54f942d3b))
+
+## [2.116.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.116.0-alpha.0...v2.116.1-alpha.0) (2023-12-22)
+
 ## [2.116.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.115.0-alpha.0...v2.116.0-alpha.0) (2023-12-21)
 
 

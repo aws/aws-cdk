@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.117.0](https://github.com/aws/aws-cdk/compare/v2.116.1...v2.117.0) (2023-12-26)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#28489](https://github.com/aws/aws-cdk/issues/28489)) ([607dccb](https://github.com/aws/aws-cdk/commit/607dccb0fd920d25f0fe2613b83c9830322c439e)), closes [/docs.aws.amazon.com/datasync/latest/userguide/working-with-locations.html#create-s3](https://github.com/aws//docs.aws.amazon.com/datasync/latest/userguide/working-with-locations.html/issues/create-s3)
+* **api-gateway-v2:** Add method to generate flexible execute-api ARN ([#28400](https://github.com/aws/aws-cdk/issues/28400)) ([0932027](https://github.com/aws/aws-cdk/commit/09320276c2c08ace1d85b970fe91bc1bea208457)), closes [#23301](https://github.com/aws/aws-cdk/issues/23301)
+* **autoscaling:** instance maintenance policy for AutoScalingGroup ([#28092](https://github.com/aws/aws-cdk/issues/28092)) ([5eb2c26](https://github.com/aws/aws-cdk/commit/5eb2c262141d197073173037fc350c26920b774f)), closes [#28042](https://github.com/aws/aws-cdk/issues/28042)
+* **codebuild:** Lambda compute for codebuild projects ([#27934](https://github.com/aws/aws-cdk/issues/27934)) ([a4a4c6f](https://github.com/aws/aws-cdk/commit/a4a4c6f19719b9238e2f397d0049af867846ad94)), closes [#28418](https://github.com/aws/aws-cdk/issues/28418)
+* **core:** option to disable cache for docker build ([#27944](https://github.com/aws/aws-cdk/issues/27944)) ([84d81b6](https://github.com/aws/aws-cdk/commit/84d81b67ee2574c98c4a26d8b5c567be84b6cf02)), closes [#27916](https://github.com/aws/aws-cdk/issues/27916)
+* **ec2:** trn1 instance type ([#28477](https://github.com/aws/aws-cdk/issues/28477)) ([ed02d5c](https://github.com/aws/aws-cdk/commit/ed02d5c148a9412e92ee62d35560526b14cfc907))
+* **ecs:** Implement method in ECS cluster to retrieve task ARN ([#28381](https://github.com/aws/aws-cdk/issues/28381)) ([7635bbc](https://github.com/aws/aws-cdk/commit/7635bbc9b4d766a7920747dd73c571bee90895f9)), closes [#26232](https://github.com/aws/aws-cdk/issues/26232)
+* **ecs-patterns:** support disabling CPU-based scaling and custom target utilization ([#28315](https://github.com/aws/aws-cdk/issues/28315)) ([3cb3e02](https://github.com/aws/aws-cdk/commit/3cb3e0299ee427a02161a4e5bb250dad8ab3909a)), closes [#20706](https://github.com/aws/aws-cdk/issues/20706) [#20706](https://github.com/aws/aws-cdk/issues/20706)
+* **elasticloadbalancingv2:** dualstack NetworkLoadBalancer ([#27546](https://github.com/aws/aws-cdk/issues/27546)) ([e03a41f](https://github.com/aws/aws-cdk/commit/e03a41f5cbafda74a193cd64955674e59a654a78)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-loadbalancer.html#cfn-elasticloadbalancingv2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-loadbalancer.html/issues/cfn-elasticloadbalancingv2) [#27538](https://github.com/aws/aws-cdk/issues/27538)
+* **elasticloadbalancingv2:** FIPS compliant SSL policy to ALB ([#28479](https://github.com/aws/aws-cdk/issues/28479)) ([7bb72e1](https://github.com/aws/aws-cdk/commit/7bb72e1e1bcc84f45ebe714e379fa085a5642355)), closes [#28455](https://github.com/aws/aws-cdk/issues/28455)
+* **globalaccelerator:** add support for ip addresses and type ([#28055](https://github.com/aws/aws-cdk/issues/28055)) ([943abe8](https://github.com/aws/aws-cdk/commit/943abe877cfbcbb54311e2ecc4a9a3bfb231a202)), closes [#28051](https://github.com/aws/aws-cdk/issues/28051) [#28209](https://github.com/aws/aws-cdk/issues/28209)
+* **ses:** synth-time naming validation for dedicatedIpPoolName ([#28466](https://github.com/aws/aws-cdk/issues/28466)) ([be6ddb8](https://github.com/aws/aws-cdk/commit/be6ddb88cce057ef23ff8fee67a4f5b3f063a931)), closes [#28451](https://github.com/aws/aws-cdk/issues/28451)
+
+
+### Bug Fixes
+
+* **core:** core constructs fail with `Error: Cannot find module '../dist/core/<file>.generated'` ([#28467](https://github.com/aws/aws-cdk/issues/28467)) ([cd54c42](https://github.com/aws/aws-cdk/commit/cd54c4239ec29182e30fd91634505df560d6e5f8)), closes [#28251](https://github.com/aws/aws-cdk/issues/28251) [#28465](https://github.com/aws/aws-cdk/issues/28465)
+* **ecs-patterns:** `ApplicationMultipleTargetGroupsEc2Service` ignores load balancer name ([#28394](https://github.com/aws/aws-cdk/issues/28394)) ([9c0fecf](https://github.com/aws/aws-cdk/commit/9c0fecf9a5cc26416e814ae4754729b54c827b9d)), closes [#23535](https://github.com/aws/aws-cdk/issues/23535)
+
+## [2.116.1](https://github.com/aws/aws-cdk/compare/v2.116.0...v2.116.1) (2023-12-22)
+
+
+### Bug Fixes
+
+* **core:** core constructs fail with `Error: Cannot find module '../dist/core/<file>.generated'` ([#28467](https://github.com/aws/aws-cdk/issues/28467)) ([e8be128](https://github.com/aws/aws-cdk/commit/e8be12836cdb73b74cd36e19e5cec52258304933)), closes [#28251](https://github.com/aws/aws-cdk/issues/28251) [#28465](https://github.com/aws/aws-cdk/issues/28465)
+
 ## [2.116.0](https://github.com/aws/aws-cdk/compare/v2.115.0...v2.116.0) (2023-12-21)
 
 

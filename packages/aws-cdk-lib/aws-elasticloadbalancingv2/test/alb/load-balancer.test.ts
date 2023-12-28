@@ -801,4 +801,45 @@ describe('tests', () => {
       });
     });
   });
+
+  describe('dualstack', () => {
+    test('Can create internet-facing dualstack ApplicationLoadBalancer', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        internetFacing: true,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internet-facing',
+        Type: 'application',
+        IpAddressType: 'dualstack',
+      });
+    });
+
+    test('Can create internal dualstack ApplicationLoadBalancer', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        Scheme: 'internal',
+        Type: 'application',
+        IpAddressType: 'dualstack',
+      });
+    });
+  });
 });
