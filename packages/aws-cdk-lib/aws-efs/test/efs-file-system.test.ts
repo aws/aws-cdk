@@ -880,13 +880,13 @@ test('specify availabilityZoneName to create mount targets in a specific AZ', ()
   // WHEN
   new FileSystem(stack, 'EfsFileSystem', {
     vpc,
-    availabilityZoneName: 'us-east-1a',
+    availabilityZoneName: 'us-east-1c',
   });
 
   // THEN
   console.log(JSON.stringify(Template.fromStack(stack).toJSON()));
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
-    AvailabilityZoneName: 'us-east-1a',
+    AvailabilityZoneName: selectedAZ,
   });
   // mount target should be created only 1
   Template.fromStack(stack).resourceCountIs('AWS::EFS::MountTarget', 1);

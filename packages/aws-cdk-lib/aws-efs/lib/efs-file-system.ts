@@ -562,18 +562,8 @@ export class FileSystem extends FileSystemBase {
     });
 
     // When availabilityZoneName is specified, to avoid deployment failure, mountTarget should also be created only in the specified AZ.
-    let subnetSelection: ec2.SubnetSelection;
-    if (props.availabilityZoneName) {
-      subnetSelection = { availabilityZones: [props.availabilityZoneName] };
-      if (props.vpcSubnets) {
-        subnetSelection = { ...props.vpcSubnets, ...subnetSelection };
-      }
-    } else if (props.vpcSubnets) {
-      subnetSelection = props.vpcSubnets;
-    } else {
-      subnetSelection = { onePerAz: true };
-    }
-    const subnets = props.vpc.selectSubnets(subnetSelection);
+    const subnets = props.vpc.selectSubnets(props.vpcSubnets ?? { onePerAz: true });
+    console.log(subnets)
 
     // We now have to create the mount target for each of the mentioned subnet
 
