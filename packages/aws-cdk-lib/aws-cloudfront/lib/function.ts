@@ -104,7 +104,7 @@ export interface FunctionAttributes {
   /**
    * The Runtime of the function.
    */
-  readonly functionRuntime: string;
+  readonly functionRuntime?: string;
 
 }
 
@@ -148,7 +148,7 @@ export class Function extends Resource implements IFunction {
     return new class extends Resource implements IFunction {
       public readonly functionName = attrs.functionName;
       public readonly functionArn = attrs.functionArn;
-      public readonly functionRuntime = attrs.functionRuntime;
+      public readonly functionRuntime = attrs.functionRuntime ?? FunctionRuntime.JS_1_0.value;
     }(scope, id);
   }
 
