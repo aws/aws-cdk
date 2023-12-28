@@ -31,7 +31,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPC",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
                   "version": "0.0.0"
                 }
               },
@@ -45,9 +45,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "vpcA2121C38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -71,11 +68,14 @@
                             "key": "Name",
                             "value": "aws-cdk-rds-proxy/vpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -83,7 +83,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-proxy/vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -93,19 +93,19 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "vpcA2121C38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-rds-proxy/vpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -124,7 +124,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -134,17 +134,17 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "vpcIGWE57CBDCA"
+                        },
+                        "routeTableId": {
+                          "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -164,7 +164,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -174,14 +174,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "vpcPublicSubnet1Subnet2E65531E"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "vpcPublicSubnet1EIPDA49DCBE",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "vpcPublicSubnet1Subnet2E65531E"
                         },
                         "tags": [
                           {
@@ -192,13 +192,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -212,9 +212,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "vpcA2121C38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -238,11 +235,14 @@
                             "key": "Name",
                             "value": "aws-cdk-rds-proxy/vpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -250,7 +250,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-proxy/vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -260,19 +260,19 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "vpcA2121C38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-rds-proxy/vpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -291,7 +291,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -301,17 +301,17 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "vpcIGWE57CBDCA"
+                        },
+                        "routeTableId": {
+                          "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   },
@@ -331,7 +331,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
                       "version": "0.0.0"
                     }
                   },
@@ -341,14 +341,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "vpcPublicSubnet2Subnet009B674F"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "vpcPublicSubnet2EIP9B3743B1",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "vpcPublicSubnet2Subnet009B674F"
                         },
                         "tags": [
                           {
@@ -359,13 +359,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -379,9 +379,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "vpcA2121C38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -405,11 +402,14 @@
                             "key": "Name",
                             "value": "aws-cdk-rds-proxy/vpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -417,7 +417,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-proxy/vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -427,19 +427,19 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "vpcA2121C38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-rds-proxy/vpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -458,7 +458,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -468,23 +468,23 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "vpcPublicSubnet1NATGateway9C16659E"
+                        },
+                        "routeTableId": {
+                          "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -498,9 +498,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "vpcA2121C38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -524,11 +521,14 @@
                             "key": "Name",
                             "value": "aws-cdk-rds-proxy/vpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
                       "version": "0.0.0"
                     }
                   },
@@ -536,7 +536,7 @@
                     "id": "Acl",
                     "path": "aws-cdk-rds-proxy/vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -546,19 +546,19 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "vpcA2121C38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-rds-proxy/vpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "vpcA2121C38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
                       "version": "0.0.0"
                     }
                   },
@@ -577,7 +577,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
                       "version": "0.0.0"
                     }
                   },
@@ -587,23 +587,23 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "vpcPublicSubnet2NATGateway9B8AE11A"
+                        },
+                        "routeTableId": {
+                          "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
                   "version": "0.0.0"
                 }
               },
@@ -622,7 +622,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
                   "version": "0.0.0"
                 }
               },
@@ -632,22 +632,22 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "vpcA2121C38"
-                    },
                     "internetGatewayId": {
                       "Ref": "vpcIGWE57CBDCA"
+                    },
+                    "vpcId": {
+                      "Ref": "vpcA2121C38"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.Vpc",
+              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
               "version": "0.0.0"
             }
           },
@@ -677,13 +677,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-rds.CfnDBSubnetGroup",
+                      "fqn": "aws-cdk-lib.aws_rds.CfnDBSubnetGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.SubnetGroup",
+                  "fqn": "aws-cdk-lib.aws_rds.SubnetGroup",
                   "version": "0.0.0"
                 }
               },
@@ -711,7 +711,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
                   },
@@ -721,7 +721,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "ipProtocol": "tcp",
                         "description": "Allow connections to the database Instance from the Proxy",
                         "fromPort": {
                           "Fn::GetAtt": [
@@ -735,6 +734,7 @@
                             "GroupId"
                           ]
                         },
+                        "ipProtocol": "tcp",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
                             "dbProxyProxySecurityGroup16E727A7",
@@ -750,13 +750,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                   "version": "0.0.0"
                 }
               },
@@ -790,7 +790,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                       "version": "0.0.0"
                     }
                   },
@@ -814,19 +814,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-secretsmanager.CfnSecretTargetAttachment",
+                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecretTargetAttachment",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.DatabaseSecret",
+                  "fqn": "aws-cdk-lib.aws_rds.DatabaseSecret",
                   "version": "0.0.0"
                 }
               },
@@ -880,13 +880,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-rds.DatabaseInstance",
+              "fqn": "aws-cdk-lib.aws_rds.DatabaseInstance",
               "version": "0.0.0"
             }
           },
@@ -902,7 +902,7 @@
                     "id": "ImportIAMRole",
                     "path": "aws-cdk-rds-proxy/dbProxy/IAMRole/ImportIAMRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -927,7 +927,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -965,19 +965,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -1005,13 +1005,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                   "version": "0.0.0"
                 }
               },
@@ -1032,21 +1032,13 @@
                     ],
                     "dbProxyName": "awscdkrdsproxydbProxy0E60A1B7",
                     "engineFamily": "POSTGRESQL",
+                    "requireTls": true,
                     "roleArn": {
                       "Fn::GetAtt": [
                         "dbProxyIAMRole662F3AB8",
                         "Arn"
                       ]
                     },
-                    "vpcSubnetIds": [
-                      {
-                        "Ref": "vpcPrivateSubnet1Subnet934893E8"
-                      },
-                      {
-                        "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
-                      }
-                    ],
-                    "requireTls": true,
                     "vpcSecurityGroupIds": [
                       {
                         "Fn::GetAtt": [
@@ -1054,11 +1046,19 @@
                           "GroupId"
                         ]
                       }
+                    ],
+                    "vpcSubnetIds": [
+                      {
+                        "Ref": "vpcPrivateSubnet1Subnet934893E8"
+                      },
+                      {
+                        "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+                      }
                     ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBProxy",
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBProxy",
                   "version": "0.0.0"
                 }
               },
@@ -1068,10 +1068,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBProxyTargetGroup",
                   "aws:cdk:cloudformation:props": {
-                    "dbProxyName": {
-                      "Ref": "dbProxy3B89EAF2"
-                    },
-                    "targetGroupName": "default",
                     "connectionPoolConfigurationInfo": {
                       "connectionBorrowTimeout": 30,
                       "maxConnectionsPercent": 50
@@ -1080,17 +1076,21 @@
                       {
                         "Ref": "dbInstance4076B1EC"
                       }
-                    ]
+                    ],
+                    "dbProxyName": {
+                      "Ref": "dbProxy3B89EAF2"
+                    },
+                    "targetGroupName": "default"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBProxyTargetGroup",
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBProxyTargetGroup",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-rds.DatabaseProxy",
+              "fqn": "aws-cdk-lib.aws_rds.DatabaseProxy",
               "version": "0.0.0"
             }
           },
@@ -1120,13 +1120,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-rds.CfnDBSubnetGroup",
+                      "fqn": "aws-cdk-lib.aws_rds.CfnDBSubnetGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.SubnetGroup",
+                  "fqn": "aws-cdk-lib.aws_rds.SubnetGroup",
                   "version": "0.0.0"
                 }
               },
@@ -1154,17 +1154,16 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                       "version": "0.0.0"
                     }
                   },
-                  "from awscdkrdsproxyProxyProxySecurityGroup9F179E6F:{IndirectPort}": {
-                    "id": "from awscdkrdsproxyProxyProxySecurityGroup9F179E6F:{IndirectPort}",
-                    "path": "aws-cdk-rds-proxy/dbCluster/SecurityGroup/from awscdkrdsproxyProxyProxySecurityGroup9F179E6F:{IndirectPort}",
+                  "from awscdkrdsproxydbClusterProxyProxySecurityGroupFBC47B09:{IndirectPort}": {
+                    "id": "from awscdkrdsproxydbClusterProxyProxySecurityGroupFBC47B09:{IndirectPort}",
+                    "path": "aws-cdk-rds-proxy/dbCluster/SecurityGroup/from awscdkrdsproxydbClusterProxyProxySecurityGroupFBC47B09:{IndirectPort}",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "ipProtocol": "tcp",
                         "description": "Allow connections to the database Cluster from the Proxy",
                         "fromPort": {
                           "Fn::GetAtt": [
@@ -1178,9 +1177,10 @@
                             "GroupId"
                           ]
                         },
+                        "ipProtocol": "tcp",
                         "sourceSecurityGroupId": {
                           "Fn::GetAtt": [
-                            "ProxyProxySecurityGroupC42FC3CE",
+                            "dbClusterProxyProxySecurityGroup170F327D",
                             "GroupId"
                           ]
                         },
@@ -1193,13 +1193,52 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroupIngress",
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "from awscdkrdsproxydbClusterProxy2ProxySecurityGroup5B77853F:{IndirectPort}": {
+                    "id": "from awscdkrdsproxydbClusterProxy2ProxySecurityGroup5B77853F:{IndirectPort}",
+                    "path": "aws-cdk-rds-proxy/dbCluster/SecurityGroup/from awscdkrdsproxydbClusterProxy2ProxySecurityGroup5B77853F:{IndirectPort}",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "description": "Allow connections to the database Cluster from the Proxy",
+                        "fromPort": {
+                          "Fn::GetAtt": [
+                            "dbClusterE86E47AE",
+                            "Endpoint.Port"
+                          ]
+                        },
+                        "groupId": {
+                          "Fn::GetAtt": [
+                            "dbClusterSecurityGroupCAA1A91F",
+                            "GroupId"
+                          ]
+                        },
+                        "ipProtocol": "tcp",
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "dbClusterProxy2ProxySecurityGroupB44507AE",
+                            "GroupId"
+                          ]
+                        },
+                        "toPort": {
+                          "Fn::GetAtt": [
+                            "dbClusterE86E47AE",
+                            "Endpoint.Port"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
                   "version": "0.0.0"
                 }
               },
@@ -1207,7 +1246,7 @@
                 "id": "AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup",
                 "path": "aws-cdk-rds-proxy/dbCluster/AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Resource",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -1241,7 +1280,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.CfnSecret",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
                       "version": "0.0.0"
                     }
                   },
@@ -1265,19 +1304,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-secretsmanager.CfnSecretTargetAttachment",
+                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecretTargetAttachment",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-secretsmanager.SecretTargetAttachment",
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.DatabaseSecret",
+                  "fqn": "aws-cdk-lib.aws_rds.DatabaseSecret",
                   "version": "0.0.0"
                 }
               },
@@ -1330,7 +1369,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBCluster",
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBCluster",
                   "version": "0.0.0"
                 }
               },
@@ -1351,7 +1390,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
                   "version": "0.0.0"
                 }
               },
@@ -1372,214 +1411,415 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBInstance",
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
                   "version": "0.0.0"
                 }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-rds.DatabaseCluster",
-              "version": "0.0.0"
-            }
-          },
-          "Proxy": {
-            "id": "Proxy",
-            "path": "aws-cdk-rds-proxy/Proxy",
-            "children": {
-              "IAMRole": {
-                "id": "IAMRole",
-                "path": "aws-cdk-rds-proxy/Proxy/IAMRole",
+              },
+              "Proxy": {
+                "id": "Proxy",
+                "path": "aws-cdk-rds-proxy/dbCluster/Proxy",
                 "children": {
-                  "ImportIAMRole": {
-                    "id": "ImportIAMRole",
-                    "path": "aws-cdk-rds-proxy/Proxy/IAMRole/ImportIAMRole",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-rds-proxy/Proxy/IAMRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "rds.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "aws-cdk-rds-proxy/Proxy/IAMRole/DefaultPolicy",
+                  "IAMRole": {
+                    "id": "IAMRole",
+                    "path": "aws-cdk-rds-proxy/dbCluster/Proxy/IAMRole",
                     "children": {
+                      "ImportIAMRole": {
+                        "id": "ImportIAMRole",
+                        "path": "aws-cdk-rds-proxy/dbCluster/Proxy/IAMRole/ImportIAMRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-proxy/Proxy/IAMRole/DefaultPolicy/Resource",
+                        "path": "aws-cdk-rds-proxy/dbCluster/Proxy/IAMRole/Resource",
                         "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
+                            "assumeRolePolicyDocument": {
                               "Statement": [
                                 {
-                                  "Action": [
-                                    "secretsmanager:DescribeSecret",
-                                    "secretsmanager:GetSecretValue"
-                                  ],
+                                  "Action": "sts:AssumeRole",
                                   "Effect": "Allow",
-                                  "Resource": {
-                                    "Ref": "dbClusterSecretAttachmentAB67A752"
+                                  "Principal": {
+                                    "Service": "rds.amazonaws.com"
                                   }
                                 }
                               ],
                               "Version": "2012-10-17"
-                            },
-                            "policyName": "ProxyIAMRoleDefaultPolicy59EB0117",
-                            "roles": [
-                              {
-                                "Ref": "ProxyIAMRole2FE8AB0F"
-                              }
-                            ]
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "aws-cdk-rds-proxy/dbCluster/Proxy/IAMRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-cdk-rds-proxy/dbCluster/Proxy/IAMRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "secretsmanager:DescribeSecret",
+                                        "secretsmanager:GetSecretValue"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Ref": "dbClusterSecretAttachmentAB67A752"
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "dbClusterProxyIAMRoleDefaultPolicyEEE23224",
+                                "roles": [
+                                  {
+                                    "Ref": "dbClusterProxyIAMRole693E39F5"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
                       "version": "0.0.0"
                     }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "ProxySecurityGroup": {
-                "id": "ProxySecurityGroup",
-                "path": "aws-cdk-rds-proxy/Proxy/ProxySecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-rds-proxy/Proxy/ProxySecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "SecurityGroup for Database Proxy",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
+                  },
+                  "ProxySecurityGroup": {
+                    "id": "ProxySecurityGroup",
+                    "path": "aws-cdk-rds-proxy/dbCluster/Proxy/ProxySecurityGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-rds-proxy/dbCluster/Proxy/ProxySecurityGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                          "aws:cdk:cloudformation:props": {
+                            "groupDescription": "SecurityGroup for Database Proxy",
+                            "securityGroupEgress": [
+                              {
+                                "cidrIp": "0.0.0.0/0",
+                                "description": "Allow all outbound traffic by default",
+                                "ipProtocol": "-1"
+                              }
+                            ],
+                            "vpcId": {
+                              "Ref": "vpcA2121C38"
+                            }
                           }
-                        ],
-                        "vpcId": {
-                          "Ref": "vpcA2121C38"
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
+                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-rds-proxy/dbCluster/Proxy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBProxy",
+                      "aws:cdk:cloudformation:props": {
+                        "auth": [
+                          {
+                            "authScheme": "SECRETS",
+                            "iamAuth": "DISABLED",
+                            "secretArn": {
+                              "Ref": "dbClusterSecretAttachmentAB67A752"
+                            }
+                          }
+                        ],
+                        "dbProxyName": "awscdkrdsproxydbClusterProxyE88930B6",
+                        "engineFamily": "POSTGRESQL",
+                        "requireTls": true,
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "dbClusterProxyIAMRole693E39F5",
+                            "Arn"
+                          ]
+                        },
+                        "vpcSecurityGroupIds": [
+                          {
+                            "Fn::GetAtt": [
+                              "dbClusterProxyProxySecurityGroup170F327D",
+                              "GroupId"
+                            ]
+                          }
+                        ],
+                        "vpcSubnetIds": [
+                          {
+                            "Ref": "vpcPrivateSubnet1Subnet934893E8"
+                          },
+                          {
+                            "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_rds.CfnDBProxy",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ProxyTargetGroup": {
+                    "id": "ProxyTargetGroup",
+                    "path": "aws-cdk-rds-proxy/dbCluster/Proxy/ProxyTargetGroup",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBProxyTargetGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "connectionPoolConfigurationInfo": {},
+                        "dbClusterIdentifiers": [
+                          {
+                            "Ref": "dbClusterE86E47AE"
+                          }
+                        ],
+                        "dbProxyName": {
+                          "Ref": "dbClusterProxyAB5F8181"
+                        },
+                        "targetGroupName": "default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_rds.CfnDBProxyTargetGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
+                  "fqn": "aws-cdk-lib.aws_rds.DatabaseProxy",
                   "version": "0.0.0"
                 }
               },
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-rds-proxy/Proxy/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::RDS::DBProxy",
-                  "aws:cdk:cloudformation:props": {
-                    "auth": [
-                      {
-                        "authScheme": "SECRETS",
-                        "iamAuth": "DISABLED",
-                        "secretArn": {
-                          "Ref": "dbClusterSecretAttachmentAB67A752"
+              "Proxy2": {
+                "id": "Proxy2",
+                "path": "aws-cdk-rds-proxy/dbCluster/Proxy2",
+                "children": {
+                  "IAMRole": {
+                    "id": "IAMRole",
+                    "path": "aws-cdk-rds-proxy/dbCluster/Proxy2/IAMRole",
+                    "children": {
+                      "ImportIAMRole": {
+                        "id": "ImportIAMRole",
+                        "path": "aws-cdk-rds-proxy/dbCluster/Proxy2/IAMRole/ImportIAMRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-rds-proxy/dbCluster/Proxy2/IAMRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "rds.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "aws-cdk-rds-proxy/dbCluster/Proxy2/IAMRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-cdk-rds-proxy/dbCluster/Proxy2/IAMRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "secretsmanager:DescribeSecret",
+                                        "secretsmanager:GetSecretValue"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Ref": "dbClusterSecretAttachmentAB67A752"
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "dbClusterProxy2IAMRoleDefaultPolicyFD9414D8",
+                                "roles": [
+                                  {
+                                    "Ref": "dbClusterProxy2IAMRole190D217C"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
                         }
                       }
-                    ],
-                    "dbProxyName": "cluster-db-proxy",
-                    "engineFamily": "POSTGRESQL",
-                    "roleArn": {
-                      "Fn::GetAtt": [
-                        "ProxyIAMRole2FE8AB0F",
-                        "Arn"
-                      ]
                     },
-                    "vpcSubnetIds": [
-                      {
-                        "Ref": "vpcPrivateSubnet1Subnet934893E8"
-                      },
-                      {
-                        "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ProxySecurityGroup": {
+                    "id": "ProxySecurityGroup",
+                    "path": "aws-cdk-rds-proxy/dbCluster/Proxy2/ProxySecurityGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-rds-proxy/dbCluster/Proxy2/ProxySecurityGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                          "aws:cdk:cloudformation:props": {
+                            "groupDescription": "SecurityGroup for Database Proxy",
+                            "securityGroupEgress": [
+                              {
+                                "cidrIp": "0.0.0.0/0",
+                                "description": "Allow all outbound traffic by default",
+                                "ipProtocol": "-1"
+                              }
+                            ],
+                            "vpcId": {
+                              "Ref": "vpcA2121C38"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                          "version": "0.0.0"
+                        }
                       }
-                    ],
-                    "requireTls": true,
-                    "vpcSecurityGroupIds": [
-                      {
-                        "Fn::GetAtt": [
-                          "ProxyProxySecurityGroupC42FC3CE",
-                          "GroupId"
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-rds-proxy/dbCluster/Proxy2/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBProxy",
+                      "aws:cdk:cloudformation:props": {
+                        "auth": [
+                          {
+                            "authScheme": "SECRETS",
+                            "iamAuth": "DISABLED",
+                            "secretArn": {
+                              "Ref": "dbClusterSecretAttachmentAB67A752"
+                            }
+                          }
+                        ],
+                        "dbProxyName": "awscdkrdsproxydbClusterProxy27493E9A7",
+                        "engineFamily": "POSTGRESQL",
+                        "requireTls": true,
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "dbClusterProxy2IAMRole190D217C",
+                            "Arn"
+                          ]
+                        },
+                        "vpcSecurityGroupIds": [
+                          {
+                            "Fn::GetAtt": [
+                              "dbClusterProxy2ProxySecurityGroupB44507AE",
+                              "GroupId"
+                            ]
+                          }
+                        ],
+                        "vpcSubnetIds": [
+                          {
+                            "Ref": "vpcPrivateSubnet1Subnet934893E8"
+                          },
+                          {
+                            "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+                          }
                         ]
                       }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBProxy",
-                  "version": "0.0.0"
-                }
-              },
-              "ProxyTargetGroup": {
-                "id": "ProxyTargetGroup",
-                "path": "aws-cdk-rds-proxy/Proxy/ProxyTargetGroup",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::RDS::DBProxyTargetGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "dbProxyName": {
-                      "Ref": "ProxyCB0DFB71"
                     },
-                    "targetGroupName": "default",
-                    "connectionPoolConfigurationInfo": {},
-                    "dbClusterIdentifiers": [
-                      {
-                        "Ref": "dbClusterE86E47AE"
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_rds.CfnDBProxy",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ProxyTargetGroup": {
+                    "id": "ProxyTargetGroup",
+                    "path": "aws-cdk-rds-proxy/dbCluster/Proxy2/ProxyTargetGroup",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::RDS::DBProxyTargetGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "connectionPoolConfigurationInfo": {},
+                        "dbClusterIdentifiers": [
+                          {
+                            "Ref": "dbClusterE86E47AE"
+                          }
+                        ],
+                        "dbProxyName": {
+                          "Ref": "dbClusterProxy28BBD43D5"
+                        },
+                        "targetGroupName": "default"
                       }
-                    ]
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_rds.CfnDBProxyTargetGroup",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-rds.CfnDBProxyTargetGroup",
+                  "fqn": "aws-cdk-lib.aws_rds.DatabaseProxy",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-rds.DatabaseProxy",
+              "fqn": "aws-cdk-lib.aws_rds.DatabaseCluster",
               "version": "0.0.0"
             }
           },
@@ -1587,7 +1827,7 @@
             "id": "BootstrapVersion",
             "path": "aws-cdk-rds-proxy/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -1595,13 +1835,13 @@
             "id": "CheckBootstrapVersion",
             "path": "aws-cdk-rds-proxy/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -1618,7 +1858,7 @@
                 "path": "database-proxy-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1629,7 +1869,7 @@
                     "id": "BootstrapVersion",
                     "path": "database-proxy-integ-test/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -1637,25 +1877,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "database-proxy-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -1664,12 +1904,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }
