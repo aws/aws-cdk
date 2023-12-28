@@ -399,11 +399,54 @@ describe('proxy', () => {
         'clusterInstance183584D40',
         'clusterInstance23D1AD8B2',
         'cluster611F8AFF',
-        'clusterSecretAttachment69BFCEC4',
-        'clusterSecretE349B730',
-        'clusterSecurityGroupfromproxyProxySecurityGroupA80F0525IndirectPortA13E5F3D',
-        'clusterSecurityGroupF441DCEA',
-        'clusterSubnets81E3593F',
+      ],
+    });
+  });
+
+  test('Correct dependencies are created when multiple DatabaseProxy are created with addProxy', () => {
+    // GIVEN
+    const cluster = new rds.DatabaseCluster(stack, 'cluster', {
+      engine: rds.DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    //WHEN
+    cluster.addProxy('Proxy', {
+      vpc,
+      secrets: [cluster.secret!],
+    });
+    cluster.addProxy('Proxy2', {
+      vpc,
+      secrets: [cluster.secret!],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::RDS::DBProxyTargetGroup', {
+      Properties: {
+        DBProxyName: {
+          Ref: 'clusterProxy22303E35D',
+        },
+        TargetGroupName: 'default',
+      },
+      DependsOn: [
+        'clusterInstance183584D40',
+        'clusterInstance23D1AD8B2',
+        'cluster611F8AFF',
+      ],
+    });
+    Template.fromStack(stack).hasResource('AWS::RDS::DBProxyTargetGroup', {
+      Properties: {
+        DBProxyName: {
+          Ref: 'clusterProxyC4BEF551',
+        },
+        TargetGroupName: 'default',
+      },
+      DependsOn: [
+        'clusterInstance183584D40',
+        'clusterInstance23D1AD8B2',
+        'cluster611F8AFF',
       ],
     });
   });

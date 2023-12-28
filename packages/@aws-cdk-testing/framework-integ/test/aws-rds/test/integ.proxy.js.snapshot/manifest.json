@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "aws-cdk-rds-proxy.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-rds-proxy.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fbfbdae93c15032979fecbc2362ee6c1bf3b952eb363424fb60a8f6c15d6a0d0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/938b3109faa6eac41e1d4a7b5d76197a74908e45302636596d841968426d6321.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -249,10 +250,16 @@
             "data": "dbClusterSecurityGroupCAA1A91F"
           }
         ],
-        "/aws-cdk-rds-proxy/dbCluster/SecurityGroup/from awscdkrdsproxyProxyProxySecurityGroup9F179E6F:{IndirectPort}": [
+        "/aws-cdk-rds-proxy/dbCluster/SecurityGroup/from awscdkrdsproxydbClusterProxyProxySecurityGroupFBC47B09:{IndirectPort}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "dbClusterSecurityGroupfromawscdkrdsproxyProxyProxySecurityGroup9F179E6FIndirectPortED421002"
+            "data": "dbClusterSecurityGroupfromawscdkrdsproxydbClusterProxyProxySecurityGroupFBC47B09IndirectPort152B2D99"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbCluster/SecurityGroup/from awscdkrdsproxydbClusterProxy2ProxySecurityGroup5B77853F:{IndirectPort}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterSecurityGroupfromawscdkrdsproxydbClusterProxy2ProxySecurityGroup5B77853FIndirectPort61009070"
           }
         ],
         "/aws-cdk-rds-proxy/dbCluster/Secret/Resource": [
@@ -285,34 +292,64 @@
             "data": "dbClusterInstance20BA1ECD9"
           }
         ],
-        "/aws-cdk-rds-proxy/Proxy/IAMRole/Resource": [
+        "/aws-cdk-rds-proxy/dbCluster/Proxy/IAMRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProxyIAMRole2FE8AB0F"
+            "data": "dbClusterProxyIAMRole693E39F5"
           }
         ],
-        "/aws-cdk-rds-proxy/Proxy/IAMRole/DefaultPolicy/Resource": [
+        "/aws-cdk-rds-proxy/dbCluster/Proxy/IAMRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProxyIAMRoleDefaultPolicy59EB0117"
+            "data": "dbClusterProxyIAMRoleDefaultPolicyEEE23224"
           }
         ],
-        "/aws-cdk-rds-proxy/Proxy/ProxySecurityGroup/Resource": [
+        "/aws-cdk-rds-proxy/dbCluster/Proxy/ProxySecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProxyProxySecurityGroupC42FC3CE"
+            "data": "dbClusterProxyProxySecurityGroup170F327D"
           }
         ],
-        "/aws-cdk-rds-proxy/Proxy/Resource": [
+        "/aws-cdk-rds-proxy/dbCluster/Proxy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProxyCB0DFB71"
+            "data": "dbClusterProxyAB5F8181"
           }
         ],
-        "/aws-cdk-rds-proxy/Proxy/ProxyTargetGroup": [
+        "/aws-cdk-rds-proxy/dbCluster/Proxy/ProxyTargetGroup": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ProxyProxyTargetGroupB462B5C5"
+            "data": "dbClusterProxyProxyTargetGroupB7010C0D"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbCluster/Proxy2/IAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterProxy2IAMRole190D217C"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbCluster/Proxy2/IAMRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterProxy2IAMRoleDefaultPolicyFD9414D8"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbCluster/Proxy2/ProxySecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterProxy2ProxySecurityGroupB44507AE"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbCluster/Proxy2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterProxy28BBD43D5"
+          }
+        ],
+        "/aws-cdk-rds-proxy/dbCluster/Proxy2/ProxyTargetGroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "dbClusterProxy2ProxyTargetGroup8BD48F57"
           }
         ],
         "/aws-cdk-rds-proxy/BootstrapVersion": [
@@ -343,6 +380,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "databaseproxyintegtestDefaultTestDeployAssert1DC3D9D5.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
