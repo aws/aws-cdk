@@ -312,7 +312,7 @@ describe('Pipe', () => {
       const enrichment: IEnrichment = {
         enrichmentArn: 'enrichment-arn',
         enrichmentParameters: {
-          inputTemplate: 'input-template',
+          inputTransformation: { inputTemplate: 'input-template' },
         },
         grantInvoke: () => { },
       };
@@ -379,7 +379,7 @@ describe('Pipe', () => {
       const enrichment: IEnrichment = {
         enrichmentArn: 'enrichment-arn',
         enrichmentParameters: {
-          inputTemplate: 'input-template',
+          inputTransformation: { inputTemplate: 'input-template' },
         },
         grantInvoke: jest.fn(),
       };

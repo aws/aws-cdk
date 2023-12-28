@@ -1,4 +1,5 @@
 import { IRole } from 'aws-cdk-lib/aws-iam';
+import { IInputTransformation } from './inputTransformation';
 
 /**
    * These are custom parameter to be used when the target is an API Gateway REST APIs or EventBridge ApiDestinations.
@@ -59,7 +60,7 @@ export interface EnrichmentParametersProperty {
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipeenrichmentparameters.html#cfn-pipes-pipe-pipeenrichmentparameters-inputtemplate
    * @default - none
    */
-  readonly inputTemplate?: string;
+  readonly inputTransformation?: IInputTransformation;
 }
 
 /**

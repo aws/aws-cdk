@@ -219,14 +219,23 @@ export class Pipe extends PipeBase {
     /**
      * Enrichment setup
      */
+    let enrichmentParameters: CfnPipeProps['enrichmentParameters'] = undefined;
     if (props.enrichment) {
       props.enrichment.grantInvoke(this.pipeRole);
+      enrichmentParameters = {
+        ...props.enrichment.enrichmentParameters,
+        inputTemplate: props.enrichment?.enrichmentParameters?.inputTransformation?.inputTemplate,
+      };
     }
 
     /**
      * Target setup
      */
     props.target.grantPush(this.pipeRole);
+    const targetParameters: CfnPipeProps['targetParameters'] = {
+      ...props.target.targetParameters,
+      inputTemplate: props.target?.targetParameters?.inputTransformation?.inputTemplate,
+    };
 
     /**
      * Logs setup
@@ -259,9 +268,9 @@ export class Pipe extends PipeBase {
       source: props.source.sourceArn,
       sourceParameters: sourceParameters,
       enrichment: props.enrichment?.enrichmentArn,
-      enrichmentParameters: props.enrichment?.enrichmentParameters,
+      enrichmentParameters: enrichmentParameters,
       target: props.target.targetArn,
-      targetParameters: props.target.targetParameters,
+      targetParameters: targetParameters,
       desiredState: props.desiredState,
       logConfiguration: mergedLogConfiguration,
       tags: props.tags,

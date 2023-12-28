@@ -29,7 +29,7 @@ new Pipe(stack, 'Pipe', {
     grantPush: (role) => targetQueue.grantSendMessages(role),
     targetArn: targetQueue.queueArn,
     targetParameters: {
-      inputTemplate: '<$.body>',
+      inputTransformation: { inputTemplate: '<$.body>' },
     },
   },
   enrichment: {
