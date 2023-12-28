@@ -194,6 +194,7 @@
      ],
      "Level": "TRACE"
     },
+    "Name": "BaseTestPipe",
     "RoleArn": {
      "Fn::GetAtt": [
       "PipeRole7D4AFC73",

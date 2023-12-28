@@ -14,6 +14,7 @@ exports[`Pipe pipe is present with props 1`] = `
       "Properties": {
         "Description": "test description",
         "DesiredState": "RUNNING",
+        "Name": "TestPipe",
         "RoleArn": {
           "Fn::GetAtt": [
             "TestPipeRole0FD00B2B",

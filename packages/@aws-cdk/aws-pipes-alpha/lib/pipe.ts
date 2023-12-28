@@ -13,7 +13,7 @@ import { ITarget } from './target';
  */
 export interface IPipe extends IResource {
   /**
-   * The name of the pipe
+   * The name of the pipe.
    *
    * @attribute
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-name
@@ -21,7 +21,7 @@ export interface IPipe extends IResource {
   readonly pipeName: string;
 
   /**
-   * The ARN of the pipe
+   * The ARN of the pipe.
    *
    * @attribute
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#Arn-fn::getatt
@@ -29,7 +29,8 @@ export interface IPipe extends IResource {
   readonly pipeArn: string;
 
   /**
-   * The role used by the pipe
+   * The role used by the pipe.
+   * For imported pipes it assumes that the default role is used.
    *
    * @attribute
    */
@@ -37,16 +38,6 @@ export interface IPipe extends IResource {
 
 }
 
-/**
- * Construction properties for `Pipe`.
- */
-export interface PipeProps {
-  /**
-   * The name of the pipe.
-   */
-  readonly pipeName: string
-
-}
 /**
  * The state the pipe should be in.
  */
@@ -62,26 +53,37 @@ export enum DesiredState {
   STOPPED = 'STOPPED',
 }
 
+/**
+ * Properties for a pipe.
+ */
 export interface PipeProps {
   /**
-   * The source of the pipe
+   * The source of the pipe.
+   *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-event-source.html
    */
   readonly source: ISource;
 
   /**
    * The filter pattern for the pipe source
+   *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-event-filtering.html
    * @default - no filter
    */
   readonly filter?: ISourceFilter;
 
   /**
   * Enrichment step to enhance the data from the source before sending it to the target.
+  *
+  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/pipes-enrichment.html
   * @default - no enrichment
   */
   readonly enrichment?: IEnrichment;
 
   /**
    * The target of the pipe
+   *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-event-target.html
    */
   readonly target: ITarget;
 
@@ -92,19 +94,22 @@ export interface PipeProps {
   *
   * @default - automatically generated name
   */
-  readonly name?: string;
+  readonly pipeName?: string;
 
   /**
    * The role used by the pipe which has permissions to read from the source and write to the target.
    * If an enriched target is used, the role also have permissions to call the enriched target.
    * If no role is provided, a role will be created.
    *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-permissions.html
    * @default - a new role will be created.
    */
   readonly role?: IRole;
 
   /**
    * Destinations for the logs.
+   *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html
    * @default - no logs
    */
   readonly logDestinations?: ILogDestination[];
@@ -114,7 +119,7 @@ export interface PipeProps {
     *
     * This applies to all log destinations for the pipe.
     *
-    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-level
+    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html
     * @default - LogLevel.ERROR
     */
   readonly logLevel?: LogLevel
@@ -124,7 +129,7 @@ export interface PipeProps {
     *
     * This applies to all log destinations for the pipe.
     *
-    * For more information, see [Including execution data in logs](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html#eb-pipes-logs-execution-data) in the *Amazon EventBridge User Guide* .
+    * For more information, see [Including execution data in logs](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html#eb-pipes-logs-execution-data) and the [message schema](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs-schema.html) in the *Amazon EventBridge User Guide* .
     *
     * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-includeexecutiondata
     * @default - none
@@ -134,7 +139,7 @@ export interface PipeProps {
   /**
    * A description of the pipe displayed in the AWS console
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-description
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-description
    *
    * @default - no description
    */
@@ -143,16 +148,16 @@ export interface PipeProps {
   /**
    * The desired state of the pipe. If the state is set to STOPPED, the pipe will not process events.
    *
-   * @link https://docs.aws.amazon.com/eventbridge/latest/pipes-reference/API_Pipe.html#eventbridge-Type-Pipe-DesiredState
+   * @see https://docs.aws.amazon.com/eventbridge/latest/pipes-reference/API_Pipe.html#eventbridge-Type-Pipe-DesiredState
    *
    * @default - DesiredState.RUNNING
    */
   readonly desiredState?: DesiredState;
 
   /**
-   * `AWS::Pipes::Pipe.Tags`
+   * The list of key-value pairs to associate with the pipe.
    *
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-tags
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-tags
    *
    * @default - no tags
    */
@@ -169,8 +174,13 @@ abstract class PipeBase extends Resource implements IPipe {
 }
 
 /**
- * An EventBridge Pipe
-*/
+ * Amazon EventBridge Pipes connects sources to targets.
+ *
+ * Pipes are intended for point-to-point integrations between supported sources and targets,
+ * with support for advanced transformations and enrichment.
+ *
+ * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes.html
+ */
 export class Pipe extends PipeBase {
   /**
    * Reference an existing pipe by ARN
@@ -185,9 +195,8 @@ export class Pipe extends PipeBase {
   public readonly pipeRole: IRole;
 
   constructor(scope: Construct, id: string, props: PipeProps) {
-    const pipeName =
-      props.name;
-    super(scope, id, { physicalName: pipeName });
+
+    super(scope, id, { physicalName: props.pipeName });
 
     /**
      * Role setup
@@ -244,7 +253,7 @@ export class Pipe extends PipeBase {
      */
 
     const resource = new CfnPipe(this, 'Resource', {
-      name: props.name,
+      name: props.pipeName,
       description: props.description,
       roleArn: this.pipeRole.roleArn,
       source: props.source.sourceArn,
