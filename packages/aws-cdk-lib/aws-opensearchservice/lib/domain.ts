@@ -424,6 +424,20 @@ export interface WindowStartTime {
 }
 
 /**
+ * The IP address type for the domain.
+ */
+export enum IpAddressType {
+  /**
+   * IPv4 addresses only
+   */
+  IPV4 = 'ipv4',
+  /**
+   * IPv4 and IPv6 addresses
+   */
+  DUAL_STACK = 'dualstack',
+}
+
+/**
  * Properties for an Amazon OpenSearch Service domain.
  */
 export interface DomainProps {
@@ -642,6 +656,16 @@ export interface DomainProps {
    * @default - false
    */
   readonly enableAutoSoftwareUpdate?: boolean;
+
+  /**
+   * Specify either dual stack or IPv4 as your IP address type.
+   * Dual stack allows you to share domain resources across IPv4 and IPv6 address types, and is the recommended option.
+   *
+   * If you set your IP address type to dual stack, you can't change your address type later.
+   *
+   * @default - IpAddressType.IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
 }
 
 /**
@@ -1883,6 +1907,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       softwareUpdateOptions: props.enableAutoSoftwareUpdate ? {
         autoSoftwareUpdateEnabled: props.enableAutoSoftwareUpdate,
       } : undefined,
+      ipAddressType: props.ipAddressType,
     });
     this.domain.applyRemovalPolicy(props.removalPolicy);
 

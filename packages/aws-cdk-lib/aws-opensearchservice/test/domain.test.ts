@@ -10,7 +10,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Domain, DomainProps, EngineVersion } from '../lib';
+import { Domain, DomainProps, EngineVersion, IpAddressType } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -2465,6 +2465,20 @@ describe('EBS Options Configurations', () => {
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
     }).toThrow('throughput property takes a minimum of 125 and a maximum of 1000.');
+  });
+});
+
+each([
+  [IpAddressType.IPV4, 'ipv4'],
+  [IpAddressType.DUAL_STACK, 'dualstack'],
+]).test('ip address type', (type, expected) => {
+  new Domain(stack, 'Domain', {
+    version: EngineVersion.OPENSEARCH_2_5,
+    ipAddressType: type,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    IPAddressType: expected,
   });
 });
 
