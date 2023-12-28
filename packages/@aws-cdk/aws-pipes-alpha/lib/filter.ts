@@ -13,7 +13,7 @@ export interface IFilterPattern {
 /**
  * The collection of event patterns used to filter events.
  */
-export interface ISourceFilter {
+export interface IFilter {
   /**
    * Filters for the source.
    */
@@ -21,21 +21,9 @@ export interface ISourceFilter {
 }
 
 /**
- * Generate a filter pattern from an input.
- */
-export class GenericFilterPattern {
-  /**
-   * Generates a filter pattern from a JSON object.
-   */
-  static fromJson(patternObject: Record<string, any>): IFilterPattern {
-    return { pattern: JSON.stringify(patternObject) };
-  }
-}
-
-/**
  * The collection of event patterns used to filter events.
  */
-export class SourceFilter implements ISourceFilter {
+export class Filter implements IFilter {
   /**
    * Filters for the source.
    */

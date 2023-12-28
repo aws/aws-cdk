@@ -3,9 +3,9 @@ import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnPipe, CfnPipeProps } from 'aws-cdk-lib/aws-pipes';
 import { Construct } from 'constructs';
 import { IEnrichment } from './enrichment';
+import { IFilter } from './filter';
 import { ILogDestination, IncludeExecutionData, LogDestinationProperties, LogLevel } from './logs';
 import { ISource } from './source';
-import { ISourceFilter } from './sourceFilter';
 import { ITarget } from './target';
 
 /**
@@ -70,7 +70,7 @@ export interface PipeProps {
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-event-filtering.html
    * @default - no filter
    */
-  readonly filter?: ISourceFilter;
+  readonly filter?: IFilter;
 
   /**
   * Enrichment step to enhance the data from the source before sending it to the target.

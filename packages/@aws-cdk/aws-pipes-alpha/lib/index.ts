@@ -3,6 +3,7 @@ export * from './inputTransformation';
 export * from './logs';
 export * from './pipe';
 export * from './source';
-export * from './sourceFilter';
+export * from './filter';
+export * from './filterPattern';
 export * from './target';
 export * from './targetParameter';
