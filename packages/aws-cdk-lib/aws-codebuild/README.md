@@ -302,11 +302,14 @@ can use the `environment` property to customize the build environment:
 
 The CodeBuild library supports both Linux and Windows images via the
 `LinuxBuildImage` (or `LinuxArmBuildImage`), and `WindowsBuildImage` classes, respectively.
+With the introduction of Lambda compute support, the `LinuxLambdaBuildImage ` (or `LinuxArmLambdaBuildImage`) class 
+is available for specifying Lambda-compatible images.
 
 You can specify one of the predefined Windows/Linux images by using one
 of the constants such as `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE`,
 `WindowsBuildImage.WINDOWS_BASE_2_0`, `LinuxBuildImage.STANDARD_2_0`,
-`LinuxBuildImage.AMAZON_LINUX_2_5`, or `LinuxArmBuildImage.AMAZON_LINUX_2_ARM`.
+`LinuxBuildImage.AMAZON_LINUX_2_5`, `LinuxArmBuildImage.AMAZON_LINUX_2_ARM`,
+`LinuxLambdaBuildImage.AMAZON_LINUX_2_NODE_18` or `LinuxArmLambdaBuildImage.AMAZON_LINUX_2_NODE_18`.
 
 Alternatively, you can specify a custom image using one of the static methods on
 `LinuxBuildImage`:
@@ -328,6 +331,8 @@ or one of the corresponding methods on `LinuxArmBuildImage`:
 
 * `LinuxArmBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])`
 * `LinuxArmBuildImage.fromEcrRepository(repo[, tag])`
+
+**Note:** You cannot specify custom images on `LinuxLambdaBuildImage` or `LinuxArmLambdaBuildImage` images.
 
 Note that the `WindowsBuildImage` version of the static methods accepts an optional parameter of type `WindowsImageType`,
 which can be either `WindowsImageType.STANDARD`, the default, or `WindowsImageType.SERVER_2019`:
@@ -395,6 +400,22 @@ new codebuild.Project(this, 'Project', {
 ```
 
 Alternatively, you can reference an image available in an ECR repository using the `LinuxGpuBuildImage.fromEcrRepository(repo[, tag])` method.
+
+### Lambda images
+
+The `LinuxLambdaBuildImage` (or `LinuxArmLambdaBuildImage`) class contains constants for working with
+Lambda compute:
+
+```ts
+new codebuild.Project(this, 'Project', {
+  environment: {
+    buildImage: codebuild.LinuxLambdaBuildImage.AMAZON_LINUX_2_NODE_18,
+  },
+  // ...
+})
+```
+
+> Visit [AWS Lambda compute in AWS CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/lambda.html) for more details.
 
 ## Logs
 

@@ -36,9 +36,14 @@ const cluster = new rds.DatabaseCluster(stack, 'dbCluster', {
   instanceProps: { vpc },
 });
 
-new rds.DatabaseProxy(stack, 'Proxy', {
-  dbProxyName: 'cluster-db-proxy',
-  proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+// The `DatabaseProxy` internally adds a dependency so that the `TargetGroup` is created after the `DatabaseCluster` is created.
+// In this test, we use `addProxy` to add two `DatabaseProxy` as a child of `DatabaseCluster`
+// and verify that they can be deployed correctly without circular dependencies.
+cluster.addProxy('Proxy', {
+  secrets: [cluster.secret!],
+  vpc,
+});
+cluster.addProxy('Proxy2', {
   secrets: [cluster.secret!],
   vpc,
 });

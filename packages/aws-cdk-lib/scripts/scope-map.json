@@ -68,6 +68,9 @@
   "aws-autoscalingplans": [
     "AWS::AutoScalingPlans"
   ],
+  "aws-b2bi": [
+    "AWS::B2BI"
+  ],
   "aws-backup": [
     "AWS::Backup"
   ],
@@ -461,6 +464,9 @@
   ],
   "aws-neptune": [
     "AWS::Neptune"
+  ],
+  "aws-neptunegraph": [
+    "AWS::NeptuneGraph"
   ],
   "aws-networkfirewall": [
     "AWS::NetworkFirewall"

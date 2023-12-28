@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "AssertionsTest/DefaultTest": {
+      "stacks": [
+        "InvokeFunctionAssertions"
+      ],
+      "assertionStack": "AssertionsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AssertionsTestDefaultTestDeployAssertDC0672BB"
+    }
+  }
+}
