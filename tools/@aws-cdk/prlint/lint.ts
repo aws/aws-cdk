@@ -494,7 +494,7 @@ export class PullRequestLinter {
 
   /**
    * Trusted community reviewers is derived from the source of truth at this wiki:
-   * https://github.com/aws/aws-cdk/wiki/Introducing-CDK-Community-PR-Reviews
+   * https://github.com/aws/aws-cdk/wiki/CDK-Community-PR-Reviews
    */
   private getTrustedCommunityMembers(): string[] {
     if (this.trustedCommunity.length > 0) { return this.trustedCommunity; }
