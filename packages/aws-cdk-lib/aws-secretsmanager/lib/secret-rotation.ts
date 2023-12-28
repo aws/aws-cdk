@@ -58,6 +58,18 @@ export class SecretRotationApplication {
   });
 
   /**
+   * Conducts an AWS SecretsManager secret rotation for RDS DB2 using the single user rotation scheme
+   */
+  public static readonly DB2_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSDb2RotationSingleUser', '1.1.367');
+
+  /**
+   * Conducts an AWS SecretsManager secret rotation for RDS DB2 using the multi user rotation scheme
+   */
+  public static readonly DB2_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSDb2RotationMultiUser', '1.1.367', {
+    isMultiUser: true,
+  });
+
+  /**
    * Conducts an AWS SecretsManager secret rotation for RDS PostgreSQL using the single user rotation scheme
    */
   public static readonly POSTGRES_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationSingleUser', '1.1.367');

@@ -1030,7 +1030,8 @@ describe('instance', () => {
     const tzSupportedEngines = [rds.DatabaseInstanceEngine.SQL_SERVER_EE, rds.DatabaseInstanceEngine.SQL_SERVER_EX,
       rds.DatabaseInstanceEngine.SQL_SERVER_SE, rds.DatabaseInstanceEngine.SQL_SERVER_WEB];
     const tzUnsupportedEngines = [rds.DatabaseInstanceEngine.MYSQL, rds.DatabaseInstanceEngine.POSTGRES,
-      rds.DatabaseInstanceEngine.ORACLE_EE, rds.DatabaseInstanceEngine.MARIADB];
+      rds.DatabaseInstanceEngine.ORACLE_EE, rds.DatabaseInstanceEngine.MARIADB, rds.DatabaseInstanceEngine.DB2_SE,
+      rds.DatabaseInstanceEngine.DB2_AE];
 
     // THEN
     tzSupportedEngines.forEach((engine) => {
@@ -1349,7 +1350,8 @@ describe('instance', () => {
   test('throws when domain is set for mariadb database engine', () => {
     const domainSupportedEngines = [rds.DatabaseInstanceEngine.SQL_SERVER_EE, rds.DatabaseInstanceEngine.SQL_SERVER_EX,
       rds.DatabaseInstanceEngine.SQL_SERVER_SE, rds.DatabaseInstanceEngine.SQL_SERVER_WEB, rds.DatabaseInstanceEngine.MYSQL,
-      rds.DatabaseInstanceEngine.POSTGRES, rds.DatabaseInstanceEngine.ORACLE_EE];
+      rds.DatabaseInstanceEngine.POSTGRES, rds.DatabaseInstanceEngine.ORACLE_EE, rds.DatabaseInstanceEngine.DB2_SE,
+      rds.DatabaseInstanceEngine.DB2_AE];
     const domainUnsupportedEngines = [rds.DatabaseInstanceEngine.MARIADB];
 
     // THEN

@@ -249,6 +249,16 @@ export class HostedRotation implements ec2.IConnectable {
     return new HostedRotation(HostedRotationType.ORACLE_MULTI_USER, options, options.masterSecret);
   }
 
+  /** DB2 Single User */
+  public static db2SingleUser(options: SingleUserHostedRotationOptions = {}) {
+    return new HostedRotation(HostedRotationType.DB2_SINGLE_USER, options);
+  }
+
+  /** DB2 Multi User */
+  public static db2MultiUser(options: MultiUserHostedRotationOptions) {
+    return new HostedRotation(HostedRotationType.DB2_MULTI_USER, options, options.masterSecret);
+  }
+
   /** MariaDB Single User */
   public static mariaDbSingleUser(options: SingleUserHostedRotationOptions = {}) {
     return new HostedRotation(HostedRotationType.MARIADB_SINGLE_USER, options);
@@ -411,6 +421,12 @@ export class HostedRotationType {
   /** MongoDB Multi User */
   public static readonly MONGODB_MULTI_USER = new HostedRotationType('MongoDBMultiUser', true);
 
+  /** DB2 Single User */
+  public static readonly DB2_SINGLE_USER = new HostedRotationType('Db2SingleUser');
+
+  /** DB2 Multi User */
+  public static readonly DB2_MULTI_USER = new HostedRotationType('Db2MultiUser', true);
+  
   /**
    * @param name The type of rotation
    * @param isMultiUser Whether the rotation uses the mutli user scheme

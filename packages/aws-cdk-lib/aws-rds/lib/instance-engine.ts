@@ -467,6 +467,132 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
   }
 }
 
+interface Db2InstanceEngineBaseProps {
+  readonly engineType: string;
+  readonly version?: EngineVersion;
+}
+
+abstract class Db2InstanceEngineBase extends InstanceEngineBase {
+  constructor(props: Db2InstanceEngineBaseProps) {
+    super({
+      ...props,
+      singleUserRotationApplication: secretsmanager.SecretRotationApplication.DB2_ROTATION_SINGLE_USER,
+      multiUserRotationApplication: secretsmanager.SecretRotationApplication.DB2_ROTATION_MULTI_USER,
+      parameterGroupFamily: props.version ? `${props.engineType}-${props.version.majorVersion}` : undefined,
+      features: {
+        s3Import: 'S3_INTEGRATION',
+        s3Export: 'S3_INTEGRATION',
+      },
+    });
+  }
+
+  public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
+    const config = super.bindToInstance(scope, options);
+
+    let optionGroup = options.optionGroup;
+    if (options.s3ImportRole || options.s3ExportRole) {
+      if (!optionGroup) {
+        optionGroup = new OptionGroup(scope, 'InstanceOptionGroup', {
+          engine: this,
+          configurations: [],
+        });
+      }
+      // https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html
+      optionGroup.addConfiguration({
+        name: 'S3_INTEGRATION',
+        version: '1.0',
+      });
+    }
+
+    return {
+      ...config,
+      optionGroup,
+    };
+  }
+}
+
+/**
+ * Properties for DB2 Standard Edition instance engines.
+ * Used in `DatabaseInstanceEngine.db2Se`.
+ */
+export interface Db2SeInstanceEngineProps extends Db2InstanceEngineProps {
+}
+
+class Db2SeInstanceEngine extends Db2InstanceEngineBase {
+  constructor(version?: Db2EngineVersion) {
+    super({
+      engineType: 'db2-se',
+      version: version
+        ? {
+          fullVersion: version.db2FullVersion,
+          majorVersion: version.db2MajorVersion,
+        }
+        : undefined,
+    });
+  }
+}
+
+/**
+ * Properties for DB2 Advanced Edition instance engines.
+ * Used in `DatabaseInstanceEngine.db2Ae`.
+ */
+export interface Db2AeInstanceEngineProps extends Db2InstanceEngineProps {
+}
+
+class Db2AeInstanceEngine extends Db2InstanceEngineBase {
+  constructor(version?: Db2EngineVersion) {
+    super({
+      engineType: 'db2-ae',
+      version: version
+        ? {
+          fullVersion: version.db2FullVersion,
+          majorVersion: version.db2MajorVersion,
+        }
+        : undefined,
+    });
+  }
+}
+
+/**
+ * The versions for the DB2 instance engines
+ * (those returned by `DatabaseInstanceEngine.mariaDb`).
+ */
+export class Db2EngineVersion {
+  /** Version "11.5". */
+  public static readonly VER_11_5 = Db2EngineVersion.of('11.5', '11.5');
+
+  /**
+   * Create a new Db2EngineVersion with an arbitrary version.
+   *
+   * @param db2FullVersion the full version string,
+   *   for example "10.5.28"
+   * @param db2MajorVersion the major version of the engine,
+   *   for example "10.5"
+   */
+  public static of(db2FullVersion: string, db2MajorVersion: string): Db2EngineVersion {
+    return new Db2EngineVersion(db2FullVersion, db2MajorVersion);
+  }
+
+  /** The full version string, for example, "10.5.28". */
+  public readonly db2FullVersion: string;
+  /** The major version of the engine, for example, "10.5". */
+  public readonly db2MajorVersion: string;
+
+  private constructor(db2FullVersion: string, db2MajorVersion: string) {
+    this.db2FullVersion = db2FullVersion;
+    this.db2MajorVersion = db2MajorVersion;
+  }
+}
+
+/**
+ * Properties for DB2 instance engines.
+ * Used in `DatabaseInstanceEngine.mariaDb`.
+ */
+export interface Db2InstanceEngineProps {
+  /** The exact version of the engine to use. */
+  readonly version: Db2EngineVersion;
+}
+
 /**
  * The versions for the MySQL instance engines
  * (those returned by `DatabaseInstanceEngine.mysql`).
@@ -2140,6 +2266,22 @@ class SqlServerEeInstanceEngine extends SqlServerInstanceEngineBase {
  */
 export class DatabaseInstanceEngine {
   /**
+   * The unversioned 'db2-se' instance engine.
+   *
+   * NOTE: using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the `db2Se()` methods
+   */
+  public static readonly DB2_SE: IInstanceEngine = new Db2SeInstanceEngine();
+
+  /**
+   * The unversioned 'db2-ae' instance engine.
+   *
+   * NOTE: using unversioned engines is an availability risk.
+   *   We recommend using versioned engines created using the `db2Ae()` methods
+   */
+  public static readonly DB2_AE: IInstanceEngine = new Db2AeInstanceEngine();
+
+  /**
    * The unversioned 'mariadb' instance engine.
    *
    * NOTE: using unversioned engines is an availability risk.
@@ -2240,6 +2382,16 @@ export class DatabaseInstanceEngine {
    *   We recommend using versioned engines created using the `sqlServerWeb()` method
    */
   public static readonly SQL_SERVER_WEB: IInstanceEngine = new SqlServerWebInstanceEngine();
+
+  /** Creates a new DB2 Standard Edition instance engine. */
+  public static db2Se(props: Db2SeInstanceEngineProps): IInstanceEngine {
+    return new Db2SeInstanceEngine(props.version);
+  }
+
+  /** Creates a new DB2 Advanced Edition instance engine. */
+  public static db2Ae(props: Db2AeInstanceEngineProps): IInstanceEngine {
+    return new Db2AeInstanceEngine(props.version);
+  }
 
   /** Creates a new MariaDB instance engine. */
   public static mariaDb(props: MariaDbInstanceEngineProps): IInstanceEngine {

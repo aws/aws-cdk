@@ -60,6 +60,22 @@ describe('instance engine', () => {
     expect(family).toEqual(undefined);
   });
 
+  test('default parameterGroupFamily for versionless DB2 SE instance engine is not defined', () => {
+    const engine = rds.DatabaseInstanceEngine.DB2_SE;
+
+    const family = engine.parameterGroupFamily;
+
+    expect(family).toEqual(undefined);
+  });
+
+  test('default parameterGroupFamily for versionless DB2 AE instance engine is not defined', () => {
+    const engine = rds.DatabaseInstanceEngine.DB2_AE;
+
+    const family = engine.parameterGroupFamily;
+
+    expect(family).toEqual(undefined);
+  });
+
   test('default parameterGroupFamily for versionless Oracle EE instance engine is not defined', () => {
     const engine = rds.DatabaseInstanceEngine.ORACLE_EE;
 
@@ -260,6 +276,64 @@ describe('instance engine', () => {
       const engineConfig = engineNewerVersion.bindToInstance(new cdk.Stack(), {});
       expect(engineConfig.features?.s3Import).toEqual('s3Import');
       expect(engineConfig.features?.s3Export).toEqual('s3Export');
+    });
+  });
+
+  describe('DB2 engine bindToInstance', () => {
+
+    test('returns s3 integration feature', () => {
+      const engine = rds.DatabaseInstanceEngine.db2Se({ version: rds.Db2EngineVersion.VER_11_5 });
+
+      const engineConfig = engine.bindToInstance(new cdk.Stack(), {});
+      expect(engineConfig.features?.s3Import).toEqual('S3_INTEGRATION');
+      expect(engineConfig.features?.s3Export).toEqual('S3_INTEGRATION');
+    });
+
+    test('s3 import/export - creates an option group if needed', () => {
+      const stack = new cdk.Stack();
+      const engine = rds.DatabaseInstanceEngine.db2Se({ version: rds.Db2EngineVersion.VER_11_5 });
+
+      const engineConfig = engine.bindToInstance(stack, {
+        optionGroup: undefined,
+        s3ImportRole: new iam.Role(stack, 'ImportRole', { assumedBy: new iam.AccountRootPrincipal() }),
+      });
+
+      expect(engineConfig.optionGroup).toBeDefined();
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
+        EngineName: 'db2-se',
+        OptionConfigurations: [{
+          OptionName: 'S3_INTEGRATION',
+          OptionVersion: '1.0',
+        }],
+      });
+    });
+
+    test('s3 import/export - appends to an existing option group if it exists', () => {
+      const stack = new cdk.Stack();
+      const engine = rds.DatabaseInstanceEngine.db2Ae({ version: rds.Db2EngineVersion.VER_11_5 });
+      const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
+        engine,
+        configurations: [{
+          name: 'MY_OPTION_CONFIG',
+        }],
+      });
+
+      const engineConfig = engine.bindToInstance(stack, {
+        optionGroup,
+        s3ImportRole: new iam.Role(stack, 'ImportRole', { assumedBy: new iam.AccountRootPrincipal() }),
+      });
+
+      expect(engineConfig.optionGroup).toEqual(optionGroup);
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::OptionGroup', {
+        EngineName: 'db2-ae',
+        OptionConfigurations: [{
+          OptionName: 'MY_OPTION_CONFIG',
+        },
+        {
+          OptionName: 'S3_INTEGRATION',
+          OptionVersion: '1.0',
+        }],
+      });
     });
   });
 });
