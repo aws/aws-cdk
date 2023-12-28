@@ -48,7 +48,7 @@ export enum Tracing {
   /**
    * Lambda will not trace any request.
    */
-  DISABLED = 'Disabled'
+  DISABLED = 'Disabled',
 }
 
 /**
@@ -68,7 +68,7 @@ export enum SystemLogLevel {
   /**
    * Lambda will capture only logs at warn level.
    */
-  WARN = 'WARN'
+  WARN = 'WARN',
 }
 
 /**
@@ -100,7 +100,7 @@ export enum ApplicationLogLevel {
   /**
    * Lambda will capture only logs at fatal level.
    */
-  FATAL = 'FATAL'
+  FATAL = 'FATAL',
 }
 
 /**
@@ -118,7 +118,7 @@ export enum LogFormat {
   /**
    * Lambda structured logging in Json format.
    */
-  JSON = 'JSON'
+  JSON = 'JSON',
 }
 
 /**
