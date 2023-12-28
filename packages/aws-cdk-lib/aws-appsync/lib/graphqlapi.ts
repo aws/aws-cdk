@@ -439,9 +439,9 @@ export interface GraphqlApiProps {
   /**
    * A value indicating whether the API to enable (ENABLED) or disable (DISABLED) introspection.
    *
-   * @default ENABLED
+   * @default IntrospectionConfig.ENABLED
    */
-  readonly introspectionConfig?: IntrospectionConfig
+  readonly introspectionConfig?: IntrospectionConfig;
 }
 
 /**
@@ -528,6 +528,7 @@ export enum IntrospectionConfig {
    * Enable introspection
    */
   ENABLED = 'ENABLED',
+
   /**
    * Disable introspection
    */
