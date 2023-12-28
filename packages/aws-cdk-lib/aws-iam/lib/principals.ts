@@ -264,6 +264,18 @@ export class PrincipalWithConditions extends PrincipalAdapter {
     this.additionalConditions = conditions;
   }
 
+  public addToAssumeRolePolicy(doc: PolicyDocument) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const adapter: typeof import('./private/policydoc-adapter') = require('./private/policydoc-adapter');
+
+    defaultAddPrincipalToAssumeRole(this.wrapped, new adapter.MutatingPolicyDocumentAdapter(doc, (statement) => {
+      // Avoid override of existing actions (see https://github.com/aws/aws-cdk/issues/28426)
+      statement.addActions(this.assumeRoleAction);
+      statement.addConditions(this.conditions);
+      return statement;
+    }));
+  }
+
   /**
    * Add a condition to the principal
    */
