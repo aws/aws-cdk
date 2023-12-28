@@ -1123,6 +1123,48 @@ describe('cluster', () => {
     });
   });
 
+  test('grantTaskProtection grants ecs:UpdateTaskProtection permission', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+    });
+
+    // WHEN
+    cluster.grantTaskProtection(role);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'ecs:UpdateTaskProtection',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':ecs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':task/',
+                  { Ref: 'EcsCluster97242B84' },
+                  '/*',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
   /*
    * TODO:v2.0.0 END OF OBSOLETE BLOCK
    */
