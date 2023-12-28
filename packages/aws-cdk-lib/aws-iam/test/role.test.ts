@@ -1325,3 +1325,38 @@ test('cross-env role ARNs include path', () => {
     },
   });
 });
+
+test('throws with empty role name', () => {
+  const app = new App();
+  const stack = new Stack(app, 'MyStack');
+  expect(() => {
+    new Role(stack, 'Test', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      roleName: '',
+    });
+  }).toThrow('/Invalid roleName/');
+});
+
+test('throws with name over 64 chars', () => {
+  const app = new App();
+  const stack = new Stack(app, 'MyStack');
+  const longName = 'a'.repeat(65);
+
+  expect(() => {
+    new Role(stack, 'Test', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      roleName: longName,
+    });
+  }).toThrow('Invalid roleName');
+});
+
+test('throws with invalid chars', () => {
+  const app = new App();
+  const stack = new Stack(app, 'MyStack');
+  expect(() => {
+    new Role(stack, 'Test', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      roleName: 'invalid!name',
+    });
+  }).toThrow('Invalid roleName');
+});
