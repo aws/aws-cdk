@@ -266,15 +266,11 @@ export interface FileSystemProps {
   readonly allowAnonymousAccess?: boolean;
 
   /**
-   * For One Zone file systems, specify the AWS Availability Zone in which to create the file system.
-   *
-   * @default undefiend - The filesystem is deployed as regional.
-   */
-  // readonly availabilityZoneName?: string;
-
-  /**
+   * Creating a One Zone file system.
+   * When set to true, only the GENERAL_PURPOSE performance mode is allowed.
    *
    * @default false
+   * @link https://docs.aws.amazon.com/efs/latest/ug/availability-durability.html#file-system-type
    */
   readonly oneZone?: boolean;
 }
@@ -569,7 +565,7 @@ export class FileSystem extends FileSystemBase {
       defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
     });
 
-    // When availabilityZoneName is specified, to avoid deployment failure, mountTarget should also be created only in the specified AZ.
+    // When oneZone is specified, to avoid deployment failure, mountTarget should also be created only in the specified AZ.
     let subnetSelection: ec2.SubnetSelection;
     if (props.oneZone) {
       subnetSelection = {
