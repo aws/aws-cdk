@@ -41,6 +41,10 @@ export enum PipeVariables {
  * Helper class to generate dynamic target parameters.
  */
 export class TargetParameter {
+  /**
+   * Reserved pipe variables
+   */
+  static pipeVariable = PipeVariables;
 
   /**
    * Target parameter based on a jsonPath expression from the incoming event.
@@ -50,13 +54,6 @@ export class TargetParameter {
       throw new Error('JsonPath must start with "$."');
     }
     return `<${jsonPath}>`;
-  }
-
-  /**
-   * Target parameter based on a reserved pipe variable.
-   */
-  static fromPipeVariable(pipeVariable: PipeVariables): string {
-    return pipeVariable;
   }
 
 }
