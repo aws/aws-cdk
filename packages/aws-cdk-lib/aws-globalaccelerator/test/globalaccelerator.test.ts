@@ -1,5 +1,5 @@
 import { testFixture } from './util';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { Duration } from '../../core';
 import * as ga from '../lib';
 
@@ -225,6 +225,47 @@ test('create accelerator with uniqueResourceName if acceleratorName is not speci
   });
 });
 
+test('create accelerator with IpAddresses and IpAddressType', () => {
+  // GIVEN
+  const { stack } = testFixture();
+
+  // WHEN
+  const acc = new ga.Accelerator(stack, 'Accelerator', {
+    ipAddresses: [
+      '1.1.1.1',
+      '2.2.2.2',
+    ],
+    ipAddressType: ga.IpAddressType.DUAL_STACK,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::Accelerator', {
+    Enabled: true,
+    Name: 'StackAccelerator472129D8',
+    IpAddresses: [
+      '1.1.1.1',
+      '2.2.2.2',
+    ],
+    IpAddressType: 'DUAL_STACK',
+  });
+});
+
+test('create accelerator with no IpAddresses and IpAddressType', () => {
+  // GIVEN
+  const { stack } = testFixture();
+
+  // WHEN
+  new ga.Accelerator(stack, 'Accelerator');
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::Accelerator', {
+    Enabled: true,
+    Name: 'StackAccelerator472129D8',
+    IpAddresses: Match.absent(),
+    IpAddressType: Match.absent(),
+  });
+});
+
 test('should validate acceleratorName minimum and maximum length', () => {
   const { stack } = testFixture();
 
@@ -238,4 +279,32 @@ test('should validate acceleratorName minimum and maximum length', () => {
       acceleratorName: 'a'.repeat(100),
     });
   }).toThrowError(/must have length between 1 and 64/);
+});
+
+test('should validate ipAddresses minimum and maximum length', () => {
+  const { stack } = testFixture();
+
+  expect(() => {
+    new ga.Accelerator(stack, 'Acc1', {});
+  }).not.toThrow();
+  expect(() => {
+    new ga.Accelerator(stack, 'Acc2', {
+      ipAddresses: ['1.1.1.1'],
+    });
+  }).not.toThrow();
+  expect(() => {
+    new ga.Accelerator(stack, 'Acc3', {
+      ipAddresses: ['1.1.1.1', '2.2.2.2'],
+    });
+  }).not.toThrow();
+  expect(() => {
+    new ga.Accelerator(stack, 'Acc4', {
+      ipAddresses: [],
+    });
+  }).toThrow('Invalid ipAddresses value [], you can specify one or two addresses, got: 0');
+  expect(() => {
+    new ga.Accelerator(stack, 'Acc5', {
+      ipAddresses: ['1.1.1.1', '2.2.2.2', '3.3.3.3'],
+    });
+  }).toThrow('Invalid ipAddresses value [1.1.1.1,2.2.2.2,3.3.3.3], you can specify one or two addresses, got: 3');
 });

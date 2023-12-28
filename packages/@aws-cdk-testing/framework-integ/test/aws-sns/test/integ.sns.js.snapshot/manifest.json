@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "35.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "SNSInteg.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "SNSInteg.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/abc29d4f06b918fce7d7beea18c92c833e7e6266f0863b256fd6927b69eb595f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c917d5a2b2e16b9e3cd0679e1dee0539129223bcca595b66788045cc8fc23e20.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -51,6 +46,18 @@
             "data": "MyTopic86869434"
           }
         ],
+        "/SNSInteg/FeedbackRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FeedbackRoleCAF84E5C"
+          }
+        ],
+        "/SNSInteg/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Policy23B91518"
+          }
+        ],
         "/SNSInteg/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -65,6 +72,12 @@
         ]
       },
       "displayName": "SNSInteg"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

@@ -237,7 +237,6 @@ export interface FunctionAssociation {
  * The function's runtime environment version.
  */
 export class FunctionRuntime {
-
   /**
    * cloudfront-js-1.0
    */
@@ -257,6 +256,5 @@ export class FunctionRuntime {
     return new FunctionRuntime(runtimeString);
   }
 
-  protected constructor(public readonly value: string) {}
-
+  private constructor(public readonly value: string) {}
 }
