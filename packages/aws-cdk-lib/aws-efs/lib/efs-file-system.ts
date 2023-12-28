@@ -270,7 +270,13 @@ export interface FileSystemProps {
    *
    * @default undefiend - The filesystem is deployed as regional.
    */
-  readonly availabilityZoneName?: string;
+  // readonly availabilityZoneName?: string;
+
+  /**
+   *
+   * @default false
+   */
+  readonly oneZone?: boolean;
 }
 
 /**
@@ -485,8 +491,8 @@ export class FileSystem extends FileSystemBase {
   constructor(scope: Construct, id: string, props: FileSystemProps) {
     super(scope, id);
 
-    if (props.performanceMode === PerformanceMode.MAX_IO && props.availabilityZoneName) {
-      throw new Error('AvailabilityZoneName is not supported for file systems with performanceMode MAX_IO');
+    if (props.performanceMode === PerformanceMode.MAX_IO && props.oneZone) {
+      throw new Error('OneZone mode file systems do not support the MAX_IO performance mode.');
     }
 
     if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
@@ -511,6 +517,8 @@ export class FileSystem extends FileSystemBase {
     if (props.outOfInfrequentAccessPolicy) {
       lifecyclePolicies.push({ transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy });
     }
+
+    const oneZoneAzName = props.vpc.availabilityZones[0];
 
     this._resource = new CfnFileSystem(this, 'Resource', {
       encrypted: encrypted,
@@ -542,7 +550,7 @@ export class FileSystem extends FileSystemBase {
           return this._fileSystemPolicy;
         },
       }),
-      availabilityZoneName: props.availabilityZoneName,
+      availabilityZoneName: props.oneZone ? oneZoneAzName : undefined,
     });
     this._resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -562,8 +570,21 @@ export class FileSystem extends FileSystemBase {
     });
 
     // When availabilityZoneName is specified, to avoid deployment failure, mountTarget should also be created only in the specified AZ.
-    const subnets = props.vpc.selectSubnets(props.vpcSubnets ?? { onePerAz: true });
-    console.log(subnets)
+    let subnetSelection: ec2.SubnetSelection;
+    if (props.oneZone) {
+      subnetSelection = {
+        availabilityZones: [oneZoneAzName],
+      };
+      if (props.vpcSubnets) {
+        subnetSelection = {
+          ...props.vpcSubnets,
+          ...subnetSelection,
+        };
+      }
+    } else {
+      subnetSelection = props.vpcSubnets ?? { onePerAz: true };
+    }
+    const subnets = props.vpc.selectSubnets(subnetSelection);
 
     // We now have to create the mount target for each of the mentioned subnet
 

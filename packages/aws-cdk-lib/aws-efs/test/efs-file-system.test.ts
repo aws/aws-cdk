@@ -880,26 +880,33 @@ test('specify availabilityZoneName to create mount targets in a specific AZ', ()
   // WHEN
   new FileSystem(stack, 'EfsFileSystem', {
     vpc,
-    availabilityZoneName: 'us-east-1c',
+    oneZone: true,
   });
 
   // THEN
-  console.log(JSON.stringify(Template.fromStack(stack).toJSON()));
-  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
-    AvailabilityZoneName: selectedAZ,
-  });
-  // mount target should be created only 1
-  Template.fromStack(stack).resourceCountIs('AWS::EFS::MountTarget', 1);
-  Template.fromStack(stack).hasResourceProperties('AWS::EFS::MountTarget', {
-    AvailabilityZoneId: {
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::EFS::FileSystem', {
+    AvailabilityZoneName: {
       'Fn::Select': [
         0,
         {
-          'Fn::GetAZs': {
-            Ref: 'AWS::Region',
-          },
+          'Fn::GetAZs': '',
         },
       ],
     },
   });
+
+  // MountTargetのサブネットIDを取得
+  template.resourceCountIs('AWS::EFS::MountTarget', 1);
+});
+
+test('one zone file system with MAX_IO performance mode is not supported', () => {
+  // THEN
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      oneZone: true,
+      performanceMode: PerformanceMode.MAX_IO,
+    });
+  }).toThrow(/OneZone mode file systems do not support the MAX_IO performance mode./);
 });
