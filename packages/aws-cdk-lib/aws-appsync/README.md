@@ -744,11 +744,10 @@ Learn more about Pipeline Resolvers and AppSync Functions [here](https://docs.aw
 
 ## Introspection
 
-By default all AppSync allows you to use introspection queries.
+By default, AppSync allows you to use introspection queries.
 
 For customers that want to limit access to be introspection queries, the `introspectionConfig` property can be set to `IntrospectionConfig.DISABLED` at creation time.
 If `introspectionConfig` is not set, the service will default to `ENABLED`.
-CDK stack file `app-stack.ts`:
 
 ```ts
 const api = new appsync.GraphqlApi(this, 'api', {
