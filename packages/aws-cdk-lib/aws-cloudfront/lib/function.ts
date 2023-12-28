@@ -103,6 +103,7 @@ export interface FunctionAttributes {
 
   /**
    * The Runtime of the function.
+   * @default FunctionRuntime.JS_1_0
    */
   readonly functionRuntime?: string;
 
