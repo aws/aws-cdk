@@ -3,7 +3,7 @@ import { IDatabaseCluster } from './cluster-ref';
 import { IEngine } from './engine';
 import { IDatabaseInstance } from './instance';
 import { engineDescription } from './private/util';
-import { CfnDBProxy, CfnDBProxyTargetGroup } from './rds.generated';
+import { CfnDBProxy, CfnDBProxyTargetGroup, CfnDBInstance } from './rds.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
@@ -490,7 +490,22 @@ export class DatabaseProxy extends DatabaseProxyBase
       connectionPoolConfigurationInfo: toConnectionPoolConfigurationInfo(props),
     });
 
-    bindResult.dbClusters?.forEach((c) => proxyTargetGroup.node.addDependency(c));
+    // When a `DatabaseProxy` is created by `DatabaseCluster.addProxy`,
+    // the `DatabaseProxy` and `DBProxyTarget` are created as a child of the `DatabaseCluster`,
+    // so if multiple `DatabaseProxy` are created by `DatabaseCluster.addProxy`,
+    // using `node.addDependency` will cause circular dependencies.
+    // To avoid this, use `CfnResource.addDependency` to add dependencies on `DatabaseCluster` and `DBInstance`.
+    bindResult.dbClusters?.forEach((cluster) => {
+      cluster.node.children.forEach((child) => {
+        if (child instanceof CfnDBInstance) {
+          proxyTargetGroup.addDependency(child);
+        }
+      });
+      const clusterResource = cluster.node.defaultChild as cdk.CfnResource;
+      if (clusterResource && cdk.CfnResource.isCfnResource(clusterResource)) {
+        proxyTargetGroup.addDependency(clusterResource);
+      }
+    });
   }
 
   /**
