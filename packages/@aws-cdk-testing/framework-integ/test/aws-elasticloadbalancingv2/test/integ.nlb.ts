@@ -25,13 +25,14 @@ backend.addListener('Listener', {
   }),
 });
 
-const nlbSecurityGroup = new ec2.SecurityGroup(stack, 'SG', { vpc });
 const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
   vpc,
   internetFacing: true,
-  securityGroups: [nlbSecurityGroup],
+  securityGroups: [
+    new ec2.SecurityGroup(stack, 'SG', { vpc }),
+  ],
 });
-nlbSecurityGroup.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
+nlb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
 
 const listener = nlb.addListener('Listener', {
   port: 80,
@@ -41,7 +42,7 @@ const group = listener.addTargets('Target', {
   port: 80,
   targets: [new targets.AlbTarget(backend, 80)],
 });
-backend.connections.allowFrom(nlbSecurityGroup, ec2.Port.tcp(80));
+backend.connections.allowFrom(nlb, ec2.Port.tcp(80));
 
 group.configureHealthCheck({
   interval: cdk.Duration.seconds(250),
