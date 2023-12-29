@@ -265,6 +265,8 @@ export class PrincipalWithConditions extends PrincipalAdapter {
   }
 
   public addToAssumeRolePolicy(doc: PolicyDocument) {
+    // Lazy import to avoid circular import dependencies during startup
+
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const adapter: typeof import('./private/policydoc-adapter') = require('./private/policydoc-adapter');
 
