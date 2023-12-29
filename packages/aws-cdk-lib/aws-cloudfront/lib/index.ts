@@ -4,6 +4,7 @@ export * from './endpoint';
 export * from './function';
 export * from './geo-restriction';
 export * from './key-group';
+export * from './key-value-store';
 export * from './origin';
 export * from './origin-access-identity';
 export * from './origin-request-policy';
