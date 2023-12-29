@@ -65,7 +65,7 @@ export interface BackupVaultProps {
    *
    * @default - no notifications
    */
-  readonly notificationTopic?: sns.ITopic
+  readonly notificationTopic?: sns.ICfnTopic;
 
   /**
    * The vault events to send.
@@ -276,11 +276,12 @@ export class BackupVault extends BackupVaultBase {
 
     let notifications: CfnBackupVault.NotificationObjectTypeProperty | undefined;
     if (props.notificationTopic) {
+      const notificationTopic = sns.Topic.fromCfnTopic(props.notificationTopic);
       notifications = {
         backupVaultEvents: props.notificationEvents || Object.values(BackupVaultEvents),
-        snsTopicArn: props.notificationTopic.topicArn,
+        snsTopicArn: notificationTopic.attrTopicArn,
       };
-      props.notificationTopic.grantPublish(new iam.ServicePrincipal('backup.amazonaws.com'));
+      notificationTopic.grantPublish(new iam.ServicePrincipal('backup.amazonaws.com'));
     }
 
     this.accessPolicy = props.accessPolicy ?? new iam.PolicyDocument();

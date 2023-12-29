@@ -48,12 +48,13 @@ export class SnsTopicAction implements iot.IAction {
    * @param topic The Amazon SNS topic to publish data on. Must not be a FIFO topic.
    * @param props Properties to configure the action.
    */
-  constructor(topic: sns.ITopic, props: SnsTopicActionProps = {}) {
-    if (topic.fifo) {
+  constructor(topic: sns.ICfnTopic, props: SnsTopicActionProps = {}) {
+    this.topic = sns.Topic.fromCfnTopic(topic);
+
+    if (this.topic.fifo) {
       throw Error('IoT Rule actions cannot be used with FIFO SNS Topics, please pass a non-FIFO Topic instead');
     }
 
-    this.topic = topic;
     this.role = props.role;
     this.messageFormat = props.messageFormat;
   }

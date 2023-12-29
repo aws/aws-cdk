@@ -10,10 +10,10 @@ import { sameEnvDimension } from './util';
  */
 export class SnsPublish extends ScheduleTargetBase implements IScheduleTarget {
   constructor(
-    private readonly topic: sns.ITopic,
+    private readonly topic: sns.ICfnTopic,
     private readonly props: ScheduleTargetBaseProps = {},
   ) {
-    super(props, topic.topicArn);
+    super(props, topic.attrTopicArn);
   }
 
   protected addTargetActionToRole(schedule: ISchedule, role: IRole): void {

@@ -42,7 +42,7 @@ export interface NestedStackProps {
    *
    * @default - notifications are not sent for this stack.
    */
-  readonly notifications?: sns.ITopic[];
+  readonly notifications?: sns.ICfnTopic[];
 }
 
 /**
@@ -68,7 +68,7 @@ export class NestedStack extends core.NestedStack {
     super(scope, id, {
       parameters: props.parameters,
       timeout: props.timeout,
-      notificationArns: props.notifications?.map(n => n.topicArn),
+      notificationArns: props.notifications?.map(n => n.attrTopicArn),
     });
   }
 }

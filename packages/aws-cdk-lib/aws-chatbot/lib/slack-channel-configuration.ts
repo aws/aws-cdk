@@ -47,7 +47,7 @@ export interface SlackChannelConfigurationProps {
    *
    * @default None
    */
-  readonly notificationTopics?: sns.ITopic[];
+  readonly notificationTopics?: sns.ICfnTopic[];
 
   /**
    * Specifies the logging level for this configuration.
@@ -290,7 +290,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
     this.grantPrincipal = this.role;
 
-    this.notificationTopics = props.notificationTopics ?? [];
+    this.notificationTopics = props.notificationTopics?.forEach((topic) => sns.Topic.fromCfnTopic(topic)) ?? [];
 
     const configuration = new CfnSlackChannelConfiguration(this, 'Resource', {
       configurationName: props.slackChannelConfigurationName,
@@ -322,8 +322,8 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
    * Adds a SNS topic that deliver notifications to AWS Chatbot.
    * @param notificationTopic
    */
-  public addNotificationTopic(notificationTopic: sns.ITopic): void {
-    this.notificationTopics.push(notificationTopic);
+  public addNotificationTopic(notificationTopic: sns.ICfnTopic): void {
+    this.notificationTopics.push(sns.Topic.fromCfnTopic(notificationTopic));
   }
 }
 

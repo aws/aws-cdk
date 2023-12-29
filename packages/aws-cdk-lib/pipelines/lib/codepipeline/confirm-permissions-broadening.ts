@@ -24,7 +24,7 @@ export interface PermissionsBroadeningCheckProps {
    *
    * @default - no notification
    */
-  readonly notificationTopic?: sns.ITopic
+  readonly notificationTopic?: sns.ICfnTopic;
 }
 
 /**
@@ -39,7 +39,9 @@ export class ConfirmPermissionsBroadening extends Step implements ICodePipelineA
 
   public produceAction(stage: IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
     const sec = this.getOrCreateSecCheck(options.pipeline);
-    this.props.notificationTopic?.grantPublish(sec.cdkDiffProject);
+    if (this.props.notificationTopic) {
+      sns.Topic.fromCfnTopic(this.props.notificationTopic).grantPublish(sec.cdkDiffProject);
+    }
 
     const variablesNamespace = Node.of(this.props.stage).addr;
 
@@ -55,7 +57,7 @@ export class ConfirmPermissionsBroadening extends Step implements ICodePipelineA
         STAGE_NAME: { value: stage.stageName },
         ACTION_NAME: { value: approveActionName },
         ...this.props.notificationTopic ? {
-          NOTIFICATION_ARN: { value: this.props.notificationTopic.topicArn },
+          NOTIFICATION_ARN: { value: this.props.notificationTopic.attrTopicArn },
           NOTIFICATION_SUBJECT: { value: `Confirm permission broadening in ${this.props.stage.stageName}` },
         } : {},
       },

@@ -30,7 +30,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
   /**
    * Returns a configuration for an SQS queue to subscribe to an SNS topic
    */
-  public bind(topic: sns.ITopic): sns.TopicSubscriptionConfig {
+  public bind(topic: sns.ICfnTopic): sns.TopicSubscriptionConfig {
     // Create subscription under *consuming* construct to make sure it ends up
     // in the correct stack in cases of cross-stack subscriptions.
     if (!Construct.isConstruct(this.queue)) {
@@ -57,7 +57,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
       actions: ['sqs:SendMessage'],
       principals: [snsServicePrincipal],
       conditions: {
-        ArnEquals: { 'aws:SourceArn': topic.topicArn },
+        ArnEquals: { 'aws:SourceArn': topic.attrTopicArn },
       },
     })).policyDependable;
 
@@ -69,7 +69,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
         actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
         principals: [snsServicePrincipal],
         conditions: FeatureFlags.of(topic).isEnabled(cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY)
-          ? { ArnEquals: { 'aws:SourceArn': topic.topicArn } }
+          ? { ArnEquals: { 'aws:SourceArn': topic.attrTopicArn } }
           : undefined,
       }));
     }
@@ -94,7 +94,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
     };
   }
 
-  private regionFromArn(topic: sns.ITopic): string | undefined {
+  private regionFromArn(topic: sns.ICfnTopic): string | undefined {
     // no need to specify `region` for topics defined within the same stack
     if (topic instanceof sns.Topic) {
       if (topic.stack !== this.queue.stack) {
@@ -107,6 +107,6 @@ export class SqsSubscription implements sns.ITopicSubscription {
       }
       return undefined;
     }
-    return Stack.of(topic).splitArn(topic.topicArn, ArnFormat.SLASH_RESOURCE_NAME).region;
+    return Stack.of(topic).splitArn(topic.attrTopicArn, ArnFormat.SLASH_RESOURCE_NAME).region;
   }
 }

@@ -34,7 +34,7 @@ export interface S3Props {
    *
    * @default no notification
    */
-  readonly topic?: sns.ITopic;
+  readonly topic?: sns.ICfnTopic;
 }
 
 /**
@@ -95,7 +95,7 @@ export class S3 implements ses.IReceiptRuleAction {
         bucketName: bucket.attrBucketName,
         kmsKeyArn: this.props.kmsKey?.keyArn,
         objectKeyPrefix: this.props.objectKeyPrefix,
-        topicArn: this.props.topic?.topicArn,
+        topicArn: this.props.topic?.attrTopicArn,
       },
     };
   }

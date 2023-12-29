@@ -54,7 +54,7 @@ export class UrlSubscription implements sns.ITopicSubscription {
   /**
    * Returns a configuration for a URL to subscribe to an SNS topic
    */
-  public bind(_topic: sns.ITopic): sns.TopicSubscriptionConfig {
+  public bind(_topic: sns.ICfnTopic): sns.TopicSubscriptionConfig {
     return {
       subscriberId: this.url,
       endpoint: this.url,

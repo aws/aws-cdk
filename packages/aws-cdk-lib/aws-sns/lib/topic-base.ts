@@ -6,11 +6,12 @@ import { Subscription } from './subscription';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
 import { IResource, Resource, ResourceProps, Token } from '../../core';
+import { ICfnTopic } from './sns.generated';
 
 /**
  * Represents an SNS topic
  */
-export interface ITopic extends IResource, notifications.INotificationRuleTarget {
+export interface ITopic extends IResource, ICfnTopic, notifications.INotificationRuleTarget {
   /**
    * The ARN of the topic
    *
@@ -63,12 +64,20 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
  * Either a new or imported Topic
  */
 export abstract class TopicBase extends Resource implements ITopic {
+  /**
+   * Deprecated: use attrTopicArn
+   */
   public abstract readonly topicArn: string;
 
+  /**
+   * The arn of this topic
+   *
+   * @attribute
+   */
+  public abstract readonly attrTopicArn: string;
+
   public abstract readonly topicName: string;
-
   public abstract readonly fifo: boolean;
-
   public abstract readonly contentBasedDeduplication: boolean;
 
   /**

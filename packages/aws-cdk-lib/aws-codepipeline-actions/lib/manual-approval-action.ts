@@ -12,7 +12,7 @@ export interface ManualApprovalActionProps extends codepipeline.CommonAwsActionP
   /**
    * Optional SNS topic to send notifications to when an approval is pending.
    */
-  readonly notificationTopic?: sns.ITopic;
+  readonly notificationTopic?: sns.ICfnTopic;
 
   /**
    * A list of email addresses to subscribe to notifications when this Action is pending approval.
@@ -90,7 +90,7 @@ export class ManualApprovalAction extends Action {
 
   protected bound(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
     if (this.props.notificationTopic) {
-      this._notificationTopic = this.props.notificationTopic;
+      this._notificationTopic = sns.Topic.fromCfnTopic(this.props.notificationTopic);
     } else if ((this.props.notifyEmails || []).length > 0) {
       this._notificationTopic = new sns.Topic(scope, 'TopicResource');
     }
