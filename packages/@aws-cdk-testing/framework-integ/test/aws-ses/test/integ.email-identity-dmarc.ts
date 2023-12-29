@@ -14,7 +14,7 @@ class TestStack extends Stack {
 
     new ses.EmailIdentity(this, 'EmailIdentity', {
       identity: ses.Identity.publicHostedZone(hostedZone),
-      mailFromDomain: 'mail.cdk.dev',
+      dmarcReportEmail: 'dmarc-reports@example.com',
       autoDmarc: true,
     });
   }

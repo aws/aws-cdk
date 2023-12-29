@@ -263,3 +263,21 @@ test('email identity with DMARC enabled but no custom report email', () => {
     ResourceRecords: ['"v=DMARC1; p=none; rua=mailto:dmarc-reports@cdk.dev"'],
   });
 });
+
+test('autoDmarc is set to true when dmarcReportEmail is provided', () => {
+  const hostedZone = new route53.PublicHostedZone(stack, 'HostedZone', {
+    zoneName: 'cdk.dev',
+  });
+
+  new EmailIdentity(stack, 'Identity', {
+    identity: Identity.publicHostedZone(hostedZone),
+    dmarcReportEmail: 'custom-reports@example.com',
+    // Notice autoDmarc is not explicitly set
+  });
+
+  // Check if DMARC record is created, implying autoDmarc is enabled
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+    Name: '_dmarc.cdk.dev.',
+    Type: 'TXT',
+  });
+});

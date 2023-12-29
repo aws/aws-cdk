@@ -434,7 +434,7 @@ export class EmailIdentity extends Resource implements IEmailIdentity {
       });
     }
 
-    if (props.autoDmarc && props.identity.hostedZone) {
+    if ((props.autoDmarc || props.dmarcReportEmail) && props.identity.hostedZone) {
       const dmarcDomain = props.identity.value;
       const dmarcReportEmail = props.dmarcReportEmail || `dmarc-reports@${dmarcDomain}`;
       new route53.TxtRecord(this, 'DmarcTxtRecord', {

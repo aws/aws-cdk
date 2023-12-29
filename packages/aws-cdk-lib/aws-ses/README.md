@@ -224,7 +224,7 @@ declare const myHostedZone: route53.IPublicHostedZone;
 new ses.EmailIdentity(this, 'Identity', {
   identity: ses.Identity.publicHostedZone(myHostedZone),
   autoDmarc: true,
-  dmarcReportEmail: 'dmarc-reports@yourdomain.com', // Optional
+  dmarcReportEmail: 'dmarc-reports@example.com', // Optional
 });
 ```
 
