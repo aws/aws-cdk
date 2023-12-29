@@ -536,6 +536,27 @@ It will auto-generate the name of the function and deploy it to the `live` stage
 
 Additionally, you can load the function's code from a file using the `FunctionCode.fromFile()` method.
 
+### Key Value Store
+
+A CloudFront Key Value Store can be created and optionally have data imported from a JSON file
+by default.
+
+To create an empty Key Value Store:
+
+```ts
+const store = new cloudfront.KeyValueStore(this, 'KeyValueStore');
+```
+
+To also include an initial set of value, the `source` property can be specified. For the
+structure of this file, see [Creating a file of key value pairs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-create-s3-kvp.html).
+
+```ts
+const store = new cloudfront.KeyValueStore(this, 'KeyValueStore', {
+  keyValueStoreName: 'KeyValueStore',
+  source: cloudfront.ImportSource.fromAsset('path-to-data.json'),
+});
+```
+
 ### Logging
 
 You can configure CloudFront to create log files that contain detailed information about every user request that CloudFront receives.
