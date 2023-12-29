@@ -341,10 +341,13 @@ export class EventBus extends EventBusBase {
       throw new Error('Event Bus policy statements must have a sid');
     }
 
-    const policy = new EventBusPolicy(this, statement.sid, {
+    // In order to generate new statementIDs for the change in https://github.com/aws/aws-cdk/pull/27340
+    const statementId = `cdk-${statement.sid}`.slice(0, 64);
+    statement.sid = statementId;
+    const policy = new EventBusPolicy(this, statementId, {
       eventBus: this,
       statement: statement.toJSON(),
-      statementId: statement.sid,
+      statementId,
     });
 
     return { statementAdded: true, policyDependable: policy };
