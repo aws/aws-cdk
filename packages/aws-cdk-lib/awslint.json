@@ -236,6 +236,7 @@
     "docs-public-apis:aws-cdk-lib.aws_autoscaling.TargetTrackingScalingPolicy",
     "docs-public-apis:aws-cdk-lib.aws_cloudfront.ViewerCertificate.aliases",
     "docs-public-apis:aws-cdk-lib.aws_cloudfront.ViewerCertificate.props",
+    "docs-public-apis:aws-cdk-lib.aws_cloudfront.FunctionRuntime.value",
     "docs-public-apis:aws-cdk-lib.aws_cloudtrail.InsightType.value",
     "docs-public-apis:aws-cdk-lib.aws_cloudwatch.DefaultValue.val",
     "docs-public-apis:aws-cdk-lib.aws_cloudwatch.Values.toJson",
