@@ -680,6 +680,20 @@ export namespace EmrCreateCluster {
      * Capacity-optimized, which launches instances from Spot Instance pools with optimal capacity for the number of instances that are launching.
      */
     CAPACITY_OPTIMIZED = 'capacity-optimized',
+    /**
+     * Price-capacity-optimized, which launches instances from Spot Instance pools with the highest capacity availability for the number of instances that are launching.
+     *
+     * Recommended.
+     */
+    PRICE_CAPACITY_OPTIMIZED = 'price-capacity-optimized',
+    /**
+     * Lowest-price, which launches instances from the lowest priced pool that has available capacity.
+     */
+    LOWEST_PRICE = 'lowest-price',
+    /**
+     * Diversified, which launches instances across all Spot capacity pools.
+     */
+    DIVERSIFIED = 'diversified',
   }
 
   /**
