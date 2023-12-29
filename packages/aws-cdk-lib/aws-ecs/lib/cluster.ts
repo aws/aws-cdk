@@ -3,6 +3,7 @@ import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
 import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
+import { EcsClusterLookupOptions } from './cluster-lookup';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -148,7 +149,7 @@ export class Cluster extends Resource implements ICluster {
     });
   }
 
-  public static fromLookup(scope: Construct, id: string, options: ClusterLookupOptions): ICluster {
+  public static fromLookup(scope: Construct, id: string, options: EcsClusterLookupOptions): ICluster {
     const attributes: cxapi.EcsClusterContextResponse = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.ECS_CLUSTER_PROVIDER,
       props: options,
