@@ -687,6 +687,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
                       "aws:cdk:cloudformation:props": {
+                        "name": "lb1",
                         "loadBalancerAttributes": [
                           {
                             "key": "deletion_protection.enabled",
@@ -894,6 +895,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
                       "aws:cdk:cloudformation:props": {
+                        "name": "lb2",
                         "loadBalancerAttributes": [
                           {
                             "key": "deletion_protection.enabled",
