@@ -11,7 +11,9 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token } from '../../core';
+import * as cxapi from '../../cx-api';
+import * as cxschema from '../../cloud-assembly-schema';
+import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token, ContextProvider } from '../../core';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -144,6 +146,16 @@ export class Cluster extends Resource implements ICluster {
     return new Import(scope, id, {
       environmentFromArn: clusterArn,
     });
+  }
+
+  public static fromLookup(scope: Construct, id: string, options: ClusterLookupOptions): ICluster {
+    const attributes: cxapi.EcsClusterContextResponse = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.ECS_CLUSTER_PROVIDER,
+      props: options,
+      dummyValue: undefined,
+    }).value;
+
+    return new LookedUpCluster(scope, id, attributes);
   }
 
   /**
@@ -896,6 +908,45 @@ class ImportedCluster extends Resource implements ICluster {
 
   public get executeCommandConfiguration(): ExecuteCommandConfiguration | undefined {
     return this._executeCommandConfiguration;
+  }
+}
+
+class LookedUpCluster extends Resource implements ICluster {
+  public readonly clusterName: string;
+  public readonly clusterArn: string;
+  public readonly vpc: ec2.IVpc;
+  public readonly connections: ec2.Connections;
+  public readonly hasEc2Capacity: boolean;
+  public readonly defaultCloudMapNamespace?: cloudmap.INamespace;
+  public readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
+  public readonly executeCommandConfiguration?: ExecuteCommandConfiguration;
+
+  constructor(scope: Construct, id: string, props: cxapi.EcsClusterContextResponse) {
+    super(scope, id);
+
+    this.clusterName = props.clusterName;
+    this.vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
+      vpcId: props.vpcId,
+    });
+    this.connections = new ec2.Connections();
+    for (const securityGroupId of props.securityGroupIds) {
+      const securityGroup = ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
+      this.connections.addSecurityGroup(securityGroup);
+    }
+    this.hasEc2Capacity = props.hasEc2Capacity !== false;
+    // いい感じに以下のパラメータを設定する必要あり。
+    // this.defaultCloudMapNamespace = props.defaultCloudMapNamespace;
+    // this.autoscalingGroup = props.autoscalingGroup;
+    // this.executeCommandConfiguration = props.executeCommandConfiguration;
+    this.defaultCloudMapNamespace = undefined;
+    this.autoscalingGroup = undefined;
+    this.executeCommandConfiguration = undefined;
+
+    this.clusterArn = props.clusterArn ?? Stack.of(this).formatArn({
+      service: 'ecs',
+      resource: 'cluster',
+      resourceName: props.clusterName,
+    });
   }
 }
 

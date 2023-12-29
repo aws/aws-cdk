@@ -58,6 +58,8 @@ export enum ContextProvider {
    * A plugin provider (the actual plugin name will be in the properties)
    */
   PLUGIN = 'plugin',
+
+  ECS_CLUSTER_PROVIDER = 'ecs-cluster',
 }
 
 /**
@@ -500,6 +502,20 @@ export interface PluginContextQuery {
   [key: string]: any;
 }
 
+export interface EcsclustercontextQuery {
+  /**
+   * Query account
+   */
+  readonly account: string;
+
+  /**
+     * Query region
+     */
+  readonly region: string;
+  readonly clusterName: string;
+  readonly clusterArn: string;
+}
+
 export type ContextQueryProperties = AmiContextQuery
 | AvailabilityZonesContextQuery
 | HostedZoneContextQuery
@@ -510,5 +526,6 @@ export type ContextQueryProperties = AmiContextQuery
 | LoadBalancerListenerContextQuery
 | SecurityGroupContextQuery
 | KeyContextQuery
-| PluginContextQuery;
+| PluginContextQuery
+| EcsclustercontextQuery;
 
