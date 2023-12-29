@@ -100,6 +100,13 @@ export interface FunctionAttributes {
    * The ARN of the function.
    */
   readonly functionArn: string;
+
+  /**
+   * The Runtime of the function.
+   * @default FunctionRuntime.JS_1_0
+   */
+  readonly functionRuntime?: string;
+
 }
 
 /**
@@ -122,6 +129,12 @@ export interface FunctionProps {
    * The source code of the function.
    */
   readonly code: FunctionCode;
+
+  /**
+   * The runtime environment for the function.
+   * @default FunctionRuntime.JS_1_0
+   */
+  readonly runtime?: FunctionRuntime;
 }
 
 /**
@@ -136,6 +149,7 @@ export class Function extends Resource implements IFunction {
     return new class extends Resource implements IFunction {
       public readonly functionName = attrs.functionName;
       public readonly functionArn = attrs.functionArn;
+      public readonly functionRuntime = attrs.functionRuntime ?? FunctionRuntime.JS_1_0.value;
     }(scope, id);
   }
 
@@ -154,18 +168,25 @@ export class Function extends Resource implements IFunction {
    * @attribute
    */
   public readonly functionStage: string;
+  /**
+   * the runtime of the CloudFront function
+   * @attribute
+   */
+  public readonly functionRuntime: string;
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id);
 
     this.functionName = props.functionName ?? this.generateName();
 
+    this.functionRuntime = props.runtime?.value ?? FunctionRuntime.JS_1_0.value;
+
     const resource = new CfnFunction(this, 'Resource', {
       autoPublish: true,
       functionCode: props.code.render(),
       functionConfig: {
         comment: props.comment ?? this.functionName,
-        runtime: 'cloudfront-js-1.0',
+        runtime: this.functionRuntime,
       },
       name: this.functionName,
     });
@@ -211,4 +232,30 @@ export interface FunctionAssociation {
 
   /** The type of event which should invoke the function. */
   readonly eventType: FunctionEventType;
+}
+
+/**
+ * The function's runtime environment version.
+ */
+export class FunctionRuntime {
+  /**
+   * cloudfront-js-1.0
+   */
+  public static readonly JS_1_0 = new FunctionRuntime('cloudfront-js-1.0');
+
+  /**
+   * cloudfront-js-2.0
+   */
+  public static readonly JS_2_0 = new FunctionRuntime('cloudfront-js-2.0');
+
+  /**
+   * A custom runtime string.
+   *
+   * Gives full control over the runtime string fragment.
+   */
+  public static custom(runtimeString: string): FunctionRuntime {
+    return new FunctionRuntime(runtimeString);
+  }
+
+  private constructor(public readonly value: string) {}
 }
