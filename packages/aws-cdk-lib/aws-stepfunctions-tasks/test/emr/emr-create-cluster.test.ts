@@ -1331,7 +1331,7 @@ test('Throws if timeoutDurationMinutes for Spot instances is greater than 1440 m
   }).toThrow(/timeoutDurationMinutes must be between 5 and 1440 minutes, got 1441/);
 });
 
-test('Throws if both timeout and timeoutDurationMinutes are not specified', () => {
+test('Throws if neither timeout nor timeoutDurationMinutes is specified', () => {
   // GIVEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
@@ -1356,6 +1356,72 @@ test('Throws if both timeout and timeoutDurationMinutes are not specified', () =
   expect(() => {
     task.toStateJson();
   }).toThrow(/timeout must be specified/);
+});
+
+test('timeout takes precedence if both timeout and timeoutDurationMinutes are specified', () => {
+  // WHEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        launchSpecifications: {
+          spotSpecification: {
+            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+            timeout: cdk.Duration.minutes(5),
+            timeoutDurationMinutes: 10,
+          },
+        },
+        name: 'Main',
+        targetSpotCapacity: 1,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true,
+        InstanceFleets: [{
+          InstanceFleetType: 'MASTER',
+          LaunchSpecifications: {
+            SpotSpecification: {
+              TimeoutAction: 'TERMINATE_CLUSTER',
+              TimeoutDurationMinutes: 5,
+            },
+          },
+          Name: 'Main',
+          TargetSpotCapacity: 1,
+        }],
+      },
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192',
+      },
+    },
+  });
 });
 
 test('Throws if both bidPrice and bidPriceAsPercentageOfOnDemandPrice are specified', () => {
