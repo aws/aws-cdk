@@ -734,6 +734,8 @@ export namespace EmrCreateCluster {
      *
      * The value must be between 5 and 1440 minutes.
      *
+     * @default - No timeoutDurationMinutes
+     *
      * @deprecated - Use `timeout`.
      */
     readonly timeoutDurationMinutes?: number;
@@ -744,6 +746,8 @@ export namespace EmrCreateCluster {
      * The value must be between 5 and 1440 minutes.
      *
      * You must specify one of `timeout` and `timeoutDurationMinutes`.
+     *
+     * @default - No timeout
      */
     readonly timeout?: cdk.Duration;
   }
