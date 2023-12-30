@@ -16,6 +16,7 @@ const bucket = new s3.Bucket(stack, 'DataBucket', {
 
 const database = new glue.Database(stack, 'MyDatabase', {
   databaseName: 'my_database',
+  description: 'my_database_description',
 });
 
 const columns = [{

@@ -202,7 +202,10 @@ See [documentation](https://docs.aws.amazon.com/glue/latest/dg/encryption-securi
 A `Database` is a logical grouping of `Tables` in the Glue Catalog.
 
 ```ts
-new glue.Database(this, 'MyDatabase');
+new glue.Database(this, 'MyDatabase', {
+  databaseName: 'my_database',
+  description: 'my_database_description',
+});
 ```
 
 ## Table
