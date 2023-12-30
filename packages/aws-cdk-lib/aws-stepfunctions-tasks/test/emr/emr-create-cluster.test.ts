@@ -896,7 +896,6 @@ test.each([
         instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
         instanceTypeConfigs: [{
           bidPrice: '1',
-          bidPriceAsPercentageOfOnDemandPrice: 1,
           configurations: [{
             classification: 'Classification',
             properties: {
@@ -922,11 +921,10 @@ test.each([
             allocationStrategy: strategy,
             blockDurationMinutes: 1,
             timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
-            timeoutDurationMinutes: 1,
+            timeoutDurationMinutes: 5,
           },
         },
         name: 'Main',
-        targetOnDemandCapacity: 1,
         targetSpotCapacity: 1,
       }],
     },
@@ -960,7 +958,6 @@ test.each([
           InstanceFleetType: 'MASTER',
           InstanceTypeConfigs: [{
             BidPrice: '1',
-            BidPriceAsPercentageOfOnDemandPrice: 1,
             Configurations: [{
               Classification: 'Classification',
               Properties: {
@@ -986,11 +983,10 @@ test.each([
               AllocationStrategy: expected,
               BlockDurationMinutes: 1,
               TimeoutAction: 'TERMINATE_CLUSTER',
-              TimeoutDurationMinutes: 1,
+              TimeoutDurationMinutes: 5,
             },
           },
           Name: 'Main',
-          TargetOnDemandCapacity: 1,
           TargetSpotCapacity: 1,
         }],
       },
@@ -1013,7 +1009,6 @@ test('Create Cluster with InstanceFleet for Spot instances', () => {
         instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
         instanceTypeConfigs: [{
           bidPrice: '1',
-          bidPriceAsPercentageOfOnDemandPrice: 1,
           configurations: [{
             classification: 'Classification',
             properties: {
@@ -1038,11 +1033,10 @@ test('Create Cluster with InstanceFleet for Spot instances', () => {
           spotSpecification: {
             blockDurationMinutes: 1,
             timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
-            timeoutDurationMinutes: 1,
+            timeoutDurationMinutes: 5,
           },
         },
         name: 'Main',
-        targetOnDemandCapacity: 1,
         targetSpotCapacity: 1,
       }],
     },
@@ -1076,7 +1070,6 @@ test('Create Cluster with InstanceFleet for Spot instances', () => {
           InstanceFleetType: 'MASTER',
           InstanceTypeConfigs: [{
             BidPrice: '1',
-            BidPriceAsPercentageOfOnDemandPrice: 1,
             Configurations: [{
               Classification: 'Classification',
               Properties: {
@@ -1101,11 +1094,10 @@ test('Create Cluster with InstanceFleet for Spot instances', () => {
             SpotSpecification: {
               BlockDurationMinutes: 1,
               TimeoutAction: 'TERMINATE_CLUSTER',
-              TimeoutDurationMinutes: 1,
+              TimeoutDurationMinutes: 5,
             },
           },
           Name: 'Main',
-          TargetOnDemandCapacity: 1,
           TargetSpotCapacity: 1,
         }],
       },
@@ -1128,7 +1120,6 @@ test('Create Cluster with InstanceFleet for On-Demand instances', () => {
         instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
         instanceTypeConfigs: [{
           bidPrice: '1',
-          bidPriceAsPercentageOfOnDemandPrice: 1,
           configurations: [{
             classification: 'Classification',
             properties: {
@@ -1156,7 +1147,6 @@ test('Create Cluster with InstanceFleet for On-Demand instances', () => {
         },
         name: 'Main',
         targetOnDemandCapacity: 1,
-        targetSpotCapacity: 1,
       }],
     },
     clusterRole,
@@ -1189,7 +1179,6 @@ test('Create Cluster with InstanceFleet for On-Demand instances', () => {
           InstanceFleetType: 'MASTER',
           InstanceTypeConfigs: [{
             BidPrice: '1',
-            BidPriceAsPercentageOfOnDemandPrice: 1,
             Configurations: [{
               Classification: 'Classification',
               Properties: {
@@ -1217,7 +1206,6 @@ test('Create Cluster with InstanceFleet for On-Demand instances', () => {
           },
           Name: 'Main',
           TargetOnDemandCapacity: 1,
-          TargetSpotCapacity: 1,
         }],
       },
       VisibleToAllUsers: true,
@@ -1229,6 +1217,177 @@ test('Create Cluster with InstanceFleet for On-Demand instances', () => {
       },
     },
   });
+});
+
+test('Throws if timeoutDurationMinutes for Spot instances is less than 5', () => {
+  // GIVEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        launchSpecifications: {
+          spotSpecification: {
+            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+            timeoutDurationMinutes: 4,
+          },
+        },
+        name: 'Main',
+        targetSpotCapacity: 1,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(() => {
+    task.toStateJson();
+  }).toThrow(/timeoutDurationMinutes must be between 5 and 1440, got 4/);
+});
+
+test('Throws if timeoutDurationMinutes for Spot instances is greater than 1440', () => {
+  // GIVEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        launchSpecifications: {
+          spotSpecification: {
+            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+            timeoutDurationMinutes: 1441,
+          },
+        },
+        name: 'Main',
+        targetSpotCapacity: 1,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(() => {
+    task.toStateJson();
+  }).toThrow(/timeoutDurationMinutes must be between 5 and 1440, got 1441/);
+});
+
+test('Throws if both bidPrice and bidPriceAsPercentageOfOnDemandPrice are specified', () => {
+  // GIVEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        instanceTypeConfigs: [{
+          bidPrice: '1',
+          bidPriceAsPercentageOfOnDemandPrice: 1,
+          instanceType: 'm5.xlarge',
+        }],
+        name: 'Main',
+        targetSpotCapacity: 1,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(() => {
+    task.toStateJson();
+  }).toThrow(/Cannot specify both bidPrice and bidPriceAsPercentageOfOnDemandPrice/);
+});
+
+test('Throws if neither targetSpotCapacity nor targetOnDemandCapacity is specified', () => {
+  // GIVEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        name: 'Main',
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(() => {
+    task.toStateJson();
+  }).toThrow(/At least one of targetSpotCapacity and targetOnDemandCapacity should be greater than 0/);
+});
+
+test('Throws if both targetSpotCapacity and targetOnDemandCapacity are specified for a master instance fleet', () => {
+  // GIVEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        name: 'Main',
+        targetSpotCapacity: 1,
+        targetOnDemandCapacity: 1,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(() => {
+    task.toStateJson();
+  }).toThrow(/For a master instance fleet, only one of targetSpotCapacity and targetOnDemandCapacity can be specified/);
+});
+
+test('Throws if a number other than 1 as targetSpotCapacity is specified for a master instance fleet', () => {
+  // GIVEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        name: 'Main',
+        targetSpotCapacity: 2,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(() => {
+    task.toStateJson();
+  }).toThrow(/For a master instance fleet, targetSpotCapacity cannot be a number other than 1, got 2/);
+});
+
+test('Throws if a number other than 1 as targetOnDemandCapacity is specified for a master instance fleet', () => {
+  // GIVEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        name: 'Main',
+        targetOnDemandCapacity: 2,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(() => {
+    task.toStateJson();
+  }).toThrow(/For a master instance fleet, targetOnDemandCapacity cannot be a number other than 1, got 2/);
 });
 
 test('Create Cluster with InstanceGroup', () => {
