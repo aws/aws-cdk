@@ -172,7 +172,7 @@ export function InstanceFleetConfigPropertyToJson(property: EmrCreateCluster.Ins
   }
   if (property.instanceFleetType === EmrCreateCluster.InstanceRoleType.MASTER) {
     if (property.targetSpotCapacity && property.targetOnDemandCapacity) {
-      throw new Error('For a master instance fleet, only one of targetSpotCapacity and targetOnDemandCapacity can be specified.');
+      throw new Error('For a master instance fleet, only one of targetSpotCapacity and targetOnDemandCapacity can be specified');
     }
     if (property.targetSpotCapacity && property.targetSpotCapacity !== 1) {
       throw new Error(`For a master instance fleet, targetSpotCapacity cannot be a number other than 1, got ${property.targetSpotCapacity}`);
