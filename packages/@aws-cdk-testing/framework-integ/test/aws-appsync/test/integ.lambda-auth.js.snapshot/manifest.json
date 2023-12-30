@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "appsync-lambda-auth.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "appsync-lambda-auth.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2a49dc15a0c4a34b59e6ebe72dd3ea67ded69bd76fdf544c63fab4f22c41102e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a12846e2dfbd4ac2f9badd633fac6c2476828f26f0868c4d54ac41e463d26a12.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -69,6 +70,30 @@
             "data": "api1SchemaFFA53DB6"
           }
         ],
+        "/appsync-lambda-auth/api1/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "api1LogRetention2AFE947B"
+          }
+        ],
+        "/appsync-lambda-auth/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/appsync-lambda-auth/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/appsync-lambda-auth/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
         "/appsync-lambda-auth/api2/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -79,6 +104,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "api2SchemaD5C26031"
+          }
+        ],
+        "/appsync-lambda-auth/api2/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "api2LogRetention34028E04"
           }
         ],
         "/appsync-lambda-auth/BootstrapVersion": [
@@ -109,6 +140,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "GraphQlApiLambdaAuthDefaultTestDeployAssert3A9D82EA.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

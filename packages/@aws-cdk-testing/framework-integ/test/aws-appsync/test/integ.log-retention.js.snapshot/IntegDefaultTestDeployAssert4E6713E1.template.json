@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallCloudWatchLogsdescribeLogGroupsb47bd431584c5dacce67df7a7092125e": {
+  "AwsApiCallCloudWatchLogsdescribeLogGroups8bf25a7acd37f39f7e35df44651487d5": {
    "Type": "Custom::DeployAssert@SdkCallCloudWatchLogsdescribeLogGroups",
    "Properties": {
     "ServiceToken": {
@@ -15,9 +15,9 @@
      "Fn::Join": [
       "",
       [
-       "{\"$ObjectLike\":{\"logGroups\":[{\"logGroupName\":\"/aws/appsync/apis/",
+       "{\"$ObjectLike\":{\"logGroups\":[{\"logGroupName\":\"",
        {
-        "Fn::ImportValue": "AppSyncIntegLogRetention:ExportsOutputFnGetAttGraphqlApi1B6CF24CApiIdE34D50AD"
+        "Fn::ImportValue": "AppSyncIntegLogRetention:ExportsOutputFnGetAttGraphqlApiLogRetention082A7017LogGroupName1AF00191"
        },
        "\",\"retentionInDays\":7}]}}"
       ]
@@ -28,9 +28,9 @@
       "Fn::Join": [
        "",
        [
-        "\"/aws/appsync/apis/",
+        "\"",
         {
-         "Fn::ImportValue": "AppSyncIntegLogRetention:ExportsOutputFnGetAttGraphqlApi1B6CF24CApiIdE34D50AD"
+         "Fn::ImportValue": "AppSyncIntegLogRetention:ExportsOutputFnGetAttGraphqlApiLogRetention082A7017LogGroupName1AF00191"
         },
         "\""
        ]
@@ -38,7 +38,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1693924787275"
+    "salt": "1703893596043"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -92,7 +92,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c7f4a8ca56d10961cf5e40d181faddf14f2ea8b39c5d65c7b61a366b17c7a2ce.zip"
+     "S3Key": "57562799cf15fb41a7aa03a2d25a0707be565346aac1fb1f9634924d82585d44.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -106,10 +106,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallCloudWatchLogsdescribeLogGroupsb47bd431584c5dacce67df7a7092125e": {
+  "AssertionResultsAwsApiCallCloudWatchLogsdescribeLogGroups8bf25a7acd37f39f7e35df44651487d5": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCloudWatchLogsdescribeLogGroupsb47bd431584c5dacce67df7a7092125e",
+     "AwsApiCallCloudWatchLogsdescribeLogGroups8bf25a7acd37f39f7e35df44651487d5",
      "assertion"
     ]
    }

@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "Stack.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "Stack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0d28049698de9f166ab2500a6a65a1e012fb46df87be49853f2b631a3573c599.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8b342734263fac288679aea2874e1c47ab5d895d813d8914db7f09a0f868b3c6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -51,10 +52,34 @@
             "data": "FirstSourceAPIDefaultApiKey9D9AE06D"
           }
         ],
+        "/Stack/FirstSourceAPI/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstSourceAPILogRetentionF81631B5"
+          }
+        ],
         "/Stack/FirstSourceAPI/FirstSourceDS/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FirstSourceAPIFirstSourceDS6AD299B7"
+          }
+        ],
+        "/Stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/Stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/Stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
           }
         ],
         "/Stack/SecondSourceAPI/Resource": [
@@ -73,6 +98,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SecondSourceAPIDefaultApiKeyCE5A0A64"
+          }
+        ],
+        "/Stack/SecondSourceAPI/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondSourceAPILogRetention874987AE"
           }
         ],
         "/Stack/SecondSourceAPI/SecondSourceDS/Resource": [
@@ -99,6 +130,12 @@
             "data": "ThirdSourceAPIDefaultApiKey3D5568A7"
           }
         ],
+        "/Stack/ThirdSourceAPI/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ThirdSourceAPILogRetentionC3E54536"
+          }
+        ],
         "/Stack/MergedApiExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -121,6 +158,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MergedAPIDefaultApiKeyAF5EA13C"
+          }
+        ],
+        "/Stack/MergedAPI/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MergedAPILogRetention1040A933"
           }
         ],
         "/Stack/SourceApiAssociation1/Resource": [
@@ -169,6 +212,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "apiDefaultTestDeployAssert018781F2.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

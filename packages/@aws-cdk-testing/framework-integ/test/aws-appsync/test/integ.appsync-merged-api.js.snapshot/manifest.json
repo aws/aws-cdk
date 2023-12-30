@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "stack.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "stack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c7f75afe322325fc4ced34825c95ad7229c5bd2157dba5f20c58aac8b6cd9c89.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/78ee30450bb035cd1d74e67b56d22d98103273695478660806fcdcc04a0c0cc7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -51,10 +52,34 @@
             "data": "FirstSourceAPIDefaultApiKey9D9AE06D"
           }
         ],
+        "/stack/FirstSourceAPI/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FirstSourceAPILogRetentionF81631B5"
+          }
+        ],
         "/stack/FirstSourceAPI/FirstSourceDS/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "FirstSourceAPIFirstSourceDS6AD299B7"
+          }
+        ],
+        "/stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/stack/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
           }
         ],
         "/stack/SecondSourceAPI/Resource": [
@@ -73,6 +98,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SecondSourceAPIDefaultApiKeyCE5A0A64"
+          }
+        ],
+        "/stack/SecondSourceAPI/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecondSourceAPILogRetention874987AE"
           }
         ],
         "/stack/SecondSourceAPI/SecondSourceDS/Resource": [
@@ -117,6 +148,12 @@
             "data": "MergedAPIDefaultApiKeyAF5EA13C"
           }
         ],
+        "/stack/MergedAPI/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MergedAPILogRetention1040A933"
+          }
+        ],
         "/stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -145,6 +182,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "apiDefaultTestDeployAssert018781F2.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

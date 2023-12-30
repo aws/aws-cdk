@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "appsync-opensearch.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "appsync-opensearch.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8a2a9f9e0d429354b6c00646ad4364f5e46ab6ceecf270d2ff59b9befcba8b5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/949dd3c692280b52abda429ce4ea4c55c317ce8c2b06ed64d815db28d38ff9b7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -63,6 +64,12 @@
             "data": "apiDefaultApiKey6AB8D7C4"
           }
         ],
+        "/appsync-opensearch/api/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiLogRetention531D9956"
+          }
+        ],
         "/appsync-opensearch/api/ds/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -85,6 +92,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "apiQueryGetTests5F79F353"
+          }
+        ],
+        "/appsync-opensearch/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/appsync-opensearch/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/appsync-opensearch/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
           }
         ],
         "/appsync-opensearch/BootstrapVersion": [
@@ -115,6 +140,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "opensearch23stackDefaultTestDeployAssert16E12129.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

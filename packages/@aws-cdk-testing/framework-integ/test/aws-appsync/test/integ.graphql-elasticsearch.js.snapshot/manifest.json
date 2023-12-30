@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "appsync-elasticsearch.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "appsync-elasticsearch.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fcad6b907b2ee72d05b9e3af0a8d220115fb800f1839d979919a8e80e5c933e5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dc9ae0cd4e494eab1814fdf401292937d1ac41a50887b0cc42c447162a69eff4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -63,6 +64,12 @@
             "data": "apiDefaultApiKey6AB8D7C4"
           }
         ],
+        "/appsync-elasticsearch/api/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiLogRetention531D9956"
+          }
+        ],
         "/appsync-elasticsearch/api/ds/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -87,6 +94,24 @@
             "data": "apiQueryGetTests5F79F353"
           }
         ],
+        "/appsync-elasticsearch/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/appsync-elasticsearch/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/appsync-elasticsearch/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
         "/appsync-elasticsearch/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -97,15 +122,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "apidsQuerygetTestsResolver5C6FBB59": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "apidsQuerygetTestsResolver5C6FBB59",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

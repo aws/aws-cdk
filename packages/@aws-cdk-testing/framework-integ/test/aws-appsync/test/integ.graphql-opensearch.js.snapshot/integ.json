@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "36.0.0",
   "testCases": {
     "opensearch-2.3-stack/DefaultTest": {
       "stacks": [

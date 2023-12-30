@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-appsync-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-appsync-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/de7d932209c6d07c0ba0e631387676246a8182018b2b7423dc18b52baec3e984.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c28687cd2fc7dc64cf1ee77517d4fe59f21d6b96e5adfb74eaf37f2f1d535164.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -51,6 +52,12 @@
             "data": "ApiDefaultApiKeyF991C37B"
           }
         ],
+        "/aws-appsync-integ/Api/LogRetention/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiLogRetention94272E33"
+          }
+        ],
         "/aws-appsync-integ/Api/testDataSource/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -81,6 +88,24 @@
             "data": "ApiMutationAddTestBF148084"
           }
         ],
+        "/aws-appsync-integ/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ],
+        "/aws-appsync-integ/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB"
+          }
+        ],
+        "/aws-appsync-integ/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
+          }
+        ],
         "/aws-appsync-integ/TestTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -97,24 +122,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ApitestDataSourceQuerygetTestsResolverA3BBB672": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApitestDataSourceQuerygetTestsResolverA3BBB672",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ApitestDataSourceMutationaddTestResolver36203D6B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApitestDataSourceMutationaddTestResolver36203D6B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
