@@ -151,7 +151,7 @@ function SpotProvisioningSpecificationPropertyToJson(property?: EmrCreateCluster
     return undefined;
   }
   if (!cdk.Token.isUnresolved(property.timeoutDurationMinutes) && (property.timeoutDurationMinutes < 5 || property.timeoutDurationMinutes > 1440)) {
-    throw new Error(`timeout duration must be between 5 and 1440 minutes, got ${property.timeoutDurationMinutes}`);
+    throw new Error(`timeoutDurationMinutes must be between 5 and 1440, got ${property.timeoutDurationMinutes}`);
   }
   return {
     AllocationStrategy: cdk.stringToCloudFormation(property.allocationStrategy),

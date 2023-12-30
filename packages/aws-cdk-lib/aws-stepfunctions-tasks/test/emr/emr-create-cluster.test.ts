@@ -1239,7 +1239,7 @@ test('Throws if timeoutDurationMinutes for Spot instances is less than 5', () =>
   // THEN
   expect(() => {
     task.toStateJson();
-  }).toThrow(/timeout duration must be between 5 and 1440 minutes, got 4/);
+  }).toThrow(/timeoutDurationMinutes must be between 5 and 1440, got 4/);
 });
 
 test('Throws if timeoutDurationMinutes for Spot instances is greater than 1440', () => {
@@ -1267,7 +1267,7 @@ test('Throws if timeoutDurationMinutes for Spot instances is greater than 1440',
   // THEN
   expect(() => {
     task.toStateJson();
-  }).toThrow(/timeout duration must be between 5 and 1440 minutes, got 1441/);
+  }).toThrow(/timeoutDurationMinutes must be between 5 and 1440, got 1441/);
 });
 
 test('Throws if both bidPrice and bidPriceAsPercentageOfOnDemandPrice are specified', () => {
