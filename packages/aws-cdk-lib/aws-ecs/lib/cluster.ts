@@ -1,20 +1,21 @@
 import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
+import { EcsClusterLookupOptions } from './cluster-lookup';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
 import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
-import { EcsClusterLookupOptions } from './cluster-lookup';
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
+import { mapTagMapToCxschema } from '../../aws-elasticloadbalancingv2/lib/shared/util';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import * as cxapi from '../../cx-api';
 import * as cxschema from '../../cloud-assembly-schema';
 import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token, ContextProvider } from '../../core';
+import * as cxapi from '../../cx-api';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -149,11 +150,26 @@ export class Cluster extends Resource implements ICluster {
     });
   }
 
+  /**
+   * Lookup an existing cluster.
+   */
   public static fromLookup(scope: Construct, id: string, options: EcsClusterLookupOptions): ICluster {
+    let cxschemaTags: cxschema.Tag[] | undefined;
+    if (options.tags) {
+      cxschemaTags = mapTagMapToCxschema(options.tags);
+    }
+
     const attributes: cxapi.EcsClusterContextResponse = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.ECS_CLUSTER_PROVIDER,
-      props: options,
-      dummyValue: undefined,
+      props: { ...options, tags: cxschemaTags },
+      dummyValue: {
+        clusterName: 'cluster-name',
+        // eslint-disable-next-line @aws-cdk/no-literal-partition
+        clusterArn: 'arn:aws:ecs:us-east-1:123456789012:cluster/cluster-name',
+        vpcId: 'vpc-12345',
+        securityGroupIds: ['sg-12345678'],
+        hasEc2Capacity: true,
+      },
     }).value;
 
     return new LookedUpCluster(scope, id, attributes);
@@ -934,7 +950,7 @@ class LookedUpCluster extends Resource implements ICluster {
       const securityGroup = ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
       this.connections.addSecurityGroup(securityGroup);
     }
-    this.hasEc2Capacity = props.hasEc2Capacity !== false;
+    this.hasEc2Capacity = props.hasEc2Capacity;
     // いい感じに以下のパラメータを設定する必要あり。
     // this.defaultCloudMapNamespace = props.defaultCloudMapNamespace;
     // this.autoscalingGroup = props.autoscalingGroup;

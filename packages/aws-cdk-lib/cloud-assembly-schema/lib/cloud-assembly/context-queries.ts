@@ -59,6 +59,9 @@ export enum ContextProvider {
    */
   PLUGIN = 'plugin',
 
+  /**
+   * ECS Cluster Provider
+   */
   ECS_CLUSTER_PROVIDER = 'ecs-cluster',
 }
 
@@ -502,7 +505,10 @@ export interface PluginContextQuery {
   [key: string]: any;
 }
 
-export interface EcsclustercontextQuery {
+/**
+ * query
+ */
+export interface EcsClusterContextQuery {
   /**
    * Query account
    */
@@ -512,8 +518,23 @@ export interface EcsclustercontextQuery {
      * Query region
      */
   readonly region: string;
-  readonly clusterName: string;
-  readonly clusterArn: string;
+
+  /**
+  * Cluster name
+  *
+  * @default - None
+  */
+  readonly clusterName?: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   */
+  readonly clusterArn?: string;
+
+  /**
+   * tags
+   */
+  readonly Tags?: Tag[];
 }
 
 export type ContextQueryProperties = AmiContextQuery
@@ -527,5 +548,5 @@ export type ContextQueryProperties = AmiContextQuery
 | SecurityGroupContextQuery
 | KeyContextQuery
 | PluginContextQuery
-| EcsclustercontextQuery;
+| EcsClusterContextQuery;
 

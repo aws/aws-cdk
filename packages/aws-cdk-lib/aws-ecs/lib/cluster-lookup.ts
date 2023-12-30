@@ -1,3 +1,6 @@
+/**
+ * Options for looking up a cluster.
+ */
 export interface EcsClusterLookupOptions {
   /**
      * The name of the cluster
@@ -14,4 +17,10 @@ export interface EcsClusterLookupOptions {
      * @default Current stack's environment region
      */
   readonly region?: string;
+
+  /**
+   * tags
+   */
+  readonly tags?: Record<string, string>;
+
 }

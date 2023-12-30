@@ -1,4 +1,5 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Construct } from 'constructs';
 import { Match, Template } from '../../assertions';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
@@ -7,6 +8,8 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
+import * as cxschema from '../../cloud-assembly-schema';
+import { ContextProvider, GetContextValueOptions } from '../../core';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import * as ecs from '../lib';
@@ -3037,4 +3040,38 @@ describe('Accessing container instance role', function () {
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('sudo service iptables save');
     expect(autoScalingGroup.addUserData).not.toHaveBeenCalledWith('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
   });
+});
+
+describe('looking up a cluster', () => {
+  test('lookup cluster', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    // WHEN
+    const cluster = ecs.Cluster.fromLookup(stack, 'Cluster', { clusterName: 'cluster-name' });
+
+    // THEN
+    expect(cluster.clusterName).toEqual('cluster-name');
+    expect(cluster.clusterArn).toEqual('arn:aws:ecs:us-east-1:123456789012:cluster/cluster-name');
+    expect(cluster.vpc.vpcId).toEqual('vpc-12345');
+    expect(cluster.connections.securityGroups[0].securityGroupId).toEqual('sg-12345678');
+    expect(cluster.hasEc2Capacity).toEqual(true);
+  });
+
+  test('lookup cluster with imported security group', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    // WHEN
+    const cluster = ecs.Cluster.fromLookup(stack, 'Cluster', {
+      securityGroupIds: [ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'sg-12345678')],
+    });
+  });
+
 });
