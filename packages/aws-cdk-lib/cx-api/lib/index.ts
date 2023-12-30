@@ -4,6 +4,7 @@ export * from './context/ami';
 export * from './context/load-balancer';
 export * from './context/availability-zones';
 export * from './context/endpoint-service-availability-zones';
+export * from './context/ecs-cluster';
 export * from './context/security-group';
 export * from './context/key';
 export * from './context/ecs-cluster';

@@ -55,14 +55,14 @@ export enum ContextProvider {
   KEY_PROVIDER = 'key-provider',
 
   /**
-   * A plugin provider (the actual plugin name will be in the properties)
-   */
-  PLUGIN = 'plugin',
-
-  /**
    * ECS Cluster Provider
    */
   ECS_CLUSTER_PROVIDER = 'ecs-cluster',
+
+  /**
+   * A plugin provider (the actual plugin name will be in the properties)
+   */
+  PLUGIN = 'plugin',
 }
 
 /**

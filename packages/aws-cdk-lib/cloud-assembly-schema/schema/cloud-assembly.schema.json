@@ -504,6 +504,7 @@
                 "load-balancer-listener",
                 "security-group",
                 "key-provider",
+                "ecs-cluster",
                 "plugin"
             ]
         },
@@ -541,6 +542,9 @@
                 },
                 {
                     "$ref": "#/definitions/PluginContextQuery"
+                },
+                {
+                    "$ref": "#/definitions/EcsClusterContextQuery"
                 }
             ]
         },
@@ -916,6 +920,39 @@
             },
             "required": [
                 "pluginName"
+            ]
+        },
+        "EcsClusterContextQuery": {
+            "description": "query",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "clusterName": {
+                    "description": "Cluster name (Default - None)",
+                    "type": "string"
+                },
+                "clusterArn": {
+                    "description": "The ARN of the role that should be used to look up the missing values",
+                    "type": "string"
+                },
+                "Tags": {
+                    "description": "tags",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Tag"
+                    }
+                }
+            },
+            "required": [
+                "account",
+                "region"
             ]
         },
         "RuntimeInfo": {

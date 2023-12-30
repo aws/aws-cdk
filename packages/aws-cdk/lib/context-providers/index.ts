@@ -2,6 +2,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { AmiContextProviderPlugin } from './ami';
 import { AZContextProviderPlugin } from './availability-zones';
+import { EcsClusterContextProviderPlugin } from './ecs-clusters';
 import { EndpointServiceAZContextProviderPlugin } from './endpoint-service-availability-zones';
 import { HostedZoneContextProviderPlugin } from './hosted-zones';
 import { KeyContextProviderPlugin } from './keys';
@@ -117,4 +118,5 @@ const availableContextProviders: ProviderMap = {
   [cxschema.ContextProvider.LOAD_BALANCER_PROVIDER]: (s) => new LoadBalancerContextProviderPlugin(s),
   [cxschema.ContextProvider.LOAD_BALANCER_LISTENER_PROVIDER]: (s) => new LoadBalancerListenerContextProviderPlugin(s),
   [cxschema.ContextProvider.KEY_PROVIDER]: (s) => new KeyContextProviderPlugin(s),
+  [cxschema.ContextProvider.ECS_CLUSTER_PROVIDER]: (s) => new EcsClusterContextProviderPlugin(s),
 };
