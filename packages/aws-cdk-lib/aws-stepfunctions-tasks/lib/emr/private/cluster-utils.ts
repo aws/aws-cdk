@@ -150,14 +150,26 @@ function SpotProvisioningSpecificationPropertyToJson(property?: EmrCreateCluster
   if (!property) {
     return undefined;
   }
-  if (!cdk.Token.isUnresolved(property.timeoutDurationMinutes) && (property.timeoutDurationMinutes < 5 || property.timeoutDurationMinutes > 1440)) {
-    throw new Error(`timeoutDurationMinutes must be between 5 and 1440, got ${property.timeoutDurationMinutes}`);
+
+  if (!property.timeout && !property.timeoutDurationMinutes) {
+    throw new Error('timeout must be specified');
   }
+  if (property.timeout && (property.timeout.toMinutes() < 5 || property.timeout.toMinutes() > 1440)) {
+    throw new Error(`timeout must be between 5 and 1440 minutes, got ${property.timeout.toMinutes()}`);
+  }
+  if (
+    property.timeoutDurationMinutes
+    && !cdk.Token.isUnresolved(property.timeoutDurationMinutes)
+    && (property.timeoutDurationMinutes < 5 || property.timeoutDurationMinutes > 1440)
+  ) {
+    throw new Error(`timeoutDurationMinutes must be between 5 and 1440 minutes, got ${property.timeoutDurationMinutes}`);
+  }
+
   return {
     AllocationStrategy: cdk.stringToCloudFormation(property.allocationStrategy),
     BlockDurationMinutes: cdk.numberToCloudFormation(property.blockDurationMinutes),
     TimeoutAction: cdk.stringToCloudFormation(property.timeoutAction?.valueOf()),
-    TimeoutDurationMinutes: cdk.numberToCloudFormation(property.timeoutDurationMinutes),
+    TimeoutDurationMinutes: cdk.numberToCloudFormation(property.timeout?.toMinutes() || property.timeoutDurationMinutes),
   };
 }
 
