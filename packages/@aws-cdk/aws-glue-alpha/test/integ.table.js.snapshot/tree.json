@@ -44,7 +44,8 @@
                       "Ref": "AWS::AccountId"
                     },
                     "databaseInput": {
-                      "name": "my_database"
+                      "name": "my_database",
+                      "description": "my_database_description"
                     }
                   }
                 },
