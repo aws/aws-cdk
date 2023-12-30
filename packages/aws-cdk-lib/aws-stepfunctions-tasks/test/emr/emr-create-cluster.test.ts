@@ -1,4 +1,4 @@
-import { Template, Match } from '../../../assertions';
+import { Template } from '../../../assertions';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
@@ -883,7 +883,12 @@ test('Create Cluster with Instances configuration', () => {
   });
 });
 
-test('Create Cluster with InstanceFleet with allocation strategy=capacity-optimized for Spot instances', () => {
+test.each([
+  [EmrCreateCluster.SpotAllocationStrategy.CAPACITY_OPTIMIZED, 'capacity-optimized'],
+  [EmrCreateCluster.SpotAllocationStrategy.PRICE_CAPACITY_OPTIMIZED, 'price-capacity-optimized'],
+  [EmrCreateCluster.SpotAllocationStrategy.LOWEST_PRICE, 'lowest-price'],
+  [EmrCreateCluster.SpotAllocationStrategy.DIVERSIFIED, 'diversified'],
+])('Create Cluster with InstanceFleet with allocation strategy %s for Spot instances', (strategy, expected) => {
   // WHEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
@@ -913,7 +918,7 @@ test('Create Cluster with InstanceFleet with allocation strategy=capacity-optimi
         }],
         launchSpecifications: {
           spotSpecification: {
-            allocationStrategy: EmrCreateCluster.SpotAllocationStrategy.CAPACITY_OPTIMIZED,
+            allocationStrategy: strategy,
             blockDurationMinutes: 1,
             timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
             timeoutDurationMinutes: 5,
@@ -975,7 +980,7 @@ test('Create Cluster with InstanceFleet with allocation strategy=capacity-optimi
           }],
           LaunchSpecifications: {
             SpotSpecification: {
-              AllocationStrategy: 'capacity-optimized',
+              AllocationStrategy: expected,
               BlockDurationMinutes: 1,
               TimeoutAction: 'TERMINATE_CLUSTER',
               TimeoutDurationMinutes: 5,
