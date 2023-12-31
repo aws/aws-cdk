@@ -1300,7 +1300,7 @@ test('Throws if timeoutDurationMinutes for Spot instances is less than 5 minutes
   // THEN
   expect(() => {
     task.toStateJson();
-  }).toThrow(/timeoutDurationMinutes must be between 5 and 1440 minutes, got 4/);
+  }).toThrow(/timeout must be between 5 and 1440 minutes, got 4/);
 });
 
 test('Throws if timeoutDurationMinutes for Spot instances is greater than 1440 minutes', () => {
@@ -1328,7 +1328,7 @@ test('Throws if timeoutDurationMinutes for Spot instances is greater than 1440 m
   // THEN
   expect(() => {
     task.toStateJson();
-  }).toThrow(/timeoutDurationMinutes must be between 5 and 1440 minutes, got 1441/);
+  }).toThrow(/timeout must be between 5 and 1440 minutes, got 1441/);
 });
 
 test('Throws if neither timeout nor timeoutDurationMinutes is specified', () => {
@@ -1355,10 +1355,10 @@ test('Throws if neither timeout nor timeoutDurationMinutes is specified', () => 
   // THEN
   expect(() => {
     task.toStateJson();
-  }).toThrow(/timeout must be specified/);
+  }).toThrow(/one of timeout and timeoutDurationMinutes must be specified/);
 });
 
-test('timeout takes precedence if both timeout and timeoutDurationMinutes are specified', () => {
+test('Throws if both timeout and timeoutDurationMinutes are specified', () => {
   // WHEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
@@ -1382,46 +1382,9 @@ test('timeout takes precedence if both timeout and timeoutDurationMinutes are sp
   });
 
   // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
-          },
-          ':states:::elasticmapreduce:createCluster',
-        ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      Name: 'Cluster',
-      Instances: {
-        KeepJobFlowAliveWhenNoSteps: true,
-        InstanceFleets: [{
-          InstanceFleetType: 'MASTER',
-          LaunchSpecifications: {
-            SpotSpecification: {
-              TimeoutAction: 'TERMINATE_CLUSTER',
-              TimeoutDurationMinutes: 5,
-            },
-          },
-          Name: 'Main',
-          TargetSpotCapacity: 1,
-        }],
-      },
-      VisibleToAllUsers: true,
-      JobFlowRole: {
-        Ref: 'ClusterRoleD9CA7471',
-      },
-      ServiceRole: {
-        Ref: 'ServiceRole4288B192',
-      },
-    },
-  });
+  expect(() => {
+    task.toStateJson();
+  }).toThrow(/one of timeout and timeoutDurationMinutes must be specified/);
 });
 
 test('Throws if both bidPrice and bidPriceAsPercentageOfOnDemandPrice are specified', () => {
