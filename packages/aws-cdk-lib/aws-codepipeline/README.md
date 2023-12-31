@@ -365,6 +365,8 @@ const replicationBucket = new s3.Bucket(replicationStack, 'ReplicationBucket', {
 
 ## Variables
 
+### Action-level variables
+
 The library supports the CodePipeline Variables feature.
 Each action class that emits variables has a separate variables interface,
 accessed as a property of the action instance called `variables`.
@@ -418,6 +420,50 @@ for details on how to use the variables for each action class.
 
 See the [CodePipeline documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-variables.html)
 for more details on how to use the variables feature.
+
+### Pipeline-level variables
+
+You can add one or more variables at the pipeline level. You can reference
+this value in the configuration of CodePipeline actions. You can add the
+variable names, default values, and descriptions when you create the pipeline.
+Variables are resolved at the time of execution.
+
+Note that using pipeline-level variables in any kind of Source action is not supported.
+Also, the variables can only used with pipeline type V2.
+
+```ts
+declare const sourceAction: codepipeline_actions.S3SourceAction;
+declare const sourceOutput: codepipeline.Artifact;
+declare const deployBucket: s3.Bucket;
+
+new codepipeline.Pipeline(stack, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+  // Pipeline-level variables
+  variables: [{
+    variableName: 'bucket-var',
+    description: 'description',
+    defaultValue: 'sample',
+  }],
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Deploy',
+      actions: [
+        new codepipeline_actions.S3DeployAction({
+          actionName: 'DeployAction',
+          // can reference the variables
+          objectKey: '#{variables.bucket-var}.txt',
+          input: sourceOutput,
+          bucket: deployBucket,
+        }),
+      ],
+    },
+  ],
+});
+```
 
 ## Events
 
