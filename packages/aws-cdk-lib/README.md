@@ -396,7 +396,7 @@ CloudFormation to re-read the secret.
 ## ARN manipulation
 
 Sometimes you will need to put together or pick apart Amazon Resource Names
-(ARNs). The functions `stack.formatArn()` and `stack.parseArn()` exist for
+(ARNs). The functions `stack.formatArn()` and `stack.splitArn()` exist for
 this purpose.
 
 `formatArn()` can be used to build an ARN from components. It will automatically
@@ -409,12 +409,12 @@ declare const stack: Stack;
 stack.formatArn({
   service: 'lambda',
   resource: 'function',
-  sep: ':',
+  arnFormat: ArnFormat.COLON_RESOURCE_NAME,
   resourceName: 'MyFunction'
 });
 ```
 
-`parseArn()` can be used to get a single component from an ARN. `parseArn()`
+`splitArn()` can be used to get a single component from an ARN. `splitArn()`
 will correctly deal with both literal ARNs and deploy-time values (tokens),
 but in case of a deploy-time value be aware that the result will be another
 deploy-time value which cannot be inspected in the CDK application.
@@ -423,14 +423,13 @@ deploy-time value which cannot be inspected in the CDK application.
 declare const stack: Stack;
 
 // Extracts the function name out of an AWS Lambda Function ARN
-const arnComponents = stack.parseArn(arn, ':');
+const arnComponents = stack.splitArn(arn, ArnFormat.COLON_RESOURCE_NAME);
 const functionName = arnComponents.resourceName;
 ```
 
-Note that depending on the service, the resource separator can be either
-`:` or `/`, and the resource name can be either the 6th or 7th
-component in the ARN. When using these functions, you will need to know
-the format of the ARN you are dealing with.
+Note that the format of the resource separator depends on the service and
+may be any of the values supported by `ArnFormat`. When dealing with these
+functions, it is important to know the format of the ARN you are dealing with.
 
 For an exhaustive list of ARN formats used in AWS, see [AWS ARNs and
 Namespaces](https://docs.aws.amazon.com/general/latest/gr/aws-arns-and-namespaces.html)
@@ -611,7 +610,7 @@ response to the CloudFormation service and handle various error cases.
 Set `serviceToken` to `lambda.functionArn` to use this provider:
 
 ```ts
-const fn = new lambda.Function(this, 'MyProvider', functionProps);
+const fn = new lambda.SingletonFunction(this, 'MyProvider', functionProps);
 
 new CustomResource(this, 'MyResource', {
   serviceToken: fn.functionArn,
