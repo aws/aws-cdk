@@ -482,6 +482,19 @@ const taskDef = new ecs.TaskDefinition(this, 'TaskDef', {
 taskDef.grantRun(role);
 ```
 
+To deploy containerized applications that require the allocation of standard input (stdin) or a terminal (tty), you can set the `interactive` propertiy to `true` in `ContainerDefinitionOptions`.
+
+This parameter corresponds to OpenStdin in the [Create a container](https://docs.docker.com/engine/api/v1.35/#tag/Container/operation/ContainerCreate) section of the [Docker Remote API](https://docs.docker.com/engine/api/v1.35/) and the `--interactive` option to `docker run`.
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+taskDefinition.addContainer("Container", {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  interactive: true,
+});
+```
+
 ### Images
 
 Images supply the software that runs inside the container. Images can be
