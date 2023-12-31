@@ -92,6 +92,41 @@ export interface StageOptions extends StageProps {
   readonly placement?: StagePlacement;
 }
 
+/**
+ * Pipeline types.
+ */
+export enum PipelineType {
+  /**
+   * V1 type
+   */
+  V1 = 'V1',
+  /**
+   * V2 type
+   */
+  V2 = 'V2',
+}
+
+/**
+ * Construction properties of a Pipeline-Level Variable.
+ */
+export interface PipelineVariable {
+  /**
+   * The name of a pipeline-level variable.
+   */
+  readonly variableName: string;
+
+  /**
+   * The description of a pipeline-level variable. It's used to add additional context
+   * about the variable, and not being used at time when pipeline executes.
+   */
+  readonly description?: string;
+
+  /**
+   * The value of a pipeline-level variable.
+   */
+  readonly defaultValue?: string;
+}
+
 export interface PipelineProps {
   /**
    * The S3 bucket used by this Pipeline to store artifacts.
@@ -173,6 +208,22 @@ export interface PipelineProps {
    * @default - true (Use the same support stack for all pipelines in App)
    */
   readonly reuseCrossRegionSupportStacks?: boolean;
+
+  /**
+   * Type of the pipeline.
+   *
+   * @default - PipelineType.V1
+   *
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipeline-types-planning.html
+   */
+  readonly pipelineType?: PipelineType;
+
+  /**
+   * A list that defines the pipeline variables for a pipeline resource.
+   *
+   * @default - No variables
+   */
+  readonly variables?: PipelineVariable[]
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -441,6 +492,8 @@ export class Pipeline extends PipelineBase {
       disableInboundStageTransitions: Lazy.any({ produce: () => this.renderDisabledTransitions() }, { omitEmptyArray: true }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
+      pipelineType: props.pipelineType,
+      variables: this.renderVariables(props.variables),
       name: this.physicalName,
     });
 
@@ -1075,6 +1128,14 @@ export class Pipeline extends PipelineBase {
         reason: stage.transitionDisabledReason,
         stageName: stage.stageName,
       }));
+  }
+
+  private renderVariables(variables?: PipelineVariable[]): CfnPipeline.VariableDeclarationProperty[] | undefined {
+    return variables?.map(v => ({
+      defaultValue: v.defaultValue,
+      description: v.description,
+      name: v.variableName,
+    }));
   }
 
   private requireRegion(): string {
