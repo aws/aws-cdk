@@ -529,7 +529,7 @@ describe('', () => {
       });
     });
 
-    test('can specify pipeline type', () => {
+    test('can specify pipeline-level variables', () => {
       const stack = new cdk.Stack();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -568,7 +568,7 @@ describe('', () => {
       });
     });
 
-    test('throw if variables are specified when pipelineType is not set to V2', () => {
+    test('throw if pipeline-level variables are specified when pipelineType is not set to V2', () => {
       const stack = new cdk.Stack();
       expect(() => {
         new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -581,7 +581,7 @@ describe('', () => {
       }).toThrow(/Pipeline variables can only be used with V2 pipelines/);
     });
 
-    test('throw if name for variable uses invalid character', () => {
+    test('throw if name for pipeline-level variable uses invalid character', () => {
       const stack = new cdk.Stack();
       expect(() => {
         new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -595,7 +595,7 @@ describe('', () => {
       }).toThrow('Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got \'var name\'');
     });
 
-    test('throw if length of name for variable is less than 1', () => {
+    test('throw if length of name for pipeline-level variable is less than 1', () => {
       const stack = new cdk.Stack();
       expect(() => {
         new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -609,7 +609,7 @@ describe('', () => {
       }).toThrow('Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got \'\'');
     });
 
-    test('throw if length of name for variable is greater than 128', () => {
+    test('throw if length of name for pipeline-level variable is greater than 128', () => {
       const stack = new cdk.Stack();
       expect(() => {
         new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -623,7 +623,7 @@ describe('', () => {
       }).toThrow(`Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got '${'a'.repeat(129)}'`);
     });
 
-    test('throw if length of default value for variable is less than 1', () => {
+    test('throw if length of default value for pipeline-level variable is less than 1', () => {
       const stack = new cdk.Stack();
       expect(() => {
         new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -637,7 +637,7 @@ describe('', () => {
       }).toThrow(/Default value for variable 'var-name' must be between 1 and 1000 characters long, got 0/);
     });
 
-    test('throw if length of default value for variable is greater than 1000', () => {
+    test('throw if length of default value for pipeline-level variable is greater than 1000', () => {
       const stack = new cdk.Stack();
       expect(() => {
         new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -651,7 +651,7 @@ describe('', () => {
       }).toThrow(/Default value for variable 'var-name' must be between 1 and 1000 characters long, got 1001/);
     });
 
-    test('throw if length of description for variable is greater than 200', () => {
+    test('throw if length of description for pipeline-level variable is greater than 200', () => {
       const stack = new cdk.Stack();
       expect(() => {
         new codepipeline.Pipeline(stack, 'Pipeline', {
