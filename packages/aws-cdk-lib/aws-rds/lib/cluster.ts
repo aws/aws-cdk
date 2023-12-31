@@ -359,6 +359,9 @@ interface DatabaseClusterBaseProps {
    * @default - IPV4
    */
   readonly networkType?: NetworkType;
+
+  readonly domain?: string;
+  readonly domainIamRoleName?: string;
 }
 
 /**
@@ -637,6 +640,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
       // Tags
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
+      domain: props.domain,
+      domainIamRoleName: props.domainIamRoleName,
     };
   }
 
