@@ -7,7 +7,7 @@ import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-v2');
+const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-with-pipeline-variables');
 
 const sourceBucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,
@@ -55,7 +55,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   ],
 });
 
-const integ = new IntegTest(app, 'codepipeline-v2-test', {
+const integ = new IntegTest(app, 'codepipeline-with-pipeline-variables-test', {
   testCases: [stack],
   diffAssets: true,
 });
