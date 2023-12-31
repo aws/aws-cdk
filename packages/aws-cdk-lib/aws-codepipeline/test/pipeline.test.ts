@@ -637,7 +637,7 @@ describe('', () => {
       }).toThrow(/Default value for variable 'var-name' must be between 1 and 1000 characters long, got 0/);
     });
 
-    test('throw if length of default value for variable is greater than 128', () => {
+    test('throw if length of default value for variable is greater than 1000', () => {
       const stack = new cdk.Stack();
       expect(() => {
         new codepipeline.Pipeline(stack, 'Pipeline', {
