@@ -118,11 +118,15 @@ export interface PipelineVariable {
   /**
    * The description of a pipeline-level variable. It's used to add additional context
    * about the variable, and not being used at time when pipeline executes.
+   *
+   * @default - No description.
    */
   readonly description?: string;
 
   /**
    * The value of a pipeline-level variable.
+   *
+   * @default - No default value.
    */
   readonly defaultValue?: string;
 }
