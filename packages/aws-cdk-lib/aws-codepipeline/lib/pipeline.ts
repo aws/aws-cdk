@@ -225,6 +225,8 @@ export interface PipelineProps {
   /**
    * A list that defines the pipeline variables for a pipeline resource.
    *
+   * `variables` can only be used when `pipelineType` is set to `PipelineType.V2`.
+   *
    * @default - No variables
    */
   readonly variables?: PipelineVariable[]
