@@ -9,6 +9,7 @@ import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
+import { IResolvable } from '../../core';
 
 /**
  * Specify the secret's version id or version stage
@@ -250,6 +251,14 @@ export interface ContainerDefinitionOptions {
    * @default - Automatic hostname.
    */
   readonly hostname?: string;
+
+  /**
+   * When this parameter is true , you can deploy containerized applications that require stdin or a tty to be allocated.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinition.html#cfn-ecs-taskdefinition-containerdefinition-interactive
+   * @default - false
+   */
+  readonly interactive?: boolean | IResolvable;
 
   /**
    * The amount (in MiB) of memory to present to the container.
@@ -797,6 +806,7 @@ export class ContainerDefinition extends Construct {
       essential: this.essential,
       hostname: this.props.hostname,
       image: this.imageConfig.imageName,
+      interactive: this.props.interactive,
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
       mountPoints: cdk.Lazy.any({ produce: () => this.mountPoints.map(renderMountPoint) }, { omitEmptyArray: true }),
