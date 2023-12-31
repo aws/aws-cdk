@@ -967,11 +967,12 @@ describe('serverless cluster', () => {
   test('invalid ServerlessScalingOptions throws', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
 
     // THEN
     expect(() => new ServerlessCluster(stack, 'Database1', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      vpc: new ec2.Vpc(stack, 'Vpc'),
+      vpc,
       scaling: {
         autoPause: cdk.Duration.minutes(10),
         minCapacity: AuroraCapacityUnit.ACU_8,
@@ -982,7 +983,7 @@ describe('serverless cluster', () => {
 
     expect(() => new ServerlessCluster(stack, 'Database2', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
-      vpc: new ec2.Vpc(stack, 'Vpc'),
+      vpc,
       scaling: {
         autoPause: cdk.Duration.minutes(10),
         minCapacity: AuroraCapacityUnit.ACU_8,
