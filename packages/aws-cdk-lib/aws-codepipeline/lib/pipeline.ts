@@ -12,7 +12,7 @@ import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './private/
 import { FullActionDescriptor } from './private/full-action-descriptor';
 import { RichAction } from './private/rich-action';
 import { Stage } from './private/stage';
-import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
+import { validateName, validateNamespaceName, validatePipelineVariableName, validateSourceAction } from './private/validation';
 import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
@@ -425,6 +425,8 @@ export class Pipeline extends PipelineBase {
   private readonly reuseCrossRegionSupportStacks: boolean;
   private readonly codePipeline: CfnPipeline;
 
+  private readonly pipelineType: PipelineType;
+
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
       physicalName: props.pipelineName,
@@ -484,6 +486,8 @@ export class Pipeline extends PipelineBase {
     this.role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
     });
+
+    this.pipelineType = props.pipelineType ?? PipelineType.V1;
 
     this.codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
@@ -1131,6 +1135,21 @@ export class Pipeline extends PipelineBase {
   }
 
   private renderVariables(variables?: PipelineVariable[]): CfnPipeline.VariableDeclarationProperty[] | undefined {
+    if (!variables) {
+      return undefined;
+    }
+    if (this.pipelineType !== PipelineType.V2) {
+      throw new Error('Pipeline variables can only be used with V2 pipelines');
+    }
+    variables.forEach(v => {
+      validatePipelineVariableName(v.variableName);
+      if (v.defaultValue !== undefined && !Token.isUnresolved(v.defaultValue) && (v.defaultValue.length < 1 || v.defaultValue.length > 1000)) {
+        throw new Error(`Default value for variable '${v.variableName}' must be between 1 and 1000 characters long, got ${v.defaultValue.length}`);
+      }
+      if (v.description !== undefined && !Token.isUnresolved(v.description) && v.description.length > 200) {
+        throw new Error(`Description for variable '${v.variableName}' must not be greater than 200 characters long, got ${v.description.length}`);
+      }
+    });
     return variables?.map(v => ({
       defaultValue: v.defaultValue,
       description: v.description,
