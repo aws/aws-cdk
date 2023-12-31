@@ -496,6 +496,174 @@ describe('', () => {
         });
       });
     });
+
+    test.each([
+      [codepipeline.PipelineType.V1, 'V1'],
+      [codepipeline.PipelineType.V2, 'V2'],
+    ])('can specify pipeline type %s', (type, expected) => {
+      const stack = new cdk.Stack();
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: type,
+      });
+
+      // Adding 2 stages with actions so pipeline validation will pass
+      const sourceArtifact = new codepipeline.Artifact();
+      pipeline.addStage({
+        stageName: 'Source',
+        actions: [new FakeSourceAction({
+          actionName: 'FakeSource',
+          output: sourceArtifact,
+        })],
+      });
+
+      pipeline.addStage({
+        stageName: 'Build',
+        actions: [new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        })],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        PipelineType: expected,
+      });
+    });
+
+    test('can specify pipeline type', () => {
+      const stack = new cdk.Stack();
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        variables: [{
+          variableName: 'var-name',
+          description: 'description',
+          defaultValue: 'default-value',
+        }],
+      });
+
+      // Adding 2 stages with actions so pipeline validation will pass
+      const sourceArtifact = new codepipeline.Artifact();
+      pipeline.addStage({
+        stageName: 'Source',
+        actions: [new FakeSourceAction({
+          actionName: 'FakeSource',
+          output: sourceArtifact,
+        })],
+      });
+
+      pipeline.addStage({
+        stageName: 'Build',
+        actions: [new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        })],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        PipelineType: 'V2',
+        Variables: [{
+          Name: 'var-name',
+          Description: 'description',
+          DefaultValue: 'default-value',
+        }],
+      });
+    });
+
+    test('throw if variables are specified when pipelineType is not set to V2', () => {
+      const stack = new cdk.Stack();
+      expect(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          variables: [{
+            variableName: 'var-name',
+            description: 'description',
+            defaultValue: 'default-value',
+          }],
+        });
+      }).toThrow(/Pipeline variables can only be used with V2 pipelines/);
+    });
+
+    test('throw if name for variable uses invalid character', () => {
+      const stack = new cdk.Stack();
+      expect(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          pipelineType: codepipeline.PipelineType.V2,
+          variables: [{
+            variableName: 'var name',
+            description: 'description',
+            defaultValue: 'default-value',
+          }],
+        });
+      }).toThrow('Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got \'var name\'');
+    });
+
+    test('throw if length of name for variable is less than 1', () => {
+      const stack = new cdk.Stack();
+      expect(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          pipelineType: codepipeline.PipelineType.V2,
+          variables: [{
+            variableName: '',
+            description: 'description',
+            defaultValue: 'default-value',
+          }],
+        });
+      }).toThrow('Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got \'\'');
+    });
+
+    test('throw if length of name for variable is greater than 128', () => {
+      const stack = new cdk.Stack();
+      expect(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          pipelineType: codepipeline.PipelineType.V2,
+          variables: [{
+            variableName: 'a'.repeat(129),
+            description: 'description',
+            defaultValue: 'default-value',
+          }],
+        });
+      }).toThrow(`Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got '${'a'.repeat(129)}'`);
+    });
+
+    test('throw if length of default value for variable is less than 1', () => {
+      const stack = new cdk.Stack();
+      expect(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          pipelineType: codepipeline.PipelineType.V2,
+          variables: [{
+            variableName: 'var-name',
+            description: 'description',
+            defaultValue: '',
+          }],
+        });
+      }).toThrow(/Default value for variable 'var-name' must be between 1 and 1000 characters long, got 0/);
+    });
+
+    test('throw if length of default value for variable is greater than 128', () => {
+      const stack = new cdk.Stack();
+      expect(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          pipelineType: codepipeline.PipelineType.V2,
+          variables: [{
+            variableName: 'var-name',
+            description: 'description',
+            defaultValue: 'a'.repeat(1001),
+          }],
+        });
+      }).toThrow(/Default value for variable 'var-name' must be between 1 and 1000 characters long, got 1001/);
+    });
+
+    test('throw if length of description for variable is greater than 200', () => {
+      const stack = new cdk.Stack();
+      expect(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          pipelineType: codepipeline.PipelineType.V2,
+          variables: [{
+            variableName: 'var-name',
+            description: 'a'.repeat(201),
+            defaultValue: 'default',
+          }],
+        });
+      }).toThrow(/Description for variable 'var-name' must not be greater than 200 characters long, got 201/);
+    });
   });
 
   describe('cross account key alias name tests', () => {
