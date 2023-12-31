@@ -18,7 +18,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-codepipeline-v2:ExportsOutputRefDeployBucket67E2C076D8DEC04D"
+         "Fn::ImportValue": "aws-cdk-codepipeline-with-pipeline-variables:ExportsOutputRefDeployBucket67E2C076D8DEC04D"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      "Key": "\"sample.txt\""
     },
     "flattenResponse": "false",
-    "salt": "1704019239666"
+    "salt": "1704021702612"
    },
    "DependsOn": [
     "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
@@ -146,7 +146,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-codepipeline-v2:ExportsOutputRefPipelineBucketB967BD35BAE6E881"
+         "Fn::ImportValue": "aws-cdk-codepipeline-with-pipeline-variables:ExportsOutputRefPipelineBucketB967BD35BAE6E881"
         },
         "\""
        ]
@@ -156,7 +156,7 @@
      "Body": "\"HelloWorld\""
     },
     "flattenResponse": "false",
-    "salt": "1704019239666"
+    "salt": "1704021702612"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -183,7 +183,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-codepipeline-v2:ExportsOutputRefPipelineC660917DEB540586"
+         "Fn::ImportValue": "aws-cdk-codepipeline-with-pipeline-variables:ExportsOutputRefPipelineC660917DEB540586"
         },
         "\""
        ]
@@ -191,7 +191,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1704019239666"
+    "salt": "1704021702612"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

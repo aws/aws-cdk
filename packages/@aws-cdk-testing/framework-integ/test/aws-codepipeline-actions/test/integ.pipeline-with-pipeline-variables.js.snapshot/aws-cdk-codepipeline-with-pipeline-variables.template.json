@@ -644,7 +644,7 @@
     "Ref": "DeployBucket67E2C076"
    },
    "Export": {
-    "Name": "aws-cdk-codepipeline-v2:ExportsOutputRefDeployBucket67E2C076D8DEC04D"
+    "Name": "aws-cdk-codepipeline-with-pipeline-variables:ExportsOutputRefDeployBucket67E2C076D8DEC04D"
    }
   },
   "ExportsOutputRefPipelineBucketB967BD35BAE6E881": {
@@ -652,7 +652,7 @@
     "Ref": "PipelineBucketB967BD35"
    },
    "Export": {
-    "Name": "aws-cdk-codepipeline-v2:ExportsOutputRefPipelineBucketB967BD35BAE6E881"
+    "Name": "aws-cdk-codepipeline-with-pipeline-variables:ExportsOutputRefPipelineBucketB967BD35BAE6E881"
    }
   },
   "ExportsOutputRefPipelineC660917DEB540586": {
@@ -660,7 +660,7 @@
     "Ref": "PipelineC660917D"
    },
    "Export": {
-    "Name": "aws-cdk-codepipeline-v2:ExportsOutputRefPipelineC660917DEB540586"
+    "Name": "aws-cdk-codepipeline-with-pipeline-variables:ExportsOutputRefPipelineC660917DEB540586"
    }
   }
  },

@@ -430,7 +430,6 @@ export class Pipeline extends PipelineBase {
   private readonly enableKeyRotation?: boolean;
   private readonly reuseCrossRegionSupportStacks: boolean;
   private readonly codePipeline: CfnPipeline;
-
   private readonly pipelineType: PipelineType;
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {

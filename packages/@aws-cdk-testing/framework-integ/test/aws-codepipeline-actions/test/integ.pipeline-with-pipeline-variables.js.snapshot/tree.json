@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-cdk-codepipeline-v2": {
-        "id": "aws-cdk-codepipeline-v2",
-        "path": "aws-cdk-codepipeline-v2",
+      "aws-cdk-codepipeline-with-pipeline-variables": {
+        "id": "aws-cdk-codepipeline-with-pipeline-variables",
+        "path": "aws-cdk-codepipeline-with-pipeline-variables",
         "children": {
           "PipelineBucket": {
             "id": "PipelineBucket",
-            "path": "aws-cdk-codepipeline-v2/PipelineBucket",
+            "path": "aws-cdk-codepipeline-with-pipeline-variables/PipelineBucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-codepipeline-v2/PipelineBucket/Resource",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/PipelineBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -36,11 +36,11 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "aws-cdk-codepipeline-v2/PipelineBucket/Policy",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/PipelineBucket/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-codepipeline-v2/PipelineBucket/Policy/Resource",
+                    "path": "aws-cdk-codepipeline-with-pipeline-variables/PipelineBucket/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
@@ -106,11 +106,11 @@
               },
               "AutoDeleteObjectsCustomResource": {
                 "id": "AutoDeleteObjectsCustomResource",
-                "path": "aws-cdk-codepipeline-v2/PipelineBucket/AutoDeleteObjectsCustomResource",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/PipelineBucket/AutoDeleteObjectsCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-codepipeline-v2/PipelineBucket/AutoDeleteObjectsCustomResource/Default",
+                    "path": "aws-cdk-codepipeline-with-pipeline-variables/PipelineBucket/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -130,11 +130,11 @@
           },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
-            "path": "aws-cdk-codepipeline-v2/Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "path": "aws-cdk-codepipeline-with-pipeline-variables/Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "aws-cdk-codepipeline-v2/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -142,7 +142,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "aws-cdk-codepipeline-v2/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -150,7 +150,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "aws-cdk-codepipeline-v2/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -164,11 +164,11 @@
           },
           "DeployBucket": {
             "id": "DeployBucket",
-            "path": "aws-cdk-codepipeline-v2/DeployBucket",
+            "path": "aws-cdk-codepipeline-with-pipeline-variables/DeployBucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-codepipeline-v2/DeployBucket/Resource",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/DeployBucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -187,11 +187,11 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "aws-cdk-codepipeline-v2/DeployBucket/Policy",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/DeployBucket/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-codepipeline-v2/DeployBucket/Policy/Resource",
+                    "path": "aws-cdk-codepipeline-with-pipeline-variables/DeployBucket/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
@@ -257,11 +257,11 @@
               },
               "AutoDeleteObjectsCustomResource": {
                 "id": "AutoDeleteObjectsCustomResource",
-                "path": "aws-cdk-codepipeline-v2/DeployBucket/AutoDeleteObjectsCustomResource",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/DeployBucket/AutoDeleteObjectsCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-codepipeline-v2/DeployBucket/AutoDeleteObjectsCustomResource/Default",
+                    "path": "aws-cdk-codepipeline-with-pipeline-variables/DeployBucket/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -281,15 +281,15 @@
           },
           "Pipeline": {
             "id": "Pipeline",
-            "path": "aws-cdk-codepipeline-v2/Pipeline",
+            "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "aws-cdk-codepipeline-v2/Pipeline/Role",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "aws-cdk-codepipeline-v2/Pipeline/Role/ImportRole",
+                    "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -297,7 +297,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-codepipeline-v2/Pipeline/Role/Resource",
+                    "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -322,11 +322,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-codepipeline-v2/Pipeline/Role/DefaultPolicy",
+                    "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-codepipeline-v2/Pipeline/Role/DefaultPolicy/Resource",
+                        "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -417,7 +417,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-codepipeline-v2/Pipeline/Resource",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CodePipeline::Pipeline",
                   "aws:cdk:cloudformation:props": {
@@ -517,19 +517,19 @@
               },
               "Source": {
                 "id": "Source",
-                "path": "aws-cdk-codepipeline-v2/Pipeline/Source",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Source",
                 "children": {
                   "Source": {
                     "id": "Source",
-                    "path": "aws-cdk-codepipeline-v2/Pipeline/Source/Source",
+                    "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Source/Source",
                     "children": {
                       "CodePipelineActionRole": {
                         "id": "CodePipelineActionRole",
-                        "path": "aws-cdk-codepipeline-v2/Pipeline/Source/Source/CodePipelineActionRole",
+                        "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Source/Source/CodePipelineActionRole",
                         "children": {
                           "ImportCodePipelineActionRole": {
                             "id": "ImportCodePipelineActionRole",
-                            "path": "aws-cdk-codepipeline-v2/Pipeline/Source/Source/CodePipelineActionRole/ImportCodePipelineActionRole",
+                            "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Source/Source/CodePipelineActionRole/ImportCodePipelineActionRole",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -537,7 +537,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-codepipeline-v2/Pipeline/Source/Source/CodePipelineActionRole/Resource",
+                            "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Source/Source/CodePipelineActionRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -577,11 +577,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "aws-cdk-codepipeline-v2/Pipeline/Source/Source/CodePipelineActionRole/DefaultPolicy",
+                            "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Source/Source/CodePipelineActionRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-cdk-codepipeline-v2/Pipeline/Source/Source/CodePipelineActionRole/DefaultPolicy/Resource",
+                                "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Source/Source/CodePipelineActionRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -693,19 +693,19 @@
               },
               "Deploy": {
                 "id": "Deploy",
-                "path": "aws-cdk-codepipeline-v2/Pipeline/Deploy",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Deploy",
                 "children": {
                   "DeployAction": {
                     "id": "DeployAction",
-                    "path": "aws-cdk-codepipeline-v2/Pipeline/Deploy/DeployAction",
+                    "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Deploy/DeployAction",
                     "children": {
                       "CodePipelineActionRole": {
                         "id": "CodePipelineActionRole",
-                        "path": "aws-cdk-codepipeline-v2/Pipeline/Deploy/DeployAction/CodePipelineActionRole",
+                        "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Deploy/DeployAction/CodePipelineActionRole",
                         "children": {
                           "ImportCodePipelineActionRole": {
                             "id": "ImportCodePipelineActionRole",
-                            "path": "aws-cdk-codepipeline-v2/Pipeline/Deploy/DeployAction/CodePipelineActionRole/ImportCodePipelineActionRole",
+                            "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Deploy/DeployAction/CodePipelineActionRole/ImportCodePipelineActionRole",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -713,7 +713,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-codepipeline-v2/Pipeline/Deploy/DeployAction/CodePipelineActionRole/Resource",
+                            "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Deploy/DeployAction/CodePipelineActionRole/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -753,11 +753,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "aws-cdk-codepipeline-v2/Pipeline/Deploy/DeployAction/CodePipelineActionRole/DefaultPolicy",
+                            "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Deploy/DeployAction/CodePipelineActionRole/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-cdk-codepipeline-v2/Pipeline/Deploy/DeployAction/CodePipelineActionRole/DefaultPolicy/Resource",
+                                "path": "aws-cdk-codepipeline-with-pipeline-variables/Pipeline/Deploy/DeployAction/CodePipelineActionRole/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -875,11 +875,11 @@
           },
           "Exports": {
             "id": "Exports",
-            "path": "aws-cdk-codepipeline-v2/Exports",
+            "path": "aws-cdk-codepipeline-with-pipeline-variables/Exports",
             "children": {
               "Output{\"Ref\":\"DeployBucket67E2C076\"}": {
                 "id": "Output{\"Ref\":\"DeployBucket67E2C076\"}",
-                "path": "aws-cdk-codepipeline-v2/Exports/Output{\"Ref\":\"DeployBucket67E2C076\"}",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/Exports/Output{\"Ref\":\"DeployBucket67E2C076\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -887,7 +887,7 @@
               },
               "Output{\"Ref\":\"PipelineBucketB967BD35\"}": {
                 "id": "Output{\"Ref\":\"PipelineBucketB967BD35\"}",
-                "path": "aws-cdk-codepipeline-v2/Exports/Output{\"Ref\":\"PipelineBucketB967BD35\"}",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/Exports/Output{\"Ref\":\"PipelineBucketB967BD35\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -895,7 +895,7 @@
               },
               "Output{\"Ref\":\"PipelineC660917D\"}": {
                 "id": "Output{\"Ref\":\"PipelineC660917D\"}",
-                "path": "aws-cdk-codepipeline-v2/Exports/Output{\"Ref\":\"PipelineC660917D\"}",
+                "path": "aws-cdk-codepipeline-with-pipeline-variables/Exports/Output{\"Ref\":\"PipelineC660917D\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -909,7 +909,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-cdk-codepipeline-v2/BootstrapVersion",
+            "path": "aws-cdk-codepipeline-with-pipeline-variables/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -917,7 +917,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-codepipeline-v2/CheckBootstrapVersion",
+            "path": "aws-cdk-codepipeline-with-pipeline-variables/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -929,17 +929,17 @@
           "version": "10.3.0"
         }
       },
-      "codepipeline-v2-test": {
-        "id": "codepipeline-v2-test",
-        "path": "codepipeline-v2-test",
+      "codepipeline-with-pipeline-variables-test": {
+        "id": "codepipeline-with-pipeline-variables-test",
+        "path": "codepipeline-with-pipeline-variables-test",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "codepipeline-v2-test/DefaultTest",
+            "path": "codepipeline-with-pipeline-variables-test/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "codepipeline-v2-test/DefaultTest/Default",
+                "path": "codepipeline-with-pipeline-variables-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -947,19 +947,19 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "codepipeline-v2-test/DefaultTest/DeployAssert",
+                "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert",
                 "children": {
                   "AwsApiCallS3getObject695fba8d94427feada0ec333e9baba77": {
                     "id": "AwsApiCallS3getObject695fba8d94427feada0ec333e9baba77",
-                    "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallS3getObject695fba8d94427feada0ec333e9baba77",
+                    "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallS3getObject695fba8d94427feada0ec333e9baba77",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallS3getObject695fba8d94427feada0ec333e9baba77/SdkProvider",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallS3getObject695fba8d94427feada0ec333e9baba77/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallS3getObject695fba8d94427feada0ec333e9baba77/SdkProvider/AssertionsProvider",
+                            "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallS3getObject695fba8d94427feada0ec333e9baba77/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -973,11 +973,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallS3getObject695fba8d94427feada0ec333e9baba77/Default",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallS3getObject695fba8d94427feada0ec333e9baba77/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallS3getObject695fba8d94427feada0ec333e9baba77/Default/Default",
+                            "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallS3getObject695fba8d94427feada0ec333e9baba77/Default/Default",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -997,11 +997,11 @@
                   },
                   "SingletonFunction1488541a7b23466481b69b4408076b81": {
                     "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
-                    "path": "codepipeline-v2-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -1009,7 +1009,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -1017,7 +1017,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -1031,15 +1031,15 @@
                   },
                   "AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d": {
                     "id": "AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d",
-                    "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d",
+                    "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d/SdkProvider",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d/SdkProvider/AssertionsProvider",
+                            "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -1053,11 +1053,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d/Default",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d/Default/Default",
+                            "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallS3putObjecte1b51fae535275287a7fd0b537ad2b3d/Default/Default",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -1077,15 +1077,15 @@
                   },
                   "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e": {
                     "id": "AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
-                    "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
+                    "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/SdkProvider",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/SdkProvider/AssertionsProvider",
+                            "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -1099,11 +1099,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/Default",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/Default/Default",
+                            "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/Default/Default",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -1117,15 +1117,15 @@
                       },
                       "WaitFor": {
                         "id": "WaitFor",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor",
                         "children": {
                           "IsCompleteProvider": {
                             "id": "IsCompleteProvider",
-                            "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/IsCompleteProvider",
+                            "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/IsCompleteProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.3.0"
@@ -1133,7 +1133,7 @@
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/IsCompleteProvider/Invoke",
+                                "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.3.0"
@@ -1147,11 +1147,11 @@
                           },
                           "TimeoutProvider": {
                             "id": "TimeoutProvider",
-                            "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/TimeoutProvider",
+                            "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/TimeoutProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.3.0"
@@ -1159,7 +1159,7 @@
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/TimeoutProvider/Invoke",
+                                "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.3.0"
@@ -1173,7 +1173,7 @@
                           },
                           "Role": {
                             "id": "Role",
-                            "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/Role",
+                            "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/Role",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -1181,7 +1181,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/Resource",
+                            "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/WaitFor/Resource",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -1195,7 +1195,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/AssertionResults",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/AwsApiCallCodePipelinegetPipelineState57ac6eaf015feec14cf48d22e7e8225e/AssertionResults",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -1209,11 +1209,11 @@
                   },
                   "SingletonFunction76b3e830a873425f8453eddd85c86925": {
                     "id": "SingletonFunction76b3e830a873425f8453eddd85c86925",
-                    "path": "codepipeline-v2-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -1221,7 +1221,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -1229,7 +1229,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -1243,11 +1243,11 @@
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
                     "id": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
-                    "path": "codepipeline-v2-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -1255,7 +1255,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -1263,7 +1263,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "codepipeline-v2-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
+                        "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -1277,7 +1277,7 @@
                   },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "codepipeline-v2-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -1285,7 +1285,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "codepipeline-v2-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
