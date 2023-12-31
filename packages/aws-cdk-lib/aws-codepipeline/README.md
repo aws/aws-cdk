@@ -436,7 +436,7 @@ declare const sourceAction: codepipeline_actions.S3SourceAction;
 declare const sourceOutput: codepipeline.Artifact;
 declare const deployBucket: s3.Bucket;
 
-new codepipeline.Pipeline(stack, 'Pipeline', {
+new codepipeline.Pipeline(this, 'Pipeline', {
   pipelineType: codepipeline.PipelineType.V2,
   // Pipeline-level variables
   variables: [{
