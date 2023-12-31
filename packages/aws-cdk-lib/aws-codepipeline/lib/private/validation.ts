@@ -59,7 +59,7 @@ export function validateNamespaceName(namespaceName: string | undefined): void {
 }
 
 export function validatePipelineVariableName(variableName: string | undefined): void {
-  validateAgainstRegex(/^[A-Za-z0-9@-_]{1,128}$/, 'Variable', variableName);
+  validateAgainstRegex(/^[A-Za-z0-9@\-_]{1,128}$/, 'Variable', variableName);
 }
 
 function validateAgainstRegex(regex: RegExp, thing: string, name: string | undefined) {
