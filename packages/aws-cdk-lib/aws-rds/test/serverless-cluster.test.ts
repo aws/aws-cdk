@@ -964,7 +964,10 @@ describe('serverless cluster', () => {
     });
   });
 
-  test('invalid ServerlessScalingOptions throws', () => {
+  test.each([
+    cdk.Duration.seconds(59),
+    cdk.Duration.seconds(601),
+  ])('invalid ServerlessScalingOptions throws', (duration) => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -977,18 +980,7 @@ describe('serverless cluster', () => {
         autoPause: cdk.Duration.minutes(10),
         minCapacity: AuroraCapacityUnit.ACU_8,
         maxCapacity: AuroraCapacityUnit.ACU_32,
-        secondsBeforeTimeout: cdk.Duration.seconds(59),
-      },
-    })).toThrow(/secondsBeforeTimeout must be between 60 and 600 seconds./);
-
-    expect(() => new ServerlessCluster(stack, 'Database2', {
-      engine: DatabaseClusterEngine.AURORA_MYSQL,
-      vpc,
-      scaling: {
-        autoPause: cdk.Duration.minutes(10),
-        minCapacity: AuroraCapacityUnit.ACU_8,
-        maxCapacity: AuroraCapacityUnit.ACU_32,
-        secondsBeforeTimeout: cdk.Duration.minutes(11),
+        secondsBeforeTimeout: duration,
       },
     })).toThrow(/secondsBeforeTimeout must be between 60 and 600 seconds./);
   });
