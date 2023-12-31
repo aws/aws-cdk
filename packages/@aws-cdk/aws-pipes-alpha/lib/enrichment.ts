@@ -35,10 +35,10 @@ export interface EnrichmentHttpParametersProperty {
 }
 
 /**
-   * The parameters required to set up enrichment on your pipe.
-   *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipeenrichmentparameters.html
-   */
+ * The parameters required to set up enrichment on your pipe.
+ *
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipeenrichmentparameters.html
+ */
 export interface EnrichmentParametersProperty {
   /**
    * Contains the HTTP parameters to use when the target is a API Gateway REST endpoint or EventBridge ApiDestination.

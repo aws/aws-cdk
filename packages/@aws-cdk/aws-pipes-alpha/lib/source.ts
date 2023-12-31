@@ -109,10 +109,10 @@ export interface ISource {
 }
 
 /**
-   * The parameters for using an Active MQ broker as a source.
-   *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourceactivemqbrokerparameters.html
-   */
+ * The parameters for using an Active MQ broker as a source.
+ *
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourceactivemqbrokerparameters.html
+ */
 export interface PipeSourceActiveMQBrokerParametersProperty {
   /**
    * The maximum number of records to include in each batch.
@@ -148,12 +148,12 @@ export interface PipeSourceActiveMQBrokerParametersProperty {
 }
 
 /**
-   * The parameters for using a DynamoDB stream as a source.
-   *
-   * @struct
-   * @stability external
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcedynamodbstreamparameters.html
-   */
+ * The parameters for using a DynamoDB stream as a source.
+ *
+ * @struct
+ * @stability external
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcedynamodbstreamparameters.html
+ */
 export interface PipeSourceDynamoDBStreamParametersProperty {
   /**
    * The maximum number of records to include in each batch.
@@ -266,28 +266,28 @@ export enum DynamoDBStartingPosition {
 }
 
 /**
-  * A `DeadLetterConfig` object that contains information about a dead-letter queue configuration.
-  *
-  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-deadletterconfig.html
-  */
+ * A `DeadLetterConfig` object that contains information about a dead-letter queue configuration.
+ *
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-deadletterconfig.html
+ */
 export interface DeadLetterConfigProperty {
   /**
-    * The ARN of the specified target for the dead-letter queue.
-    *
-    * For Amazon Kinesis stream and Amazon DynamoDB stream sources, specify either an Amazon SNS topic or Amazon SQS queue ARN.
-    *
-    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-deadletterconfig.html#cfn-pipes-pipe-deadletterconfig-arn
-    *
-    * @default - none
-    */
+   * The ARN of the specified target for the dead-letter queue.
+   *
+   * For Amazon Kinesis stream and Amazon DynamoDB stream sources, specify either an Amazon SNS topic or Amazon SQS queue ARN.
+   *
+   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-deadletterconfig.html#cfn-pipes-pipe-deadletterconfig-arn
+   *
+   * @default - none
+   */
   readonly arn?: string;
 }
 
 /**
-   * The parameters for using a Kinesis stream as a source.
-   *
-   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-kinesis.html
-   */
+ * The parameters for using a Kinesis stream as a source.
+ *
+ * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-kinesis.html
+ */
 export interface PipeSourceKinesisStreamParametersProperty {
   /**
    * The maximum number of records to include in each batch.
@@ -400,10 +400,10 @@ export enum KinesisStartingPosition {
 }
 
 /**
-   * The parameters for using an MSK stream as a source.
-   *
-   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-msk.html
-   */
+ * The parameters for using an MSK stream as a source.
+ *
+ * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-msk.html
+ */
 export interface PipeSourceManagedStreamingKafkaParametersProperty {
   /**
    * The maximum number of records to include in each batch.
@@ -459,10 +459,10 @@ export interface PipeSourceManagedStreamingKafkaParametersProperty {
 }
 
 /**
-   * The AWS Secrets Manager secret that stores your stream credentials.
-   *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-mskaccesscredentials.html
-   */
+ * The AWS Secrets Manager secret that stores your stream credentials.
+ *
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-mskaccesscredentials.html
+ */
 export interface MSKAccessCredentialsProperty {
   /**
    * The ARN of the Secrets Manager secret.
@@ -499,10 +499,10 @@ export enum KafkaStartingPosition {
 }
 
 /**
-   * The parameters for using a Rabbit MQ broker as a source.
-   *
-   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-mq.html
-   */
+ * The parameters for using a Rabbit MQ broker as a source.
+ *
+ * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-mq.html
+ */
 export interface PipeSourceRabbitMQBrokerParametersProperty {
   /**
    * The maximum number of records to include in each batch.
@@ -547,10 +547,10 @@ export interface PipeSourceRabbitMQBrokerParametersProperty {
 }
 
 /**
-   * The AWS Secrets Manager secret that stores your broker credentials.
-   *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-mqbrokeraccesscredentials.html
-   */
+ * The AWS Secrets Manager secret that stores your broker credentials.
+ *
+ * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-mqbrokeraccesscredentials.html
+ */
 export interface MQBrokerAccessCredentialsProperty {
   /**
    * The ARN of the Secrets Manager secret.
@@ -561,10 +561,10 @@ export interface MQBrokerAccessCredentialsProperty {
 }
 
 /**
-   * The parameters for using a self-managed apache Kafka stream as a source.
-   *
-   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-kafka.html
-   */
+ * The parameters for using a self-managed apache Kafka stream as a source.
+ *
+ * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-kafka.html
+ */
 export interface PipeSourceSelfManagedKafkaParametersProperty {
   /**
    * An array of server URLs.
@@ -719,10 +719,10 @@ export interface SelfManagedKafkaAccessConfigurationCredentialsProperty {
 }
 
 /**
-   * The parameters for using a Amazon SQS stream as a source.
-   *
-   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-sqs.html
-   */
+ * The parameters for using a Amazon SQS stream as a source.
+ *
+ * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-sqs.html
+ */
 export interface PipeSourceSqsQueueParametersProperty {
   /**
    * The maximum number of records to include in each batch.

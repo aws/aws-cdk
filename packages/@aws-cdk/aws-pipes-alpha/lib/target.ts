@@ -34,12 +34,12 @@ export interface ITarget {
 }
 
 /**
-   * The parameters required to set up a target for your pipe.
-   *
-   * For more information about pipe target parameters, including how to use dynamic path parameters, see [Target parameters](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-event-target.html) in the *Amazon EventBridge User Guide* .
-   *
-   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-event-target.html#pipes-targets-specific-parms
-   */
+ * The parameters required to set up a target for your pipe.
+ *
+ * For more information about pipe target parameters, including how to use dynamic path parameters, see [Target parameters](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-event-target.html) in the *Amazon EventBridge User Guide* .
+ *
+ * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-event-target.html#pipes-targets-specific-parms
+ */
 export interface PipeTargetParametersProperty {
   /**
    * The parameters for using an AWS Batch job as a target.
