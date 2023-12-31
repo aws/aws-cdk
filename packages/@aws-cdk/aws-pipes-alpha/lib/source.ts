@@ -5,7 +5,7 @@ import { IRole } from 'aws-cdk-lib/aws-iam';
  *
  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-event-source.html
  */
-export interface SourceProperties {
+export interface SourceParameters {
   /**
    * ActiveMQBroker configuration parameters.
    *
@@ -100,7 +100,7 @@ export interface ISource {
   /**
    * The parameters required to set up a source for your pipe.
    */
-  sourceParameters?: SourceProperties;
+  sourceParameters?: SourceParameters;
 
   /**
    * Grant the pipe role read access to the source.
