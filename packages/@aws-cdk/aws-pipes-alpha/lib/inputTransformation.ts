@@ -23,7 +23,7 @@ export interface IInputTransformation {
   /**
    * Valid JSON text passed to the target.
    */
-  inputTemplate: string;
+  readonly inputTemplate: string;
 }
 
 /**
@@ -39,7 +39,7 @@ export class InputTransformation implements IInputTransformation {
     return new InputTransformation(inputTemplate);
   }
 
-  inputTemplate: string;
+  public readonly inputTemplate: string;
 
   constructor(inputTemplate: InputTransformationValue) {
     this.inputTemplate = this.unquoteKeyPlaceholders(inputTemplate);
