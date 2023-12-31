@@ -68,26 +68,6 @@ export interface SourceParameters {
   readonly sqsQueueParameters?: PipeSourceSqsQueueParametersProperty;
 }
 
-// /**
-//  * Shared parameters that are available on all sources.
-//  */
-// interface IPipeSourceCommonParameters {
-//   /**
-//     * The maximum number of records to include in each batch.
-//     *
-//     * @default - 1
-//     */
-//   readonly batchSize?: Duration;
-
-//   /**
-//      * The maximum length of a time to wait for events.
-//      * Must be between 0 and 300 seconds.
-//      * TODO: check what is the default
-//      * @default - 300
-//      */
-//   readonly maximumBatchingWindow?: Duration;
-// }
-
 /**
  * Source interface
  */

@@ -182,14 +182,6 @@ abstract class PipeBase extends Resource implements IPipe {
  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes.html
  */
 export class Pipe extends PipeBase {
-  /**
-   * Reference an existing pipe by ARN
-   */
-  public static fromPipeArn(scope: Construct, id: string, pipeArn: string): IPipe {
-    // TODO implement fromPipeArn function
-    throw Error(`Not implemented! ${scope} ${id} ${pipeArn}`);
-  }
-
   public readonly pipeName: string;
   public readonly pipeArn: string;
   public readonly pipeRole: IRole;
