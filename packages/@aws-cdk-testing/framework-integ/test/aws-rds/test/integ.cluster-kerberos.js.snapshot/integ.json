@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "cluster-kerberos/DefaultTest": {
+      "stacks": [
+        "Default"
+      ],
+      "assertionStack": "cluster-kerberos/DefaultTest/DeployAssert",
+      "assertionStackName": "clusterkerberosDefaultTestDeployAssertD5BA5ABF"
+    }
+  }
+}

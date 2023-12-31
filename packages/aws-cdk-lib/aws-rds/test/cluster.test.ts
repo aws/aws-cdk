@@ -3971,6 +3971,27 @@ describe('cluster', () => {
       },
     });
   });
+
+  test('setup kerberos authentication', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_3 }),
+      instanceProps: { vpc },
+      domain: 'domain.com',
+      domainIamRoleName: 'iamRoleName',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DBClusterParameterGroupName: 'default.aurora-postgresql14',
+      Domain: 'domain.com',
+      DomainIAMRoleName: 'iamRoleName',
+    });
+  });
 });
 
 test.each([
