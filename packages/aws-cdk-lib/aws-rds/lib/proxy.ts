@@ -11,6 +11,28 @@ import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
+ * Client password authentication type used by a proxy to log in as a specific database user.
+ */
+export enum ClientPasswordAuthType {
+  /**
+   * MySQL Native Password client authentication type.
+   */
+  MYSQL_NATIVE_PASSWORD = 'MYSQL_NATIVE_PASSWORD',
+  /**
+   * SCRAM SHA 256 client authentication type.
+   */
+  POSTGRES_SCRAM_SHA_256 = 'POSTGRES_SCRAM_SHA_256',
+  /**
+   * PostgreSQL MD5 client authentication type.
+   */
+  POSTGRES_MD5 = 'POSTGRES_MD5',
+  /**
+   * SQL Server Authentication client authentication type.
+   */
+  SQL_SERVER_AUTHENTICATION = 'SQL_SERVER_AUTHENTICATION',
+}
+
+/**
  * SessionPinningFilter
  *
  * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html#rds-proxy-pinning
@@ -259,6 +281,13 @@ export interface DatabaseProxyOptions {
    * The VPC to associate with the new proxy.
    */
   readonly vpc: ec2.IVpc;
+
+  /**
+   * Specifies the details of authentication used by a proxy to log in as a specific database user.
+   *
+   * @default - The default client password authentication type for the database engine is used.
+   */
+  readonly clientPasswordAuthType?: ClientPasswordAuthType;
 }
 
 /**
@@ -445,10 +474,26 @@ export class DatabaseProxy extends DatabaseProxyBase
     }
     this.secrets = props.secrets;
 
+    if (props.clientPasswordAuthType) {
+      if (props.clientPasswordAuthType === ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD && bindResult.engineFamily !== 'MYSQL') {
+        throw new Error(`${ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD} client password authentication type requires MYSQL engineFamily, got ${bindResult.engineFamily}`);
+      }
+      if (props.clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256 && bindResult.engineFamily !== 'POSTGRESQL') {
+        throw new Error(`${ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256} client password authentication type requires POSTGRESQL engineFamily, got ${bindResult.engineFamily}`);
+      }
+      if (props.clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_MD5 && bindResult.engineFamily !== 'POSTGRESQL') {
+        throw new Error(`${ClientPasswordAuthType.POSTGRES_MD5} client password authentication type requires POSTGRESQL engineFamily, got ${bindResult.engineFamily}`);
+      }
+      if (props.clientPasswordAuthType === ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION && bindResult.engineFamily !== 'SQLSERVER') {
+        throw new Error(`${ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION} client password authentication type requires SQLSERVER engineFamily, got ${bindResult.engineFamily}`);
+      }
+    }
+
     this.resource = new CfnDBProxy(this, 'Resource', {
       auth: props.secrets.map(_ => {
         return {
           authScheme: 'SECRETS',
+          clientPasswordAuthType: props.clientPasswordAuthType,
           iamAuth: props.iamAuth ? 'REQUIRED' : 'DISABLED',
           secretArn: _.secretArn,
         };
