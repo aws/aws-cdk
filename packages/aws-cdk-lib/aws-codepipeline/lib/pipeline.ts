@@ -106,10 +106,7 @@ export enum PipelineType {
   V2 = 'V2',
 }
 
-/**
- * Construction properties of a Pipeline-Level Variable.
- */
-export interface PipelineVariable {
+export interface VariableProps {
   /**
    * The name of a pipeline-level variable.
    */
@@ -129,6 +126,57 @@ export interface PipelineVariable {
    * @default - No default value.
    */
   readonly defaultValue?: string;
+}
+
+/**
+ * Pipeline-Level variable.
+ */
+export class Variable {
+  private readonly variableName: string;
+  private readonly description?: string;
+  private readonly defaultValue?: string;
+
+  constructor(props: VariableProps) {
+    this.variableName = props.variableName;
+    this.description = props.description;
+    this.defaultValue = props.defaultValue;
+
+    this.validate();
+  }
+
+  private validate() {
+    validatePipelineVariableName(this.variableName);
+    if (
+      this.defaultValue !== undefined
+      && !Token.isUnresolved(this.defaultValue)
+      && (this.defaultValue.length < 1 || this.defaultValue.length > 1000)
+    ) {
+      throw new Error(`Default value for variable '${this.variableName}' must be between 1 and 1000 characters long, got ${this.defaultValue.length}`);
+    }
+    if (this.description !== undefined && !Token.isUnresolved(this.description) && this.description.length > 200) {
+      throw new Error(`Description for variable '${this.variableName}' must not be greater than 200 characters long, got ${this.description.length}`);
+    }
+  }
+
+  /**
+   * Reference the variable name at Pipeline actions.
+   *
+   * @returns The variable name in a format that can be referenced at Pipeline actions
+   */
+  public reference(): string {
+    return `#{variables.${this.variableName}}`;
+  }
+
+  /**
+   * Render to CloudFormation property.
+   */
+  public render(): CfnPipeline.VariableDeclarationProperty {
+    return {
+      defaultValue: this.defaultValue,
+      description: this.description,
+      name: this.variableName,
+    };
+  }
 }
 
 export interface PipelineProps {
@@ -229,7 +277,7 @@ export interface PipelineProps {
    *
    * @default - No variables
    */
-  readonly variables?: PipelineVariable[]
+  readonly variables?: Variable[]
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -431,6 +479,7 @@ export class Pipeline extends PipelineBase {
   private readonly reuseCrossRegionSupportStacks: boolean;
   private readonly codePipeline: CfnPipeline;
   private readonly pipelineType: PipelineType;
+  private readonly variables = new Array<Variable>();
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -493,6 +542,7 @@ export class Pipeline extends PipelineBase {
     });
 
     this.pipelineType = props.pipelineType ?? PipelineType.V1;
+    this.variables = props.variables ?? [];
 
     this.codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
@@ -502,7 +552,7 @@ export class Pipeline extends PipelineBase {
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       pipelineType: props.pipelineType,
-      variables: this.renderVariables(props.variables),
+      variables: Lazy.any({ produce: () => this.renderVariables() }, { omitEmptyArray: true }),
       name: this.physicalName,
     });
 
@@ -562,6 +612,15 @@ export class Pipeline extends PipelineBase {
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
+  }
+
+  /**
+   * Adds a new Variable to this Pipeline.
+   *
+   * @param variable Variable instance to add to this Pipeline
+   */
+  public addVariable(variable: Variable) {
+    this.variables.push(variable);
   }
 
   /**
@@ -652,6 +711,7 @@ export class Pipeline extends PipelineBase {
       ...this.validateHasStages(),
       ...this.validateStages(),
       ...this.validateArtifacts(),
+      ...this.validateVariables(),
     ];
   }
 
@@ -1079,6 +1139,13 @@ export class Pipeline extends PipelineBase {
     return ret;
   }
 
+  private validateVariables(): string[] {
+    if (this.variables.length && this.pipelineType !== PipelineType.V2) {
+      return ['Pipeline variables can only be used with V2 pipelines'];
+    }
+    return [];
+  }
+
   private renderArtifactStoresProperty(): CfnPipeline.ArtifactStoreMapProperty[] | undefined {
     if (!this.crossRegion) { return undefined; }
 
@@ -1139,27 +1206,8 @@ export class Pipeline extends PipelineBase {
       }));
   }
 
-  private renderVariables(variables?: PipelineVariable[]): CfnPipeline.VariableDeclarationProperty[] | undefined {
-    if (!variables) {
-      return undefined;
-    }
-    if (this.pipelineType !== PipelineType.V2) {
-      throw new Error('Pipeline variables can only be used with V2 pipelines');
-    }
-    return variables?.map(v => {
-      validatePipelineVariableName(v.variableName);
-      if (v.defaultValue !== undefined && !Token.isUnresolved(v.defaultValue) && (v.defaultValue.length < 1 || v.defaultValue.length > 1000)) {
-        throw new Error(`Default value for variable '${v.variableName}' must be between 1 and 1000 characters long, got ${v.defaultValue.length}`);
-      }
-      if (v.description !== undefined && !Token.isUnresolved(v.description) && v.description.length > 200) {
-        throw new Error(`Description for variable '${v.variableName}' must not be greater than 200 characters long, got ${v.description.length}`);
-      }
-      return {
-        defaultValue: v.defaultValue,
-        description: v.description,
-        name: v.variableName,
-      };
-    });
+  private renderVariables(): CfnPipeline.VariableDeclarationProperty[] {
+    return this.variables.map(v => ( v.render() ));
   }
 
   private requireRegion(): string {

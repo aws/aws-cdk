@@ -27,14 +27,16 @@ const deployBucket = new s3.Bucket(stack, 'DeployBucket', {
   autoDeleteObjects: true,
 });
 
+const variable = new codepipeline.Variable({
+  variableName: 'bucket-var',
+  description: 'description',
+  defaultValue: 'sample',
+});
+
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: sourceBucket,
   pipelineType: codepipeline.PipelineType.V2,
-  variables: [{
-    variableName: 'bucket-var',
-    description: 'description',
-    defaultValue: 'sample',
-  }],
+  variables: [variable],
   stages: [
     {
       stageName: 'Source',
@@ -46,7 +48,7 @@ const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         new cpactions.S3DeployAction({
           actionName: 'DeployAction',
           extract: false,
-          objectKey: '#{variables.bucket-var}.txt',
+          objectKey: `${variable.reference()}.txt`,
           input: sourceOutput,
           bucket: deployBucket,
         }),

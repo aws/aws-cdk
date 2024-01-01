@@ -436,14 +436,16 @@ declare const sourceAction: codepipeline_actions.S3SourceAction;
 declare const sourceOutput: codepipeline.Artifact;
 declare const deployBucket: s3.Bucket;
 
+// Pipeline-level variable
+const variable = new codepipeline.Variable({
+  variableName: 'bucket-var',
+  description: 'description',
+  defaultValue: 'sample',
+});
+
 new codepipeline.Pipeline(this, 'Pipeline', {
   pipelineType: codepipeline.PipelineType.V2,
-  // Pipeline-level variables
-  variables: [{
-    variableName: 'bucket-var',
-    description: 'description',
-    defaultValue: 'sample',
-  }],
+  variables: [variable],
   stages: [
     {
       stageName: 'Source',
@@ -455,7 +457,7 @@ new codepipeline.Pipeline(this, 'Pipeline', {
         new codepipeline_actions.S3DeployAction({
           actionName: 'DeployAction',
           // can reference the variables
-          objectKey: '#{variables.bucket-var}.txt',
+          objectKey: `${variable.reference()}.txt`,
           input: sourceOutput,
           bucket: deployBucket,
         }),

@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 import { Match, Template } from '../../assertions';
@@ -531,13 +531,14 @@ describe('', () => {
 
     test('can specify pipeline-level variables', () => {
       const stack = new cdk.Stack();
+      const variable = new codepipeline.Variable({
+        variableName: 'var-name',
+        description: 'description',
+        defaultValue: 'default-value',
+      });
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
-        variables: [{
-          variableName: 'var-name',
-          description: 'description',
-          defaultValue: 'default-value',
-        }],
+        variables: [variable],
       });
 
       // Adding 2 stages with actions so pipeline validation will pass
@@ -568,29 +569,99 @@ describe('', () => {
       });
     });
 
-    test('throw if pipeline-level variables are specified when pipelineType is not set to V2', () => {
+    test('can specify pipeline-level variables by addVariable method', () => {
       const stack = new cdk.Stack();
-      expect(() => {
-        new codepipeline.Pipeline(stack, 'Pipeline', {
-          variables: [{
-            variableName: 'var-name',
-            description: 'description',
-            defaultValue: 'default-value',
-          }],
-        });
-      }).toThrow(/Pipeline variables can only be used with V2 pipelines/);
+      const variable = new codepipeline.Variable({
+        variableName: 'var-name',
+        description: 'description',
+        defaultValue: 'default-value',
+      });
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+      });
+      pipeline.addVariable(variable);
+
+      // Adding 2 stages with actions so pipeline validation will pass
+      const sourceArtifact = new codepipeline.Artifact();
+      pipeline.addStage({
+        stageName: 'Source',
+        actions: [new FakeSourceAction({
+          actionName: 'FakeSource',
+          output: sourceArtifact,
+        })],
+      });
+
+      pipeline.addStage({
+        stageName: 'Build',
+        actions: [new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        })],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        PipelineType: 'V2',
+        Variables: [{
+          Name: 'var-name',
+          Description: 'description',
+          DefaultValue: 'default-value',
+        }],
+      });
+    });
+
+    test('can reference in a format `#{variables.${this.variableName}}`', () => {
+      const variable = new codepipeline.Variable({
+        variableName: 'var-name',
+        description: 'description',
+        defaultValue: 'default-value',
+      });
+
+      expect(variable.reference()).toEqual('#{variables.var-name}');
+    });
+
+    test('validate if pipeline-level variables are specified when pipelineType is not set to V2', () => {
+      const stack = new cdk.Stack();
+      const variable = new codepipeline.Variable({
+        variableName: 'var-name',
+        description: 'description',
+        defaultValue: 'default-value',
+      });
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        variables: [variable],
+      });
+
+      // Adding 2 stages with actions so pipeline validation will pass
+      const sourceArtifact = new codepipeline.Artifact();
+      pipeline.addStage({
+        stageName: 'Source',
+        actions: [new FakeSourceAction({
+          actionName: 'FakeSource',
+          output: sourceArtifact,
+        })],
+      });
+
+      pipeline.addStage({
+        stageName: 'Build',
+        actions: [new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        })],
+      });
+
+      const errors = validate(stack);
+
+      expect(errors.length).toEqual(1);
+      const error = errors[0];
+      expect(error).toMatch(/Pipeline variables can only be used with V2 pipelines/);
     });
 
     test('throw if name for pipeline-level variable uses invalid character', () => {
       const stack = new cdk.Stack();
       expect(() => {
-        new codepipeline.Pipeline(stack, 'Pipeline', {
-          pipelineType: codepipeline.PipelineType.V2,
-          variables: [{
-            variableName: 'var name',
-            description: 'description',
-            defaultValue: 'default-value',
-          }],
+        new codepipeline.Variable({
+          variableName: 'var name',
+          description: 'description',
+          defaultValue: 'default-value',
         });
       }).toThrow('Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got \'var name\'');
     });
@@ -598,13 +669,10 @@ describe('', () => {
     test('throw if length of name for pipeline-level variable is less than 1', () => {
       const stack = new cdk.Stack();
       expect(() => {
-        new codepipeline.Pipeline(stack, 'Pipeline', {
-          pipelineType: codepipeline.PipelineType.V2,
-          variables: [{
-            variableName: '',
-            description: 'description',
-            defaultValue: 'default-value',
-          }],
+        new codepipeline.Variable({
+          variableName: '',
+          description: 'description',
+          defaultValue: 'default-value',
         });
       }).toThrow('Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got \'\'');
     });
@@ -612,13 +680,10 @@ describe('', () => {
     test('throw if length of name for pipeline-level variable is greater than 128', () => {
       const stack = new cdk.Stack();
       expect(() => {
-        new codepipeline.Pipeline(stack, 'Pipeline', {
-          pipelineType: codepipeline.PipelineType.V2,
-          variables: [{
-            variableName: 'a'.repeat(129),
-            description: 'description',
-            defaultValue: 'default-value',
-          }],
+        new codepipeline.Variable({
+          variableName: 'a'.repeat(129),
+          description: 'description',
+          defaultValue: 'default-value',
         });
       }).toThrow(`Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got '${'a'.repeat(129)}'`);
     });
@@ -626,13 +691,10 @@ describe('', () => {
     test('throw if length of default value for pipeline-level variable is less than 1', () => {
       const stack = new cdk.Stack();
       expect(() => {
-        new codepipeline.Pipeline(stack, 'Pipeline', {
-          pipelineType: codepipeline.PipelineType.V2,
-          variables: [{
-            variableName: 'var-name',
-            description: 'description',
-            defaultValue: '',
-          }],
+        new codepipeline.Variable({
+          variableName: 'var-name',
+          description: 'description',
+          defaultValue: '',
         });
       }).toThrow(/Default value for variable 'var-name' must be between 1 and 1000 characters long, got 0/);
     });
@@ -640,13 +702,10 @@ describe('', () => {
     test('throw if length of default value for pipeline-level variable is greater than 1000', () => {
       const stack = new cdk.Stack();
       expect(() => {
-        new codepipeline.Pipeline(stack, 'Pipeline', {
-          pipelineType: codepipeline.PipelineType.V2,
-          variables: [{
-            variableName: 'var-name',
-            description: 'description',
-            defaultValue: 'a'.repeat(1001),
-          }],
+        new codepipeline.Variable({
+          variableName: 'var-name',
+          description: 'description',
+          defaultValue: 'a'.repeat(1001),
         });
       }).toThrow(/Default value for variable 'var-name' must be between 1 and 1000 characters long, got 1001/);
     });
@@ -654,13 +713,10 @@ describe('', () => {
     test('throw if length of description for pipeline-level variable is greater than 200', () => {
       const stack = new cdk.Stack();
       expect(() => {
-        new codepipeline.Pipeline(stack, 'Pipeline', {
-          pipelineType: codepipeline.PipelineType.V2,
-          variables: [{
-            variableName: 'var-name',
-            description: 'a'.repeat(201),
-            defaultValue: 'default',
-          }],
+        new codepipeline.Variable({
+          variableName: 'var-name',
+          description: 'a'.repeat(201),
+          defaultValue: 'default',
         });
       }).toThrow(/Description for variable 'var-name' must not be greater than 200 characters long, got 201/);
     });
@@ -1080,3 +1136,15 @@ function createPipelineStack(options: CreatePipelineStackOptions): PipelineStack
     pipelineId: options.pipelineId,
   });
 };
+
+function validate(construct: IConstruct): string[] {
+  try {
+    (construct.node.root as cdk.App).synth();
+    return [];
+  } catch (err: any) {
+    if (!('message' in err) || !err.message.startsWith('Validation failed')) {
+      throw err;
+    }
+    return err.message.split('\n').slice(1);
+  }
+}
