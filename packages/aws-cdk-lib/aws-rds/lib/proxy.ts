@@ -474,20 +474,7 @@ export class DatabaseProxy extends DatabaseProxyBase
     }
     this.secrets = props.secrets;
 
-    if (props.clientPasswordAuthType) {
-      if (props.clientPasswordAuthType === ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD && bindResult.engineFamily !== 'MYSQL') {
-        throw new Error(`${ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD} client password authentication type requires MYSQL engineFamily, got ${bindResult.engineFamily}`);
-      }
-      if (props.clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256 && bindResult.engineFamily !== 'POSTGRESQL') {
-        throw new Error(`${ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256} client password authentication type requires POSTGRESQL engineFamily, got ${bindResult.engineFamily}`);
-      }
-      if (props.clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_MD5 && bindResult.engineFamily !== 'POSTGRESQL') {
-        throw new Error(`${ClientPasswordAuthType.POSTGRES_MD5} client password authentication type requires POSTGRESQL engineFamily, got ${bindResult.engineFamily}`);
-      }
-      if (props.clientPasswordAuthType === ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION && bindResult.engineFamily !== 'SQLSERVER') {
-        throw new Error(`${ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION} client password authentication type requires SQLSERVER engineFamily, got ${bindResult.engineFamily}`);
-      }
-    }
+    this.validateClientPasswordAuthType(bindResult.engineFamily, props.clientPasswordAuthType);
 
     this.resource = new CfnDBProxy(this, 'Resource', {
       auth: props.secrets.map(_ => {
@@ -573,6 +560,22 @@ export class DatabaseProxy extends DatabaseProxyBase
       dbUser = this.secrets[0].secretValueFromJson('username').unsafeUnwrap();
     }
     return super.grantConnect(grantee, dbUser);
+  }
+
+  private validateClientPasswordAuthType(engineFamily: string, clientPasswordAuthType?: ClientPasswordAuthType) {
+    if (!clientPasswordAuthType || cdk.Token.isUnresolved(clientPasswordAuthType)) return;
+    if (clientPasswordAuthType === ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD && engineFamily !== 'MYSQL') {
+      throw new Error(`${ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD} client password authentication type requires MYSQL engineFamily, got ${engineFamily}`);
+    }
+    if (clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256 && engineFamily !== 'POSTGRESQL') {
+      throw new Error(`${ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256} client password authentication type requires POSTGRESQL engineFamily, got ${engineFamily}`);
+    }
+    if (clientPasswordAuthType === ClientPasswordAuthType.POSTGRES_MD5 && engineFamily !== 'POSTGRESQL') {
+      throw new Error(`${ClientPasswordAuthType.POSTGRES_MD5} client password authentication type requires POSTGRESQL engineFamily, got ${engineFamily}`);
+    }
+    if (clientPasswordAuthType === ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION && engineFamily !== 'SQLSERVER') {
+      throw new Error(`${ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION} client password authentication type requires SQLSERVER engineFamily, got ${engineFamily}`);
+    }
   }
 }
 
