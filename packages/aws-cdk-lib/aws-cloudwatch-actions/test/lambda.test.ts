@@ -33,23 +33,9 @@ def handler(event, context):
   Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     AlarmActions: [
       {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':lambda:',
-            {
-              Ref: 'AWS::Region',
-            },
-            ':',
-            {
-              Ref: 'AWS::AccountId',
-            },
-            ':alarmLambda',
-          ],
+        'Fn::GetAtt': [
+          'alarmLambda131DB691',
+          'Arn',
         ],
       },
     ],
@@ -86,24 +72,7 @@ def handler(event, context):
   Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     AlarmActions: [
       {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':lambda:',
-            {
-              Ref: 'AWS::Region',
-            },
-            ':',
-            {
-              Ref: 'AWS::AccountId',
-            },
-            ':alarmLambda:aliasName',
-          ],
-        ],
+        Ref: 'alarmLambdaAliasaliasName41B27313',
       },
     ],
   });
@@ -136,24 +105,7 @@ def handler(event, context):
   Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
     AlarmActions: [
       {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':lambda:',
-            {
-              Ref: 'AWS::Region',
-            },
-            ':',
-            {
-              Ref: 'AWS::AccountId',
-            },
-            ':alarmLambda:1',
-          ],
-        ],
+        Ref: 'alarmLambdaCurrentVersionBDCE825Cf5e98d107ecb420808f3d9421127310e',
       },
     ],
   });

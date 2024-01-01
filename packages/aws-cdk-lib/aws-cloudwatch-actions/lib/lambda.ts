@@ -22,7 +22,7 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
    */
   bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
     if (this.lambdaFunction.stack.account === Stack.of(_scope).account) {
-      new lambda.CfnPermission(_scope, 'AlarmPermission', {
+      new lambda.CfnPermission(_scope, `${this.lambdaFunction.node.id}AlarmPermission`, {
         sourceAccount: Stack.of(_scope).account,
         action: 'lambda:InvokeFunction',
         sourceArn: _alarm.alarmArn,
@@ -30,18 +30,8 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
         functionName: this.lambdaFunction.functionName,
       });
     }
-    if ((this.lambdaFunction as lambda.IAlias).aliasName) {
-      return {
-        alarmActionArn: `arn:${Stack.of(this.lambdaFunction.stack).partition}:lambda:${Stack.of(this.lambdaFunction.stack).region}:${Stack.of(this.lambdaFunction.stack).account}:function:${this.lambdaFunction.functionName}:${(this.lambdaFunction as lambda.IAlias).aliasName}`,
-      };
-    } else if ((this.lambdaFunction as lambda.IAlias).version) {
-      return {
-        alarmActionArn: `arn:${Stack.of(this.lambdaFunction.stack).partition}:lambda:${Stack.of(this.lambdaFunction.stack).region}:${Stack.of(this.lambdaFunction.stack).account}:function:${this.lambdaFunction.functionName}:${(this.lambdaFunction as lambda.IVersion).version}`,
-      };
-    } else {
-      return {
-        alarmActionArn: `arn:${Stack.of(this.lambdaFunction.stack).partition}:lambda:${Stack.of(this.lambdaFunction.stack).region}:${Stack.of(this.lambdaFunction.stack).account}:function:${this.lambdaFunction.functionName}`,
-      };
-    }
+    return {
+      alarmActionArn: this.lambdaFunction.functionArn,
+    };
   }
 }
