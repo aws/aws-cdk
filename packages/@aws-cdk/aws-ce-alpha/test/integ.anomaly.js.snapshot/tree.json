@@ -1,0 +1,270 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdk-integ-ce-anomaly": {
+        "id": "cdk-integ-ce-anomaly",
+        "path": "cdk-integ-ce-anomaly",
+        "children": {
+          "TagsMonitor": {
+            "id": "TagsMonitor",
+            "path": "cdk-integ-ce-anomaly/TagsMonitor",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-ce-anomaly/TagsMonitor/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CE::AnomalyMonitor",
+                  "aws:cdk:cloudformation:props": {
+                    "monitorName": "cdkintegceanomalyTagsMonitorCA9FC1C1",
+                    "monitorSpecification": "{\"Tags\":{\"Key\":\"Key\",\"Values\":[\"Value1\",\"Value2\"]}}",
+                    "monitorType": "CUSTOM"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ce.CfnAnomalyMonitor",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ce-alpha.AnomalyMonitor",
+              "version": "0.0.0"
+            }
+          },
+          "CostCategoryMonitor": {
+            "id": "CostCategoryMonitor",
+            "path": "cdk-integ-ce-anomaly/CostCategoryMonitor",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-ce-anomaly/CostCategoryMonitor/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CE::AnomalyMonitor",
+                  "aws:cdk:cloudformation:props": {
+                    "monitorName": "cdkintegceanomalyCostCategoryMonitorAEA35A02",
+                    "monitorSpecification": "{\"CostCategories\":{\"Key\":\"CostCategoryKey\",\"Values\":[\"CostCategoryValue\"]}}",
+                    "monitorType": "CUSTOM"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ce.CfnAnomalyMonitor",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ce-alpha.AnomalyMonitor",
+              "version": "0.0.0"
+            }
+          },
+          "Topic": {
+            "id": "Topic",
+            "path": "cdk-integ-ce-anomaly/Topic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-ce-anomaly/Topic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "cdk-integ-ce-anomaly/Topic/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "cdk-integ-ce-anomaly/Topic/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SNS::TopicPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sns:Publish",
+                              "Condition": {
+                                "StringEquals": {
+                                  "aws:SourceAccount": [
+                                    {
+                                      "Ref": "AWS::AccountId"
+                                    }
+                                  ]
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "costalerts.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Ref": "TopicBFC7AF6E"
+                              },
+                              "Sid": "0"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "topics": [
+                          {
+                            "Ref": "TopicBFC7AF6E"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sns.CfnTopicPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.TopicPolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
+              "version": "0.0.0"
+            }
+          },
+          "Subscription": {
+            "id": "Subscription",
+            "path": "cdk-integ-ce-anomaly/Subscription",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-ce-anomaly/Subscription/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CE::AnomalySubscription",
+                  "aws:cdk:cloudformation:props": {
+                    "frequency": "IMMEDIATE",
+                    "monitorArnList": [
+                      {
+                        "Ref": "TagsMonitor11E84F58"
+                      },
+                      {
+                        "Ref": "CostCategoryMonitorAA4784FA"
+                      }
+                    ],
+                    "subscribers": [
+                      {
+                        "type": "SNS",
+                        "address": {
+                          "Ref": "TopicBFC7AF6E"
+                        }
+                      }
+                    ],
+                    "subscriptionName": "cdkintegceanomalySubscriptionC6F77DFD",
+                    "thresholdExpression": "{\"Dimensions\":{\"Key\":\"ANOMALY_TOTAL_IMPACT_ABSOLUTE\",\"MatchOptions\":[\"GREATER_THAN_OR_EQUAL\"],\"Values\":[\"100\"]}}"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ce.CfnAnomalySubscription",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ce-alpha.AnomalySubscription",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-integ-ce-anomaly/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-integ-ce-anomaly/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "CeAnomalyTest": {
+        "id": "CeAnomalyTest",
+        "path": "CeAnomalyTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "CeAnomalyTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "CeAnomalyTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "CeAnomalyTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "CeAnomalyTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "CeAnomalyTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

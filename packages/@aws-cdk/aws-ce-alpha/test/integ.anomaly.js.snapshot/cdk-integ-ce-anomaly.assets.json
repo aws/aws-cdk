@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "acb3ef4ebf037c67c3351eb64506d5c4fd8744b9fc76a2b91e9067ddfc915ab2": {
+      "source": {
+        "path": "cdk-integ-ce-anomaly.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "acb3ef4ebf037c67c3351eb64506d5c4fd8744b9fc76a2b91e9067ddfc915ab2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

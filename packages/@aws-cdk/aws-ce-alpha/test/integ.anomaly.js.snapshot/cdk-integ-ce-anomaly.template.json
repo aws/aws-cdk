@@ -1,0 +1,116 @@
+{
+ "Resources": {
+  "TagsMonitor11E84F58": {
+   "Type": "AWS::CE::AnomalyMonitor",
+   "Properties": {
+    "MonitorName": "cdkintegceanomalyTagsMonitorCA9FC1C1",
+    "MonitorSpecification": "{\"Tags\":{\"Key\":\"Key\",\"Values\":[\"Value1\",\"Value2\"]}}",
+    "MonitorType": "CUSTOM"
+   }
+  },
+  "CostCategoryMonitorAA4784FA": {
+   "Type": "AWS::CE::AnomalyMonitor",
+   "Properties": {
+    "MonitorName": "cdkintegceanomalyCostCategoryMonitorAEA35A02",
+    "MonitorSpecification": "{\"CostCategories\":{\"Key\":\"CostCategoryKey\",\"Values\":[\"CostCategoryValue\"]}}",
+    "MonitorType": "CUSTOM"
+   }
+  },
+  "TopicBFC7AF6E": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "TopicPolicyA1747468": {
+   "Type": "AWS::SNS::TopicPolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": [
+          {
+           "Ref": "AWS::AccountId"
+          }
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "costalerts.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "TopicBFC7AF6E"
+       },
+       "Sid": "0"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "TopicBFC7AF6E"
+     }
+    ]
+   }
+  },
+  "Subscription391C9821": {
+   "Type": "AWS::CE::AnomalySubscription",
+   "Properties": {
+    "Frequency": "IMMEDIATE",
+    "MonitorArnList": [
+     {
+      "Ref": "TagsMonitor11E84F58"
+     },
+     {
+      "Ref": "CostCategoryMonitorAA4784FA"
+     }
+    ],
+    "Subscribers": [
+     {
+      "Address": {
+       "Ref": "TopicBFC7AF6E"
+      },
+      "Type": "SNS"
+     }
+    ],
+    "SubscriptionName": "cdkintegceanomalySubscriptionC6F77DFD",
+    "ThresholdExpression": "{\"Dimensions\":{\"Key\":\"ANOMALY_TOTAL_IMPACT_ABSOLUTE\",\"MatchOptions\":[\"GREATER_THAN_OR_EQUAL\"],\"Values\":[\"100\"]}}"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

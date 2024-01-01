@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "CeAnomalyTest/DefaultTest": {
+      "stacks": [
+        "cdk-integ-ce-anomaly"
+      ],
+      "assertionStack": "CeAnomalyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CeAnomalyTestDefaultTestDeployAssertDEF6AC0B"
+    }
+  }
+}
