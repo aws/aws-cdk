@@ -105,6 +105,10 @@ export function EbsConfigurationPropertyToJson(property: EmrCreateCluster.EbsCon
  * @param property
  */
 export function InstanceTypeConfigPropertyToJson(property: EmrCreateCluster.InstanceTypeConfigProperty) {
+  if (property.bidPrice && property.bidPriceAsPercentageOfOnDemandPrice) {
+    throw new Error('Cannot specify both bidPrice and bidPriceAsPercentageOfOnDemandPrice');
+  }
+
   return {
     BidPrice: cdk.stringToCloudFormation(property.bidPrice),
     BidPriceAsPercentageOfOnDemandPrice: cdk.numberToCloudFormation(property.bidPriceAsPercentageOfOnDemandPrice),
@@ -146,6 +150,9 @@ function SpotProvisioningSpecificationPropertyToJson(property?: EmrCreateCluster
   if (!property) {
     return undefined;
   }
+  if (!cdk.Token.isUnresolved(property.timeoutDurationMinutes) && (property.timeoutDurationMinutes < 5 || property.timeoutDurationMinutes > 1440)) {
+    throw new Error(`timeoutDurationMinutes must be between 5 and 1440, got ${property.timeoutDurationMinutes}`);
+  }
   return {
     AllocationStrategy: cdk.stringToCloudFormation(property.allocationStrategy),
     BlockDurationMinutes: cdk.numberToCloudFormation(property.blockDurationMinutes),
@@ -160,6 +167,20 @@ function SpotProvisioningSpecificationPropertyToJson(property?: EmrCreateCluster
  * @param property
  */
 export function InstanceFleetConfigPropertyToJson(property: EmrCreateCluster.InstanceFleetConfigProperty) {
+  if (!property.targetSpotCapacity && !property.targetOnDemandCapacity) {
+    throw new Error('At least one of targetSpotCapacity and targetOnDemandCapacity should be greater than 0');
+  }
+  if (property.instanceFleetType === EmrCreateCluster.InstanceRoleType.MASTER) {
+    if (property.targetSpotCapacity && property.targetOnDemandCapacity) {
+      throw new Error('For a master instance fleet, only one of targetSpotCapacity and targetOnDemandCapacity can be specified');
+    }
+    if (property.targetSpotCapacity && property.targetSpotCapacity !== 1) {
+      throw new Error(`For a master instance fleet, targetSpotCapacity cannot be a number other than 1, got ${property.targetSpotCapacity}`);
+    }
+    if (property.targetOnDemandCapacity && property.targetOnDemandCapacity !== 1) {
+      throw new Error(`For a master instance fleet, targetOnDemandCapacity cannot be a number other than 1, got ${property.targetOnDemandCapacity}`);
+    }
+  }
   return {
     InstanceFleetType: cdk.stringToCloudFormation(property.instanceFleetType?.valueOf()),
     InstanceTypeConfigs: cdk.listMapper(InstanceTypeConfigPropertyToJson)(property.instanceTypeConfigs),
