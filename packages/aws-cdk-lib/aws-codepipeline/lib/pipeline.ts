@@ -1207,7 +1207,7 @@ export class Pipeline extends PipelineBase {
   }
 
   private renderVariables(): CfnPipeline.VariableDeclarationProperty[] {
-    return this.variables.map(v => ( v.render() ));
+    return this.variables.map(variable => variable.render());
   }
 
   private requireRegion(): string {
