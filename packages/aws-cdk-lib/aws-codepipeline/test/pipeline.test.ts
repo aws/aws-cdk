@@ -655,6 +655,41 @@ describe('', () => {
       expect(error).toMatch(/Pipeline variables can only be used with V2 pipelines/);
     });
 
+    test('validate if pipeline-level variables are specified when pipelineType is not set to V2 and addVariable method is used', () => {
+      const stack = new cdk.Stack();
+      const variable = new codepipeline.Variable({
+        variableName: 'var-name',
+        description: 'description',
+        defaultValue: 'default-value',
+      });
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {});
+      pipeline.addVariable(variable);
+
+      // Adding 2 stages with actions so pipeline validation will pass
+      const sourceArtifact = new codepipeline.Artifact();
+      pipeline.addStage({
+        stageName: 'Source',
+        actions: [new FakeSourceAction({
+          actionName: 'FakeSource',
+          output: sourceArtifact,
+        })],
+      });
+
+      pipeline.addStage({
+        stageName: 'Build',
+        actions: [new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        })],
+      });
+
+      const errors = validate(stack);
+
+      expect(errors.length).toEqual(1);
+      const error = errors[0];
+      expect(error).toMatch(/Pipeline variables can only be used with V2 pipelines/);
+    });
+
     test('throw if name for pipeline-level variable uses invalid character', () => {
       const stack = new cdk.Stack();
       expect(() => {
