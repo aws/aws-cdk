@@ -478,7 +478,7 @@ export class Pipeline extends PipelineBase {
   private readonly enableKeyRotation?: boolean;
   private readonly reuseCrossRegionSupportStacks: boolean;
   private readonly codePipeline: CfnPipeline;
-  private readonly pipelineType: PipelineType;
+  private readonly pipelineType?: PipelineType;
   private readonly variables = new Array<Variable>();
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
@@ -541,7 +541,7 @@ export class Pipeline extends PipelineBase {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
     });
 
-    this.pipelineType = props.pipelineType ?? PipelineType.V1;
+    this.pipelineType = props.pipelineType;
     this.variables = props.variables ?? [];
 
     this.codePipeline = new CfnPipeline(this, 'Resource', {
