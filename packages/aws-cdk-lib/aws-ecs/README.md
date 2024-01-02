@@ -484,7 +484,8 @@ taskDef.grantRun(role);
 
 To deploy containerized applications that require the allocation of standard input (stdin) or a terminal (tty), use the `interactive` property.
 
-This parameter corresponds to OpenStdin in the [Create a container](https://docs.docker.com/engine/api/v1.35/#tag/Container/operation/ContainerCreate) section of the [Docker Remote API](https://docs.docker.com/engine/api/v1.35/) and the `--interactive` option to `docker run`.
+This parameter corresponds to `OpenStdin` in the [Create a container](https://docs.docker.com/engine/api/v1.35/#tag/Container/operation/ContainerCreate) section of the [Docker Remote API](https://docs.docker.com/engine/api/v1.35/)
+and the `--interactive` option to [docker run](https://docs.docker.com/engine/reference/run/#security-configuration).
 
 ```ts
 declare const taskDefinition: ecs.TaskDefinition;
