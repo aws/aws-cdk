@@ -1272,7 +1272,7 @@ test('Throws if timeout for Spot instances is greater than 1440 minutes', () => 
   // THEN
   expect(() => {
     task.toStateJson();
-  }).toThrow(/timeout must be between 5 and 1440 minutes, got 1441/);
+  }).toThrow(/timeout must be between 5 and 1440 minutes, got 1441 minutes./);
 });
 
 test('Throws if timeoutDurationMinutes for Spot instances is less than 5 minutes', () => {
@@ -1300,7 +1300,7 @@ test('Throws if timeoutDurationMinutes for Spot instances is less than 5 minutes
   // THEN
   expect(() => {
     task.toStateJson();
-  }).toThrow(/timeout must be between 5 and 1440 minutes, got 4/);
+  }).toThrow(/timeout must be between 5 and 1440 minutes, got 4 minutes./);
 });
 
 test('Throws if timeoutDurationMinutes for Spot instances is greater than 1440 minutes', () => {
@@ -1328,7 +1328,7 @@ test('Throws if timeoutDurationMinutes for Spot instances is greater than 1440 m
   // THEN
   expect(() => {
     task.toStateJson();
-  }).toThrow(/timeout must be between 5 and 1440 minutes, got 1441/);
+  }).toThrow(/timeout must be between 5 and 1440 minutes, got 1441 minutes./);
 });
 
 test('Throws if neither timeout nor timeoutDurationMinutes is specified', () => {

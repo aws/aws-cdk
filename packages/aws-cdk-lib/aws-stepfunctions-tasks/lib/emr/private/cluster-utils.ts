@@ -156,7 +156,7 @@ function SpotProvisioningSpecificationPropertyToJson(property?: EmrCreateCluster
   }
   const timeout = property.timeout?.toMinutes() ?? property.timeoutDurationMinutes;
   if (timeout !== undefined && !cdk.Token.isUnresolved(timeout) && (timeout < 5 || timeout > 1440)) {
-    throw new Error(`timeout must be between 5 and 1440 minutes, got ${timeout}`);
+    throw new Error(`timeout must be between 5 and 1440 minutes, got ${timeout} minutes.`);
   }
 
   return {
