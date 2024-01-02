@@ -266,8 +266,8 @@ export interface FileSystemProps {
   readonly allowAnonymousAccess?: boolean;
 
   /**
-   * Creating a One Zone file system.
-   * When set to true, only the GENERAL_PURPOSE performance mode is allowed.
+   * Whether this is a One Zone file system.
+   * If enabled, `performanceMode` must be set to `GENERAL_PURPOSE`.
    *
    * @default false
    * @link https://docs.aws.amazon.com/efs/latest/ug/availability-durability.html#file-system-type
