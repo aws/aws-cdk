@@ -732,9 +732,26 @@ export namespace EmrCreateCluster {
     /**
      * The spot provisioning timeout period in minutes.
      *
-     * The value must be between 5 and 1440.
+     * The value must be between 5 and 1440 minutes.
+     *
+     * You must specify one of `timeout` and `timeoutDurationMinutes`.
+     *
+     * @default - The value in `timeout` is used
+     *
+     * @deprecated - Use `timeout`.
      */
-    readonly timeoutDurationMinutes: number;
+    readonly timeoutDurationMinutes?: number;
+
+    /**
+     * The spot provisioning timeout period in minutes.
+     *
+     * The value must be between 5 and 1440 minutes.
+     *
+     * You must specify one of `timeout` and `timeoutDurationMinutes`.
+     *
+     * @default - The value in `timeoutDurationMinutes` is used
+     */
+    readonly timeout?: cdk.Duration;
   }
 
   /**

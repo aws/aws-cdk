@@ -150,14 +150,20 @@ function SpotProvisioningSpecificationPropertyToJson(property?: EmrCreateCluster
   if (!property) {
     return undefined;
   }
-  if (!cdk.Token.isUnresolved(property.timeoutDurationMinutes) && (property.timeoutDurationMinutes < 5 || property.timeoutDurationMinutes > 1440)) {
-    throw new Error(`timeoutDurationMinutes must be between 5 and 1440, got ${property.timeoutDurationMinutes}`);
+
+  if ((property.timeout && property.timeoutDurationMinutes) || (!property.timeout && !property.timeoutDurationMinutes)) {
+    throw new Error('one of timeout and timeoutDurationMinutes must be specified');
   }
+  const timeout = property.timeout?.toMinutes() ?? property.timeoutDurationMinutes;
+  if (timeout !== undefined && !cdk.Token.isUnresolved(timeout) && (timeout < 5 || timeout > 1440)) {
+    throw new Error(`timeout must be between 5 and 1440 minutes, got ${timeout} minutes.`);
+  }
+
   return {
     AllocationStrategy: cdk.stringToCloudFormation(property.allocationStrategy),
     BlockDurationMinutes: cdk.numberToCloudFormation(property.blockDurationMinutes),
     TimeoutAction: cdk.stringToCloudFormation(property.timeoutAction?.valueOf()),
-    TimeoutDurationMinutes: cdk.numberToCloudFormation(property.timeoutDurationMinutes),
+    TimeoutDurationMinutes: cdk.numberToCloudFormation(property.timeout?.toMinutes() || property.timeoutDurationMinutes),
   };
 }
 

@@ -921,7 +921,7 @@ test.each([
             allocationStrategy: strategy,
             blockDurationMinutes: 1,
             timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
-            timeoutDurationMinutes: 5,
+            timeout: cdk.Duration.minutes(5),
           },
         },
         name: 'Main',
@@ -1033,7 +1033,7 @@ test('Create Cluster with InstanceFleet for Spot instances', () => {
           spotSpecification: {
             blockDurationMinutes: 1,
             timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
-            timeoutDurationMinutes: 5,
+            timeout: cdk.Duration.minutes(5),
           },
         },
         name: 'Main',
@@ -1219,7 +1219,63 @@ test('Create Cluster with InstanceFleet for On-Demand instances', () => {
   });
 });
 
-test('Throws if timeoutDurationMinutes for Spot instances is less than 5', () => {
+test('Throws if timeout for Spot instances is less than 5 minutes', () => {
+  // GIVEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        launchSpecifications: {
+          spotSpecification: {
+            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+            timeout: cdk.Duration.minutes(4),
+          },
+        },
+        name: 'Main',
+        targetSpotCapacity: 1,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(() => {
+    task.toStateJson();
+  }).toThrow(/timeout must be between 5 and 1440 minutes, got 4/);
+});
+
+test('Throws if timeout for Spot instances is greater than 1440 minutes', () => {
+  // GIVEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        launchSpecifications: {
+          spotSpecification: {
+            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+            timeout: cdk.Duration.minutes(1441),
+          },
+        },
+        name: 'Main',
+        targetSpotCapacity: 1,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(() => {
+    task.toStateJson();
+  }).toThrow(/timeout must be between 5 and 1440 minutes, got 1441 minutes./);
+});
+
+test('Throws if timeoutDurationMinutes for Spot instances is less than 5 minutes', () => {
   // GIVEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
@@ -1244,10 +1300,10 @@ test('Throws if timeoutDurationMinutes for Spot instances is less than 5', () =>
   // THEN
   expect(() => {
     task.toStateJson();
-  }).toThrow(/timeoutDurationMinutes must be between 5 and 1440, got 4/);
+  }).toThrow(/timeout must be between 5 and 1440 minutes, got 4 minutes./);
 });
 
-test('Throws if timeoutDurationMinutes for Spot instances is greater than 1440', () => {
+test('Throws if timeoutDurationMinutes for Spot instances is greater than 1440 minutes', () => {
   // GIVEN
   const task = new EmrCreateCluster(stack, 'Task', {
     instances: {
@@ -1272,7 +1328,63 @@ test('Throws if timeoutDurationMinutes for Spot instances is greater than 1440',
   // THEN
   expect(() => {
     task.toStateJson();
-  }).toThrow(/timeoutDurationMinutes must be between 5 and 1440, got 1441/);
+  }).toThrow(/timeout must be between 5 and 1440 minutes, got 1441 minutes./);
+});
+
+test('Throws if neither timeout nor timeoutDurationMinutes is specified', () => {
+  // GIVEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        launchSpecifications: {
+          spotSpecification: {
+            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+          },
+        },
+        name: 'Main',
+        targetSpotCapacity: 1,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(() => {
+    task.toStateJson();
+  }).toThrow(/one of timeout and timeoutDurationMinutes must be specified/);
+});
+
+test('Throws if both timeout and timeoutDurationMinutes are specified', () => {
+  // WHEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {
+      instanceFleets: [{
+        instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
+        launchSpecifications: {
+          spotSpecification: {
+            timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
+            timeout: cdk.Duration.minutes(5),
+            timeoutDurationMinutes: 10,
+          },
+        },
+        name: 'Main',
+        targetSpotCapacity: 1,
+      }],
+    },
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(() => {
+    task.toStateJson();
+  }).toThrow(/one of timeout and timeoutDurationMinutes must be specified/);
 });
 
 test('Throws if both bidPrice and bidPriceAsPercentageOfOnDemandPrice are specified', () => {
