@@ -488,7 +488,11 @@ export class FileSystem extends FileSystemBase {
     super(scope, id);
 
     if (props.performanceMode === PerformanceMode.MAX_IO && props.oneZone) {
-      throw new Error(`performanceMode MAX_IO is not supported for One Zone file systems.`);
+      throw new Error('performanceMode MAX_IO is not supported for One Zone file systems.');
+    }
+
+    if (props.oneZone && props.vpcSubnets) {
+      throw new Error('vpcSubnets is not supported for One Zone file systems.');
     }
 
     if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
@@ -571,12 +575,6 @@ export class FileSystem extends FileSystemBase {
       subnetSelection = {
         availabilityZones: [oneZoneAzName],
       };
-      if (props.vpcSubnets) {
-        subnetSelection = {
-          ...props.vpcSubnets,
-          ...subnetSelection,
-        };
-      }
     } else {
       subnetSelection = props.vpcSubnets ?? { onePerAz: true };
     }

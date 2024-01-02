@@ -908,5 +908,16 @@ test('one zone file system with MAX_IO performance mode is not supported', () =>
       oneZone: true,
       performanceMode: PerformanceMode.MAX_IO,
     });
-  }).toThrow(/OneZone mode file systems do not support the MAX_IO performance mode./);
+  }).toThrow(/performanceMode MAX_IO is not supported for One Zone file systems./);
+});
+
+test('one zone file system with vpcSubnets is not supported', () => {
+  // THEN
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      oneZone: true,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    });
+  }).toThrow(/vpcSubnets is not supported for One Zone file systems./);
 });
