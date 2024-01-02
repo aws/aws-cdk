@@ -2,17 +2,6 @@ import { CfnTag } from 'aws-cdk-lib';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { IInputTransformation } from '.';
 
-// TODO refactor to build your own representation of PipeTargetParametersProperty;
-// /**
-//  * Common parameters for all pipe targets.
-//  */
-// export interface IPipeTargetCommonParameters {
-//   /**
-//    * Input template applied for the target.
-//    */
-//   readonly inputTemplate?: IInputTransformation;
-// }
-
 /**
  * Target configuration.
  */

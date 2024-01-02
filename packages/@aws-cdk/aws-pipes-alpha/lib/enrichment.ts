@@ -1,5 +1,6 @@
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { IInputTransformation } from './inputTransformation';
+import { Arn } from 'aws-cdk-lib';
 
 /**
    * These are custom parameter to be used when the target is an API Gateway REST APIs or EventBridge ApiDestinations.
@@ -102,7 +103,6 @@ export abstract class Enrichment implements IEnrichment {
     props: EnrichmentParameters,
   ) {
     this.enrichmentParameters = props;
-    // TODO - validate ARN is a valid enrichment ARN based on regex from cfn
     this.enrichmentArn = enrichmentArn;
   }
   /**
