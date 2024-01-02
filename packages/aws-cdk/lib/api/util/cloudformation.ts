@@ -291,6 +291,7 @@ export type PrepareChangeSetOptions = {
   willExecute: boolean;
   sdkProvider: SdkProvider;
   stream: NodeJS.WritableStream;
+  parameters: { [name: string]: string | undefined };
 }
 
 export type CreateChangeSetOptions = {
@@ -301,9 +302,13 @@ export type CreateChangeSetOptions = {
   uuid: string;
   stack: cxapi.CloudFormationStackArtifact;
   bodyParameter: TemplateBodyParameter;
+  parameters: { [name: string]: string | undefined };
 }
 
-export async function prepareAndCreateDiffChangeSet(options: PrepareChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
+/**
+ * Create a changeset for a diff operation
+ */
+export async function createDiffChangeSet(options: PrepareChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
   for (const resource of Object.values((options.stack.template.Resources ?? {}))) {
     if ((resource as any).Type === 'AWS::CloudFormation::Stack') {
       // eslint-disable-next-line no-console
@@ -313,10 +318,10 @@ export async function prepareAndCreateDiffChangeSet(options: PrepareChangeSetOpt
     }
   }
 
-  return prepareAndCreateChangeSet(options);
+  return UploadBodyParameterAndCreateChangeSet(options);
 }
 
-async function prepareAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
+async function UploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
   try {
     const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
     const bodyParameter = await makeBodyParameterAndUpload(
@@ -338,6 +343,7 @@ async function prepareAndCreateChangeSet(options: PrepareChangeSetOptions): Prom
       uuid: options.uuid,
       willExecute: options.willExecute,
       bodyParameter,
+      parameters: options.parameters,
     });
   } catch (e: any) {
     // eslint-disable-next-line no-console
@@ -352,6 +358,9 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<CloudFo
 
   debug(`Attempting to create ChangeSet with name ${options.changeSetName} for stack ${options.stack.stackName}`);
 
+  const templateParams = TemplateParameters.fromTemplate(options.stack.template);
+  const stackParams = templateParams.supplyAll(options.parameters);
+
   const changeSet = await options.cfn.createChangeSet({
     StackName: options.stack.stackName,
     ChangeSetName: options.changeSetName,
@@ -360,6 +369,7 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<CloudFo
     ClientToken: `diff${options.uuid}`,
     TemplateURL: options.bodyParameter.TemplateURL,
     TemplateBody: options.bodyParameter.TemplateBody,
+    Parameters: stackParams.apiParameters,
     Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
   }).promise();
 
