@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Pipe pipe is present with props 1`] = `
+exports[`Pipe is present with props 1`] = `
 {
   "Parameters": {
     "BootstrapVersion": {

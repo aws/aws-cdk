@@ -25,7 +25,7 @@ export interface ITarget {
   /**
    * The parameters required to set up a target for your pipe.
    */
-  readonly targetParameters: PipeTargetParametersProperty;
+  readonly targetParameters: TargetParameters;
 
   /**
    * Grant the pipe role to push to the target.
@@ -40,7 +40,7 @@ export interface ITarget {
  *
  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-event-target.html#pipes-targets-specific-parms
  */
-export interface PipeTargetParametersProperty {
+export interface TargetParameters {
   /**
    * The parameters for using an AWS Batch job as a target.
    *

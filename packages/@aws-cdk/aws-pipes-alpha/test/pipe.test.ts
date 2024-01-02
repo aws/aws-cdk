@@ -2,17 +2,67 @@ import { App, Stack } from 'aws-cdk-lib';
 
 import { Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { DesiredState, IEnrichment, ISource, ITarget, IncludeExecutionData, LogLevel, Pipe } from '../lib';
+import { DesiredState, EnrichmentParameters, IEnrichment, ILogDestination, ISource, ITarget, IncludeExecutionData, LogLevel, Pipe, SourceParameters, TargetParameters } from '../lib';
+
+class TestSource implements ISource {
+  sourceArn = 'source-arn';
+  sourceParameters = {};
+  public grantRead = jest.fn();
+
+  constructor(parameters?: SourceParameters) {
+    if (parameters) {
+      this.sourceParameters = parameters;
+    }
+  }
+}
+
+class TestTarget implements ITarget {
+  targetArn = 'target-arn';
+  targetParameters = {};
+  public grantPush = jest.fn();
+
+  constructor(parameters?: TargetParameters) {
+    if (parameters) {
+      this.targetParameters = parameters;
+    }
+  }
+}
+
+class TestEnrichment implements IEnrichment {
+  enrichmentArn = 'enrichment-arn';
+  enrichmentParameters = {};
+  public grantInvoke = jest.fn();
+
+  constructor(parameters?: EnrichmentParameters) {
+    if (parameters) {
+      this.enrichmentParameters = parameters;
+    }
+  }
+}
+
+class TestLogDestination implements ILogDestination {
+  logDestinationArn = 'log-destination-arn';
+  parameters = {
+    cloudwatchLogsLogDestination: {
+      logGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/events/pipes/TestPipe',
+    },
+  };
+  public grantPush = jest.fn();
+
+}
 
 describe('Pipe', () => {
   let stack: Stack;
+  const source = new TestSource();
+  const target = new TestTarget();
 
   beforeEach(() => {
+    jest.resetAllMocks();
     const app = new App();
     stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
   });
 
-  test('pipe is present with props', () => {
+  test('is present with props', () => {
     // WHEN
     new Pipe(stack, 'TestPipe', {
       pipeName: 'TestPipe',
@@ -21,19 +71,11 @@ describe('Pipe', () => {
       tags: {
         key: 'value',
       },
-      source: {
-        grantRead: () => { },
-        sourceArn: 'source-arn',
-        sourceParameters: {},
-
-      },
-      target: {
-        grantPush: () => { },
-        targetArn: 'target-arn',
-        targetParameters: {},
-      },
+      source,
+      target,
     });
     const template = Template.fromStack(stack);
+
     // THEN
     template.resourceCountIs('AWS::Pipes::Pipe', 1);
     expect(template).toMatchSnapshot();
@@ -41,23 +83,13 @@ describe('Pipe', () => {
 
   describe('source', () => {
     it('should grant read permissions to the source', () => {
-      // GIVEN
-      const source = {
-        grantRead: jest.fn(),
-        sourceArn: 'source-arn',
-        sourceParameters: {},
-      };
-      const target = {
-        grantPush: () => { },
-        targetArn: 'target-arn',
-        targetParameters: {},
-      };
       // WHEN
       const pipe = new Pipe(stack, 'TestPipe', {
         pipeName: 'TestPipe',
         source,
         target,
       });
+
       // THEN
       expect(source.grantRead).toHaveBeenCalled();
       expect(source.grantRead).toHaveBeenCalledWith(pipe.pipeRole);
@@ -65,24 +97,16 @@ describe('Pipe', () => {
 
     it('should pass parameters and arn', () => {
       // GIVEN
-      const source: ISource = {
-        grantRead: () => { },
-        sourceArn: 'source-arn',
-        sourceParameters: {
-          sqsQueueParameters: {
-            batchSize: 2,
-          },
+      const sourceWithParameters: ISource =new TestSource({
+        sqsQueueParameters: {
+          batchSize: 2,
         },
-      };
-      const target = {
-        grantPush: () => { },
-        targetArn: 'target-arn',
-        targetParameters: {},
-      };
+      });
+
       // WHEN
       new Pipe(stack, 'TestPipe', {
         pipeName: 'TestPipe',
-        source,
+        source: sourceWithParameters,
         target,
       });
 
@@ -104,17 +128,6 @@ describe('Pipe', () => {
     });
 
     it('should add filter criteria to the source parameters', () => {
-      // GIVEN
-      const source = {
-        grantRead: () => { },
-        sourceArn: 'source-arn',
-        sourceParameters: {},
-      };
-      const target = {
-        grantPush: () => { },
-        targetArn: 'target-arn',
-        targetParameters: {},
-      };
       // WHEN
       new Pipe(stack, 'TestPipe', {
         pipeName: 'TestPipe',
@@ -150,24 +163,16 @@ describe('Pipe', () => {
     });
     it('should merge filter criteria and source parameters', () => {
       // GIVEN
-      const source = {
-        grantRead: () => { },
-        sourceArn: 'source-arn',
-        sourceParameters: {
-          sqsQueueParameters: {
-            batchSize: 2,
-          },
+      const sourceWithParameters: ISource =new TestSource({
+        sqsQueueParameters: {
+          batchSize: 2,
         },
-      };
-      const target = {
-        grantPush: () => { },
-        targetArn: 'target-arn',
-        targetParameters: {},
-      };
+      });
+
       // WHEN
       new Pipe(stack, 'TestPipe', {
         pipeName: 'TestPipe',
-        source,
+        source: sourceWithParameters,
         target,
         filter: {
           filters: [
@@ -205,23 +210,13 @@ describe('Pipe', () => {
   describe('target', () => {
 
     it('should grant push permissions to the target', () => {
-      // GIVEN
-      const source = {
-        grantRead: () => { },
-        sourceArn: 'source-arn',
-        sourceParameters: {},
-      };
-      const target = {
-        grantPush: jest.fn(),
-        targetArn: 'target-arn',
-        targetParameters: {},
-      };
       // WHEN
       const pipe = new Pipe(stack, 'TestPipe', {
         pipeName: 'TestPipe',
         source,
         target,
       });
+
       // THEN
       expect(target.grantPush).toHaveBeenCalled();
       expect(target.grantPush).toHaveBeenCalledWith(pipe.pipeRole);
@@ -229,25 +224,17 @@ describe('Pipe', () => {
 
     it('should pass parameters and arn', () => {
       // GIVEN
-      const source = {
-        grantRead: () => { },
-        sourceArn: 'source-arn',
-        sourceParameters: {},
-      };
-      const target: ITarget = {
-        grantPush: () => { },
-        targetArn: 'target-arn',
-        targetParameters: {
-          sqsQueueParameters: {
-            messageGroupId: 'message-group-id',
-          },
+      const targetWithParameters: ITarget = new TestTarget({
+        sqsQueueParameters: {
+          messageGroupId: 'message-group-id',
         },
-      };
+      });
+
       // WHEN
       new Pipe(stack, 'TestPipe', {
         pipeName: 'TestPipe',
         source,
-        target,
+        target: targetWithParameters,
       });
 
       const template = Template.fromStack(stack);
@@ -268,30 +255,17 @@ describe('Pipe', () => {
   });
 
   describe('enrichment', () => {
+    const enrichment = new TestEnrichment();
+
     it('should grant invoke permissions to the enrichment', () => {
-      // GIVEN
-      const source = {
-        grantRead: () => { },
-        sourceArn: 'source-arn',
-        sourceParameters: {},
-      };
-      const target = {
-        grantPush: () => { },
-        targetArn: 'target-arn',
-        targetParameters: {},
-      };
-      const enrichment: IEnrichment = {
-        enrichmentArn: 'enrichment-arn',
-        enrichmentParameters: {},
-        grantInvoke: jest.fn(),
-      };
       // WHEN
       const pipe = new Pipe(stack, 'TestPipe', {
         pipeName: 'TestPipe',
         source,
         target,
-        enrichment: enrichment,
+        enrichment,
       });
+
       // THEN
       expect(enrichment.grantInvoke).toHaveBeenCalled();
       expect(enrichment.grantInvoke).toHaveBeenCalledWith(pipe.pipeRole);
@@ -299,29 +273,16 @@ describe('Pipe', () => {
 
     it('should pass enrichment parameters', () => {
       // GIVEN
-      const source = {
-        grantRead: () => { },
-        sourceArn: 'source-arn',
-        sourceParameters: {},
-      };
-      const target = {
-        grantPush: () => { },
-        targetArn: 'target-arn',
-        targetParameters: {},
-      };
-      const enrichment: IEnrichment = {
-        enrichmentArn: 'enrichment-arn',
-        enrichmentParameters: {
-          inputTransformation: { inputTemplate: 'input-template' },
-        },
-        grantInvoke: () => { },
-      };
+      const enrichmentWithParameters =new TestEnrichment({
+        inputTransformation: { inputTemplate: 'input-template' },
+      } );
+
       // WHEN
       new Pipe(stack, 'TestPipe', {
         pipeName: 'TestPipe',
         source,
         target,
-        enrichment: enrichment,
+        enrichment: enrichmentWithParameters,
       });
 
       const template = Template.fromStack(stack);
@@ -341,23 +302,13 @@ describe('Pipe', () => {
 
   describe('role', () => {
     it('should create a role', () => {
-      // GIVEN
-      const source = {
-        grantRead: () => { },
-        sourceArn: 'source-arn',
-        sourceParameters: {},
-      };
-      const target = {
-        grantPush: () => { },
-        targetArn: 'target-arn',
-        targetParameters: {},
-      };
       // WHEN
       const pipe = new Pipe(stack, 'TestPipe', {
         pipeName: 'TestPipe',
         source,
         target,
       });
+
       // THEN
       expect(pipe.pipeRole).toBeDefined();
       expect(pipe.pipeRole).toBeInstanceOf(Role);
@@ -365,27 +316,12 @@ describe('Pipe', () => {
 
     it('should use the provided role', () => {
       // GIVEN
-      const source = {
-        grantRead: jest.fn(),
-        sourceArn: 'source-arn',
-        sourceParameters: {},
-      };
-      const target = {
-        grantPush: jest.fn(),
-        targetArn: 'target-arn',
-        targetParameters: {},
-      };
+      const enrichment: IEnrichment = new TestEnrichment();
 
-      const enrichment: IEnrichment = {
-        enrichmentArn: 'enrichment-arn',
-        enrichmentParameters: {
-          inputTransformation: { inputTemplate: 'input-template' },
-        },
-        grantInvoke: jest.fn(),
-      };
       const role = new Role(stack, 'Role', {
         assumedBy: new ServicePrincipal('pipes.amazonaws.com'),
       });
+
       // WHEN
       const pipe = new Pipe(stack, 'TestPipe', {
         pipeName: 'TestPipe',
@@ -394,6 +330,7 @@ describe('Pipe', () => {
         target,
         role,
       });
+
       // THEN
       expect(pipe.pipeRole).toBeDefined();
       expect(pipe.pipeRole).toBe(role);
@@ -405,16 +342,6 @@ describe('Pipe', () => {
 
     it('should call grant on the provided role', () => {
       // GIVEN
-      const source = {
-        grantRead: () => { },
-        sourceArn: 'source-arn',
-        sourceParameters: {},
-      };
-      const target = {
-        grantPush: () => { },
-        targetArn: 'target-arn',
-        targetParameters: {},
-      };
       const role = new Role(stack, 'Role', {
         assumedBy: new ServicePrincipal('pipes.amazonaws.com'),
       });
@@ -432,16 +359,6 @@ describe('Pipe', () => {
 
     it('should use the imported role', () => {
       // GIVEN
-      const source = {
-        grantRead: jest.fn(),
-        sourceArn: 'source-arn',
-        sourceParameters: {},
-      };
-      const target = {
-        grantPush: jest.fn(),
-        targetArn: 'target-arn',
-        targetParameters: {},
-      };
       const role = Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/Role');
       // WHEN
       const pipe = new Pipe(stack, 'TestPipe', {
@@ -459,18 +376,8 @@ describe('Pipe', () => {
   });
 
   describe('logs', () => {
+    const logDestination = new TestLogDestination();
     it('should pass along log configuration', () => {
-      // GIVEN
-      const source = {
-        grantRead: () => { },
-        sourceArn: 'source-arn',
-        sourceParameters: {},
-      };
-      const target = {
-        grantPush: () => { },
-        targetArn: 'target-arn',
-        targetParameters: {},
-      };
       // WHEN
       new Pipe(stack, 'TestPipe', {
         pipeName: 'TestPipe',
@@ -479,14 +386,7 @@ describe('Pipe', () => {
         logLevel: LogLevel.INFO,
         logIncludeExecutionData: [IncludeExecutionData.ALL],
         logDestinations: [
-          {
-            parameters: {
-              cloudwatchLogsLogDestination: {
-                logGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/events/pipes/TestPipe',
-              },
-            },
-            grantPush: () => { },
-          },
+          logDestination,
         ],
       });
 
@@ -509,25 +409,6 @@ describe('Pipe', () => {
     } );
 
     it('should call grantPush of the log destination with pipe role', () => {
-      // GIVEN
-      const source = {
-        grantRead: () => { },
-        sourceArn: 'source-arn',
-        sourceParameters: {},
-      };
-      const target = {
-        grantPush: () => { },
-        targetArn: 'target-arn',
-        targetParameters: {},
-      };
-      const logDestination = {
-        parameters: {
-          cloudwatchLogsLogDestination: {
-            logGroupArn: 'arn:aws:logs:us-east-1:123456789012:log-group:/aws/events/pipes/TestPipe',
-          },
-        },
-        grantPush: jest.fn(),
-      };
       // WHEN
       const pipe = new Pipe(stack, 'TestPipe', {
         pipeName: 'TestPipe',

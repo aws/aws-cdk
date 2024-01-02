@@ -4,7 +4,7 @@ import { CfnPipe, CfnPipeProps } from 'aws-cdk-lib/aws-pipes';
 import { Construct } from 'constructs';
 import { IEnrichment } from './enrichment';
 import { IFilter } from './filter';
-import { ILogDestination, IncludeExecutionData, LogDestinationProperties, LogLevel } from './logs';
+import { ILogDestination, IncludeExecutionData, LogDestinationParameters, LogLevel } from './logs';
 import { ISource } from './source';
 import { ITarget } from './target';
 
@@ -232,7 +232,7 @@ export class Pipe extends PipeBase {
     /**
      * Logs setup
      */
-    const logDestinationConfiguration: LogDestinationProperties[] = [];
+    const logDestinationConfiguration: LogDestinationParameters[] = [];
     props.logDestinations?.forEach((destination) => {
       logDestinationConfiguration.push(destination.parameters);
       destination.grantPush(this.pipeRole);

@@ -39,7 +39,7 @@ export interface EnrichmentHttpParametersProperty {
  *
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipeenrichmentparameters.html
  */
-export interface EnrichmentParametersProperty {
+export interface EnrichmentParameters {
   /**
    * Contains the HTTP parameters to use when the target is a API Gateway REST endpoint or EventBridge ApiDestination.
    *
@@ -80,7 +80,7 @@ export interface IEnrichment {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pipes-pipe.html#cfn-pipes-pipe-enrichmentparameters
    */
-  readonly enrichmentParameters: EnrichmentParametersProperty;
+  readonly enrichmentParameters: EnrichmentParameters;
 
   /**
    * Grant the pipes role to invoke the enrichment.
@@ -95,11 +95,11 @@ export interface IEnrichment {
  */
 export abstract class Enrichment implements IEnrichment {
   public readonly enrichmentArn: string;
-  public readonly enrichmentParameters: EnrichmentParametersProperty;
+  public readonly enrichmentParameters: EnrichmentParameters;
 
   constructor(
     enrichmentArn: string,
-    props: EnrichmentParametersProperty,
+    props: EnrichmentParameters,
   ) {
     this.enrichmentParameters = props;
     // TODO - validate ARN is a valid enrichment ARN based on regex from cfn

@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Code } from 'aws-cdk-lib/aws-lambda';
-import { IncludeExecutionData, LogLevel, Pipe } from '../lib';
+import { EnrichmentParameters as EnrichmentParameters, IEnrichment, ILogDestination, ISource, ITarget, IncludeExecutionData, LogDestinationParameters, LogLevel, Pipe, TargetParameters } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes');
@@ -18,39 +18,73 @@ const enrichmentLambda = new cdk.aws_lambda.Function(stack, 'EnrichmentLambda', 
 
 const loggroup = new cdk.aws_logs.LogGroup(stack, 'LogGroup');
 
+class TestSource implements ISource {
+  sourceArn: string;
+  sourceParameters = undefined;
+  constructor(private readonly queue: cdk.aws_sqs.Queue) {
+    this.queue = queue;
+    this.sourceArn = queue.queueArn;
+  }
+  grantRead(pipeRole: cdk.aws_iam.IRole): void {
+    this.queue.grantConsumeMessages(pipeRole);
+  }
+}
+
+class TestTarget implements ITarget {
+  targetArn: string;
+  targetParameters: TargetParameters;
+
+  constructor(private readonly queue: cdk.aws_sqs.Queue) {
+    this.queue = queue;
+    this.targetArn = queue.queueArn;
+    this.targetParameters = {
+      inputTransformation: { inputTemplate: '<$.body>' },
+    };
+  }
+
+  grantPush(pipeRole: cdk.aws_iam.IRole): void {
+    this.queue.grantSendMessages(pipeRole);
+  }
+}
+
+class TestEnrichment implements IEnrichment {
+  enrichmentArn: string;
+  enrichmentParameters: EnrichmentParameters;
+  constructor(private readonly lambda: cdk.aws_lambda.Function) {
+    this.lambda = lambda;
+    this.enrichmentArn = lambda.functionArn;
+    this.enrichmentParameters = {};
+  }
+  grantInvoke(pipeRole: cdk.aws_iam.IRole): void {
+    this.lambda.grantInvoke(pipeRole);
+  }
+}
+
+class TestLogDestination implements ILogDestination {
+  logDestinationArn: string;
+  parameters: LogDestinationParameters;
+  constructor(private readonly logGroup: cdk.aws_logs.LogGroup) {
+    this.logGroup = logGroup;
+    this.logDestinationArn = logGroup.logGroupArn;
+    this.parameters = {
+      cloudwatchLogsLogDestination: {},
+    };
+  }
+  grantPush(pipeRole: cdk.aws_iam.IRole): void {
+    this.logGroup.grantWrite(pipeRole);
+  }
+}
+
 new Pipe(stack, 'Pipe', {
   pipeName: 'BaseTestPipe',
-  source: {
-    grantRead: (role) => sourceQueue.grantConsumeMessages(role),
-    sourceArn: sourceQueue.queueArn,
-    sourceParameters: {},
-  },
-  target: {
-    grantPush: (role) => targetQueue.grantSendMessages(role),
-    targetArn: targetQueue.queueArn,
-    targetParameters: {
-      inputTransformation: { inputTemplate: '<$.body>' },
-    },
-  },
-  enrichment: {
-    enrichmentArn: enrichmentLambda.functionArn,
-    enrichmentParameters: {},
-    grantInvoke: (role) => {
-      enrichmentLambda.grantInvoke(role);
-    },
-  },
+  source: new TestSource(sourceQueue),
+  target: new TestTarget(targetQueue),
+  enrichment: new TestEnrichment(enrichmentLambda),
   logLevel: LogLevel.TRACE,
   logIncludeExecutionData: [IncludeExecutionData.ALL],
 
   logDestinations: [
-    {
-      parameters: {
-        cloudwatchLogsLogDestination: {
-          logGroupArn: loggroup.logGroupArn,
-        },
-      },
-      grantPush: (role) => loggroup.grantWrite(role),
-    },
+    new TestLogDestination(loggroup),
   ],
 });
 
@@ -76,5 +110,5 @@ putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage',
 })).waitForAssertions({
   totalTimeout: cdk.Duration.seconds(30),
 });
-// TODO add test for pipeName, pipeArn, pipeRole
+
 app.synth();

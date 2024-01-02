@@ -137,7 +137,7 @@ export interface ILogDestination {
   /**
    * Get the log destination configuration parameters.
    */
-  parameters: LogDestinationProperties
+  parameters: LogDestinationParameters
 
   /**
    * Grant the pipe role to push to the log destination.
@@ -146,9 +146,9 @@ export interface ILogDestination {
 }
 
 /**
- * Log destination properties.
+ * Log destination parameters.
  */
-export interface LogDestinationProperties {
+export interface LogDestinationParameters {
   /**
    * The logging configuration settings for the pipe.
    *
