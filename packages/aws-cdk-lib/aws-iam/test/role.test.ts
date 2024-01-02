@@ -1,7 +1,7 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct } from 'constructs';
 import { Template, Match, Annotations } from '../../assertions';
-import { Duration, Stack, App, CfnResource, RemovalPolicy, Lazy, Stage, DefaultStackSynthesizer, CliCredentialsStackSynthesizer, PERMISSIONS_BOUNDARY_CONTEXT_KEY, PermissionsBoundary } from '../../core';
+import { Duration, Stack, App, CfnResource, RemovalPolicy, Lazy, Stage, DefaultStackSynthesizer, CliCredentialsStackSynthesizer, PERMISSIONS_BOUNDARY_CONTEXT_KEY, PermissionsBoundary, Token } from '../../core';
 import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument, Effect } from '../lib';
 
 describe('isRole() returns', () => {
@@ -1326,7 +1326,7 @@ test('cross-env role ARNs include path', () => {
   });
 });
 
-test('doesn\'t throw with name of 64 chars', () => {
+test('doesn\'t throw with roleName of 64 chars', () => {
   const app = new App();
   const stack = new Stack(app, 'MyStack');
   const valdName = 'a'.repeat(64);
@@ -1339,7 +1339,7 @@ test('doesn\'t throw with name of 64 chars', () => {
   }).not.toThrow('Invalid roleName');
 });
 
-test('throws with name over 64 chars', () => {
+test('throws with roleName over 64 chars', () => {
   const app = new App();
   const stack = new Stack(app, 'MyStack');
   const longName = 'a'.repeat(65);
@@ -1377,4 +1377,32 @@ describe('roleName validation', () => {
     });
   });
 
+});
+
+test('roleName validation with Tokens', () =>{
+  const app = new App();
+  const stack = new Stack(app, 'MyStack');
+  const token = Lazy.string({ produce: () => 'token' });
+
+  // Mock isUnresolved to return false
+  jest.spyOn(Token, 'isUnresolved').mockReturnValue(false);
+
+  expect(() => {
+    new Role(stack, 'Valid', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      roleName: token,
+    });
+  }).toThrow('Invalid roleName');
+
+  // Mock isUnresolved to return true
+  jest.spyOn(Token, 'isUnresolved').mockReturnValue(true);
+
+  expect(() => {
+    new Role(stack, 'Invalid', {
+      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+      roleName: token,
+    });
+  }).not.toThrow('Invalid roleName');
+
+  jest.clearAllMocks();
 });
