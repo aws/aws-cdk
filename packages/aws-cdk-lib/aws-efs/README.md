@@ -64,9 +64,13 @@ new efs.FileSystem(this, 'OneZoneFileSystem', {
 })
 ```
 
-⚠️ Performance Mode Compatibility: The oneZone option is not compatible with the MAX_IO performance mode. An error will be thrown if these two options are used together.
-⚠️ Availability Zone Selection: When oneZone is enabled, the file system is automatically placed in the first availability zone of the VPC. It is not currently possible to specify a different availability zone.
-⚠️ Mount Target Creation: When using oneZone, mount targets will be created only in the specified availability zone. This is to prevent deployment failures due to cross-AZ configurations.
+⚠️ One Zone file systems are not compatible with the MAX_IO performance mode.
+
+⚠️ When `oneZone` is enabled, the file system is automatically placed in the first availability zone of the VPC.
+It is not currently possible to specify a different availability zone.
+
+⚠️ When `oneZone` is enabled, mount targets will be created only in the specified availability zone. 
+This is to prevent deployment failures due to cross-AZ configurations.
 
 ### IAM to control file system data access
 
