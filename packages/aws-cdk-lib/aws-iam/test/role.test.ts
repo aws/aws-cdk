@@ -1326,15 +1326,17 @@ test('cross-env role ARNs include path', () => {
   });
 });
 
-test('throws with empty role name', () => {
+test('doesn\'t throw with name of 64 chars', () => {
   const app = new App();
   const stack = new Stack(app, 'MyStack');
+  const valdName = 'a'.repeat(64);
+
   expect(() => {
     new Role(stack, 'Test', {
       assumedBy: new ServicePrincipal('sns.amazonaws.com'),
-      roleName: '',
+      roleName: valdName,
     });
-  }).toThrow('/Invalid roleName/');
+  }).not.toThrow('Invalid roleName');
 });
 
 test('throws with name over 64 chars', () => {
@@ -1350,13 +1352,29 @@ test('throws with name over 64 chars', () => {
   }).toThrow('Invalid roleName');
 });
 
-test('throws with invalid chars', () => {
+describe('roleName validation', () => {
   const app = new App();
   const stack = new Stack(app, 'MyStack');
-  expect(() => {
-    new Role(stack, 'Test', {
-      assumedBy: new ServicePrincipal('sns.amazonaws.com'),
-      roleName: 'invalid!name',
+  const invalidChars = '!#$%^&*()';
+
+  it('rejects names with spaces', () => {
+    expect(() => {
+      new Role(stack, 'test spaces', {
+        assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+        roleName: 'invalid name',
+      });
+    }).toThrow('Invalid roleName');
+  });
+
+  invalidChars.split('').forEach(char => {
+    it(`rejects name with ${char}`, () => {
+      expect(() => {
+        new Role(stack, `test ${char}`, {
+          assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+          roleName: `invalid${char}`,
+        });
+      }).toThrow('Invalid roleName');
     });
-  }).toThrow('Invalid roleName');
+  });
+
 });
