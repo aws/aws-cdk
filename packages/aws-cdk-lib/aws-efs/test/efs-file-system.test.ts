@@ -896,7 +896,7 @@ test('specify availabilityZoneName to create mount targets in a specific AZ', ()
     },
   });
 
-  // MountTargetのサブネットIDを取得
+  // make sure only one mount target is created.
   template.resourceCountIs('AWS::EFS::MountTarget', 1);
 });
 
