@@ -1,12 +1,14 @@
 {
-  "version": "36.0.0",
+  "version": "20.0.0",
   "testCases": {
-    "cluster-dual-test/DefaultTest": {
+    "integ.serverless-cluster": {
       "stacks": [
         "aws-cdk-rds-integ"
       ],
-      "assertionStack": "cluster-dual-test/DefaultTest/DeployAssert",
-      "assertionStackName": "clusterdualtestDefaultTestDeployAssert0AE5E6E0"
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
     }
-  }
+  },
+  "synthContext": {},
+  "enableLookups": false
 }
