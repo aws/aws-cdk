@@ -267,7 +267,7 @@ export interface FileSystemProps {
 
   /**
    * Whether this is a One Zone file system.
-   * If enabled, `performanceMode` must be set to `GENERAL_PURPOSE`.
+   * If enabled, `performanceMode` must be set to `GENERAL_PURPOSE` and `vpcSubnets` cannot be set.
    *
    * @default false
    * @link https://docs.aws.amazon.com/efs/latest/ug/availability-durability.html#file-system-type

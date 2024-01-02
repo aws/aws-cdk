@@ -69,8 +69,10 @@ new efs.FileSystem(this, 'OneZoneFileSystem', {
 ⚠️ When `oneZone` is enabled, the file system is automatically placed in the first availability zone of the VPC.
 It is not currently possible to specify a different availability zone.
 
-⚠️ When `oneZone` is enabled, mount targets will be created only in the specified availability zone. 
+⚠️ When `oneZone` is enabled, mount targets will be created only in the specified availability zone.
 This is to prevent deployment failures due to cross-AZ configurations.
+
+⚠️ When `oneZone` is enabled, `vpcSubnets` cannot be specified.
 
 ### IAM to control file system data access
 
