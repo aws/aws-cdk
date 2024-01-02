@@ -429,7 +429,7 @@ variable names, default values, and descriptions when you create the pipeline.
 Variables are resolved at the time of execution.
 
 Note that using pipeline-level variables in any kind of Source action is not supported.
-Also, the variables can only used with pipeline type V2.
+Also, the variables can only be used with pipeline type V2.
 
 ```ts
 declare const sourceAction: codepipeline_actions.S3SourceAction;
