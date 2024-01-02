@@ -9,7 +9,6 @@ import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
-import { IResolvable } from '../../core';
 
 /**
  * Specify the secret's version id or version stage
