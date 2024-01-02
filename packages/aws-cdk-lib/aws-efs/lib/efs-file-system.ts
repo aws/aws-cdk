@@ -488,7 +488,7 @@ export class FileSystem extends FileSystemBase {
     super(scope, id);
 
     if (props.performanceMode === PerformanceMode.MAX_IO && props.oneZone) {
-      throw new Error('OneZone mode file systems do not support the MAX_IO performance mode.');
+      throw new Error(`performanceMode MAX_IO is not supported for One Zone file systems.`);
     }
 
     if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
