@@ -26,13 +26,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Statement1": {
-                "id": "Statement1",
-                "path": "Stack/Bus/Statement1",
+              "cdk-Statement1": {
+                "id": "cdk-Statement1",
+                "path": "Stack/Bus/cdk-Statement1",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "Stack/Bus/Statement1/Resource",
+                    "path": "Stack/Bus/cdk-Statement1/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Events::EventBusPolicy",
                       "aws:cdk:cloudformation:props": {
@@ -66,9 +66,9 @@
                               "Arn"
                             ]
                           },
-                          "Sid": "Statement1"
+                          "Sid": "cdk-Statement1"
                         },
-                        "statementId": "Statement1"
+                        "statementId": "cdk-Statement1"
                       }
                     },
                     "constructInfo": {
@@ -82,13 +82,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Statement2": {
-                "id": "Statement2",
-                "path": "Stack/Bus/Statement2",
+              "cdk-Statement2": {
+                "id": "cdk-Statement2",
+                "path": "Stack/Bus/cdk-Statement2",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "Stack/Bus/Statement2/Resource",
+                    "path": "Stack/Bus/cdk-Statement2/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Events::EventBusPolicy",
                       "aws:cdk:cloudformation:props": {
@@ -122,9 +122,9 @@
                               "Arn"
                             ]
                           },
-                          "Sid": "Statement2"
+                          "Sid": "cdk-Statement2"
                         },
-                        "statementId": "Statement2"
+                        "statementId": "cdk-Statement2"
                       }
                     },
                     "constructInfo": {
@@ -179,7 +179,7 @@
                 "path": "IntegTest-EventBusStack/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -225,7 +225,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },
