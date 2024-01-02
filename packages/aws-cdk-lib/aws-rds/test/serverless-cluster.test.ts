@@ -947,7 +947,7 @@ describe('serverless cluster', () => {
         autoPause: cdk.Duration.minutes(10),
         minCapacity: AuroraCapacityUnit.ACU_8,
         maxCapacity: AuroraCapacityUnit.ACU_32,
-        secondsBeforeTimeout: cdk.Duration.minutes(10),
+        timeout: cdk.Duration.minutes(10),
         timeoutAction: TimeoutAction.FORCE_APPLY_CAPACITY_CHANGE,
       },
     });
@@ -980,9 +980,9 @@ describe('serverless cluster', () => {
         autoPause: cdk.Duration.minutes(10),
         minCapacity: AuroraCapacityUnit.ACU_8,
         maxCapacity: AuroraCapacityUnit.ACU_32,
-        secondsBeforeTimeout: duration,
+        timeout: duration,
       },
-    })).toThrow(/secondsBeforeTimeout must be between 60 and 600 seconds./);
+    })).toThrow(/timeout must be between 60 and 600 seconds./);
   });
 });
 

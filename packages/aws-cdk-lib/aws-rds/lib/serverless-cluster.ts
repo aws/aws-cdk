@@ -294,12 +294,11 @@ export interface ServerlessScalingOptions {
   readonly autoPause?: Duration;
 
   /**
-   * secondsBeforeTimeout specifies the amount of time, in seconds,
-   * that Aurora Serverless v1 tries to find a scaling point to perform seamless scaling before enforcing the timeout action.
+   * timeout specifies the amount of time, that Aurora Serverless v1 tries to find a scaling point to perform seamless scaling before enforcing the timeout action.
    *
-   * @default - 300 (5 minutes)
+   * @default - 5 minutes
    */
-  readonly secondsBeforeTimeout? : Duration;
+  readonly timeout? : Duration;
 
   /**
    * timeoutAction specifies the action to take when the timeout is reached.
@@ -481,7 +480,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
   private renderScalingConfiguration(options: ServerlessScalingOptions): CfnDBCluster.ScalingConfigurationProperty {
     const minCapacity = options.minCapacity;
     const maxCapacity = options.maxCapacity;
-    const timeout = options.secondsBeforeTimeout?.toSeconds();
+    const timeout = options.timeout?.toSeconds();
 
     if (minCapacity && maxCapacity && minCapacity > maxCapacity) {
       throw new Error('maximum capacity must be greater than or equal to minimum capacity.');
@@ -493,7 +492,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     }
 
     if (timeout && (timeout < 60 || timeout > 600)) {
-      throw new Error('secondsBeforeTimeout must be between 60 and 600 seconds.');
+      throw new Error('timeout must be between 60 and 600 seconds.');
     }
 
     return {
