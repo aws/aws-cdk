@@ -32,7 +32,7 @@ const cluster = new rds.ServerlessCluster(stack, 'Serverless Database', {
     minCapacity: rds.AuroraCapacityUnit.ACU_8,
     maxCapacity: rds.AuroraCapacityUnit.ACU_32,
     timeoutAction: rds.TimeoutAction.FORCE_APPLY_CAPACITY_CHANGE,
-    secondsBeforeTimeout: cdk.Duration.minutes(8),
+    timeout: cdk.Duration.minutes(8),
   },
 });
 cluster.connections.allowDefaultPortFromAnyIpv4('Open to the world');

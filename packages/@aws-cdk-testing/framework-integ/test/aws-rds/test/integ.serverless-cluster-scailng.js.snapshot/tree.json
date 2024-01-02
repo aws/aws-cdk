@@ -784,7 +784,6 @@
                       "minCapacity": 8,
                       "maxCapacity": 32,
                       "secondsUntilAutoPause": 300,
-                      "secondsBeforeTimeout": 480,
                       "timeoutAction": "ForceApplyCapacityChange"
                     },
                     "storageEncrypted": true,
