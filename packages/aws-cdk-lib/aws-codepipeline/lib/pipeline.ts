@@ -554,7 +554,7 @@ export class Pipeline extends PipelineBase {
       disableInboundStageTransitions: Lazy.any({ produce: () => this.renderDisabledTransitions() }, { omitEmptyArray: true }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
-      pipelineType: props.pipelineType,
+      pipelineType: this.pipelineType,
       variables: Lazy.any({ produce: () => this.renderVariables() }, { omitEmptyArray: true }),
       name: this.physicalName,
     });
