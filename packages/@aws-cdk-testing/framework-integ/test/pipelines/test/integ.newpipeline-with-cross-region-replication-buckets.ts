@@ -13,7 +13,7 @@ class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const regionalBucket = new s3.Bucket(this, 'RegionalBucket', {
+    const regionalBucketVa = new s3.Bucket(this, 'RegionalBucket-us-east-1', {
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
       encryption: s3.BucketEncryption.S3_MANAGED,
       enforceSSL: true,
@@ -21,8 +21,14 @@ class PipelineStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
+    const regionalBucketOr = s3.Bucket.fromBucketAttributes(this, 'RegionalBucket-us-west-2', {
+      bucketArn: 'arn:aws:s3:::fake-bucket',
+      region: 'us-west-2',
+    });
+
     const crossRegionReplicationBuckets = {
-      'us-east-1': regionalBucket,
+      'us-east-1': regionalBucketVa,
+      'us-west-2': regionalBucketOr,
     };
 
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
