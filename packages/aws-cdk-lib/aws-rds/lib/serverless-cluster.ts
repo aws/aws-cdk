@@ -308,7 +308,7 @@ export interface ServerlessScalingOptions {
    *
    * @default - TimeoutAction.ROLLBACK_CAPACITY_CHANGE
    */
-  readonly timeoutAction? : TimeoutAction;
+  readonly timeoutAction?: TimeoutAction;
 }
 
 /**
