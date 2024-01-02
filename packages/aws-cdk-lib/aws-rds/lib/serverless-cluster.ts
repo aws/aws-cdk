@@ -256,7 +256,7 @@ export enum TimeoutAction {
    * ROLLBACK_CAPACITY_CHANGE ignores the capacity change if a scaling point is not found.
    * This is the default behavior.
    */
-  ROLLBACK_CAPACITY_CHANGE = 'RollbackCapacityChange'
+  ROLLBACK_CAPACITY_CHANGE = 'RollbackCapacityChange',
 }
 
 /**
