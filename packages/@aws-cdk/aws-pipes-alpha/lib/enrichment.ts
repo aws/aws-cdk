@@ -1,6 +1,5 @@
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { IInputTransformation } from './inputTransformation';
-import { Arn } from 'aws-cdk-lib';
 
 /**
    * These are custom parameter to be used when the target is an API Gateway REST APIs or EventBridge ApiDestinations.
