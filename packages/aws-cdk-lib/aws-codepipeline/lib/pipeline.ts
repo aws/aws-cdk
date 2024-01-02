@@ -106,6 +106,9 @@ export enum PipelineType {
   V2 = 'V2',
 }
 
+/**
+ * Properties of pipeline-Level variable.
+ */
 export interface VariableProps {
   /**
    * The name of a pipeline-level variable.
