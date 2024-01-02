@@ -12,6 +12,7 @@ import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import {
   Annotations,
+  ArnFormat,
   App,
   Aws,
   CfnCondition,
