@@ -306,7 +306,7 @@ export interface ServerlessScalingOptions {
    * Selecting ForceApplyCapacityChange will force the capacity to the specified value as soon as possible, even without a scaling point.
    * Selecting RollbackCapacityChange will ignore the capacity change if a scaling point is not found. This is the default behavior.
    *
-   * @default - RollbackCapacityChange
+   * @default - TimeoutAction.ROLLBACK_CAPACITY_CHANGE
    */
   readonly timeoutAction? : TimeoutAction;
 }
