@@ -258,7 +258,7 @@ export interface ContainerDefinitionOptions {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinition.html#cfn-ecs-taskdefinition-containerdefinition-interactive
    * @default - false
    */
-  readonly interactive?: boolean | IResolvable;
+  readonly interactive?: boolean;
 
   /**
    * The amount (in MiB) of memory to present to the container.
