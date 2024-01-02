@@ -52,7 +52,6 @@ class PipelineStack extends Stack {
           'main',
         ),
         commands: ['npm ci', 'npm run build', 'npx cdk synth'],
-        // commands: ['echo Running integ tests...'],
       }),
       crossRegionReplicationBuckets,
     });
