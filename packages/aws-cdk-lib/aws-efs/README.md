@@ -53,8 +53,7 @@ const importedFileSystem = efs.FileSystem.fromFileSystemAttributes(this, 'existi
 
 ### One Zone file system
 
-One Zone file systems provide continuous availability to data within a single Availability Zone in an AWS Region.
-Here's a basic example:
+To initialize a One Zone file system use the `oneZone` property:
 
 ```ts
 declare const vpc: ec2.Vpc;
