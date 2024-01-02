@@ -1246,15 +1246,15 @@ The following code assumes you have created and are managing your buckets in the
 separate cdk repo and are just importing them for use in one of your (many) pipelines.
 
 ```ts
-let sharedArtifactBucketArn: string;
-let sharedArtifactKeyArn: string;
+let sharedXRegionUsWest1BucketArn: string;
+let sharedXRegionUsWest1KeyArn: string;
 
 let sharedXRegionUsWest2BucketArn: string;
 let sharedXRegionUsWest2KeyArn: string;
 
-const artifactBucket = s3.Bucket.fromBucketAttributes(scope, 'bucketArn', {
-  bucketArn: sharedArtifactBucketArn,
-  encryptionKey: kms.Key.fromKeyArn(scope, 'keyArn', sharedArtifactKeyArn),
+const usWest1Bucket = s3.Bucket.fromBucketAttributes(scope, 'bucketArn', {
+  bucketArn: sharedXRegionUsWest1BucketArn,
+  encryptionKey: kms.Key.fromKeyArn(scope, 'keyArn', sharedXRegionUsWest1BucketArn),
 });
 
 const usWest2Bucket = s3.Bucket.fromBucketAttributes(scope, 'us-west-2Bucket', {
@@ -1263,6 +1263,7 @@ const usWest2Bucket = s3.Bucket.fromBucketAttributes(scope, 'us-west-2Bucket', {
 });
 
 const crossRegionReplicationBuckets: Record<[key: string]: s3.IBucket> = {
+  'us-west-1': usWest1Bucket,
   'us-west-2': usWest2Bucket,
   // Support for additional regions.
 }
@@ -1271,7 +1272,6 @@ let otherProps: pipelines.CodePipelineProps;
 const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
   ...otherProps,
   // Use shared buckets.
-  artifactBucket,
   crossRegionReplicationBuckets,
 });
 ```
