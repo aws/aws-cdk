@@ -36,3 +36,22 @@ export enum PipeVariable {
   EVENT_JSON = '<aws.pipes.event.json>'
 
 }
+
+/**
+ * Dynamic variables that can be used in the input transformation.
+ */
+export class DynamicInput {
+  /**
+   * Value from the event payload at jsonPath.
+   */
+  static fromJsonPath(path: string): string {
+    return `<${path}>`;
+  }
+
+  /**
+   * Value from one of the provided Pipe variables.
+   */
+  static fromPipeVariable(variable: PipeVariable): string {
+    return variable;
+  }
+}

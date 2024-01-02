@@ -61,13 +61,13 @@ class TestEnrichment implements IEnrichment {
 }
 
 class TestLogDestination implements ILogDestination {
-  logDestinationArn: string;
   parameters: LogDestinationParameters;
   constructor(private readonly logGroup: cdk.aws_logs.LogGroup) {
     this.logGroup = logGroup;
-    this.logDestinationArn = logGroup.logGroupArn;
     this.parameters = {
-      cloudwatchLogsLogDestination: {},
+      cloudwatchLogsLogDestination: {
+        logGroupArn: logGroup.logGroupArn,
+      },
     };
   }
   grantPush(pipeRole: cdk.aws_iam.IRole): void {

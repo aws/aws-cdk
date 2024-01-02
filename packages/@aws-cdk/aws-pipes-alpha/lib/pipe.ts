@@ -1,4 +1,4 @@
-import { IResource, Resource } from 'aws-cdk-lib';
+import { IResource, Resource, Stack } from 'aws-cdk-lib';
 import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnPipe, CfnPipeProps } from 'aws-cdk-lib/aws-pipes';
 import { Construct } from 'constructs';
@@ -174,6 +174,27 @@ abstract class PipeBase extends Resource implements IPipe {
 }
 
 /**
+ * An imported pipe.
+ */
+class ImportedPipe extends PipeBase {
+  public readonly pipeName: string ;
+  public readonly pipeArn: string;
+  public readonly pipeRole: IRole;
+
+  constructor(scope: Construct, id: string, pipeName: string) {
+    super(scope, id);
+    this.pipeName = pipeName;
+    this.pipeArn = Stack.of(this).formatArn({
+      service: 'pipes',
+      partition: 'aws',
+      resource: 'pipe',
+      resourceName: this.pipeName,
+    });
+    this.pipeRole = Role.fromRoleName(this, 'Role', this.pipeName );
+  }
+}
+
+/**
  * Amazon EventBridge Pipes connects sources to targets.
  *
  * Pipes are intended for point-to-point integrations between supported sources and targets,
@@ -182,6 +203,14 @@ abstract class PipeBase extends Resource implements IPipe {
  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes.html
  */
 export class Pipe extends PipeBase {
+  /**
+   * Creates a pipe from the name of a pipe.
+   */
+  static fromPipeName(scope: Construct, id: string, pipeName: string): IPipe {
+
+    return new ImportedPipe(scope, id, pipeName);
+  }
+
   public readonly pipeName: string;
   public readonly pipeArn: string;
   public readonly pipeRole: IRole;

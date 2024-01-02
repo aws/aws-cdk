@@ -81,6 +81,16 @@ describe('Pipe', () => {
     expect(template).toMatchSnapshot();
   });
 
+  test('fromPipeName', () => {
+    // WHEN
+    const pipe = Pipe.fromPipeName(stack, 'TestPipe', 'TestPipe');
+
+    // THEN
+    expect(pipe.pipeName).toEqual('TestPipe');
+    expect(pipe.pipeArn).toEqual('arn:aws:pipes:us-east-1:123456789012:pipe/TestPipe');
+    expect(pipe.pipeRole.roleArn).toEqual(expect.stringContaining('role/TestPipe'));
+  });
+
   describe('source', () => {
     it('should grant read permissions to the source', () => {
       // WHEN
