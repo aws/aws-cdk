@@ -1,5 +1,12 @@
 import { Construct } from 'constructs';
-import { ActionCategory, IAction, IPipeline, IStage, PipelineNotificationEvents, PipelineNotifyOnOptions } from './action';
+import {
+  ActionCategory,
+  IAction,
+  IPipeline,
+  IStage,
+  PipelineNotificationEvents,
+  PipelineNotifyOnOptions,
+} from './action';
 import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './private/cross-region-support-stack';
 import { FullActionDescriptor } from './private/full-action-descriptor';
@@ -325,7 +332,9 @@ export class Pipeline extends PipelineBase {
       public readonly pipelineArn = pipelineArn;
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: pipelineArn,
+    });
   }
 
   /**

@@ -1,6 +1,7 @@
 import { Connections, IConnectable } from './connections';
 import { Instance } from './instance';
 import { InstanceType } from './instance-types';
+import { IKeyPair } from './key-pair';
 import { IMachineImage, LookupMachineImage } from './machine-image';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -171,8 +172,16 @@ export interface NatInstanceProps {
    * Name of SSH keypair to grant access to instance
    *
    * @default - No SSH access will be possible.
+   * @deprecated - Use `keyPair` instead.
    */
   readonly keyName?: string;
+
+  /**
+   * The SSH keypair to grant access to the instance.
+   *
+   * @default - No SSH access will be possible.
+   */
+  readonly keyPair?: IKeyPair;
 
   /**
    * Security Group for NAT instances
@@ -274,6 +283,10 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
     if (props.defaultAllowedTraffic !== undefined && props.allowAllTraffic !== undefined) {
       throw new Error('Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
     }
+
+    if (props.keyName && props.keyPair) {
+      throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+    }
   }
 
   public configureNat(options: ConfigureNatOptions) {
@@ -308,6 +321,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
         vpcSubnets: { subnets: [sub] },
         securityGroup: this._securityGroup,
         role,
+        keyPair: this.props.keyPair,
         keyName: this.props.keyName,
       });
       // NAT instance routes all traffic, both ways
