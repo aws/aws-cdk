@@ -551,12 +551,29 @@ export interface InstancesDistribution {
  */
 export interface LaunchTemplateOverrides {
   /**
-   * The instance type, such as m3.xlarge. You must use an instance type that is supported in your requested Region
-   * and Availability Zones.
+   * The instance requirements. Amazon EC2 Auto Scaling uses your specified requirements to identify instance types.
+   * Then, it uses your On-Demand and Spot allocation strategies to launch instances from these instance types.
+   *
+   * You can specify up to four separate sets of instance requirements per Auto Scaling group.
+   * This is useful for provisioning instances from different Amazon Machine Images (AMIs) in the same Auto Scaling group.
+   * To do this, create the AMIs and create a new launch template for each AMI.
+   * Then, create a compatible set of instance requirements for each launch template.
+   *
+   * You must specify one of instanceRequirements or instanceType.
    *
    * @default - Do not override instance type
    */
-  readonly instanceType: ec2.InstanceType,
+  readonly instanceRequirements?: CfnAutoScalingGroup.InstanceRequirementsProperty
+
+  /**
+   * The instance type, such as m3.xlarge. You must use an instance type that is supported in your requested Region
+   * and Availability Zones.
+   *
+   * You must specify one of instanceRequirements or instanceType.
+   *
+   * @default - Do not override instance type
+   */
+  readonly instanceType?: ec2.InstanceType,
 
   /**
    * Provides the launch template to be used when launching the instance type. For example, some instance types might
@@ -695,6 +712,42 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default false
    */
   readonly requireImdsv2?: boolean;
+
+  /**
+   * Specifies the upper threshold as a percentage of the desired capacity of the Auto Scaling group.
+   * It represents the maximum percentage of the group that can be in service and healthy, or pending,
+   * to support your workload when replacing instances.
+   *
+   * Value range is 0 to 100. After it's set, both `minHealthyPercentage` and `maxHealthyPercentage` to
+   * -1 will clear the previously set value.
+   *
+   * Both or neither of `minHealthyPercentage` and `maxHealthyPercentage` must be specified, and the
+   * difference between them cannot be greater than 100. A large range increases the number of
+   * instances that can be replaced at the same time.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-maintenance-policy.html
+   *
+   * @default - No instance maintenance policy.
+   */
+  readonly maxHealthyPercentage?: number;
+
+  /**
+   * Specifies the lower threshold as a percentage of the desired capacity of the Auto Scaling group.
+   * It represents the minimum percentage of the group to keep in service, healthy, and ready to use
+   * to support your workload when replacing instances.
+   *
+   * Value range is 0 to 100. After it's set, both `minHealthyPercentage` and `maxHealthyPercentage` to
+   * -1 will clear the previously set value.
+   *
+   * Both or neither of `minHealthyPercentage` and `maxHealthyPercentage` must be specified, and the
+   * difference between them cannot be greater than 100. A large range increases the number of
+   * instances that can be replaced at the same time.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-instance-maintenance-policy.html
+   *
+   * @default - No instance maintenance policy.
+   */
+  readonly minHealthyPercentage?: number;
 }
 
 /**
@@ -1436,6 +1489,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       terminationPolicies: props.terminationPolicies,
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
+      instanceMaintenancePolicy: this.renderInstanceMaintenancePolicy(
+        props.minHealthyPercentage,
+        props.maxHealthyPercentage,
+      ),
       ...this.getLaunchSettings(launchConfig, props.launchTemplate ?? launchTemplateFromConfig, props.mixedInstancesPolicy),
     };
 
@@ -1810,11 +1867,18 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
                 if (override.weightedCapacity && Math.floor(override.weightedCapacity) !== override.weightedCapacity) {
                   throw new Error('Weight must be an integer');
                 }
+                if (!override.instanceType && !override.instanceRequirements) {
+                  throw new Error('You must specify either \'instanceRequirements\' or \'instanceType\'.');
+                }
+                if (override.instanceType && override.instanceRequirements) {
+                  throw new Error('You can specify either \'instanceRequirements\' or \'instanceType\', not both.');
+                }
                 return {
-                  instanceType: override.instanceType.toString(),
+                  instanceType: override.instanceType?.toString(),
                   launchTemplateSpecification: override.launchTemplate
                     ? this.convertILaunchTemplateToSpecification(override.launchTemplate)
                     : undefined,
+                  instanceRequirements: override.instanceRequirements,
                   weightedCapacity: override.weightedCapacity?.toString(),
                 };
               }),
@@ -1848,6 +1912,32 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     return errors;
+  }
+
+  private renderInstanceMaintenancePolicy(
+    minHealthyPercentage?: number,
+    maxHealthyPercentage?: number,
+  ): CfnAutoScalingGroup.InstanceMaintenancePolicyProperty | undefined {
+    if (minHealthyPercentage === undefined && maxHealthyPercentage === undefined) return;
+    if (minHealthyPercentage === undefined || maxHealthyPercentage === undefined) {
+      throw new Error(`Both or neither of minHealthyPercentage and maxHealthyPercentage must be specified, got minHealthyPercentage: ${minHealthyPercentage} and maxHealthyPercentage: ${maxHealthyPercentage}`);
+    }
+    if ((minHealthyPercentage === -1 || maxHealthyPercentage === -1) && minHealthyPercentage !== maxHealthyPercentage) {
+      throw new Error(`Both minHealthyPercentage and maxHealthyPercentage must be -1 to clear the previously set value, got minHealthyPercentage: ${minHealthyPercentage} and maxHealthyPercentage: ${maxHealthyPercentage}`);
+    }
+    if (minHealthyPercentage !== -1 && (minHealthyPercentage < 0 || minHealthyPercentage > 100)) {
+      throw new Error(`minHealthyPercentage must be between 0 and 100, or -1 to clear the previously set value, got ${minHealthyPercentage}`);
+    }
+    if (maxHealthyPercentage !== -1 && (maxHealthyPercentage < 100 || maxHealthyPercentage > 200)) {
+      throw new Error(`maxHealthyPercentage must be between 100 and 200, or -1 to clear the previously set value, got ${maxHealthyPercentage}`);
+    }
+    if (maxHealthyPercentage - minHealthyPercentage > 100) {
+      throw new Error(`The difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100, got ${maxHealthyPercentage - minHealthyPercentage}`);
+    }
+    return {
+      minHealthyPercentage,
+      maxHealthyPercentage,
+    };
   }
 }
 
