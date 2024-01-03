@@ -318,10 +318,10 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
     }
   }
 
-  return UploadBodyParameterAndCreateChangeSet(options);
+  return uploadBodyParameterAndCreateChangeSet(options);
 }
 
-async function UploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
+async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
   try {
     const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
     const bodyParameter = await makeBodyParameterAndUpload(
