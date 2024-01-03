@@ -91,6 +91,29 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+You can specify instances requirements with the `instanceRequirements ` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const launchTemplate1: ec2.LaunchTemplate;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  mixedInstancesPolicy: {
+    launchTemplate: launchTemplate1,
+    launchTemplateOverrides: [
+      {
+        instanceRequirements: {
+          vCpuCount: { min: 4, max: 8 },
+          memoryMiB: { min: 16384 },
+          cpuManufacturers: ['intel'],
+        },
+      }
+    ],
+  }
+});
+```
+
 ## Machine Images (AMIs)
 
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2
