@@ -19,6 +19,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import {
+  Annotations,
   ArnFormat,
   BootstraplessSynthesizer,
   DefaultStackSynthesizer,
@@ -544,6 +545,9 @@ export class Pipeline extends PipelineBase {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
     });
 
+    if (props.pipelineType === undefined) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-codepipeline:unspecifiedPipelineType', 'V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`.');
+    }
     this.pipelineType = props.pipelineType ?? PipelineType.V1;
     this.variables = props.variables ?? [];
 
