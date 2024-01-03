@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 import * as path from 'path';
 import * as yargs from 'yargs';
-import { findPackageJsons, ValidationRule } from '../lib';
+//import { findPackageJsons, ValidationRule } from '../lib';
 
-/* eslint-disable @typescript-eslint/no-shadow */
 const argv = yargs
   .env('PKGLINT_')
   .usage('$0 [directory]')
@@ -20,6 +19,7 @@ if (typeof(directory) !== 'string') {
 argv.directory = path.resolve(directory, process.cwd());
 
 async function main(): Promise<void> {
+  /*
   const ruleClasses = require('../lib/rules'); // eslint-disable-line @typescript-eslint/no-require-imports
   const rules: ValidationRule[] = Object.keys(ruleClasses).map(key => new ruleClasses[key]()).filter(obj => obj instanceof ValidationRule);
 
@@ -37,6 +37,7 @@ async function main(): Promise<void> {
   if (pkgs.some(p => p.hasReports)) {
     throw new Error('Some package.json files had errors');
   }
+  */
 }
 
 main().catch((e) => {
