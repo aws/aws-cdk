@@ -206,6 +206,25 @@ test('call UpdateStack when method=direct and the stack exists already', async (
   expect(cfnMocks.updateStack).toHaveBeenCalled();
 });
 
+test('method=direct and no updates to be performed', async () => {
+  cfnMocks.updateStack?.mockRejectedValueOnce({
+    code: 'ValidationError',
+    message: 'No updates are to be performed.',
+  } as never);
+
+  // WHEN
+  givenStackExists();
+
+  const ret = await deployStack({
+    ...standardDeployStackArguments(),
+    deploymentMethod: { method: 'direct' },
+    force: true,
+  });
+
+  // THEN
+  expect(ret).toEqual(expect.objectContaining({ noOp: true }));
+});
+
 test("does not call tryHotswapDeployment() if 'hotswap' is false", async () => {
   // WHEN
   await deployStack({
