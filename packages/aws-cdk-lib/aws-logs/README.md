@@ -373,7 +373,7 @@ const dataProtectionPolicy = new logs.DataProtectionPolicy({
   identifiers: [
     logs.DataIdentifier.DRIVERSLICENSE_US, // managed data identifier
     new logs.DataIdentifier('EmailAddress'), // forward compatibility for new managed data identifiers
-    new logs.DataIdentifier('EmployeeId', 'EmployeeId-\\d{9}')], // custom data identifier
+    new logs.CustomDataIdentifier('EmployeeId', 'EmployeeId-\\d{9}')], // custom data identifier
   logGroupAuditDestination: logGroupDestination,
   s3BucketAuditDestination: bucket,
   deliveryStreamNameAuditDestination: deliveryStream.deliveryStreamName,

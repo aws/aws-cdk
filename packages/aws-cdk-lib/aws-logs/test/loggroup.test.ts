@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
 import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
-import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern } from '../lib';
+import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern } from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -787,7 +787,7 @@ describe('log group', () => {
     const dataProtectionPolicy = new DataProtectionPolicy({
       name: 'test-policy-name',
       description: 'test description',
-      identifiers: [new DataIdentifier('EmployeeId', 'EmployeeId-\\d{9}')],
+      identifiers: [new CustomDataIdentifier('EmployeeId', 'EmployeeId-\\d{9}')],
     });
 
     // WHEN
@@ -847,7 +847,7 @@ describe('log group', () => {
     const dataProtectionPolicy = new DataProtectionPolicy({
       name: 'test-policy-name',
       description: 'test description',
-      identifiers: [new DataIdentifier('EmployeeId', 'EmployeeId-\\d{9}'), DataIdentifier.EMAILADDRESS],
+      identifiers: [new CustomDataIdentifier('EmployeeId', 'EmployeeId-\\d{9}'), DataIdentifier.EMAILADDRESS],
     });
 
     // WHEN
