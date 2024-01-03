@@ -601,6 +601,7 @@
     "Auth": [
      {
       "AuthScheme": "SECRETS",
+      "ClientPasswordAuthType": "POSTGRES_SCRAM_SHA_256",
       "IAMAuth": "DISABLED",
       "SecretArn": {
        "Ref": "dbInstanceSecretAttachment88CFBDAE"
