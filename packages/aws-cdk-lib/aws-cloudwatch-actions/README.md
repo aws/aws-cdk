@@ -43,6 +43,7 @@ alarm.addAlarmAction(
 ## Lambda Action Example
 
 ```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda'
 declare const alarm: cloudwatch.Alarm;
 declare const fn: lambda.Function;
 
