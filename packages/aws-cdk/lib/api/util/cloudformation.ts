@@ -309,6 +309,9 @@ export type CreateChangeSetOptions = {
  * Create a changeset for a diff operation
  */
 export async function createDiffChangeSet(options: PrepareChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
+  // `options.stack` has been modified to include any nested stack templates directly inline with its own template, under a special `NestedTemplate` property.
+  // Thus the parent template's Resources section contains the nested template's CDK metadata check, which uses Fn::Equals.
+  // This causes CreateChangeSet to fail with `Template Error: Fn::Equals cannot be partially collapsed`.
   for (const resource of Object.values((options.stack.template.Resources ?? {}))) {
     if ((resource as any).Type === 'AWS::CloudFormation::Stack') {
       // eslint-disable-next-line no-console
