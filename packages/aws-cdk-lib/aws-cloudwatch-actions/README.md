@@ -44,10 +44,10 @@ alarm.addAlarmAction(
 
 ```ts
 declare const alarm: cloudwatch.Alarm;
-declare const lambda: lambda.Function;
+declare const fn: lambda.Function;
 
 alarm.addAlarmAction(
-  new actions.LambdaAction(lambda)
+  new actions.LambdaAction(fn)
 );
 ```
 
