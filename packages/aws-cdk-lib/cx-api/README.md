@@ -241,3 +241,20 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse`
+
+Enables Pipeline to set the default value for `crossAccountKeys` to false.
+
+If this is set, and a `crossAccountKeys` prop in a `Pipeline` construct is not passed to,
+the construct will set the default value of the prop to false.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true
+  }
+}
+```

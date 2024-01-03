@@ -97,6 +97,7 @@ export const RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS = '@aws-cdk/aws-rds:pr
 export const AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS = '@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters';
 export const APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION = '@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier';
 export const CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME = '@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource';
+export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE = '@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -975,6 +976,19 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.103.1' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE]: {
+    type: FlagType.ApiDefault,
+    summary: 'Enables Pipeline to set the default value for crossAccountKeys to false.',
+    detailsMd: `
+      If this is set, and a \`crossAccountKeys\` prop in a \`Pipeline\` construct is not passed to,
+      the construct will set the default value of the prop to false.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Pass `crossAccountKeys: true` to `Pipeline` construct to restore the previous behavior.',
   },
 };
 
