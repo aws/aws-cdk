@@ -469,16 +469,24 @@ class FullCloudFormationDeployment {
     const startTime = new Date();
 
     if (this.update) {
-      await this.cfn.updateStack({
-        StackName: this.stackName,
-        ClientRequestToken: `update${this.uuid}`,
-        ...this.commonPrepareOptions(),
-        ...this.commonExecuteOptions(),
-      }).promise();
-
-      const ret = await this.monitorDeployment(startTime, undefined);
       await this.updateTerminationProtection();
-      return ret;
+
+      try {
+        await this.cfn.updateStack({
+          StackName: this.stackName,
+          ClientRequestToken: `update${this.uuid}`,
+          ...this.commonPrepareOptions(),
+          ...this.commonExecuteOptions(),
+        }).promise();
+      } catch (err: any) {
+        if (err.message === 'No updates are to be performed.') {
+          debug('No updates are to be performed for stack %s', this.stackName);
+          return { noOp: true, outputs: this.cloudFormationStack.outputs, stackArn: this.cloudFormationStack.stackId };
+        }
+        throw err;
+      }
+
+      return this.monitorDeployment(startTime, undefined);
     } else {
       // Take advantage of the fact that we can set termination protection during create
       const terminationProtection = this.stackArtifact.terminationProtection ?? false;
