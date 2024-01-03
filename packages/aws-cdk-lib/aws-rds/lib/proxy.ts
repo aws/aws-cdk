@@ -285,7 +285,7 @@ export interface DatabaseProxyOptions {
   /**
    * Specifies the details of authentication used by a proxy to log in as a specific database user.
    *
-   * @default - The default client password authentication type for the database engine is used.
+   * @default - CloudFormation defaults will apply given the specified database engine.
    */
   readonly clientPasswordAuthType?: ClientPasswordAuthType;
 }
