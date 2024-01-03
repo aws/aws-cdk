@@ -58,7 +58,7 @@ declare const construct: Construct;
 declare const constructA: Construct;
 declare const constructB: Construct;
 declare const constructC: Construct;
-declare const functionProps: lambda.FunctionProps;
+declare const functionProps: lambda.SingletonFunctionProps;
 declare const isCompleteHandler: lambda.Function;
 declare const myBucket: s3.IBucket;
 declare const myFunction: lambda.IFunction;
