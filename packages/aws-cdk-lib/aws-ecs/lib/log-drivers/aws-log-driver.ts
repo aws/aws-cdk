@@ -137,7 +137,7 @@ export class AwsLogDriver extends LogDriver {
       : undefined;
 
     // These policies are required for the Execution role to use awslogs driver.
-    // In cases where `addToExecutionRolePolicy` is not implemented in some cases,
+    // In cases where `addToExecutionRolePolicy` is not implemented,
     // for example, when used from aws-batch construct,
     // use `obtainExecutionRole` instead of `addToExecutionRolePolicy` to grant policies to the Execution role.
     // See https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_awslogs.html#enable_awslogs
