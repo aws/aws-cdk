@@ -481,7 +481,7 @@ export class Pipeline extends PipelineBase {
   private readonly enableKeyRotation?: boolean;
   private readonly reuseCrossRegionSupportStacks: boolean;
   private readonly codePipeline: CfnPipeline;
-  private readonly pipelineType?: PipelineType;
+  private readonly pipelineType: PipelineType;
   private readonly variables = new Array<Variable>();
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
@@ -544,7 +544,7 @@ export class Pipeline extends PipelineBase {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
     });
 
-    this.pipelineType = props.pipelineType;
+    this.pipelineType = props.pipelineType ?? PipelineType.V1;
     this.variables = props.variables ?? [];
 
     this.codePipeline = new CfnPipeline(this, 'Resource', {
@@ -554,7 +554,7 @@ export class Pipeline extends PipelineBase {
       disableInboundStageTransitions: Lazy.any({ produce: () => this.renderDisabledTransitions() }, { omitEmptyArray: true }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
-      pipelineType: this.pipelineType,
+      pipelineType: props.pipelineType,
       variables: Lazy.any({ produce: () => this.renderVariables() }, { omitEmptyArray: true }),
       name: this.physicalName,
     });
