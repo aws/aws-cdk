@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "Stack.assets": {
+    "aws-ecs-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "Stack.assets.json",
+        "file": "aws-ecs-integ.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "Stack": {
+    "aws-ecs-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "Stack.template.json",
+        "templateFile": "aws-ecs-integ.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1ac02a396bc49bcce2ab3c276dd4e234efe7e86f9d1a06c9ae16c054f1764bf1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3ec26ce81958ec34f75b10a9cf74a9b069629a04fbb143ee6fee92eba0fa2458.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "Stack.assets"
+          "aws-ecs-integ.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,73 +31,49 @@
         }
       },
       "dependencies": [
-        "Stack.assets"
+        "aws-ecs-integ.assets"
       ],
       "metadata": {
-        "/Stack/Bus/Resource": [
+        "/aws-ecs-integ/TaskDefinition/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BusEA82B648"
+            "data": "TaskDefinitionTaskRoleFD40A61D"
           }
         ],
-        "/Stack/Bus/cdk-Statement1/Resource": [
+        "/aws-ecs-integ/TaskDefinition/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BuscdkStatement1D7D87B9D"
+            "data": "TaskDefinitionB36D86D9"
           }
         ],
-        "/Stack/Bus/cdk-Statement2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BuscdkStatement2341A5B58"
-          }
-        ],
-        "/Stack/BootstrapVersion": [
+        "/aws-ecs-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/Stack/CheckBootstrapVersion": [
+        "/aws-ecs-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "BusStatement1B4D0336C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BusStatement1B4D0336C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "BusStatement2B5FB314B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BusStatement2B5FB314B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
-      "displayName": "Stack"
+      "displayName": "aws-ecs-integ"
     },
-    "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets": {
+    "awsecscontainerdefinitioninteractiveDefaultTestDeployAssert6E49E825.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets.json",
+        "file": "awsecscontainerdefinitioninteractiveDefaultTestDeployAssert6E49E825.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9": {
+    "awsecscontainerdefinitioninteractiveDefaultTestDeployAssert6E49E825": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.template.json",
+        "templateFile": "awsecscontainerdefinitioninteractiveDefaultTestDeployAssert6E49E825.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -106,7 +82,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets"
+          "awsecscontainerdefinitioninteractiveDefaultTestDeployAssert6E49E825.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -115,23 +91,23 @@
         }
       },
       "dependencies": [
-        "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9.assets"
+        "awsecscontainerdefinitioninteractiveDefaultTestDeployAssert6E49E825.assets"
       ],
       "metadata": {
-        "/IntegTest-EventBusStack/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/aws-ecs-container-definition-interactive/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/IntegTest-EventBusStack/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/aws-ecs-container-definition-interactive/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "IntegTest-EventBusStack/DefaultTest/DeployAssert"
+      "displayName": "aws-ecs-container-definition-interactive/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
