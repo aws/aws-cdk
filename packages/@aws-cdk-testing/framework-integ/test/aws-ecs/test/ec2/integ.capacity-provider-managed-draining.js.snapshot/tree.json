@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "integ-ec2-capacity-provider": {
-        "id": "integ-ec2-capacity-provider",
-        "path": "integ-ec2-capacity-provider",
+      "integ-ec2-capacity-provider-managed-draining": {
+        "id": "integ-ec2-capacity-provider-managed-draining",
+        "path": "integ-ec2-capacity-provider-managed-draining",
         "children": {
           "Vpc": {
             "id": "Vpc",
-            "path": "integ-ec2-capacity-provider/Vpc",
+            "path": "integ-ec2-capacity-provider-managed-draining/Vpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-ec2-capacity-provider/Vpc/Resource",
+                "path": "integ-ec2-capacity-provider-managed-draining/Vpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +25,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-ec2-capacity-provider/Vpc"
+                        "value": "integ-ec2-capacity-provider-managed-draining/Vpc"
                       }
                     ]
                   }
@@ -37,11 +37,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet1",
+                "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet1/Subnet",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -66,7 +66,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-capacity-provider/Vpc/PublicSubnet1"
+                            "value": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -81,7 +81,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet1/Acl",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -89,14 +89,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet1/RouteTable",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-capacity-provider/Vpc/PublicSubnet1"
+                            "value": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -111,7 +111,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -130,7 +130,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet1/DefaultRoute",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -150,7 +150,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet1/EIP",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -158,7 +158,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-capacity-provider/Vpc/PublicSubnet1"
+                            "value": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -170,7 +170,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet1/NATGateway",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -186,7 +186,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-capacity-provider/Vpc/PublicSubnet1"
+                            "value": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -204,11 +204,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet2",
+                "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet2/Subnet",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -233,7 +233,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-capacity-provider/Vpc/PublicSubnet2"
+                            "value": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -248,7 +248,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet2/Acl",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -256,14 +256,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet2/RouteTable",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-capacity-provider/Vpc/PublicSubnet2"
+                            "value": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -278,7 +278,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -297,7 +297,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet2/DefaultRoute",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -317,7 +317,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet2/EIP",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -325,7 +325,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-capacity-provider/Vpc/PublicSubnet2"
+                            "value": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -337,7 +337,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "integ-ec2-capacity-provider/Vpc/PublicSubnet2/NATGateway",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -353,7 +353,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-capacity-provider/Vpc/PublicSubnet2"
+                            "value": "integ-ec2-capacity-provider-managed-draining/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -371,11 +371,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "integ-ec2-capacity-provider/Vpc/PrivateSubnet1",
+                "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-capacity-provider/Vpc/PrivateSubnet1/Subnet",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -400,7 +400,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-capacity-provider/Vpc/PrivateSubnet1"
+                            "value": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -415,7 +415,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-capacity-provider/Vpc/PrivateSubnet1/Acl",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -423,14 +423,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-capacity-provider/Vpc/PrivateSubnet1/RouteTable",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-capacity-provider/Vpc/PrivateSubnet1"
+                            "value": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -445,7 +445,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-capacity-provider/Vpc/PrivateSubnet1/RouteTableAssociation",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -464,7 +464,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-capacity-provider/Vpc/PrivateSubnet1/DefaultRoute",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -490,11 +490,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "integ-ec2-capacity-provider/Vpc/PrivateSubnet2",
+                "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-capacity-provider/Vpc/PrivateSubnet2/Subnet",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -519,7 +519,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-capacity-provider/Vpc/PrivateSubnet2"
+                            "value": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -534,7 +534,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-capacity-provider/Vpc/PrivateSubnet2/Acl",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -542,14 +542,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-capacity-provider/Vpc/PrivateSubnet2/RouteTable",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-capacity-provider/Vpc/PrivateSubnet2"
+                            "value": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -564,7 +564,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-capacity-provider/Vpc/PrivateSubnet2/RouteTableAssociation",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -583,7 +583,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-capacity-provider/Vpc/PrivateSubnet2/DefaultRoute",
+                    "path": "integ-ec2-capacity-provider-managed-draining/Vpc/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -609,14 +609,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "integ-ec2-capacity-provider/Vpc/IGW",
+                "path": "integ-ec2-capacity-provider-managed-draining/Vpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-ec2-capacity-provider/Vpc"
+                        "value": "integ-ec2-capacity-provider-managed-draining/Vpc"
                       }
                     ]
                   }
@@ -628,7 +628,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "integ-ec2-capacity-provider/Vpc/VPCGW",
+                "path": "integ-ec2-capacity-provider-managed-draining/Vpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -653,11 +653,11 @@
           },
           "EC2CPCluster": {
             "id": "EC2CPCluster",
-            "path": "integ-ec2-capacity-provider/EC2CPCluster",
+            "path": "integ-ec2-capacity-provider-managed-draining/EC2CPCluster",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-ec2-capacity-provider/EC2CPCluster/Resource",
+                "path": "integ-ec2-capacity-provider-managed-draining/EC2CPCluster/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
                   "aws:cdk:cloudformation:props": {}
@@ -669,7 +669,7 @@
               },
               "EC2CPCluster": {
                 "id": "EC2CPCluster",
-                "path": "integ-ec2-capacity-provider/EC2CPCluster/EC2CPCluster",
+                "path": "integ-ec2-capacity-provider-managed-draining/EC2CPCluster/EC2CPCluster",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::ClusterCapacityProviderAssociations",
                   "aws:cdk:cloudformation:props": {
@@ -699,15 +699,15 @@
           },
           "TaskDef": {
             "id": "TaskDef",
-            "path": "integ-ec2-capacity-provider/TaskDef",
+            "path": "integ-ec2-capacity-provider-managed-draining/TaskDef",
             "children": {
               "TaskRole": {
                 "id": "TaskRole",
-                "path": "integ-ec2-capacity-provider/TaskDef/TaskRole",
+                "path": "integ-ec2-capacity-provider-managed-draining/TaskDef/TaskRole",
                 "children": {
                   "ImportTaskRole": {
                     "id": "ImportTaskRole",
-                    "path": "integ-ec2-capacity-provider/TaskDef/TaskRole/ImportTaskRole",
+                    "path": "integ-ec2-capacity-provider-managed-draining/TaskDef/TaskRole/ImportTaskRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -715,7 +715,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-ec2-capacity-provider/TaskDef/TaskRole/Resource",
+                    "path": "integ-ec2-capacity-provider-managed-draining/TaskDef/TaskRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -746,7 +746,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "integ-ec2-capacity-provider/TaskDef/Resource",
+                "path": "integ-ec2-capacity-provider-managed-draining/TaskDef/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
                   "aws:cdk:cloudformation:props": {
@@ -758,7 +758,7 @@
                         "name": "web"
                       }
                     ],
-                    "family": "integec2capacityproviderTaskDefA6140A6B",
+                    "family": "integec2capacityprovidermanageddrainingTaskDef8BEF62A7",
                     "networkMode": "bridge",
                     "requiresCompatibilities": [
                       "EC2"
@@ -778,7 +778,7 @@
               },
               "web": {
                 "id": "web",
-                "path": "integ-ec2-capacity-provider/TaskDef/web",
+                "path": "integ-ec2-capacity-provider-managed-draining/TaskDef/web",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
                   "version": "0.0.0"
@@ -792,19 +792,19 @@
           },
           "ASG": {
             "id": "ASG",
-            "path": "integ-ec2-capacity-provider/ASG",
+            "path": "integ-ec2-capacity-provider-managed-draining/ASG",
             "children": {
               "InstanceSecurityGroup": {
                 "id": "InstanceSecurityGroup",
-                "path": "integ-ec2-capacity-provider/ASG/InstanceSecurityGroup",
+                "path": "integ-ec2-capacity-provider-managed-draining/ASG/InstanceSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-ec2-capacity-provider/ASG/InstanceSecurityGroup/Resource",
+                    "path": "integ-ec2-capacity-provider-managed-draining/ASG/InstanceSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "integ-ec2-capacity-provider/ASG/InstanceSecurityGroup",
+                        "groupDescription": "integ-ec2-capacity-provider-managed-draining/ASG/InstanceSecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -815,7 +815,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-capacity-provider/ASG"
+                            "value": "integ-ec2-capacity-provider-managed-draining/ASG"
                           }
                         ],
                         "vpcId": {
@@ -836,11 +836,11 @@
               },
               "InstanceRole": {
                 "id": "InstanceRole",
-                "path": "integ-ec2-capacity-provider/ASG/InstanceRole",
+                "path": "integ-ec2-capacity-provider-managed-draining/ASG/InstanceRole",
                 "children": {
                   "ImportInstanceRole": {
                     "id": "ImportInstanceRole",
-                    "path": "integ-ec2-capacity-provider/ASG/InstanceRole/ImportInstanceRole",
+                    "path": "integ-ec2-capacity-provider-managed-draining/ASG/InstanceRole/ImportInstanceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -848,7 +848,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-ec2-capacity-provider/ASG/InstanceRole/Resource",
+                    "path": "integ-ec2-capacity-provider-managed-draining/ASG/InstanceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -867,7 +867,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-capacity-provider/ASG"
+                            "value": "integ-ec2-capacity-provider-managed-draining/ASG"
                           }
                         ]
                       }
@@ -879,11 +879,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "integ-ec2-capacity-provider/ASG/InstanceRole/DefaultPolicy",
+                    "path": "integ-ec2-capacity-provider-managed-draining/ASG/InstanceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-ec2-capacity-provider/ASG/InstanceRole/DefaultPolicy/Resource",
+                        "path": "integ-ec2-capacity-provider-managed-draining/ASG/InstanceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -961,7 +961,7 @@
               },
               "InstanceProfile": {
                 "id": "InstanceProfile",
-                "path": "integ-ec2-capacity-provider/ASG/InstanceProfile",
+                "path": "integ-ec2-capacity-provider-managed-draining/ASG/InstanceProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                   "aws:cdk:cloudformation:props": {
@@ -979,7 +979,7 @@
               },
               "ImportedInstanceProfile": {
                 "id": "ImportedInstanceProfile",
-                "path": "integ-ec2-capacity-provider/ASG/ImportedInstanceProfile",
+                "path": "integ-ec2-capacity-provider-managed-draining/ASG/ImportedInstanceProfile",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -987,11 +987,11 @@
               },
               "LaunchTemplate": {
                 "id": "LaunchTemplate",
-                "path": "integ-ec2-capacity-provider/ASG/LaunchTemplate",
+                "path": "integ-ec2-capacity-provider-managed-draining/ASG/LaunchTemplate",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-ec2-capacity-provider/ASG/LaunchTemplate/Resource",
+                    "path": "integ-ec2-capacity-provider-managed-draining/ASG/LaunchTemplate/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
                       "aws:cdk:cloudformation:props": {
@@ -1025,7 +1025,7 @@
                               "tags": [
                                 {
                                   "key": "Name",
-                                  "value": "integ-ec2-capacity-provider/ASG/LaunchTemplate"
+                                  "value": "integ-ec2-capacity-provider-managed-draining/ASG/LaunchTemplate"
                                 }
                               ]
                             },
@@ -1034,7 +1034,7 @@
                               "tags": [
                                 {
                                   "key": "Name",
-                                  "value": "integ-ec2-capacity-provider/ASG/LaunchTemplate"
+                                  "value": "integ-ec2-capacity-provider-managed-draining/ASG/LaunchTemplate"
                                 }
                               ]
                             }
@@ -1060,7 +1060,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "integ-ec2-capacity-provider/ASG/LaunchTemplate"
+                                "value": "integ-ec2-capacity-provider-managed-draining/ASG/LaunchTemplate"
                               }
                             ]
                           }
@@ -1080,7 +1080,7 @@
               },
               "ASG": {
                 "id": "ASG",
-                "path": "integ-ec2-capacity-provider/ASG/ASG",
+                "path": "integ-ec2-capacity-provider-managed-draining/ASG/ASG",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
                   "aws:cdk:cloudformation:props": {
@@ -1100,7 +1100,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-ec2-capacity-provider/ASG",
+                        "value": "integ-ec2-capacity-provider-managed-draining/ASG",
                         "propagateAtLaunch": true
                       }
                     ],
@@ -1118,446 +1118,6 @@
                   "fqn": "aws-cdk-lib.aws_autoscaling.CfnAutoScalingGroup",
                   "version": "0.0.0"
                 }
-              },
-              "DrainECSHook": {
-                "id": "DrainECSHook",
-                "path": "integ-ec2-capacity-provider/ASG/DrainECSHook",
-                "children": {
-                  "Function": {
-                    "id": "Function",
-                    "path": "integ-ec2-capacity-provider/ASG/DrainECSHook/Function",
-                    "children": {
-                      "ServiceRole": {
-                        "id": "ServiceRole",
-                        "path": "integ-ec2-capacity-provider/ASG/DrainECSHook/Function/ServiceRole",
-                        "children": {
-                          "ImportServiceRole": {
-                            "id": "ImportServiceRole",
-                            "path": "integ-ec2-capacity-provider/ASG/DrainECSHook/Function/ServiceRole/ImportServiceRole",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "integ-ec2-capacity-provider/ASG/DrainECSHook/Function/ServiceRole/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                              "aws:cdk:cloudformation:props": {
-                                "assumeRolePolicyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Principal": {
-                                        "Service": "lambda.amazonaws.com"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "managedPolicyArns": [
-                                  {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                      ]
-                                    ]
-                                  }
-                                ],
-                                "tags": [
-                                  {
-                                    "key": "Name",
-                                    "value": "integ-ec2-capacity-provider/ASG"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "DefaultPolicy": {
-                            "id": "DefaultPolicy",
-                            "path": "integ-ec2-capacity-provider/ASG/DrainECSHook/Function/ServiceRole/DefaultPolicy",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "integ-ec2-capacity-provider/ASG/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                  "aws:cdk:cloudformation:props": {
-                                    "policyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": [
-                                            "ec2:DescribeHosts",
-                                            "ec2:DescribeInstanceAttribute",
-                                            "ec2:DescribeInstanceStatus",
-                                            "ec2:DescribeInstances"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": "*"
-                                        },
-                                        {
-                                          "Action": "autoscaling:CompleteLifecycleAction",
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Fn::Join": [
-                                              "",
-                                              [
-                                                "arn:",
-                                                {
-                                                  "Ref": "AWS::Partition"
-                                                },
-                                                ":autoscaling:",
-                                                {
-                                                  "Ref": "AWS::Region"
-                                                },
-                                                ":",
-                                                {
-                                                  "Ref": "AWS::AccountId"
-                                                },
-                                                ":autoScalingGroup:*:autoScalingGroupName/",
-                                                {
-                                                  "Ref": "ASG46ED3070"
-                                                }
-                                              ]
-                                            ]
-                                          }
-                                        },
-                                        {
-                                          "Action": [
-                                            "ecs:DescribeContainerInstances",
-                                            "ecs:DescribeTasks",
-                                            "ecs:ListTasks",
-                                            "ecs:UpdateContainerInstancesState"
-                                          ],
-                                          "Condition": {
-                                            "ArnEquals": {
-                                              "ecs:cluster": {
-                                                "Fn::GetAtt": [
-                                                  "EC2CPClusterD5F0FD32",
-                                                  "Arn"
-                                                ]
-                                              }
-                                            }
-                                          },
-                                          "Effect": "Allow",
-                                          "Resource": "*"
-                                        },
-                                        {
-                                          "Action": [
-                                            "ecs:ListContainerInstances",
-                                            "ecs:SubmitContainerStateChange",
-                                            "ecs:SubmitTaskStateChange"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Fn::GetAtt": [
-                                              "EC2CPClusterD5F0FD32",
-                                              "Arn"
-                                            ]
-                                          }
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "policyName": "ASGDrainECSHookFunctionServiceRoleDefaultPolicy16848A27",
-                                    "roles": [
-                                      {
-                                        "Ref": "ASGDrainECSHookFunctionServiceRoleC12963BB"
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "integ-ec2-capacity-provider/ASG/DrainECSHook/Function/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                          "aws:cdk:cloudformation:props": {
-                            "code": {
-                              "zipFile": "import boto3, json, os, time\n\necs = boto3.client('ecs')\nautoscaling = boto3.client('autoscaling')\n\n\ndef lambda_handler(event, context):\n  print(json.dumps(dict(event, ResponseURL='...')))\n  cluster = os.environ['CLUSTER']\n  snsTopicArn = event['Records'][0]['Sns']['TopicArn']\n  lifecycle_event = json.loads(event['Records'][0]['Sns']['Message'])\n  instance_id = lifecycle_event.get('EC2InstanceId')\n  if not instance_id:\n    print('Got event without EC2InstanceId: %s', json.dumps(dict(event, ResponseURL='...')))\n    return\n\n  instance_arn = container_instance_arn(cluster, instance_id)\n  print('Instance %s has container instance ARN %s' % (lifecycle_event['EC2InstanceId'], instance_arn))\n\n  if not instance_arn:\n    return\n\n  task_arns = container_instance_task_arns(cluster, instance_arn)\n\n  if task_arns:\n    print('Instance ARN %s has task ARNs %s' % (instance_arn, ', '.join(task_arns)))\n\n  while has_tasks(cluster, instance_arn, task_arns):\n    time.sleep(10)\n\n  try:\n    print('Terminating instance %s' % instance_id)\n    autoscaling.complete_lifecycle_action(\n        LifecycleActionResult='CONTINUE',\n        **pick(lifecycle_event, 'LifecycleHookName', 'LifecycleActionToken', 'AutoScalingGroupName'))\n  except Exception as e:\n    # Lifecycle action may have already completed.\n    print(str(e))\n\n\ndef container_instance_arn(cluster, instance_id):\n  \"\"\"Turn an instance ID into a container instance ARN.\"\"\"\n  arns = ecs.list_container_instances(cluster=cluster, filter='ec2InstanceId==' + instance_id)['containerInstanceArns']\n  if not arns:\n    return None\n  return arns[0]\n\ndef container_instance_task_arns(cluster, instance_arn):\n  \"\"\"Fetch tasks for a container instance ARN.\"\"\"\n  arns = ecs.list_tasks(cluster=cluster, containerInstance=instance_arn)['taskArns']\n  return arns\n\ndef has_tasks(cluster, instance_arn, task_arns):\n  \"\"\"Return True if the instance is running tasks for the given cluster.\"\"\"\n  instances = ecs.describe_container_instances(cluster=cluster, containerInstances=[instance_arn])['containerInstances']\n  if not instances:\n    return False\n  instance = instances[0]\n\n  if instance['status'] == 'ACTIVE':\n    # Start draining, then try again later\n    set_container_instance_to_draining(cluster, instance_arn)\n    return True\n\n  task_count = None\n\n  if task_arns:\n    # Fetch details for tasks running on the container instance\n    tasks = ecs.describe_tasks(cluster=cluster, tasks=task_arns)['tasks']\n    if tasks:\n      # Consider any non-stopped tasks as running\n      task_count = sum(task['lastStatus'] != 'STOPPED' for task in tasks) + instance['pendingTasksCount']\n\n  if not task_count:\n    # Fallback to instance task counts if detailed task information is unavailable\n    task_count = instance['runningTasksCount'] + instance['pendingTasksCount']\n\n  print('Instance %s has %s tasks' % (instance_arn, task_count))\n\n  return task_count > 0\n\ndef set_container_instance_to_draining(cluster, instance_arn):\n  ecs.update_container_instances_state(\n      cluster=cluster,\n      containerInstances=[instance_arn], status='DRAINING')\n\n\ndef pick(dct, *keys):\n  \"\"\"Pick a subset of a dict.\"\"\"\n  return {k: v for k, v in dct.items() if k in keys}\n"
-                            },
-                            "environment": {
-                              "variables": {
-                                "CLUSTER": {
-                                  "Ref": "EC2CPClusterD5F0FD32"
-                                }
-                              }
-                            },
-                            "handler": "index.lambda_handler",
-                            "role": {
-                              "Fn::GetAtt": [
-                                "ASGDrainECSHookFunctionServiceRoleC12963BB",
-                                "Arn"
-                              ]
-                            },
-                            "runtime": "python3.9",
-                            "tags": [
-                              {
-                                "key": "Name",
-                                "value": "integ-ec2-capacity-provider/ASG"
-                              }
-                            ],
-                            "timeout": 310
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "AllowInvoke:integec2capacityproviderASGLifecycleHookDrainHookTopic4714B3C1": {
-                        "id": "AllowInvoke:integec2capacityproviderASGLifecycleHookDrainHookTopic4714B3C1",
-                        "path": "integ-ec2-capacity-provider/ASG/DrainECSHook/Function/AllowInvoke:integec2capacityproviderASGLifecycleHookDrainHookTopic4714B3C1",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                          "aws:cdk:cloudformation:props": {
-                            "action": "lambda:InvokeFunction",
-                            "functionName": {
-                              "Fn::GetAtt": [
-                                "ASGDrainECSHookFunction5F24CF4D",
-                                "Arn"
-                              ]
-                            },
-                            "principal": "sns.amazonaws.com",
-                            "sourceArn": {
-                              "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Topic": {
-                        "id": "Topic",
-                        "path": "integ-ec2-capacity-provider/ASG/DrainECSHook/Function/Topic",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "integ-ec2-capacity-provider/ASG/DrainECSHook/Function/Topic/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
-                              "aws:cdk:cloudformation:props": {
-                                "endpoint": {
-                                  "Fn::GetAtt": [
-                                    "ASGDrainECSHookFunction5F24CF4D",
-                                    "Arn"
-                                  ]
-                                },
-                                "protocol": "lambda",
-                                "topicArn": {
-                                  "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_sns.Subscription",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
-                }
-              },
-              "LifecycleHookDrainHook": {
-                "id": "LifecycleHookDrainHook",
-                "path": "integ-ec2-capacity-provider/ASG/LifecycleHookDrainHook",
-                "children": {
-                  "Topic": {
-                    "id": "Topic",
-                    "path": "integ-ec2-capacity-provider/ASG/LifecycleHookDrainHook/Topic",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "integ-ec2-capacity-provider/ASG/LifecycleHookDrainHook/Topic/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
-                          "aws:cdk:cloudformation:props": {
-                            "tags": [
-                              {
-                                "key": "Name",
-                                "value": "integ-ec2-capacity-provider/ASG"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_sns.Topic",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Role": {
-                    "id": "Role",
-                    "path": "integ-ec2-capacity-provider/ASG/LifecycleHookDrainHook/Role",
-                    "children": {
-                      "ImportRole": {
-                        "id": "ImportRole",
-                        "path": "integ-ec2-capacity-provider/ASG/LifecycleHookDrainHook/Role/ImportRole",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "integ-ec2-capacity-provider/ASG/LifecycleHookDrainHook/Role/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                          "aws:cdk:cloudformation:props": {
-                            "assumeRolePolicyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "Service": "autoscaling.amazonaws.com"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "tags": [
-                              {
-                                "key": "Name",
-                                "value": "integ-ec2-capacity-provider/ASG"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "integ-ec2-capacity-provider/ASG/LifecycleHookDrainHook/Role/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "integ-ec2-capacity-provider/ASG/LifecycleHookDrainHook/Role/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sns:Publish",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "ASGLifecycleHookDrainHookRoleDefaultPolicy3EEFDE57",
-                                "roles": [
-                                  {
-                                    "Ref": "ASGLifecycleHookDrainHookRoleD640316C"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integ-ec2-capacity-provider/ASG/LifecycleHookDrainHook/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AutoScaling::LifecycleHook",
-                      "aws:cdk:cloudformation:props": {
-                        "autoScalingGroupName": {
-                          "Ref": "ASG46ED3070"
-                        },
-                        "defaultResult": "CONTINUE",
-                        "heartbeatTimeout": 300,
-                        "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
-                        "notificationTargetArn": {
-                          "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
-                        },
-                        "roleArn": {
-                          "Fn::GetAtt": [
-                            "ASGLifecycleHookDrainHookRoleD640316C",
-                            "Arn"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_autoscaling.CfnLifecycleHook",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_autoscaling.LifecycleHook",
-                  "version": "0.0.0"
-                }
               }
             },
             "constructInfo": {
@@ -1567,7 +1127,7 @@
           },
           "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
             "id": "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
-            "path": "integ-ec2-capacity-provider/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "integ-ec2-capacity-provider-managed-draining/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -1575,7 +1135,7 @@
           },
           "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118": {
             "id": "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
-            "path": "integ-ec2-capacity-provider/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "integ-ec2-capacity-provider-managed-draining/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
@@ -1583,11 +1143,11 @@
           },
           "EC2CapacityProvider": {
             "id": "EC2CapacityProvider",
-            "path": "integ-ec2-capacity-provider/EC2CapacityProvider",
+            "path": "integ-ec2-capacity-provider-managed-draining/EC2CapacityProvider",
             "children": {
               "EC2CapacityProvider": {
                 "id": "EC2CapacityProvider",
-                "path": "integ-ec2-capacity-provider/EC2CapacityProvider/EC2CapacityProvider",
+                "path": "integ-ec2-capacity-provider-managed-draining/EC2CapacityProvider/EC2CapacityProvider",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::CapacityProvider",
                   "aws:cdk:cloudformation:props": {
@@ -1599,7 +1159,8 @@
                         "status": "ENABLED",
                         "targetCapacity": 100
                       },
-                      "managedTerminationProtection": "DISABLED"
+                      "managedTerminationProtection": "DISABLED",
+                      "managedDraining": "ENABLED"
                     }
                   }
                 },
@@ -1616,11 +1177,11 @@
           },
           "EC2Service": {
             "id": "EC2Service",
-            "path": "integ-ec2-capacity-provider/EC2Service",
+            "path": "integ-ec2-capacity-provider-managed-draining/EC2Service",
             "children": {
               "Service": {
                 "id": "Service",
-                "path": "integ-ec2-capacity-provider/EC2Service/Service",
+                "path": "integ-ec2-capacity-provider-managed-draining/EC2Service/Service",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::Service",
                   "aws:cdk:cloudformation:props": {
@@ -1665,7 +1226,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "integ-ec2-capacity-provider/BootstrapVersion",
+            "path": "integ-ec2-capacity-provider-managed-draining/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -1673,7 +1234,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "integ-ec2-capacity-provider/CheckBootstrapVersion",
+            "path": "integ-ec2-capacity-provider-managed-draining/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"

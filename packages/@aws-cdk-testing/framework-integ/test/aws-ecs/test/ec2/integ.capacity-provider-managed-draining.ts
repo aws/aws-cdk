@@ -5,7 +5,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'integ-ec2-capacity-provider');
+const stack = new cdk.Stack(app, 'integ-ec2-capacity-provider-managed-draining');
 
 const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 

@@ -1253,7 +1253,7 @@ rather manage scaling behavior yourself set `enableManagedScaling` to `false`.
 
 Additionally [Managed Termination Protection](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html#managed-termination-protection) is enabled by default to
 prevent scale-in behavior from terminating instances that have non-daemon tasks
-running on them. This is ideal for tasks that should be ran to completion. If your
+running on them. This is ideal for tasks that can be run to completion. If your
 tasks are safe to interrupt then this protection can be disabled by setting
 `enableManagedTerminationProtection` to `false`. Managed Scaling must be enabled for
 Managed Termination Protection to work.
@@ -1266,10 +1266,10 @@ Managed Termination Protection to work.
 > delete the Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-process-shutdown.html).
 > For other workarounds, see [this GitHub issue](https://github.com/aws/aws-cdk/issues/18179).
 
-[Need to confirm with Doc team]
-Additionally [Managed Draining](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html#managed-instance-draining) is enabled by default for new capacity providers to 
-gracefully terminate Amazon ECS instances. Setting `enableManagedDraining` to `true` will replace the instance-draining lifecycle hook
-created during addAsgCapacityProvider.
+Managed instance draining facilitates graceful termination of Amazon ECS instances.
+This allows your service workloads to stop safely and be rescheduled to non-terminating instances.
+Infrastructure maintenance and updates are preformed without disruptions to workloads.
+To use managed instance draining, set enableManagedDraining to true.
 
 ```ts
 declare const vpc: ec2.Vpc;

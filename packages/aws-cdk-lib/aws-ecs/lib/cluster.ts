@@ -1168,7 +1168,10 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
   readonly enableManagedTerminationProtection?: boolean;
 
   /**
-   * PLACEHOLDER FOR DOC
+   * Managed instance draining facilitates graceful termination of Amazon ECS instances.
+   * This allows your service workloads to stop safely and be rescheduled to non-terminating instances.
+   * Infrastructure maintenance and updates are preformed without disruptions to workloads.
+   * To use managed instance draining, set enableManagedDraining to true.
    *
    * @default null
    */
@@ -1243,7 +1246,7 @@ export class AsgCapacityProvider extends Construct {
     this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
     this.canContainersAccessInstanceRole = props.canContainersAccessInstanceRole;
     this.enableManagedTerminationProtection = props.enableManagedTerminationProtection ?? true;
-    this.enableManagedDraining = props.enableManagedDraining ?? undefined;
+    this.enableManagedDraining = props.enableManagedDraining;
 
     let managedDraining = undefined;
     if (this.enableManagedDraining != undefined) {
