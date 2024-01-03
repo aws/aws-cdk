@@ -53,11 +53,13 @@ describeDeprecated('codepipeline existing', () => {
     const existingCodePipeline = new codePipeline.Pipeline(stack, 'CustomCodePipeline');
 
     expect(() => {
-      new cdkp.CdkPipeline(stack, 'CDKPipeline', {
+      new cdkp.CodePipeline(stack, 'CDKPipeline', {
         crossRegionReplicationBuckets: {}, // Even the empty set is forbidden.
         codePipeline: existingCodePipeline,
-        cloudAssemblyArtifact: new codePipeline.Artifact(),
-      });
+        synth: new cdkp.ShellStep('Synth', {
+          commands: ['echo hello'],
+        }),
+      }).buildPipeline();
     }).toThrow("Cannot set 'crossRegionReplicationBuckets' if an existing CodePipeline is given using 'codePipeline'");
   });
 });
