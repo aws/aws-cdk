@@ -464,6 +464,7 @@
      "AutoPause": true,
      "MaxCapacity": 32,
      "MinCapacity": 8,
+     "SecondsBeforeTimeout": 480,
      "SecondsUntilAutoPause": 300,
      "TimeoutAction": "ForceApplyCapacityChange"
     },
