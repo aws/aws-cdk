@@ -558,7 +558,7 @@ describe('node group', () => {
         new ec2.InstanceType('p3.large'),
         new ec2.InstanceType('g3.large'),
       ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64_GPU or don't specify any/);
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64_GPU, BOTTLEROCKET_x86_64_NVIDIA, BOTTLEROCKET_ARM_64_NVIDIA or don't specify any/);
   });
 
   /**
@@ -580,7 +580,7 @@ describe('node group', () => {
         new ec2.InstanceType('c5.large'),
         new ec2.InstanceType('m5.large'),
       ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64,BOTTLEROCKET_x86_64,WINDOWS_CORE_2019_x86_64,WINDOWS_CORE_2022_x86_64,WINDOWS_FULL_2019_x86_64,WINDOWS_FULL_2022_x86_64 or don't specify any/);
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64, BOTTLEROCKET_x86_64, WINDOWS_CORE_2019_x86_64, WINDOWS_CORE_2022_x86_64, WINDOWS_FULL_2019_x86_64, WINDOWS_FULL_2022_x86_64 or don't specify any/);
   });
 
   test('throws when AmiType is Windows and forbidden instanceType is selected', () => {
@@ -619,7 +619,43 @@ describe('node group', () => {
         new ec2.InstanceType('c5.large'),
         new ec2.InstanceType('m5.large'),
       ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64,BOTTLEROCKET_x86_64,WINDOWS_CORE_2019_x86_64,WINDOWS_CORE_2022_x86_64,WINDOWS_FULL_2019_x86_64,WINDOWS_FULL_2022_x86_64 or don't specify any/);
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64, BOTTLEROCKET_x86_64, WINDOWS_CORE_2019_x86_64, WINDOWS_CORE_2022_x86_64, WINDOWS_FULL_2019_x86_64, WINDOWS_FULL_2022_x86_64 or don't specify any/);
+  });
+
+  test('throws when LaunchTemplate is undefined, amiType is BOTTLEROCKET_ARM_64_NVIDIA and instanceTypes are not GPU', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    expect(() => cluster.addNodegroupCapacity('ng', {
+      amiType: NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA,
+      instanceTypes: [
+        new ec2.InstanceType('c5.large'),
+        new ec2.InstanceType('m5.large'),
+      ],
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64, BOTTLEROCKET_x86_64, WINDOWS_CORE_2019_x86_64, WINDOWS_CORE_2022_x86_64, WINDOWS_FULL_2019_x86_64, WINDOWS_FULL_2022_x86_64 or don't specify any/);
+  });
+
+  test('throws when LaunchTemplate is undefined, amiType is BOTTLEROCKET_X86_64_NVIDIA and instanceTypes are not GPU', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    // THEN
+    expect(() => cluster.addNodegroupCapacity('ng', {
+      amiType: NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA,
+      instanceTypes: [
+        new ec2.InstanceType('c5.large'),
+        new ec2.InstanceType('m5.large'),
+      ],
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64, BOTTLEROCKET_x86_64, WINDOWS_CORE_2019_x86_64, WINDOWS_CORE_2022_x86_64, WINDOWS_FULL_2019_x86_64, WINDOWS_FULL_2022_x86_64 or don't specify any/);
   });
 
   /**

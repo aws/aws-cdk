@@ -477,6 +477,32 @@ describe('log group', () => {
     });
   });
 
+  test('log groups accept the AnyPrincipal policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    lg.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['logs:PutLogEvents'],
+      principals: [new iam.AnyPrincipal()],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: JSON.stringify({
+        Statement: [{
+          Action: 'logs:PutLogEvents',
+          Effect: 'Allow',
+          Principal: { AWS: '*' },
+          Resource: '*',
+        }],
+        Version: '2012-10-17',
+      }),
+    });
+  });
+
   test('imported values are treated as if they are ARNs and converted to account IDs via CFN pseudo parameters', () => {
     // GIVEN
     const stack = new Stack();

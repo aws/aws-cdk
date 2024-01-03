@@ -413,6 +413,10 @@ export class Role extends Resource implements IRole {
       physicalName: props.roleName,
     });
 
+    if (props.roleName && !Token.isUnresolved(props.roleName) && !/^[\w+=,.@-]{1,64}$/.test(props.roleName)) {
+      throw new Error('Invalid roleName. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 64 characters.');
+    }
+
     const externalIds = props.externalIds || [];
     if (props.externalId) {
       externalIds.push(props.externalId);

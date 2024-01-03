@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "KeyValueStore/DefaultTest": {
+      "stacks": [
+        "integ-key-value-store"
+      ],
+      "assertionStack": "KeyValueStore/DefaultTest/DeployAssert",
+      "assertionStackName": "KeyValueStoreDefaultTestDeployAssert87336A31"
+    }
+  }
+}
