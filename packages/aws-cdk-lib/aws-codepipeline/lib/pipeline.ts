@@ -153,7 +153,7 @@ export interface PipelineProps {
    * encrypted with an AWS-managed key). However, cross-account deployments will
    * no longer be possible.
    *
-   * @default false - false if the feature flag CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE
+   * @default false - false if the feature flag `CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE`
    * is true, true otherwise
    */
   readonly crossAccountKeys?: boolean;
