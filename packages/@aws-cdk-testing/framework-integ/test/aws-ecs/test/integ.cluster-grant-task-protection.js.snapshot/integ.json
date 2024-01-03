@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "aws-ecs-cluster-grant-task-protection/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ"
+      ],
+      "assertionStack": "aws-ecs-cluster-grant-task-protection/DefaultTest/DeployAssert",
+      "assertionStackName": "awsecsclustergranttaskprotectionDefaultTestDeployAssert24DEFE93"
+    }
+  }
+}

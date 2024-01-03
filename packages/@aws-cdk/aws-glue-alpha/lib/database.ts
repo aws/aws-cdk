@@ -43,6 +43,13 @@ export interface DatabaseProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-database-databaseinput.html
    */
   readonly locationUri?: string;
+
+  /**
+   * A description of the database.
+   *
+   * @default - no database description
+   */
+  readonly description?: string;
 }
 
 /**
@@ -96,8 +103,13 @@ export class Database extends Resource implements IDatabase {
         }),
     });
 
+    if (props.description !== undefined) {
+      validateDescription(props.description);
+    }
+
     let databaseInput: CfnDatabase.DatabaseInputProperty = {
       name: this.physicalName,
+      description: props.description,
     };
 
     if (props.locationUri !== undefined) {
@@ -133,6 +145,12 @@ export class Database extends Resource implements IDatabase {
 
 function validateLocationUri(locationUri: string): void {
   if (locationUri.length < 1 || locationUri.length > 1024) {
-    throw new Error(`locationUri length must be (inclusively) between 1 and 1024, but was ${locationUri.length}`);
+    throw new Error(`locationUri length must be (inclusively) between 1 and 1024, got ${locationUri.length}`);
+  }
+}
+
+function validateDescription(description: string): void {
+  if (description.length > 2048) {
+    throw new Error(`description length must be less than or equal to 2048, got ${description.length}`);
   }
 }

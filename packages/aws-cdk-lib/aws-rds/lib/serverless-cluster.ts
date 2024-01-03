@@ -240,6 +240,26 @@ export enum AuroraCapacityUnit {
 }
 
 /**
+ * TimeoutAction defines the action to take when a timeout occurs if a scaling point is not found.
+ *
+ * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v1.how-it-works.html#aurora-serverless.how-it-works.timeout-action
+ */
+export enum TimeoutAction {
+  /**
+   * FORCE_APPLY_CAPACITY_CHANGE sets the capacity to the specified value as soon as possible.
+   * Transactions may be interrupted, and connections to temporary tables and locks may be dropped.
+   * Only select this option if your application can recover from dropped connections or incomplete transactions.
+   */
+  FORCE_APPLY_CAPACITY_CHANGE = 'ForceApplyCapacityChange',
+
+  /**
+   * ROLLBACK_CAPACITY_CHANGE ignores the capacity change if a scaling point is not found.
+   * This is the default behavior.
+   */
+  ROLLBACK_CAPACITY_CHANGE = 'RollbackCapacityChange',
+}
+
+/**
  * Options for configuring scaling on an Aurora Serverless cluster
  *
  */
@@ -272,6 +292,23 @@ export interface ServerlessScalingOptions {
    * @default - automatic pause enabled after 5 minutes
    */
   readonly autoPause?: Duration;
+
+  /**
+   * The amount of time that Aurora Serverless v1 tries to find a scaling point to perform
+   * seamless scaling before enforcing the timeout action.
+   *
+   * @default - 5 minutes
+   */
+  readonly timeout? : Duration;
+
+  /**
+   * The action to take when the timeout is reached.
+   * Selecting ForceApplyCapacityChange will force the capacity to the specified value as soon as possible, even without a scaling point.
+   * Selecting RollbackCapacityChange will ignore the capacity change if a scaling point is not found. This is the default behavior.
+   *
+   * @default - TimeoutAction.ROLLBACK_CAPACITY_CHANGE
+   */
+  readonly timeoutAction?: TimeoutAction;
 }
 
 /**
@@ -444,6 +481,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
   private renderScalingConfiguration(options: ServerlessScalingOptions): CfnDBCluster.ScalingConfigurationProperty {
     const minCapacity = options.minCapacity;
     const maxCapacity = options.maxCapacity;
+    const timeout = options.timeout?.toSeconds();
 
     if (minCapacity && maxCapacity && minCapacity > maxCapacity) {
       throw new Error('maximum capacity must be greater than or equal to minimum capacity.');
@@ -454,11 +492,17 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       throw new Error('auto pause time must be between 5 minutes and 1 day.');
     }
 
+    if (timeout && (timeout < 60 || timeout > 600)) {
+      throw new Error(`timeout must be between 60 and 600 seconds, but got ${timeout} seconds.`);
+    }
+
     return {
       autoPause: (secondsToAutoPause === 0) ? false : true,
       minCapacity: options.minCapacity,
       maxCapacity: options.maxCapacity,
       secondsUntilAutoPause: (secondsToAutoPause === 0) ? undefined : secondsToAutoPause,
+      secondsBeforeTimeout: timeout,
+      timeoutAction: options.timeoutAction,
     };
   }
 }

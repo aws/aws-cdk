@@ -53,7 +53,7 @@ test('bundling', () => {
       command: [
         'bash', '-c',
         [
-          'go build -o /asset-output/bootstrap ./cmd/api',
+          'go build -o "/asset-output/bootstrap" ./cmd/api',
         ].join(' && '),
       ],
     }),
@@ -81,7 +81,7 @@ test('bundling with file as entry', () => {
       command: [
         'bash', '-c',
         [
-          'go build -o /asset-output/bootstrap ./main.go',
+          'go build -o "/asset-output/bootstrap" ./main.go',
         ].join(' && '),
       ],
     }),
@@ -102,7 +102,7 @@ test('bundling with file in subdirectory as entry', () => {
       command: [
         'bash', '-c',
         [
-          'go build -o /asset-output/bootstrap ./cmd/api/main.go',
+          'go build -o "/asset-output/bootstrap" ./cmd/api/main.go',
         ].join(' && '),
       ],
     }),
@@ -123,7 +123,7 @@ test('bundling with file other than main.go in subdirectory as entry', () => {
       command: [
         'bash', '-c',
         [
-          'go build -o /asset-output/bootstrap ./cmd/api/api.go',
+          'go build -o "/asset-output/bootstrap" ./cmd/api/api.go',
         ].join(' && '),
       ],
     }),
@@ -265,7 +265,7 @@ test('Go build flags can be passed', () => {
       command: [
         'bash', '-c',
         [
-          'go build -o /asset-output/bootstrap -ldflags "-s -w" ./cmd/api',
+          'go build -o "/asset-output/bootstrap" -ldflags "-s -w" ./cmd/api',
         ].join(' && '),
       ],
     }),
@@ -297,7 +297,7 @@ test('AssetHashType can be specified', () => {
       command: [
         'bash', '-c',
         [
-          'go build -o /asset-output/bootstrap ./cmd/api',
+          'go build -o "/asset-output/bootstrap" ./cmd/api',
         ].join(' && '),
       ],
     }),

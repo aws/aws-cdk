@@ -36,7 +36,6 @@ const gp3Domain = new Domain(this, 'Domain', {
 });
 ```
 
-
 Create a production grade cluster by also specifying things like capacity and az distribution
 
 ```ts
@@ -472,5 +471,16 @@ The domain can be configured to use service software updates.
 const domain = new Domain(this, 'Domain', {
   version: EngineVersion.OPENSEARCH_1_3,
   enableAutoSoftwareUpdate: true,
+});
+```
+
+## IP address type
+
+You can specify either dual stack or IPv4 as your IP address type.
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_3,
+  ipAddressType: IpAddressType.DUAL_STACK,
 });
 ```

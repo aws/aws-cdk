@@ -147,6 +147,16 @@ export interface TableBaseProps {
    * @default - The parameter is not defined
    */
   readonly storageParameters?: StorageParameter[];
+
+  /**
+   * The key/value pairs define properties associated with the table.
+   * The key/value pairs that are allowed to be submitted are not limited, however their functionality is not guaranteed.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-parameters
+   *
+   * @default - The parameter is not defined
+   */
+  readonly parameters?: { [key: string]: string }
 }
 
 /**
@@ -215,6 +225,12 @@ export abstract class TableBase extends Resource implements ITable {
   public readonly storageParameters?: StorageParameter[];
 
   /**
+   * The tables' properties associated with the table.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-table-tableinput.html#cfn-glue-table-tableinput-parameters
+  */
+  protected readonly parameters: { [key: string]: string }
+
+  /**
    * Partition indexes must be created one at a time. To avoid
    * race conditions, we store the resource and add dependencies
    * each time a new partition index is created.
@@ -236,6 +252,7 @@ export abstract class TableBase extends Resource implements ITable {
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
     this.storageParameters = props.storageParameters;
+    this.parameters = props.parameters ?? {};
 
     this.compressed = props.compressed ?? false;
   }

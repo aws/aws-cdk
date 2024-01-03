@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "aws-cdk-asg-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a8efad29e5cb8979aac968ca3709d9f3c874be848a2097779d79b8be52e4fd9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cc56cf10db6f9a8d08a1dd3ac11545a658835fe20afe0105866946e153d2d173.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -248,6 +248,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AsgFromMipWithoutDistributionASG4BF292F9"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgFromMipWithInstanceRequirements": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
+          }
+        ],
+        "/aws-cdk-asg-integ/AsgFromMipWithInstanceRequirements/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AsgFromMipWithInstanceRequirementsASG8BFE597D"
           }
         ],
         "/aws-cdk-asg-integ/AsgWithGp3Blockdevice": [

@@ -209,7 +209,7 @@ export class Bundling implements cdk.BundlingOptions {
     const goBuildCommand: string = [
       'go', 'build',
       hasVendor ? '-mod=vendor': '',
-      '-o', `${pathJoin(outputDir, 'bootstrap')}`,
+      '-o', `"${pathJoin(outputDir, 'bootstrap')}"`,
       `${this.props.goBuildFlags ? this.props.goBuildFlags.join(' ') : ''}`,
       `${this.relativeEntryPath.replace(/\\/g, '/')}`,
     ].filter(c => !!c).join(' ');

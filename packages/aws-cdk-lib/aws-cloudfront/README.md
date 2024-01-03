@@ -518,6 +518,7 @@ You can also deploy CloudFront functions and add them to a CloudFront distributi
 // Add a cloudfront Function to a Distribution
 const cfFunction = new cloudfront.Function(this, 'Function', {
   code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
+  runtime: cloudfront.FunctionRuntime.JS_2_0,
 });
 
 declare const s3Bucket: s3.Bucket;
@@ -535,6 +536,27 @@ new cloudfront.Distribution(this, 'distro', {
 It will auto-generate the name of the function and deploy it to the `live` stage.
 
 Additionally, you can load the function's code from a file using the `FunctionCode.fromFile()` method.
+
+### Key Value Store
+
+A CloudFront Key Value Store can be created and optionally have data imported from a JSON file
+by default.
+
+To create an empty Key Value Store:
+
+```ts
+const store = new cloudfront.KeyValueStore(this, 'KeyValueStore');
+```
+
+To also include an initial set of value, the `source` property can be specified. For the
+structure of this file, see [Creating a file of key value pairs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-create-s3-kvp.html).
+
+```ts
+const store = new cloudfront.KeyValueStore(this, 'KeyValueStore', {
+  keyValueStoreName: 'KeyValueStore',
+  source: cloudfront.ImportSource.fromAsset('path-to-data.json'),
+});
+```
 
 ### Logging
 

@@ -442,3 +442,43 @@ test('Can enable session tags', () => {
     },
   });
 });
+
+test('Can enable session tags with conditions (order of calls is irrelevant)', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal(
+      's3.amazonaws.com')
+      .withConditions({
+        StringEquals: { hairColor: 'blond' },
+      })
+      .withSessionTags(),
+  });
+
+  new iam.Role(stack, 'Role2', {
+    assumedBy: new iam.ServicePrincipal(
+      's3.amazonaws.com')
+      .withSessionTags()
+      .withConditions({
+        StringEquals: { hairColor: 'blond' },
+      }),
+  });
+
+  // THEN
+  Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: ['sts:AssumeRole', 'sts:TagSession'],
+          Condition: {
+            StringEquals: { hairColor: 'blond' },
+          },
+          Effect: 'Allow',
+          Principal: { Service: 's3.amazonaws.com' },
+        },
+      ],
+    },
+  }, 2);
+});
