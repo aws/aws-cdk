@@ -959,6 +959,7 @@ describe('serverless cluster', () => {
         MaxCapacity: 32,
         MinCapacity: 8,
         SecondsUntilAutoPause: 600,
+        SecondsBeforeTimeout: 600,
         TimeoutAction: 'ForceApplyCapacityChange',
       },
     });
@@ -982,7 +983,7 @@ describe('serverless cluster', () => {
         maxCapacity: AuroraCapacityUnit.ACU_32,
         timeout: duration,
       },
-    })).toThrow(/timeout must be between 60 and 600 seconds./);
+    })).toThrow(/timeout must be between 60 and 600 seconds/);
   });
 });
 

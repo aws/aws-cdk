@@ -294,14 +294,15 @@ export interface ServerlessScalingOptions {
   readonly autoPause?: Duration;
 
   /**
-   * timeout specifies the amount of time, that Aurora Serverless v1 tries to find a scaling point to perform seamless scaling before enforcing the timeout action.
+   * The amount of time that Aurora Serverless v1 tries to find a scaling point to perform
+   * seamless scaling before enforcing the timeout action.
    *
    * @default - 5 minutes
    */
   readonly timeout? : Duration;
 
   /**
-   * timeoutAction specifies the action to take when the timeout is reached.
+   * The action to take when the timeout is reached.
    * Selecting ForceApplyCapacityChange will force the capacity to the specified value as soon as possible, even without a scaling point.
    * Selecting RollbackCapacityChange will ignore the capacity change if a scaling point is not found. This is the default behavior.
    *
@@ -492,7 +493,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     }
 
     if (timeout && (timeout < 60 || timeout > 600)) {
-      throw new Error('timeout must be between 60 and 600 seconds.');
+      throw new Error(`timeout must be between 60 and 600 seconds, but got ${timeout} seconds.`);
     }
 
     return {
