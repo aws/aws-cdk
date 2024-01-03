@@ -494,12 +494,12 @@ export class PullRequestLinter {
 
   /**
    * Trusted community reviewers is derived from the source of truth at this wiki:
-   * https://github.com/aws/aws-cdk/wiki/Introducing-CDK-Community-PR-Reviews
+   * https://github.com/aws/aws-cdk/wiki/CDK-Community-PR-Reviews
    */
   private getTrustedCommunityMembers(): string[] {
     if (this.trustedCommunity.length > 0) { return this.trustedCommunity; }
 
-    const wiki = execSync('curl https://raw.githubusercontent.com/wiki/aws/aws-cdk/Introducing-CDK-Community-PR-Reviews.md', { encoding: 'utf-8' }).toString();
+    const wiki = execSync('curl https://raw.githubusercontent.com/wiki/aws/aws-cdk/CDK-Community-PR-Reviews.md', { encoding: 'utf-8' }).toString();
     const rawMdTable = wiki.split('<!--section-->')[1].split('\n').filter(l => l !== '');
     for (let i = 2; i < rawMdTable.length; i++) {
       this.trustedCommunity.push(rawMdTable[i].split('|')[1].trim());

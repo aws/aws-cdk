@@ -1,0 +1,197 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdk-integ-opensearch-ip-address-type": {
+        "id": "cdk-integ-opensearch-ip-address-type",
+        "path": "cdk-integ-opensearch-ip-address-type",
+        "children": {
+          "IPv4": {
+            "id": "IPv4",
+            "path": "cdk-integ-opensearch-ip-address-type/IPv4",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-opensearch-ip-address-type/IPv4/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::OpenSearchService::Domain",
+                  "aws:cdk:cloudformation:props": {
+                    "clusterConfig": {
+                      "dedicatedMasterEnabled": false,
+                      "instanceCount": 1,
+                      "instanceType": "r5.large.search",
+                      "multiAzWithStandbyEnabled": false,
+                      "zoneAwarenessEnabled": false
+                    },
+                    "domainEndpointOptions": {
+                      "enforceHttps": false,
+                      "tlsSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+                    },
+                    "ebsOptions": {
+                      "ebsEnabled": true,
+                      "volumeSize": 10,
+                      "volumeType": "gp2"
+                    },
+                    "encryptionAtRestOptions": {
+                      "enabled": false
+                    },
+                    "engineVersion": "Elasticsearch_7.1",
+                    "ipAddressType": "ipv4",
+                    "logPublishingOptions": {},
+                    "nodeToNodeEncryptionOptions": {
+                      "enabled": false
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "DualStack": {
+            "id": "DualStack",
+            "path": "cdk-integ-opensearch-ip-address-type/DualStack",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-opensearch-ip-address-type/DualStack/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::OpenSearchService::Domain",
+                  "aws:cdk:cloudformation:props": {
+                    "clusterConfig": {
+                      "dedicatedMasterEnabled": false,
+                      "instanceCount": 1,
+                      "instanceType": "r5.large.search",
+                      "multiAzWithStandbyEnabled": false,
+                      "zoneAwarenessEnabled": false
+                    },
+                    "domainEndpointOptions": {
+                      "enforceHttps": false,
+                      "tlsSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+                    },
+                    "ebsOptions": {
+                      "ebsEnabled": true,
+                      "volumeSize": 10,
+                      "volumeType": "gp2"
+                    },
+                    "encryptionAtRestOptions": {
+                      "enabled": false
+                    },
+                    "engineVersion": "Elasticsearch_7.1",
+                    "ipAddressType": "dualstack",
+                    "logPublishingOptions": {},
+                    "nodeToNodeEncryptionOptions": {
+                      "enabled": false
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-integ-opensearch-ip-address-type/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-integ-opensearch-ip-address-type/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      },
+      "OpenSearchIpAddressTypeInteg": {
+        "id": "OpenSearchIpAddressTypeInteg",
+        "path": "OpenSearchIpAddressTypeInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "OpenSearchIpAddressTypeInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "OpenSearchIpAddressTypeInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "OpenSearchIpAddressTypeInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "OpenSearchIpAddressTypeInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "OpenSearchIpAddressTypeInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
+    }
+  }
+}

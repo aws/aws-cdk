@@ -6,6 +6,7 @@ import { Environment, UNKNOWN_ACCOUNT, UNKNOWN_REGION } from '@aws-cdk/cx-api';
 import * as cdk_from_cfn from 'cdk-from-cfn';
 import { cliInit } from '../../lib/init';
 import { Mode, SdkProvider } from '../api';
+import { CloudFormationStack } from '../api/util/cloudformation';
 import { zipDirectory } from '../util/archive';
 
 const camelCase = require('camelcase');
@@ -112,9 +113,13 @@ export function readFromPath(inputPath?: string): string | undefined {
 export async function readFromStack(stackName: string, sdkProvider: SdkProvider, environment: Environment): Promise<string | undefined> {
   const cloudFormation = (await sdkProvider.forEnvironment(environment, Mode.ForReading)).sdk.cloudFormation();
 
-  return (await cloudFormation.getTemplate({
-    StackName: stackName,
-  }).promise()).TemplateBody;
+  const stack = await CloudFormationStack.lookup(cloudFormation, stackName);
+  if (stack.stackStatus.isDeploySuccess || stack.stackStatus.isRollbackSuccess) {
+    return JSON.stringify(await stack.template());
+  } else {
+    throw new Error(`Stack '${stackName}' in account ${environment.account} and region ${environment.region} has a status of '${stack.stackStatus.name}' due to '${stack.stackStatus.reason}'. The stack cannot be migrated until it is in a healthy state.`);
+  }
+  return;
 }
 
 /**

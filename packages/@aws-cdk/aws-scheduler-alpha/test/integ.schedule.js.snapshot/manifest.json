@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-scheduler-schedule.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/77d06d03c78dc7776966b7c7ee414cc19be012ccfba5d7a9b1e425718920ab3e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e85511e5051d124b858b12d793cf362aeaa393047d83195843b1ab4d1bcac9ee.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -116,6 +116,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomerKmsSchedule12B1FEFE"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/UseFlexibleTimeWindow/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UseFlexibleTimeWindowBF55D3ED"
           }
         ],
         "/aws-cdk-scheduler-schedule/ScheduleWithTimeFrame/Resource": [

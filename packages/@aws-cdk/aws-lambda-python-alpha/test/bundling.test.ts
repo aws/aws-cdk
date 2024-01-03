@@ -193,7 +193,7 @@ test('Bundling a function with pipenv dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && PIPENV_VENV_IN_PROJECT=1 pipenv lock -r > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python',
+        'rsync -rLv /asset-input/ /asset-output/python && cd /asset-output/python && PIPENV_VENV_IN_PROJECT=1 pipenv requirements > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python',
       ],
     }),
   }));
@@ -221,7 +221,7 @@ test('Bundling a function with pipenv dependencies with assetExcludes', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        "rsync -rLv --exclude='.ignorefile' /asset-input/ /asset-output/python && cd /asset-output/python && PIPENV_VENV_IN_PROJECT=1 pipenv lock -r > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python",
+        "rsync -rLv --exclude='.ignorefile' /asset-input/ /asset-output/python && cd /asset-output/python && PIPENV_VENV_IN_PROJECT=1 pipenv requirements > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python",
       ],
     }),
   }));
