@@ -235,6 +235,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup) {
     this.connections.addSecurityGroup(securityGroup);
+    this.securityGroups?.push(securityGroup.securityGroupId);
   }
 
   /**
