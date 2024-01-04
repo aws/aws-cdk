@@ -728,17 +728,7 @@ describe('tests', () => {
       ],
       SecurityGroups: Match.absent(),
     });
-    template.resourcePropertiesCountIs('AWS::EC2::SecurityGroup', {
-      SecurityGroupIngress: [
-        {
-          CidrIp: '0.0.0.0/0',
-          Description: 'from 0.0.0.0/0:80',
-          FromPort: 80,
-          IpProtocol: 'tcp',
-          ToPort: 80,
-        },
-      ],
-    }, 0);
+    template.resourceCountIs('AWS::EC2::SecurityGroup', 0);
   });
 
   describe('lookup', () => {
