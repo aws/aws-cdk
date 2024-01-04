@@ -1246,32 +1246,35 @@ The following code assumes you have created and are managing your buckets in the
 separate cdk repo and are just importing them for use in one of your (many) pipelines.
 
 ```ts
-let sharedXRegionUsWest1BucketArn: string;
-let sharedXRegionUsWest1KeyArn: string;
+declare const sharedXRegionUsWest1BucketArn: string;
+declare const sharedXRegionUsWest1KeyArn: string;
 
-let sharedXRegionUsWest2BucketArn: string;
-let sharedXRegionUsWest2KeyArn: string;
+declare const sharedXRegionUsWest2BucketArn: string;
+declare const sharedXRegionUsWest2KeyArn: string;
 
-const usWest1Bucket = s3.Bucket.fromBucketAttributes(scope, 'us-east-1Bucket', {
+const usWest1Bucket = s3.Bucket.fromBucketAttributes(scope, 'UsEast1Bucket', {
   bucketArn: sharedXRegionUsWest1BucketArn,
-  encryptionKey: kms.Key.fromKeyArn(scope, 'keyArn', sharedXRegionUsWest1BucketArn),
+  encryptionKey: kms.Key.fromKeyArn(scope, 'UsEast1BucketKeyArn', sharedXRegionUsWest1BucketArn),
 });
 
-const usWest2Bucket = s3.Bucket.fromBucketAttributes(scope, 'us-west-2Bucket', {
+const usWest2Bucket = s3.Bucket.fromBucketAttributes(scope, 'UsWest2Bucket', {
   bucketArn: sharedXRegionUsWest2BucketArn,
-  encryptionKey: kms.Key.fromKeyArn(scope, 'keyArn', sharedXRegionUsWest2KeyArn),
+  encryptionKey: kms.Key.fromKeyArn(scope, 'UsWest2BucketKeyArn', sharedXRegionUsWest2KeyArn),
 });
 
-const crossRegionReplicationBuckets: Record<[key: string]: s3.IBucket> = {
+const crossRegionReplicationBuckets: Record<string, s3.IBucket> = {
   'us-west-1': usWest1Bucket,
   'us-west-2': usWest2Bucket,
   // Support for additional regions.
 }
 
-let otherProps: pipelines.CodePipelineProps;
 const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
-  ...otherProps,
-  // Use shared buckets.
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41',
+    }),
+    commands: ['npm ci','npm run build','npx cdk synth'],
+  }),  // Use shared buckets.
   crossRegionReplicationBuckets,
 });
 ```
