@@ -143,4 +143,31 @@ describe('output', () => {
       expect.stringContaining('Export name cannot exceed 255 characters'),
     ]);
   });
+
+  test('Verify zero length of export name', () => {
+    const output = new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: '' });
+    const errors = output.node.validate();
+
+    expect(errors).toEqual([
+      expect.stringContaining('Export name cannot be empty'),
+    ]);
+  });
+
+  test('throw if export name has invalid string (space)', () => {
+    const output = new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: 'SOME INVALID EXPORT NAME' });
+    const errors = output.node.validate();
+
+    expect(errors).toEqual([
+      expect.stringContaining('Export name must only include alphanumeric characters, colons, or hyphens (got \'SOME INVALID EXPORT NAME\''),
+    ]);
+  });
+
+  test('throw if export name has invalid string (under_bar)', () => {
+    const output = new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: 'SOME_INVALID_EXPORT_NAME' });
+    const errors = output.node.validate();
+
+    expect(errors).toEqual([
+      expect.stringContaining('Export name must only include alphanumeric characters, colons, or hyphens (got \'SOME_INVALID_EXPORT_NAME\''),
+    ]);
+  });
 });
