@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.118.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.117.0-alpha.0...v2.118.0-alpha.0) (2024-01-03)
+
+
+### Features
+
+* **glue:** database description property ([#27744](https://github.com/aws/aws-cdk/issues/27744)) ([cbac240](https://github.com/aws/aws-cdk/commit/cbac24041db7dbc39b4ae1d6da4902b3443528cb)), closes [#27740](https://github.com/aws/aws-cdk/issues/27740)
+* **glue-alpha:** add `cfn-glue-table-tableinput-parameters` to Glue table construct ([#27643](https://github.com/aws/aws-cdk/issues/27643)) ([8e15482](https://github.com/aws/aws-cdk/commit/8e15482295c1324eefea020faeb11e4c686357c6))
+
+
+### Bug Fixes
+
+* **lambda-go:** path with space breaks go build ([#28554](https://github.com/aws/aws-cdk/issues/28554)) ([a8a639e](https://github.com/aws/aws-cdk/commit/a8a639e2a2114162db240361c32c40a596a7a19e)), closes [#28555](https://github.com/aws/aws-cdk/issues/28555)
+
 ## [2.117.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.116.1-alpha.0...v2.117.0-alpha.0) (2023-12-26)
 
 
