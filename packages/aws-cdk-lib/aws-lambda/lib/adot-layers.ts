@@ -424,6 +424,7 @@ export class AdotLambdaLayerGenericVersion extends AdotLambdaLayerVersion {
    * introduce incompatible changes. Make sure to test them before deploying to production.
    */
   public static readonly LATEST = this.V0_90_1;
+
   private constructor(protected readonly layerVersion: string) {
     super(AdotLambdaLayerType.GENERIC, layerVersion);
   }
