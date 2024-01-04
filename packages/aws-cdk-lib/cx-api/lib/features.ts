@@ -97,6 +97,7 @@ export const RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS = '@aws-cdk/aws-rds:pr
 export const AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS = '@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters';
 export const APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION = '@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier';
 export const CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME = '@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource';
+export const NLB_CREATE_DEFAULT_SECURITY_GROUP = '@aws-cdk/aws-elasticloadbalancingv2:nlbCreateDefaultSecurityGroup';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -975,6 +976,20 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.103.1' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [NLB_CREATE_DEFAULT_SECURITY_GROUP]: {
+    type: FlagType.ApiDefault,
+    summary: 'When not provided security groups of props, then create a new security group.',
+    detailsMd: `
+      This flag create a new security group and associate it to the load balancer when not provided security groups of props.
+      If this flag is not set, \`NetworkLoadBalancer\` will not create security group.
+      A network load balancer that not associated security group can not associate security groups until recreate.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Pass `createDefaultSecurityGroup: false` to `NetworkLoadBalancer` construct to restore the old behavior.',
   },
 };
 
