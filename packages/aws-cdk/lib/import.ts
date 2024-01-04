@@ -143,7 +143,7 @@ export class ResourceImporter {
   public async discoverImportableResources(allowNonAdditions = false): Promise<DiscoverImportableResourcesResult> {
     const currentTemplate = await this.currentTemplate();
 
-    const diff = cfnDiff.diffTemplate(currentTemplate, this.stack.template);
+    const diff = cfnDiff.fullDiff(currentTemplate, this.stack.template);
 
     // Ignore changes to CDKMetadata
     const resourceChanges = Object.entries(diff.resources.changes)
