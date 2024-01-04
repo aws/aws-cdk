@@ -492,7 +492,7 @@ export class FileSystem extends FileSystemBase {
     }
 
     if (props.oneZone && props.vpcSubnets) {
-      throw new Error('vpcSubnets is not supported for One Zone file systems.');
+      throw new Error('vpcSubnets cannot be specified when oneZone is enabled.');
     }
 
     if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
