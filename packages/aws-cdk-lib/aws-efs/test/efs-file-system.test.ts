@@ -919,5 +919,5 @@ test('one zone file system with vpcSubnets is not supported', () => {
       oneZone: true,
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
-  }).toThrow(/vpcSubnets is not supported for One Zone file systems./);
+  }).toThrow(/vpcSubnets cannot be specified when oneZone is enabled./);
 });
