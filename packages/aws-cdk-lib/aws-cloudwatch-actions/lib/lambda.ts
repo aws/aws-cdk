@@ -16,13 +16,11 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
   }
 
   /**
-   * Returns an alarm action configuration to use an Lambda action as an alarm action
+   * Returns an alarm action configuration to use an Lambda action as an alarm action.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_PutMetricAlarm.html
-   *
    */
   bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
-
     this.lambdaFunction.addPermission('AlarmPermission', {
       sourceAccount: Stack.of(_scope).account,
       action: 'lambda:InvokeFunction',
