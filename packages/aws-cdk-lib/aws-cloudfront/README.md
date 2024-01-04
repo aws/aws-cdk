@@ -558,6 +558,19 @@ const store = new cloudfront.KeyValueStore(this, 'KeyValueStore', {
 });
 ```
 
+The Key Value Store can then be associated to a function using the `cloudfront-js-2.0` runtime
+or newer:
+
+```ts
+const store = new cloudfront.KeyValueStore(this, 'KeyValueStore');
+new cloudfront.Function(this, 'Function', {
+  code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
+  // Note that JS_2_0 must be used for Key Value Store support
+  runtime: cloudfront.FunctionRuntime.JS_2_0,
+  keyValueStores: [store],
+});
+```
+
 ### Logging
 
 You can configure CloudFront to create log files that contain detailed information about every user request that CloudFront receives.
