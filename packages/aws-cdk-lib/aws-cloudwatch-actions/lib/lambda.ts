@@ -23,7 +23,7 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
    */
   bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
 
-    this.lambdaFunction.addPermission(`${this.lambdaFunction.node.id}AlarmPermission`, {
+    this.lambdaFunction.addPermission('AlarmPermission', {
       sourceAccount: Stack.of(_scope).account,
       action: 'lambda:InvokeFunction',
       sourceArn: _alarm.alarmArn,

@@ -147,6 +147,119 @@
                   "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
                   "version": "0.0.0"
                 }
+              },
+              "CurrentVersionAlarmPermission": {
+                "id": "CurrentVersionAlarmPermission",
+                "path": "LambdaAlarmActionIntegrationTestStack/Alarm/CurrentVersionAlarmPermission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          {
+                            "Ref": "alarmLambda131DB691"
+                          },
+                          ":",
+                          {
+                            "Fn::GetAtt": [
+                              "alarmLambdaCurrentVersionBDCE825C61967a018dfe55c69152d31b6e7ab40b",
+                              "Version"
+                            ]
+                          }
+                        ]
+                      ]
+                    },
+                    "principal": "lambda.alarms.cloudwatch.amazonaws.com",
+                    "sourceAccount": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "Alarm7103F465",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "AliasaliasNameAlarmPermission": {
+                "id": "AliasaliasNameAlarmPermission",
+                "path": "LambdaAlarmActionIntegrationTestStack/Alarm/AliasaliasNameAlarmPermission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          {
+                            "Fn::Select": [
+                              6,
+                              {
+                                "Fn::Split": [
+                                  ":",
+                                  {
+                                    "Ref": "alarmLambdaAliasaliasName41B27313"
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          ":aliasName"
+                        ]
+                      ]
+                    },
+                    "principal": "lambda.alarms.cloudwatch.amazonaws.com",
+                    "sourceAccount": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "Alarm7103F465",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "alarmLambdaAlarmPermission": {
+                "id": "alarmLambdaAlarmPermission",
+                "path": "LambdaAlarmActionIntegrationTestStack/Alarm/alarmLambdaAlarmPermission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Ref": "alarmLambda131DB691"
+                    },
+                    "principal": "lambda.alarms.cloudwatch.amazonaws.com",
+                    "sourceAccount": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "Alarm7103F465",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -259,33 +372,6 @@
                       "fqn": "aws-cdk-lib.aws_lambda.CfnVersion",
                       "version": "0.0.0"
                     }
-                  },
-                  "CurrentVersionAlarmPermission": {
-                    "id": "CurrentVersionAlarmPermission",
-                    "path": "LambdaAlarmActionIntegrationTestStack/alarmLambda/CurrentVersion/CurrentVersionAlarmPermission",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                      "aws:cdk:cloudformation:props": {
-                        "action": "lambda:InvokeFunction",
-                        "functionName": {
-                          "Ref": "alarmLambdaCurrentVersionBDCE825C61967a018dfe55c69152d31b6e7ab40b"
-                        },
-                        "principal": "lambda.alarms.cloudwatch.amazonaws.com",
-                        "sourceAccount": {
-                          "Ref": "AWS::AccountId"
-                        },
-                        "sourceArn": {
-                          "Fn::GetAtt": [
-                            "Alarm7103F465",
-                            "Arn"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
-                      "version": "0.0.0"
-                    }
                   }
                 },
                 "constructInfo": {
@@ -327,67 +413,10 @@
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
-                  },
-                  "AliasaliasNameAlarmPermission": {
-                    "id": "AliasaliasNameAlarmPermission",
-                    "path": "LambdaAlarmActionIntegrationTestStack/alarmLambda/AliasaliasName/AliasaliasNameAlarmPermission",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                      "aws:cdk:cloudformation:props": {
-                        "action": "lambda:InvokeFunction",
-                        "functionName": {
-                          "Ref": "alarmLambdaAliasaliasName41B27313"
-                        },
-                        "principal": "lambda.alarms.cloudwatch.amazonaws.com",
-                        "sourceAccount": {
-                          "Ref": "AWS::AccountId"
-                        },
-                        "sourceArn": {
-                          "Fn::GetAtt": [
-                            "Alarm7103F465",
-                            "Arn"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
-                      "version": "0.0.0"
-                    }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.Alias",
-                  "version": "0.0.0"
-                }
-              },
-              "alarmLambdaAlarmPermission": {
-                "id": "alarmLambdaAlarmPermission",
-                "path": "LambdaAlarmActionIntegrationTestStack/alarmLambda/alarmLambdaAlarmPermission",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "alarmLambda131DB691",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "lambda.alarms.cloudwatch.amazonaws.com",
-                    "sourceAccount": {
-                      "Ref": "AWS::AccountId"
-                    },
-                    "sourceArn": {
-                      "Fn::GetAtt": [
-                        "Alarm7103F465",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
                   "version": "0.0.0"
                 }
               }

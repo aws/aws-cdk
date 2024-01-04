@@ -87,6 +87,95 @@
     "TreatMissingData": "notBreaching"
    }
   },
+  "AlarmCurrentVersionAlarmPermission22DB4772": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "alarmLambda131DB691"
+       },
+       ":",
+       {
+        "Fn::GetAtt": [
+         "alarmLambdaCurrentVersionBDCE825C61967a018dfe55c69152d31b6e7ab40b",
+         "Version"
+        ]
+       }
+      ]
+     ]
+    },
+    "Principal": "lambda.alarms.cloudwatch.amazonaws.com",
+    "SourceAccount": {
+     "Ref": "AWS::AccountId"
+    },
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "Alarm7103F465",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AlarmAliasaliasNameAlarmPermission3887D390": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Fn::Select": [
+         6,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Ref": "alarmLambdaAliasaliasName41B27313"
+           }
+          ]
+         }
+        ]
+       },
+       ":aliasName"
+      ]
+     ]
+    },
+    "Principal": "lambda.alarms.cloudwatch.amazonaws.com",
+    "SourceAccount": {
+     "Ref": "AWS::AccountId"
+    },
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "Alarm7103F465",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AlarmalarmLambdaAlarmPermission5CAF3DE7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Ref": "alarmLambda131DB691"
+    },
+    "Principal": "lambda.alarms.cloudwatch.amazonaws.com",
+    "SourceAccount": {
+     "Ref": "AWS::AccountId"
+    },
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "Alarm7103F465",
+      "Arn"
+     ]
+    }
+   }
+  },
   "alarmLambdaServiceRoleCDAABB9D": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -146,25 +235,6 @@
     }
    }
   },
-  "alarmLambdaCurrentVersionCurrentVersionAlarmPermission274CB36D": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Ref": "alarmLambdaCurrentVersionBDCE825C61967a018dfe55c69152d31b6e7ab40b"
-    },
-    "Principal": "lambda.alarms.cloudwatch.amazonaws.com",
-    "SourceAccount": {
-     "Ref": "AWS::AccountId"
-    },
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "Alarm7103F465",
-      "Arn"
-     ]
-    }
-   }
-  },
   "alarmLambdaAliasaliasName41B27313": {
    "Type": "AWS::Lambda::Alias",
    "Properties": {
@@ -178,47 +248,6 @@
      ]
     },
     "Name": "aliasName"
-   }
-  },
-  "alarmLambdaAliasaliasNameAliasaliasNameAlarmPermissionED9EC624": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Ref": "alarmLambdaAliasaliasName41B27313"
-    },
-    "Principal": "lambda.alarms.cloudwatch.amazonaws.com",
-    "SourceAccount": {
-     "Ref": "AWS::AccountId"
-    },
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "Alarm7103F465",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "alarmLambdaalarmLambdaAlarmPermissionA0BF56DE": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "alarmLambda131DB691",
-      "Arn"
-     ]
-    },
-    "Principal": "lambda.alarms.cloudwatch.amazonaws.com",
-    "SourceAccount": {
-     "Ref": "AWS::AccountId"
-    },
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "Alarm7103F465",
-      "Arn"
-     ]
-    }
    }
   }
  },

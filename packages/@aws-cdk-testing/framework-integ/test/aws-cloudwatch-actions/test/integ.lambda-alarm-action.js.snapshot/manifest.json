@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/01b15cd45f337d30b1b8c28cf3ed77a67ed6679eb13828d43f8b809a84819959.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/88b21afc833974331e24a331feac58d1ab1f74688025e5e90d7b77bdf6d33820.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -52,10 +52,22 @@
             "data": "Alarm7103F465"
           }
         ],
-        "/LambdaAlarmActionIntegrationTestStack/alarmLambda": [
+        "/LambdaAlarmActionIntegrationTestStack/Alarm/CurrentVersionAlarmPermission": [
           {
-            "type": "aws:cdk:warning",
-            "data": "AWS Lambda has changed their authorization strategy, which may cause client invocations using the 'Qualifier' parameter of the lambda function to fail with Access Denied errors.\nIf you are using a lambda Version or Alias, make sure to call 'grantInvoke' or 'addPermission' on the Version or Alias, not the underlying Function\nSee: https://github.com/aws/aws-cdk/issues/19273 [ack: @aws-cdk/aws-lambda:addPermissionsToVersionOrAlias]"
+            "type": "aws:cdk:logicalId",
+            "data": "AlarmCurrentVersionAlarmPermission22DB4772"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStack/Alarm/AliasaliasNameAlarmPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlarmAliasaliasNameAlarmPermission3887D390"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStack/Alarm/alarmLambdaAlarmPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlarmalarmLambdaAlarmPermission5CAF3DE7"
           }
         ],
         "/LambdaAlarmActionIntegrationTestStack/alarmLambda/ServiceRole/Resource": [
@@ -76,28 +88,10 @@
             "data": "alarmLambdaCurrentVersionBDCE825C61967a018dfe55c69152d31b6e7ab40b"
           }
         ],
-        "/LambdaAlarmActionIntegrationTestStack/alarmLambda/CurrentVersion/CurrentVersionAlarmPermission": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "alarmLambdaCurrentVersionCurrentVersionAlarmPermission274CB36D"
-          }
-        ],
         "/LambdaAlarmActionIntegrationTestStack/alarmLambda/AliasaliasName/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "alarmLambdaAliasaliasName41B27313"
-          }
-        ],
-        "/LambdaAlarmActionIntegrationTestStack/alarmLambda/AliasaliasName/AliasaliasNameAlarmPermission": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "alarmLambdaAliasaliasNameAliasaliasNameAlarmPermissionED9EC624"
-          }
-        ],
-        "/LambdaAlarmActionIntegrationTestStack/alarmLambda/alarmLambdaAlarmPermission": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "alarmLambdaalarmLambdaAlarmPermissionA0BF56DE"
           }
         ],
         "/LambdaAlarmActionIntegrationTestStack/BootstrapVersion": [
@@ -112,28 +106,28 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "AlarmCurrentVersionAlarmPermission22DB4772": [
+        "alarmLambdaCurrentVersionCurrentVersionAlarmPermission274CB36D": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AlarmCurrentVersionAlarmPermission22DB4772",
+            "data": "alarmLambdaCurrentVersionCurrentVersionAlarmPermission274CB36D",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "AlarmAliasaliasNameAlarmPermission3887D390": [
+        "alarmLambdaAliasaliasNameAliasaliasNameAlarmPermissionED9EC624": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AlarmAliasaliasNameAlarmPermission3887D390",
+            "data": "alarmLambdaAliasaliasNameAliasaliasNameAlarmPermissionED9EC624",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "AlarmalarmLambdaAlarmPermission5CAF3DE7": [
+        "alarmLambdaalarmLambdaAlarmPermissionA0BF56DE": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AlarmalarmLambdaAlarmPermission5CAF3DE7",
+            "data": "alarmLambdaalarmLambdaAlarmPermissionA0BF56DE",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
