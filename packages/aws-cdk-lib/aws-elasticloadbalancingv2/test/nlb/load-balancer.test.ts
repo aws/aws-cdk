@@ -848,12 +848,12 @@ describe('tests', () => {
         CidrIp: '0.0.0.0/0',
         Description: 'from 0.0.0.0/0:80',
         FromPort: 80,
-        // ID of lookuped security group is dummy value (defined by ec2.SecurityGroup.fromLookupAttributes)
+        // ID of looked-up security group is dummy value (defined by ec2.SecurityGroup.fromLookupAttributes)
         GroupId: 'sg-12345678',
         IpProtocol: 'tcp',
         ToPort: 80,
       });
-      // IDs of lookuped nlb security groups are dummy value (defined by elbv2.BaseLoadBalancer._queryContextProvider)
+      // IDs of looked-up nlb security groups are dummy values (defined by elbv2.BaseLoadBalancer._queryContextProvider)
       expect(nlb.securityGroups).toEqual(['sg-1234']);
     });
   });
