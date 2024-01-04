@@ -286,6 +286,13 @@ export interface DockerImageAssetSource {
    * @default - no cache to args are passed
    */
   readonly dockerCacheTo?: DockerCacheOption;
+
+  /**
+   * Disable the cache and pass `--no-cache` to the `docker build` command.
+   *
+   * @default - cache is used
+   */
+  readonly dockerCacheDisabled?: boolean;
 }
 
 /**

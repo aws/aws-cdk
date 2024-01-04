@@ -18,9 +18,6 @@
   "vpcPublicSubnet1Subnet2E65531E": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -44,21 +41,24 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy/vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPublicSubnet1RouteTable48A2DF9B": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy/vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPublicSubnet1RouteTableAssociation5D3F4579": {
@@ -75,12 +75,12 @@
   "vpcPublicSubnet1DefaultRoute10708846": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "vpcIGWE57CBDCA"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet1RouteTable48A2DF9B"
     }
    },
    "DependsOn": [
@@ -102,14 +102,14 @@
   "vpcPublicSubnet1NATGateway9C16659E": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "vpcPublicSubnet1Subnet2E65531E"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "vpcPublicSubnet1EIPDA49DCBE",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet1Subnet2E65531E"
     },
     "Tags": [
      {
@@ -126,9 +126,6 @@
   "vpcPublicSubnet2Subnet009B674F": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -152,21 +149,24 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy/vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPublicSubnet2RouteTableEB40D4CB": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy/vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPublicSubnet2RouteTableAssociation21F81B59": {
@@ -183,12 +183,12 @@
   "vpcPublicSubnet2DefaultRouteA1EC0F60": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "vpcIGWE57CBDCA"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPublicSubnet2RouteTableEB40D4CB"
     }
    },
    "DependsOn": [
@@ -210,14 +210,14 @@
   "vpcPublicSubnet2NATGateway9B8AE11A": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "vpcPublicSubnet2Subnet009B674F"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "vpcPublicSubnet2EIP9B3743B1",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "vpcPublicSubnet2Subnet009B674F"
     },
     "Tags": [
      {
@@ -234,9 +234,6 @@
   "vpcPrivateSubnet1Subnet934893E8": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -260,21 +257,24 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy/vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPrivateSubnet1RouteTableB41A48CC": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy/vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPrivateSubnet1RouteTableAssociation67945127": {
@@ -291,21 +291,18 @@
   "vpcPrivateSubnet1DefaultRoute1AA8E2E5": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "vpcPublicSubnet1NATGateway9C16659E"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet1RouteTableB41A48CC"
     }
    }
   },
   "vpcPrivateSubnet2Subnet7031C2BA": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -329,21 +326,24 @@
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy/vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPrivateSubnet2RouteTable7280F23E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-rds-proxy/vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
    }
   },
   "vpcPrivateSubnet2RouteTableAssociation007E94D3": {
@@ -360,12 +360,12 @@
   "vpcPrivateSubnet2DefaultRouteB0E07F99": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "vpcPublicSubnet2NATGateway9B8AE11A"
+    },
+    "RouteTableId": {
+     "Ref": "vpcPrivateSubnet2RouteTable7280F23E"
     }
    }
   },
@@ -383,11 +383,11 @@
   "vpcVPCGW7984C166": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "vpcA2121C38"
-    },
     "InternetGatewayId": {
      "Ref": "vpcIGWE57CBDCA"
+    },
+    "VpcId": {
+     "Ref": "vpcA2121C38"
     }
    }
   },
@@ -424,7 +424,6 @@
   "dbInstanceSecurityGroupfromawscdkrdsproxydbProxyProxySecurityGroupA345AFE5IndirectPortE3621D4F": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
-    "IpProtocol": "tcp",
     "Description": "Allow connections to the database Instance from the Proxy",
     "FromPort": {
      "Fn::GetAtt": [
@@ -438,6 +437,7 @@
       "GroupId"
      ]
     },
+    "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
       "dbProxyProxySecurityGroup16E727A7",
@@ -499,18 +499,6 @@
     },
     "Engine": "postgres",
     "EngineVersion": "15.2",
-    "MasterUsername": {
-     "Fn::Join": [
-      "",
-      [
-       "{{resolve:secretsmanager:",
-       {
-        "Ref": "dbInstanceSecret032D3661"
-       },
-       ":SecretString:username::}}"
-      ]
-     ]
-    },
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -520,6 +508,18 @@
         "Ref": "dbInstanceSecret032D3661"
        },
        ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "dbInstanceSecret032D3661"
+       },
+       ":SecretString:username::}}"
       ]
      ]
     },
@@ -601,6 +601,7 @@
     "Auth": [
      {
       "AuthScheme": "SECRETS",
+      "ClientPasswordAuthType": "POSTGRES_SCRAM_SHA_256",
       "IAMAuth": "DISABLED",
       "SecretArn": {
        "Ref": "dbInstanceSecretAttachment88CFBDAE"
@@ -609,21 +610,13 @@
     ],
     "DBProxyName": "awscdkrdsproxydbProxy0E60A1B7",
     "EngineFamily": "POSTGRESQL",
+    "RequireTLS": true,
     "RoleArn": {
      "Fn::GetAtt": [
       "dbProxyIAMRole662F3AB8",
       "Arn"
      ]
     },
-    "VpcSubnetIds": [
-     {
-      "Ref": "vpcPrivateSubnet1Subnet934893E8"
-     },
-     {
-      "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
-     }
-    ],
-    "RequireTLS": true,
     "VpcSecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -631,16 +624,20 @@
        "GroupId"
       ]
      }
+    ],
+    "VpcSubnetIds": [
+     {
+      "Ref": "vpcPrivateSubnet1Subnet934893E8"
+     },
+     {
+      "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+     }
     ]
    }
   },
   "dbProxyProxyTargetGroup8DA26A77": {
    "Type": "AWS::RDS::DBProxyTargetGroup",
    "Properties": {
-    "DBProxyName": {
-     "Ref": "dbProxy3B89EAF2"
-    },
-    "TargetGroupName": "default",
     "ConnectionPoolConfigurationInfo": {
      "ConnectionBorrowTimeout": 30,
      "MaxConnectionsPercent": 50
@@ -649,7 +646,11 @@
      {
       "Ref": "dbInstance4076B1EC"
      }
-    ]
+    ],
+    "DBProxyName": {
+     "Ref": "dbProxy3B89EAF2"
+    },
+    "TargetGroupName": "default"
    }
   },
   "dbClusterSubnets03B9B0E1": {
@@ -682,10 +683,9 @@
     }
    }
   },
-  "dbClusterSecurityGroupfromawscdkrdsproxyProxyProxySecurityGroup9F179E6FIndirectPortED421002": {
+  "dbClusterSecurityGroupfromawscdkrdsproxydbClusterProxyProxySecurityGroupFBC47B09IndirectPort152B2D99": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
-    "IpProtocol": "tcp",
     "Description": "Allow connections to the database Cluster from the Proxy",
     "FromPort": {
      "Fn::GetAtt": [
@@ -699,9 +699,41 @@
       "GroupId"
      ]
     },
+    "IpProtocol": "tcp",
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
-      "ProxyProxySecurityGroupC42FC3CE",
+      "dbClusterProxyProxySecurityGroup170F327D",
+      "GroupId"
+     ]
+    },
+    "ToPort": {
+     "Fn::GetAtt": [
+      "dbClusterE86E47AE",
+      "Endpoint.Port"
+     ]
+    }
+   }
+  },
+  "dbClusterSecurityGroupfromawscdkrdsproxydbClusterProxy2ProxySecurityGroup5B77853FIndirectPort61009070": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Allow connections to the database Cluster from the Proxy",
+    "FromPort": {
+     "Fn::GetAtt": [
+      "dbClusterE86E47AE",
+      "Endpoint.Port"
+     ]
+    },
+    "GroupId": {
+     "Fn::GetAtt": [
+      "dbClusterSecurityGroupCAA1A91F",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "dbClusterProxy2ProxySecurityGroupB44507AE",
       "GroupId"
      ]
     },
@@ -759,18 +791,6 @@
     },
     "Engine": "aurora-postgresql",
     "EngineVersion": "14.5",
-    "MasterUsername": {
-     "Fn::Join": [
-      "",
-      [
-       "{{resolve:secretsmanager:",
-       {
-        "Ref": "dbClusterSecretCEA6D7B6"
-       },
-       ":SecretString:username::}}"
-      ]
-     ]
-    },
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -780,6 +800,18 @@
         "Ref": "dbClusterSecretCEA6D7B6"
        },
        ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "dbClusterSecretCEA6D7B6"
+       },
+       ":SecretString:username::}}"
       ]
      ]
     },
@@ -838,7 +870,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ProxyIAMRole2FE8AB0F": {
+  "dbClusterProxyIAMRole693E39F5": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -855,7 +887,7 @@
     }
    }
   },
-  "ProxyIAMRoleDefaultPolicy59EB0117": {
+  "dbClusterProxyIAMRoleDefaultPolicyEEE23224": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -873,15 +905,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ProxyIAMRoleDefaultPolicy59EB0117",
+    "PolicyName": "dbClusterProxyIAMRoleDefaultPolicyEEE23224",
     "Roles": [
      {
-      "Ref": "ProxyIAMRole2FE8AB0F"
+      "Ref": "dbClusterProxyIAMRole693E39F5"
      }
     ]
    }
   },
-  "ProxyProxySecurityGroupC42FC3CE": {
+  "dbClusterProxyProxySecurityGroup170F327D": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "SecurityGroup for Database Proxy",
@@ -897,7 +929,7 @@
     }
    }
   },
-  "ProxyCB0DFB71": {
+  "dbClusterProxyAB5F8181": {
    "Type": "AWS::RDS::DBProxy",
    "Properties": {
     "Auth": [
@@ -909,14 +941,23 @@
       }
      }
     ],
-    "DBProxyName": "cluster-db-proxy",
+    "DBProxyName": "awscdkrdsproxydbClusterProxyE88930B6",
     "EngineFamily": "POSTGRESQL",
+    "RequireTLS": true,
     "RoleArn": {
      "Fn::GetAtt": [
-      "ProxyIAMRole2FE8AB0F",
+      "dbClusterProxyIAMRole693E39F5",
       "Arn"
      ]
     },
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "dbClusterProxyProxySecurityGroup170F327D",
+       "GroupId"
+      ]
+     }
+    ],
     "VpcSubnetIds": [
      {
       "Ref": "vpcPrivateSubnet1Subnet934893E8"
@@ -924,41 +965,145 @@
      {
       "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
      }
-    ],
-    "RequireTLS": true,
-    "VpcSecurityGroupIds": [
-     {
-      "Fn::GetAtt": [
-       "ProxyProxySecurityGroupC42FC3CE",
-       "GroupId"
-      ]
-     }
     ]
    }
   },
-  "ProxyProxyTargetGroupB462B5C5": {
+  "dbClusterProxyProxyTargetGroupB7010C0D": {
    "Type": "AWS::RDS::DBProxyTargetGroup",
    "Properties": {
-    "DBProxyName": {
-     "Ref": "ProxyCB0DFB71"
-    },
-    "TargetGroupName": "default",
     "ConnectionPoolConfigurationInfo": {},
     "DBClusterIdentifiers": [
      {
       "Ref": "dbClusterE86E47AE"
      }
-    ]
+    ],
+    "DBProxyName": {
+     "Ref": "dbClusterProxyAB5F8181"
+    },
+    "TargetGroupName": "default"
    },
    "DependsOn": [
     "dbClusterInstance1BCE092AC",
     "dbClusterInstance20BA1ECD9",
-    "dbClusterE86E47AE",
-    "dbClusterSecretAttachmentAB67A752",
-    "dbClusterSecretCEA6D7B6",
-    "dbClusterSecurityGroupfromawscdkrdsproxyProxyProxySecurityGroup9F179E6FIndirectPortED421002",
-    "dbClusterSecurityGroupCAA1A91F",
-    "dbClusterSubnets03B9B0E1"
+    "dbClusterE86E47AE"
+   ]
+  },
+  "dbClusterProxy2IAMRole190D217C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "rds.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "dbClusterProxy2IAMRoleDefaultPolicyFD9414D8": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "dbClusterSecretAttachmentAB67A752"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "dbClusterProxy2IAMRoleDefaultPolicyFD9414D8",
+    "Roles": [
+     {
+      "Ref": "dbClusterProxy2IAMRole190D217C"
+     }
+    ]
+   }
+  },
+  "dbClusterProxy2ProxySecurityGroupB44507AE": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "SecurityGroup for Database Proxy",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "vpcA2121C38"
+    }
+   }
+  },
+  "dbClusterProxy28BBD43D5": {
+   "Type": "AWS::RDS::DBProxy",
+   "Properties": {
+    "Auth": [
+     {
+      "AuthScheme": "SECRETS",
+      "IAMAuth": "DISABLED",
+      "SecretArn": {
+       "Ref": "dbClusterSecretAttachmentAB67A752"
+      }
+     }
+    ],
+    "DBProxyName": "awscdkrdsproxydbClusterProxy27493E9A7",
+    "EngineFamily": "POSTGRESQL",
+    "RequireTLS": true,
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "dbClusterProxy2IAMRole190D217C",
+      "Arn"
+     ]
+    },
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "dbClusterProxy2ProxySecurityGroupB44507AE",
+       "GroupId"
+      ]
+     }
+    ],
+    "VpcSubnetIds": [
+     {
+      "Ref": "vpcPrivateSubnet1Subnet934893E8"
+     },
+     {
+      "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
+     }
+    ]
+   }
+  },
+  "dbClusterProxy2ProxyTargetGroup8BD48F57": {
+   "Type": "AWS::RDS::DBProxyTargetGroup",
+   "Properties": {
+    "ConnectionPoolConfigurationInfo": {},
+    "DBClusterIdentifiers": [
+     {
+      "Ref": "dbClusterE86E47AE"
+     }
+    ],
+    "DBProxyName": {
+     "Ref": "dbClusterProxy28BBD43D5"
+    },
+    "TargetGroupName": "default"
+   },
+   "DependsOn": [
+    "dbClusterInstance1BCE092AC",
+    "dbClusterInstance20BA1ECD9",
+    "dbClusterE86E47AE"
    ]
   }
  },

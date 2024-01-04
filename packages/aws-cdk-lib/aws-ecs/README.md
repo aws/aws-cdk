@@ -203,6 +203,19 @@ taskDefinition.addToTaskRolePolicy(
 )
 ```
 
+To manage task protection settings in an ECS cluster, you can use the `grantTaskProtection` method.
+This method grants the `ecs:UpdateTaskProtection` permission to a specified IAM entity.
+
+```ts
+// Assume 'cluster' is an instance of ecs.Cluster
+declare const cluster: ecs.Cluster;
+declare const taskRole: iam.Role;
+
+// Grant ECS Task Protection permissions to the role
+// Now 'taskRole' has the 'ecs:UpdateTaskProtection' permission on all tasks in the cluster
+cluster.grantTaskProtection(taskRole);
+```
+
 ### Bottlerocket
 
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open source operating system that is
@@ -219,6 +232,19 @@ cluster.addCapacity('bottlerocket-asg', {
   minCapacity: 2,
   instanceType: new ec2.InstanceType('c5.large'),
   machineImage: new ecs.BottleRocketImage(),
+});
+```
+
+You can also specify an NVIDIA-compatible AMI such as in this example:
+
+```ts
+declare const cluster: ecs.Cluster;
+
+cluster.addCapacity('bottlerocket-asg', {
+  instanceType: new ec2.InstanceType('p3.2xlarge'),
+  machineImage: new ecs.BottleRocketImage({
+      variant: ecs.BottlerocketEcsVariant.AWS_ECS_2_NVIDIA,
+  }),
 });
 ```
 
@@ -454,6 +480,20 @@ const taskDef = new ecs.TaskDefinition(this, 'TaskDef', {
 
 // Gives role required permissions to run taskDef
 taskDef.grantRun(role);
+```
+
+To deploy containerized applications that require the allocation of standard input (stdin) or a terminal (tty), use the `interactive` property.
+
+This parameter corresponds to `OpenStdin` in the [Create a container](https://docs.docker.com/engine/api/v1.35/#tag/Container/operation/ContainerCreate) section of the [Docker Remote API](https://docs.docker.com/engine/api/v1.35/)
+and the `--interactive` option to [docker run](https://docs.docker.com/engine/reference/run/#security-configuration).
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+taskDefinition.addContainer("Container", {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  interactive: true,
+});
 ```
 
 ### Images

@@ -343,11 +343,16 @@ export class AssetStaging extends Construct {
     this.stageAsset(bundledAsset.path, stagedPath, 'move');
 
     // If bundling produced a single archive file we "touch" this file in the bundling
-    // directory after it has been moved to the staging directory. This way if bundling
+    // directory after it has been moved to the staging directory if the hash is known before bundling. This way if bundling
     // is skipped because the bundling directory already exists we can still determine
     // the correct packaging type.
+    // If the hash is calculated after bundling we remove the temporary directory now.
     if (bundledAsset.packaging === FileAssetPackaging.FILE) {
-      fs.closeSync(fs.openSync(bundledAsset.path, 'w'));
+      if (this.hashType === AssetHashType.OUTPUT || this.hashType === AssetHashType.BUNDLE) {
+        fs.removeSync(path.dirname(bundledAsset.path));
+      } else {
+        fs.closeSync(fs.openSync(bundledAsset.path, 'w'));
+      }
     }
 
     return {
@@ -487,7 +492,7 @@ export class AssetStaging extends Construct {
 
       // If we're bundling an asset, include the bundling configuration in the hash
       if (bundling) {
-        hash.update(JSON.stringify(bundling));
+        hash.update(JSON.stringify(bundling, sanitizeHashValue));
       }
 
       return hash.digest('hex');
@@ -538,7 +543,7 @@ function determineHashType(assetHashType?: AssetHashType, customSourceFingerprin
  */
 function calculateCacheKey<A extends object>(props: A): string {
   return crypto.createHash('sha256')
-    .update(JSON.stringify(sortObject(props)))
+    .update(JSON.stringify(sortObject(props), sanitizeHashValue))
     .digest('hex');
 }
 
@@ -554,6 +559,30 @@ function sortObject(object: { [key: string]: any }): { [key: string]: any } {
     ret[key] = sortObject(object[key]);
   }
   return ret;
+}
+
+/**
+ * Removes the auth token from pip URLs if present to prevent an unnecessary
+ * rebuild.
+ *
+ * @see https://github.com/aws/aws-cdk/issues/27331
+ */
+function sanitizeHashValue(key: string, value: any): any {
+  if (key === 'PIP_INDEX_URL' || key === 'PIP_EXTRA_INDEX_URL') {
+    try {
+      let url = new URL(value);
+      if (url.password) {
+        url.password = '';
+        return url.toString();
+      }
+    } catch (e: any) {
+      if (e.name === 'TypeError') {
+        throw new Error(`${key} must be a valid URL, got ${value}.`);
+      }
+      throw e;
+    }
+  }
+  return value;
 }
 
 /**
