@@ -1419,6 +1419,37 @@ describe('staging', () => {
     expect(staging.isArchive).toEqual(false);
   });
 
+  test('bundling that produces a single file with SINGLE_FILE and hash type OUTPUT', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+    const stack = new Stack(app, 'stack');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1', 'subdir');
+
+    // WHEN
+    const staging = new AssetStaging(stack, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SINGLE_FILE],
+        outputType: BundlingOutput.SINGLE_FILE,
+      },
+    });
+
+    // THEN
+    const assembly = app.synth();
+    expect(fs.readdirSync(assembly.directory)).toEqual([
+      // 'bundling-temp-0e346bd27baa32f4f2d15d1d73c8972db3293080f6c2836328b7bf77747683db', this directory gets removed and does no longer exist
+      'asset.95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df.txt',
+      'cdk.out',
+      'manifest.json',
+      'stack.template.json',
+      'tree.json',
+    ]);
+    expect(staging.packaging).toEqual(FileAssetPackaging.FILE);
+    expect(staging.isArchive).toEqual(false);
+  });
+
 });
 
 describe('staging with docker cp', () => {
