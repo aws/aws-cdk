@@ -178,8 +178,16 @@ export class CfnOutput extends CfnElement {
   }
 
   private validateOutput(): string[] {
-    if (this._exportName && !Token.isUnresolved(this._exportName) && this._exportName.length > 255) {
-      return [`Export name cannot exceed 255 characters (got ${this._exportName.length} characters)`];
+    if (this._exportName !== undefined && !Token.isUnresolved(this._exportName)) {
+      if (this._exportName.length === 0) {
+        return ['Export name cannot be empty'];
+      }
+      if (this._exportName.length > 255) {
+        return [`Export name cannot exceed 255 characters (got ${this._exportName.length} characters)`];
+      }
+      if (!/^[A-Za-z0-9-:]*$/.test(this._exportName)) {
+        return [`Export name must only include alphanumeric characters, colons, or hyphens (got '${this._exportName}')`];
+      }
     }
     return [];
   }
