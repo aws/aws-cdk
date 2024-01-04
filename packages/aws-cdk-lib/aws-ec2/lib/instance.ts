@@ -7,6 +7,7 @@ import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { IMachineImage, OperatingSystemType } from './machine-image';
+import { INetworkInterface } from './network-interface';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
@@ -350,6 +351,7 @@ export class Instance extends Resource implements IInstance {
 
   private readonly securityGroup: ISecurityGroup;
   private readonly securityGroups: ISecurityGroup[] = [];
+  private attachedNetworkInterfaces: INetworkInterface[];
 
   constructor(scope: Construct, id: string, props: InstanceProps) {
     super(scope, id);
@@ -427,6 +429,11 @@ export class Instance extends Resource implements IInstance {
         groupSet: securityGroupsToken,
         privateIpAddress: props.privateIpAddress,
       }] : undefined;
+    this.attachedNetworkInterfaces = [new class DummyNetworkInterface extends Resource implements INetworkInterface {
+      constructor(readonly connections: Connections) { super(scope, 'DummyNetworkInterface'); }
+      get networkInterfaceId(): string { throw new Error('An ID of network interface that created automatically by an EC2 instance can not be retrieved'); }
+      attachToInstance(): void {}
+    }(this.connections)];
 
     if (props.keyPair && !props.keyPair._isOsCompatible(imageConfig.osType)) {
       throw new Error(`${props.keyPair.type} keys are not compatible with the chosen AMI`);
@@ -531,6 +538,14 @@ export class Instance extends Resource implements IInstance {
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
+  }
+
+  /**
+   * Adds a network interface to the instance.
+   */
+  public addNetworkInterface(networkInterface: INetworkInterface, options: AddNetworkInterfaceOptions = {}) {
+    networkInterface.attachToInstance(this, options.deviceIndex ?? this.attachedNetworkInterfaces.length, options);
+    this.attachedNetworkInterfaces.push(networkInterface);
   }
 
   /**
@@ -677,4 +692,22 @@ export interface ApplyCloudFormationInitOptions {
    * @default false
    */
   readonly includeRole?: boolean;
+}
+
+/**
+ * Options for adding network interface to the instance.
+ */
+export interface AddNetworkInterfaceOptions {
+  /**
+   * The device index of the instance.
+   *
+   * @default - Currently attached network interface count.
+   */
+  readonly deviceIndex?: number;
+  /**
+   * Whether to delete the network interface when the instance terminates.
+   *
+   * @default true
+   */
+  readonly deleteOnTermination?: boolean;
 }

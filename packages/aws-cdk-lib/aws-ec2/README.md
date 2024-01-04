@@ -2084,3 +2084,45 @@ new ec2.PrefixList(this, 'PrefixList', {
 ```
 
 For more information see [Work with customer-managed prefix lists](https://docs.aws.amazon.com/vpc/latest/userguide/working-with-managed-prefix-lists.html)
+
+## Network Interface
+
+You can attach additional network interfaces to an EC2 instance.  Attaching multiple network interfaces to an instance is useful when you want to:
+- Create a management network.
+- Use network and security appliances in your Virtual Private Cloud (VPC).
+- Create dual-homed instances with workloads/roles on distinct subnets.
+- Create a low-budget, high-availability solution.
+
+The following code how to add additional network interfaces for an EC2 instance.
+
+```ts
+declare const vpc: ec2.IVpc;
+declare const instance: ec2.Instance;
+
+const eni1 = new ec2.NetworkInterface(this, 'NetworkInterface', {
+  vpc,
+});
+// device index is ordered by default
+instance.addNetworkInterface(eni1);
+
+// or, you can also specify the device index
+declare const eni2: ec2.INetworkInterface;
+instance.addNetworkInterface(eni2, {
+  deviceIndex: 3,
+});
+```
+
+You can also assign private IPv4 address from prefixes or specific IPv4 addresses.
+The following code assigns IPv4 address from prefixes.
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new ec2.NetworkInterface(this, 'NetworkInterface', {
+  vpc,
+  ipv4: Ipv4Assign.fromPrefixes('10.0.0.0/28', '10.1.0.0/28')
+    .addPrimaryAddress('10.0.0.10'),
+});
+```
+
+For more information see [Scenarios for network interfaces](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/scenarios-enis.html).
