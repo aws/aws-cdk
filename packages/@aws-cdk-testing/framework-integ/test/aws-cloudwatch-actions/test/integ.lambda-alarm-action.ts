@@ -13,7 +13,7 @@ class LambdaAlarmActionIntegrationTestStack extends Stack {
       functionName: 'inAlarmLambda',
       code: lambda.Code.fromInline(`
 def handler(event, context):
-  make this fn fail
+  # make this fn fail
   prinr22(''hello)`),
       handler: 'index.handler',
     });
