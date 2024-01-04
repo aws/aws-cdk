@@ -213,6 +213,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     });
 
     this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);
+    this.securityGroups = props.securityGroups?.map(sg => sg.securityGroupId);
     this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
