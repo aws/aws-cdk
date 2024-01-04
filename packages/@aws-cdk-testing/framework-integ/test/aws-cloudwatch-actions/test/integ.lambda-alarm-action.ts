@@ -2,6 +2,7 @@ import { App, Stack, StackProps, Duration } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 import * as cloudwatchActions from 'aws-cdk-lib/aws-cloudwatch-actions';
 
 class LambdaAlarmActionIntegrationTestStack extends Stack {
@@ -9,13 +10,10 @@ class LambdaAlarmActionIntegrationTestStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
     const inAlarmLambda = new lambda.Function(this, 'inAlarmLambda', {
-      runtime: lambda.Runtime.PYTHON_3_12,
       functionName: 'inAlarmLambda',
-      code: lambda.Code.fromInline(`
-def handler(event, context):
-  # make this fn fail
-  prinr22(''hello)`),
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
+      code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
     });
     const alarm = new cloudwatch.Alarm(this, 'Alarm', {
       comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
@@ -27,14 +25,10 @@ def handler(event, context):
     });
 
     const alarmLambda = new lambda.Function(this, 'alarmLambda', {
-      runtime: lambda.Runtime.PYTHON_3_12,
       functionName: 'alarmLambda',
-      code: lambda.Code.fromInline(`
-def handler(event, context):
-  print('event:', event)
-  print('.............................................')
-  print('context:', context)`),
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
+      code: lambda.Code.fromInline(`exports.handler = ${handler.toString()}`),
     });
     const version = alarmLambda.currentVersion;
     const aliasName = alarmLambda.addAlias('aliasName');
@@ -53,3 +47,9 @@ new integ.IntegTest(app, 'LambdaAlarmActionIntegrationTest', {
 });
 
 app.synth();
+
+/* eslint-disable no-console */
+function handler(event: any, _context: any, callback: any) {
+  console.log(JSON.stringify(event, undefined, 2));
+  return callback();
+}

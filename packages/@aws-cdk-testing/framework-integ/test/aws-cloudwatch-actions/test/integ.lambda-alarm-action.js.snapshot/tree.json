@@ -76,7 +76,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "zipFile": "\ndef handler(event, context):\n  # make this fn fail\n  prinr22(''hello)"
+                      "zipFile": "exports.handler = function handler(event, _context, callback) {\n    console.log(JSON.stringify(event, undefined, 2));\n    return callback();\n}"
                     },
                     "functionName": "inAlarmLambda",
                     "handler": "index.handler",
@@ -86,7 +86,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "python3.12"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -113,7 +113,7 @@
                     "actionsEnabled": true,
                     "alarmActions": [
                       {
-                        "Ref": "alarmLambdaCurrentVersionBDCE825Ced84cae8d64e7eaa69f8105fc0363a2a"
+                        "Ref": "alarmLambdaCurrentVersionBDCE825C61967a018dfe55c69152d31b6e7ab40b"
                       },
                       {
                         "Ref": "alarmLambdaAliasaliasName41B27313"
@@ -165,7 +165,7 @@
                           ":",
                           {
                             "Fn::GetAtt": [
-                              "alarmLambdaCurrentVersionBDCE825Ced84cae8d64e7eaa69f8105fc0363a2a",
+                              "alarmLambdaCurrentVersionBDCE825C61967a018dfe55c69152d31b6e7ab40b",
                               "Version"
                             ]
                           }
@@ -335,7 +335,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "zipFile": "\ndef handler(event, context):\n  print('event:', event)\n  print('.............................................')\n  print('context:', context)"
+                      "zipFile": "exports.handler = function handler(event, _context, callback) {\n    console.log(JSON.stringify(event, undefined, 2));\n    return callback();\n}"
                     },
                     "functionName": "alarmLambda",
                     "handler": "index.handler",
@@ -345,7 +345,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "python3.12"
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
@@ -394,7 +394,7 @@
                         },
                         "functionVersion": {
                           "Fn::GetAtt": [
-                            "alarmLambdaCurrentVersionBDCE825Ced84cae8d64e7eaa69f8105fc0363a2a",
+                            "alarmLambdaCurrentVersionBDCE825C61967a018dfe55c69152d31b6e7ab40b",
                             "Version"
                           ]
                         },

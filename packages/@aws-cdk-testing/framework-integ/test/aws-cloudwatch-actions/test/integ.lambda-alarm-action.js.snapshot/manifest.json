@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8756f063d4272071b5a0e679dcc6ce13f3735d993730d1cff013753d30c02715.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/88b21afc833974331e24a331feac58d1ab1f74688025e5e90d7b77bdf6d33820.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -55,7 +55,10 @@
         "/LambdaAlarmActionIntegrationTestStack/Alarm/CurrentVersionAlarmPermission": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AlarmCurrentVersionAlarmPermission22DB4772"
+            "data": "AlarmCurrentVersionAlarmPermission22DB4772",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/LambdaAlarmActionIntegrationTestStack/Alarm/AliasaliasNameAlarmPermission": [
@@ -85,7 +88,7 @@
         "/LambdaAlarmActionIntegrationTestStack/alarmLambda/CurrentVersion/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "alarmLambdaCurrentVersionBDCE825Ced84cae8d64e7eaa69f8105fc0363a2a"
+            "data": "alarmLambdaCurrentVersionBDCE825C61967a018dfe55c69152d31b6e7ab40b"
           }
         ],
         "/LambdaAlarmActionIntegrationTestStack/alarmLambda/AliasaliasName/Resource": [
@@ -104,6 +107,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "alarmLambdaCurrentVersionBDCE825Ced84cae8d64e7eaa69f8105fc0363a2a": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambdaCurrentVersionBDCE825Ced84cae8d64e7eaa69f8105fc0363a2a",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
