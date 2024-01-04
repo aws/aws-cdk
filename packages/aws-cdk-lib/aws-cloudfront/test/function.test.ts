@@ -1,7 +1,7 @@
 import * as path from 'path';
-import { Template } from '../../assertions';
+import { Template, Match } from '../../assertions';
 import { App, Stack } from '../../core';
-import { Function, FunctionCode, FunctionRuntime } from '../lib';
+import { Function, FunctionCode, FunctionRuntime, KeyValueStore } from '../lib';
 
 describe('CloudFront Function', () => {
 
@@ -186,6 +186,111 @@ describe('CloudFront Function', () => {
           },
         },
       },
+    });
+  });
+
+  describe('key value store association', () => {
+    test('minimal example', () => {
+      const stack = new Stack();
+      const keyValueStore = new KeyValueStore(stack, 'TestStore');
+
+      new Function(stack, 'TestFn', {
+        code: FunctionCode.fromInline('code'),
+        keyValueStores: [keyValueStore],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+        FunctionConfig: {
+          Runtime: 'cloudfront-js-2.0',
+          KeyValueStoreAssociations: [{
+            KeyValueStoreARN: stack.resolve(keyValueStore.keyValueStoreArn),
+          }],
+        },
+      });
+    });
+
+    test('rejects key value store with v1.0 runtime', () => {
+      const stack = new Stack();
+      const keyValueStore = new KeyValueStore(stack, 'TestStore');
+
+      expect(() => new Function(stack, 'TestFn', {
+        code: FunctionCode.fromInline('code'),
+        keyValueStores: [keyValueStore],
+        runtime: FunctionRuntime.JS_1_0,
+      })).toThrow(/Key Value Stores cannot be associated to functions using the .* runtime/);
+    });
+
+    test('defaults to js-2.0 runtime with key value store', () => {
+      const stack = new Stack();
+      const keyValueStore = new KeyValueStore(stack, 'TestStore');
+
+      new Function(stack, 'TestFn', {
+        code: FunctionCode.fromInline('code'),
+        keyValueStores: [keyValueStore],
+        runtime: undefined,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+        FunctionConfig: {
+          Runtime: 'cloudfront-js-2.0',
+        },
+      });
+    });
+
+    test('works with js-2.0 runtime specified', () => {
+      const stack = new Stack();
+      const keyValueStore = new KeyValueStore(stack, 'TestStore');
+
+      new Function(stack, 'TestFn', {
+        code: FunctionCode.fromInline('code'),
+        keyValueStores: [keyValueStore],
+        runtime: FunctionRuntime.JS_2_0,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+        FunctionConfig: {
+          Runtime: 'cloudfront-js-2.0',
+          KeyValueStoreAssociations: [{
+            KeyValueStoreARN: stack.resolve(keyValueStore.keyValueStoreArn),
+          }],
+        },
+      });
+    });
+
+    test('empty list is equivalent to not specifying', () => {
+      const stack = new Stack();
+  
+      new Function(stack, 'TestFn', {
+        code: FunctionCode.fromInline('code'),
+        runtime: FunctionRuntime.JS_2_0,
+        keyValueStores: [],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+        FunctionConfig: {
+          KeyValueStoreAssociations: Match.absent(),
+        },
+      });
+    });
+
+    test('multiple key value stores can be specified', () => {
+      const stack = new Stack();
+      const store1 = new KeyValueStore(stack, 'TestStore1');
+      const store2 = new KeyValueStore(stack, 'TestStore2');
+
+      new Function(stack, 'TestFn', {
+        code: FunctionCode.fromInline('code'),
+        keyValueStores: [store1, store2],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+        FunctionConfig: {
+          KeyValueStoreAssociations: [
+            { KeyValueStoreARN: stack.resolve(store1.keyValueStoreArn) },
+            { KeyValueStoreARN: stack.resolve(store2.keyValueStoreArn) },
+          ],
+        },
+      });
     });
   });
 });
