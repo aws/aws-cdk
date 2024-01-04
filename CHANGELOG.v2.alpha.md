@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.118.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.117.0-alpha.0...v2.118.0-alpha.0) (2024-01-03)
+
+
+### Features
+
+* **glue:** database description property ([#27744](https://github.com/aws/aws-cdk/issues/27744)) ([cbac240](https://github.com/aws/aws-cdk/commit/cbac24041db7dbc39b4ae1d6da4902b3443528cb)), closes [#27740](https://github.com/aws/aws-cdk/issues/27740)
+* **glue-alpha:** add `cfn-glue-table-tableinput-parameters` to Glue table construct ([#27643](https://github.com/aws/aws-cdk/issues/27643)) ([8e15482](https://github.com/aws/aws-cdk/commit/8e15482295c1324eefea020faeb11e4c686357c6))
+
+
+### Bug Fixes
+
+* **lambda-go:** path with space breaks go build ([#28554](https://github.com/aws/aws-cdk/issues/28554)) ([a8a639e](https://github.com/aws/aws-cdk/commit/a8a639e2a2114162db240361c32c40a596a7a19e)), closes [#28555](https://github.com/aws/aws-cdk/issues/28555)
+
+## [2.117.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.116.1-alpha.0...v2.117.0-alpha.0) (2023-12-26)
+
+
+### Bug Fixes
+
+* **lambda-python-alpha:** bundling hash logic includes auth tokens in PIP urls, causing an unnecessary rebuild ([#27903](https://github.com/aws/aws-cdk/issues/27903)) ([00331a7](https://github.com/aws/aws-cdk/commit/00331a7292a3e60ea5ba3caf2a4fd4cca2fe7dc5)), closes [#27331](https://github.com/aws/aws-cdk/issues/27331)
+* **lambda-python-alpha:** use function architecture ([#18696](https://github.com/aws/aws-cdk/issues/18696)) ([#28449](https://github.com/aws/aws-cdk/issues/28449)) ([c724d27](https://github.com/aws/aws-cdk/commit/c724d277277c45b421dcd89ee1a6d4b54f942d3b))
+
 ## [2.116.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.116.0-alpha.0...v2.116.1-alpha.0) (2023-12-22)
 
 ## [2.116.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.115.0-alpha.0...v2.116.0-alpha.0) (2023-12-21)
