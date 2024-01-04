@@ -55,10 +55,7 @@
         "/LambdaAlarmActionIntegrationTestStack/Alarm/CurrentVersionAlarmPermission": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AlarmCurrentVersionAlarmPermission22DB4772",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "AlarmCurrentVersionAlarmPermission22DB4772"
           }
         ],
         "/LambdaAlarmActionIntegrationTestStack/Alarm/AliasaliasNameAlarmPermission": [
@@ -107,15 +104,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "alarmLambdaCurrentVersionBDCE825Ced84cae8d64e7eaa69f8105fc0363a2a": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "alarmLambdaCurrentVersionBDCE825Ced84cae8d64e7eaa69f8105fc0363a2a",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
