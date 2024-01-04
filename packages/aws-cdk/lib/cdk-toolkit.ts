@@ -5,6 +5,7 @@ import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
+import * as uuid from 'uuid';
 import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
@@ -14,6 +15,7 @@ import { Deployments } from './api/deployments';
 import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
+import { createDiffChangeSet } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, validateSourceOptions } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
@@ -121,6 +123,8 @@ export class CdkToolkit {
     const quiet = options.quiet || false;
 
     let diffs = 0;
+    const parameterMap = buildParameterMap(options.parameters);
+
     if (options.templatePath !== undefined) {
       // Compare single stack against fixed template
       if (stacks.stackCount !== 1) {
@@ -130,10 +134,21 @@ export class CdkToolkit {
       if (!await fs.pathExists(options.templatePath)) {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
+
+      const changeSet = options.changeSet ? await createDiffChangeSet({
+        stack: stacks.firstStack,
+        uuid: uuid.v4(),
+        willExecute: false,
+        deployments: this.props.deployments,
+        sdkProvider: this.props.sdkProvider,
+        parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
+        stream,
+      }) : undefined;
+
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
-        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening))
-        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, stream);
+        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, changeSet))
+        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, changeSet, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
@@ -147,10 +162,20 @@ export class CdkToolkit {
         const currentTemplate = templateWithNames.deployedTemplate;
         const nestedStackCount = templateWithNames.nestedStackCount;
 
+        const changeSet = options.changeSet ? await createDiffChangeSet({
+          stack,
+          uuid: uuid.v4(),
+          deployments: this.props.deployments,
+          willExecute: false,
+          sdkProvider: this.props.sdkProvider,
+          parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
+          stream,
+        }) : undefined;
+
         const stackCount =
         options.securityOnly
-          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening)) > 0 ? 1 : 0)
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, stream) > 0 ? 1 : 0);
+          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)) > 0 ? 1 : 0)
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream) > 0 ? 1 : 0);
 
         diffs += stackCount + nestedStackCount;
       }
@@ -181,20 +206,7 @@ export class CdkToolkit {
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
-    const parameterMap: { [name: string]: { [name: string]: string | undefined } } = { '*': {} };
-    for (const key in options.parameters) {
-      if (options.parameters.hasOwnProperty(key)) {
-        const [stack, parameter] = key.split(':', 2);
-        if (!parameter) {
-          parameterMap['*'][stack] = options.parameters[key];
-        } else {
-          if (!parameterMap[stack]) {
-            parameterMap[stack] = {};
-          }
-          parameterMap[stack][parameter] = options.parameters[key];
-        }
-      }
-    }
+    const parameterMap = buildParameterMap(options.parameters);
 
     if (options.hotswap !== HotswapMode.FULL_DEPLOYMENT) {
       warning('⚠️ The --hotswap and --hotswap-fallback flags deliberately introduce CloudFormation drift to speed up deployments');
@@ -929,6 +941,19 @@ export interface DiffOptions {
   * @default false
   */
   quiet?: boolean;
+
+  /**
+   * Additional parameters for CloudFormation at diff time, used to create a change set
+   * @default {}
+   */
+  parameters?: { [name: string]: string | undefined };
+
+  /**
+   * Whether or not to create, analyze, and subsequently delete a changeset
+   *
+   * @default true
+   */
+  changeSet?: boolean;
 }
 
 interface CfnDeployOptions {
@@ -1285,4 +1310,25 @@ function roundPercentage(num: number): number {
  */
 function millisecondsToSeconds(num: number): number {
   return num / 1000;
+}
+
+function buildParameterMap(parameters: {
+  [name: string]: string | undefined;
+} | undefined): { [name: string]: { [name: string]: string | undefined } } {
+  const parameterMap: { [name: string]: { [name: string]: string | undefined } } = { '*': {} };
+  for (const key in parameters) {
+    if (parameters.hasOwnProperty(key)) {
+      const [stack, parameter] = key.split(':', 2);
+      if (!parameter) {
+        parameterMap['*'][stack] = parameters[key];
+      } else {
+        if (!parameterMap[stack]) {
+          parameterMap[stack] = {};
+        }
+        parameterMap[stack][parameter] = parameters[key];
+      }
+    }
+  }
+
+  return parameterMap;
 }
