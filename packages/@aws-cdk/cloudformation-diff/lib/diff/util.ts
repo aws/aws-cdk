@@ -48,54 +48,12 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
     if (keys.length !== Object.keys(rvalue).length) { return false; }
     for (const key of keys) {
       if (!rvalue.hasOwnProperty(key)) { return false; }
-      if (key === 'DependsOn') {
-        if (!dependsOnEqual(lvalue[key], rvalue[key])) { return false; };
-        // check differences other than `DependsOn`
-        continue;
-      }
       if (!deepEqual(lvalue[key], rvalue[key])) { return false; }
     }
     return true;
   }
   // Neither object, nor array: I deduce this is primitive type
   // Primitive type and not ===, so I deduce not deepEqual
-  return false;
-}
-
-/**
- * Compares two arguments to DependsOn for equality.
- *
- * @param lvalue the left operand of the equality comparison.
- * @param rvalue the right operand of the equality comparison.
- *
- * @returns +true+ if both +lvalue+ and +rvalue+ are equivalent to each other.
- */
-function dependsOnEqual(lvalue: any, rvalue: any): boolean {
-  // allows ['Value'] and 'Value' to be equal
-  if (Array.isArray(lvalue) !== Array.isArray(rvalue)) {
-    const array = Array.isArray(lvalue) ? lvalue : rvalue;
-    const nonArray = Array.isArray(lvalue) ? rvalue : lvalue;
-
-    if (array.length === 1 && deepEqual(array[0], nonArray)) {
-      return true;
-    }
-    return false;
-  }
-
-  // allows arrays passed to DependsOn to be equivalent irrespective of element order
-  if (Array.isArray(lvalue) && Array.isArray(rvalue)) {
-    if (lvalue.length !== rvalue.length) { return false; }
-    for (let i = 0 ; i < lvalue.length ; i++) {
-      for (let j = 0 ; j < lvalue.length ; j++) {
-        if ((!deepEqual(lvalue[i], rvalue[j])) && (j === lvalue.length - 1)) {
-          return false;
-        }
-        break;
-      }
-    }
-    return true;
-  }
-
   return false;
 }
 
