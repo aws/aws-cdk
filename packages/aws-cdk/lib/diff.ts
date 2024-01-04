@@ -23,9 +23,10 @@ export function printStackDiff(
   context: number,
   quiet: boolean,
   changeSet?: CloudFormation.DescribeChangeSetOutput,
-  stream?: cfnDiff.FormatStream): number {
+  stream?: cfnDiff.FormatStream,
+  stackDiff?: cfnDiff.TemplateDiff): number {
 
-  let diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet);
+  let diff = stackDiff ?? cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet);
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
@@ -81,8 +82,9 @@ export function printSecurityDiff(
   newTemplate: cxapi.CloudFormationStackArtifact,
   requireApproval: RequireApproval,
   changeSet?: CloudFormation.DescribeChangeSetOutput,
+  stackDiff?: cfnDiff.TemplateDiff,
 ): boolean {
-  const diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet);
+  const diff = stackDiff ?? cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet);
 
   if (difRequiresApproval(diff, requireApproval)) {
     // eslint-disable-next-line max-len

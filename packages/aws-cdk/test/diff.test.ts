@@ -187,15 +187,37 @@ describe('non-nested stacks', () => {
 
     // WHEN
     const exitCode = await toolkit.diff({
-      stackNames: ['A', 'A'],
+      stackNames: ['D'],
       stream: buffer,
       fail: false,
       quiet: true,
     });
 
     // THEN
-    expect(buffer.data.trim()).not.toContain('Stack A');
-    expect(buffer.data.trim()).not.toContain('There were no differences');
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput).not.toContain('Stack D');
+    expect(plainTextOutput).not.toContain('There were no differences');
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 0');
+    expect(exitCode).toBe(0);
+  });
+
+  test('when quiet mode is enabled, stacks with diffs should print stack name to stdout', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput).toContain('Stack A');
+    expect(plainTextOutput).not.toContain('There were no differences');
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
     expect(exitCode).toBe(0);
   });
 });
