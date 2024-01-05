@@ -994,6 +994,7 @@
     },
     "EnableECSManagedTags": false,
     "LaunchType": "EC2",
+    "PlacementConstraints": [],
     "SchedulingStrategy": "REPLICA",
     "TaskDefinition": {
      "Ref": "TaskDef54694570"

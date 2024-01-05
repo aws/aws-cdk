@@ -699,7 +699,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
               "version": "0.0.0"
             }
           },
@@ -1412,7 +1412,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.3.0"
                 }
               },
               "LifecycleHookDrainHook": {
@@ -1697,6 +1697,7 @@
                     },
                     "enableEcsManagedTags": false,
                     "launchType": "EC2",
+                    "placementConstraints": [],
                     "schedulingStrategy": "REPLICA",
                     "taskDefinition": {
                       "Ref": "TaskDef54694570"
@@ -1710,7 +1711,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ecs.Ec2Service",
+              "fqn": "aws-cdk-lib.aws_ecs.BaseService",
               "version": "0.0.0"
             }
           },
@@ -1798,7 +1799,7 @@
                 "path": "DeploymentAlarms/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1844,7 +1845,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.3.0"
         }
       }
     },

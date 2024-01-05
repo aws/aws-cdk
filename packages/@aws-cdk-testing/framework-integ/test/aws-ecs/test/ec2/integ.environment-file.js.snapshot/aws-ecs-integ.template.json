@@ -1405,6 +1405,7 @@
       ]
      }
     },
+    "PlacementConstraints": [],
     "SchedulingStrategy": "REPLICA",
     "TaskDefinition": {
      "Ref": "TaskDefinitionB36D86D9"
