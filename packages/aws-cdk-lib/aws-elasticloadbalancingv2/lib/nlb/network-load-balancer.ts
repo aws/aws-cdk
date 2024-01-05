@@ -457,7 +457,6 @@ export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointS
 
   /**
    * Security groups associated with this load balancer
-   * @deprecated Use `connections.securityGroups`
    */
   readonly securityGroups?: string[];
 
