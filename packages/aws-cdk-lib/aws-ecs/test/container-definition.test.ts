@@ -2636,4 +2636,30 @@ describe('container definition', () => {
       });
     });
   });
+
+  test('can specify interactive parameter', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    new ecs.ContainerDefinition(stack, 'Container', {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      taskDefinition,
+      memoryLimitMiB: 2048,
+      interactive: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Essential: true,
+          Image: '/aws/aws-example-app',
+          Memory: 2048,
+          Name: 'Container',
+          Interactive: true,
+        },
+      ],
+    });
+  });
 });

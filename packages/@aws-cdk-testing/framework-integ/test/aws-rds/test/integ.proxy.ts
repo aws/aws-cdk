@@ -27,6 +27,7 @@ new rds.DatabaseProxy(stack, 'dbProxy', {
   secrets: [dbInstance.secret!],
   proxyTarget: rds.ProxyTarget.fromInstance(dbInstance),
   vpc,
+  clientPasswordAuthType: rds.ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256,
 });
 
 const cluster = new rds.DatabaseCluster(stack, 'dbCluster', {
