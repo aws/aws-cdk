@@ -8,9 +8,11 @@ import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
 import { BucketPinger } from './bucket-pinger/bucket-pinger';
 import * as eks from 'aws-cdk-lib/aws-eks';
+import { WAITER_STATE_MACHINE_LOG_GROUP_NAME } from 'aws-cdk-lib/cx-api';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 
 const app = new App();
+app.node.setContext(WAITER_STATE_MACHINE_LOG_GROUP_NAME, false);
 const stack = new Stack(app, 'aws-eks-service-account-sdk-calls-test');
 
 // this bucket gets created by a kubernetes pod.

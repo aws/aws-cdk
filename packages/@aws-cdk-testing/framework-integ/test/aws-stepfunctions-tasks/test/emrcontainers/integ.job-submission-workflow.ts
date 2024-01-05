@@ -8,7 +8,7 @@ import {
   Classification, VirtualClusterInput, EksClusterInput, EmrContainersDeleteVirtualCluster,
   EmrContainersCreateVirtualCluster, EmrContainersStartJobRun, ReleaseLabel,
 } from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP, WAITER_STATE_MACHINE_LOG_GROUP_NAME } from 'aws-cdk-lib/cx-api';
 
 /**
  * Stack verification steps:
@@ -24,6 +24,7 @@ import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-all-services-test');
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
+stack.node.setContext(WAITER_STATE_MACHINE_LOG_GROUP_NAME, false);
 
 const eksCluster = new eks.Cluster(stack, 'integration-test-eks-cluster', {
   version: eks.KubernetesVersion.V1_22,

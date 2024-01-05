@@ -1,8 +1,10 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import { WAITER_STATE_MACHINE_LOG_GROUP_NAME } from 'aws-cdk-lib/cx-api';
 
 const app = new cdk.App();
+app.node.setContext(WAITER_STATE_MACHINE_LOG_GROUP_NAME, false);
 const stack = new cdk.Stack(app, 'aws-cdk-dynamodb-global-replicas-provisioned');
 
 const table = new dynamodb.Table(stack, 'Table', {

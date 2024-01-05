@@ -6,7 +6,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import { NodegroupAmiType, TaintEffect } from 'aws-cdk-lib/aws-eks';
-import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP, WAITER_STATE_MACHINE_LOG_GROUP_NAME } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
 
@@ -50,6 +50,7 @@ class EksClusterStack extends Stack {
 }
 
 const app = new App();
+app.node.setContext(WAITER_STATE_MACHINE_LOG_GROUP_NAME, false);
 
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-windows-ng-test');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-windows-ng', {

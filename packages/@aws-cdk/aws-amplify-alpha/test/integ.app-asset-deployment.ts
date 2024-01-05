@@ -3,6 +3,7 @@ import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as amplify from '../lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import { WAITER_STATE_MACHINE_LOG_GROUP_NAME } from 'aws-cdk-lib/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends Stack {
@@ -19,6 +20,7 @@ class TestStack extends Stack {
 }
 
 const app = new App();
+app.node.setContext(WAITER_STATE_MACHINE_LOG_GROUP_NAME, false);
 const stack = new TestStack(app, 'cdk-amplify-app-asset-deployment');
 
 // Deploying the stack is sufficient to test the custom resources

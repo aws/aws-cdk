@@ -1,6 +1,7 @@
 import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import { WAITER_STATE_MACHINE_LOG_GROUP_NAME } from 'aws-cdk-lib/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends Stack {
@@ -30,6 +31,7 @@ class TestStack extends Stack {
 }
 
 const app = new App();
+app.node.setContext(WAITER_STATE_MACHINE_LOG_GROUP_NAME, false);
 const stack = new TestStack(app, 'cdk-dynamodb-global-20191121', { env: { region: 'eu-west-1' } });
 
 new IntegTest(app, 'cdk-dynamodb-global-20191121-test', {

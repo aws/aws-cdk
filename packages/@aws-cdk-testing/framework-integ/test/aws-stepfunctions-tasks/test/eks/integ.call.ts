@@ -4,7 +4,7 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { EksCall, HttpMethods } from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP, WAITER_STATE_MACHINE_LOG_GROUP_NAME } from 'aws-cdk-lib/cx-api';
 
 /*
  * Create a state machine with a task state to use the Kubernetes API to read Kubernetes resource objects
@@ -20,6 +20,7 @@ import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-eks-call-integ-test');
+stack.node.setContext(WAITER_STATE_MACHINE_LOG_GROUP_NAME, false);
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
 const cluster = new eks.Cluster(stack, 'EksCluster', {

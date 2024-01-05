@@ -7,6 +7,7 @@ import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { ClusterInstance } from 'aws-cdk-lib/aws-rds';
+import { WAITER_STATE_MACHINE_LOG_GROUP_NAME } from 'aws-cdk-lib/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 import { LogLevel } from 'aws-cdk-lib/aws-stepfunctions';
@@ -128,6 +129,8 @@ class Snapshoter extends Construct {
 }
 
 const app = new App();
+app.node.setContext(WAITER_STATE_MACHINE_LOG_GROUP_NAME, false);
+
 const stack = new TestStack(app, 'cdk-integ-cluster-snapshot');
 
 new IntegTest(app, 'ClusterSnapshotInteg', {

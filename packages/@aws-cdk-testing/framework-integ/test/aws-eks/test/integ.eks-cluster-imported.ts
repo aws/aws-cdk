@@ -11,6 +11,7 @@ import * as hello from './hello-k8s';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
+import { WAITER_STATE_MACHINE_LOG_GROUP_NAME } from 'aws-cdk-lib/cx-api';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-27';
 import * as constructs from 'constructs';
@@ -207,6 +208,8 @@ class EksClusterStack extends Stack {
 }
 
 const app = new App();
+app.node.setContext(WAITER_STATE_MACHINE_LOG_GROUP_NAME, false);
+
 const stack = new EksClusterStack(app, 'aws-cdk-eks-import-cluster-test');
 
 new integ.IntegTest(app, 'aws-cdk-eks-import-cluster', {

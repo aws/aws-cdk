@@ -7,6 +7,7 @@ import * as kplus from 'cdk8s-plus-27';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import { Pinger } from './pinger/pinger';
 import * as eks from 'aws-cdk-lib/aws-eks';
+import { WAITER_STATE_MACHINE_LOG_GROUP_NAME } from 'aws-cdk-lib/cx-api';
 
 class EksClusterAlbControllerStack extends Stack {
 
@@ -69,6 +70,8 @@ class EksClusterAlbControllerStack extends Stack {
 }
 
 const app = new App();
+app.node.setContext(WAITER_STATE_MACHINE_LOG_GROUP_NAME, false);
+
 const stack = new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller');
 new integ.IntegTest(app, 'aws-cdk-cluster-alb-controller-integ', {
   testCases: [stack],

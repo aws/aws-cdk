@@ -5,6 +5,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
+import { WAITER_STATE_MACHINE_LOG_GROUP_NAME } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
   constructor(scope: App, id: string) {
@@ -43,6 +44,7 @@ class EksClusterStack extends Stack {
 }
 
 const app = new App();
+app.node.setContext(WAITER_STATE_MACHINE_LOG_GROUP_NAME, false);
 
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster-private-endpoint-test');
 new integ.IntegTest(app, 'aws-cdk-eks-cluster-private-endpoint', {

@@ -1,6 +1,7 @@
 /// !cdk-integ *
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
+import { WAITER_STATE_MACHINE_LOG_GROUP_NAME } from 'aws-cdk-lib/cx-api';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct, Node } from 'constructs';
 import { S3Assert } from './integration-test-fixtures/s3-assert';
@@ -46,6 +47,7 @@ class TestStack extends Stack {
 }
 
 const app = new App();
+app.node.setContext(WAITER_STATE_MACHINE_LOG_GROUP_NAME, false);
 const stack = new TestStack(app, 'integ-provider-framework');
 
 new integ.IntegTest(app, 'IntegProviderFrameworkTest', {

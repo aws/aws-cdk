@@ -12,6 +12,7 @@ import * as constructs from 'constructs';
 import * as hello from './hello-k8s';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
+import { WAITER_STATE_MACHINE_LOG_GROUP_NAME } from 'aws-cdk-lib/cx-api';
 
 class EksClusterStack extends Stack {
 
@@ -334,6 +335,7 @@ const supportedRegions = [
 ];
 
 const app = new App();
+app.node.setContext(WAITER_STATE_MACHINE_LOG_GROUP_NAME, false);
 
 // since the EKS optimized AMI is hard-coded here based on the region,
 // we need to actually pass in a specific region.

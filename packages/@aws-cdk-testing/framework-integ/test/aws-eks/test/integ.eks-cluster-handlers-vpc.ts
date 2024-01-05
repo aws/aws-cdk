@@ -3,7 +3,7 @@ import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
-import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
+import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP, WAITER_STATE_MACHINE_LOG_GROUP_NAME } from 'aws-cdk-lib/cx-api';
 
 class EksAllHandlersInVpcStack extends Stack {
 
@@ -11,6 +11,7 @@ class EksAllHandlersInVpcStack extends Stack {
     super(scope, id);
 
     this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
+    this.node.setContext(WAITER_STATE_MACHINE_LOG_GROUP_NAME, false);
     new eks.Cluster(this, 'EksAllHandlersInVpcStack', {
       ...getClusterVersionConfig(this),
       placeClusterHandlerInVpc: true,
