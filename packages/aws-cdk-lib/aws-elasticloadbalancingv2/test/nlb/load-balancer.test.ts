@@ -729,6 +729,34 @@ describe('tests', () => {
       SecurityGroups: Match.absent(),
     });
     template.resourceCountIs('AWS::EC2::SecurityGroup', 0);
+    expect(nlb.securityGroups).toBeUndefined();
+  });
+
+  test('Trivial construction: empty security groups', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+      securityGroups: [],
+    });
+    nlb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Subnets: [
+        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
+        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
+      ],
+      SecurityGroups: [],
+    });
+    template.resourceCountIs('AWS::EC2::SecurityGroup', 0);
+    expect(nlb.securityGroups).toStrictEqual([]);
   });
 
   describe('lookup', () => {

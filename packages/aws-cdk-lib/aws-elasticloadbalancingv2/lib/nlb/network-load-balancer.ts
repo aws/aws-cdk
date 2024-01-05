@@ -199,21 +199,33 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   }
 
   public readonly metrics: INetworkLoadBalancerMetrics;
-  public readonly securityGroups?: string[];
   public readonly ipAddressType?: IpAddressType;
   public readonly connections: ec2.Connections;
+  /**
+   * The security groups that were passed in Props.
+   */
+  private readonly originalSecurityGroups?: ec2.ISecurityGroup[];
+  public get securityGroups() {
+    /**
+     * With the implementation of IConnectable, connections security groups are now used instead of the security group passed in props,
+     * however, since connections always return arrays that are not undefined and NLB does not allow mutual changes of undefined and empty array,
+     * when the connections security groups is an empty array, the original security group is specified for backwards compatible. (original can be undefined or empty array)
+     * https://github.com/aws/aws-cdk/pull/28494
+     */
+    return this.connections.securityGroups.length > 0
+      ? this.connections.securityGroups.map(sg => sg.securityGroupId)
+      : this.originalSecurityGroups?.map(sg => sg.securityGroupId);
+  }
 
   constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
     super(scope, id, props, {
       type: 'network',
-      securityGroups: Lazy.list({
-        produce: () => this.connections.securityGroups.length >= 1 ? this.connections.securityGroups.map(sg => sg.securityGroupId) : undefined,
-      }),
+      securityGroups: Lazy.list({ produce: () => this.securityGroups }),
       ipAddressType: props.ipAddressType,
     });
 
     this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);
-    this.securityGroups = props.securityGroups?.map(sg => sg.securityGroupId);
+    this.originalSecurityGroups = props.securityGroups;
     this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
@@ -236,7 +248,6 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    */
   public addSecurityGroup(securityGroup: ec2.ISecurityGroup) {
     this.connections.addSecurityGroup(securityGroup);
-    this.securityGroups?.push(securityGroup.securityGroupId);
   }
 
   /**
