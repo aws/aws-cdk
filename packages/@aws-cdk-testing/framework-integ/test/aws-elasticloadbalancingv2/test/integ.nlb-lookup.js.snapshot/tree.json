@@ -634,7 +634,6 @@
                   "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                   "aws:cdk:cloudformation:props": {
                     "groupDescription": "aws-cdk-elbv2-StackWithLb/SG",
-                    "groupName": "sg-1234",
                     "securityGroupEgress": [
                       {
                         "cidrIp": "0.0.0.0/0",
@@ -804,6 +803,14 @@
             "id": "Exports",
             "path": "aws-cdk-elbv2-StackWithLb/Exports",
             "children": {
+              "Output{\"Fn::GetAtt\":[\"SGADB53937\",\"GroupId\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"SGADB53937\",\"GroupId\"]}",
+                "path": "aws-cdk-elbv2-StackWithLb/Exports/Output{\"Fn::GetAtt\":[\"SGADB53937\",\"GroupId\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
               "Output{\"Ref\":\"LB8A12904C\"}": {
                 "id": "Output{\"Ref\":\"LB8A12904C\"}",
                 "path": "aws-cdk-elbv2-StackWithLb/Exports/Output{\"Ref\":\"LB8A12904C\"}",
@@ -1132,6 +1139,39 @@
           "NlbByCfnOutputsFromAnotherStackWithinCdk": {
             "id": "NlbByCfnOutputsFromAnotherStackWithinCdk",
             "path": "aws-cdk-elbv2-integ-StackUnderTest/NlbByCfnOutputsFromAnotherStackWithinCdk",
+            "children": {
+              "SecurityGroup-0": {
+                "id": "SecurityGroup-0",
+                "path": "aws-cdk-elbv2-integ-StackUnderTest/NlbByCfnOutputsFromAnotherStackWithinCdk/SecurityGroup-0",
+                "children": {
+                  "from 0.0.0.0_0:443": {
+                    "id": "from 0.0.0.0_0:443",
+                    "path": "aws-cdk-elbv2-integ-StackUnderTest/NlbByCfnOutputsFromAnotherStackWithinCdk/SecurityGroup-0/from 0.0.0.0_0:443",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "cidrIp": "0.0.0.0/0",
+                        "description": "from 0.0.0.0/0:443",
+                        "fromPort": 443,
+                        "groupId": {
+                          "Fn::ImportValue": "aws-cdk-elbv2-StackWithLb:ExportsOutputFnGetAttSGADB53937GroupId97E49F2D"
+                        },
+                        "ipProtocol": "tcp",
+                        "toPort": 443
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              }
+            },
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"

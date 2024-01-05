@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/bd7f2dbf481b2cbf940a70008e95084dfd3fc498f87c4385cabfb3fc81f6b7be.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/f1e050ba32e6a454732cd4c1528331d0514e20eb81e2e55a72e6ef6886aa5009.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -214,6 +214,12 @@
             "data": "SgId"
           }
         ],
+        "/aws-cdk-elbv2-StackWithLb/Exports/Output{\"Fn::GetAtt\":[\"SGADB53937\",\"GroupId\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttSGADB53937GroupId97E49F2D"
+          }
+        ],
         "/aws-cdk-elbv2-StackWithLb/Exports/Output{\"Ref\":\"LB8A12904C\"}": [
           {
             "type": "aws:cdk:logicalId",
@@ -354,7 +360,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/853fd474dc943b5042f03b88a589344b61fe4d5039572d6914bbece8053d10bd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/c3565e1b0b0473ea6a48a3f26f392eeca391548afd1bf7b8b0a7b0e2b2c0e6b7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -393,6 +399,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NlbByCfnOutputsFromAnotherStackOutsideCdkAlarmFlowCountD9A1D5AC"
+          }
+        ],
+        "/aws-cdk-elbv2-integ-StackUnderTest/NlbByCfnOutputsFromAnotherStackWithinCdk/SecurityGroup-0/from 0.0.0.0_0:443": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NlbByCfnOutputsFromAnotherStackWithinCdkSecurityGroup0from000004437639F0E5"
           }
         ],
         "/aws-cdk-elbv2-integ-StackUnderTest/NlbByCfnOutputsFromAnotherStackWithinCdk_AlarmFlowCount/Resource": [

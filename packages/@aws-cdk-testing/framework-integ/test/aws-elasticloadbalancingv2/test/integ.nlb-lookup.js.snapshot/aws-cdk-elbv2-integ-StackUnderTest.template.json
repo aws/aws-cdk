@@ -107,6 +107,19 @@
     "Threshold": 0
    }
   },
+  "NlbByCfnOutputsFromAnotherStackWithinCdkSecurityGroup0from000004437639F0E5": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "CidrIp": "0.0.0.0/0",
+    "Description": "from 0.0.0.0/0:443",
+    "FromPort": 443,
+    "GroupId": {
+     "Fn::ImportValue": "aws-cdk-elbv2-StackWithLb:ExportsOutputFnGetAttSGADB53937GroupId97E49F2D"
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 443
+   }
+  },
   "NlbByCfnOutputsFromAnotherStackWithinCdkAlarmFlowCountD865DB84": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {

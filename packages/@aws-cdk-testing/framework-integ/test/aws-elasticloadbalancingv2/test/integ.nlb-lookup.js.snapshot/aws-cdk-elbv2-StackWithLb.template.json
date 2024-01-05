@@ -367,7 +367,6 @@
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "aws-cdk-elbv2-StackWithLb/SG",
-    "GroupName": "sg-1234",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -477,6 +476,17 @@
    },
    "Export": {
     "Name": "SgId"
+   }
+  },
+  "ExportsOutputFnGetAttSGADB53937GroupId97E49F2D": {
+   "Value": {
+    "Fn::GetAtt": [
+     "SGADB53937",
+     "GroupId"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-elbv2-StackWithLb:ExportsOutputFnGetAttSGADB53937GroupId97E49F2D"
    }
   },
   "ExportsOutputRefLB8A12904C1150D6A6": {

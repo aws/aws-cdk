@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "853fd474dc943b5042f03b88a589344b61fe4d5039572d6914bbece8053d10bd": {
+    "c3565e1b0b0473ea6a48a3f26f392eeca391548afd1bf7b8b0a7b0e2b2c0e6b7": {
       "source": {
         "path": "aws-cdk-elbv2-integ-StackUnderTest.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "12345678-test-region": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
-          "objectKey": "853fd474dc943b5042f03b88a589344b61fe4d5039572d6914bbece8053d10bd.json",
+          "objectKey": "c3565e1b0b0473ea6a48a3f26f392eeca391548afd1bf7b8b0a7b0e2b2c0e6b7.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
         }
