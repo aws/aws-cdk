@@ -316,7 +316,6 @@ export class DataIdentifier {
 
 /**
  * A custom data identifier. Include a custom data identifier name and regular expression in the JSON policy used to define the data protection policy.
- * https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL-custom-data-identifiers.html
  */
 export class CustomDataIdentifier extends DataIdentifier {
   /**
