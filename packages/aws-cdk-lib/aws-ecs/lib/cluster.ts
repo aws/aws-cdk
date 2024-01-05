@@ -1173,7 +1173,7 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
    * Infrastructure maintenance and updates are preformed without disruptions to workloads.
    * To use managed instance draining, set enableManagedDraining to true.
    *
-   * @default null
+   * @default true
    */
   readonly enableManagedDraining?: boolean;
 
