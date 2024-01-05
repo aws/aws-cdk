@@ -282,7 +282,7 @@ export enum TLSSecurityPolicy {
   TLS_1_0 = 'Policy-Min-TLS-1-0-2019-07',
   /** Cipher suite TLS 1.2 */
   TLS_1_2 = 'Policy-Min-TLS-1-2-2019-07',
-  /** Cipher suite TLS 1.2 to 1.3 with perfect forward secrecy cipher suites */
+  /** Cipher suite TLS 1.2 to 1.3 with perfect forward secrecy (PFS) */
   TLS_1_3 = 'Policy-Min-TLS-1-2-PFS-2023-10',
 }
 
