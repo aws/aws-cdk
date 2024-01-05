@@ -94,10 +94,12 @@ export class DataProtectionPolicy {
 interface PolicyConfiguration {
   customDataIdentifier?: PolicyCustomDataIdentifier[];
 }
+
 interface PolicyCustomDataIdentifier {
   name: string;
   regex: string;
 }
+
 interface PolicyFindingsDestination {
   cloudWatchLogs?: PolicyCloudWatchLogsDestination;
   firehose?: PolicyFirehoseDestination;
