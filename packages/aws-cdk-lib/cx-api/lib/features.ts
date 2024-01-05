@@ -981,10 +981,10 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [WAITER_STATE_MACHINE_LOG_GROUP_NAME]: {
     type: FlagType.BugFix,
-    summary: 'When enabled, the log group name for waiter state machine in CompleteHandler will start with `/aws/vendedlogs/states`.',
+    summary: 'When enabled, the log group name for waiter state machine in CompleteHandler will start with `/aws/vendedlogs/states/`.',
     detailsMd: `
       If this is set, the log group name of a generated log group in \`WaiterStateMachine\` construct which is
-      created by \`Provider\` construct with \`CompleteHandler\` will start with \`/aws/vendedlogs/states\`.
+      created by \`Provider\` construct with \`CompleteHandler\` will start with \`/aws/vendedlogs/states/\`.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,

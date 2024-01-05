@@ -244,10 +244,10 @@ _cdk.json_
 
 * `@aws-cdk/custom-resources:changeDefaultLogGroupNameForWaiterStateMachineInCompleteHandler`
 
-When enabled, the log group name for waiter state machine in CompleteHandler will start with `/aws/vendedlogs/states`.
+When enabled, the log group name for waiter state machine in CompleteHandler will start with `/aws/vendedlogs/states/`.
 
 If this is set, the log group name of a generated log group in `WaiterStateMachine` construct which is
-created by `Provider` construct with `CompleteHandler` will start with `/aws/vendedlogs/states`.
+created by `Provider` construct with `CompleteHandler` will start with `/aws/vendedlogs/states/`.
 
 _cdk.json_
 
