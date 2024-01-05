@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "integ-provider-with-waiter-state-machine.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9f2dc8213110bb8380686e1a0cb206e2dccd079bad9ead40b7c56cd9fbf3161e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c4934037912635137a61ff14a2b2623fa08b180c4b757ad915d6fd9365ffb971.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -296,6 +296,108 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyProviderwaiterstatemachineC1FBB9F9"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/OnEventWithDefaultLog/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnEventWithDefaultLogServiceRole0B11B3D5"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/OnEventWithDefaultLog/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OnEventWithDefaultLog5CE2EFB8"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/IsCompleteWithDefaultLog/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IsCompleteWithDefaultLogServiceRole5D4A0813"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/IsCompleteWithDefaultLog/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IsCompleteWithDefaultLog5A9119E0"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithDefaultLog/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithDefaultLogframeworkonEventServiceRole2AE4154C"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithDefaultLog/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithDefaultLogframeworkonEventServiceRoleDefaultPolicyB8788AD8"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithDefaultLog/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithDefaultLogframeworkonEventACFEA06F"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithDefaultLog/framework-isComplete/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithDefaultLogframeworkisCompleteServiceRole690A3970"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithDefaultLog/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithDefaultLogframeworkisCompleteServiceRoleDefaultPolicy4BF8E112"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithDefaultLog/framework-isComplete/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithDefaultLogframeworkisCompleteC86EC850"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithDefaultLog/framework-onTimeout/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithDefaultLogframeworkonTimeoutServiceRole121D30AD"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithDefaultLog/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithDefaultLogframeworkonTimeoutServiceRoleDefaultPolicyBA7DB06B"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithDefaultLog/framework-onTimeout/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithDefaultLogframeworkonTimeoutAF0F8F0D"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithDefaultLog/waiter-state-machine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithDefaultLogwaiterstatemachineRole5E8C52CD"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithDefaultLog/waiter-state-machine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithDefaultLogwaiterstatemachineRoleDefaultPolicyE520C138"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithDefaultLog/waiter-state-machine/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithDefaultLogwaiterstatemachineLogGroup5907E67B"
+          }
+        ],
+        "/integ-provider-with-waiter-state-machine/MyProviderWithDefaultLog/waiter-state-machine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProviderWithDefaultLogwaiterstatemachineFA25B8A4"
           }
         ],
         "/integ-provider-with-waiter-state-machine/BootstrapVersion": [
