@@ -346,7 +346,8 @@ For a list of types of managed identifiers that can be audited and masked, see [
 
 If a new identifier is supported but not yet in the `DataIdentifiers` enum, the name of the identifier can be supplied as `name` in the constructor instead. 
 
-To add a custom data identifier, supply a custom `name` and `regex` to the `DataIdentifiers` constructor. For more information on custom data identifiers, see [Custom data identifiers](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL-custom-data-identifiers.html).
+To add a custom data identifier, supply a custom `name` and `regex` to the `CustomDataIdentifiers` constructor.
+For more information on custom data identifiers, see [Custom data identifiers](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL-custom-data-identifiers.html).
 
 Each policy may consist of a log group, S3 bucket, and/or Firehose delivery stream audit destination.  
 
