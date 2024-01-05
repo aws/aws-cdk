@@ -1,7 +1,7 @@
 import { FilterPattern } from '../lib';
 
 describe('FilterPattern', () => {
-  describe('fromJson', () => {
+  describe('fromObject', () => {
     it('should stringify pattern', () => {
       // GIVEN
       const filter = {
@@ -10,7 +10,7 @@ describe('FilterPattern', () => {
       };
 
       // WHEN
-      const result = FilterPattern.fromJson(filter);
+      const result = FilterPattern.fromObject(filter);
 
       // THEN
       expect(result).toEqual(

@@ -240,12 +240,13 @@ export class Pipe extends PipeBase {
     /**
      * Enrichment setup
      */
-    let enrichmentParameters: CfnPipeProps['enrichmentParameters'] = undefined;
+    let enrichmentParameters: CfnPipeProps['enrichmentParameters'];
     if (props.enrichment) {
+      const { inputTransformation, ...rest } = props.enrichment.enrichmentParameters;
       props.enrichment.grantInvoke(this.pipeRole);
       enrichmentParameters = {
-        ...props.enrichment.enrichmentParameters,
-        inputTemplate: props.enrichment?.enrichmentParameters?.inputTransformation?.inputTemplate,
+        ...rest,
+        ...props.enrichment?.enrichmentParameters?.inputTransformation?.bind(this),
       };
     }
 
@@ -255,7 +256,7 @@ export class Pipe extends PipeBase {
     props.target.grantPush(this.pipeRole);
     const targetParameters: CfnPipeProps['targetParameters'] = {
       ...props.target.targetParameters,
-      inputTemplate: props.target?.targetParameters?.inputTransformation?.inputTemplate,
+      ...props.target?.targetParameters?.inputTransformation?.bind(this),
     };
 
     /**

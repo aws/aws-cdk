@@ -30,7 +30,7 @@ class TestTarget implements ITarget {
 
 class TestEnrichment implements IEnrichment {
   enrichmentArn = 'enrichment-arn';
-  enrichmentParameters = {};
+  enrichmentParameters: EnrichmentParameters = {};
   public grantInvoke = jest.fn();
 
   constructor(parameters?: EnrichmentParameters) {
@@ -284,7 +284,8 @@ describe('Pipe', () => {
     it('should pass enrichment parameters', () => {
       // GIVEN
       const enrichmentWithParameters =new TestEnrichment({
-        inputTransformation: { inputTemplate: 'input-template' },
+        inputTransformation: { bind: () => ({ inputTemplate: 'input-template' }) },
+        // inputTransformation: { bind: () => 'input-template' },
       } );
 
       // WHEN

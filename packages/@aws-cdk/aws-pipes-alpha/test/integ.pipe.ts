@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Code } from 'aws-cdk-lib/aws-lambda';
-import { EnrichmentParameters as EnrichmentParameters, IEnrichment, ILogDestination, ISource, ITarget, IncludeExecutionData, LogDestinationParameters, LogLevel, Pipe, TargetParameters } from '../lib';
+import { EnrichmentParameters, IEnrichment, ILogDestination, ISource, ITarget, IncludeExecutionData, InputTransformation, LogDestinationParameters, LogLevel, Pipe, TargetParameters } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes');
@@ -38,7 +38,7 @@ class TestTarget implements ITarget {
     this.queue = queue;
     this.targetArn = queue.queueArn;
     this.targetParameters = {
-      inputTransformation: { inputTemplate: '<$.body>' },
+      inputTransformation: InputTransformation.fromEventPath('$.body'),
     };
   }
 

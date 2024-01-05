@@ -86,6 +86,7 @@ export interface IEnrichment {
    * Grant the pipes role to invoke the enrichment.
    */
   grantInvoke(grantee: IRole): void;
+
 }
 
 /**
@@ -104,6 +105,7 @@ export abstract class Enrichment implements IEnrichment {
     this.enrichmentParameters = props;
     this.enrichmentArn = enrichmentArn;
   }
+
   /**
    * Grant the pipes role to invoke the enrichment.
    */
