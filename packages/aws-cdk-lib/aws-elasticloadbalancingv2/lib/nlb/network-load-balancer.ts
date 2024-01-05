@@ -201,11 +201,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public readonly metrics: INetworkLoadBalancerMetrics;
   public readonly ipAddressType?: IpAddressType;
   public readonly connections: ec2.Connections;
-
-  /**
-   * The security groups that were passed via the `securityGroups` property.
-   */
-  private readonly originalSecurityGroups?: ec2.ISecurityGroup[];
+  private readonly isSecurityGroupsPropertyDefined: boolean;
 
   /**
    * After the implementation of `IConnectable` (see https://github.com/aws/aws-cdk/pull/28494), the default
@@ -227,7 +223,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     });
 
     this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);
-    this.originalSecurityGroups = props.securityGroups;
+    this.isSecurityGroupsPropertyDefined = !!props.securityGroups;
     this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
