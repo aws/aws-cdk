@@ -292,7 +292,18 @@ describe('state machine', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
-      LogGroupName: '/aws/vendedlogs/states/waiter-state-machine-c892b744a2306a661f17f50ce17de4b606ce3fc700-Logs',
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/vendedlogs/states/waiter-state-machine-',
+            {
+              Ref: 'isCompleteBBB74F92',
+            },
+            '-c892b744a2306a661f17f50ce17de4b606ce3fc700',
+          ],
+        ],
+      },
     });
   });
 });

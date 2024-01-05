@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c4934037912635137a61ff14a2b2623fa08b180c4b757ad915d6fd9365ffb971.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f846c7dce86a836c27a5ff81d868b42f46e94502cd6f0859944c4d9e48751e33.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -391,7 +391,10 @@
         "/integ-provider-with-waiter-state-machine/MyProviderWithDefaultLog/waiter-state-machine/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyProviderWithDefaultLogwaiterstatemachineLogGroup5907E67B"
+            "data": "MyProviderWithDefaultLogwaiterstatemachineLogGroup5907E67B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-provider-with-waiter-state-machine/MyProviderWithDefaultLog/waiter-state-machine/Resource": [

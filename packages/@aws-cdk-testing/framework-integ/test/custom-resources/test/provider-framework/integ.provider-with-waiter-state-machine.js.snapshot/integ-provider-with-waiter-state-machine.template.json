@@ -2077,7 +2077,18 @@
   "MyProviderWithDefaultLogwaiterstatemachineLogGroup5907E67B": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
-    "LogGroupName": "/aws/vendedlogs/states/waiter-state-machine-c8755c6a4f7af107037ba386c1af047796ca4678a8-Logs",
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/vendedlogs/states/waiter-state-machine-",
+       {
+        "Ref": "MyProviderWithDefaultLogframeworkisCompleteC86EC850"
+       },
+       "-c8755c6a4f7af107037ba386c1af047796ca4678a8"
+      ]
+     ]
+    },
     "RetentionInDays": 731
    },
    "UpdateReplacePolicy": "Retain",

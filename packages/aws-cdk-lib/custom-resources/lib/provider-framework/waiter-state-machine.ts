@@ -89,6 +89,7 @@ export class WaiterStateMachine extends Construct {
    * The ARN of the state machine.
    */
   public readonly stateMachineArn: string;
+  private readonly isCompleteHandler: IFunction;
 
   constructor(scope: Construct, id: string, props: WaiterStateMachineProps) {
     super(scope, id);
@@ -125,6 +126,7 @@ export class WaiterStateMachine extends Construct {
       },
     });
 
+    this.isCompleteHandler = props.isCompleteHandler;
     const resource = new CfnStateMachine(this, 'Resource', {
       definitionString: definition,
       roleArn: role.roleArn,
@@ -173,12 +175,9 @@ export class WaiterStateMachine extends Construct {
       resources: ['*'],
     }));
 
-    // Using `node.addr` because it needs to be a unique log group name in the AWS account,
-    // not using `node.path` because of the possibility of exceeding the maximum number of characters for the log group name.
-    // The `addr` value does not change when moving the construct tree using the ID `Default`.
     const logGroupName =
       FeatureFlags.of(this).isEnabled(cxapi.WAITER_STATE_MACHINE_LOG_GROUP_NAME)
-        ? `/aws/vendedlogs/states/waiter-state-machine-${this.node.addr}-Logs`
+        ? `/aws/vendedlogs/states/waiter-state-machine-${this.isCompleteHandler.functionName}-${this.node.addr}`
         : undefined;
     const logGroup = logOptions?.destination ?? new LogGroup(this, 'LogGroup', {
       logGroupName,
