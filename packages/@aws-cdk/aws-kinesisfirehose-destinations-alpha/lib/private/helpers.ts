@@ -87,8 +87,8 @@ export function createBufferingHints(
   }
 
   const intervalInSeconds = interval?.toSeconds() ?? 300;
-  if (intervalInSeconds < 60 || intervalInSeconds > 900) {
-    throw new Error(`Buffering interval must be between 60 and 900 seconds. Buffering interval provided was ${intervalInSeconds} seconds.`);
+  if (intervalInSeconds < 5 || intervalInSeconds > 900) {
+    throw new Error(`Buffering interval must be between 5 and 900 seconds. Buffering interval provided was ${intervalInSeconds} seconds.`);
   }
   const sizeInMBs = size?.toMebibytes() ?? 5;
   if (sizeInMBs < 1 || sizeInMBs > 128) {
