@@ -319,7 +319,7 @@ export class DataIdentifier {
  */
 export class CustomDataIdentifier extends DataIdentifier {
   /**
-   * Create a custom data identfier
+   * Create a custom data identifier.
    * @param name - the name of the custom data identifier. This cannot share the same name as a managed data identifier.
    * @param regex - the regular expresssion to detect and mask log events for.
    */
