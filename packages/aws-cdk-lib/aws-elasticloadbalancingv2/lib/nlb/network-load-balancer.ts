@@ -210,9 +210,9 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * a getter has been added.
    */
   public get securityGroups(): string[] | undefined {
-    return this.connections.securityGroups.length > 0
+    return this.isSecurityGroupsPropertyDefined
       ? this.connections.securityGroups.map(sg => sg.securityGroupId)
-      : this.isSecurityGroupsPropertyDefined ? [] : undefined;
+      : undefined;
   }
 
   constructor(scope: Construct, id: string, props: NetworkLoadBalancerProps) {
