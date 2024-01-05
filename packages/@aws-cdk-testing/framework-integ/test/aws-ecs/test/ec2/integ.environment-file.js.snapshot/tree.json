@@ -165,7 +165,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
               "version": "0.0.0"
             }
           },
@@ -2259,6 +2259,7 @@
                         ]
                       }
                     },
+                    "placementConstraints": [],
                     "schedulingStrategy": "REPLICA",
                     "taskDefinition": {
                       "Ref": "TaskDefinitionB36D86D9"
@@ -2306,7 +2307,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ecs.Ec2Service",
+              "fqn": "aws-cdk-lib.aws_ecs.BaseService",
               "version": "0.0.0"
             }
           },

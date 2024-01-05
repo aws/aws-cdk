@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "EmptyPlacementConstraints/DefaultTest": {
+      "stacks": [
+        "aws-ecs-ec2"
+      ],
+      "assertionStack": "EmptyPlacementConstraints/DefaultTest/DeployAssert",
+      "assertionStackName": "EmptyPlacementConstraintsDefaultTestDeployAssertD6A3D141"
+    }
+  }
+}
