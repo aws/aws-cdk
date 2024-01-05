@@ -1849,8 +1849,34 @@ describe('ec2 service', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-        PlacementConstraints: Match.absent(),
+        PlacementConstraints: Match.arrayEquals([]),
       });
+    });
+
+    test('with an empty list in placement constraints', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        placementConstraints: [],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        PlacementConstraints: Match.arrayEquals([]),
+      });
+
     });
 
     testDeprecated('with both propagateTags and propagateTaskTagsFrom defined', () => {
