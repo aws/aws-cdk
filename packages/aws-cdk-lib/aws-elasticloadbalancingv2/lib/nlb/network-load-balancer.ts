@@ -210,7 +210,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * a getter has been added.
    */
   public get securityGroups(): string[] | undefined {
-    return this.isSecurityGroupsPropertyDefined
+    return this.isSecurityGroupsPropertyDefined || this.connections.securityGroups.length
       ? this.connections.securityGroups.map(sg => sg.securityGroupId)
       : undefined;
   }

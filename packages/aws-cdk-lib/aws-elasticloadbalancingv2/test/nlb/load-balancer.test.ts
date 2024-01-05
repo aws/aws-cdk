@@ -759,6 +759,59 @@ describe('tests', () => {
     expect(nlb.securityGroups).toStrictEqual([]);
   });
 
+  test('Can add a security groups from no security groups', () =>{
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const sg1 = new ec2.SecurityGroup(stack, 'SG1', { vpc });
+    const sg2 = new ec2.SecurityGroup(stack, 'SG2', { vpc });
+
+    // WHEN
+    const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+    });
+    nlb.addSecurityGroup(sg1);
+    nlb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
+    nlb.addSecurityGroup(sg2);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Subnets: [
+        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
+        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
+      ],
+      SecurityGroups: [
+        {
+          'Fn::GetAtt': [
+            stack.getLogicalId(sg1.node.findChild('Resource') as cdk.CfnElement),
+            'GroupId',
+          ],
+        },
+        {
+          'Fn::GetAtt': [
+            stack.getLogicalId(sg2.node.findChild('Resource') as cdk.CfnElement),
+            'GroupId',
+          ],
+        },
+      ],
+      Type: 'network',
+    });
+    template.resourcePropertiesCountIs('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          Description: 'from 0.0.0.0/0:80',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+      ],
+    }, 2);
+  });
+
   describe('lookup', () => {
     test('Can look up a NetworkLoadBalancer', () => {
       // GIVEN
