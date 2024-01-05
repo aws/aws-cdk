@@ -162,7 +162,7 @@ describe('output', () => {
     ]);
   });
 
-  test('throw if export name has invalid strings (under_bar)', () => {
+  test('throw if export name has invalid strings (underscore)', () => {
     const output = new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: 'SOME_INVALID_EXPORT_NAME' });
     const errors = output.node.validate();
 
