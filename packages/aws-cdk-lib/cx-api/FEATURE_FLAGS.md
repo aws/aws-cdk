@@ -118,7 +118,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
     "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
     "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
-    "@aws-cdk/aws-codepipeline-actions:changeDefaultLogGroupNameForWaiterStateMachineInCompleteHandler": true
+    "@aws-cdk/custom-resources:changeDefaultLogGroupNameForWaiterStateMachineInCompleteHandler": true
   }
 }
 ```
