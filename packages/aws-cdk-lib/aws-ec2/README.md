@@ -270,6 +270,22 @@ new ec2.Vpc(this, 'TheVPC', {
 
 With this method of IP address management, no attempt is made to guess at subnet group sizes or to exhaustively allocate the IP range. All subnet groups must have an explicit `cidrMask` set as part of their subnet configuration, or `defaultSubnetIpv4NetmaskLength` must be set for a default size. If not, synthesis will fail and you must provide one or the other.
 
+### Dual Stack configuration
+
+To allocate both IPv4 and IPv6 addresses in your VPC, you can configure your VPC to have a dual stack protocol.
+
+```ts
+new ec2.Vpc(this, 'DualStackVpc', {
+  vpcProtocol: ec2.VpcProtocol.DUAL_STACK,
+})
+```
+
+By default, a dual stack VPC will create an Amazon provided IPv6 /56 CIDR block associted to the VPC. It will then assign /64 portions of the block to each subnet. For each subnet, auto-assigning an IPv6 address will be enabled, and auto-asigning a public IPv4 address will be disabled. An egress only internet gateway will be created for `PRIVATE_WITH_EGRESS` subnets, and IPv6 routes will be added for IGWs and EIGWs.
+
+Disabling the auto-assigning of an IPv4 address by default can avoid the cost of public IPv4 addresses starting 2/1/2024. However, most use cases will need an IPv4 address. The `mapPublicIpOnLaunch` property in `subnetConfiguration` can be set to auto-assign the IPv4 address.
+
+
+
 ### Reserving availability zones
 
 There are situations where the IP space for availability zones will
@@ -1671,6 +1687,43 @@ const keyPair = ec2.KeyPair.fromKeyPairAttributes(this, 'KeyPair', {
   type: ec2.KeyPairType.RSA,
 })
 ```
+
+### Using IPv6 IPs
+
+Instances can be given IPv6 IPs by launching them into a subnet of a dual stack VPC.
+
+```ts
+const vpc = new ec2.Vpc(this, 'Ip6VpcDualStack', {
+  vpcProtocol: ec2.VpcProtocol.DUAL_STACK,
+  subnetConfiguration: [
+    {
+      name: 'Public',
+      subnetType: ec2.SubnetType.PUBLIC,
+      mapPublicIpOnLaunch: true,
+    },
+    {
+      name: 'Private',
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+    },
+  ],
+});
+
+const instance = new ec2.Instance(this, 'MyInstance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
+  vpc: vpc,
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+  allowAllIpv6Outbound: true,
+
+  // ...
+});
+
+instance.connections.allowFrom(ec2.Peer.anyIpv6(), ec2.Port.allIcmpV6(), 'allow ICMPv6');
+```
+
+Note to set `mapPublicIpOnLaunch` to true in the `subnetConfiguration`.
+
+Additionally, IPv6 support varies by instance type. Most instance types have IPv6 support with exception of m1-m3, c1, g2, and t1.micro. A full list can be found here: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#AvailableIpPerENI.
 
 
 ## VPC Flow Logs
