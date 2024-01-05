@@ -97,6 +97,7 @@ export const RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS = '@aws-cdk/aws-rds:pr
 export const AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS = '@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters';
 export const APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION = '@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier';
 export const CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME = '@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource';
+export const WAITER_STATE_MACHINE_LOG_GROUP_NAME = '@aws-cdk/custom-resources:changeDefaultLogGroupNameForWaiterStateMachineInCompleteHandler';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -974,6 +975,18 @@ export const FLAGS: Record<string, FlagInfo> = {
       However, with the activation of this feature flag, the default branch is updated to \'main\'.
     `,
     introducedIn: { v2: '2.103.1' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [WAITER_STATE_MACHINE_LOG_GROUP_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the log group name for waiter state machine in CompleteHandler will start with `/aws/vendedlogs/states`.',
+    detailsMd: `
+      If this is set, the log group name of a generated log group in \`WaiterStateMachine\` construct which is
+      created by \`Provider\` construct with \`CompleteHandler\` will start with \`/aws/vendedlogs/states\`.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 };

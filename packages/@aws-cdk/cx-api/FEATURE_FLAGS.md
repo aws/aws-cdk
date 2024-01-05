@@ -63,6 +63,7 @@ Flags come in three types:
 | [@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters](#aws-cdkaws-rdsauroraclusterchangescopeofinstanceparametergroupwitheachparameters) | When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change. | 2.97.0 | (fix) |
 | [@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials](#aws-cdkaws-rdspreventrenderingdeprecatedcredentials) | When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials. | 2.98.0 | (fix) |
 | [@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource](#aws-cdkaws-codepipeline-actionsusenewdefaultbranchforcodecommitsource) | When enabled, the CodeCommit source action is using the default branch name 'main'. | 2.103.1 | (fix) |
+| [@aws-cdk/custom-resources:changeDefaultLogGroupNameForWaiterStateMachineInCompleteHandler](#aws-cdkcustom-resourceschangedefaultloggroupnameforwaiterstatemachineincompletehandler) | When enabled, the log group name for waiter state machine in CompleteHandler will start with `/aws/vendedlogs/states`. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -116,7 +117,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": true,
     "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
     "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
-    "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true
+    "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
+    "@aws-cdk/aws-codepipeline-actions:changeDefaultLogGroupNameForWaiterStateMachineInCompleteHandler": true
   }
 }
 ```
@@ -1191,6 +1193,20 @@ However, with the activation of this feature flag, the default branch is updated
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.103.1 | `false` | `true` |
+
+
+### @aws-cdk/custom-resources:changeDefaultLogGroupNameForWaiterStateMachineInCompleteHandler
+
+*When enabled, the log group name for waiter state machine in CompleteHandler will start with `/aws/vendedlogs/states`.* (fix)
+
+If this is set, the log group name of a generated log group in `WaiterStateMachine` construct which is
+created by `Provider` construct with `CompleteHandler` will start with `/aws/vendedlogs/states`.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

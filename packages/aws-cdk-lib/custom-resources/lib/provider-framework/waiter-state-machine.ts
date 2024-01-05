@@ -3,7 +3,8 @@ import { Grant, IGrantable, PolicyStatement, Role, ServicePrincipal } from '../.
 import { IFunction } from '../../../aws-lambda';
 import { ILogGroup, LogGroup } from '../../../aws-logs';
 import { CfnStateMachine, LogLevel } from '../../../aws-stepfunctions';
-import { Duration, Stack } from '../../../core';
+import { Duration, FeatureFlags, Stack } from '../../../core';
+import * as cxapi from '../../../cx-api';
 
 /**
  * Log Options for the state machine.
@@ -172,7 +173,16 @@ export class WaiterStateMachine extends Construct {
       resources: ['*'],
     }));
 
-    const logGroup = logOptions?.destination ?? new LogGroup(this, 'LogGroup');
+    // Using `node.addr` because it needs to be a unique log group name in the AWS account,
+    // not using `node.path` because of the possibility of exceeding the maximum number of characters for the log group name.
+    // The `addr` value does not change when moving the construct tree using the ID `Default`.
+    const logGroupName =
+      FeatureFlags.of(this).isEnabled(cxapi.WAITER_STATE_MACHINE_LOG_GROUP_NAME)
+        ? `/aws/vendedlogs/states/waiter-state-machine-${this.node.addr}-Logs`
+        : undefined;
+    const logGroup = logOptions?.destination ?? new LogGroup(this, 'LogGroup', {
+      logGroupName,
+    });
 
     return {
       destinations: [{

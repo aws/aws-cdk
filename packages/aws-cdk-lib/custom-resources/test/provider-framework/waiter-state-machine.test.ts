@@ -260,4 +260,39 @@ describe('state machine', () => {
     });
     Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
   });
+
+  test('log group name is specified if the feature flag is set', () => {
+    // GIVEN
+    const stack = new Stack();
+    Node.of(stack).setContext('@aws-cdk/core:target-partitions', ['aws', 'aws-cn']);
+    Node.of(stack).setContext('@aws-cdk/custom-resources:changeDefaultLogGroupNameForWaiterStateMachineInCompleteHandler', true);
+
+    const isCompleteHandler = new lambdaFn(stack, 'isComplete', {
+      code: Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+    });
+    const timeoutHandler = new lambdaFn(stack, 'isTimeout', {
+      code: Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+    });
+    const interval = Duration.hours(2);
+    const maxAttempts = 2;
+    const backoffRate = 5;
+
+    // WHEN
+    new WaiterStateMachine(stack, 'statemachine', {
+      isCompleteHandler,
+      timeoutHandler,
+      backoffRate,
+      interval,
+      maxAttempts,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: '/aws/vendedlogs/states/waiter-state-machine-c892b744a2306a661f17f50ce17de4b606ce3fc700-Logs',
+    });
+  });
 });
