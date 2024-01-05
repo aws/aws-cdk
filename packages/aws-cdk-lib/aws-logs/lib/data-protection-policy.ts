@@ -121,7 +121,7 @@ interface PolicyS3Destination {
 /**
  * Interface representing a data protection policy
  */
-export interface DataProtectionPolicyConfig {
+interface DataProtectionPolicyConfig {
   /**
    * Name of the data protection policy
    *
