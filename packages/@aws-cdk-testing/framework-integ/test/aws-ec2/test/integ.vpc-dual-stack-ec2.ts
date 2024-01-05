@@ -21,10 +21,11 @@ class EC2DualStack extends cdk.Stack {
         {
           name: 'Public',
           subnetType: ec2.SubnetType.PUBLIC,
+          mapPublicIpOnLaunch: true,
         },
         {
           name: 'Private',
-          subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
         },
       ],
       flowLogs: {
