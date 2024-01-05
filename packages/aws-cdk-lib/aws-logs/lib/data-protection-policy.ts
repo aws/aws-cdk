@@ -171,10 +171,10 @@ export interface DataProtectionPolicyProps {
   readonly description?: string;
 
   /**
-   * List of data protection identifiers, containing managed or custom data identfiers (CustomDataIdentifier).
-   * Managed data identiers must be in the following list: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL-managed-data-identifiers.html
-   * Custom data identfiers must have a valid regex defined: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL-custom-data-identifiers.html
+   * List of data protection identifiers.
    *
+   * Managed data identifiers must be in the following list: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL-managed-data-identifiers.html
+   * Custom data identifiers must have a valid regex defined: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL-custom-data-identifiers.html#custom-data-identifiers-constraints
    */
   readonly identifiers: DataIdentifier[];
 
