@@ -1776,7 +1776,7 @@ export class Vpc extends VpcBase {
         throw new Error('No IPv6 CIDR block associated with this VPC could be found');
       }
       if (this.ipv6IpAddresses === undefined) {
-        throw new Error('No IPv6 IpAddresss were found');
+        throw new Error('No IPv6 IpAddresses were found');
       }
       // create the IPv6 CIDR block
       const subnetIpv6Cidrs = Fn.cidr(this.ipv6SelectedCidr, allocatedSubnets.length, (128 - 64).toString());
