@@ -138,6 +138,21 @@ export interface AllocateCidrRequest {
 }
 
 /**
+ * Request for subnet IPv6 CIDRs to be allocated for a VPC
+ */
+export interface AllocateIpv6CidrRequest {
+  /**
+   * List of subnets allocated with IPv4 CIDRs
+   */
+  readonly allocatedSubnets: AllocatedSubnet[];
+
+  /**
+   * The IPv6 CIDRs to be allocated to the subnets
+   */
+  readonly ipv6Cidrs: string[];
+}
+
+/**
  * Cidr Allocated Subnets
  */
 export interface SubnetIpamOptions {
@@ -162,8 +177,10 @@ export interface AllocatedSubnet {
    * IPv6 Cidr Allocations for a Subnet.
    *
    * Note this is specific to the IPv6 CIDR.
+   *
+   * @default - no IPV6 CIDR
    */
-  ipv6Cidr?: string;
+  readonly ipv6Cidr?: string;
 }
 
 /**
@@ -391,7 +408,19 @@ export class Ipv6IpAddresses {
  * Note this is specific to the IPv6 CIDR.
  */
 export interface IIpv6IpAddresses {
+  /**
+   * Whether the IPv6 CIDR is Amazon provided or not.
+   *
+   * Note this is specific to the IPv6 CIDR.
+   */
   amazonProvided: boolean,
+
+  /**
+   * Allocates Subnets IPv6 CIDRs. Called by VPC when creating subnets with IPv6 enabled.
+   *
+   * Note this is specific to the IPv6 CIDR.
+   */
+  allocateSubnetsIpv6Cidr(input: AllocateIpv6CidrRequest): SubnetIpamOptions;
 }
 
 /**
@@ -400,9 +429,36 @@ export interface IIpv6IpAddresses {
  * Note this is specific to the IPv6 CIDR.
  */
 export class AmazonProvided implements IIpv6IpAddresses {
+  /**
+   * Whether the IPv6 CIDR is Amazon provided or not.
+   */
   amazonProvided: boolean;
 
   constructor() {
     this.amazonProvided = true;
+  }
+
+  /**
+   * Allocates Subnets IPv6 CIDRs. Called by VPC when creating subnets with IPv6 enabled.
+   *
+   * This function takes the list of allocated subnets,
+   * and copies the IPv4 CIDRs while also assigning the IPv6 CIDR.
+   *
+   * Note this is specific to the IPv6 CIDR.
+   */
+  allocateSubnetsIpv6Cidr(input: AllocateIpv6CidrRequest): SubnetIpamOptions {
+    const allocatedSubnets: AllocatedSubnet[] = [];
+
+    input.allocatedSubnets.forEach((allocated, i) => {
+      const allocatedIpv6: AllocatedSubnet = {
+        cidr: allocated.cidr,
+        ipv6Cidr: Fn.select(i, input.ipv6Cidrs),
+      };
+      allocatedSubnets.push(allocatedIpv6);
+    });
+
+    return {
+      allocatedSubnets: allocatedSubnets,
+    };
   }
 }

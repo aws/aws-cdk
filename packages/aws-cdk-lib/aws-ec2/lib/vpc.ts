@@ -1775,12 +1775,24 @@ export class Vpc extends VpcBase {
       if (this.ipv6SelectedCidr === undefined) {
         throw new Error('No IPv6 CIDR block associated with this VPC could be found');
       }
+      if (this.ipv6IpAddresses === undefined) {
+        throw new Error('No IPv6 IpAddresss were found');
+      }
+      // create the IPv6 CIDR block
       const subnetIpv6Cidrs = Fn.cidr(this.ipv6SelectedCidr, allocatedSubnets.length, (128 - 64).toString());
-      allocatedSubnets.forEach((allocated, i) => {
-        allocated.ipv6Cidr = Fn.select(i, subnetIpv6Cidrs);
+
+      // copy the list of allocated subnets while assigning the IPv6 CIDR
+      const allocatedSubnetsIpv6 = this.ipv6IpAddresses.allocateSubnetsIpv6Cidr({
+        allocatedSubnets: allocatedSubnets,
+        ipv6Cidrs: subnetIpv6Cidrs,
       });
+
+      // call the create function with the updated allocated subnet list
+      this.createSubnetResources(requestedSubnets, allocatedSubnetsIpv6.allocatedSubnets);
+    } else {
+      // keep default behavior without IPv6 CIDRs if not using IPv6
+      this.createSubnetResources(requestedSubnets, allocatedSubnets);
     }
-    this.createSubnetResources(requestedSubnets, allocatedSubnets);
   }
 
   /**
@@ -1833,7 +1845,7 @@ export class Vpc extends VpcBase {
         mapPublicIpOnLaunch: this.calculateMapPublicIpOnLaunch(subnetConfig),
         ipv6CidrBlock: allocated.ipv6Cidr,
         assignIpv6AddressOnCreation: this.useIpv6 ? subnetConfig.ipv6AssignAddressOnCreation ?? true : undefined,
-        dependantIpv6CidrBlock: this.useIpv6 ? this.ipv6CidrBlock : undefined,
+        dependantIpv6CidrBlock: this.useIpv6 ? { cidrBlock: this.ipv6CidrBlock } : undefined,
       } satisfies SubnetProps;
 
       let subnet: Subnet;
@@ -1929,6 +1941,18 @@ function subnetTypeTagValue(type: SubnetType) {
 }
 
 /**
+ * Wraps the CFN CIDR block which the IPv6 enabled subnets depend on.
+ */
+export interface DependantIpv6CidrBlock {
+  /**
+   * CIDR block to pass.
+   *
+   * @default - no IPv6 CIDR block for subnets to depend on
+   */
+  readonly cidrBlock?: CfnVPCCidrBlock,
+}
+
+/**
  * Specify configuration parameters for a VPC subnet
  */
 export interface SubnetProps {
@@ -1975,8 +1999,10 @@ export interface SubnetProps {
 
   /**
    * Need to pass the construct to depend on for IPv6 enabled subnets to avoid race conditions.
+   *
+   * @default - no IPv6 CIDR block for subnets to depend on
    */
-  readonly dependantIpv6CidrBlock?: CfnVPCCidrBlock;
+  readonly dependantIpv6CidrBlock?: DependantIpv6CidrBlock;
 }
 
 /**
@@ -2076,8 +2102,8 @@ export class Subnet extends Resource implements ISubnet {
       ipv6CidrBlock: props.ipv6CidrBlock,
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation,
     });
-    if (props.dependantIpv6CidrBlock !== undefined) {
-      subnet.node.addDependency(props.dependantIpv6CidrBlock);
+    if (props.dependantIpv6CidrBlock !== undefined && props.dependantIpv6CidrBlock.cidrBlock !== undefined) {
+      subnet.node.addDependency(props.dependantIpv6CidrBlock.cidrBlock);
     }
     this.subnetId = subnet.ref;
     this.subnetVpcId = subnet.attrVpcId;
