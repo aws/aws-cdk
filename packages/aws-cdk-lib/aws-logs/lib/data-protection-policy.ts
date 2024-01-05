@@ -142,7 +142,7 @@ export interface DataProtectionPolicyConfig {
   /**
    * Configuration of the data protection policy. Currently supports custom data identifiers
    */
-  readonly configuration: any;
+  readonly configuration: PolicyConfiguration;
 
   /**
    * Statements within the data protection policy. Must contain one Audit and one Redact statement
