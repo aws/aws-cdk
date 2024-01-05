@@ -140,7 +140,7 @@ describe('output', () => {
     const errors = output.node.validate();
 
     expect(errors).toEqual([
-      expect.stringContaining('Export name cannot exceed 255 characters'),
+      expect.stringContaining('Export name cannot exceed 255 characters (got 260 characters)'),
     ]);
   });
 
@@ -153,7 +153,7 @@ describe('output', () => {
     ]);
   });
 
-  test('throw if export name has invalid string (space)', () => {
+  test('throw if export name has invalid strings (space)', () => {
     const output = new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: 'SOME INVALID EXPORT NAME' });
     const errors = output.node.validate();
 
@@ -162,12 +162,22 @@ describe('output', () => {
     ]);
   });
 
-  test('throw if export name has invalid string (under_bar)', () => {
+  test('throw if export name has invalid strings (under_bar)', () => {
     const output = new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: 'SOME_INVALID_EXPORT_NAME' });
     const errors = output.node.validate();
 
     expect(errors).toEqual([
       expect.stringContaining('Export name must only include alphanumeric characters, colons, or hyphens (got \'SOME_INVALID_EXPORT_NAME\''),
+    ]);
+  });
+
+  test('throw if export name exceeds maximum length and has invalid strings', () => {
+    const output = new CfnOutput(stack, 'SomeOutput', { value: 'x', exportName: ' '.repeat(260) });
+    const errors = output.node.validate();
+
+    expect(errors).toEqual([
+      expect.stringContaining('Export name cannot exceed 255 characters (got 260 characters)'),
+      expect.stringContaining(`Export name must only include alphanumeric characters, colons, or hyphens (got '${' '.repeat(260)}'`),
     ]);
   });
 });
