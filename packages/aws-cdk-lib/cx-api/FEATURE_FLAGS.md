@@ -63,7 +63,6 @@ Flags come in three types:
 | [@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters](#aws-cdkaws-rdsauroraclusterchangescopeofinstanceparametergroupwitheachparameters) | When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change. | 2.97.0 | (fix) |
 | [@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials](#aws-cdkaws-rdspreventrenderingdeprecatedcredentials) | When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials. | 2.98.0 | (fix) |
 | [@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource](#aws-cdkaws-codepipeline-actionsusenewdefaultbranchforcodecommitsource) | When enabled, the CodeCommit source action is using the default branch name 'main'. | 2.103.1 | (fix) |
-| [@aws-cdk/aws-elasticloadbalancingv2:nlbCreateDefaultSecurityGroup](#aws-cdkaws-elasticloadbalancingv2nlbcreatedefaultsecuritygroup) | When not provided security groups of props, then create a new security group. | V2NEXT | (default) |
 
 <!-- END table -->
 
@@ -117,8 +116,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": true,
     "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
     "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
-    "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
-    "@aws-cdk/aws-elasticloadbalancingv2:nlbCreateDefaultSecurityGroup": true
+    "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true
   }
 }
 ```
@@ -1193,23 +1191,6 @@ However, with the activation of this feature flag, the default branch is updated
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.103.1 | `false` | `true` |
-
-
-### @aws-cdk/aws-elasticloadbalancingv2:nlbCreateDefaultSecurityGroup
-
-*When not provided security groups of props, then create a new security group.* (default)
-
-This flag create a new security group and associate it to the load balancer when not provided security groups of props.
-If this flag is not set, `NetworkLoadBalancer` will not create security group.
-A network load balancer that not associated security group can not associate security groups until recreate.
-
-
-| Since | Default | Recommended |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** Pass `createDefaultSecurityGroup: false` to `NetworkLoadBalancer` construct to restore the old behavior.
 
 
 <!-- END details -->

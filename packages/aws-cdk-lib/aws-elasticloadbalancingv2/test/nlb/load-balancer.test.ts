@@ -3,7 +3,6 @@ import * as ec2 from '../../../aws-ec2';
 import * as route53 from '../../../aws-route53';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
-import { NLB_CREATE_DEFAULT_SECURITY_GROUP } from '../../../cx-api';
 import * as elbv2 from '../../lib';
 
 describe('tests', () => {
@@ -657,18 +656,18 @@ describe('tests', () => {
   test('Trivial construction: security groups', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    stack.node.setContext(NLB_CREATE_DEFAULT_SECURITY_GROUP, true);
     const vpc = new ec2.Vpc(stack, 'Stack');
-    const securityGroup = new ec2.SecurityGroup(stack, 'SG', { vpc });
+    const sg1 = new ec2.SecurityGroup(stack, 'SG1', { vpc });
+    const sg2 = new ec2.SecurityGroup(stack, 'SG2', { vpc });
 
     // WHEN
     const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
       vpc,
       internetFacing: true,
+      securityGroups: [sg1],
     });
-    const defaultSecurityGroup = nlb.connections.securityGroups[0];
     nlb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
-    nlb.addSecurityGroup(securityGroup);
+    nlb.addSecurityGroup(sg2);
 
     // THEN
     const template = Template.fromStack(stack);
@@ -681,13 +680,13 @@ describe('tests', () => {
       SecurityGroups: [
         {
           'Fn::GetAtt': [
-            stack.getLogicalId(defaultSecurityGroup.node.findChild('Resource') as cdk.CfnElement),
+            stack.getLogicalId(sg1.node.findChild('Resource') as cdk.CfnElement),
             'GroupId',
           ],
         },
         {
           'Fn::GetAtt': [
-            stack.getLogicalId(securityGroup.node.findChild('Resource') as cdk.CfnElement),
+            stack.getLogicalId(sg2.node.findChild('Resource') as cdk.CfnElement),
             'GroupId',
           ],
         },
@@ -707,61 +706,29 @@ describe('tests', () => {
     }, 2);
   });
 
-  describe('Trivial construction: no security groups', () => {
-    test('Using createDefaultSecurityGroup props', () => {
+  test('Trivial construction: no security groups', () => {
     // GIVEN
-      const stack = new cdk.Stack();
-      stack.node.setContext(NLB_CREATE_DEFAULT_SECURITY_GROUP, true);
-      const vpc = new ec2.Vpc(stack, 'Stack');
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
 
-      // WHEN
-      const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
-        vpc,
-        internetFacing: true,
-        createDefaultSecurityGroup: false,
-      });
-      nlb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
-
-      // THEN
-      const template = Template.fromStack(stack);
-      template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-        Scheme: 'internet-facing',
-        Subnets: [
-          { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
-          { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
-        ],
-        SecurityGroups: Match.absent(),
-      });
-      template.resourceCountIs('AWS::EC2::SecurityGroup', 0);
-      expect(nlb.securityGroups).toBeUndefined();
+    // WHEN
+    const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
     });
+    nlb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
 
-    test('Using feature flag', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      stack.node.setContext(NLB_CREATE_DEFAULT_SECURITY_GROUP, false);
-      const vpc = new ec2.Vpc(stack, 'Vpc');
-
-      // WHEN
-      const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
-        vpc,
-        internetFacing: true,
-      });
-      nlb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
-
-      // THEN
-      const template = Template.fromStack(stack);
-      template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-        Scheme: 'internet-facing',
-        Subnets: [
-          { Ref: 'VpcPublicSubnet1Subnet5C2D37C4' },
-          { Ref: 'VpcPublicSubnet2Subnet691E08A3' },
-        ],
-        SecurityGroups: Match.absent(),
-      });
-      template.resourceCountIs('AWS::EC2::SecurityGroup', 0);
-      expect(nlb.securityGroups).toBeUndefined();
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Subnets: [
+        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
+        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
+      ],
+      SecurityGroups: Match.absent(),
     });
+    template.resourceCountIs('AWS::EC2::SecurityGroup', 0);
   });
 
   describe('lookup', () => {
