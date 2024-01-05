@@ -36,6 +36,7 @@ export async function makeBodyParameter(
   resources: EnvironmentResources,
   sdk: ISDK,
   overrideTemplate?: any,
+  alwaysUploadTemplate: boolean = false,
 ): Promise<TemplateBodyParameter> {
 
   // If the template has already been uploaded to S3, just use it from there.
@@ -46,7 +47,8 @@ export async function makeBodyParameter(
   // Otherwise, pass via API call (if small) or upload here (if large)
   const templateJson = toYAML(overrideTemplate ?? stack.template);
 
-  if (templateJson.length <= LARGE_TEMPLATE_SIZE_KB * 1024) {
+  if (templateJson.length <= LARGE_TEMPLATE_SIZE_KB * 1024 && !alwaysUploadTemplate) {
+    debug('woah');
     return { TemplateBody: templateJson };
   }
 
@@ -95,7 +97,8 @@ export async function makeBodyParameterAndUpload(
   resources: EnvironmentResources,
   sdkProvider: SdkProvider,
   sdk: ISDK,
-  overrideTemplate?: any): Promise<TemplateBodyParameter> {
+  overrideTemplate?: any,
+  alwaysUploadTemplate?: boolean): Promise<TemplateBodyParameter> {
 
   // We don't have access to the actual asset manifest here, so pretend that the
   // stack doesn't have a pre-published URL.
@@ -104,7 +107,8 @@ export async function makeBodyParameterAndUpload(
   });
 
   const builder = new AssetManifestBuilder();
-  const bodyparam = await makeBodyParameter(forceUploadStack, resolvedEnvironment, builder, resources, sdk, overrideTemplate);
+  debug('making body param with' + alwaysUploadTemplate);
+  const bodyparam = await makeBodyParameter(forceUploadStack, resolvedEnvironment, builder, resources, sdk, overrideTemplate, alwaysUploadTemplate);
   const manifest = builder.toManifest(stack.assembly.directory);
   await publishAssets(manifest, sdkProvider, resolvedEnvironment, { quiet: true });
 

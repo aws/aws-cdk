@@ -150,32 +150,84 @@ export class CdkToolkit {
         ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, changeSet))
         : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, changeSet, stream);
     } else {
+      if (options.changeSet) {
+        const stacksAndTheirAssetManifests = stacks.stackArtifacts.flatMap(stack => [
+          stack,
+          ...stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact),
+        ]);
+        const workGraph = new WorkGraphBuilder(true).build(stacksAndTheirAssetManifests);
+
+        /*
+        // Unless we are running with '--force', skip already published assets
+        if (!options.force) {
+          await this.removePublishedAssets(workGraph, options);
+        }
+        */
+
+        const graphConcurrency: Concurrency = {
+          'stack': 1,
+          'asset-build': 1, // This will be CPU-bound/memory bound, mostly matters for Docker builds
+          'asset-publish': (true) ? 8 : 1, // This will be I/O-bound, 8 in parallel seems reasonable
+        };
+
+        const buildAsset = async (assetNode: AssetBuildNode) => {
+          await this.props.deployments.buildSingleAsset(assetNode.assetManifestArtifact, assetNode.assetManifest, assetNode.asset, {
+            stack: assetNode.parentStack,
+            roleArn: undefined,
+            toolkitStackName: undefined,
+            stackName: assetNode.parentStack.stackName,
+          });
+        };
+
+        const publishAsset = async (assetNode: AssetPublishNode) => {
+          await this.props.deployments.publishSingleAsset(assetNode.assetManifest, assetNode.asset, {
+            stack: assetNode.parentStack,
+            roleArn: undefined,
+            toolkitStackName: undefined,
+            stackName: assetNode.parentStack.stackName,
+          });
+        };
+
+        await workGraph.doParallel(graphConcurrency, {
+          buildAsset,
+          publishAsset,
+        });
+      }
+
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
         if (!quiet) {
           stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
         }
 
-        const templateWithNames = await this.props.deployments.readCurrentTemplateWithNestedStacks(
-          stack, options.compareAgainstProcessedTemplate,
-        );
-        const currentTemplate = templateWithNames.deployedTemplate;
-        const nestedStackCount = templateWithNames.nestedStackCount;
+        let currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
+        let nestedStackCount = 0;
+        let changeSet = undefined;
 
-        const changeSet = options.changeSet ? await createDiffChangeSet({
-          stack,
-          uuid: uuid.v4(),
-          deployments: this.props.deployments,
-          willExecute: false,
-          sdkProvider: this.props.sdkProvider,
-          parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
-          stream,
-        }) : undefined;
+        if (options.changeSet) {
+          changeSet = await createDiffChangeSet({
+            stack,
+            uuid: uuid.v4(),
+            deployments: this.props.deployments,
+            willExecute: false,
+            sdkProvider: this.props.sdkProvider,
+            parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
+            stream,
+          });
+
+          stream.write(JSON.stringify(changeSet));
+        } else {
+          const templateWithNames = await this.props.deployments.readCurrentTemplateWithNestedStacks(
+            stack, options.compareAgainstProcessedTemplate,
+          );
+          currentTemplate = templateWithNames.deployedTemplate;
+          nestedStackCount = templateWithNames.nestedStackCount;
+        }
 
         const stackCount =
-        options.securityOnly
-          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)) > 0 ? 1 : 0)
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream) > 0 ? 1 : 0);
+          options.securityOnly
+            ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)) > 0 ? 1 : 0)
+            : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream) > 0 ? 1 : 0);
 
         diffs += stackCount + nestedStackCount;
       }
