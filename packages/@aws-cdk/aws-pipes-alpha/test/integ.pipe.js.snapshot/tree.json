@@ -120,7 +120,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "zipFile": "exports.handler = async (event) => { return event.map( record => ({...record, body: record.body + \"-enriched\"}) ) };"
+                      "zipFile": "exports.handler = async (event) => { return event.map( record => ({...record, body: record.body + \"-\" + record.name + \"-\" record.static}) ) };"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -329,7 +329,9 @@
                         "Arn"
                       ]
                     },
-                    "enrichmentParameters": {},
+                    "enrichmentParameters": {
+                      "inputTemplate": "{\"body\":<$.body>,\"name\":<aws.pipes.pipe-name>,\"static\":\"static\"}"
+                    },
                     "logConfiguration": {
                       "level": "TRACE",
                       "includeExecutionData": [
@@ -365,6 +367,9 @@
                       ]
                     },
                     "targetParameters": {
+                      "inputTransformation": {
+                        "inputTemplate": "<$.body>"
+                      },
                       "inputTemplate": "<$.body>"
                     }
                   }
@@ -387,6 +392,14 @@
               "Output{\"Ref\":\"SourceQueue6E809DF0\"}": {
                 "id": "Output{\"Ref\":\"SourceQueue6E809DF0\"}",
                 "path": "aws-cdk-pipes/Exports/Output{\"Ref\":\"SourceQueue6E809DF0\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"Pipe7793F8A1\"}": {
+                "id": "Output{\"Ref\":\"Pipe7793F8A1\"}",
+                "path": "aws-cdk-pipes/Exports/Output{\"Ref\":\"Pipe7793F8A1\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -448,17 +461,17 @@
                 "id": "DeployAssert",
                 "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallSQSsendMessagee6eeada3208154780f47e304e481d8c7": {
-                    "id": "AwsApiCallSQSsendMessagee6eeada3208154780f47e304e481d8c7",
-                    "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagee6eeada3208154780f47e304e481d8c7",
+                  "AwsApiCallSQSsendMessage4c5fa599e26f0ada126f1038d1938823": {
+                    "id": "AwsApiCallSQSsendMessage4c5fa599e26f0ada126f1038d1938823",
+                    "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage4c5fa599e26f0ada126f1038d1938823",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagee6eeada3208154780f47e304e481d8c7/SdkProvider",
+                        "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage4c5fa599e26f0ada126f1038d1938823/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagee6eeada3208154780f47e304e481d8c7/SdkProvider/AssertionsProvider",
+                            "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage4c5fa599e26f0ada126f1038d1938823/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -472,11 +485,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagee6eeada3208154780f47e304e481d8c7/Default",
+                        "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage4c5fa599e26f0ada126f1038d1938823/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagee6eeada3208154780f47e304e481d8c7/Default/Default",
+                            "path": "integtest-pipe-sqs-to-sqs/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage4c5fa599e26f0ada126f1038d1938823/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"

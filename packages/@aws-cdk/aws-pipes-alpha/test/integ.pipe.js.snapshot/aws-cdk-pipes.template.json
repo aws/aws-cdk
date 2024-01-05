@@ -45,7 +45,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "exports.handler = async (event) => { return event.map( record => ({...record, body: record.body + \"-enriched\"}) ) };"
+     "ZipFile": "exports.handler = async (event) => { return event.map( record => ({...record, body: record.body + \"-\" + record.name + \"-\" record.static}) ) };"
     },
     "Handler": "index.handler",
     "Role": {
@@ -179,7 +179,9 @@
       "Arn"
      ]
     },
-    "EnrichmentParameters": {},
+    "EnrichmentParameters": {
+     "InputTemplate": "{\"body\":<$.body>,\"name\":<aws.pipes.pipe-name>,\"static\":\"static\"}"
+    },
     "LogConfiguration": {
      "CloudwatchLogsLogDestination": {
       "LogGroupArn": {
@@ -227,6 +229,14 @@
    },
    "Export": {
     "Name": "aws-cdk-pipes:ExportsOutputRefSourceQueue6E809DF09604904F"
+   }
+  },
+  "ExportsOutputRefPipe7793F8A1A40D990A": {
+   "Value": {
+    "Ref": "Pipe7793F8A1"
+   },
+   "Export": {
+    "Name": "aws-cdk-pipes:ExportsOutputRefPipe7793F8A1A40D990A"
    }
   },
   "ExportsOutputRefTargetQueue08AD2B3C0C69AE0E": {

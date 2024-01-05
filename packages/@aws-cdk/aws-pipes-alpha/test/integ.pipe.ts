@@ -2,14 +2,14 @@ import { randomUUID } from 'crypto';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Code } from 'aws-cdk-lib/aws-lambda';
-import { EnrichmentParameters, IEnrichment, ILogDestination, ISource, ITarget, IncludeExecutionData, InputTransformation, LogDestinationParameters, LogLevel, Pipe, TargetParameters } from '../lib';
+import { DynamicInput, EnrichmentParameters, IEnrichment, ILogDestination, ISource, ITarget, IncludeExecutionData, InputTransformation, LogDestinationParameters, LogLevel, Pipe, TargetParameters } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes');
 const sourceQueue = new cdk.aws_sqs.Queue(stack, 'SourceQueue');
 const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');
 
-const enrichmentHandlerCode = 'exports.handler = async (event) => { return event.map( record => ({...record, body: record.body + "-enriched"}) ) };';
+const enrichmentHandlerCode = 'exports.handler = async (event) => { return event.map( record => ({...record, body: `${record.body}-${record.name}-${record.static}` }) ) };';
 const enrichmentLambda = new cdk.aws_lambda.Function(stack, 'EnrichmentLambda', {
   code: Code.fromInline(enrichmentHandlerCode),
   handler: 'index.handler',
@@ -53,7 +53,13 @@ class TestEnrichment implements IEnrichment {
   constructor(private readonly lambda: cdk.aws_lambda.Function) {
     this.lambda = lambda;
     this.enrichmentArn = lambda.functionArn;
-    this.enrichmentParameters = {};
+    this.enrichmentParameters = {
+      inputTransformation: InputTransformation.fromObject({
+        body: DynamicInput.fromEventPath('$.body'),
+        name: DynamicInput.pipeName,
+        static: 'static',
+      }),
+    };
   }
   grantInvoke(pipeRole: cdk.aws_iam.IRole): void {
     this.lambda.grantInvoke(pipeRole);
@@ -75,7 +81,7 @@ class TestLogDestination implements ILogDestination {
   }
 }
 
-new Pipe(stack, 'Pipe', {
+const pipe = new Pipe(stack, 'Pipe', {
   pipeName: 'BaseTestPipe',
   source: new TestSource(sourceQueue),
   target: new TestTarget(targetQueue),
@@ -104,7 +110,7 @@ putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage',
   })).expect(ExpectedResult.objectLike({
   Messages: [
     {
-      Body: uniqueIdentifier+ '-enriched',
+      Body: uniqueIdentifier+ '-' + pipe.pipeName + '-static',
     },
   ],
 })).waitForAssertions({

@@ -220,16 +220,4 @@ describe('InputTransformation', () => {
   },
   );
 
-  it('should pass enrichment parameters', () => {
-    // WHEN
-    const result = InputTransformation.fromObject( {
-      foo: 'bar',
-    }).bind(pipe);
-    const resolvedResult = stack.resolve(result);
-
-    // THEN
-    expect(resolvedResult.inputTemplate).toMatchInlineSnapshot('"{"foo":"bar"}"');
-
-  });
-
 });
