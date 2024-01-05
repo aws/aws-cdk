@@ -201,17 +201,19 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public readonly metrics: INetworkLoadBalancerMetrics;
   public readonly ipAddressType?: IpAddressType;
   public readonly connections: ec2.Connections;
+
   /**
-   * The security groups that were passed in Props.
+   * The security groups that were passed via the `securityGroups` property.
    */
   private readonly originalSecurityGroups?: ec2.ISecurityGroup[];
-  public get securityGroups() {
-    /**
-     * With the implementation of IConnectable, connections security groups are now used instead of the security group passed in props,
-     * however, since connections always return arrays that are not undefined and NLB does not allow mutual changes of undefined and empty array,
-     * when the connections security groups is an empty array, the original security group is specified for backwards compatible. (original can be undefined or empty array)
-     * https://github.com/aws/aws-cdk/pull/28494
-     */
+
+  /**
+   * After the implementation of `IConnectable` (see https://github.com/aws/aws-cdk/pull/28494), the default
+   * value for `securityGroups` is set by the `ec2.Connections` constructor to an empty array.
+   * To keep backward compatibility (`securityGroups` is `undefined` if the related property is not specified)
+   * a getter has been added.
+   */
+  public get securityGroups(): string[] | undefined {
     return this.connections.securityGroups.length > 0
       ? this.connections.securityGroups.map(sg => sg.securityGroupId)
       : this.originalSecurityGroups?.map(sg => sg.securityGroupId);
