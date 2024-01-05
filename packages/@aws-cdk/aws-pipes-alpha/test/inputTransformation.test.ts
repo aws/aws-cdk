@@ -217,6 +217,20 @@ describe('InputTransformation', () => {
       // THEN
       expect(resolvedResult.inputTemplate).toEqual({ 'Fn::Join': ['', ['{"pipeName":<aws.pipes.pipe-name>,"foo":<$.foo.bar>,"roleName":"', { Ref: 'Role1ABCC5F0' }, '"}']] });
     });
+
+    it('should return unquoted string if dynamic value is set manually', () => {
+      // GIVEN
+      const result = InputTransformation.fromObject({
+        pipeName: '<aws.pipes.pipe-name>',
+        path: '<$.foo.bar>',
+      }).bind(pipe);
+
+      // WHEN
+      const resolvedResult = stack.resolve(result);
+
+      // THEN
+      expect(resolvedResult.inputTemplate).toEqual('{"pipeName":<aws.pipes.pipe-name>,"path":<$.foo.bar>}');
+    });
   },
   );
 
