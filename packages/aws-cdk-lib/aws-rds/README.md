@@ -854,7 +854,32 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
 });
 ```
 
-**Note**: In addition to the setup above, you need to make sure that the database instance has network connectivity
+The following example shows enabling domain support for a Aurora databse cluster and creating an IAM role to access Directory Services.
+
+```ts
+declare const vpc: ec2.Vpc;
+const iamRole = new iam.Role(stack, 'Role', {
+  assumedBy: new iam.CompositePrincipal(
+    new iam.ServicePrincipal('rds.amazonaws.com'),
+    new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
+  ),
+  managedPolicies: [
+    iam.ManagedPolicy.fromManagedPolicyArn(stack, 'RdsRole', 'arn:aws:iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess'),
+  ],
+});
+
+new rds.DatabaseCluster(stack, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_05_1 }),
+  writer: rds.ClusterInstance.provisioned('Instance', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+  }),
+  vpc,
+  domain: 'd-????????', // The ID of the domain for the instance to join.
+  domainRole: iamRole, // Optional - will be create automatically if not provided.
+});
+```
+
+**Note**: In addition to the setup above, you need to make sure that the database instance or cluster has network connectivity
 to the domain controllers. This includes enabling cross-VPC traffic if in a different VPC and setting up the
 appropriate security groups/network ACL to allow traffic between the database instance and domain controllers.
 Once configured, see <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html> for details
