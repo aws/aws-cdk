@@ -101,6 +101,13 @@ export interface CertificateProps {
    * @default the full, absolute path of this construct
    */
   readonly certificateName?: string
+
+  /**
+   * Specifies the algorithm of the public and private key pair that your certificate uses to encrypt data.
+   *
+   * @default KeyAlgorithm.RSA_2048
+   */
+  readonly keyAlgorithm?: KeyAlgorithm;
 }
 
 /**
@@ -289,6 +296,7 @@ export class Certificate extends CertificateBase implements ICertificate {
       domainValidationOptions: renderDomainValidation(validation, allDomainNames),
       validationMethod: validation.method,
       certificateTransparencyLoggingPreference,
+      keyAlgorithm: props.keyAlgorithm?.name,
     });
 
     Tags.of(cert).add(NAME_TAG, props.certificateName || this.node.path.slice(0, 255));
