@@ -4001,7 +4001,7 @@ describe('cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       DBClusterParameterGroupName: 'default.aurora-postgresql14',
       Domain: 'domain.com',
-      DomainIAMRoleName: { Ref: 'RDSDirectoryServicesRoleB18EFDC2' },
+      DomainIAMRoleName: { Ref: 'Role1ABCC5F0' },
     });
   });
 
@@ -4032,6 +4032,12 @@ describe('cluster', () => {
           Effect: 'Allow',
           Principal: {
             Service: 'rds.amazonaws.com',
+          },
+        }, {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'directoryservice.rds.amazonaws.com',
           },
         }],
         Version: '2012-10-17',
