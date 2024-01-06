@@ -123,7 +123,7 @@ describe('Key Algorithm', () => {
       domainName: 'test.example.com',
       certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
         'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
-        keyAlgorithm: KeyAlgorithm.EC_SECP384R1
+      keyAlgorithm: KeyAlgorithm.EC_SECP384R1,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
@@ -138,7 +138,7 @@ describe('Key Algorithm', () => {
       domainName: 'test.example.com',
       certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
         'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
-      keyAlgorithm: new KeyAlgorithm("any value"),
+      keyAlgorithm: new KeyAlgorithm('any value'),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
