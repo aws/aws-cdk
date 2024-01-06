@@ -142,6 +142,7 @@ new acm.PrivateCertificate(this, 'PrivateCertificate', {
   subjectAlternativeNames: ['cool.example.com', 'test.example.net'], // optional
   certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(this, 'CA',
     'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
+  keyAlgorithm: acm.KeyAlgorithm.RSA_2048 // optional, default algorithm is RSA_2048
 });
 ```
 
