@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Code } from 'aws-cdk-lib/aws-lambda';
-import { DynamicInput, EnrichmentParameters, IEnrichment, ILogDestination, ISource, ITarget, IncludeExecutionData, InputTransformation, LogDestinationParameters, LogLevel, Pipe, TargetParameters } from '../lib';
+import { DynamicInput, EnrichmentParametersConfig, IEnrichment, ILogDestination, IPipe, ISource, ITarget, IncludeExecutionData, InputTransformation, LogDestinationConfig, LogDestinationParameters, LogLevel, Pipe, SourceConfig, TargetConfig } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes');
@@ -25,6 +25,12 @@ class TestSource implements ISource {
     this.queue = queue;
     this.sourceArn = queue.queueArn;
   }
+  bind(_pipe: IPipe): SourceConfig {
+    return {
+      sourceArn: this.sourceArn,
+      sourceParameters: this.sourceParameters,
+    };
+  }
   grantRead(pipeRole: cdk.aws_iam.IRole): void {
     this.queue.grantConsumeMessages(pipeRole);
   }
@@ -32,13 +38,19 @@ class TestSource implements ISource {
 
 class TestTarget implements ITarget {
   targetArn: string;
-  targetParameters: TargetParameters;
+  inputTransformation: InputTransformation = InputTransformation.fromEventPath('$.body');
 
   constructor(private readonly queue: cdk.aws_sqs.Queue) {
     this.queue = queue;
     this.targetArn = queue.queueArn;
-    this.targetParameters = {
-      inputTransformation: InputTransformation.fromEventPath('$.body'),
+  }
+
+  bind(_pipe: Pipe): TargetConfig {
+    return {
+      targetArn: this.targetArn,
+      targetParameters: {
+        inputTemplate: this.inputTransformation.bind(_pipe).inputTemplate,
+      },
     };
   }
 
@@ -49,16 +61,21 @@ class TestTarget implements ITarget {
 
 class TestEnrichment implements IEnrichment {
   enrichmentArn: string;
-  enrichmentParameters: EnrichmentParameters;
+
+  inputTransformation: InputTransformation = InputTransformation.fromObject({
+    body: DynamicInput.fromEventPath('$.body'),
+    name: DynamicInput.pipeName,
+    static: 'static',
+  });
   constructor(private readonly lambda: cdk.aws_lambda.Function) {
-    this.lambda = lambda;
     this.enrichmentArn = lambda.functionArn;
-    this.enrichmentParameters = {
-      inputTransformation: InputTransformation.fromObject({
-        body: DynamicInput.fromEventPath('$.body'),
-        name: DynamicInput.pipeName,
-        static: 'static',
-      }),
+  }
+  bind(pipe: IPipe): EnrichmentParametersConfig {
+    return {
+      enrichmentArn: this.enrichmentArn,
+      enrichmentParameters: {
+        inputTemplate: this.inputTransformation.bind(pipe).inputTemplate,
+      },
     };
   }
   grantInvoke(pipeRole: cdk.aws_iam.IRole): void {
@@ -76,9 +93,16 @@ class TestLogDestination implements ILogDestination {
       },
     };
   }
+  bind(_pipe: IPipe): LogDestinationConfig {
+    return {
+      parameters: this.parameters,
+    };
+  }
+
   grantPush(pipeRole: cdk.aws_iam.IRole): void {
     this.logGroup.grantWrite(pipeRole);
   }
+
 }
 
 const pipe = new Pipe(stack, 'Pipe', {

@@ -1,10 +1,10 @@
 import { IResource, Resource, Stack } from 'aws-cdk-lib';
 import { IRole, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { CfnPipe, CfnPipeProps } from 'aws-cdk-lib/aws-pipes';
+import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 import { Construct } from 'constructs';
 import { IEnrichment } from './enrichment';
 import { IFilter } from './filter';
-import { ILogDestination, IncludeExecutionData, LogDestinationParameters, LogLevel } from './logs';
+import { ILogDestination, IncludeExecutionData, LogLevel } from './logs';
 import { ISource } from './source';
 import { ITarget } from './target';
 
@@ -229,55 +229,43 @@ export class Pipe extends PipeBase {
       });
 
     /**
-      * Source setup
-      */
-    const sourceParameters = {
-      ...props.source.sourceParameters,
+     * Source / Filter setup
+     */
+    const source = props.source.bind(this);
+    props.source.grantRead(this.pipeRole);
+    // Add the filter criteria to the source parameters
+    const sourceParameters : CfnPipe.PipeSourceParametersProperty= {
+      ...source.sourceParameters,
       filterCriteria: props.filter,
     };
-    props.source.grantRead(this.pipeRole);
 
     /**
      * Enrichment setup
      */
-    let enrichmentParameters: CfnPipeProps['enrichmentParameters'];
-    if (props.enrichment) {
-      const { inputTransformation, ...rest } = props.enrichment.enrichmentParameters;
-      props.enrichment.grantInvoke(this.pipeRole);
-      enrichmentParameters = {
-        ...rest,
-        ...props.enrichment?.enrichmentParameters?.inputTransformation?.bind(this),
-      };
-    }
+    const enrichment = props.enrichment?.bind(this);
+    props.enrichment?.grantInvoke(this.pipeRole);
 
     /**
      * Target setup
      */
+    const target = props.target.bind(this);
     props.target.grantPush(this.pipeRole);
-    const targetParameters: CfnPipeProps['targetParameters'] = {
-      ...props.target.targetParameters,
-      ...props.target?.targetParameters?.inputTransformation?.bind(this),
-    };
 
     /**
      * Logs setup
      */
-    const logDestinationConfiguration: LogDestinationParameters[] = [];
-    props.logDestinations?.forEach((destination) => {
-      logDestinationConfiguration.push(destination.parameters);
-      destination.grantPush(this.pipeRole);
-    });
-
-    const logConfiguration: CfnPipeProps['logConfiguration'] = {
+    const initialLogConfiguration: CfnPipe.PipeLogConfigurationProperty = {
       level: props.logLevel || LogLevel.ERROR,
       includeExecutionData: props.logIncludeExecutionData || undefined,
     };
 
-    const mergedLogConfiguration = props.logDestinations?.reduce((acc, destination) => {
-      const config = destination.parameters;
-      return { ...acc, ...config };
-
-    }, logConfiguration);
+    // Iterate over all the log destinations and add them to the log configuration
+    const logConfiguration = props.logDestinations?.reduce((currentLogConfiguration, destination) => {
+      const logDestinationConfig = destination.bind(this);
+      destination.grantPush(this.pipeRole);
+      const additionalLogConfiguration = logDestinationConfig.parameters;
+      return { ...currentLogConfiguration, ...additionalLogConfiguration };
+    }, initialLogConfiguration);
 
     /**
      * Pipe resource
@@ -287,20 +275,19 @@ export class Pipe extends PipeBase {
       name: props.pipeName,
       description: props.description,
       roleArn: this.pipeRole.roleArn,
-      source: props.source.sourceArn,
+      source: source.sourceArn,
       sourceParameters: sourceParameters,
-      enrichment: props.enrichment?.enrichmentArn,
-      enrichmentParameters: enrichmentParameters,
-      target: props.target.targetArn,
-      targetParameters: targetParameters,
+      enrichment: enrichment?.enrichmentArn,
+      enrichmentParameters: enrichment?.enrichmentParameters,
+      target: target.targetArn,
+      targetParameters: target.targetParameters,
       desiredState: props.desiredState,
-      logConfiguration: mergedLogConfiguration,
+      logConfiguration: logConfiguration,
       tags: props.tags,
     });
 
     this.pipeName = resource.ref;
     this.pipeArn = resource.attrArn;
-
   }
 
 }

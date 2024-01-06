@@ -2,45 +2,11 @@ import { App, Stack } from 'aws-cdk-lib';
 
 import { Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { DesiredState, EnrichmentParameters, IEnrichment, ILogDestination, ISource, ITarget, IncludeExecutionData, LogLevel, Pipe, SourceParameters, TargetParameters } from '../lib';
-
-class TestSource implements ISource {
-  sourceArn = 'source-arn';
-  sourceParameters = {};
-  public grantRead = jest.fn();
-
-  constructor(parameters?: SourceParameters) {
-    if (parameters) {
-      this.sourceParameters = parameters;
-    }
-  }
-}
-
-class TestTarget implements ITarget {
-  targetArn = 'target-arn';
-  targetParameters = {};
-  public grantPush = jest.fn();
-
-  constructor(parameters?: TargetParameters) {
-    if (parameters) {
-      this.targetParameters = parameters;
-    }
-  }
-}
-
-class TestEnrichment implements IEnrichment {
-  enrichmentArn = 'enrichment-arn';
-  enrichmentParameters: EnrichmentParameters = {};
-  public grantInvoke = jest.fn();
-
-  constructor(parameters?: EnrichmentParameters) {
-    if (parameters) {
-      this.enrichmentParameters = parameters;
-    }
-  }
-}
+import { TestEnrichment, TestSource, TestTarget } from './test-classes';
+import { DesiredState, IEnrichment, ILogDestination, IPipe, ISource, ITarget, IncludeExecutionData, LogDestinationConfig, LogLevel, Pipe } from '../lib';
 
 class TestLogDestination implements ILogDestination {
+
   logDestinationArn = 'log-destination-arn';
   parameters = {
     cloudwatchLogsLogDestination: {
@@ -48,6 +14,11 @@ class TestLogDestination implements ILogDestination {
     },
   };
   public grantPush = jest.fn();
+  bind(_pipe: IPipe): LogDestinationConfig {
+    return {
+      parameters: this.parameters,
+    };
+  }
 
 }
 
@@ -284,7 +255,7 @@ describe('Pipe', () => {
     it('should pass enrichment parameters', () => {
       // GIVEN
       const enrichmentWithParameters =new TestEnrichment({
-        inputTransformation: { bind: () => ({ inputTemplate: 'input-template' }) },
+        inputTemplate: 'input-template',
         // inputTransformation: { bind: () => 'input-template' },
       } );
 
