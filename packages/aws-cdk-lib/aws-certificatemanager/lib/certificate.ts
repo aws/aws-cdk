@@ -103,6 +103,12 @@ export interface CertificateProps {
   readonly certificateName?: string
 }
 
+/**
+ * Certificate Manager key algorithm
+ *
+ * If you need to use an algorithm that doesn't exist as a static member, you
+ * can instantiate a `KeyAlgorithm` object, e.g: `new KeyAlgorithm('RSA_2048')`.
+ */
 export class KeyAlgorithm {
   /**
    * RSA_2048 algorithm
