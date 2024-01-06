@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { ICertificate } from './certificate';
+import { ICertificate, KeyAlgorithm } from './certificate';
 import { CertificateBase } from './certificate-base';
 import { CfnCertificate } from './certificatemanager.generated';
 import * as acmpca from '../../aws-acmpca';
@@ -28,6 +28,13 @@ export interface PrivateCertificateProps {
    * Private certificate authority (CA) that will be used to issue the certificate.
    */
   readonly certificateAuthority: acmpca.ICertificateAuthority;
+
+  /**
+   * Specifies the algorithm of the public and private key pair that your certificate uses to encrypt data.
+   *
+   * @default KeyAlgorithm.RSA_2048
+   */
+  readonly keyAlgorithm?: KeyAlgorithm;
 }
 
 /**
@@ -59,6 +66,7 @@ export class PrivateCertificate extends CertificateBase implements ICertificate 
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
       certificateAuthorityArn: props.certificateAuthority.certificateAuthorityArn,
+      keyAlgorithm: props.keyAlgorithm?.name,
     });
 
     this.certificateArn = cert.ref;

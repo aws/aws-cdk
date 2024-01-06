@@ -103,6 +103,30 @@ export interface CertificateProps {
   readonly certificateName?: string
 }
 
+export class KeyAlgorithm {
+  /**
+   * RSA_2048 algorithm
+   */
+  public static readonly RSA_2048 = new KeyAlgorithm("RSA_2048");
+
+  /**
+   * EC_prime256v1 algorithm
+   */
+  public static readonly EC_PRIME256V1 = new KeyAlgorithm("EC_prime256v1");
+
+  /**
+   * EC_secp384r1 algorithm
+   */
+  public static readonly EC_SECP384R1 = new KeyAlgorithm("EC_secp384r1");
+
+  constructor(
+    /**
+     * The name of the algorithm
+     */
+    public readonly name: string
+  ) { };
+}
+
 /**
  * Properties for certificate validation
  */
