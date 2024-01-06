@@ -858,17 +858,17 @@ The following example shows enabling domain support for a Aurora databse cluster
 
 ```ts
 declare const vpc: ec2.Vpc;
-const iamRole = new iam.Role(stack, 'Role', {
+const iamRole = new iam.Role(this, 'Role', {
   assumedBy: new iam.CompositePrincipal(
     new iam.ServicePrincipal('rds.amazonaws.com'),
     new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
   ),
   managedPolicies: [
-    iam.ManagedPolicy.fromManagedPolicyArn(stack, 'RdsRole', 'arn:aws:iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess'),
+    iam.ManagedPolicy.fromManagedPolicyArn(this, 'RdsRole', 'arn:aws:iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess'),
   ],
 });
 
-new rds.DatabaseCluster(stack, 'Database', {
+new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_05_1 }),
   writer: rds.ClusterInstance.provisioned('Instance', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
