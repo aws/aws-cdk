@@ -6,7 +6,7 @@ import * as ds from 'aws-cdk-lib/aws-directoryservice';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'instance-kerberos');
+const stack = new cdk.Stack(app, 'instance-kerberos-without-domainRole');
 const vpc = new ec2.Vpc(stack, 'VPC');
 
 const activeDirectory = new ds.CfnMicrosoftAD(stack, 'AD', {
@@ -27,7 +27,7 @@ new rds.DatabaseInstance(stack, 'Database', {
   domain: activeDirectory.ref,
 });
 
-new integ.IntegTest(app, 'integ-instance-kerberos', {
+new integ.IntegTest(app, 'integ-instance-kerberos-without-domainRole', {
   testCases: [stack],
 });
 
