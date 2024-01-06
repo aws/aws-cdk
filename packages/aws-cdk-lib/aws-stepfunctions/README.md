@@ -604,7 +604,7 @@ custom.addCatch(errorHandler);
 
 // retry the task if something goes wrong
 custom.addRetry({
-  errors: ['States.ALL'],
+  errors: [sfn.Errors.ALL],
   interval: cdk.Duration.seconds(10),
   maxAttempts: 5,
 });
