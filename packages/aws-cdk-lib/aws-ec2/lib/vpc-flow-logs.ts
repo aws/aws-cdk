@@ -98,6 +98,9 @@ export abstract class FlowLogResourceType {
     };
   }
 
+  /**
+   * The Transit Gateway to attach the Flow Log to
+   */
   public static fromTransitGatewayId(id: string): FlowLogResourceType {
     return {
       resourceType: 'TransitGateway',
@@ -105,6 +108,9 @@ export abstract class FlowLogResourceType {
     };
   };
 
+  /**
+   * The Transit Gateway Attachment to attach the Flow Log to
+   */
   public static fromTransitGatewayAttachmentId(id: string): FlowLogResourceType {
     return {
       resourceType: 'TransitGatewayAttachment',

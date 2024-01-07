@@ -1733,6 +1733,8 @@ new ec2.FlowLog(this, 'TransitGatewayAttachmentFlowLog', {
 })
 ```
 
+For flow logs targeting TransitGateway and TransitGatewayAttachment, specifying the `trafficType` is not possible.
+
 ### Custom Formatting
 
 You can also custom format flow logs.
