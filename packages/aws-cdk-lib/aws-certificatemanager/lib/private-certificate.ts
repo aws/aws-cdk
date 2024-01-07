@@ -35,6 +35,8 @@ export interface PrivateCertificateProps {
    * When you request a private PKI certificate signed by a CA from AWS Private CA, the specified signing algorithm family
    * (RSA or ECDSA) must match the algorithm family of the CA's secret key.
    *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/acm-certificate.html#algorithms.title
+   *
    * @default KeyAlgorithm.RSA_2048
    */
   readonly keyAlgorithm?: KeyAlgorithm;
