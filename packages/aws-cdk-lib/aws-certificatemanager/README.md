@@ -157,6 +157,24 @@ new acm.Certificate(this, 'Certificate', {
 });
 ```
 
+## Key Algorithms
+
+To specify the algorithm of the public and private key pair that your certificate uses to encrypt data use the `keyAlgorithm` property.
+
+Algorithms supported for an ACM certificate request include:
+ * `RSA_2048`
+ * `EC_prime256v1`
+ * `EC_secp384r1`
+
+```ts
+new acm.Certificate(this, 'Certificate', {
+  domainName: 'test.example.com',
+  keyAlgorithm: acm.KeyAlgorithm.EC_PRIME256V1,
+});
+```
+
+> Visit [Key algorithms](https://docs.aws.amazon.com/acm/latest/userguide/acm-certificate.html#algorithms.title) for more details.
+
 ## Importing
 
 If you want to import an existing certificate, you can do so from its ARN:

@@ -4,7 +4,7 @@
   "testCases": {
     "integ-test/DefaultTest": {
       "stacks": [
-        "integ-certificate-name"
+        "integ-key-algorithm"
       ],
       "diffAssets": true,
       "assertionStack": "integ-test/DefaultTest/DeployAssert",

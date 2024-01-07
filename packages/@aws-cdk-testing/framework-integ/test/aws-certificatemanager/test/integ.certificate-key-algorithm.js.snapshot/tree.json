@@ -4,13 +4,13 @@
     "id": "App",
     "path": "",
     "children": {
-      "integ-certificate-name": {
-        "id": "integ-certificate-name",
-        "path": "integ-certificate-name",
+      "integ-key-algorithm": {
+        "id": "integ-key-algorithm",
+        "path": "integ-key-algorithm",
         "children": {
           "HostedZone": {
             "id": "HostedZone",
-            "path": "integ-certificate-name/HostedZone",
+            "path": "integ-key-algorithm/HostedZone",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "2.118.0"
@@ -18,11 +18,11 @@
           },
           "EC_prime256v1": {
             "id": "EC_prime256v1",
-            "path": "integ-certificate-name/EC_prime256v1",
+            "path": "integ-key-algorithm/EC_prime256v1",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-certificate-name/EC_prime256v1/Resource",
+                "path": "integ-key-algorithm/EC_prime256v1/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CertificateManager::Certificate",
                   "aws:cdk:cloudformation:props": {
@@ -37,7 +37,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-certificate-name/EC_prime256v1"
+                        "value": "integ-key-algorithm/EC_prime256v1"
                       }
                     ],
                     "validationMethod": "DNS"
@@ -56,11 +56,11 @@
           },
           "EC_secp384r1": {
             "id": "EC_secp384r1",
-            "path": "integ-certificate-name/EC_secp384r1",
+            "path": "integ-key-algorithm/EC_secp384r1",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-certificate-name/EC_secp384r1/Resource",
+                "path": "integ-key-algorithm/EC_secp384r1/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CertificateManager::Certificate",
                   "aws:cdk:cloudformation:props": {
@@ -75,7 +75,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-certificate-name/EC_secp384r1"
+                        "value": "integ-key-algorithm/EC_secp384r1"
                       }
                     ],
                     "validationMethod": "DNS"
@@ -94,11 +94,11 @@
           },
           "RSA_2048": {
             "id": "RSA_2048",
-            "path": "integ-certificate-name/RSA_2048",
+            "path": "integ-key-algorithm/RSA_2048",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-certificate-name/RSA_2048/Resource",
+                "path": "integ-key-algorithm/RSA_2048/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CertificateManager::Certificate",
                   "aws:cdk:cloudformation:props": {
@@ -113,7 +113,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-certificate-name/RSA_2048"
+                        "value": "integ-key-algorithm/RSA_2048"
                       }
                     ],
                     "validationMethod": "DNS"
@@ -132,7 +132,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "integ-certificate-name/BootstrapVersion",
+            "path": "integ-key-algorithm/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "2.118.0"
@@ -140,7 +140,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "integ-certificate-name/CheckBootstrapVersion",
+            "path": "integ-key-algorithm/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "2.118.0"

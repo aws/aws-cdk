@@ -32,6 +32,9 @@ export interface PrivateCertificateProps {
   /**
    * Specifies the algorithm of the public and private key pair that your certificate uses to encrypt data.
    *
+   * When you request a private PKI certificate signed by a CA from AWS Private CA, the specified signing algorithm family
+   * (RSA or ECDSA) must match the algorithm family of the CA's secret key.
+   *
    * @default KeyAlgorithm.RSA_2048
    */
   readonly keyAlgorithm?: KeyAlgorithm;

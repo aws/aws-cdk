@@ -14,7 +14,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-certificate-name/EC_prime256v1"
+      "Value": "integ-key-algorithm/EC_prime256v1"
      }
     ],
     "ValidationMethod": "DNS"
@@ -34,7 +34,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-certificate-name/EC_secp384r1"
+      "Value": "integ-key-algorithm/EC_secp384r1"
      }
     ],
     "ValidationMethod": "DNS"
@@ -54,7 +54,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-certificate-name/RSA_2048"
+      "Value": "integ-key-algorithm/RSA_2048"
      }
     ],
     "ValidationMethod": "DNS"

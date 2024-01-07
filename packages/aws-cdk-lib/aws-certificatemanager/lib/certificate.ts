@@ -105,6 +105,8 @@ export interface CertificateProps {
   /**
    * Specifies the algorithm of the public and private key pair that your certificate uses to encrypt data.
    *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/acm-certificate.html#algorithms.title
+   *
    * @default KeyAlgorithm.RSA_2048
    */
   readonly keyAlgorithm?: KeyAlgorithm;
