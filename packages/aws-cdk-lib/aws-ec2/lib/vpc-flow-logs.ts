@@ -681,6 +681,8 @@ export interface FlowLogOptions {
    * The type of traffic to log. You can log traffic that the resource accepts or rejects, or all traffic.
    * When the target is either TransitGateway or TransitGatewayAttachment, setting the traffic type is not possible.
    *
+   * @see https://docs.aws.amazon.com/vpc/latest/tgw/working-with-flow-logs.html
+   *
    * @default ALL
    */
   readonly trafficType?: FlowLogTrafficType;
