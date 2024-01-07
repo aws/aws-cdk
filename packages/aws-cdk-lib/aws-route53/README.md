@@ -247,7 +247,7 @@ Additionally, that KMS key must be in `us-east-1`.
 ```ts
 const kmsKey = new kms.Key(this, 'KmsCMK', {
   keySpec: kms.KeySpec.ECC_NIST_P256,
-  keyUsage: kms.keyUsage.SIGN_VERIFY,
+  keyUsage: kms.KeyUsage.SIGN_VERIFY,
 });
 const hostedZone = new route53.HostedZone(this, 'HostedZone', {
   zoneName: 'example.com',
