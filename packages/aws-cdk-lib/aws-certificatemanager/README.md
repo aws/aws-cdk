@@ -165,7 +165,7 @@ requests.
 ```ts
 new acm.Certificate(this, 'Certificate', {
   domainName: 'test.example.com',
-  keyAlgorithm: acm.keyAlgorithm.EC_PRIME256V1,
+  keyAlgorithm: acm.KeyAlgorithm.EC_PRIME256V1,
 });
 ```
 
