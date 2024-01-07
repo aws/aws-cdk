@@ -1,7 +1,7 @@
 import { Template, Match } from '../../assertions';
 import * as route53 from '../../aws-route53';
 import { Aws, Duration, Lazy, Stack } from '../../core';
-import { Certificate, CertificateValidation } from '../lib';
+import { Certificate, CertificateValidation, KeyAlgorithm } from '../lib';
 
 test('apex domain selection by default', () => {
   const stack = new Stack();
@@ -431,6 +431,47 @@ describe('Certificate Name setting', () => {
     Template.fromStack(stack).hasResource('AWS::CertificateManager::Certificate',
       hasTags([{ Key: 'Name', Value: 'Custom Certificate Name' }]),
     );
+  });
+});
+
+describe('Key Algorithm setting', () => {
+  test('the RSA 2048 algorithm', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certficate', {
+      domainName: 'test.example.com',
+      keyAlgorithm: KeyAlgorithm.RSA_2048,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      KeyAlgorithm: 'RSA_2048',
+    });
+  });
+
+  test('the ECDSA 256 bit algorithm', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certficate', {
+      domainName: 'test.example.com',
+      keyAlgorithm: KeyAlgorithm.EC_PRIME256V1,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      KeyAlgorithm: 'EC_prime256v1',
+    });
+  });
+
+  test('the ECDSA 384 bit algorithm', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certficate', {
+      domainName: 'test.example.com',
+      keyAlgorithm: KeyAlgorithm.EC_SECP384R1,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      KeyAlgorithm: 'EC_secp384r1',
+    });
   });
 });
 

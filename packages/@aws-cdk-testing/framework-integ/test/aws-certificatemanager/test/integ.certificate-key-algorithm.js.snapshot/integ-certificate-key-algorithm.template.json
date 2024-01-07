@@ -1,0 +1,98 @@
+{
+ "Resources": {
+  "CertificateRsa2048A1EE6743": {
+   "Type": "AWS::CertificateManager::Certificate",
+   "Properties": {
+    "DomainName": "*.example.com",
+    "DomainValidationOptions": [
+     {
+      "DomainName": "*.example.com",
+      "HostedZoneId": "Z23ABC4XYZL05B"
+     }
+    ],
+    "KeyAlgorithm": "RSA_2048",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "This is a test name RSA2048"
+     }
+    ],
+    "ValidationMethod": "DNS"
+   }
+  },
+  "CertificateEc2562D0E5C7E": {
+   "Type": "AWS::CertificateManager::Certificate",
+   "Properties": {
+    "DomainName": "*.example.com",
+    "DomainValidationOptions": [
+     {
+      "DomainName": "*.example.com",
+      "HostedZoneId": "Z23ABC4XYZL05B"
+     }
+    ],
+    "KeyAlgorithm": "EC_prime256v1",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "This is a test name EC256"
+     }
+    ],
+    "ValidationMethod": "DNS"
+   }
+  },
+  "CertificateEc384CA103C09": {
+   "Type": "AWS::CertificateManager::Certificate",
+   "Properties": {
+    "DomainName": "*.example.com",
+    "DomainValidationOptions": [
+     {
+      "DomainName": "*.example.com",
+      "HostedZoneId": "Z23ABC4XYZL05B"
+     }
+    ],
+    "KeyAlgorithm": "EC_secp384r1",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "This is a test name EC384"
+     }
+    ],
+    "ValidationMethod": "DNS"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

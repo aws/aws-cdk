@@ -156,6 +156,19 @@ new acm.Certificate(this, 'Certificate', {
 });
 ```
 
+## Key Algorithms
+
+The [key algorithm](https://docs.aws.amazon.com/acm/latest/userguide/acm-certificate.html#algorithms.title) can be specified
+for each key. Only some values (highlighted in the linked article) are supported for certificate
+requests.
+
+```ts
+new acm.Certificate(this, 'Certificate', {
+  domainName: 'test.example.com',
+  keyAlgorithm: acm.keyAlgorithm.EC_PRIME256V1,
+});
+```
+
 ## Importing
 
 If you want to import an existing certificate, you can do so from its ARN:

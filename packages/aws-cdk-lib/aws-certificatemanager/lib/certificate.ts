@@ -100,7 +100,41 @@ export interface CertificateProps {
    *
    * @default the full, absolute path of this construct
    */
-  readonly certificateName?: string
+  readonly certificateName?: string;
+
+  /**
+   * The algorithm of the public and private key pair that the certificate uses to encrypt data.
+   *
+   * RSA is the default key algorithm for ACM certificates. Elliptic Curve Digital Signature
+   * Algorithm (ECDSA) keys are smaller, offering security comparable to RSA keys but with greater
+   * computing efficiency. However, ECDSA is not supported by all network clients. Some AWS
+   * services may require RSA keys, or only support ECDSA keys of a particular size, while others
+   * allow the use of either RSA and ECDSA keys to ensure that compatibility is not broken. Check
+   * the requirements for the AWS service where you plan to deploy your certificate.
+   *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/acm-certificate.html#algorithms.title
+   *
+   * @default the CloudFormation default (RSA 2048 bit)
+   */
+  readonly keyAlgorithm?: KeyAlgorithm;
+}
+
+/**
+ * Algorithms that AWS Certificate Manager supports for certificate requests.
+ */
+export enum KeyAlgorithm {
+  /**
+   * An RSA 2048 bit key.
+   */
+  RSA_2048 = 'RSA_2048',
+  /**
+   * An ECDSA 256 bit key.
+   */
+  EC_PRIME256V1 = 'EC_prime256v1',
+  /**
+   * An ECSDA 284 bit key.
+   */
+  EC_SECP384R1 = 'EC_secp384r1',
 }
 
 /**
@@ -259,6 +293,7 @@ export class Certificate extends CertificateBase implements ICertificate {
       domainValidationOptions: renderDomainValidation(validation, allDomainNames),
       validationMethod: validation.method,
       certificateTransparencyLoggingPreference,
+      keyAlgorithm: props.keyAlgorithm,
     });
 
     Tags.of(cert).add(NAME_TAG, props.certificateName || this.node.path.slice(0, 255));
