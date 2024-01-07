@@ -4,7 +4,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Certificate, CertificateValidation, KeyAlgorithm } from 'aws-cdk-lib/aws-certificatemanager';
 
 /**
- * In order to test this you need 
+ * In order to test this you need
  * to have a valid public hosted zone that you can use
  * to request certificates for.
  *
