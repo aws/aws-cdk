@@ -399,6 +399,39 @@ describe('vpc', () => {
 
     });
 
+    test('with no public subnets and natGateways > 0, should throw an error', () => {
+      const stack = getTestStack();
+      expect(() => new Vpc(stack, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+            name: 'egress',
+          },
+        ],
+        natGateways: 1,
+      })).toThrow(/If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into \(got \[{"subnetType":"Private","name":"egress"}\]./);
+
+    });
+
+    test('with only reserved subnets as public subnets and natGateways > 0, should throw an error', () => {
+      const stack = getTestStack();
+      expect(() => new Vpc(stack, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'public',
+            reserved: true,
+          },
+          {
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+            name: 'egress',
+          },
+        ],
+        natGateways: 1,
+      })).toThrow(/If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into \(got \[{"subnetType":"Public","name":"public","reserved":true},{"subnetType":"Private","name":"egress"}\]./);
+
+    });
+
     test('with subnets and reserved subnets defined, VPC subnet count should not contain reserved subnets ', () => {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', {
