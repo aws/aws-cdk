@@ -85,10 +85,11 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
   constructor(scope: Construct, id: string, props: DnsValidatedCertificateProps) {
     super(scope, id);
 
-    if (props.keyAlgorithm)
+    if (props.keyAlgorithm) {
       cdk.Annotations.of(this)
-        .addWarningV2("@aws-cdk/aws-certificatemanager:keyAlgorithmIgnored",
-          "keyAlgorithm is ignored for DnsValidatedCertificate construct.");
+        .addWarningV2('@aws-cdk/aws-certificatemanager:keyAlgorithmIgnored',
+          'keyAlgorithm is ignored for DnsValidatedCertificate construct.');
+    }
 
     this.region = props.region;
     this.domainName = props.domainName;
