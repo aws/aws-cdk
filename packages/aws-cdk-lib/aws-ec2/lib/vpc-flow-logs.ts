@@ -673,6 +673,7 @@ export class LogFormat {
 export interface FlowLogOptions {
   /**
    * The type of traffic to log. You can log traffic that the resource accepts or rejects, or all traffic.
+   * When the target is either TransitGateway or TransitGatewayAttachment, setting the traffic type is not possible.
    *
    * @default ALL
    */
@@ -814,6 +815,17 @@ export class FlowLog extends FlowLogBase {
       }).join(' ');
     }
 
+    // In Transit Gateway and Transit Gateway Attachment, `trafficType` is not supported.
+    let trafficType: FlowLogTrafficType | undefined = FlowLogTrafficType.ALL;
+    if (props.resourceType.resourceType === 'TransitGateway' || props.resourceType.resourceType === 'TransitGatewayAttachment') {
+      if (props.trafficType) {
+        throw new Error('trafficType is not supported for Transit Gateway and Transit Gateway Attachment');
+      }
+      trafficType = undefined;
+    } else if (props.trafficType) {
+      trafficType = props.trafficType;
+    }
+
     const flowLog = new CfnFlowLog(this, 'FlowLog', {
       destinationOptions: destinationConfig.destinationOptions,
       deliverLogsPermissionArn: this.iamRole ? this.iamRole.roleArn : undefined,
@@ -822,9 +834,7 @@ export class FlowLog extends FlowLogBase {
       maxAggregationInterval: props.maxAggregationInterval,
       resourceId: props.resourceType.resourceId,
       resourceType: props.resourceType.resourceType,
-      trafficType: props.trafficType
-        ? props.trafficType
-        : FlowLogTrafficType.ALL,
+      trafficType,
       logFormat: customLogFormat,
       logDestination,
     });

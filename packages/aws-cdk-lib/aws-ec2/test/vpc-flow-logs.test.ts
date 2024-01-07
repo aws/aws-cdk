@@ -3,7 +3,7 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { RemovalPolicy, Stack } from '../../core';
-import { FlowLog, FlowLogDestination, FlowLogResourceType, FlowLogMaxAggregationInterval, LogFormat, Vpc } from '../lib';
+import { FlowLog, FlowLogDestination, FlowLogResourceType, FlowLogMaxAggregationInterval, LogFormat, Vpc, FlowLogTrafficType } from '../lib';
 
 describe('vpc flow logs', () => {
   test('with defaults set, it successfully creates with cloudwatch logs destination', () => {
@@ -543,7 +543,7 @@ describe('vpc flow logs', () => {
     });
   });
 
-  test('create with transit gateway id()`', () => {
+  test('create with transit gateway id`', () => {
     const stack = getTestStack();
 
     new FlowLog(stack, 'FlowLogs', {
@@ -552,7 +552,6 @@ describe('vpc flow logs', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
       ResourceType: 'TransitGateway',
-      TrafficType: 'ALL',
       ResourceId: 'tgw-123456',
       DeliverLogsPermissionArn: {
         'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
@@ -561,6 +560,17 @@ describe('vpc flow logs', () => {
         Ref: 'FlowLogsLogGroup9853A85F',
       },
     });
+  });
+
+  test('create with transit gateway id and specifiy traffic type', () => {
+    const stack = getTestStack();
+
+    expect(() => {
+      new FlowLog(stack, 'FlowLogs', {
+        resourceType: FlowLogResourceType.fromTransitGatewayId('tgw-123456'),
+        trafficType: FlowLogTrafficType.REJECT,
+      });
+    }).toThrow(/trafficType is not supported for Transit Gateway and Transit Gateway Attachment/);
   });
 
   test('create with transit gateway attachment id', () => {
@@ -572,7 +582,6 @@ describe('vpc flow logs', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
       ResourceType: 'TransitGatewayAttachment',
-      TrafficType: 'ALL',
       ResourceId: 'tgw-attach-123456',
       DeliverLogsPermissionArn: {
         'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
@@ -581,6 +590,17 @@ describe('vpc flow logs', () => {
         Ref: 'FlowLogsLogGroup9853A85F',
       },
     });
+  });
+
+  test('create with transit gateway attachment id and specifiy traffic type', () => {
+    const stack = getTestStack();
+
+    expect(() => {
+      new FlowLog(stack, 'FlowLogs', {
+        resourceType: FlowLogResourceType.fromTransitGatewayAttachmentId('tgw-attach-123456'),
+        trafficType: FlowLogTrafficType.REJECT,
+      });
+    }).toThrow(/trafficType is not supported for Transit Gateway and Transit Gateway Attachment/);
   });
 });
 
