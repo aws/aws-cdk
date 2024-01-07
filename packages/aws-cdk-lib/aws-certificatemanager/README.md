@@ -158,9 +158,12 @@ new acm.Certificate(this, 'Certificate', {
 
 ## Key Algorithms
 
-The [key algorithm](https://docs.aws.amazon.com/acm/latest/userguide/acm-certificate.html#algorithms.title) can be specified
-for each key. Only some values (highlighted in the linked article) are supported for certificate
-requests.
+To specify the algorithm of the public and private key pair that your certificate uses to encrypt data use the `keyAlgorithm` property.
+
+Algorithms supported for an ACM certificate request include:
+ * `RSA_2048`
+ * `EC_prime256v1`
+ * `EC_secp384r1`
 
 ```ts
 new acm.Certificate(this, 'Certificate', {
@@ -168,6 +171,8 @@ new acm.Certificate(this, 'Certificate', {
   keyAlgorithm: acm.KeyAlgorithm.EC_PRIME256V1,
 });
 ```
+
+> Visit [Key algorithms](https://docs.aws.amazon.com/acm/latest/userguide/acm-certificate.html#algorithms.title) for more details.
 
 ## Importing
 

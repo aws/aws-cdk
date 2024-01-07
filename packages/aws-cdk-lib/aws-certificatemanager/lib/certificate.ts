@@ -114,7 +114,7 @@ export interface CertificateProps {
    *
    * @see https://docs.aws.amazon.com/acm/latest/userguide/acm-certificate.html#algorithms.title
    *
-   * @default the CloudFormation default (RSA 2048 bit)
+   * @default - `RSA_2048`
    */
   readonly keyAlgorithm?: KeyAlgorithm;
 }
