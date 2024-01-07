@@ -379,7 +379,7 @@ describe('vpc', () => {
 
     });
 
-    test('with reserved public subnets, should not create the internet gateway', () => {
+    test('with only reserved subnets as public subnets, should not create the internet gateway', () => {
       const stack = getTestStack();
       const vpc = new Vpc(stack, 'TheVPC', {
         subnetConfiguration: [
