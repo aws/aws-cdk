@@ -117,6 +117,8 @@ export interface CertificateProps {
  *
  * If you need to use an algorithm that doesn't exist as a static member, you
  * can instantiate a `KeyAlgorithm` object, e.g: `new KeyAlgorithm('RSA_2048')`.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-keyalgorithm
  */
 export class KeyAlgorithm {
   /**
