@@ -1491,7 +1491,7 @@ export class Vpc extends VpcBase {
 
     const createInternetGateway = props.createInternetGateway ?? true;
     const allowOutbound = this.subnetConfiguration.filter(
-      subnet => (subnet.subnetType !== SubnetType.PRIVATE_ISOLATED && subnet.subnetType !== SubnetType.ISOLATED)).length > 0;
+      subnet => (subnet.subnetType !== SubnetType.PRIVATE_ISOLATED && subnet.subnetType !== SubnetType.ISOLATED && !subnet.reserved)).length > 0;
 
     // Create an Internet Gateway and attach it if necessary
     if (allowOutbound && createInternetGateway) {

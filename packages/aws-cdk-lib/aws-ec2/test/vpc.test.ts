@@ -379,6 +379,26 @@ describe('vpc', () => {
 
     });
 
+    test('with reserved public subnets, should not create the internet gateway', () => {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PRIVATE_ISOLATED,
+            name: 'isolated',
+          },
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'public',
+            reserved: true,
+          },
+        ],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::InternetGateway', 0);
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::VPCGatewayAttachment', 0);
+
+    });
+
     test('with subnets and reserved subnets defined, VPC subnet count should not contain reserved subnets ', () => {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', {
