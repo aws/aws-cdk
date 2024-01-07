@@ -542,6 +542,46 @@ describe('vpc flow logs', () => {
       MaxAggregationInterval: 60,
     });
   });
+
+  test('create with transit gateway id()`', () => {
+    const stack = getTestStack();
+
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromTransitGatewayId('tgw-123456'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      ResourceType: 'TransitGateway',
+      TrafficType: 'ALL',
+      ResourceId: 'tgw-123456',
+      DeliverLogsPermissionArn: {
+        'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
+      },
+      LogGroupName: {
+        Ref: 'FlowLogsLogGroup9853A85F',
+      },
+    });
+  });
+
+  test('create with transit gateway attachment id', () => {
+    const stack = getTestStack();
+
+    new FlowLog(stack, 'FlowLogs', {
+      resourceType: FlowLogResourceType.fromTransitGatewayAttachmentId('tgw-attach-123456'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::FlowLog', {
+      ResourceType: 'TransitGatewayAttachment',
+      TrafficType: 'ALL',
+      ResourceId: 'tgw-attach-123456',
+      DeliverLogsPermissionArn: {
+        'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
+      },
+      LogGroupName: {
+        Ref: 'FlowLogsLogGroup9853A85F',
+      },
+    });
+  });
 });
 
 test('add to vpc with maxAggregationInterval', () => {
@@ -721,3 +761,4 @@ test('with custom log format set custom, it not creates with cloudwatch log dest
     },
   });
 });
+
