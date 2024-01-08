@@ -56,12 +56,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.0.1.tgz#6dc9b7cdb22ff622a7176141197962360c33e9ac"
   integrity sha512-DDt4SLdLOwWCjGtltH4VCST7hpOI5DzieuhGZsBpZ+AgJdSI2GCjklCXm0GCTwJG/SolkL5dtQXyUKgg9luBDg==
 
-"@aws-cdk/aws-service-spec@^0.0.38":
-  version "0.0.38"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.0.38.tgz#bcc5fedaaec1358f3b299be7f6b60691b9d887eb"
-  integrity sha512-rnsZbD+S9RZxqQ6hhSmJEhW3iKgIkq1ztex74uYE7jFZszTIM0F1tdbnyb78RtC/+FuUwZ7FDnrXdQmWMMSsNg==
+"@aws-cdk/aws-service-spec@^0.0.40":
+  version "0.0.40"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.0.40.tgz#f1b7cb34323b060d6ab72df456f5a92ec8346bdf"
+  integrity sha512-ujRd7lEnmwsoaHAAY04QjjzKoOHnyEcv6APSEH7airjv+rodJG6713wZOWo5su8ESaC/1SE/+cFix2mKtpcz1Q==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.38"
+    "@aws-cdk/service-spec-types" "^0.0.40"
     "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/lambda-layer-kubectl-v24@^2.0.242":
@@ -89,6 +89,13 @@
   version "0.0.38"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.38.tgz#ca56478cdb0cdb2502ae5e332227553ff61a4c9b"
   integrity sha512-uFZpElN0flikUQvqtnKEDP1Q4bO+Dxsc1+GhL2bEm1Wb/oreBNhlRQJIQBzby4ABMC2iiZgqmKJ+peon1UTM4A==
+  dependencies:
+    "@cdklabs/tskb" "^0.0.3"
+
+"@aws-cdk/service-spec-types@^0.0.40":
+  version "0.0.40"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.40.tgz#348f67da375fbed4538f3dcbefae6f5458662b37"
+  integrity sha512-+UWCCRQ5CtkLVaiJMCdG+r/0ifHo/YIE2u0hhD731Ud1iO99cMEzulzMztfBXxNdX4ySNq9WthyJTFSFWWAxYw==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
@@ -5798,6 +5805,22 @@ aws-sdk-mock@5.8.0:
     aws-sdk "^2.1231.0"
     sinon "^14.0.1"
     traverse "^0.6.6"
+
+aws-sdk@2.1516.0:
+  version "2.1516.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1516.0.tgz#66c427bd800dbc3e502b946500d312cafec95611"
+  integrity sha512-RgTRRQR77NDYjnpCwA8/fv9bKTrbcugP6PaLduYtlMZa78fws/vROTe6bL6K+BRZ/lrWz6kW6xJJdN9KkkrOMw==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.16.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    util "^0.12.4"
+    uuid "8.0.0"
+    xml2js "0.5.0"
 
 aws-sdk@^2.1231.0, aws-sdk@^2.1517.0, aws-sdk@^2.928.0:
   version "2.1517.0"

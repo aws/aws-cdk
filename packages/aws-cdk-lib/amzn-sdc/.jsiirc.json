@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "amzn.sdc"
+    },
+    "dotnet": {
+      "package": "Amazon.CDK.AMZN.SDC"
+    },
+    "python": {
+      "module": "aws_cdk.amzn_sdc"
+    }
+  }
+}
