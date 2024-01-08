@@ -15,6 +15,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as kms from '../../aws-kms';
+import * as s3 from '../../aws-s3';
 import {
   ArnFormat, Resource,
   Aws, CfnCondition, CfnCustomResource, CfnResource, Duration,
@@ -42,6 +43,169 @@ export interface SchemaOptions {
    * @default no sort key
    */
   readonly sortKey?: Attribute;
+}
+
+/**
+ * Type of compression to use for imported data.
+ */
+export enum InputCompressionType {
+  /**
+   * GZIP compression.
+   */
+  GZIP = 'GZIP',
+
+  /**
+   * ZSTD compression.
+   */
+  ZSTD = 'ZSTD',
+
+  /**
+   * No compression.
+   */
+  NONE = 'NONE',
+}
+
+/**
+ * The options for imported source files in CSV format.
+ */
+export interface CsvOptions {
+  /**
+   * The delimiter used for separating items in the CSV file being imported.
+   *
+   * Valid delimiters are as follows:
+   * - comma (`,`)
+   * - tab (`\t`)
+   * - colon (`:`)
+   * - semicolon (`;`)
+   * - pipe (`|`)
+   * - space (` `)
+   *
+   * @default - use comma as a delimiter.
+   */
+  readonly delimiter?: string;
+
+  /**
+   * List of the headers used to specify a common header for all source CSV files being imported.
+   *
+   * **NOTE**: If this field is specified then the first line of each CSV file is treated as data instead of the header.
+   * If this field is not specified the the first line of each CSV file is treated as the header.
+   *
+   * @default - the first line of the CSV file is treated as the header
+   */
+  readonly headerList?: string[];
+}
+
+/**
+ * The format of the source data.
+ */
+export abstract class InputFormat {
+  /**
+   * DynamoDB JSON format.
+   */
+  public static dynamoDBJson(): InputFormat {
+    return new class extends InputFormat {
+      public _render(): Pick<CfnTable.ImportSourceSpecificationProperty, 'inputFormat' | 'inputFormatOptions'> {
+        return {
+          inputFormat: 'DYNAMODB_JSON',
+        };
+      }
+    }();
+  }
+
+  /**
+   * Amazon Ion format.
+   */
+  public static ion(): InputFormat {
+    return new class extends InputFormat {
+      public _render(): Pick<CfnTable.ImportSourceSpecificationProperty, 'inputFormat' | 'inputFormatOptions'> {
+        return {
+          inputFormat: 'ION',
+        };
+      }
+    }();
+  }
+
+  /**
+   * CSV format.
+   */
+  public static csv(options?: CsvOptions): InputFormat {
+    // We are using the .length property to check the length of the delimiter.
+    // Note that .length may not return the expected result for multi-codepoint characters like full-width characters or emojis,
+    // but such characters are not expected to be used as delimiters in this context.
+    if (options?.delimiter && (!this.validCsvDelimiters.includes(options.delimiter) || options.delimiter.length !== 1)) {
+      throw new Error([
+        'Delimiter must be a single character and one of the following:',
+        `${this.readableValidCsvDelimiters.join(', ')},`,
+        `got '${options.delimiter}'`,
+      ].join(' '));
+    }
+
+    return new class extends InputFormat {
+      public _render(): Pick<CfnTable.ImportSourceSpecificationProperty, 'inputFormat' | 'inputFormatOptions'> {
+        return {
+          inputFormat: 'CSV',
+          inputFormatOptions: {
+            csv: {
+              delimiter: options?.delimiter,
+              headerList: options?.headerList,
+            },
+          },
+        };
+      }
+    }();
+  }
+
+  /**
+   * Valid CSV delimiters.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-csv.html#cfn-dynamodb-table-csv-delimiter
+   */
+  private static validCsvDelimiters = [',', '\t', ':', ';', '|', ' '];
+
+  private static readableValidCsvDelimiters = ['comma (,)', 'tab (\\t)', 'colon (:)', 'semicolon (;)', 'pipe (|)', 'space ( )'];
+
+  /**
+   * Render the input format and options.
+   *
+   * @internal
+   */
+  public abstract _render(): Pick<CfnTable.ImportSourceSpecificationProperty, 'inputFormat' | 'inputFormatOptions'>;
+}
+
+/**
+ *  Properties for importing data from the S3.
+ */
+export interface ImportSourceSpecification {
+  /**
+   * Type of compression to be used on the input coming from the imported table.
+   *
+   * @default InputCompressionType.NONE
+   */
+  readonly compressionType?: InputCompressionType;
+
+  /**
+   * The format of the imported data.
+   */
+  readonly inputFormat: InputFormat;
+
+  /**
+   * The S3 bucket that is being imported from.
+   */
+  readonly bucket: s3.IBucket;
+
+  /**
+   * The account number of the S3 bucket that is being imported from.
+   *
+   * @default - no value
+   */
+  readonly bucketOwner?: string;
+
+  /**
+   * The key prefix shared by all S3 Objects that are being imported.
+   *
+   * @default - no value
+   */
+  readonly keyPrefix?: string;
 }
 
 /**
@@ -199,6 +363,13 @@ export interface TableOptions extends SchemaOptions {
    * @default false
    */
   readonly deletionProtection?: boolean;
+
+  /**
+   * Specifies the properties of data being imported from the S3 bucket source to the table.
+   *
+   * @default - no data import from the S3 bucket
+   */
+  readonly importSource?: ImportSourceSpecification;
 }
 
 /**
@@ -923,6 +1094,7 @@ export class Table extends TableBase {
       contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
       deletionProtectionEnabled: props.deletionProtection,
+      importSourceSpecification: props.importSource ? this.renderImportSourceSpecification(props.importSource) : undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
@@ -1451,6 +1623,20 @@ export class Table extends TableBase {
       default:
         throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
     }
+  }
+
+  private renderImportSourceSpecification(
+    importSource: ImportSourceSpecification,
+  ): CfnTable.ImportSourceSpecificationProperty | undefined {
+    return {
+      ...importSource.inputFormat._render(),
+      inputCompressionType: importSource.compressionType,
+      s3BucketSource: {
+        s3Bucket: importSource.bucket.bucketName,
+        s3BucketOwner: importSource.bucketOwner,
+        s3KeyPrefix: importSource.keyPrefix,
+      },
+    };
   }
 }
 

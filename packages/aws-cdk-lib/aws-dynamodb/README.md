@@ -783,3 +783,98 @@ const barStack = new BarStack(app, 'BarStack', {
   env: { region: 'us-east-1' },
 });
 ```
+
+## import from S3 Bucket
+You can import data in S3 when creating a Table using the `Table` construct.
+To import data into DynamoDB, it is required that your data is in a CSV, DynamoDB JSON, or Amazon Ion format within an Amazon S3 bucket.
+The data may be compressed using ZSTD or GZIP formats, or you may choose to import it without compression.
+The data source can be a single S3 object or multiple S3 objects sharing a common prefix.
+
+
+Further reading:
+https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/S3DataImport.HowItWorks.html
+
+### use CSV format
+The `InputFormat.csv` method accepts `delimiter` and `headerList` options as arguments.
+If `delimiter` is not specified, `,` is used by default.
+And if `headerList` is specified, the first line of CSV is treated as data instead of header.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
+
+declare const bucket: s3.IBucket;
+
+new dynamodb.Table(stack, 'Table', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  importSource: {
+    compressionType: InputCompressionType.GZIP,
+    inputFormat: InputFormat.csv({
+      delimiter: ',',
+      headerList: ['id', 'name'],
+    }),
+    bucket,
+    keyPrefix: 'prefix',
+  },
+});
+```
+
+### use DynamoDB JSON format
+Use the `InputFormat.dynamoDBJson()` method to specify the `inputFormat` property.
+There are currently no options available.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
+
+declare const bucket: s3.IBucket;
+
+new dynamodb.Table(stack, 'Table', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  importSource: {
+    compressionType: InputCompressionType.GZIP,
+    inputFormat: InputFormat.dynamoDBJson(),
+    bucket,
+    keyPrefix: 'prefix',
+  },
+});
+```
+
+### use Amazon Ion format
+Use the `InputFormat.ion()` method to specify the `inputFormat` property.
+There are currently no options available.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'Stack');
+
+declare const bucket: s3.IBucket;
+
+new dynamodb.Table(stack, 'Table', {
+  partitionKey: {
+    name: 'id',
+    type: dynamodb.AttributeType.STRING,
+  },
+  importSource: {
+    compressionType: InputCompressionType.GZIP,
+    inputFormat: InputFormat.ion(),
+    bucket,
+    keyPrefix: 'prefix',
+  },
+});
+```
