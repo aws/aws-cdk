@@ -6,7 +6,7 @@ import { SecurityGroupChanges } from '../network/security-group-changes';
 
 export type PropertyMap = {[key: string]: any };
 
-export type ResourceReplacements = { [logicalId: string]: ResourceReplacement };
+export type ResourceReplacements = { [logicalId: string]: ResourceReplacement | ResourceReplacements };
 
 export interface ResourceReplacement {
   resourceReplaced: boolean,
