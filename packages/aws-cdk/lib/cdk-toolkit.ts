@@ -200,34 +200,27 @@ export class CdkToolkit {
           stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
         }
 
-        let currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
-        let nestedStackCount = 0;
-        let changeSet = undefined;
+        const templateWithNames = await this.props.deployments.readCurrentTemplateWithNestedStacks(
+          stack, options.compareAgainstProcessedTemplate,
+        );
 
-        if (options.changeSet) {
-          changeSet = await createDiffChangeSet({
-            stack,
-            uuid: uuid.v4(),
-            deployments: this.props.deployments,
-            willExecute: false,
-            sdkProvider: this.props.sdkProvider,
-            parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
-            stream,
-          });
+        const currentTemplate = templateWithNames.deployedTemplate;
+        const nestedStackCount = templateWithNames.nestedStackCount;
 
-          stream.write(JSON.stringify(changeSet));
-        } else {
-          const templateWithNames = await this.props.deployments.readCurrentTemplateWithNestedStacks(
-            stack, options.compareAgainstProcessedTemplate,
-          );
-          currentTemplate = templateWithNames.deployedTemplate;
-          nestedStackCount = templateWithNames.nestedStackCount;
-        }
+        const changeSet = options.changeSet ? await createDiffChangeSet({
+          stack,
+          uuid: uuid.v4(),
+          deployments: this.props.deployments,
+          willExecute: false,
+          sdkProvider: this.props.sdkProvider,
+          parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
+          stream,
+        }) : undefined;
 
         const stackCount =
-          options.securityOnly
-            ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)) > 0 ? 1 : 0)
-            : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream) > 0 ? 1 : 0);
+        options.securityOnly
+          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)) > 0 ? 1 : 0)
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream) > 0 ? 1 : 0);
 
         diffs += stackCount + nestedStackCount;
       }
