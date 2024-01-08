@@ -7,6 +7,7 @@ import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
 import { SdkProvider } from '../aws-auth';
 import { Deployments } from '../deployments';
+import { populateNestedChangeSet } from '../nested-stack-helpers';
 
 export type Template = {
   Parameters?: Record<string, TemplateParameter>;
@@ -382,6 +383,7 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<CloudFo
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   // Fetching all pages if we'll execute, so we can have the correct change count when monitoring.
   const createdChangeSet = await waitForChangeSet(options.cfn, options.stack.stackName, options.changeSetName, { fetchAll: options.willExecute });
+  await populateNestedChangeSet(createdChangeSet, options.cfn);
   await cleanupOldChangeset(options.exists, options.changeSetName, options.stack.stackName, options.cfn);
 
   return createdChangeSet;
