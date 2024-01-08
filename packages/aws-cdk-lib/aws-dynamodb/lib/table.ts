@@ -365,7 +365,7 @@ export interface TableOptions extends SchemaOptions {
   readonly deletionProtection?: boolean;
 
   /**
-   * Specifies the properties of data being imported from the S3 bucket source to the table.
+   * The properties of data being imported from the S3 bucket source to the table.
    *
    * @default - no data import from the S3 bucket
    */
