@@ -814,8 +814,8 @@ new dynamodb.Table(stack, 'Table', {
     type: dynamodb.AttributeType.STRING,
   },
   importSource: {
-    compressionType: InputCompressionType.GZIP,
-    inputFormat: InputFormat.csv({
+    compressionType: dynamodb.InputCompressionType.GZIP,
+    inputFormat: dynamodb.InputFormat.csv({
       delimiter: ',',
       headerList: ['id', 'name'],
     }),
@@ -844,8 +844,8 @@ new dynamodb.Table(stack, 'Table', {
     type: dynamodb.AttributeType.STRING,
   },
   importSource: {
-    compressionType: InputCompressionType.GZIP,
-    inputFormat: InputFormat.dynamoDBJson(),
+    compressionType: dynamodb.InputCompressionType.GZIP,
+    inputFormat: dynamodb.InputFormat.dynamoDBJson(),
     bucket,
     keyPrefix: 'prefix',
   },
@@ -871,8 +871,8 @@ new dynamodb.Table(stack, 'Table', {
     type: dynamodb.AttributeType.STRING,
   },
   importSource: {
-    compressionType: InputCompressionType.GZIP,
-    inputFormat: InputFormat.ion(),
+    compressionType: dynamodb.InputCompressionType.GZIP,
+    inputFormat: dynamodb.InputFormat.ion(),
     bucket,
     keyPrefix: 'prefix',
   },
