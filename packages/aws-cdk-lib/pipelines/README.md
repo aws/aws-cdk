@@ -16,17 +16,18 @@ everything you need. If you want or need more control, we recommend you drop
 down to using the `aws-codepipeline` construct library directly.
 
 > This module contains two sets of APIs: an **original** and a **modern** version of
-CDK Pipelines. The *modern* API has been updated to be easier to work with and
-customize, and will be the preferred API going forward. The *original* version
-of the API is still available for backwards compatibility, but we recommend migrating
-to the new version if possible.
+> CDK Pipelines. The *modern* API has been updated to be easier to work with and
+> customize, and will be the preferred API going forward. The *original* version
+> of the API is still available for backwards compatibility, but we recommend migrating
+> to the new version if possible.
 >
 > Compared to the original API, the modern API: has more sensible defaults; is
 > more flexible; supports parallel deployments; supports multiple synth inputs;
 > allows more control of CodeBuild project generation; supports deployment
 > engines other than CodePipeline.
 >
-> The README for the original API, as well as a migration guide, can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
+> The README for the original API, as well as a migration guide, can be found in
+> [our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
 
 ## At a glance
 
