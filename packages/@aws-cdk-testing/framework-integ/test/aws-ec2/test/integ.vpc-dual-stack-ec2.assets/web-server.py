@@ -11,18 +11,16 @@ class MyRequestHandler(SimpleHTTPRequestHandler):
 
             try:
                 # IPv4 request
-                response = urllib.request.urlopen('http://www.google.com')
+                response = urllib.request.urlopen('http://ipv4.google.com')
                 status_code = response.getcode()  
                 if (status_code != 200):
                   raise Exception(f"Received a non-successful status code: {status_code}")
-                # self.wfile.write(bytes(f"Status code from www.google.com: {status_code}\n\n", 'utf-8'))
 
                 # IPv6 request
                 response = urllib.request.urlopen('http://ipv6.google.com')
                 status_code = response.getcode()  
                 if (status_code != 200):
                   raise Exception(f"Received a non-successful status code: {status_code}")
-                # self.wfile.write(bytes(f"Status code from ipv6.google.com: {status_code}\n\n", 'utf-8'))
 
                 json_response = { 
                     "status": status_code
