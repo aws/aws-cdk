@@ -173,7 +173,7 @@ export enum VpcProtocol {
   /**
    * The vpc will have both IPv4 and IPv6 addresses.
    *
-   * Unless specified, IPv4 addresses will not be auto assigned,
+   * Unless specified, public IPv4 addresses will not be auto assigned,
    * an egress only internet gateway (EIGW) will be created and configured,
    * and NATs and internet gateways (IGW) will be configured with IPv6 addresses.
    */
