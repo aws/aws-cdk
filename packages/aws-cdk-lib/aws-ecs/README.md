@@ -692,10 +692,9 @@ new ecs.ExternalService(this, 'Service', {
 
 ### Deployment circuit breaker and rollback
 
-Amazon ECS [deployment circuit breaker](https://aws.amazon.com/tw/blogs/containers/announcing-amazon-ecs-deployment-circuit-breaker/)
-automatically rolls back unhealthy service deployments without the need for manual intervention. Use `circuitBreaker` to enable
-deployment circuit breaker and optionally enable `rollback` for automatic rollback. See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html)
-for more details.
+The Amazon ECS [deployment circuit breaker](https://aws.amazon.com/tw/blogs/containers/announcing-amazon-ecs-deployment-circuit-breaker/) automatically rolls back unhealthy service deployments, eliminating the need for manual intervention. By including the `circuitBreaker` parameter, you can activate this feature. Within `circuitBreaker`, the `enable` parameter is optional and defaults to true, which turns on the circuit breaker. If `circuitBreaker` is not specified, the feature remains disabled. You also have the option to explicitly set `enable` to false, which is useful for disabling an active circuit breaker. Additionally, specifying `rollback` triggers automatic rollback of deployments.
+
+See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html) for more details.
 
 ```ts
 declare const cluster: ecs.Cluster;
@@ -703,7 +702,10 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
-  circuitBreaker: { rollback: true },
+  circuitBreaker: {
+    enable: true,
+    rollback: true
+  },
 });
 ```
 
