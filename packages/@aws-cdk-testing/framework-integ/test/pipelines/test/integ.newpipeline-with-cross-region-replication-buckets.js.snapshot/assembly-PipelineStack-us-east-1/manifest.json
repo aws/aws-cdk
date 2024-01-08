@@ -1,0 +1,60 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "PipelineStackuseast1Queue1822FD5F8.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "PipelineStackuseast1Queue1822FD5F8.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "PipelineStackuseast1Queue1822FD5F8": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "PipelineStackuseast1Queue1822FD5F8.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": true,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/0cb2dea76b65bd66a374af57914e8583b3c20712b5758474102ef97620d68ec5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "PipelineStackuseast1Queue1822FD5F8.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "stackName": "us-east-1-Queue1"
+      },
+      "dependencies": [
+        "PipelineStackuseast1Queue1822FD5F8.assets"
+      ],
+      "metadata": {
+        "/PipelineStack/us-east-1/Queue1/Queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Queue4A7E3555"
+          }
+        ],
+        "/PipelineStack/us-east-1/Queue1/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/PipelineStack/us-east-1/Queue1/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "PipelineStack/us-east-1/Queue1"
+    }
+  }
+}
