@@ -215,8 +215,6 @@ describe('Migrate Function Tests', () => {
 
     expect(fs.pathExists(path.join(workDir, 's3.go'))).toBeTruthy();
     const app = fs.readFileSync(path.join(workDir, 'GoodGo', 'good_go.go'), 'utf8').split('\n');
-    // eslint-disable-next-line no-console
-    console.log(app);
     expect(app.map(line => line.match(/func NewGoodGoStack\(scope constructs.Construct, id string, props \*GoodGoStackProps\) \*GoodGoStack \{/)).filter(line => line).length).toEqual(1);
     expect(app.map(line => line.match(/    NewGoodGoStack\(app, "GoodGo", &GoodGoStackProps\{/)));
   });
