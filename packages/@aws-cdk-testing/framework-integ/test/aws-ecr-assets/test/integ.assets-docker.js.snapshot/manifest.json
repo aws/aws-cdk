@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "integ-assets-docker.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-assets-docker.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/edc1ba041db81671404e8a861496095ba07bd672d374473e59818e6cb877af42.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dc6c330d80747fedea628640e7c21c876ca149b8dac5aa89f5a0ad046e584a71.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -85,6 +86,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ImageUri7"
+          }
+        ],
+        "/integ-assets-docker/ImageUri8": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImageUri8"
           }
         ],
         "/integ-assets-docker/BootstrapVersion": [

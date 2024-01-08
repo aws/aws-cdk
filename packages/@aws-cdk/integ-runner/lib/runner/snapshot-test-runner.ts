@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Writable, WritableOptions } from 'stream';
 import { StringDecoder } from 'string_decoder';
-import { diffTemplate, formatDifferences, ResourceDifference, ResourceImpact } from '@aws-cdk/cloudformation-diff';
+import { fullDiff, formatDifferences, ResourceDifference, ResourceImpact } from '@aws-cdk/cloudformation-diff';
 import { AssemblyManifestReader } from './private/cloud-assembly';
 import { IntegRunnerOptions, IntegRunner, DEFAULT_SYNTH_OPTIONS } from './runner-base';
 import { Diagnostic, DiagnosticReason, DestructiveChange, SnapshotVerificationOptions } from '../workers/common';
@@ -211,7 +211,7 @@ export class IntegSnapshotRunner extends IntegRunner {
             actualTemplate = this.canonicalizeTemplate(actualTemplate, actual[stackId].assets);
             expectedTemplate = this.canonicalizeTemplate(expectedTemplate, expected[stackId].assets);
           }
-          const templateDiff = diffTemplate(expectedTemplate, actualTemplate);
+          const templateDiff = fullDiff(expectedTemplate, actualTemplate);
           if (!templateDiff.isEmpty) {
             const allowedDestroyTypes = this.getAllowedDestroyTypesForStack(stackId) ?? [];
 
