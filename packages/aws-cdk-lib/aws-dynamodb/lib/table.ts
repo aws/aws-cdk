@@ -1094,7 +1094,7 @@ export class Table extends TableBase {
       contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
       deletionProtectionEnabled: props.deletionProtection,
-      importSourceSpecification: props.importSource ? this.renderImportSourceSpecification(props.importSource) : undefined,
+      importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
@@ -1626,8 +1626,10 @@ export class Table extends TableBase {
   }
 
   private renderImportSourceSpecification(
-    importSource: ImportSourceSpecification,
+    importSource?: ImportSourceSpecification,
   ): CfnTable.ImportSourceSpecificationProperty | undefined {
+    if (!importSource) return undefined;
+
     return {
       ...importSource.inputFormat._render(),
       inputCompressionType: importSource.compressionType,
