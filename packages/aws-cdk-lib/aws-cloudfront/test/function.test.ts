@@ -259,7 +259,7 @@ describe('CloudFront Function', () => {
 
     test('empty list is equivalent to not specifying', () => {
       const stack = new Stack();
-  
+
       new Function(stack, 'TestFn', {
         code: FunctionCode.fromInline('code'),
         runtime: FunctionRuntime.JS_2_0,
