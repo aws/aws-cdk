@@ -12,7 +12,7 @@ export class IpAddresses {
   /**
    * Used to provide local Ip Address Management services for your VPC
    *
-   * VPC Cidr is supplied at creation and subnets are calculated locally
+   * VPC CIDR is supplied at creation and subnets are calculated locally
    *
    * Note this is specific to the IPv4 CIDR.
    *
@@ -24,7 +24,7 @@ export class IpAddresses {
   /**
    * Used to provide centralized Ip Address Management services for your VPC
    *
-   * Uses VPC Cidr allocations from AWS IPAM
+   * Uses VPC CIDR allocations from AWS IPAM
    *
    * Note this is specific to the IPv4 CIDR.
    *
@@ -59,19 +59,19 @@ export interface IIpAddresses {
 }
 
 /**
- * Cidr Allocated Vpc
+ * CIDR Allocated Vpc
  */
 export interface VpcIpamOptions {
 
   /**
-   * Cidr Block for Vpc
+   * CIDR Block for Vpc
    *
    * @default - Only required when Ipam has concrete allocation available for static Vpc
    */
   readonly cidrBlock?: string;
 
   /**
-   * Cidr Mask for Vpc
+   * CIDR Mask for Vpc
    *
    * @default - Only required when using AWS Ipam
    */
@@ -122,7 +122,7 @@ interface IRequestedSubnetInstance {
 }
 
 /**
- * Request for subnets Cidr to be allocated for a Vpc
+ * Request for subnets CIDR to be allocated for a Vpc
  */
 export interface AllocateCidrRequest {
 
@@ -153,28 +153,28 @@ export interface AllocateIpv6CidrRequest {
 }
 
 /**
- * Cidr Allocated Subnets
+ * CIDR Allocated Subnets
  */
 export interface SubnetIpamOptions {
   /**
-   * Cidr Allocations for Subnets
+   * CIDR Allocations for Subnets
    */
   readonly allocatedSubnets: AllocatedSubnet[];
 }
 
 /**
- * Cidr Allocated Subnet
+ * CIDR Allocated Subnet
  */
 export interface AllocatedSubnet {
   /**
-   * IPv4 Cidr Allocations for a Subnet.
+   * IPv4 CIDR Allocations for a Subnet.
    *
    * Note this is specific to the IPv4 CIDR.
    */
   readonly cidr: string;
 
   /**
-   * IPv6 Cidr Allocations for a Subnet.
+   * IPv6 CIDR Allocations for a Subnet.
    *
    * Note this is specific to the IPv6 CIDR.
    *
@@ -233,7 +233,7 @@ class AwsIpam implements IIpAddresses {
   }
 
   /**
-   * Allocates Vpc Cidr. called when creating a Vpc using AwsIpam.
+   * Allocates Vpc CIDR. called when creating a Vpc using AwsIpam.
    */
   allocateVpcCidr(): VpcIpamOptions {
     return {
@@ -243,7 +243,7 @@ class AwsIpam implements IIpAddresses {
   }
 
   /**
-   * Allocates Subnets Cidrs. Called by VPC when creating subnets.
+   * Allocates Subnets CIDRs. Called by VPC when creating subnets.
    */
   allocateSubnetsCidr(input: AllocateCidrRequest): SubnetIpamOptions {
 
@@ -341,7 +341,7 @@ class Cidr implements IIpAddresses {
   }
 
   /**
-   * Allocates Vpc Cidr. called when creating a Vpc using IpAddresses.cidr.
+   * Allocates Vpc CIDR. Called when creating a Vpc using IpAddresses.cidr.
    */
   allocateVpcCidr(): VpcIpamOptions {
     return {
