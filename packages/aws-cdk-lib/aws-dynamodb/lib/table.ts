@@ -177,7 +177,7 @@ export abstract class InputFormat {
  */
 export interface ImportSourceSpecification {
   /**
-   * Type of compression to be used on the input coming from the imported table.
+   * The compression type of the imported data.
    *
    * @default InputCompressionType.NONE
    */
