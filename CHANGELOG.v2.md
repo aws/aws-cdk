@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.118.0](https://github.com/aws/aws-cdk/compare/v2.117.0...v2.118.0) (2024-01-03)
+
+
+### Features
+
+* **appsync:** IntrospectionConfig property ([#28500](https://github.com/aws/aws-cdk/issues/28500)) ([98ed6b3](https://github.com/aws/aws-cdk/commit/98ed6b3346e4afd423592296bb1620d20544acad)), closes [#28429](https://github.com/aws/aws-cdk/issues/28429)
+* **autoscaling:** add support for `InstanceRequirements` property ([#28464](https://github.com/aws/aws-cdk/issues/28464)) ([276e3a6](https://github.com/aws/aws-cdk/commit/276e3a66febf32afc65a93d7296ec6be8f6e2126)), closes [#28393](https://github.com/aws/aws-cdk/issues/28393)
+* **cloudfront:** CloudFront Function runtime property ([#28099](https://github.com/aws/aws-cdk/issues/28099)) ([9b466ae](https://github.com/aws/aws-cdk/commit/9b466ae136910d07d4297a31f1010fa26ce864d0)), closes [#28163](https://github.com/aws/aws-cdk/issues/28163)
+* **cloudfront:** Key Value Store L2 ([#28473](https://github.com/aws/aws-cdk/issues/28473)) ([030db42](https://github.com/aws/aws-cdk/commit/030db42ad06a471af3833665cb80dceee034aa02)), closes [#28377](https://github.com/aws/aws-cdk/issues/28377)
+* **codepipeline-actions:** more convenient methods to `CacheControl` ([#28491](https://github.com/aws/aws-cdk/issues/28491)) ([a59dc0c](https://github.com/aws/aws-cdk/commit/a59dc0cb79af98ee601f352a7cf1b5fa9cc4d365)), closes [#25477](https://github.com/aws/aws-cdk/issues/25477)
+* **ecs:** `interactive` option in `ContainerDefinitionOptions` ([#28536](https://github.com/aws/aws-cdk/issues/28536)) ([1f9788f](https://github.com/aws/aws-cdk/commit/1f9788f8ad45c0f159c9b7e6bafb76763e9b0bea)), closes [#24326](https://github.com/aws/aws-cdk/issues/24326)
+* **ecs:** enable cluster to grant task protection API permissions to IAM entities ([#28486](https://github.com/aws/aws-cdk/issues/28486)) ([9bc972b](https://github.com/aws/aws-cdk/commit/9bc972b923b66248fb8392e9cba1b2b5829c6e1b)), closes [#26233](https://github.com/aws/aws-cdk/issues/26233)
+* **ecs:** nvidia support to BottlerocketEcsVariant enum for gpu-accelerated tasks ([#28488](https://github.com/aws/aws-cdk/issues/28488)) ([832e29a](https://github.com/aws/aws-cdk/commit/832e29a47c2cb67558c0148a3bf1fa22e4d5cb82)), closes [#25980](https://github.com/aws/aws-cdk/issues/25980)
+* **iam:** validate roleName ([#28509](https://github.com/aws/aws-cdk/issues/28509)) ([999c01a](https://github.com/aws/aws-cdk/commit/999c01a1250308b482fe33e651d7ee8da1f96956)), closes [#28502](https://github.com/aws/aws-cdk/issues/28502)
+* **opensearchservice:** ip address type for domain ([#28497](https://github.com/aws/aws-cdk/issues/28497)) ([6b80338](https://github.com/aws/aws-cdk/commit/6b80338be59bdfa1d14d81fa1ae79f2eda889b37)), closes [#28436](https://github.com/aws/aws-cdk/issues/28436)
+* **rds:** `timeout` and `timeoutAction` properties to ServerlessCluster ([#28534](https://github.com/aws/aws-cdk/issues/28534)) ([508825b](https://github.com/aws/aws-cdk/commit/508825b14d6ccae7274afc08487329162182e887)), closes [#27183](https://github.com/aws/aws-cdk/issues/27183)
+* **rds:** ClientPasswordAuthType property on DatabaseProxy ([#28540](https://github.com/aws/aws-cdk/issues/28540)) ([669e6ff](https://github.com/aws/aws-cdk/commit/669e6ffc6e9d8c7b06cb0f62348635f933b6f823)), closes [#28415](https://github.com/aws/aws-cdk/issues/28415)
+* **rds:** new Aurora Postgres engine versions ([#28508](https://github.com/aws/aws-cdk/issues/28508)) ([9d8b06f](https://github.com/aws/aws-cdk/commit/9d8b06f6478a98e01e3aaa86c1dbf22d6e861f05))
+* **stepfunctions-tasks:** add `timeout` parameter for EmrCreateCluster ([#28532](https://github.com/aws/aws-cdk/issues/28532)) ([ca91626](https://github.com/aws/aws-cdk/commit/ca91626327ac4a138adc16026d951f21fadf86a3)), closes [/github.com/aws/aws-cdk/pull/28529#discussion_r1438587964](https://github.com/aws//github.com/aws/aws-cdk/pull/28529/issues/discussion_r1438587964)
+* **stepfunctions-tasks:** add validations for EmrCreateCluster ([#28529](https://github.com/aws/aws-cdk/issues/28529)) ([e0b725c](https://github.com/aws/aws-cdk/commit/e0b725cd39a01a8387dcf28921e0912552eb7fce))
+* **stepfunctions-tasks:** additional allocation strategies for spot instance fleets in EmrCreateCluster ([#28525](https://github.com/aws/aws-cdk/issues/28525)) ([94003ec](https://github.com/aws/aws-cdk/commit/94003ecb056e56623aa6621a2d013c1a7e3dcebe))
+
+
+### Bug Fixes
+
+* **cli:** direct deploy method fails when there are no updates ([#28523](https://github.com/aws/aws-cdk/issues/28523)) ([dde5975](https://github.com/aws/aws-cdk/commit/dde59755cb71aee73a58f3b2c2068f2ae01e9b72)), closes [/github.com/aws/aws-cdk/blob/9d8b06f6478a98e01e3aaa86c1dbf22d6e861f05/packages/aws-cdk/lib/api/util/cloudformation.ts#L290-L296](https://github.com/aws//github.com/aws/aws-cdk/blob/9d8b06f6478a98e01e3aaa86c1dbf22d6e861f05/packages/aws-cdk/lib/api/util/cloudformation.ts/issues/L290-L296)
+* **events:** event bus fails with duplicate policy resource ([#28521](https://github.com/aws/aws-cdk/issues/28521)) ([166967f](https://github.com/aws/aws-cdk/commit/166967f11727a28fc11b9af5de0fad6da2a4ad64)), closes [#27340](https://github.com/aws/aws-cdk/issues/27340) [#28520](https://github.com/aws/aws-cdk/issues/28520)
+* **iam:** withConditions overrides Principal actions ([#28510](https://github.com/aws/aws-cdk/issues/28510)) ([0b345c5](https://github.com/aws/aws-cdk/commit/0b345c5a98a61ae7a587e5578ffdfc69885bb676)), closes [#28426](https://github.com/aws/aws-cdk/issues/28426)
+* **rds:** circular dependencies when creating multiple DatabaseProxies ([#28471](https://github.com/aws/aws-cdk/issues/28471)) ([a12d9eb](https://github.com/aws/aws-cdk/commit/a12d9eb75cc110657a73c6cb82399d572696d36e)), closes [/github.com/aws/aws-cdk/blob/cd54c4239ec29182e30fd91634505df560d6e5f8/packages/aws-cdk-lib/aws-rds/lib/cluster.ts#L446](https://github.com/aws//github.com/aws/aws-cdk/blob/cd54c4239ec29182e30fd91634505df560d6e5f8/packages/aws-cdk-lib/aws-rds/lib/cluster.ts/issues/L446) [#25633](https://github.com/aws/aws-cdk/issues/25633)
+
 ## [2.117.0](https://github.com/aws/aws-cdk/compare/v2.116.1...v2.117.0) (2023-12-26)
 
 
