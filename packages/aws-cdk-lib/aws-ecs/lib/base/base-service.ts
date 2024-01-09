@@ -69,9 +69,9 @@ export interface DeploymentController {
  */
 export interface DeploymentCircuitBreaker {
   /**
-  * Whether to enable the deployment circuit breaker logic
-  * @default true
-  */
+   * Whether to enable the deployment circuit breaker logic
+   * @default - true
+   */
   readonly enable?: boolean;
 
   /**
