@@ -1,20 +1,12 @@
 import { Construct } from 'constructs';
-import {
-  Arn,
-  CustomResource,
-  IResource,
-  Resource,
-  Token,
-} from '../../core';
-import { OidcProvider } from '../../custom-resource-handlers/dist/aws-iam/oidc-provider.generated';
-
-const RESOURCE_TYPE = 'Custom::AWSCDKOpenIdConnectProvider';
+import { CfnOIDCProvider } from './iam.generated';
+import { Arn, IResource, Resource, Token } from '../../core';
 
 /**
  * Represents an IAM OpenID Connect provider.
  *
  */
-export interface IOpenIdConnectProvider extends IResource {
+export interface IOpenIdConnectProvider2 extends IResource {
   /**
    * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
    */
@@ -29,7 +21,7 @@ export interface IOpenIdConnectProvider extends IResource {
 /**
  * Initialization properties for `OpenIdConnectProvider`.
  */
-export interface OpenIdConnectProviderProps {
+export interface OpenIdConnectProvider2Props {
   /**
    * The URL of the identity provider. The URL must begin with https:// and
    * should correspond to the iss claim in the provider's OpenID Connect ID
@@ -97,20 +89,28 @@ export interface OpenIdConnectProviderProps {
  * @see http://openid.net/connect
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_oidc.html
  *
- * @resource AWS::CloudFormation::CustomResource
- * @deprecated Use { @link OpenIdConnectProvider2 } instead.
+ * @resource AWS::IAM::OIDCProvider
  */
-export class OpenIdConnectProvider extends Resource implements IOpenIdConnectProvider {
+export class OpenIdConnectProvider2
+  extends Resource
+  implements IOpenIdConnectProvider2 {
   /**
    * Imports an Open ID connect provider from an ARN.
    * @param scope The definition scope
    * @param id ID of the construct
    * @param openIdConnectProviderArn the ARN to import
    */
-  public static fromOpenIdConnectProviderArn(scope: Construct, id: string, openIdConnectProviderArn: string): IOpenIdConnectProvider {
-    const resourceName = Arn.extractResourceName(openIdConnectProviderArn, 'oidc-provider');
+  public static fromOpenIdConnectProviderArn(
+    scope: Construct,
+    id: string,
+    openIdConnectProviderArn: string,
+  ): IOpenIdConnectProvider2 {
+    const resourceName = Arn.extractResourceName(
+      openIdConnectProviderArn,
+      'oidc-provider2',
+    );
 
-    class Import extends Resource implements IOpenIdConnectProvider {
+    class Import extends Resource implements IOpenIdConnectProvider2 {
       public readonly openIdConnectProviderArn = openIdConnectProviderArn;
       public readonly openIdConnectProviderIssuer = resourceName;
     }
@@ -136,45 +136,26 @@ export class OpenIdConnectProvider extends Resource implements IOpenIdConnectPro
    * @param id Construct ID
    * @param props Initialization properties
    */
-  public constructor(scope: Construct, id: string, props: OpenIdConnectProviderProps) {
+  public constructor(
+    scope: Construct,
+    id: string,
+    props: OpenIdConnectProvider2Props,
+  ) {
     super(scope, id);
 
-    const provider = this.getOrCreateProvider();
-    const resource = new CustomResource(this, 'Resource', {
-      resourceType: RESOURCE_TYPE,
-      serviceToken: provider.serviceToken,
-      properties: {
-        ClientIDList: props.clientIds,
-        ThumbprintList: props.thumbprints,
-        Url: props.url,
-
-        // code changes can cause thumbprint changes in case they weren't explicitly provided.
-        // add the code hash as a property so that CFN invokes the UPDATE handler in these cases,
-        // thus updating the thumbprint if necessary.
-        CodeHash: provider.codeHash,
-      },
+    const resource = new CfnOIDCProvider(this, 'Resource', {
+      url: props.url,
+      clientIdList: props.clientIds,
+      thumbprintList: props.thumbprints == undefined ? [] : props.thumbprints,
     });
 
     this.openIdConnectProviderArn = Token.asString(resource.ref);
-    this.openIdConnectProviderIssuer = Arn.extractResourceName(this.openIdConnectProviderArn, 'oidc-provider');
-    this.openIdConnectProviderthumbprints = Token.asString(resource.getAtt('Thumbprints'));
-  }
-
-  private getOrCreateProvider() {
-    return OidcProvider.getOrCreateProvider(this, RESOURCE_TYPE, {
-      policyStatements: [
-        {
-          Effect: 'Allow',
-          Resource: '*',
-          Action: [
-            'iam:CreateOpenIDConnectProvider',
-            'iam:DeleteOpenIDConnectProvider',
-            'iam:UpdateOpenIDConnectProviderThumbprint',
-            'iam:AddClientIDToOpenIDConnectProvider',
-            'iam:RemoveClientIDFromOpenIDConnectProvider',
-          ],
-        },
-      ],
-    });
+    this.openIdConnectProviderIssuer = Arn.extractResourceName(
+      this.openIdConnectProviderArn,
+      'oidc-provider2',
+    );
+    this.openIdConnectProviderthumbprints = Token.asString(
+      resource.getAtt('Thumbprints'),
+    );
   }
 }
