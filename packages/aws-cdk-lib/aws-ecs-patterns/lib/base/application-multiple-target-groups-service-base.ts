@@ -114,6 +114,15 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
    * @default - false
    */
   readonly enableExecuteCommand?: boolean;
+
+  /**
+   * The minimum number of tasks, specified as a percentage of
+   * the Amazon ECS service's DesiredCount value, that must
+   * continue to run and remain healthy during a deployment.
+   *
+   * @default - 0 if daemon, otherwise 50
+   */
+  readonly minHealthyPercent?: number;
 }
 
 /**
@@ -268,6 +277,15 @@ export interface ApplicationTargetProps {
    * @default No path condition
    */
   readonly pathPattern?: string;
+
+  /**
+   * The amount of time for Elastic Load Balancing to wait before deregistering a target.
+   *
+   * The range is 0-3600 seconds.
+   *
+   * @default 300
+   */
+  readonly deregistrationDelay?: Duration;
 }
 
 /**
@@ -516,6 +534,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
           }),
         ],
         conditions,
+        deregistrationDelay: targetProps.deregistrationDelay,
         priority: targetProps.priority,
       });
       this.targetGroups.push(targetGroup);
