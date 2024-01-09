@@ -6,7 +6,7 @@
     "Name": "StackBusAA0A1E4B"
    }
   },
-  "BusStatement1B4D0336C": {
+  "BuscdkStatement1D7D87B9D": {
    "Type": "AWS::Events::EventBusPolicy",
    "Properties": {
     "EventBusName": {
@@ -39,12 +39,12 @@
        "Arn"
       ]
      },
-     "Sid": "Statement1"
+     "Sid": "cdk-Statement1"
     },
-    "StatementId": "Statement1"
+    "StatementId": "cdk-Statement1"
    }
   },
-  "BusStatement2B5FB314B": {
+  "BuscdkStatement2341A5B58": {
    "Type": "AWS::Events::EventBusPolicy",
    "Properties": {
     "EventBusName": {
@@ -77,9 +77,9 @@
        "Arn"
       ]
      },
-     "Sid": "Statement2"
+     "Sid": "cdk-Statement2"
     },
-    "StatementId": "Statement2"
+    "StatementId": "cdk-Statement2"
    }
   }
  },

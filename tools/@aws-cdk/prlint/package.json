@@ -29,7 +29,7 @@
     "eslint": "^7.32.0",
     "eslint-import-resolver-node": "^0.3.9",
     "eslint-import-resolver-typescript": "^2.7.1",
-    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jest": "^24.7.0"
   },
   "jest": {
