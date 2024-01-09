@@ -106,7 +106,7 @@ export class RotationSchedule extends Resource {
 
       const servicePrincipal = new iam.ServicePrincipal('secretsmanager.amazonaws.com', {
         conditions: {
-          "StringEquals": { "aws:SourceAccount": Aws.ACCOUNT_ID },
+          StringEquals: { 'aws:SourceAccount': Aws.ACCOUNT_ID },
         },
       });
 
