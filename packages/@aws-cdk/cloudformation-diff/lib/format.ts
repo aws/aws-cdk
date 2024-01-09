@@ -81,6 +81,7 @@ const UPDATE = chalk.yellow('[~]');
 const REMOVAL = chalk.red('[-]');
 
 class Formatter {
+  private nestedDiffIndent: string = '    ';
   constructor(
     private readonly stream: FormatStream,
     private readonly logicalToPathMap: { [logicalId: string]: string },
@@ -96,6 +97,10 @@ class Formatter {
     this.stream.write(chalk.white(format(fmt, ...args)) + '\n');
   }
 
+  public write(fmt: string, ...args: any[]) {
+    this.stream.write(chalk.white(format(fmt, ...args)));
+  }
+
   public warning(fmt: string, ...args: any[]) {
     this.stream.write(chalk.yellow(format(fmt, ...args)) + '\n');
   }
@@ -104,15 +109,27 @@ class Formatter {
     title: string,
     entryType: string,
     collection: DifferenceCollection<V, T>,
-    formatter: (type: string, id: string, diff: T) => void = this.formatDifference.bind(this)) {
+    formatter: (type: string, id: string, diff: T, nestedIndent: boolean) => void = this.formatDifference.bind(this)) {
 
     if (collection.differenceCount === 0) {
       return;
     }
 
     this.printSectionHeader(title);
-    collection.forEachDifference((id, diff) => formatter(entryType, id, diff));
+    collection.forEachDifference((id, diff) => formatter(entryType, id, diff, false));
     this.printSectionFooter();
+  }
+
+  public formatNestedSection<V, T extends Difference<V>>(
+    entryType: string,
+    collection: DifferenceCollection<V, T>,
+    formatter: (type: string, id: string, diff: T, nestedIndent: boolean) => void = this.formatDifference.bind(this)) {
+
+    if (collection.differenceCount === 0) {
+      return;
+    }
+
+    collection.forEachDifference((id, diff) => formatter(entryType, id, diff, true));
   }
 
   public printSectionHeader(title: string) {
@@ -153,15 +170,14 @@ class Formatter {
    * @param logicalId the logical ID of the resource that changed.
    * @param diff      the change to be rendered.
    */
-  public formatResourceDifference(_type: string, logicalId: string, diff: ResourceDifference) {
+  public formatResourceDifference(_type: string, logicalId: string, diff: ResourceDifference, useNestedIndent: boolean) {
     if (!diff.isDifferent) { return; }
 
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
-    if (Object.keys(diff.nestedChanges).length > 0) {
-      formatDifferences(this.stream, diff.nestedChanges as TemplateDiff, this.logicalToPathMap, this.context);
+    if (useNestedIndent) {
+      this.write(this.nestedDiffIndent);
     }
-
     // eslint-disable-next-line max-len
     this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
 
@@ -170,8 +186,11 @@ class Formatter {
       let processedCount = 0;
       diff.forEachDifference((_, name, values) => {
         processedCount += 1;
-        this.formatTreeDiff(name, values, processedCount === differenceCount);
+        this.formatTreeDiff(name, values, processedCount === differenceCount, useNestedIndent);
       });
+      if (Object.keys(diff.nestedChanges).length > 0) {
+        this.formatNestedDifferences(diff.nestedChanges as TemplateDiff, this.formatPrefix(diff));
+      }
     }
   }
 
@@ -221,7 +240,7 @@ class Formatter {
    * @param diff    the difference on the tree.
    * @param last    whether this is the last node of a parent tree.
    */
-  public formatTreeDiff(name: string, diff: Difference<any>, last: boolean) {
+  public formatTreeDiff(name: string, diff: Difference<any>, last: boolean, useNestedIndent: boolean) {
     let additionalInfo = '';
     if (isPropertyDifference(diff)) {
       if (diff.changeImpact === ResourceImpact.MAY_REPLACE) {
@@ -229,6 +248,9 @@ class Formatter {
       } else if (diff.changeImpact === ResourceImpact.WILL_REPLACE) {
         additionalInfo = ' (requires replacement)';
       }
+    }
+    if (useNestedIndent) {
+      this.write(this.nestedDiffIndent);
     }
     this.print(' %s─ %s %s%s', last ? '└' : '├', this.changeTag(diff.oldValue, diff.newValue), name, additionalInfo);
     return this.formatObjectDiff(diff.oldValue, diff.newValue, ` ${last ? ' ' : '│'}`);
@@ -397,6 +419,28 @@ class Formatter {
     return source.replace(/\$\{([^.}]+)(.[^}]+)?\}/ig, (_match, logId, suffix) => {
       return '${' + (this.normalizedLogicalIdPath(logId) || logId) + (suffix || '') + '}';
     });
+  }
+
+  private formatNestedDifferences(templateDiff: TemplateDiff, prefix: string) {
+    this.nestedDiffIndent += ' ';
+    this.print(`${this.nestedDiffIndent}${prefix} NestedTemplate`);
+    if (templateDiff.awsTemplateFormatVersion || templateDiff.transform || templateDiff.description) {
+      this.printSectionHeader('Template');
+      this.formatDifference('AWSTemplateFormatVersion', 'AWSTemplateFormatVersion', templateDiff.awsTemplateFormatVersion);
+      this.formatDifference('Transform', 'Transform', templateDiff.transform);
+      this.formatDifference('Description', 'Description', templateDiff.description);
+      this.printSectionFooter();
+    }
+
+    //formatSecurityChangesWithBanner(this, templateDiff);
+
+    this.formatNestedSection('Parameter', templateDiff.parameters);
+    this.formatNestedSection('Metadata', templateDiff.metadata);
+    this.formatNestedSection('Mapping', templateDiff.mappings);
+    this.formatNestedSection('Condition', templateDiff.conditions);
+    this.formatNestedSection('Resource', templateDiff.resources, this.formatResourceDifference.bind(this));
+    this.formatNestedSection('Output', templateDiff.outputs);
+    this.formatNestedSection('Unknown', templateDiff.unknown);
   }
 }
 
