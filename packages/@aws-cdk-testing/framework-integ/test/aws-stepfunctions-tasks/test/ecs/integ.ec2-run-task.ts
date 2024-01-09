@@ -18,7 +18,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
  * -- aws stepfunctions describe-execution --execution-arn <state-machine-arn-from-output> returns a status of `Succeeded`
  */
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-ec2-integ');
+const stack = new cdk.Stack(app, 'aws-sfn-tasks-ecs-run-task');
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
 const cluster = new ecs.Cluster(stack, 'Ec2Cluster');

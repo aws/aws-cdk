@@ -13,7 +13,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc"
+      "Value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc"
      }
     ]
    }
@@ -42,7 +42,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -56,7 +56,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -97,7 +97,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -117,7 +117,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -150,7 +150,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -164,7 +164,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -205,7 +205,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -225,7 +225,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -258,7 +258,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -272,7 +272,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -327,7 +327,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -341,7 +341,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -378,7 +378,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc"
+      "Value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc"
      }
     ]
    }
@@ -418,7 +418,7 @@
      {
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:2fd4a6b04e9ebb0162037939c7caef60d007d2593ce4bfcfbe4bf8b3fca00594"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:d87af9b5acc567118fa529d3d3b763098200a6446a5ca64aea987729efd52534"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
@@ -443,7 +443,7 @@
       "Arn"
      ]
     },
-    "Family": "awssfntasksecsfargateintegTaskDefD0F4AD10",
+    "Family": "awssfntasksecsfargatetaskTaskDefBB13BD5B",
     "Memory": "512",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
@@ -547,39 +547,7 @@
   "FargateTaskSecurityGroup0BBB27CB": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-sfn-tasks-ecs-fargate-integ/FargateTask/SecurityGroup",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    }
-   }
-  },
-  "FargateTaskSetRevisionNumberSecurityGroupDF805F2C": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "aws-sfn-tasks-ecs-fargate-integ/FargateTaskSetRevisionNumber/SecurityGroup",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    }
-   }
-  },
-  "FargateTaskWithPropagatedTagSecurityGroupE2B5DD29": {
-   "Type": "AWS::EC2::SecurityGroup",
-   "Properties": {
-    "GroupDescription": "aws-sfn-tasks-ecs-fargate-integ/FargateTaskWithPropagatedTag/SecurityGroup",
+    "GroupDescription": "aws-sfn-tasks-ecs-fargate-task/FargateTask/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -617,231 +585,9 @@
       {
        "Action": "ecs:RunTask",
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Fn::Select": [
-             1,
-             {
-              "Fn::Split": [
-               ":",
-               {
-                "Ref": "TaskDef54694570"
-               }
-              ]
-             }
-            ]
-           },
-           ":",
-           {
-            "Fn::Select": [
-             2,
-             {
-              "Fn::Split": [
-               ":",
-               {
-                "Ref": "TaskDef54694570"
-               }
-              ]
-             }
-            ]
-           },
-           ":",
-           {
-            "Fn::Select": [
-             3,
-             {
-              "Fn::Split": [
-               ":",
-               {
-                "Ref": "TaskDef54694570"
-               }
-              ]
-             }
-            ]
-           },
-           ":",
-           {
-            "Fn::Select": [
-             4,
-             {
-              "Fn::Split": [
-               ":",
-               {
-                "Ref": "TaskDef54694570"
-               }
-              ]
-             }
-            ]
-           },
-           ":",
-           {
-            "Fn::Select": [
-             0,
-             {
-              "Fn::Split": [
-               "/",
-               {
-                "Fn::Select": [
-                 5,
-                 {
-                  "Fn::Split": [
-                   ":",
-                   {
-                    "Ref": "TaskDef54694570"
-                   }
-                  ]
-                 }
-                ]
-               }
-              ]
-             }
-            ]
-           },
-           "/",
-           {
-            "Fn::Select": [
-             1,
-             {
-              "Fn::Split": [
-               "/",
-               {
-                "Fn::Select": [
-                 5,
-                 {
-                  "Fn::Split": [
-                   ":",
-                   {
-                    "Ref": "TaskDef54694570"
-                   }
-                  ]
-                 }
-                ]
-               }
-              ]
-             }
-            ]
-           },
-           ":*"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Fn::Select": [
-             1,
-             {
-              "Fn::Split": [
-               ":",
-               {
-                "Ref": "TaskDef54694570"
-               }
-              ]
-             }
-            ]
-           },
-           ":",
-           {
-            "Fn::Select": [
-             2,
-             {
-              "Fn::Split": [
-               ":",
-               {
-                "Ref": "TaskDef54694570"
-               }
-              ]
-             }
-            ]
-           },
-           ":",
-           {
-            "Fn::Select": [
-             3,
-             {
-              "Fn::Split": [
-               ":",
-               {
-                "Ref": "TaskDef54694570"
-               }
-              ]
-             }
-            ]
-           },
-           ":",
-           {
-            "Fn::Select": [
-             4,
-             {
-              "Fn::Split": [
-               ":",
-               {
-                "Ref": "TaskDef54694570"
-               }
-              ]
-             }
-            ]
-           },
-           ":",
-           {
-            "Fn::Select": [
-             0,
-             {
-              "Fn::Split": [
-               "/",
-               {
-                "Fn::Select": [
-                 5,
-                 {
-                  "Fn::Split": [
-                   ":",
-                   {
-                    "Ref": "TaskDef54694570"
-                   }
-                  ]
-                 }
-                ]
-               }
-              ]
-             }
-            ]
-           },
-           "/",
-           {
-            "Fn::Select": [
-             1,
-             {
-              "Fn::Split": [
-               "/",
-               {
-                "Fn::Select": [
-                 5,
-                 {
-                  "Fn::Split": [
-                   ":",
-                   {
-                    "Ref": "TaskDef54694570"
-                   }
-                  ]
-                 }
-                ]
-               }
-              ]
-             }
-            ]
-           }
-          ]
-         ]
-        }
-       ]
+       "Resource": {
+        "Ref": "TaskDef54694570"
+       }
       },
       {
        "Action": [
@@ -915,18 +661,18 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\",\"Timeout\":900},\"Next\":\"FargateTask\"},\"FargateTask\":{\"Next\":\"FargateTaskSetRevisionNumber\",\"Type\":\"Task\",\"TimeoutSecondsPath\":\"$.Timeout\",\"Resource\":\"arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":states:::ecs:runTask.sync\",\"Parameters\":{\"Cluster\":\"",
+       "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"FargateTask\"},\"FargateTask\":{\"End\":true,\"Parameters\":{\"Cluster\":\"",
        {
         "Fn::GetAtt": [
          "FargateCluster7CCD5F93",
          "Arn"
         ]
        },
-       "\",\"TaskDefinition\":\"awssfntasksecsfargateintegTaskDefD0F4AD10\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"AssignPublicIp\":\"ENABLED\",\"Subnets\":[\"",
+       "\",\"TaskDefinition\":\"",
+       {
+        "Ref": "TaskDef54694570"
+       },
+       "\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"AssignPublicIp\":\"ENABLED\",\"Subnets\":[\"",
        {
         "Ref": "FargateClusterVpcPublicSubnet1SubnetB9C24BC7"
        },
@@ -941,59 +687,11 @@
          "GroupId"
         ]
        },
-       "\"]}},\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargateTaskSetRevisionNumber\":{\"Next\":\"FargateTaskWithPropagatedTag\",\"Type\":\"Task\",\"Resource\":\"arn:",
+       "\"]}},\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\"},\"Type\":\"Task\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::ecs:runTask\",\"Parameters\":{\"Cluster\":\"",
-       {
-        "Fn::GetAtt": [
-         "FargateCluster7CCD5F93",
-         "Arn"
-        ]
-       },
-       "\",\"TaskDefinition\":\"awssfntasksecsfargateintegTaskDefD0F4AD10:1\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"Subnets\":[\"",
-       {
-        "Ref": "FargateClusterVpcPrivateSubnet1Subnet9127625F"
-       },
-       "\",\"",
-       {
-        "Ref": "FargateClusterVpcPrivateSubnet2Subnet307CEE57"
-       },
-       "\"],\"SecurityGroups\":[\"",
-       {
-        "Fn::GetAtt": [
-         "FargateTaskSetRevisionNumberSecurityGroupDF805F2C",
-         "GroupId"
-        ]
-       },
-       "\"]}},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargateTaskWithPropagatedTag\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":states:::ecs:runTask\",\"Parameters\":{\"Cluster\":\"",
-       {
-        "Fn::GetAtt": [
-         "FargateCluster7CCD5F93",
-         "Arn"
-        ]
-       },
-       "\",\"TaskDefinition\":\"awssfntasksecsfargateintegTaskDefD0F4AD10\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"Subnets\":[\"",
-       {
-        "Ref": "FargateClusterVpcPrivateSubnet1Subnet9127625F"
-       },
-       "\",\"",
-       {
-        "Ref": "FargateClusterVpcPrivateSubnet2Subnet307CEE57"
-       },
-       "\"],\"SecurityGroups\":[\"",
-       {
-        "Fn::GetAtt": [
-         "FargateTaskWithPropagatedTagSecurityGroupE2B5DD29",
-         "GroupId"
-        ]
-       },
-       "\"]}},\"PropagateTags\":\"TASK_DEFINITION\",\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}}}}"
+       ":states:::ecs:runTask.sync\"}}}"
       ]
      ]
     },
@@ -1010,13 +708,6 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  }
- },
- "Outputs": {
-  "stateMachineArn": {
-   "Value": {
-    "Ref": "StateMachine2E01A3A5"
-   }
   }
  },
  "Parameters": {

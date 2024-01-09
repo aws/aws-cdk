@@ -1,12 +1,12 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "testCases": {
-    "EmrCreateClusterTest/DefaultTest": {
+    "SfnTasksEcsEc2RunTaskTest/DefaultTest": {
       "stacks": [
-        "aws-sfn-tasks-ecs-ec2-integ"
+        "aws-ecs-run-task"
       ],
-      "assertionStack": "EmrCreateClusterTest/DefaultTest/DeployAssert",
-      "assertionStackName": "EmrCreateClusterTestDefaultTestDeployAssert697DC891"
+      "assertionStack": "SfnTasksEcsEc2RunTaskTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SfnTasksEcsEc2RunTaskTestDefaultTestDeployAssert2569343D"
     }
   }
 }

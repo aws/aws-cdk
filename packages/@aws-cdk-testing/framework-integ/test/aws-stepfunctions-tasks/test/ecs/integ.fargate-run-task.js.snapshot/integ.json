@@ -1,12 +1,12 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "testCases": {
-    "EmrCreateClusterTest/DefaultTest": {
+    "SfnTasksEcsFargateRunTaskTest/DefaultTest": {
       "stacks": [
-        "aws-sfn-tasks-ecs-fargate-integ"
+        "aws-sfn-tasks-ecs-fargate-run-task"
       ],
-      "assertionStack": "EmrCreateClusterTest/DefaultTest/DeployAssert",
-      "assertionStackName": "EmrCreateClusterTestDefaultTestDeployAssert697DC891"
+      "assertionStack": "SfnTasksEcsFargateRunTaskTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SfnTasksEcsFargateRunTaskTestDefaultTestDeployAssert9D97FD2B"
     }
   }
 }
