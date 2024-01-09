@@ -61,13 +61,13 @@ export function fullDiff(
   normalize(newTemplate);
   const theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
-    filterFalsePositivies(theDiff, changeSet);
+    filterFalsePositivies(theDiff, findResourceReplacements(changeSet));
   }
 
   return theDiff;
 }
 
-function diffTemplate(
+export function diffTemplate(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
 ): types.TemplateDiff {
@@ -217,8 +217,7 @@ function deepCopy(x: any): any {
   return x;
 }
 
-function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput | NestedChangeSet) {
-  const replacements = findResourceReplacements(changeSet);
+function filterFalsePositivies(diff: types.TemplateDiff, replacements: types.ResourceReplacements) {
   diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
     change.forEachDifference((type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {
       if (type === 'Property') {
@@ -227,6 +226,16 @@ function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormati
           (value as types.PropertyDifference<any>).isDifferent = false;
           return;
         }
+        // to make this work, diff needs to be aware that there can be nested templates. Currently, we don't really have this.
+
+        /*
+        if (name === 'NestedTemplate') {
+          (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_UPDATE;
+          filterFalsePositivies(diff, replacements[logicalId].nestedReplacements!);
+          return;
+        }
+        */
+
         switch (replacements[logicalId].propertiesReplaced[name]) {
           case 'Always':
             (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_REPLACE;
@@ -243,6 +252,12 @@ function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormati
             break;
           // otherwise, defer to the changeImpact from `diffTemplate`
         }
+
+        /*
+        if (replacements[logicalId].nestedReplacements) {
+          filterFalsePositivies(diff, replacements[logicalId].nestedReplacements!);
+        }
+        */
       } else if (type === 'Other') {
         switch (name) {
           case 'Metadata':
@@ -254,14 +269,15 @@ function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormati
   });
 }
 
-function findResourceReplacements(changeSet: NestedChangeSet, replacements: types.ResourceReplacements = {}): types.ResourceReplacements {
-  for (const resourceChange of changeSet.Changes ?? []) {
+function findResourceReplacements(changeSet: NestedChangeSet): types.ResourceReplacements {
+  const replacements: types.ResourceReplacements = {};
+  for (const change of changeSet.Changes ?? []) {
     const propertiesReplaced: { [propName: string]: types.ChangeSetReplacement } = {};
-    if (resourceChange.ResourceChange?.NestedChanges) {
-      // eslint-disable-next-line max-len
-      findResourceReplacements(resourceChange.ResourceChange.NestedChanges, replacements[resourceChange.ResourceChange!.LogicalResourceId!] as types.ResourceReplacements);
+    const resourceChange = change.ResourceChange;
+    if (!resourceChange) {
+      continue;
     }
-    for (const propertyChange of resourceChange.ResourceChange?.Details ?? []) {
+    for (const propertyChange of resourceChange.Details ?? []) {
       if (propertyChange.Target?.Attribute === 'Properties') {
         const requiresReplacement = propertyChange.Target.RequiresRecreation === 'Always';
         if (requiresReplacement && propertyChange.Evaluation === 'Static') {
@@ -275,9 +291,10 @@ function findResourceReplacements(changeSet: NestedChangeSet, replacements: type
         }
       }
     }
-    replacements[resourceChange.ResourceChange?.LogicalResourceId!] = {
-      resourceReplaced: resourceChange.ResourceChange?.Replacement === 'True',
+    replacements[resourceChange.LogicalResourceId!] = {
+      resourceReplaced: resourceChange.Replacement === 'True',
       propertiesReplaced,
+      nestedReplacements: resourceChange.NestedChanges ? findResourceReplacements(resourceChange.NestedChanges) : undefined,
     };
   }
 

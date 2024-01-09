@@ -158,6 +158,10 @@ class Formatter {
 
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
+    if (Object.keys(diff.nestedChanges).length > 0) {
+      formatDifferences(this.stream, diff.nestedChanges as TemplateDiff, this.logicalToPathMap, this.context);
+    }
+
     // eslint-disable-next-line max-len
     this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
 
