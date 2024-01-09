@@ -1,7 +1,7 @@
 import { Template, Match } from '../../assertions';
 import * as route53 from '../../aws-route53';
 import { Aws, Duration, Lazy, Stack } from '../../core';
-import { Certificate, CertificateValidation } from '../lib';
+import { Certificate, CertificateValidation, KeyAlgorithm } from '../lib';
 
 test('apex domain selection by default', () => {
   const stack = new Stack();
@@ -441,3 +441,43 @@ function hasTags(expectedTags: Array<{Key: string, Value: string}>) {
     },
   };
 }
+
+describe('Key Algorithm', () => {
+  test('key algorithm is undefined if not provided', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      KeyAlgorithm: Match.absent(),
+    });
+  });
+
+  test('Can specify algorithm', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      keyAlgorithm: KeyAlgorithm.EC_SECP384R1,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      KeyAlgorithm: 'EC_secp384r1',
+    });
+  });
+
+  test('Can specify any arbitrary algorithm', () => {
+    const stack = new Stack();
+
+    new Certificate(stack, 'Certificate', {
+      domainName: 'test.example.com',
+      keyAlgorithm: new KeyAlgorithm('any value'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      KeyAlgorithm: 'any value',
+    });
+  });
+});

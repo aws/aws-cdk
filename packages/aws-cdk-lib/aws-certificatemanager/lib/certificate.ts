@@ -101,6 +101,47 @@ export interface CertificateProps {
    * @default the full, absolute path of this construct
    */
   readonly certificateName?: string
+
+  /**
+   * Specifies the algorithm of the public and private key pair that your certificate uses to encrypt data.
+   *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/acm-certificate.html#algorithms.title
+   *
+   * @default KeyAlgorithm.RSA_2048
+   */
+  readonly keyAlgorithm?: KeyAlgorithm;
+}
+
+/**
+ * Certificate Manager key algorithm
+ *
+ * If you need to use an algorithm that doesn't exist as a static member, you
+ * can instantiate a `KeyAlgorithm` object, e.g: `new KeyAlgorithm('RSA_2048')`.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-keyalgorithm
+ */
+export class KeyAlgorithm {
+  /**
+   * RSA_2048 algorithm
+   */
+  public static readonly RSA_2048 = new KeyAlgorithm('RSA_2048');
+
+  /**
+   * EC_prime256v1 algorithm
+   */
+  public static readonly EC_PRIME256V1 = new KeyAlgorithm('EC_prime256v1');
+
+  /**
+   * EC_secp384r1 algorithm
+   */
+  public static readonly EC_SECP384R1 = new KeyAlgorithm('EC_secp384r1');
+
+  constructor(
+    /**
+     * The name of the algorithm
+     */
+    public readonly name: string,
+  ) { };
 }
 
 /**
@@ -259,6 +300,7 @@ export class Certificate extends CertificateBase implements ICertificate {
       domainValidationOptions: renderDomainValidation(validation, allDomainNames),
       validationMethod: validation.method,
       certificateTransparencyLoggingPreference,
+      keyAlgorithm: props.keyAlgorithm?.name,
     });
 
     Tags.of(cert).add(NAME_TAG, props.certificateName || this.node.path.slice(0, 255));
