@@ -16,17 +16,18 @@ everything you need. If you want or need more control, we recommend you drop
 down to using the `aws-codepipeline` construct library directly.
 
 > This module contains two sets of APIs: an **original** and a **modern** version of
-CDK Pipelines. The *modern* API has been updated to be easier to work with and
-customize, and will be the preferred API going forward. The *original* version
-of the API is still available for backwards compatibility, but we recommend migrating
-to the new version if possible.
+> CDK Pipelines. The *modern* API has been updated to be easier to work with and
+> customize, and will be the preferred API going forward. The *original* version
+> of the API is still available for backwards compatibility, but we recommend migrating
+> to the new version if possible.
 >
 > Compared to the original API, the modern API: has more sensible defaults; is
 > more flexible; supports parallel deployments; supports multiple synth inputs;
 > allows more control of CodeBuild project generation; supports deployment
 > engines other than CodePipeline.
 >
-> The README for the original API, as well as a migration guide, can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
+> The README for the original API, as well as a migration guide, can be found in
+> [our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
 
 ## At a glance
 
@@ -1232,6 +1233,52 @@ and orphan the old bucket. You should manually delete the orphaned bucket
 after you are sure you have redeployed all CDK applications and there are no
 more references to the old asset bucket.
 
+## Considerations around Running at Scale
+
+If you are planning to run pipelines for more than a hundred repos
+deploying across multiple regions, then you will want to consider reusing
+both artifacts buckets and cross-region replication buckets.
+
+In a situation like this, you will want to have a separate CDK app / dedicated repo which creates
+and managed the buckets which will be shared by the pipelines of all your other apps.
+Note that this app must NOT be using the shared buckets because of chicken & egg issues.
+
+The following code assumes you have created and are managing your buckets in the aforementioned
+separate cdk repo and are just importing them for use in one of your (many) pipelines.
+
+```ts
+declare const sharedXRegionUsWest1BucketArn: string;
+declare const sharedXRegionUsWest1KeyArn: string;
+
+declare const sharedXRegionUsWest2BucketArn: string;
+declare const sharedXRegionUsWest2KeyArn: string;
+
+const usWest1Bucket = s3.Bucket.fromBucketAttributes(scope, 'UsEast1Bucket', {
+  bucketArn: sharedXRegionUsWest1BucketArn,
+  encryptionKey: kms.Key.fromKeyArn(scope, 'UsEast1BucketKeyArn', sharedXRegionUsWest1BucketArn),
+});
+
+const usWest2Bucket = s3.Bucket.fromBucketAttributes(scope, 'UsWest2Bucket', {
+  bucketArn: sharedXRegionUsWest2BucketArn,
+  encryptionKey: kms.Key.fromKeyArn(scope, 'UsWest2BucketKeyArn', sharedXRegionUsWest2KeyArn),
+});
+
+const crossRegionReplicationBuckets: Record<string, s3.IBucket> = {
+  'us-west-1': usWest1Bucket,
+  'us-west-2': usWest2Bucket,
+  // Support for additional regions.
+}
+
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41',
+    }),
+    commands: ['npm ci','npm run build','npx cdk synth'],
+  }),  // Use shared buckets.
+  crossRegionReplicationBuckets,
+});
+```
 ## Context Lookups
 
 You might be using CDK constructs that need to look up [runtime

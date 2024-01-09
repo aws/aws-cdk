@@ -165,6 +165,10 @@ $ # Diff against the currently deployed stack with quiet parameter enabled
 $ cdk diff --quiet --app='node bin/main.js' MyStackName
 ```
 
+The `change-set` flag will make `diff` create a change set and extract resource replacement data from it. This is a bit slower, but will provide no false positives for resource replacement.
+The `--no-change-set` mode will consider any change to a property that requires replacement to be a resource replacement,
+even if the change is purely cosmetic (like replacing a resource reference with a hardcoded arn).
+
 ### `cdk deploy`
 
 Deploys a stack of your CDK app to its environment. During the deployment, the toolkit will output progress
