@@ -276,7 +276,7 @@ To allocate both IPv4 and IPv6 addresses in your VPC, you can configure your VPC
 
 ```ts
 new ec2.Vpc(this, 'DualStackVpc', {
-  vpcProtocol: ec2.VpcProtocol.DUAL_STACK,
+  ipProtocol: ec2.IpProtocol.DUAL_STACK,
 })
 ```
 
@@ -395,7 +395,7 @@ Here is a break down of IPv4 and IPv6 specifc `subnetConfiguration` properties i
 
 ```ts
 const vpc = new ec2.Vpc(this, 'TheVPC', {
-  vpcProtocol: ec2.VpcProtocl.DUAL_STACK,
+  ipProtocol: ec2.IpProtocol.DUAL_STACK,
   
   subnetConfiguration: [
     {
@@ -1726,7 +1726,7 @@ Instances can be given IPv6 IPs by launching them into a subnet of a dual stack 
 
 ```ts
 const vpc = new ec2.Vpc(this, 'Ip6VpcDualStack', {
-  vpcProtocol: ec2.VpcProtocol.DUAL_STACK,
+  ipProtocol: ec2.IpProtocol.DUAL_STACK,
   subnetConfiguration: [
     {
       name: 'Public',
