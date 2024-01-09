@@ -21,10 +21,16 @@ interface LinuxArmLambdaBuildImageProps {
 export class LinuxArmLambdaBuildImage implements IBuildImage {
   /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs18` build image. */
   public static readonly AMAZON_LINUX_2_NODE_18 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs18');
+  /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs20` build image. */
+  public static readonly AMAZON_LINUX_2023_NODE_20 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:nodejs20');
   /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:python3.11` build image. */
   public static readonly AMAZON_LINUX_2_PYTHON_3_11 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:python3.11');
+  /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:python3.12` build image. */
+  public static readonly AMAZON_LINUX_2023_PYTHON_3_12 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:python3.12');
   /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:ruby3.2` build image. */
   public static readonly AMAZON_LINUX_2_RUBY_3_2 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:ruby3.2');
+  /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto21` build image. */
+  public static readonly AMAZON_LINUX_2023_CORRETTO_21 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto21');
   /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto17` build image. */
   public static readonly AMAZON_LINUX_2_CORRETTO_17 = LinuxArmLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto17');
   /** The `aws/codebuild/amazonlinux-aarch64-lambda-standard:corretto11` build image. */
