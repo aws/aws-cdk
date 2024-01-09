@@ -38,8 +38,13 @@ export interface QueueProcessingServiceBaseProps {
 
   /**
    * The image used to start a container.
+   *
+   * For `QueueProcessingFargateService`, either `image` or `taskDefinition` must be specified, but not both.
+   * For `QueueProcessingEc2Service`, `image` is required.
+   *
+   * @default - the image of the task definition is used for Fargate, required otherwise
    */
-  readonly image: ContainerImage;
+  readonly image?: ContainerImage;
 
   /**
    * The command that is passed to the container.
@@ -221,6 +226,20 @@ export interface QueueProcessingServiceBaseProps {
    * @default - false
    */
   readonly enableExecuteCommand?: boolean;
+
+  /**
+   * Flag to disable CPU based auto scaling strategy on the service.
+   *
+   * @default - false
+   */
+  readonly disableCpuBasedScaling?: boolean;
+
+  /**
+   * The target CPU utilization percentage for CPU based scaling strategy when enabled.
+   *
+   * @default - 50
+   */
+  readonly cpuTargetUtilizationPercent?: number;
 }
 
 /**
@@ -275,10 +294,21 @@ export abstract class QueueProcessingServiceBase extends Construct {
    * The scaling interval for autoscaling based off an SQS Queue size.
    */
   public readonly scalingSteps: ScalingInterval[];
+
   /**
    * The AwsLogDriver to use for logging if logging is enabled.
    */
   public readonly logDriver?: LogDriver;
+
+  /**
+   * Flag to disable CPU based auto scaling strategy on the service.
+   */
+  private readonly disableCpuBasedScaling: boolean;
+
+  /**
+   * The target CPU utilization percentage for CPU based scaling strategy when enabled.
+   */
+  private readonly cpuTargetUtilizationPercent: number;
 
   /**
    * Constructs a new instance of the QueueProcessingServiceBase class.
@@ -325,6 +355,8 @@ export abstract class QueueProcessingServiceBase extends Construct {
     // Add the queue name to environment variables
     this.environment = { ...(props.environment || {}), QUEUE_NAME: this.sqsQueue.queueName };
     this.secrets = props.secrets;
+    this.disableCpuBasedScaling = props.disableCpuBasedScaling ?? false;
+    this.cpuTargetUtilizationPercent = props.cpuTargetUtilizationPercent ?? 50;
 
     this.desiredCount = props.desiredTaskCount ?? 1;
 
@@ -357,9 +389,12 @@ export abstract class QueueProcessingServiceBase extends Construct {
    */
   protected configureAutoscalingForService(service: BaseService) {
     const scalingTarget = service.autoScaleTaskCount({ maxCapacity: this.maxCapacity, minCapacity: this.minCapacity });
-    scalingTarget.scaleOnCpuUtilization('CpuScaling', {
-      targetUtilizationPercent: 50,
-    });
+
+    if (!this.disableCpuBasedScaling) {
+      scalingTarget.scaleOnCpuUtilization('CpuScaling', {
+        targetUtilizationPercent: this.cpuTargetUtilizationPercent,
+      });
+    }
     scalingTarget.scaleOnMetric('QueueMessagesVisibleScaling', {
       metric: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
       scalingSteps: this.scalingSteps,

@@ -598,6 +598,17 @@ const custom = new sfn.CustomState(this, 'my custom task', {
   stateJson,
 });
 
+// catch errors with addCatch
+const errorHandler = new sfn.Pass(this, 'handle failure');
+custom.addCatch(errorHandler);
+
+// retry the task if something goes wrong
+custom.addRetry({
+  errors: [sfn.Errors.ALL],
+  interval: Duration.seconds(10),
+  maxAttempts: 5,
+});
+
 const chain = sfn.Chain.start(custom)
   .next(finalStatus);
 

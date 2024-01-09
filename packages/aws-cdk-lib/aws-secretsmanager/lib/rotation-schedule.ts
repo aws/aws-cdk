@@ -331,6 +331,13 @@ export class HostedRotation implements ec2.IConnectable {
       this.masterSecret.denyAccountRootDelete();
     }
 
+    let masterSecretArn: string | undefined;
+    if (this.masterSecret?.secretFullArn) {
+      masterSecretArn = this.masterSecret.secretArn;
+    } else if (this.masterSecret) { // ISecret as an imported secret with partial ARN
+      masterSecretArn = this.masterSecret.secretArn + '-??????';
+    }
+
     const defaultExcludeCharacters = Secret.isSecret(secret)
       ? secret.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS
       : DEFAULT_PASSWORD_EXCLUDE_CHARS;
@@ -338,7 +345,7 @@ export class HostedRotation implements ec2.IConnectable {
     return {
       rotationType: this.type.name,
       kmsKeyArn: secret.encryptionKey?.keyArn,
-      masterSecretArn: this.masterSecret?.secretArn,
+      masterSecretArn: masterSecretArn,
       masterSecretKmsKeyArn: this.masterSecret?.encryptionKey?.keyArn,
       rotationLambdaName: this.props.functionName,
       vpcSecurityGroupIds: this._connections?.securityGroups?.map(s => s.securityGroupId).join(','),
