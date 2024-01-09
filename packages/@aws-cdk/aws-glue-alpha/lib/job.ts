@@ -801,6 +801,9 @@ export class Job extends JobBase {
     if (config.extraPythonFiles && config.extraPythonFiles.length > 0) {
       args['--extra-py-files'] = config.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
     }
+    if (config.s3PythonModules && config.s3PythonModules.length > 0) {
+      args['--s3-py-modules'] = config.s3PythonModules.map(code => this.codeS3ObjectUrl(code)).join(',');
+    }
     if (config.extraFiles && config.extraFiles.length > 0) {
       args['--extra-files'] = config.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
     }

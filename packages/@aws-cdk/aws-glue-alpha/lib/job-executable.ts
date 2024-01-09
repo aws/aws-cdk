@@ -177,6 +177,22 @@ interface PythonExecutableProps {
   readonly extraPythonFiles?: Code[];
 }
 
+interface RayExecutableProps {
+  /**
+   * The Python version to use.
+   */
+  readonly pythonVersion: PythonVersion;
+
+  /**
+   * Additional Python modules that AWS Glue adds to the Python path before executing your script.
+   *
+   * @default - no extra python files and argument is not set
+   *
+   * @see `--s3-py-modules` in https://docs.aws.amazon.com/glue/latest/dg/author-job-ray-job-parameters.html
+   */
+  readonly s3PythonModules?: Code[];
+}
+
 interface SharedJobExecutableProps {
   /**
    * Runtime. It is required for Ray jobs.
@@ -253,7 +269,7 @@ export interface PythonShellExecutableProps extends SharedJobExecutableProps, Py
 /**
  * Props for creating a Python Ray job executable
  */
-export interface PythonRayExecutableProps extends SharedJobExecutableProps, PythonExecutableProps {}
+export interface PythonRayExecutableProps extends SharedJobExecutableProps, RayExecutableProps {}
 
 /**
  * The executable properties related to the Glue job's GlueVersion, JobType and code
@@ -377,6 +393,9 @@ export class JobExecutable {
     if (JobLanguage.PYTHON !== config.language && config.extraPythonFiles) {
       throw new Error('extraPythonFiles is not supported for languages other than JobLanguage.PYTHON');
     }
+    if (config.extraPythonFiles && type === JobType.RAY.name) {
+      throw new Error('extraPythonFiles is not supported for Ray jobs');
+    }
     if (config.pythonVersion === PythonVersion.THREE_NINE && type !== JobType.PYTHON_SHELL.name && type !== JobType.RAY.name) {
       throw new Error('Specified PythonVersion PythonVersion.THREE_NINE is only supported for JobType Python Shell and Ray');
     }
@@ -384,7 +403,7 @@ export class JobExecutable {
       throw new Error('Specified PythonVersion PythonVersion.THREE is not supported for Ray');
     }
     if (config.runtime === undefined && type === JobType.RAY.name) {
-      throw new Error('Runtime is required for Ray jobs.');
+      throw new Error('Runtime is required for Ray jobs');
     }
     this.config = config;
   }
@@ -465,6 +484,15 @@ export interface JobExecutableConfig {
    * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly extraPythonFiles?: Code[];
+
+  /**
+   * Additional Python modules that AWS Glue adds to the Python path before executing your script.
+   *
+   * @default - no extra python files specified.
+   *
+   * @see `--s3-py-modules` in https://docs.aws.amazon.com/glue/latest/dg/author-job-ray-job-parameters.html
+   */
+  readonly s3PythonModules?: Code[];
 
   /**
    * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
