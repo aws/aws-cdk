@@ -824,14 +824,12 @@ export class FlowLog extends FlowLogBase {
     }
 
     // In Transit Gateway and Transit Gateway Attachment, `trafficType` is not supported.
-    let trafficType: FlowLogTrafficType | undefined = FlowLogTrafficType.ALL;
+    let trafficType: FlowLogTrafficType | undefined = props.trafficType ?? FlowLogTrafficType.ALL;
     if (props.resourceType.resourceType === 'TransitGateway' || props.resourceType.resourceType === 'TransitGatewayAttachment') {
       if (props.trafficType) {
         throw new Error('trafficType is not supported for Transit Gateway and Transit Gateway Attachment');
       }
       trafficType = undefined;
-    } else if (props.trafficType) {
-      trafficType = props.trafficType;
     }
 
     const flowLog = new CfnFlowLog(this, 'FlowLog', {
