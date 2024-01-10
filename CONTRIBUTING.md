@@ -11,7 +11,7 @@ The CDK is released under the [Apache license](http://aws.amazon.com/apache2.0/)
 Any code you submit will be released under that license.
 
 This document describes how to set up a development environment and submit your changes. Please
-let us know if it's not up-to-date (even better, submit a PR with your  corrections ;-)).
+let us know if it's not up-to-date (even better, submit a PR with your corrections ;-)).
 
 - [Where To Contribute](#where-to-contribute)
   - [Demonstrating Value](#demonstrating-value)
@@ -185,7 +185,7 @@ specific to the CDK.
 
 ### Building aws-cdk-lib
 
-The full build of all of the packages within the repository can take a few minutes, about 20  when all tests are run.
+The full build of all of the packages within the repository can take a few minutes, about 20 when all tests are run.
 Most contributions only require working on a single package, usually `aws-cdk-lib`. To build this package for the first
 time, you can execute the following to build it and it's dependencies.
 
