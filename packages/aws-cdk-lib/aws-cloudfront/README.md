@@ -567,7 +567,7 @@ new cloudfront.Function(this, 'Function', {
   code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
   // Note that JS_2_0 must be used for Key Value Store support
   runtime: cloudfront.FunctionRuntime.JS_2_0,
-  keyValueStores: [store],
+  keyValueStore: store,
 });
 ```
 
