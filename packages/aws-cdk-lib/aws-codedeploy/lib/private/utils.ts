@@ -42,7 +42,7 @@ export interface renderAlarmConfigProps {
   readonly ignorePollAlarmFailure?: boolean,
   /**
    * When no alarms are provided on an update, removes previously existing alarms from the construct.
-   * @see https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/FEATURE_FLAGS.md#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup
+   * @see {@link https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/FEATURE_FLAGS.md#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup}
    *
    * @default true
    */
