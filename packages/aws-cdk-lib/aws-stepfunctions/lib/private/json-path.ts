@@ -1,5 +1,6 @@
 import { IntrinsicParser, IntrinsicExpression } from './intrinstics';
 import { captureStackTrace, IResolvable, IResolveContext, Token, Tokenization } from '../../../core';
+import { SPECIFY_NULL } from '../types';
 
 const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
 
@@ -40,6 +41,7 @@ export function renderObject(obj: object | undefined): object | undefined {
     handleNumber: renderNumber,
     handleBoolean: renderBoolean,
     handleResolvable: renderResolvable,
+    handleNull: renderNull,
   });
 }
 
@@ -79,6 +81,10 @@ export function findReferencedPaths(obj: object | undefined): Set<string> {
       for (const p of findPathsInIntrinsicFunctions(jsonPathFromAny(x))) {
         found.add(p);
       }
+      return {};
+    },
+
+    handleNull(_key: string, _x: null) {
       return {};
     },
   });
@@ -124,6 +130,7 @@ interface FieldHandlers {
   handleNumber(key: string, x: number): {[key: string]: number | string};
   handleBoolean(key: string, x: boolean): {[key: string]: boolean};
   handleResolvable(key: string, x: IResolvable): {[key: string]: any};
+  handleNull(key: string, x: null): {[key: string]: null};
 }
 
 export function recurseObject(obj: object | undefined, handlers: FieldHandlers, visited: object[] = []): object | undefined {
@@ -142,7 +149,9 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
 
   const ret: any = {};
   for (const [key, value] of Object.entries(obj)) {
-    if (typeof value === 'string') {
+    if (value === SPECIFY_NULL) {
+      Object.assign(ret, handlers.handleNull(key, null));
+    } else if (typeof value === 'string') {
       Object.assign(ret, handlers.handleString(key, value));
     } else if (typeof value === 'number') {
       Object.assign(ret, handlers.handleNumber(key, value));
@@ -316,6 +325,14 @@ function jsonPathNumber(x: number): string | undefined {
 
 function pathFromToken(token: IResolvable | undefined) {
   return token && (JsonPathToken.isJsonPathToken(token) ? token.path : undefined);
+}
+
+/**
+ * Render a parameter null value
+ */
+function renderNull(key: string, _value: null): {[key: string]: null} {
+  console.log("YEET");
+  return { [key]: null };
 }
 
 /**
