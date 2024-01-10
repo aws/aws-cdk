@@ -385,17 +385,17 @@ class Cidr implements IIpAddresses {
 }
 
 /**
- * An abstract Provider of Ipv6IpAddresses.
+ * An abstract Provider of Ipv6Addresses.
  *
  * Note this is specific to the IPv6 CIDR.
  */
-export class Ipv6IpAddresses {
+export class Ipv6Addresses {
   /**
    * Used for IPv6 address management with Amazon provided CIDRs.
    *
    * Note this is specific to the IPv6 CIDR.
    */
-  public static amazonProvided(): IIpv6IpAddresses {
+  public static amazonProvided(): IIpv6Addresses {
     return new AmazonProvided();
   }
 
@@ -407,7 +407,7 @@ export class Ipv6IpAddresses {
  *
  * Note this is specific to the IPv6 CIDR.
  */
-export interface IIpv6IpAddresses {
+export interface IIpv6Addresses {
   /**
    * Whether the IPv6 CIDR is Amazon provided or not.
    *
@@ -428,7 +428,7 @@ export interface IIpv6IpAddresses {
  *
  * Note this is specific to the IPv6 CIDR.
  */
-export class AmazonProvided implements IIpv6IpAddresses {
+class AmazonProvided implements IIpv6Addresses {
   /**
    * Whether the IPv6 CIDR is Amazon provided or not.
    */

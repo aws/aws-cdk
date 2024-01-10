@@ -4,7 +4,7 @@ import {
   CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
   CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCCidrBlock, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
 } from './ec2.generated';
-import { AllocatedSubnet, IIpAddresses, RequestedSubnet, IpAddresses, IIpv6IpAddresses, Ipv6IpAddresses } from './ip-addresses';
+import { AllocatedSubnet, IIpAddresses, RequestedSubnet, IpAddresses, IIpv6Addresses, Ipv6Addresses } from './ip-addresses';
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { SubnetFilter } from './subnet';
@@ -1134,9 +1134,9 @@ export interface VpcProps {
    *
    * Note this is specific to IPv6 addresses.
    *
-   * @default Ipv6IpAddresses.amazonProvided
+   * @default Ipv6Addresses.amazonProvided
    */
-  readonly ipv6IpAddresses?: IIpv6IpAddresses;
+  readonly ipv6Addresses?: IIpv6Addresses;
 }
 
 /**
@@ -1469,7 +1469,7 @@ export class Vpc extends VpcBase {
   /**
    * The provider of IPv6 addresses.
    */
-  private readonly ipv6IpAddresses?: IIpv6IpAddresses;
+  private readonly ipv6Addresses?: IIpv6Addresses;
 
   /**
    * The IPv6 CIDR block CFN resource.
@@ -1528,7 +1528,7 @@ export class Vpc extends VpcBase {
 
     this.useIpv6 = props.vpcProtocol === VpcProtocol.DUAL_STACK;
 
-    const ipv6OnlyProps: Array<keyof VpcProps> = ['ipv6IpAddresses'];
+    const ipv6OnlyProps: Array<keyof VpcProps> = ['ipv6Addresses'];
     if (!this.useIpv6) {
       for (const prop of ipv6OnlyProps) {
         if (props[prop] !== undefined) {
@@ -1595,14 +1595,14 @@ export class Vpc extends VpcBase {
     const natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
 
     if (this.useIpv6) {
-      this.ipv6IpAddresses = props.ipv6IpAddresses ?? Ipv6IpAddresses.amazonProvided();
+      this.ipv6Addresses = props.ipv6Addresses ?? Ipv6Addresses.amazonProvided();
 
-      if (this.ipv6IpAddresses.amazonProvided) {
+      if (this.ipv6Addresses.amazonProvided) {
         // create the IPv6 CIDR block and associate it with the VPC
         // create a dependency of the subnets on the CIDR block
         this.ipv6CidrBlock = new CfnVPCCidrBlock(this, 'ipv6cidr', {
           vpcId: this.vpcId,
-          amazonProvidedIpv6CidrBlock: this.ipv6IpAddresses.amazonProvided,
+          amazonProvidedIpv6CidrBlock: this.ipv6Addresses.amazonProvided,
         });
 
         this.ipv6SelectedCidr = Fn.select(0, this.resource.attrIpv6CidrBlocks);
@@ -1775,14 +1775,14 @@ export class Vpc extends VpcBase {
       if (this.ipv6SelectedCidr === undefined) {
         throw new Error('No IPv6 CIDR block associated with this VPC could be found');
       }
-      if (this.ipv6IpAddresses === undefined) {
+      if (this.ipv6Addresses === undefined) {
         throw new Error('No IPv6 IpAddresses were found');
       }
       // create the IPv6 CIDR block
       const subnetIpv6Cidrs = Fn.cidr(this.ipv6SelectedCidr, allocatedSubnets.length, (128 - 64).toString());
 
       // copy the list of allocated subnets while assigning the IPv6 CIDR
-      const allocatedSubnetsIpv6 = this.ipv6IpAddresses.allocateSubnetsIpv6Cidr({
+      const allocatedSubnetsIpv6 = this.ipv6Addresses.allocateSubnetsIpv6Cidr({
         allocatedSubnets: allocatedSubnets,
         ipv6Cidrs: subnetIpv6Cidrs,
       });
