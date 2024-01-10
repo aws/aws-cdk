@@ -104,7 +104,7 @@ Here are some things we look at when evaluating a contribution:
 1. Size - Is the contribution limited to a relatively self-contained surface area? Is it broken up into the smallest possible unit of functionality that makes sense?
 1. Priority - Does the contribution address an issue in, or add a new feature of, a service that has a high priority for coverage? These are generally core services most commonly used on AWS such as IAM, EC2, Lambda, and ECS.
 1. Quality - Does the contribution take into account all of the guidance provided in our documentation regarding [design patterns](./docs/DESIGN_GUIDELINES.md), test coverage, and best practices as it relates to code within the aws-cdk repository? Does it also make an effort to follow patterns commonly used within the aws-cdk repository and not deviate unnecessarily from these conventions?
-1. Breaking Changes - Does the contribution introduce any risk for breaking existing users applications? Specifically, does it require any code changes or can it trigger any resource replacement in cloudformation that would result in downtime?
+1. Breaking Changes - Does the contribution introduce any risk for breaking existing users applications? Specifically, does it require any code changes or can it trigger any resource replacement in CloudFormation that would result in downtime?
 
 ### Demonstrating Value
 
