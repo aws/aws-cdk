@@ -6271,10 +6271,10 @@ case@1.6.3, case@^1.6.3:
   resolved "https://registry.npmjs.org/case/-/case-1.6.3.tgz#0a4386e3e9825351ca2e6216c60467ff5f1ea1c9"
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
-cdk-from-cfn@^0.113.0:
-  version "0.113.0"
-  resolved "https://registry.npmjs.org/cdk-from-cfn/-/cdk-from-cfn-0.113.0.tgz#b68832b84ce939d525b9660f928a2aef028cc867"
-  integrity sha512-cBsPHyg6tNvy4JRHwQpkUh5U6Te5fUAxZX2RhIlaOVT/Ci40PjPYFDhStC1BFl+L3O9uZTmy/OY8CkjlZsWvlw==
+cdk-from-cfn@^0.116.0:
+  version "0.116.0"
+  resolved "https://registry.npmjs.org/cdk-from-cfn/-/cdk-from-cfn-0.116.0.tgz#3906e5e5322289ae2bbc210c197156a2289d3c39"
+  integrity sha512-bYomOU9z0vAVQBiyAxD9dN5+I/BGf2iHtYKq/kUntMjojbA85KH8FAiKaxvZQXRVwMV2P32rkzR+aX4T3SMcdA==
 
 cdk-generate-synthetic-examples@^0.1.299:
   version "0.1.299"
