@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
 import { CfnFunction } from './cloudfront.generated';
-import { IResource, Names, Resource, Stack } from '../../core';
+import { IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
+import { Fact } from '../../region-info';
 
 /**
  * Represents the function's source code
@@ -115,7 +116,7 @@ export interface FunctionAttributes {
 export interface FunctionProps {
   /**
    * A name to identify the function.
-   * @default - generated from the `id`
+   * @default - an automatically generated name
    */
   readonly functionName?: string;
 
@@ -196,11 +197,17 @@ export class Function extends Resource implements IFunction {
   }
 
   private generateName(): string {
-    const name = Stack.of(this).region + Names.uniqueId(this);
-    if (name.length > 64) {
-      return name.substring(0, 32) + name.substring(name.length - 32);
-    }
-    return name;
+    // Function names are globally unique, even if the stack is deployed in different regions;
+    // therefore, we prefix the region name to the resource name. It's important; however, to make
+    // sure that we don't exceed the service's length limit. We subtract the length of the region
+    // name from the max length to support the concatenation. If the region is currently unresolved,
+    // then we use the name of the longest known region.
+    const serviceMaxNameLength = 64;
+    const region = Stack.of(this).region;
+    const regionNameLength = !Token.isUnresolved(region) ? region.length : Math.max(...Fact.regions.map((r) => r.length));
+    return Lazy.string({
+      produce: () => `${region}${Names.uniqueResourceName(this, { maxLength: serviceMaxNameLength - regionNameLength })}`,
+    });
   }
 }
 

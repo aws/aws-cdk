@@ -77,6 +77,76 @@ describe('CloudFront Function', () => {
     });
   });
 
+  test('long stack and resource id in environment agnostic stack', () => {
+    const app = new App();
+    const stack = new Stack(app, 'test-stack-name-longer-than-thirtytwo-characters');
+    new Function(stack, 'test-resoruce-id-also-longer-but-with-different-end', {
+      code: FunctionCode.fromInline('code'),
+    });
+
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        testresoruceidalsolongerbutwithdifferentendFD0687C9: {
+          Type: 'AWS::CloudFront::Function',
+          Properties: {
+            Name: {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  'teststacknamelongertherbutwithdifferentend3C400F7C',
+                ],
+              ],
+            },
+            AutoPublish: true,
+            FunctionCode: 'code',
+            FunctionConfig: {
+              Comment: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    'teststacknamelongertherbutwithdifferentend3C400F7C',
+                  ],
+                ],
+              },
+              Runtime: 'cloudfront-js-1.0',
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('long stack and resource id with region specified', () => {
+    const app = new App();
+    const stack = new Stack(app, 'test-stack-name-longer-than-thirtytwo-characters', { env: { region: 'test-east-1' } });
+    new Function(stack, 'test-resoruce-id-also-longer-but-with-different-end', {
+      code: FunctionCode.fromInline('code'),
+    });
+
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        testresoruceidalsolongerbutwithdifferentendFD0687C9: {
+          Type: 'AWS::CloudFront::Function',
+          Properties: {
+            Name: 'test-east-1teststacknamelongerthagerbutwithdifferentend3C400F7C',
+            AutoPublish: true,
+            FunctionCode: 'code',
+            FunctionConfig: {
+              Comment: 'test-east-1teststacknamelongerthagerbutwithdifferentend3C400F7C',
+              Runtime: 'cloudfront-js-1.0',
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('maximum example', () => {
     const app = new App();
     const stack = new Stack(app, 'Stack', {
