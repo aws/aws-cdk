@@ -66,10 +66,5 @@ export class SubscriptionFilter extends Resource {
       filterPattern: props.filterPattern.logPatternString,
       filterName: this.physicalName,
     });
-
-    // const cfnPermission = scope.node.tryFindChild('CanInvokeLambda') as lambda.CfnPermission;
-    // if (cfnPermission) {
-    //   cfnSubscriptionFilter.addDependency(cfnPermission);
-    // }
   }
 }
