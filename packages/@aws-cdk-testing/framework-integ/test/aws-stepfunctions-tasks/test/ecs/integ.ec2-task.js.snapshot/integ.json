@@ -3,7 +3,7 @@
   "testCases": {
     "SfnTasksEcsEc2TaskTest/DefaultTest": {
       "stacks": [
-        "aws-ecs-task"
+        "aws-sfn-tasks-ecs-task"
       ],
       "assertionStack": "SfnTasksEcsEc2TaskTest/DefaultTest/DeployAssert",
       "assertionStackName": "SfnTasksEcsEc2TaskTestDefaultTestDeployAssert9E1A388C"

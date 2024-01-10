@@ -29,7 +29,7 @@ cluster.addCapacity('DefaultAutoScalingGroup', {
 
 // Build task definition
 const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
-const containerDefinition = taskDefinition.addContainer('TheContainer', {
+const containerDefinition = taskDefinition.addContainer('Container', {
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
   memoryLimitMiB: 256,
   logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' }),

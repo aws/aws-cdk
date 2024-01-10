@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-ecs-run-task": {
-        "id": "aws-ecs-run-task",
-        "path": "aws-ecs-run-task",
+      "aws-sfn-tasks-ecs-run-task": {
+        "id": "aws-sfn-tasks-ecs-run-task",
+        "path": "aws-sfn-tasks-ecs-run-task",
         "children": {
           "Ec2Cluster": {
             "id": "Ec2Cluster",
-            "path": "aws-ecs-run-task/Ec2Cluster",
+            "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-run-task/Ec2Cluster/Resource",
+                "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
                   "aws:cdk:cloudformation:props": {}
@@ -26,11 +26,11 @@
               },
               "Vpc": {
                 "id": "Vpc",
-                "path": "aws-ecs-run-task/Ec2Cluster/Vpc",
+                "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-run-task/Ec2Cluster/Vpc/Resource",
+                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                       "aws:cdk:cloudformation:props": {
@@ -41,7 +41,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-run-task/Ec2Cluster/Vpc"
+                            "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc"
                           }
                         ]
                       }
@@ -53,11 +53,11 @@
                   },
                   "PublicSubnet1": {
                     "id": "PublicSubnet1",
-                    "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1",
+                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1/Subnet",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
@@ -82,7 +82,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1"
+                                "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1"
                               }
                             ],
                             "vpcId": {
@@ -97,7 +97,7 @@
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1/Acl",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1/Acl",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -105,14 +105,14 @@
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1/RouteTable",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1"
+                                "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1"
                               }
                             ],
                             "vpcId": {
@@ -127,7 +127,7 @@
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1/RouteTableAssociation",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
@@ -146,7 +146,7 @@
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1/DefaultRoute",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
@@ -166,7 +166,7 @@
                       },
                       "EIP": {
                         "id": "EIP",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1/EIP",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1/EIP",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                           "aws:cdk:cloudformation:props": {
@@ -174,7 +174,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1"
+                                "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1"
                               }
                             ]
                           }
@@ -186,7 +186,7 @@
                       },
                       "NATGateway": {
                         "id": "NATGateway",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1/NATGateway",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1/NATGateway",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                           "aws:cdk:cloudformation:props": {
@@ -202,7 +202,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1"
+                                "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1"
                               }
                             ]
                           }
@@ -220,11 +220,11 @@
                   },
                   "PublicSubnet2": {
                     "id": "PublicSubnet2",
-                    "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2",
+                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2/Subnet",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
@@ -249,7 +249,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2"
+                                "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2"
                               }
                             ],
                             "vpcId": {
@@ -264,7 +264,7 @@
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2/Acl",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2/Acl",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -272,14 +272,14 @@
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2/RouteTable",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2"
+                                "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2"
                               }
                             ],
                             "vpcId": {
@@ -294,7 +294,7 @@
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2/RouteTableAssociation",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
@@ -313,7 +313,7 @@
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2/DefaultRoute",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
@@ -333,7 +333,7 @@
                       },
                       "EIP": {
                         "id": "EIP",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2/EIP",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2/EIP",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                           "aws:cdk:cloudformation:props": {
@@ -341,7 +341,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2"
+                                "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2"
                               }
                             ]
                           }
@@ -353,7 +353,7 @@
                       },
                       "NATGateway": {
                         "id": "NATGateway",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2/NATGateway",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2/NATGateway",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                           "aws:cdk:cloudformation:props": {
@@ -369,7 +369,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2"
+                                "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2"
                               }
                             ]
                           }
@@ -387,11 +387,11 @@
                   },
                   "PrivateSubnet1": {
                     "id": "PrivateSubnet1",
-                    "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1",
+                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1/Subnet",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
@@ -416,7 +416,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1"
+                                "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1"
                               }
                             ],
                             "vpcId": {
@@ -431,7 +431,7 @@
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1/Acl",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1/Acl",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -439,14 +439,14 @@
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1/RouteTable",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1"
+                                "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1"
                               }
                             ],
                             "vpcId": {
@@ -461,7 +461,7 @@
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1/RouteTableAssociation",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
@@ -480,7 +480,7 @@
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1/DefaultRoute",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
@@ -506,11 +506,11 @@
                   },
                   "PrivateSubnet2": {
                     "id": "PrivateSubnet2",
-                    "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2",
+                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2/Subnet",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
@@ -535,7 +535,7 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2"
+                                "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2"
                               }
                             ],
                             "vpcId": {
@@ -550,7 +550,7 @@
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2/Acl",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2/Acl",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -558,14 +558,14 @@
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2/RouteTable",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2"
+                                "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2"
                               }
                             ],
                             "vpcId": {
@@ -580,7 +580,7 @@
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2/RouteTableAssociation",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
@@ -599,7 +599,7 @@
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2/DefaultRoute",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
@@ -625,14 +625,14 @@
                   },
                   "IGW": {
                     "id": "IGW",
-                    "path": "aws-ecs-run-task/Ec2Cluster/Vpc/IGW",
+                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/IGW",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-run-task/Ec2Cluster/Vpc"
+                            "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc"
                           }
                         ]
                       }
@@ -644,7 +644,7 @@
                   },
                   "VPCGW": {
                     "id": "VPCGW",
-                    "path": "aws-ecs-run-task/Ec2Cluster/Vpc/VPCGW",
+                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/VPCGW",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                       "aws:cdk:cloudformation:props": {
@@ -669,19 +669,19 @@
               },
               "DefaultAutoScalingGroup": {
                 "id": "DefaultAutoScalingGroup",
-                "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup",
+                "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup",
                 "children": {
                   "InstanceSecurityGroup": {
                     "id": "InstanceSecurityGroup",
-                    "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
+                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/Resource",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                           "aws:cdk:cloudformation:props": {
-                            "groupDescription": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
+                            "groupDescription": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
                             "securityGroupEgress": [
                               {
                                 "cidrIp": "0.0.0.0/0",
@@ -692,7 +692,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
+                                "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
                               }
                             ],
                             "vpcId": {
@@ -713,11 +713,11 @@
                   },
                   "InstanceRole": {
                     "id": "InstanceRole",
-                    "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole",
+                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole",
                     "children": {
                       "ImportInstanceRole": {
                         "id": "ImportInstanceRole",
-                        "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole/ImportInstanceRole",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole/ImportInstanceRole",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -725,7 +725,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole/Resource",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -744,7 +744,7 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
+                                "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
                               }
                             ]
                           }
@@ -756,11 +756,11 @@
                       },
                       "DefaultPolicy": {
                         "id": "DefaultPolicy",
-                        "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole/DefaultPolicy",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole/DefaultPolicy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole/DefaultPolicy/Resource",
+                            "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceRole/DefaultPolicy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                               "aws:cdk:cloudformation:props": {
@@ -838,7 +838,7 @@
                   },
                   "InstanceProfile": {
                     "id": "InstanceProfile",
-                    "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceProfile",
+                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceProfile",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                       "aws:cdk:cloudformation:props": {
@@ -856,7 +856,7 @@
                   },
                   "ImportedInstanceProfile": {
                     "id": "ImportedInstanceProfile",
-                    "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/ImportedInstanceProfile",
+                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/ImportedInstanceProfile",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -864,11 +864,11 @@
                   },
                   "LaunchTemplate": {
                     "id": "LaunchTemplate",
-                    "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate",
+                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate/Resource",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
                           "aws:cdk:cloudformation:props": {
@@ -902,7 +902,7 @@
                                   "tags": [
                                     {
                                       "key": "Name",
-                                      "value": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate"
+                                      "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate"
                                     }
                                   ]
                                 },
@@ -911,7 +911,7 @@
                                   "tags": [
                                     {
                                       "key": "Name",
-                                      "value": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate"
+                                      "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate"
                                     }
                                   ]
                                 }
@@ -937,7 +937,7 @@
                                 "tags": [
                                   {
                                     "key": "Name",
-                                    "value": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate"
+                                    "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate"
                                   }
                                 ]
                               }
@@ -957,7 +957,7 @@
                   },
                   "ASG": {
                     "id": "ASG",
-                    "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/ASG",
+                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/ASG",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
                       "aws:cdk:cloudformation:props": {
@@ -977,7 +977,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup",
+                            "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup",
                             "propagateAtLaunch": true
                           }
                         ],
@@ -998,19 +998,19 @@
                   },
                   "DrainECSHook": {
                     "id": "DrainECSHook",
-                    "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook",
+                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook",
                     "children": {
                       "Function": {
                         "id": "Function",
-                        "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function",
                         "children": {
                           "ServiceRole": {
                             "id": "ServiceRole",
-                            "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole",
+                            "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole",
                             "children": {
                               "ImportServiceRole": {
                                 "id": "ImportServiceRole",
-                                "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/ImportServiceRole",
+                                "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/ImportServiceRole",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.3.0"
@@ -1018,7 +1018,7 @@
                               },
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/Resource",
+                                "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                                   "aws:cdk:cloudformation:props": {
@@ -1051,7 +1051,7 @@
                                     "tags": [
                                       {
                                         "key": "Name",
-                                        "value": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
+                                        "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
                                       }
                                     ]
                                   }
@@ -1063,11 +1063,11 @@
                               },
                               "DefaultPolicy": {
                                 "id": "DefaultPolicy",
-                                "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy",
+                                "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy",
                                 "children": {
                                   "Resource": {
                                     "id": "Resource",
-                                    "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource",
+                                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource",
                                     "attributes": {
                                       "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                       "aws:cdk:cloudformation:props": {
@@ -1174,7 +1174,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource",
+                            "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                               "aws:cdk:cloudformation:props": {
@@ -1199,7 +1199,7 @@
                                 "tags": [
                                   {
                                     "key": "Name",
-                                    "value": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
+                                    "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
                                   }
                                 ],
                                 "timeout": 310
@@ -1210,9 +1210,9 @@
                               "version": "10.3.0"
                             }
                           },
-                          "AllowInvoke:awsecsruntaskEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicEEF5ECF0": {
-                            "id": "AllowInvoke:awsecsruntaskEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicEEF5ECF0",
-                            "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/AllowInvoke:awsecsruntaskEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicEEF5ECF0",
+                          "AllowInvoke:awssfntasksecsruntaskEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7B5DFDE": {
+                            "id": "AllowInvoke:awssfntasksecsruntaskEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7B5DFDE",
+                            "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/AllowInvoke:awssfntasksecsruntaskEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7B5DFDE",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                               "aws:cdk:cloudformation:props": {
@@ -1236,11 +1236,11 @@
                           },
                           "Topic": {
                             "id": "Topic",
-                            "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic",
+                            "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource",
+                                "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                                   "aws:cdk:cloudformation:props": {
@@ -1281,22 +1281,22 @@
                   },
                   "LifecycleHookDrainHook": {
                     "id": "LifecycleHookDrainHook",
-                    "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook",
+                    "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook",
                     "children": {
                       "Topic": {
                         "id": "Topic",
-                        "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource",
+                            "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
                               "aws:cdk:cloudformation:props": {
                                 "tags": [
                                   {
                                     "key": "Name",
-                                    "value": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
+                                    "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
                                   }
                                 ]
                               }
@@ -1314,11 +1314,11 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role",
                         "children": {
                           "ImportRole": {
                             "id": "ImportRole",
-                            "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/ImportRole",
+                            "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/ImportRole",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -1326,7 +1326,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/Resource",
+                            "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                               "aws:cdk:cloudformation:props": {
@@ -1345,7 +1345,7 @@
                                 "tags": [
                                   {
                                     "key": "Name",
-                                    "value": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
+                                    "value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
                                   }
                                 ]
                               }
@@ -1357,11 +1357,11 @@
                           },
                           "DefaultPolicy": {
                             "id": "DefaultPolicy",
-                            "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/DefaultPolicy",
+                            "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/DefaultPolicy",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/DefaultPolicy/Resource",
+                                "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/DefaultPolicy/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                                   "aws:cdk:cloudformation:props": {
@@ -1404,7 +1404,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Resource",
+                        "path": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::AutoScaling::LifecycleHook",
                           "aws:cdk:cloudformation:props": {
@@ -1450,7 +1450,7 @@
           },
           "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
             "id": "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
-            "path": "aws-ecs-run-task/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "aws-sfn-tasks-ecs-run-task/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -1458,7 +1458,7 @@
           },
           "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118": {
             "id": "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
-            "path": "aws-ecs-run-task/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "aws-sfn-tasks-ecs-run-task/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -1466,15 +1466,15 @@
           },
           "TaskDef": {
             "id": "TaskDef",
-            "path": "aws-ecs-run-task/TaskDef",
+            "path": "aws-sfn-tasks-ecs-run-task/TaskDef",
             "children": {
               "TaskRole": {
                 "id": "TaskRole",
-                "path": "aws-ecs-run-task/TaskDef/TaskRole",
+                "path": "aws-sfn-tasks-ecs-run-task/TaskDef/TaskRole",
                 "children": {
                   "ImportTaskRole": {
                     "id": "ImportTaskRole",
-                    "path": "aws-ecs-run-task/TaskDef/TaskRole/ImportTaskRole",
+                    "path": "aws-sfn-tasks-ecs-run-task/TaskDef/TaskRole/ImportTaskRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -1482,7 +1482,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-run-task/TaskDef/TaskRole/Resource",
+                    "path": "aws-sfn-tasks-ecs-run-task/TaskDef/TaskRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1513,7 +1513,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-run-task/TaskDef/Resource",
+                "path": "aws-sfn-tasks-ecs-run-task/TaskDef/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
                   "aws:cdk:cloudformation:props": {
@@ -1524,12 +1524,12 @@
                           "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:d87af9b5acc567118fa529d3d3b763098200a6446a5ca64aea987729efd52534"
                         },
                         "memory": 256,
-                        "name": "TheContainer",
+                        "name": "Container",
                         "logConfiguration": {
                           "logDriver": "awslogs",
                           "options": {
                             "awslogs-group": {
-                              "Ref": "TaskDefTheContainerLogGroupD94C8EF5"
+                              "Ref": "TaskDefContainerLogGroupB60E6F44"
                             },
                             "awslogs-stream-prefix": "EventDemo",
                             "awslogs-region": {
@@ -1545,7 +1545,7 @@
                         "Arn"
                       ]
                     },
-                    "family": "awsecsruntaskTaskDefC6ED96A8",
+                    "family": "awssfntasksecsruntaskTaskDef75140181",
                     "networkMode": "bridge",
                     "requiresCompatibilities": [
                       "EC2"
@@ -1563,17 +1563,17 @@
                   "version": "10.3.0"
                 }
               },
-              "TheContainer": {
-                "id": "TheContainer",
-                "path": "aws-ecs-run-task/TaskDef/TheContainer",
+              "Container": {
+                "id": "Container",
+                "path": "aws-sfn-tasks-ecs-run-task/TaskDef/Container",
                 "children": {
                   "AssetImage": {
                     "id": "AssetImage",
-                    "path": "aws-ecs-run-task/TaskDef/TheContainer/AssetImage",
+                    "path": "aws-sfn-tasks-ecs-run-task/TaskDef/Container/AssetImage",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "aws-ecs-run-task/TaskDef/TheContainer/AssetImage/Staging",
+                        "path": "aws-sfn-tasks-ecs-run-task/TaskDef/Container/AssetImage/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -1581,7 +1581,7 @@
                       },
                       "Repository": {
                         "id": "Repository",
-                        "path": "aws-ecs-run-task/TaskDef/TheContainer/AssetImage/Repository",
+                        "path": "aws-sfn-tasks-ecs-run-task/TaskDef/Container/AssetImage/Repository",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -1595,11 +1595,11 @@
                   },
                   "LogGroup": {
                     "id": "LogGroup",
-                    "path": "aws-ecs-run-task/TaskDef/TheContainer/LogGroup",
+                    "path": "aws-sfn-tasks-ecs-run-task/TaskDef/Container/LogGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-run-task/TaskDef/TheContainer/LogGroup/Resource",
+                        "path": "aws-sfn-tasks-ecs-run-task/TaskDef/Container/LogGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                           "aws:cdk:cloudformation:props": {}
@@ -1623,11 +1623,11 @@
               },
               "ExecutionRole": {
                 "id": "ExecutionRole",
-                "path": "aws-ecs-run-task/TaskDef/ExecutionRole",
+                "path": "aws-sfn-tasks-ecs-run-task/TaskDef/ExecutionRole",
                 "children": {
                   "ImportExecutionRole": {
                     "id": "ImportExecutionRole",
-                    "path": "aws-ecs-run-task/TaskDef/ExecutionRole/ImportExecutionRole",
+                    "path": "aws-sfn-tasks-ecs-run-task/TaskDef/ExecutionRole/ImportExecutionRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -1635,7 +1635,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-run-task/TaskDef/ExecutionRole/Resource",
+                    "path": "aws-sfn-tasks-ecs-run-task/TaskDef/ExecutionRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1660,11 +1660,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-ecs-run-task/TaskDef/ExecutionRole/DefaultPolicy",
+                    "path": "aws-sfn-tasks-ecs-run-task/TaskDef/ExecutionRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-run-task/TaskDef/ExecutionRole/DefaultPolicy/Resource",
+                        "path": "aws-sfn-tasks-ecs-run-task/TaskDef/ExecutionRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1714,7 +1714,7 @@
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "TaskDefTheContainerLogGroupD94C8EF5",
+                                      "TaskDefContainerLogGroupB60E6F44",
                                       "Arn"
                                     ]
                                   }
@@ -1755,7 +1755,7 @@
           },
           "Start": {
             "id": "Start",
-            "path": "aws-ecs-run-task/Start",
+            "path": "aws-sfn-tasks-ecs-run-task/Start",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -1763,7 +1763,7 @@
           },
           "Run": {
             "id": "Run",
-            "path": "aws-ecs-run-task/Run",
+            "path": "aws-sfn-tasks-ecs-run-task/Run",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -1771,15 +1771,15 @@
           },
           "StateMachine": {
             "id": "StateMachine",
-            "path": "aws-ecs-run-task/StateMachine",
+            "path": "aws-sfn-tasks-ecs-run-task/StateMachine",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "aws-ecs-run-task/StateMachine/Role",
+                "path": "aws-sfn-tasks-ecs-run-task/StateMachine/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "aws-ecs-run-task/StateMachine/Role/ImportRole",
+                    "path": "aws-sfn-tasks-ecs-run-task/StateMachine/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -1787,7 +1787,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-run-task/StateMachine/Role/Resource",
+                    "path": "aws-sfn-tasks-ecs-run-task/StateMachine/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1812,11 +1812,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-ecs-run-task/StateMachine/Role/DefaultPolicy",
+                    "path": "aws-sfn-tasks-ecs-run-task/StateMachine/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-run-task/StateMachine/Role/DefaultPolicy/Resource",
+                        "path": "aws-sfn-tasks-ecs-run-task/StateMachine/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -2135,7 +2135,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-run-task/StateMachine/Resource",
+                "path": "aws-sfn-tasks-ecs-run-task/StateMachine/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
@@ -2154,7 +2154,7 @@
                               "Arn"
                             ]
                           },
-                          "\",\"TaskDefinition\":\"awsecsruntaskTaskDefC6ED96A8\",\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"EC2\"}}}}"
+                          "\",\"TaskDefinition\":\"awssfntasksecsruntaskTaskDef75140181\",\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"Container\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"EC2\"}}}}"
                         ]
                       ]
                     },
@@ -2179,7 +2179,7 @@
           },
           "stateMachineArn": {
             "id": "stateMachineArn",
-            "path": "aws-ecs-run-task/stateMachineArn",
+            "path": "aws-sfn-tasks-ecs-run-task/stateMachineArn",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -2187,7 +2187,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-ecs-run-task/BootstrapVersion",
+            "path": "aws-sfn-tasks-ecs-run-task/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -2195,7 +2195,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-ecs-run-task/CheckBootstrapVersion",
+            "path": "aws-sfn-tasks-ecs-run-task/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
