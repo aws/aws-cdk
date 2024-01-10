@@ -191,42 +191,42 @@ In the account containing the parent hosted zone:
 const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
   zoneName: 'someexample.com',
 });
-    const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
-      // The role name must be predictable
-      roleName: 'MyDelegationRole',
-      // The other account
-      assumedBy: new iam.AccountPrincipal('12345678901'),
-      // You can scope down this role policy to be least privileged.
-      // If you want the other account to be able to manage specific records,
-      // you can scope down by resource and/or normalized record names
-      inlinePolicies: {
-        crossAccountPolicy: new iam.PolicyDocument({
-          statements: [
-            new iam.PolicyStatement({
-              sid: 'ListHostedZonesByName',
-              effect: iam.Effect.ALLOW,
-              actions: ['route53:ListHostedZonesByName'],
-              resources: ['*'],
-            }),
-            new iam.PolicyStatement({
-              sid: 'GetHostedZoneAndChangeResourceRecordSet',
-              effect: iam.Effect.ALLOW,
-              actions: ['route53:GetHostedZone', 'route53:ChangeResourceRecordSet'],
-              // This example assumes the RecordSet subdomain.somexample.com
-              // is contained in the HostedZone
-              resources: ['arn:aws:route53:::hostedzone/HZID00000000000000000'],
-              conditions: {
-                'ForAllValues:StringLike': {
-                  'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
-                    'subdomain.someexample.com',
-                  ],
-                },
-              },
-            }),
-          ],
+const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
+  // The role name must be predictable
+  roleName: 'MyDelegationRole',
+  // The other account
+  assumedBy: new iam.AccountPrincipal('12345678901'),
+  // You can scope down this role policy to be least privileged.
+  // If you want the other account to be able to manage specific records,
+  // you can scope down by resource and/or normalized record names
+  inlinePolicies: {
+    crossAccountPolicy: new iam.PolicyDocument({
+      statements: [
+        new iam.PolicyStatement({
+          sid: 'ListHostedZonesByName',
+          effect: iam.Effect.ALLOW,
+          actions: ['route53:ListHostedZonesByName'],
+          resources: ['*'],
         }),
-      },
-    });
+        new iam.PolicyStatement({
+          sid: 'GetHostedZoneAndChangeResourceRecordSet',
+          effect: iam.Effect.ALLOW,
+          actions: ['route53:GetHostedZone', 'route53:ChangeResourceRecordSet'],
+          // This example assumes the RecordSet subdomain.somexample.com
+          // is contained in the HostedZone
+          resources: ['arn:aws:route53:::hostedzone/HZID00000000000000000'],
+          conditions: {
+            'ForAllValues:StringLike': {
+              'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
+                'subdomain.someexample.com',
+              ],
+            },
+          },
+        }),
+      ],
+    }),
+  },
+});
 parentZone.grantDelegation(crossAccountRole);
 ```
 
