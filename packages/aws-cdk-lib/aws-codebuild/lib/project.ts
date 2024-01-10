@@ -2117,7 +2117,8 @@ export class WindowsBuildImage implements IBuildImage {
       errors.push('Windows images do not support Lambda compute types');
     }
 
-    if (buildEnvironment.computeType === ComputeType.SMALL || buildEnvironment.computeType === ComputeType.X2_LARGE) {
+    const unsupportedComputeTypes = [ComputeType.SMALL, ComputeType.X_LARGE, ComputeType.X2_LARGE];
+    if (buildEnvironment.computeType !== undefined && unsupportedComputeTypes.includes(buildEnvironment.computeType)) {
       errors.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
     }
     return errors;
