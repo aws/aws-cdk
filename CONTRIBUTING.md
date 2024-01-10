@@ -905,7 +905,7 @@ the README for the `aws-ec2` module - https://docs.aws.amazon.com/cdk/api/latest
 ### Rosetta
 
 The README file contains code snippets written as typescript code. Code snippets typed in fenced code blocks
-(such as `` ```ts ``) will be automatically extracted, compiled and translated to other languages when the
+(such as `` ```ts ``) will be automatically extracted, compiled and translated to other languages 
 during the [pack](#pack) step. We call this feature 'rosetta'.
 
 You can run rosetta on the aws-cdk-lib module (or any other module) by running:
