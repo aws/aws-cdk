@@ -100,7 +100,7 @@ Contributions are accepted through a number of channels, including direct pull r
 
 Here are some things we look at when evaluating a contribution:
 
-1. Signal - Is there a github issue, or possibly multiple related ones, that the contribution addresses. Do the issues have a lot of engagement, such as comments, +1 reactions, etc that indicate that many users are affected by it?
+1. Signal - Is there a GitHub issue, or possibly multiple related ones, that the contribution addresses. Do the issues have a lot of engagement, such as comments, +1 reactions, etc that indicate that many users are affected by it?
 1. Size - Is the contribution limited to a relatively self-contained surface area? Is it broken up into the smallest possible unit of functionality that makes sense?
 1. Priority - Does the contribution address an issue in, or add a new feature of, a service that has a high priority for coverage? These are generally core services most commonly used on AWS such as IAM, EC2, Lambda, and ECS.
 1. Quality - Does the contribution take into account all of the guidance provided in our documentation regarding [design patterns](./docs/DESIGN_GUIDELINES.md), test coverage, and best practices as it relates to code within the aws-cdk repository? Does it also make an effort to follow patterns commonly used within the aws-cdk repository and not deviate unecessarily from these conventions?
@@ -120,7 +120,7 @@ All of this information will help make it clear to reviewers why your contributi
 
 ### Publishing Your Own Package
 
-This is by far the strongest signal you can give to the CDK team that a feature should be included within the core aws-cdk packages. A package published on npm, pypi, maven central, nuget, and github (for go) that has good documentation, a clear purpose, and an active group of users is a good indication that the functionality it provides is useful and should be examined for inclusion in the core aws-cdk packages. This may not be the goal of any given package, and some constructs and features do not provide functionality that should ever be vended as part of the core framework. However, if a package you own does include functionality that you and other users believe should be vended as part of the core CDK, we encourage making a pull request, or RFC if appropriate, proposing it's inclusion.
+This is by far the strongest signal you can give to the CDK team that a feature should be included within the core aws-cdk packages. A package published on npm, pypi, maven central, nuget, and GitHub (for go) that has good documentation, a clear purpose, and an active group of users is a good indication that the functionality it provides is useful and should be examined for inclusion in the core aws-cdk packages. This may not be the goal of any given package, and some constructs and features do not provide functionality that should ever be vended as part of the core framework. However, if a package you own does include functionality that you and other users believe should be vended as part of the core CDK, we encourage making a pull request, or RFC if appropriate, proposing it's inclusion.
 
 #### Trust and Third Party Packages 
 
@@ -299,7 +299,7 @@ eval $(gp env -e)
 ### Amazon CodeCatalyst Dev Environments
 
 Dev Environments are cloud-based development environments.
-[Amazon CodeCatalyst](https://aws.amazon.com/codecatalyst/) allows you to checkout your linked Github
+[Amazon CodeCatalyst](https://aws.amazon.com/codecatalyst/) allows you to checkout your linked GitHub
 repositories in your Dev Environments with your favorite local IDEs such as VSCode or JetBrains.
 
 Build up `aws-cdk-lib` as well as `framework-integ` when you enter your Dev Env:
@@ -368,13 +368,13 @@ much more likely to give a PR for those issues prompt attention.
 
 In some cases, it is useful to seek feedback by iterating on a design document. This is useful when you plan a big change or feature, or you want advice on what would be the best path forward.
 
-In many cases, the comments section of the relevant Github issue is sufficent for such discussion, and can be a good place to socialize and get feedback on what you plan to do. If the changes are significant in scope, require a longer form medium to communicate, or you just want to ensure that the core team agrees with your planned implementation before you submit it for review to avoid wasted work, there are a few different strategies you can pursue.
+In many cases, the comments section of the relevant GitHub issue is sufficent for such discussion, and can be a good place to socialize and get feedback on what you plan to do. If the changes are significant in scope, require a longer form medium to communicate, or you just want to ensure that the core team agrees with your planned implementation before you submit it for review to avoid wasted work, there are a few different strategies you can pursue.
 
 1. README driven development - This is the core team's preferred method for reviewing new APIs. Submit a draft PR with updates to the README for the package that you intend to change that clearly describes how the functionality will be used. For new L2s, include usage examples that cover common use cases and showcase the features of the API you're designing. The most important thing to consider for any feature is the public API and this will help to give a clear picture of what changes users can expect.
 1. Write an [RFC](aws/aws-cdk-rfcs) - This is a process for discussing new functionality that is large in scope, may incur breaking changes, or may otherwise warrant discussion from multiple stakeholders on the core team or within the community. Spefically, it is a good place to discuss new features in the core CDK framework or the CLI that are unable to be decoupled from the core cdk codebase.
 1. Publish a package - A separate package is the best place to demonstrate the value of new functionality that you believe should be included within the CDK core libraries. It not only illustrates a complete solution with it's entire API surface area available to review, it also proves that your design works! When publishing a package with the goal for eventual inclusion within aws-cdk-lib, make sure to follow our [design guidelines](./docs/DESIGN_GUIDELINES.md) wherever relevant.
 
-Performing any of the above processes helps us to ensure that expectations are clearly set before a contribution is made. We want to ensure that everyone is able to contribute to the CDK ecosystem effectively. If you make a contribution that is ultimately not merged by into aws-cdk-lib, but you believe it should be, we encourage you to keep pursuing it. The scope of the core framework is intentionally limited to ensure that we can effectively maintain it's surface area and ensure code quality and reliablity over the long term. However, new patterns may emerge in the ecosystem that clearly provide better solutions than those currently in aws-cdk-lib. If your solutions gains popularity within the community, and you want us to re-evaluate it's inclusion, reach out to us on cdk.dev or create a github issue with a feature request and references to your package. See [demonstrating value](#demonstrating-value) for more information. 
+Performing any of the above processes helps us to ensure that expectations are clearly set before a contribution is made. We want to ensure that everyone is able to contribute to the CDK ecosystem effectively. If you make a contribution that is ultimately not merged by into aws-cdk-lib, but you believe it should be, we encourage you to keep pursuing it. The scope of the core framework is intentionally limited to ensure that we can effectively maintain it's surface area and ensure code quality and reliablity over the long term. However, new patterns may emerge in the ecosystem that clearly provide better solutions than those currently in aws-cdk-lib. If your solutions gains popularity within the community, and you want us to re-evaluate it's inclusion, reach out to us on cdk.dev or create a GitHub issue with a feature request and references to your package. See [demonstrating value](#demonstrating-value) for more information. 
 
 ### Step 3: Work your Magic
 
@@ -586,7 +586,7 @@ CDK integration tests.
   > CDK core members can push to a branch on the AWS CDK repo (naming convention: `<user>/<feature-bug-name>`).
 
 * Create a [pull request on
-  Github](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork).
+  GitHub](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork).
 
 * Pull request title and message (and PR title and description) must adhere to
   [conventionalcommits](https://www.conventionalcommits.org).
