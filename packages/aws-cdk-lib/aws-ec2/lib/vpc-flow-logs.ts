@@ -6,6 +6,7 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { IResource, PhysicalName, RemovalPolicy, Resource, FeatureFlags, Stack, Tags, CfnResource } from '../../core';
 import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '../../cx-api';
+import { resource } from '../../../@aws-cdk/cloudformation-diff/test/util';
 
 /**
  * Name tag constant
@@ -797,6 +798,13 @@ export class FlowLog extends FlowLogBase {
 
   constructor(scope: Construct, id: string, props: FlowLogProps) {
     super(scope, id);
+
+    if (
+      ['TransitGateway', 'TransitGatewayAttachment'].some((type) => type === props.resourceType.resourceType)
+      && props.maxAggregationInterval === FlowLogMaxAggregationInterval.TEN_MINUTES
+    ) {
+      throw new Error('maxAggregationInterval must be ONE_MINUTE or undefined for Transit Gateway resources');
+    }
 
     const destination = props.destination || FlowLogDestination.toCloudWatchLogs();
 

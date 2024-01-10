@@ -602,6 +602,28 @@ describe('vpc flow logs', () => {
       });
     }).toThrow(/trafficType is not supported for Transit Gateway and Transit Gateway Attachment/);
   });
+
+  test('create with transit gateway id and specify maxAggregationInterval.TEN_MINUTES', () => {
+    const stack = getTestStack();
+
+    expect(() => {
+      new FlowLog(stack, 'FlowLogs', {
+        resourceType: FlowLogResourceType.fromTransitGatewayId('tgw-123456'),
+        maxAggregationInterval: FlowLogMaxAggregationInterval.TEN_MINUTES,
+      });
+    }).toThrow(/maxAggregationInterval must be ONE_MINUTE or undefined for Transit Gateway resources/);
+  });
+
+  test('create with transit gateway attachment id and specify maxAggregationInterval.TEN_MINUTES', () => {
+    const stack = getTestStack();
+
+    expect(() => {
+      new FlowLog(stack, 'FlowLogs', {
+        resourceType: FlowLogResourceType.fromTransitGatewayAttachmentId('tgw-attach-123456'),
+        maxAggregationInterval: FlowLogMaxAggregationInterval.TEN_MINUTES,
+      });
+    }).toThrow(/maxAggregationInterval must be ONE_MINUTE or undefined for Transit Gateway resources/);
+  });
 });
 
 test('add to vpc with maxAggregationInterval', () => {
