@@ -1,0 +1,59 @@
+name: Sync repository from upstream
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: 5 2 * * *
+
+env:
+  BRANCHES: main v2-release
+
+jobs:
+
+  # Check for the presence of a PROJEN_GITHUB_TOKEN secret.
+  #
+  # This is expected to contain a personal access token of someone
+  # who pas permissions to bypass branch protection rules.
+  #
+  # If not present, we will use GitHub Actions Token permissions,
+  # but those are bound by branch protection rules.
+  check-secret:
+
+    # Don't run on the target repo itself, only forks
+    if: github.repository != 'aws/aws-cdk'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for presence of PROJEN_GITHUB_TOKEN
+        id: check-secrets
+        run: |
+          if [ ! -z "${{ secrets.PROJEN_GITHUB_TOKEN }}" ]; then
+            echo "ok=true" >> $GITHUB_OUTPUT
+          else
+            echo "ok=false" >> $GITHUB_OUTPUT
+          fi
+    outputs:
+      ok: ${{ steps.check-secrets.outputs.ok }}
+
+  sync-branch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: [check-secret]
+    steps:
+      - name: Checkout using User Token
+        uses: actions/checkout@v4
+        if: needs.check-secret.outputs.ok == 'true'
+        with:
+          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+
+      - name: Checkout using GitHub Actions permissions
+        uses: actions/checkout@v4
+        if: needs.check-secret.outputs.ok == 'false'
+
+      - name: Sync from aws/aws-cdk
+        run: |-
+          git remote add upstream https://github.com/aws/aws-cdk.git
+          git fetch upstream
+
+          for branch in $BRANCHES; do
+            git push origin --force refs/remotes/upstream/$branch:refs/heads/$branch
+          done
