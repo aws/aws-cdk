@@ -710,7 +710,9 @@ export interface FlowLogOptions {
   /**
    * The maximum interval of time during which a flow of packets is captured
    * and aggregated into a flow log record.
-   * When creating flow logs for a Transit Gateway or Transit Gateway Attachment, it is not possible to specify TEN_MINUTES.
+   *
+   * When creating flow logs for a Transit Gateway or Transit Gateway Attachment,
+   * it is not possible to specify TEN_MINUTES.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-flowlog.html#cfn-ec2-flowlog-maxaggregationinterval
    *
