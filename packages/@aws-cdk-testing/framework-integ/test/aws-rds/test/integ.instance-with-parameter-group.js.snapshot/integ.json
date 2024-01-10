@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "rds-instance-with-parameter-group-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-instance-with-parameter-group"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "rds-instance-with-parameter-group-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "rdsinstancewithparametergroupintegtestDefaultTestDeployAssert833FEF6C"
+    }
+  }
+}
