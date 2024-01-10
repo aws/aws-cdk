@@ -120,7 +120,7 @@ All of this information will help make it clear to reviewers why your contributi
 
 ### Publishing Your Own Package
 
-This is by far the strongest signal you can give to the CDK team that a feature should be included within the core aws-cdk packages. A package published on npm, PyPI, Maven Central, NuGet, and GitHub (for Go) that has good documentation, a clear purpose, and an active group of users is a good indication that the functionality it provides is useful and should be examined for inclusion in the core aws-cdk packages. This may not be the goal of any given package, and some constructs and features do not provide functionality that should ever be vended as part of the core framework. However, if a package you own does include functionality that you and other users believe should be vended as part of the core CDK, we encourage making a pull request, or RFC if appropriate, proposing it's inclusion.
+This is by far the strongest signal you can give to the CDK team that a feature should be included within the core aws-cdk packages. A package published on npm, PyPI, Maven Central, NuGet, and GitHub (for Go) that has good documentation, a clear purpose, and an active group of users is a good indication that the functionality it provides is useful and should be examined for inclusion in the core aws-cdk packages. This may not be the goal of any given package, and some constructs and features do not provide functionality that should ever be vended as part of the core framework. However, if a package you own does include functionality that you and other users believe should be vended as part of the core CDK, we encourage making a pull request, or RFC if appropriate, proposing its inclusion.
 
 #### Trust and Third Party Packages 
 
@@ -187,7 +187,7 @@ specific to the CDK.
 
 The full build of all of the packages within the repository can take a few minutes, about 20 when all tests are run.
 Most contributions only require working on a single package, usually `aws-cdk-lib`. To build this package for the first
-time, you can execute the following to build it and it's dependencies.
+time, you can execute the following to build it and its dependencies.
 
 ```console
 $ npx lerna run build --scope=aws-cdk-lib
@@ -372,9 +372,9 @@ In many cases, the comments section of the relevant GitHub issue is sufficient f
 
 1. README driven development - This is the core team's preferred method for reviewing new APIs. Submit a draft PR with updates to the README for the package that you intend to change that clearly describes how the functionality will be used. For new L2s, include usage examples that cover common use cases and showcase the features of the API you're designing. The most important thing to consider for any feature is the public API and this will help to give a clear picture of what changes users can expect.
 1. Write an [RFC](aws/aws-cdk-rfcs) - This is a process for discussing new functionality that is large in scope, may incur breaking changes, or may otherwise warrant discussion from multiple stakeholders on the core team or within the community. Specifically, it is a good place to discuss new features in the core CDK framework or the CLI that are unable to be decoupled from the core cdk codebase.
-1. Publish a package - A separate package is the best place to demonstrate the value of new functionality that you believe should be included within the CDK core libraries. It not only illustrates a complete solution with it's entire API surface area available to review, it also proves that your design works! When publishing a package with the goal for eventual inclusion within aws-cdk-lib, make sure to follow our [design guidelines](./docs/DESIGN_GUIDELINES.md) wherever relevant.
+1. Publish a package - A separate package is the best place to demonstrate the value of new functionality that you believe should be included within the CDK core libraries. It not only illustrates a complete solution with its entire API surface area available to review, it also proves that your design works! When publishing a package with the goal for eventual inclusion within aws-cdk-lib, make sure to follow our [design guidelines](./docs/DESIGN_GUIDELINES.md) wherever relevant.
 
-Performing any of the above processes helps us to ensure that expectations are clearly set before a contribution is made. We want to ensure that everyone is able to contribute to the CDK ecosystem effectively. If you make a contribution that is ultimately not merged by into aws-cdk-lib, but you believe it should be, we encourage you to keep pursuing it. The scope of the core framework is intentionally limited to ensure that we can effectively maintain it's surface area and ensure code quality and reliability over the long term. However, new patterns may emerge in the ecosystem that clearly provide better solutions than those currently in aws-cdk-lib. If your solutions gains popularity within the community, and you want us to re-evaluate it's inclusion, reach out to us on cdk.dev or create a GitHub issue with a feature request and references to your package. See [demonstrating value](#demonstrating-value) for more information. 
+Performing any of the above processes helps us to ensure that expectations are clearly set before a contribution is made. We want to ensure that everyone is able to contribute to the CDK ecosystem effectively. If you make a contribution that is ultimately not merged by into aws-cdk-lib, but you believe it should be, we encourage you to keep pursuing it. The scope of the core framework is intentionally limited to ensure that we can effectivelymaintain its surface area and ensure code quality and reliability over the long term. However, new patterns may emerge in the ecosystem that clearly provide better solutions than those currently in aws-cdk-lib. If your solutions gains popularity within the community, and you want us to re-evaluate its inclusion, reach out to us on cdk.dev or create a GitHub issue with a feature request and references to your package. See [demonstrating value](#demonstrating-value) for more information. 
 
 ### Step 3: Work your Magic
 
@@ -428,7 +428,7 @@ new features and all fixes unless there is a good reason why one is not needed.
 
 All integration tests going forward should use the [IntegTest](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/integ-tests-alpha/lib/test-case.ts#L148)
 construct. Over time we will be updating all of our existing tests to use this construct. It
-allows for more control over configuring each tests as well as the ability to perform
+allows for more control over configuring each test as well as the ability to perform
 assertions against the deployed infrastructure.
 
 ```ts
@@ -593,7 +593,7 @@ CDK integration tests.
   * The title must begin with `feat(module): title`, `fix(module): title`, `refactor(module): title` or
     `chore(module): title`.
     * `feat`: indicates a feature added (requires tests and README updates in principle, but can be suppressed)
-    * `fix`: indicates a bug fixes (requires tests in principle, but can be suppressed)
+    * `fix`: indicates a bug fix (requires tests in principle, but can be suppressed)
     * `docs`: indicates updated documentation (docstrings or Markdown files)
     * `refactor`: indicates a feature-preserving refactoring
     * `chore`: something without directly visible user benefit (does not end up in the CHANGELOG). Typically used for build scripts, config, or changes so minor they don't warrant showing up the CHANGELOG.
@@ -869,7 +869,7 @@ preview version. For example, assume we add the method
 
 ```ts
 /**
- * This methods grants awesome powers
+ * This method grants awesome powers
  */
 grantAwesomePowerBeta1();
 ```
@@ -881,20 +881,20 @@ change, we will add `grantAwesomePowerBeta2()` and deprecate
 
 ```ts
 /**
-* This methods grants awesome powers to the given principal
+* This method grants awesome powers to the given principal
 *
 * @param grantee The principal to grant powers to
 */
 grantAwesomePowerBeta2(grantee: iam.IGrantable)
 
 /**
-* This methods grants awesome powers
+* This method grants awesome powers
 * @deprecated use grantAwesomePowerBeta2
 */
 grantAwesomePowerBeta1()
 ```
 
-When we decide its time to graduate the API, the latest preview version will
+When we decide it's time to graduate the API, the latest preview version will
 be deprecated and the final version - `grantAwesomePower` will be added.
 
 ## Documentation
@@ -1151,7 +1151,7 @@ Experimental packages are used to develop new constructs and experiment with the
 them as stable and including them within `aws-cdk-lib`. Once they are included in `aws-cdk-lib`, no
 more breaking api changes can be made.
 
-When you want to build an alpha package (for example, `some-package-alpha`), you can execute the following in the root of the repository to build it and it's dependencies.
+When you want to build an alpha package (for example, `some-package-alpha`), you can execute the following in the root of the repository to build it and its dependencies.
 
 ```
 $ npx lerna run build --scope=@aws-cdk/some-package-alpha
@@ -1288,7 +1288,7 @@ $ scripts/build-typescript.sh -w
 This does not do code generation and it does not do JSII checks and JSII assembly generation. Instead of doing a
 package-by-package ordered build, it compiles all `.ts` files in the repository all at once. This takes about the same
 time as it does to compile the biggest package all by itself, and on my machine is the difference between a 15
-CPU-minute build and a 20 CPU-second build. If you use this methods of recompiling and you want to run the test, you
+CPU-minute build and a 20 CPU-second build. If you use this method of recompiling and you want to run the test, you
 have to disable the built-in rebuild functionality of `lerna run test`:
 
 ```shell
