@@ -959,10 +959,9 @@ new ec2.InterfaceVpcEndpoint(this, 'VPC Endpoint', {
 
 #### Security groups for interface VPC endpoints
 
-By default, interface VPC endpoints create a new security group and traffic is **not**
-automatically allowed from the VPC CIDR.
+By default, interface VPC endpoints create a new security group and all traffic to the endpoint from within the VPC will be automatically allowed.
 
-Use the `connections` object to allow traffic to flow to the endpoint:
+Use the `connections` object to allow other traffic to flow to the endpoint:
 
 ```ts
 declare const myEndpoint: ec2.InterfaceVpcEndpoint;
@@ -1608,6 +1607,70 @@ const instance = new ec2.Instance(this, 'Instance', {
   associatePublicIpAddress: true,
 });
 ```
+
+### Specifying a key pair
+
+To allow SSH access to an EC2 instance by default, a Key Pair must be specified. Key pairs can
+be provided with the `keyPair` property to instances and launch templates. You can create a
+key pair for an instance like this:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+
+const keyPair = new ec2.KeyPair(this, 'KeyPair', {
+  type: ec2.KeyPairType.ED25519,
+  format: ec2.KeyPairFormat.PEM,
+});
+const instance = new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  // Use the custom key pair
+  keyPair,
+});
+```
+
+When a new EC2 Key Pair is created (without imported material), the private key material is
+automatically stored in Systems Manager Parameter Store. This can be retrieved from the key pair
+construct:
+
+```ts
+const keyPair = new ec2.KeyPair(this, 'KeyPair');
+const privateKey = keyPair.privateKey;
+```
+
+If you already have an SSH key that you wish to use in EC2, that can be provided when constructing the
+`KeyPair`. If public key material is provided, the key pair is considered "imported" and there
+will not be any data automatically stored in Systems Manager Parameter Store and the `type` property
+cannot be specified for the key pair.
+
+```ts
+const keyPair = new ec2.KeyPair(this, 'KeyPair', {
+  publicKeyMaterial: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB7jpNzG+YG0s+xIGWbxrxIZiiozHOEuzIJacvASP0mq",
+})
+```
+
+#### Using an existing EC2 Key Pair
+
+If you already have an EC2 Key Pair created outside of the CDK, you can import that key to
+your CDK stack.
+
+You can import it purely by name:
+
+```ts
+const keyPair = ec2.KeyPair.fromKeyPairName(this, 'KeyPair', 'the-keypair-name');
+```
+
+Or by specifying additional attributes:
+
+```ts
+const keyPair = ec2.KeyPair.fromKeyPairAttributes(this, 'KeyPair', {
+  keyPairName: 'the-keypair-name',
+  type: ec2.KeyPairType.RSA,
+})
+```
+
 
 ## VPC Flow Logs
 

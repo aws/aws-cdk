@@ -11,7 +11,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect } from '../../core';
+import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token } from '../../core';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -581,6 +581,36 @@ export class Cluster extends Resource implements ICluster {
     if (!this._capacityProviderNames.includes(provider)) {
       this._capacityProviderNames.push(provider);
     }
+  }
+
+  /**
+   * Returns an ARN that represents all tasks within the cluster that match
+   * the task pattern specified. To represent all tasks, specify ``"*"``.
+   *
+   * @param keyPattern Task id pattern
+   */
+  public arnForTasks(keyPattern: string): string {
+    return Stack.of(this).formatArn({
+      service: 'ecs',
+      resource: 'task',
+      resourceName: `${this.clusterName}/${keyPattern}`,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    });
+  }
+
+  /**
+  * Grants an ECS Task Protection API permission to the specified grantee.
+  * This method provides a streamlined way to assign the 'ecs:UpdateTaskProtection'
+  * permission, enabling the grantee to manage task protection in the ECS cluster.
+  *
+  * @param grantee The entity (e.g., IAM role or user) to grant the permissions to.
+  */
+  public grantTaskProtection(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['ecs:UpdateTaskProtection'],
+      resourceArns: [this.arnForTasks('*')],
+    });
   }
 
   private configureWindowsAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
@@ -1197,6 +1227,16 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
    * @default 100
    */
   readonly targetCapacityPercent?: number;
+
+  /**
+   * The period of time, in seconds, after a newly launched Amazon EC2 instance
+   * can contribute to CloudWatch metrics for Auto Scaling group.
+   *
+   * Must be between 0 and 10000.
+   *
+   * @default 300
+   */
+  readonly instanceWarmupPeriod?: number;
 }
 
 /**
@@ -1265,6 +1305,13 @@ export class AsgCapacityProvider extends Construct {
         throw new Error(`Invalid Capacity Provider Name: ${props.capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
       }
     }
+
+    if (props.instanceWarmupPeriod && !Token.isUnresolved(props.instanceWarmupPeriod)) {
+      if (props.instanceWarmupPeriod < 0 || props.instanceWarmupPeriod > 10000) {
+        throw new Error(`InstanceWarmupPeriod must be between 0 and 10000 inclusive, got: ${props.instanceWarmupPeriod}.`);
+      }
+    }
+
     const capacityProvider = new CfnCapacityProvider(this, id, {
       name: props.capacityProviderName,
       autoScalingGroupProvider: {
@@ -1274,6 +1321,7 @@ export class AsgCapacityProvider extends Construct {
           targetCapacity: props.targetCapacityPercent || 100,
           maximumScalingStepSize: props.maximumScalingStepSize,
           minimumScalingStepSize: props.minimumScalingStepSize,
+          instanceWarmupPeriod: props.instanceWarmupPeriod,
         },
         managedTerminationProtection: this.enableManagedTerminationProtection ? 'ENABLED' : 'DISABLED',
         managedDraining: managedDraining,
