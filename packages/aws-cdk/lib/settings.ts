@@ -292,6 +292,7 @@ export class Settings {
       notices: argv.notices,
       assetParallelism: argv['asset-parallelism'],
       assetPrebuild: argv['asset-prebuild'],
+      ignoreNoStacks: argv['ignore-no-stacks'],
     });
   }
 
