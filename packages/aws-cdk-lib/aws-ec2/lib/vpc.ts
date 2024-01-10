@@ -162,7 +162,7 @@ export interface IVpc extends IResource {
 /**
  * The types of IP addresses provisioned in the VPC.
  */
-export enum VpcProtocol {
+export enum IpProtocol {
   /**
    * The vpc will be configured with only IPv4 addresses.
    *
@@ -884,9 +884,9 @@ export interface VpcProps {
    *
    * Options are IPv4 only or dual stack.
    *
-   * @default VpcProtocol.IPV4_ONLY
+   * @default IpProtocol.IPV4_ONLY
    */
-  readonly vpcProtocol?: VpcProtocol;
+  readonly ipProtocol?: IpProtocol;
 
   /**
    * The Provider to use to allocate IPv4 Space to your VPC.
@@ -1520,19 +1520,19 @@ export class Vpc extends VpcBase {
     }
 
     // this property can be set to false if an IPv6_ONLY VPC is implemented in the future
-    this.useIpv4 = props.vpcProtocol === VpcProtocol.IPV4_ONLY || props.vpcProtocol === VpcProtocol.DUAL_STACK;
+    this.useIpv4 = props.ipProtocol === IpProtocol.IPV4_ONLY || props.ipProtocol === IpProtocol.DUAL_STACK;
     // use property to avoid lint errors
     if (this.useIpv4) {
       ; // pass
     }
 
-    this.useIpv6 = props.vpcProtocol === VpcProtocol.DUAL_STACK;
+    this.useIpv6 = props.ipProtocol === IpProtocol.DUAL_STACK;
 
     const ipv6OnlyProps: Array<keyof VpcProps> = ['ipv6Addresses'];
     if (!this.useIpv6) {
       for (const prop of ipv6OnlyProps) {
         if (props[prop] !== undefined) {
-          throw new Error(`${prop} can only be set if IPv6 is enabled. Set vpcProtocol to DUAL_STACK`);
+          throw new Error(`${prop} can only be set if IPv6 is enabled. Set ipProtocol to DUAL_STACK`);
         }
       }
     }
@@ -1833,7 +1833,7 @@ export class Vpc extends VpcBase {
       if (!this.useIpv6) {
         for (const prop of ipv6OnlyProps) {
           if (subnetConfig[prop] !== undefined) {
-            throw new Error(`${prop} can only be set if IPv6 is enabled. Set vpcProtocol to DUAL_STACK`);
+            throw new Error(`${prop} can only be set if IPv6 is enabled. Set ipProtocol to DUAL_STACK`);
           }
         }
       }

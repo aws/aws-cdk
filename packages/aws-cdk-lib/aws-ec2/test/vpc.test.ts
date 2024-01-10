@@ -29,7 +29,7 @@ import {
   Vpc,
   IpAddresses,
   InterfaceVpcEndpointAwsService,
-  VpcProtocol,
+  IpProtocol,
 } from '../lib';
 
 describe('vpc', () => {
@@ -2453,7 +2453,7 @@ describe('vpc', () => {
 
     // WHEN
     const vpc = new Vpc(stack, 'Vpc', {
-      vpcProtocol: VpcProtocol.DUAL_STACK,
+      ipProtocol: IpProtocol.DUAL_STACK,
     });
 
     // THEN

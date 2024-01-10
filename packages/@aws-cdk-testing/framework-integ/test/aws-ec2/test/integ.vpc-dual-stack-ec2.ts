@@ -16,7 +16,7 @@ class EC2DualStack extends cdk.Stack {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'Ip6VpcDualStack', {
-      vpcProtocol: ec2.VpcProtocol.DUAL_STACK,
+      ipProtocol: ec2.IpProtocol.DUAL_STACK,
       subnetConfiguration: [
         {
           name: 'Public',
