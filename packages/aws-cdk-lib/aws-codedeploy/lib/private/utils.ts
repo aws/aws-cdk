@@ -31,27 +31,54 @@ export function arnForDeploymentConfig(name: string, resource?: IResource): stri
   });
 }
 
-export function renderAlarmConfiguration(
-  alarms: cloudwatch.IAlarm[],
-  ignorePollAlarmFailure?: boolean,
-  ignoreAlarmConfiguration = false,
-  removeAlarms = true,
-): CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
+export interface renderAlarmConfigProps {
+  /**
+   * Array of Cloudwatch alarms
+   */
+  readonly alarms: cloudwatch.IAlarm[],
+  /**
+   * Whether to ignore failure to fetch the status of alarms from CloudWatch
+   */
+  readonly ignorePollAlarmFailure?: boolean,
+  /**
+   * When no alarms are provided on an update, removes previously existing alarms from the construct.
+   * @see https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/FEATURE_FLAGS.md#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup
+   *
+   * @default true
+   */
+  readonly removeAlarms?: boolean,
+  /**
+   * Whether to skip the step of checking CloudWatch alarms during the deployment process
+   *
+   * @default false
+   */
+  ignoreAlarmConfiguration?: boolean
+}
+
+export function renderAlarmConfigurationV2(props: renderAlarmConfigProps): CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
+  const ignoreAlarmConfiguration = props.ignoreAlarmConfiguration ?? false;
+  const removeAlarms = props.removeAlarms ?? true;
   if (removeAlarms) {
     return {
-      alarms: alarms.length > 0 ? alarms.map(a => ({ name: a.alarmName })) : undefined,
-      enabled: !ignoreAlarmConfiguration && alarms.length > 0,
-      ignorePollAlarmFailure,
+      alarms: props.alarms.length > 0 ? props.alarms.map(a => ({ name: a.alarmName })) : undefined,
+      enabled: !ignoreAlarmConfiguration && props.alarms.length > 0,
+      ignorePollAlarmFailure: props.ignorePollAlarmFailure,
     };
   }
 
-  return alarms.length === 0
+  return props.alarms.length === 0
     ? undefined
     : {
-      alarms: alarms.map(a => ({ name: a.alarmName })),
+      alarms: props.alarms.map(a => ({ name: a.alarmName })),
       enabled: !ignoreAlarmConfiguration,
-      ignorePollAlarmFailure,
+      ignorePollAlarmFailure: props.ignorePollAlarmFailure,
     };
+}
+
+/** @deprecated Use renderAlarmConfigurationV2 instead */
+export function renderAlarmConfiguration(alarms: cloudwatch.IAlarm[], ignorePollAlarmFailure: boolean | undefined, removeAlarms = true):
+CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
+  return renderAlarmConfigurationV2({ alarms, ignorePollAlarmFailure, removeAlarms });
 }
 
 export function deploymentConfig(name: string): IBaseDeploymentConfig & IPredefinedDeploymentConfig {

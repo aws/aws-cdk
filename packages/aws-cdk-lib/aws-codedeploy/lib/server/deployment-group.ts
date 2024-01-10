@@ -11,7 +11,7 @@ import * as cdk from '../../../core';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
-import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
+import { renderAlarmConfigurationV2, renderAutoRollbackConfiguration } from '../private/utils';
 import { AutoRollbackConfig } from '../rollback-config';
 
 export interface IServerDeploymentGroup extends cdk.IResource {
@@ -310,12 +310,12 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
       ec2TagSet: this.ec2TagSet(props.ec2InstanceTags),
       onPremisesTagSet: this.onPremiseTagSet(props.onPremiseInstanceTags),
       alarmConfiguration: cdk.Lazy.any({
-        produce: () => renderAlarmConfiguration(
-          this.alarms,
-          props.ignorePollAlarmsFailure,
-          props.ignoreAlarmConfiguration,
-          removeAlarmsFromDeploymentGroup,
-        ),
+        produce: () => renderAlarmConfigurationV2({
+          alarms: this.alarms,
+          ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
+          removeAlarms: removeAlarmsFromDeploymentGroup,
+          ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
+        }),
       }),
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
