@@ -17,9 +17,9 @@ jobs:
   # If not present, we will use GitHub Actions Token permissions,
   # but those are bound by branch protection rules.
   check-secret:
-
     # Don't run on the target repo itself, only forks
     if: github.repository != 'aws/aws-cdk'
+
     runs-on: ubuntu-latest
     steps:
       - name: Check for presence of PROJEN_GITHUB_TOKEN
