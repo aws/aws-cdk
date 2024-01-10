@@ -163,8 +163,8 @@ $ yarn install
 ```
 
 We recommend that you use [Visual Studio Code](https://code.visualstudio.com/) to work on the CDK.
-We use `eslint` to keep our code consistent in terms of style and reducing defects. We recommend installing
-the [eslint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) as well.
+We use `ESLint` to keep our code consistent in terms of style and reducing defects. We recommend installing
+the [ESLint extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) as well.
 
 Windows, as a development environment, has known performance and compatibility issues. To help in this case, consider using [Gitpod](#gitpod) or [Amazon CodeCatalyst DevEnv](https://docs.aws.amazon.com/toolkit-for-vscode/latest/userguide/codecatalyst-service.html) instead.
 
@@ -1045,16 +1045,16 @@ yarn lint
 
 The following linters are used:
 
-- [eslint](#eslint)
+- [ESLint](#eslint)
 - [pkglint](#pkglint)
 - [awslint](#awslint)
 
-#### eslint
+#### ESLint
 
 All packages in the repo use a standard base configuration found at [eslintrc.js](tools/@aws-cdk/cdk-build-tools/config/eslintrc.js).
 This can be customized for any package by modifying the `.eslintrc` file found at its root.
 
-If you're using the VS Code and would like to see eslint violations on it, install the [eslint
+If you're using the VS Code and would like to see ESLint violations on it, install the [ESLint
 extension](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint).
 
 #### pkglint
