@@ -1,0 +1,32 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "df6156f884f46480078633afbd0b768581022c5e444c5f72752980280ae15bd9": {
+      "source": {
+        "path": "asset.df6156f884f46480078633afbd0b768581022c5e444c5f72752980280ae15bd9.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "df6156f884f46480078633afbd0b768581022c5e444c5f72752980280ae15bd9.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "da06bf6fce985a0d6294ee04ff3d779dae26a32292f92401da58d56bb52983dc": {
+      "source": {
+        "path": "FargateWithAwsLogsDriverDefaultTestDeployAssert5F8EBC0C.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "da06bf6fce985a0d6294ee04ff3d779dae26a32292f92401da58d56bb52983dc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
