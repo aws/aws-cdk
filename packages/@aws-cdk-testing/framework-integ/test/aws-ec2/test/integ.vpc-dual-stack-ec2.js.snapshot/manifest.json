@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4a87f35d4d36f6bbd441fc461c869e390f6a597fcf4d39b64a3d93dfb83f45b2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f20a4f1a2d1bd6e5a4c2d834bcedc3d13f27f4c1f6904567428e101f8cf1d766.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -202,12 +202,6 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
-        "/vpc-dual-stack-ec2/MyInstanceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyInstanceRoleBF418E71"
-          }
-        ],
         "/vpc-dual-stack-ec2/MyInstance/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -235,7 +229,10 @@
         "/vpc-dual-stack-ec2/MyInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyInstanceA12EC128"
+            "data": "MyInstanceA12EC128",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
           }
         ],
         "/vpc-dual-stack-ec2/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -261,6 +258,15 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "MyInstanceRoleBF418E71": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyInstanceRoleBF418E71",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "vpc-dual-stack-ec2"
@@ -282,7 +288,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ac9eca409b2048dc8d216e21f31b3bb68013b4d86ab039af491b4cdc52447389.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0c62e785f46cbd13d4c0ab3de18a9271cf456462b47ed4a09395d56403751a4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

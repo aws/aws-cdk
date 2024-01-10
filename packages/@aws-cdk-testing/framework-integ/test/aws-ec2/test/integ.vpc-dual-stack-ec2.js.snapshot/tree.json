@@ -913,63 +913,6 @@
               "version": "0.0.0"
             }
           },
-          "MyInstanceRole": {
-            "id": "MyInstanceRole",
-            "path": "vpc-dual-stack-ec2/MyInstanceRole",
-            "children": {
-              "ImportMyInstanceRole": {
-                "id": "ImportMyInstanceRole",
-                "path": "vpc-dual-stack-ec2/MyInstanceRole/ImportMyInstanceRole",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "vpc-dual-stack-ec2/MyInstanceRole/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                  "aws:cdk:cloudformation:props": {
-                    "assumeRolePolicyDocument": {
-                      "Statement": [
-                        {
-                          "Action": "sts:AssumeRole",
-                          "Effect": "Allow",
-                          "Principal": {
-                            "Service": "ec2.amazonaws.com"
-                          }
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    },
-                    "managedPolicyArns": [
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":iam::aws:policy/AdministratorAccess"
-                          ]
-                        ]
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
-            }
-          },
           "MyInstance": {
             "id": "MyInstance",
             "path": "vpc-dual-stack-ec2/MyInstance",
@@ -1244,7 +1187,7 @@
                         "Fn::Join": [
                           "",
                           [
-                            "#!/bin/bash\n# fingerprint: 388389b8cd4e43e8\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
+                            "#!/bin/bash\n# fingerprint: 90213bdafd76f34c\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
                             {
                               "Ref": "AWS::Region"
                             },
@@ -1294,13 +1237,13 @@
               "version": "0.0.0"
             }
           },
-          "13de15af36a40d45d332c66df709083c--app--webserver.zipAsset": {
-            "id": "13de15af36a40d45d332c66df709083c--app--webserver.zipAsset",
-            "path": "vpc-dual-stack-ec2/13de15af36a40d45d332c66df709083c--app--webserver.zipAsset",
+          "15ef704257c2c618ca2b199ecb5decec--app--webserver.zipAsset": {
+            "id": "15ef704257c2c618ca2b199ecb5decec--app--webserver.zipAsset",
+            "path": "vpc-dual-stack-ec2/15ef704257c2c618ca2b199ecb5decec--app--webserver.zipAsset",
             "children": {
               "Stage": {
                 "id": "Stage",
-                "path": "vpc-dual-stack-ec2/13de15af36a40d45d332c66df709083c--app--webserver.zipAsset/Stage",
+                "path": "vpc-dual-stack-ec2/15ef704257c2c618ca2b199ecb5decec--app--webserver.zipAsset/Stage",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
@@ -1308,7 +1251,7 @@
               },
               "AssetBucket": {
                 "id": "AssetBucket",
-                "path": "vpc-dual-stack-ec2/13de15af36a40d45d332c66df709083c--app--webserver.zipAsset/AssetBucket",
+                "path": "vpc-dual-stack-ec2/15ef704257c2c618ca2b199ecb5decec--app--webserver.zipAsset/AssetBucket",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                   "version": "0.0.0"

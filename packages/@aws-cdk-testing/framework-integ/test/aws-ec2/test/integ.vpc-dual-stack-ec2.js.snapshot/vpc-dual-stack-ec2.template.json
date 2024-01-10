@@ -659,37 +659,6 @@
     "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
    ]
   },
-  "MyInstanceRoleBF418E71": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ec2.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AdministratorAccess"
-       ]
-      ]
-     }
-    ]
-   }
-  },
   "MyInstanceInstanceSecurityGroup3E7A7DD1": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
@@ -887,7 +856,7 @@
       "Fn::Join": [
        "",
        [
-        "#!/bin/bash\n# fingerprint: 388389b8cd4e43e8\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
+        "#!/bin/bash\n# fingerprint: 90213bdafd76f34c\n(\n  set +e\n  /opt/aws/bin/cfn-init -v --region ",
         {
          "Ref": "AWS::Region"
         },
@@ -930,7 +899,7 @@
       "files": {
        "/app/webserver.zip": {
         "source": {
-         "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d756ca1d341346dcb403e73b61ec7041400c5ebc122e1a7e85dfae971822fff6.zip"
+         "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5ebd9f9364eb30f85504de10c76efc8130bce55a23bc8e9aa3b169938de90d6b.zip"
         },
         "mode": "000644",
         "owner": "root",

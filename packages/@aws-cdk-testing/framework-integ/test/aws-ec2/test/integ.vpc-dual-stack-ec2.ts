@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
@@ -34,12 +33,6 @@ class EC2DualStack extends cdk.Stack {
         },
       },
     });
-
-    const role = new iam.Role(this, 'MyInstanceRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-    });
-
-    role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'));
 
     const instance = new ec2.Instance(this, 'MyInstance', {
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T2, ec2.InstanceSize.MICRO),
