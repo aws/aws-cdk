@@ -200,7 +200,8 @@ export class CdkToolkit {
     }
 
     const startSynthTime = new Date().getTime();
-    const stackCollection = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
+    const stackCollection = await this.selectStacksForDeploy(options.selector, options.exclusively,
+      options.cacheCloudAssembly, options.ignoreNoStacks);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
     print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
 
@@ -317,6 +318,7 @@ export class CdkToolkit {
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
           assetParallelism: options.assetParallelism,
+          ignoreNoStacks: options.ignoreNoStacks,
         });
 
         const message = result.noOp
@@ -491,7 +493,7 @@ export class CdkToolkit {
   }
 
   public async import(options: ImportOptions) {
-    const stacks = await this.selectStacksForDeploy(options.selector, true, true);
+    const stacks = await this.selectStacksForDeploy(options.selector, true, true, false);
 
     if (stacks.stackCount > 1) {
       throw new Error(`Stack selection is ambiguous, please choose a specific stack for import [${stacks.stackArtifacts.map(x => x.id).join(', ')}]`);
@@ -741,11 +743,13 @@ export class CdkToolkit {
     return stacks;
   }
 
-  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean, cacheCloudAssembly?: boolean): Promise<StackCollection> {
+  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean,
+    cacheCloudAssembly?: boolean, ignoreNoStacks?: boolean): Promise<StackCollection> {
     const assembly = await this.assembly(cacheCloudAssembly);
     const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
       defaultBehavior: DefaultSelection.OnlySingle,
+      ignoreNoStacks,
     });
 
     this.validateStacksSelected(stacks, selector.patterns);
@@ -1159,6 +1163,13 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default AssetBuildTime.ALL_BEFORE_DEPLOY
    */
   readonly assetBuildTime?: AssetBuildTime;
+
+  /**
+   * Whether to deploy if the app contains no stacks.
+   *
+   * @default false
+   */
+  readonly ignoreNoStacks?: boolean;
 }
 
 export interface ImportOptions extends CfnDeployOptions {
