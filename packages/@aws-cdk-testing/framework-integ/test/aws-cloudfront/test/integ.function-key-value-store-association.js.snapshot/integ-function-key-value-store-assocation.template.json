@@ -26,42 +26,26 @@
     "Name": "integfunctionkeyvaluestoreassocationTestKeyValueStoreAA209C02"
    }
   },
-  "TestKeyValueStore25F61F0F5": {
-   "Type": "AWS::CloudFront::KeyValueStore",
-   "Properties": {
-    "Name": "integfunctionkeyvaluestoreassocationTestKeyValueStore2A09DC08D"
-   }
-  },
   "TestFunction22AD90FC": {
    "Type": "AWS::CloudFront::Function",
    "Properties": {
     "AutoPublish": true,
     "FunctionCode": "code",
     "FunctionConfig": {
-     "Comment": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Ref": "AWS::Region"
-        },
-        "integfunctreassocationTestFunctionEC38B947"
-       ]
-      ]
-     },
-     "Runtime": "cloudfront-js-1.0"
+     "Comment": "TestKvFunction",
+     "KeyValueStoreAssociations": [
+      {
+       "KeyValueStoreARN": {
+        "Fn::GetAtt": [
+         "TestKeyValueStore8D0C09A2",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Runtime": "cloudfront-js-2.0"
     },
-    "Name": {
-     "Fn::Join": [
-      "",
-      [
-       {
-        "Ref": "AWS::Region"
-       },
-       "integfunctreassocationTestFunctionEC38B947"
-      ]
-     ]
-    }
+    "Name": "TestKvFunction"
    }
   }
  },

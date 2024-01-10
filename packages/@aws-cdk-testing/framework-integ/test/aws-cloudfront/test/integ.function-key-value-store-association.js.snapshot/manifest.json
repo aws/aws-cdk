@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8cd51bc32be5868f31c493a1b55db8768f9445c51a8aefbf2904c93e064c22f9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/62034410a7875b30801467b3919077211d42e469b115e1449c5e0687e72866d3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,12 +38,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TestKeyValueStore8D0C09A2"
-          }
-        ],
-        "/integ-function-key-value-store-assocation/TestKeyValueStore2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestKeyValueStore25F61F0F5"
           }
         ],
         "/integ-function-key-value-store-assocation/TestFunction/Resource": [

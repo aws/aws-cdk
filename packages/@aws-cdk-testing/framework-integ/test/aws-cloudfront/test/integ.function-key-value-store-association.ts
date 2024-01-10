@@ -10,10 +10,10 @@ const store = new cloudfront.KeyValueStore(stack, 'TestKeyValueStore', {
   comment: 'A test Key Value Store for CloudFront',
   source: cloudfront.ImportSource.fromAsset(path.join(__dirname, 'test-import-source.json')),
 });
-const store2 = new cloudfront.KeyValueStore(stack, 'TestKeyValueStore2');
 new cloudfront.Function(stack, 'TestFunction', {
+  functionName: 'TestKvFunction',
   code: cloudfront.FunctionCode.fromInline('code'),
-  keyValueStores: [store, store2],
+  keyValueStore: store,
 });
 
 new IntegTest(app, 'FunctionKeyValueStoreAssocation', {

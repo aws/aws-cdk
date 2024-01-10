@@ -138,14 +138,14 @@ export interface FunctionProps {
   readonly runtime?: FunctionRuntime;
 
   /**
-   * The Key Value Store(s) to associate with this function.
+   * The Key Value Store to associate with this function.
    *
    * In order to associate a Key Value Store, the `runtime` must be
    * `cloudfront-js-2.0` or newer.
    *
    * @default no key value store is associated
    */
-  readonly keyValueStores?: IKeyValueStore[];
+  readonly keyValueStore?: IKeyValueStore;
 }
 
 /**
@@ -190,10 +190,10 @@ export class Function extends Resource implements IFunction {
 
     this.functionName = props.functionName ?? this.generateName();
 
-    const defaultFunctionRuntime = props.keyValueStores?.length ? FunctionRuntime.JS_2_0.value : FunctionRuntime.JS_1_0.value;
+    const defaultFunctionRuntime = props.keyValueStore ? FunctionRuntime.JS_2_0.value : FunctionRuntime.JS_1_0.value;
     this.functionRuntime = props.runtime?.value ?? defaultFunctionRuntime;
 
-    if (props.keyValueStores?.length && this.functionRuntime === FunctionRuntime.JS_1_0.value) {
+    if (props.keyValueStore && this.functionRuntime === FunctionRuntime.JS_1_0.value) {
       throw new Error(
         `Key Value Stores cannot be associated to functions using the ${this.functionRuntime} runtime`,
       );
@@ -205,7 +205,7 @@ export class Function extends Resource implements IFunction {
       functionConfig: {
         comment: props.comment ?? this.functionName,
         runtime: this.functionRuntime,
-        keyValueStoreAssociations: this.buildKeyValueStoreProperties(props),
+        keyValueStoreAssociations: props.keyValueStore ? [{ keyValueStoreArn: props.keyValueStore?.keyValueStoreArn }] : undefined,
       },
       name: this.functionName,
     });
@@ -220,14 +220,6 @@ export class Function extends Resource implements IFunction {
       return name.substring(0, 32) + name.substring(name.length - 32);
     }
     return name;
-  }
-
-  private buildKeyValueStoreProperties(props: FunctionProps): CfnFunction.KeyValueStoreAssociationProperty[] | undefined {
-    if (!props.keyValueStores?.length) {
-      return undefined;
-    }
-
-    return props.keyValueStores.map(({ keyValueStoreArn }) => ({ keyValueStoreArn }));
   }
 }
 

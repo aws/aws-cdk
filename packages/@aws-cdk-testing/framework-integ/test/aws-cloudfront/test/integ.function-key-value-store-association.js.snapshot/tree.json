@@ -78,30 +78,6 @@
               "version": "0.0.0"
             }
           },
-          "TestKeyValueStore2": {
-            "id": "TestKeyValueStore2",
-            "path": "integ-function-key-value-store-assocation/TestKeyValueStore2",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "integ-function-key-value-store-assocation/TestKeyValueStore2/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::CloudFront::KeyValueStore",
-                  "aws:cdk:cloudformation:props": {
-                    "name": "integfunctionkeyvaluestoreassocationTestKeyValueStore2A09DC08D"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_cloudfront.CfnKeyValueStore",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_cloudfront.KeyValueStore",
-              "version": "0.0.0"
-            }
-          },
           "TestFunction": {
             "id": "TestFunction",
             "path": "integ-function-key-value-store-assocation/TestFunction",
@@ -115,30 +91,20 @@
                     "autoPublish": true,
                     "functionCode": "code",
                     "functionConfig": {
-                      "comment": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            "integfunctreassocationTestFunctionEC38B947"
-                          ]
-                        ]
-                      },
-                      "runtime": "cloudfront-js-1.0"
-                    },
-                    "name": {
-                      "Fn::Join": [
-                        "",
-                        [
-                          {
-                            "Ref": "AWS::Region"
-                          },
-                          "integfunctreassocationTestFunctionEC38B947"
-                        ]
+                      "comment": "TestKvFunction",
+                      "runtime": "cloudfront-js-2.0",
+                      "keyValueStoreAssociations": [
+                        {
+                          "keyValueStoreArn": {
+                            "Fn::GetAtt": [
+                              "TestKeyValueStore8D0C09A2",
+                              "Arn"
+                            ]
+                          }
+                        }
                       ]
-                    }
+                    },
+                    "name": "TestKvFunction"
                   }
                 },
                 "constructInfo": {
