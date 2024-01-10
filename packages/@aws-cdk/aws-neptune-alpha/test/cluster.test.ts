@@ -830,6 +830,27 @@ describe('DatabaseCluster', () => {
       });
     }).toThrow(/ServerlessScalingConfiguration minCapacity 10 must be less than serverlessScalingConfiguration maxCapacity 5/);
   });
+
+  test('create v1.3 engine version cluster', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      instances: 1,
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      engineVersion: EngineVersion.V1_3_0_0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+      DBSubnetGroupName: { Ref: 'DatabaseSubnets3C9252C9' },
+      VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+      EngineVersion: '1.3.0.0',
+    });
+  });
 });
 
 function testStack() {
