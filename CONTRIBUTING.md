@@ -33,7 +33,7 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
 - [Tools](#tools-advanced)
   - [Linters](#linters)
   - [scripts/foreach.sh](#scriptsforeachsh)
-  - [Jetbrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
+  - [JetBrains support (WebStorm/IntelliJ)](#jetbrains-support-webstormintellij)
   - [Linking against this repository](#linking-against-this-repository)
   - [Running integration tests in parallel](#running-integration-tests-in-parallel)
   - [Visualizing dependencies in a CloudFormation Template](#visualizing-dependencies-in-a-cloudformation-template)
@@ -1097,7 +1097,7 @@ Here are a few useful commands:
    evaluate only the rule specified [awslint README](./packages/awslint/README.md)
    for details on include/exclude rule patterns.
 
-### Jetbrains support (WebStorm/IntelliJ)
+### JetBrains support (WebStorm/IntelliJ)
 
 This project uses lerna and utilizes symlinks inside nested `node_modules` directories. You may encounter an issue during
 indexing where the IDE attempts to index these directories and keeps following links until the process runs out of
