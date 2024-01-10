@@ -611,7 +611,7 @@ describe('vpc flow logs', () => {
         resourceType: FlowLogResourceType.fromTransitGatewayId('tgw-123456'),
         maxAggregationInterval: FlowLogMaxAggregationInterval.TEN_MINUTES,
       });
-    }).toThrow(/maxAggregationInterval must be ONE_MINUTE or undefined for Transit Gateway resources/);
+    }).toThrow(/maxAggregationInterval cannot be set to TEN_MINUTES for Transit Gateway resources/);
   });
 
   test('create with transit gateway attachment id and specify maxAggregationInterval.TEN_MINUTES', () => {
@@ -622,7 +622,7 @@ describe('vpc flow logs', () => {
         resourceType: FlowLogResourceType.fromTransitGatewayAttachmentId('tgw-attach-123456'),
         maxAggregationInterval: FlowLogMaxAggregationInterval.TEN_MINUTES,
       });
-    }).toThrow(/maxAggregationInterval must be ONE_MINUTE or undefined for Transit Gateway resources/);
+    }).toThrow(/maxAggregationInterval cannot be set to TEN_MINUTES for Transit Gateway resources/);
   });
 });
 

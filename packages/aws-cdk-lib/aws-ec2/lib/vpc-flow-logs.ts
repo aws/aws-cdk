@@ -807,7 +807,7 @@ export class FlowLog extends FlowLogBase {
       ['TransitGateway', 'TransitGatewayAttachment'].some((type) => type === props.resourceType.resourceType)
       && props.maxAggregationInterval === FlowLogMaxAggregationInterval.TEN_MINUTES
     ) {
-      throw new Error('maxAggregationInterval must be ONE_MINUTE or undefined for Transit Gateway resources');
+      throw new Error('maxAggregationInterval cannot be set to TEN_MINUTES for Transit Gateway resources');
     }
 
     const destination = props.destination || FlowLogDestination.toCloudWatchLogs();
