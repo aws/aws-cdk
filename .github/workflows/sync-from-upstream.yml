@@ -40,14 +40,14 @@ jobs:
     needs: [check-secret]
     steps:
       - name: Checkout using User Token
-        uses: actions/checkout@v4
         if: needs.check-secret.outputs.ok == 'true'
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
 
       - name: Checkout using GitHub Actions permissions
-        uses: actions/checkout@v4
         if: needs.check-secret.outputs.ok == 'false'
+        uses: actions/checkout@v4
 
       - name: Sync from aws/aws-cdk
         run: |-
