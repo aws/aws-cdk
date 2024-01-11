@@ -386,6 +386,20 @@ $ cdk deploy --method=prepare-change-set --change-set-name MyChangeSetName
 For more control over when stack changes are deployed, the CDK can generate a
 CloudFormation change set but not execute it.
 
+#### Ignore No Stacks
+
+You may have an app with multiple environments, e.g., dev and prod. When starting
+development, your prod app may not have any resources or the resources are commented
+out. In this scenario, you will receive an error message stating that the app has no
+stacks.
+
+To bypass this error messages, you can pass the `--ignore-no-stacks` flag to the 
+`deploy` command:
+
+```console
+$ cdk deploy --ignore-no-stacks
+```
+
 #### Hotswap deployments for faster development
 
 You can pass the `--hotswap` flag to the `deploy` command:
