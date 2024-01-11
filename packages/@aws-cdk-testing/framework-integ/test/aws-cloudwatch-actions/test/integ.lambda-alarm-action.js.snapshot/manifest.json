@@ -1,0 +1,200 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "LambdaAlarmActionIntegrationTestStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "LambdaAlarmActionIntegrationTestStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "LambdaAlarmActionIntegrationTestStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LambdaAlarmActionIntegrationTestStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4e1c8f560b3bd32ad0758c6b7d04153c21111750f33dcfff05c52796bc71f9de.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "LambdaAlarmActionIntegrationTestStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "LambdaAlarmActionIntegrationTestStack.assets"
+      ],
+      "metadata": {
+        "/LambdaAlarmActionIntegrationTestStack/inAlarmLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "inAlarmLambdaServiceRole970DE64C"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStack/inAlarmLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "inAlarmLambda0920D101"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStack/Alarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm7103F465"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStack/alarmLambda": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "AWS Lambda has changed their authorization strategy, which may cause client invocations using the 'Qualifier' parameter of the lambda function to fail with Access Denied errors.\nIf you are using a lambda Version or Alias, make sure to call 'grantInvoke' or 'addPermission' on the Version or Alias, not the underlying Function\nSee: https://github.com/aws/aws-cdk/issues/19273 [ack: @aws-cdk/aws-lambda:addPermissionsToVersionOrAlias]"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStack/alarmLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambdaServiceRoleCDAABB9D"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStack/alarmLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambda131DB691"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStack/alarmLambda/CurrentVersion/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambdaCurrentVersionBDCE825C61967a018dfe55c69152d31b6e7ab40b"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStack/alarmLambda/CurrentVersion/AlarmPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambdaCurrentVersionAlarmPermissionFEBD056F"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStack/alarmLambda/AliasaliasName/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambdaAliasaliasName41B27313"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStack/alarmLambda/AliasaliasName/AlarmPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambdaAliasaliasNameAlarmPermission64A91652"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStack/alarmLambda/AlarmPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "alarmLambdaAlarmPermission43E41C89"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTestStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "AlarmCurrentVersionAlarmPermission22DB4772": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlarmCurrentVersionAlarmPermission22DB4772",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AlarmAliasaliasNameAlarmPermission3887D390": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlarmAliasaliasNameAlarmPermission3887D390",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AlarmalarmLambdaAlarmPermission5CAF3DE7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlarmalarmLambdaAlarmPermission5CAF3DE7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "LambdaAlarmActionIntegrationTestStack"
+    },
+    "LambdaAlarmActionIntegrationTestDefaultTestDeployAssertF9F882E5.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "LambdaAlarmActionIntegrationTestDefaultTestDeployAssertF9F882E5.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "LambdaAlarmActionIntegrationTestDefaultTestDeployAssertF9F882E5": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LambdaAlarmActionIntegrationTestDefaultTestDeployAssertF9F882E5.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "LambdaAlarmActionIntegrationTestDefaultTestDeployAssertF9F882E5.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "LambdaAlarmActionIntegrationTestDefaultTestDeployAssertF9F882E5.assets"
+      ],
+      "metadata": {
+        "/LambdaAlarmActionIntegrationTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/LambdaAlarmActionIntegrationTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "LambdaAlarmActionIntegrationTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
