@@ -7,7 +7,7 @@ import { DatabaseCluster, EngineVersion, InstanceType, ParameterGroupFamily } fr
 import { ClusterParameterGroup } from '../lib/parameter-group';
 
 /*
- * Test creating a cluster with engine version 1.2.0.0 and associated parameter group with family neptune1.2
+ * Test creating a cluster with engine version 1.3.0.0 and associated parameter group with family neptune1.3
  *
  * Stack verification steps:
  * * aws docdb describe-db-clusters --db-cluster-identifier <deployed db cluster identifier>
