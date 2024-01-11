@@ -127,7 +127,6 @@ interface IRequestedSubnetInstance {
  * Request for subnets CIDR to be allocated for a Vpc
  */
 export interface AllocateCidrRequest {
-
   /**
    * The IPv4 CIDR block for this Vpc
    */
@@ -137,6 +136,21 @@ export interface AllocateCidrRequest {
    * The Subnets to be allocated
    */
   readonly requestedSubnets: RequestedSubnet[];
+}
+
+/**
+ * Request for allocation of the VPC IPv6 CIDR.
+ */
+export interface AllocateVpcIpv6CidrRequest {
+  /**
+   * The VPC construct to attach to.
+   */
+  readonly scope: Construct;
+
+  /**
+   * The id of the VPC.
+   */
+  readonly vpcId: string;
 }
 
 /**
@@ -443,7 +457,7 @@ export interface IIpv6Addresses {
    *
    * Note this is specific to the IPv6 CIDR.
    */
-  allocateVpcIpv6Cidr(scope: Construct): CfnVPCCidrBlock;
+  allocateVpcIpv6Cidr(input: AllocateVpcIpv6CidrRequest): CfnVPCCidrBlock;
 
   /**
    * Split IPv6 CIDR block up for subnets.
@@ -481,9 +495,10 @@ class AmazonProvided implements IIpv6Addresses {
    *
    * Note this is specific to the IPv6 CIDR.
    */
-  allocateVpcIpv6Cidr(scope: Construct): CfnVPCCidrBlock {
-    return new CfnVPCCidrBlock(scope, 'ipv6cidr', {
-      vpcId: (scope as any).vpcId,
+  allocateVpcIpv6Cidr(input: AllocateVpcIpv6CidrRequest): CfnVPCCidrBlock {
+    //throw new Error(`vpcId not found, got ${(scope as any).vpcId}`);
+    return new CfnVPCCidrBlock(input.scope, 'ipv6cidr', {
+      vpcId: input.vpcId,
       amazonProvidedIpv6CidrBlock: this.amazonProvided,
     });
   }
