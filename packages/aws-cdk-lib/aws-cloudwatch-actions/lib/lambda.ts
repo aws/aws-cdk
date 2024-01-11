@@ -5,7 +5,7 @@ import * as lambda from '../../aws-lambda';
 import { Stack } from '../../core';
 
 /**
- * Use an Lambda action as an Alarm action
+ * Use a Lambda action as an Alarm action
  */
 export class LambdaAction implements cloudwatch.IAlarmAction {
   private lambdaFunction: lambda.IAlias | lambda.IVersion | lambda.IFunction
