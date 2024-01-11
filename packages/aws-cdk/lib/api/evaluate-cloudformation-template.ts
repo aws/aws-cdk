@@ -409,11 +409,11 @@ export class EvaluateCloudFormationTemplate {
   private findNestedStack(logicalId: string, nestedStackNames: {
     [nestedStackLogicalId: string]: NestedStackTemplates;
   }): string | undefined {
-    for (const [nestedStackLogicalId, { nestedStackTemplates: nestedChildStackNames, physicalName: nestedStackPhysicalName }] of Object.entries(nestedStackNames)) {
+    for (const [nestedStackLogicalId, { nestedStackTemplates, physicalName }] of Object.entries(nestedStackNames)) {
       if (nestedStackLogicalId === logicalId) {
-        return nestedStackPhysicalName;
+        return physicalName;
       }
-      const checkInNestedChildStacks = this.findNestedStack(logicalId, nestedChildStackNames);
+      const checkInNestedChildStacks = this.findNestedStack(logicalId, nestedStackTemplates);
       if (checkInNestedChildStacks) return checkInNestedChildStacks;
     }
     return undefined;
