@@ -543,7 +543,7 @@ describe('vpc flow logs', () => {
     });
   });
 
-  test('create with transit gateway id`', () => {
+  test('create from transit gateway`', () => {
     const stack = getTestStack();
 
     new FlowLog(stack, 'FlowLogs', {
