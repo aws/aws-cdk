@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack"
+      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack"
      }
     ]
    }
@@ -71,7 +71,7 @@
      },
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet1"
+      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -88,7 +88,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet1"
+      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -191,7 +191,7 @@
      },
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet2"
+      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -208,7 +208,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet2"
+      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -311,7 +311,7 @@
      },
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PrivateSubnet1"
+      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -325,7 +325,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PrivateSubnet1"
+      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -391,7 +391,7 @@
      },
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PrivateSubnet2"
+      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -405,7 +405,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PrivateSubnet2"
+      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -430,7 +430,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack"
+      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack"
      }
     ]
    }
@@ -472,7 +472,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/cloudwatchLogs"
+      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/cloudwatchLogs"
      }
     ]
    }
@@ -524,7 +524,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/cloudwatchLogs"
+      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/cloudwatchLogs"
      }
     ]
    },
@@ -551,7 +551,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/cloudwatchLogs"
+      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/cloudwatchLogs"
      }
     ],
     "TrafficType": "ALL"
@@ -676,7 +676,7 @@
   "MyInstanceInstanceSecurityGroup3E7A7DD1": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Vpc-Dual-Stack-Ec2/MyInstance/InstanceSecurityGroup",
+    "GroupDescription": "vpc-dual-stack-ec2/MyInstance/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -722,7 +722,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/MyInstance"
+      "Value": "vpc-dual-stack-ec2/MyInstance"
      }
     ],
     "VpcId": {
@@ -748,7 +748,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/MyInstance"
+      "Value": "vpc-dual-stack-ec2/MyInstance"
      }
     ]
    }
@@ -862,7 +862,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "Vpc-Dual-Stack-Ec2/MyInstance"
+      "Value": "vpc-dual-stack-ec2/MyInstance"
      }
     ],
     "UserData": {
@@ -979,7 +979,7 @@
     ]
    },
    "Export": {
-    "Name": "Vpc-Dual-Stack-Ec2:ExportsOutputFnGetAttMyInstanceA12EC128PublicIp4458147B"
+    "Name": "vpc-dual-stack-ec2:ExportsOutputFnGetAttMyInstanceA12EC128PublicIp4458147B"
    }
   }
  },

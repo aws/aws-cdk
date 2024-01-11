@@ -16,7 +16,7 @@
        [
         "http://",
         {
-         "Fn::ImportValue": "Vpc-Dual-Stack-Ec2:ExportsOutputFnGetAttMyInstanceA12EC128PublicIp4458147B"
+         "Fn::ImportValue": "vpc-dual-stack-ec2:ExportsOutputFnGetAttMyInstanceA12EC128PublicIp4458147B"
         },
         ":8000"
        ]
@@ -25,7 +25,7 @@
      "fetchOptions": {}
     },
     "expected": "{\"$ObjectLike\":{\"status\":200}}",
-    "salt": "1704996699108"
+    "salt": "1705000411624"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

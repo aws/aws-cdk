@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "Vpc-Dual-Stack-Ec2.assets": {
+    "vpc-dual-stack-ec2.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "Vpc-Dual-Stack-Ec2.assets.json",
+        "file": "vpc-dual-stack-ec2.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "Vpc-Dual-Stack-Ec2": {
+    "vpc-dual-stack-ec2": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "Vpc-Dual-Stack-Ec2.template.json",
+        "templateFile": "vpc-dual-stack-ec2.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3a1cf5d6afdc628f79f069c2ee19d91df935431737ce4e5f61da2f04530530a9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eb9c26ed50c38d81515e15fb5708924f575f26bc750b02689f8f514e27b17fb1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "Vpc-Dual-Stack-Ec2.assets"
+          "vpc-dual-stack-ec2.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,233 +31,233 @@
         }
       },
       "dependencies": [
-        "Vpc-Dual-Stack-Ec2.assets"
+        "vpc-dual-stack-ec2.assets"
       ],
       "metadata": {
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/Resource": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStack350CEE6D"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/ipv6cidr": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/ipv6cidr": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackipv6cidr40BE830A"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet1/Subnet": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPublicSubnet1Subnet9E605B7E"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet1/RouteTable": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPublicSubnet1RouteTable8E0A0DA2"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet1/RouteTableAssociation": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPublicSubnet1RouteTableAssociation948F67F3"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet1/DefaultRoute": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPublicSubnet1DefaultRoute81404AE5"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet1/DefaultRoute6": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet1/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPublicSubnet1DefaultRoute63650EE60"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet2/Subnet": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPublicSubnet2SubnetCBBC1B43"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet2/RouteTable": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPublicSubnet2RouteTable2D434A20"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet2/RouteTableAssociation": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPublicSubnet2RouteTableAssociationE4B708C7"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet2/DefaultRoute": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPublicSubnet2DefaultRoute992F69E2"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet2/DefaultRoute6": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet2/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPublicSubnet2DefaultRoute6ACAEAB46"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PrivateSubnet1/Subnet": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPrivateSubnet1Subnet842B7F4C"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PrivateSubnet1/RouteTable": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPrivateSubnet1RouteTable5326D239"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PrivateSubnet1/RouteTableAssociation": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPrivateSubnet1RouteTableAssociationF1C10B6A"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PrivateSubnet2/Subnet": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPrivateSubnet2SubnetEB493489"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PrivateSubnet2/RouteTable": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPrivateSubnet2RouteTable56BF517C"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PrivateSubnet2/RouteTableAssociation": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackPrivateSubnet2RouteTableAssociationD37A3D3D"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/IGW": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackIGW9B3D3D07"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/VPCGW": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackVPCGW304156E6"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/EIGW6": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/EIGW6": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackEIGW6491F95B8"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/cloudwatchLogs/IAMRole/Resource": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/cloudwatchLogs/IAMRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackcloudwatchLogsIAMRoleC4808C35"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/cloudwatchLogs/IAMRole/DefaultPolicy/Resource": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/cloudwatchLogs/IAMRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackcloudwatchLogsIAMRoleDefaultPolicyBE811F6E"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/cloudwatchLogs/LogGroup/Resource": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/cloudwatchLogs/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackcloudwatchLogsLogGroup9D808486"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/cloudwatchLogs/FlowLog": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/cloudwatchLogs/FlowLog": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackcloudwatchLogsFlowLog7AD3395A"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/RestrictDefaultSecurityGroupCustomResource/Default": [
+        "/vpc-dual-stack-ec2/Ip6VpcDualStack/RestrictDefaultSecurityGroupCustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Ip6VpcDualStackRestrictDefaultSecurityGroupCustomResourceD923E120"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+        "/vpc-dual-stack-ec2/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+        "/vpc-dual-stack-ec2/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/MyInstance/InstanceSecurityGroup/Resource": [
+        "/vpc-dual-stack-ec2/MyInstance/InstanceSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyInstanceInstanceSecurityGroup3E7A7DD1"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/MyInstance/InstanceRole/Resource": [
+        "/vpc-dual-stack-ec2/MyInstance/InstanceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyInstanceInstanceRole1C4D4747"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/MyInstance/InstanceRole/DefaultPolicy/Resource": [
+        "/vpc-dual-stack-ec2/MyInstance/InstanceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyInstanceInstanceRoleDefaultPolicy93DCF05D"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/MyInstance/InstanceProfile": [
+        "/vpc-dual-stack-ec2/MyInstance/InstanceProfile": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyInstanceInstanceProfile2784C631"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/MyInstance/Resource": [
+        "/vpc-dual-stack-ec2/MyInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyInstanceA12EC128"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/vpc-dual-stack-ec2/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/Exports/Output{\"Fn::GetAtt\":[\"MyInstanceA12EC128\",\"PublicIp\"]}": [
+        "/vpc-dual-stack-ec2/Exports/Output{\"Fn::GetAtt\":[\"MyInstanceA12EC128\",\"PublicIp\"]}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputFnGetAttMyInstanceA12EC128PublicIp4458147B"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/BootstrapVersion": [
+        "/vpc-dual-stack-ec2/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/Vpc-Dual-Stack-Ec2/CheckBootstrapVersion": [
+        "/vpc-dual-stack-ec2/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "Vpc-Dual-Stack-Ec2"
+      "displayName": "vpc-dual-stack-ec2"
     },
     "vpcdualstackec2testDefaultTestDeployAssertB4C8CEE8.assets": {
       "type": "cdk:asset-manifest",
@@ -276,7 +276,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/53b108b9b12b0278321abbf8562b56f0a9c0c9b6e85fb5c4ff45309e3e61a777.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3c8c35d0887dbd146edab2c6744f1db6b62c295d04be697c4c2fe53752b9cf1a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -289,7 +289,7 @@
         }
       },
       "dependencies": [
-        "Vpc-Dual-Stack-Ec2",
+        "vpc-dual-stack-ec2",
         "vpcdualstackec2testDefaultTestDeployAssertB4C8CEE8.assets"
       ],
       "metadata": {

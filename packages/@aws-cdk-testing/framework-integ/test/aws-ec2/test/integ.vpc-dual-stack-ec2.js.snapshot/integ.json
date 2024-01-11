@@ -3,7 +3,7 @@
   "testCases": {
     "vpc-dual-stack-ec2-test/DefaultTest": {
       "stacks": [
-        "Vpc-Dual-Stack-Ec2"
+        "vpc-dual-stack-ec2"
       ],
       "assertionStack": "vpc-dual-stack-ec2-test/DefaultTest/DeployAssert",
       "assertionStackName": "vpcdualstackec2testDefaultTestDeployAssertB4C8CEE8"

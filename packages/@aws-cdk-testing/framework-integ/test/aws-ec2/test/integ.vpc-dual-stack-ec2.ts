@@ -73,7 +73,7 @@ class EC2DualStack extends cdk.Stack {
   }
 }
 
-const testCase = new EC2DualStack(app, 'Vpc-Dual-Stack-Ec2');
+const testCase = new EC2DualStack(app, 'vpc-dual-stack-ec2');
 
 const integ = new IntegTest(app, 'vpc-dual-stack-ec2-test', {
   testCases: [testCase],
