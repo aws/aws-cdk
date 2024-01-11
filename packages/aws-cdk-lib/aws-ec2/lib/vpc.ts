@@ -1527,10 +1527,6 @@ export class Vpc extends VpcBase {
     const ipProtocol = props.ipProtocol ?? IpProtocol.IPV4_ONLY;
     // this property can be set to false if an IPv6_ONLY VPC is implemented in the future
     this.useIpv4 = ipProtocol === IpProtocol.IPV4_ONLY || ipProtocol === IpProtocol.DUAL_STACK;
-    // use property to avoid lint errors
-    if (this.useIpv4) {
-      ; // pass
-    }
 
     this.useIpv6 = ipProtocol === IpProtocol.DUAL_STACK;
 
@@ -1639,8 +1635,10 @@ export class Vpc extends VpcBase {
       });
 
       (this.publicSubnets as PublicSubnet[]).forEach(publicSubnet => {
-        publicSubnet.addDefaultInternetRoute(igw.ref, att);
-
+        // configure IPv4 route
+        if (this.useIpv4) {
+          publicSubnet.addDefaultInternetRoute(igw.ref, att);
+        }
         // configure IPv6 route if VPC is dual stack
         if (this.useIpv6) {
           publicSubnet.addIpv6DefaultInternetRoute(igw.ref);
@@ -2213,6 +2211,11 @@ export class Subnet extends Resource implements ISubnet {
     });
   }
 
+  /**
+   * Adds an entry to this subnets route table that points to the passed NATGatewayId.
+   * Uses the known 64:ff9b::/96 prefix.
+   * @param natGatewayId The ID of the NAT gateway
+   */
   public addIpv6Nat64Route(natGatewayId: string) {
     this.addRoute('Nat64', {
       routerType: RouterType.NAT_GATEWAY,
