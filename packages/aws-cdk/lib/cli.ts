@@ -172,7 +172,8 @@ async function parseCommandLineArguments(args: string[]) {
       })
       .option('concurrency', { type: 'number', desc: 'Maximum number of simultaneous deployments (dependency permitting) to execute.', default: 1, requiresArg: true })
       .option('asset-parallelism', { type: 'boolean', desc: 'Whether to build/publish assets in parallel' })
-      .option('asset-prebuild', { type: 'boolean', desc: 'Whether to build all assets before deploying the first stack (useful for failing Docker builds)', default: true }),
+      .option('asset-prebuild', { type: 'boolean', desc: 'Whether to build all assets before deploying the first stack (useful for failing Docker builds)', default: true })
+      .option('ignore-no-stacks', { type: 'boolean', desc: 'Whether to deploy if the app contains no stacks', default: false }),
     )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
@@ -262,7 +263,8 @@ async function parseCommandLineArguments(args: string[]) {
       .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
       .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' })
       .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false })
-      .option('quiet', { type: 'boolean', alias: 'q', desc: 'Do not print stack name and default message when there is no diff to stdout', default: false }))
+      .option('quiet', { type: 'boolean', alias: 'q', desc: 'Do not print stack name and default message when there is no diff to stdout', default: false })
+      .option('change-set', { type: 'boolean', desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.', default: true }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
     .command('notices', 'Returns a list of relevant notices')
@@ -495,6 +497,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           stream: args.ci ? process.stdout : undefined,
           compareAgainstProcessedTemplate: args.processed,
           quiet: args.quiet,
+          changeSet: args['change-set'],
         });
 
       case 'bootstrap':
@@ -583,6 +586,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           concurrency: args.concurrency,
           assetParallelism: configuration.settings.get(['assetParallelism']),
           assetBuildTime: configuration.settings.get(['assetPrebuild']) ? AssetBuildTime.ALL_BEFORE_DEPLOY : AssetBuildTime.JUST_IN_TIME,
+          ignoreNoStacks: args.ignoreNoStacks,
         });
 
       case 'import':

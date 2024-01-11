@@ -35,6 +35,11 @@ const custom = new sfn.CustomState(stack, 'my custom task', {
 });
 
 custom.addCatch(failure);
+custom.addRetry({
+  errors: [sfn.Errors.ALL],
+  interval: cdk.Duration.seconds(10),
+  maxAttempts: 5,
+});
 
 const chain = sfn.Chain.start(custom).next(finalStatus);
 
