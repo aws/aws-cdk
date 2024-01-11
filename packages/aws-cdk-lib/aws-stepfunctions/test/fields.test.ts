@@ -1,4 +1,4 @@
-import { SPECIFY_NULL, FieldUtils, JsonPath, TaskInput } from '../lib';
+import { NULL_SUBSTITUTE, FieldUtils, JsonPath, TaskInput } from '../lib';
 
 describe('Fields', () => {
   const jsonPathValidationErrorMsg = /exactly '\$', '\$\$', start with '\$.', start with '\$\$.', start with '\$\[', or start with an intrinsic function: States.Array, States.ArrayPartition, States.ArrayContains, States.ArrayRange, States.ArrayGetItem, States.ArrayLength, States.ArrayUnique, States.Base64Encode, States.Base64Decode, States.Hash, States.JsonMerge, States.StringToJson, States.JsonToString, States.MathRandom, States.MathAdd, States.StringSplit, States.UUID, or States.Format./;
@@ -255,7 +255,7 @@ describe('Fields', () => {
 
   test('null value rendered', () => {
     const object = {
-      nullParameter: SPECIFY_NULL,
+      nullParameter: NULL_SUBSTITUTE,
     };
     expect(FieldUtils.renderObject(
       {

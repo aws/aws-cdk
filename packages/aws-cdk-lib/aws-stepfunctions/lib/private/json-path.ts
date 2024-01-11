@@ -1,6 +1,6 @@
 import { IntrinsicParser, IntrinsicExpression } from './intrinstics';
 import { captureStackTrace, IResolvable, IResolveContext, Token, Tokenization } from '../../../core';
-import { SPECIFY_NULL } from '../types';
+import { NULL_SUBSTITUTE } from '../types';
 
 const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
 
@@ -149,7 +149,7 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
 
   const ret: any = {};
   for (const [key, value] of Object.entries(obj)) {
-    if (value === SPECIFY_NULL) {
+    if (value === NULL_SUBSTITUTE) {
       Object.assign(ret, handlers.handleNull(key, null));
     } else if (typeof value === 'string') {
       Object.assign(ret, handlers.handleString(key, value));
