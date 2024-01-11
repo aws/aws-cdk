@@ -959,6 +959,10 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   // ...
 });
 
+// You can get the log group of a cluster
+const errorLogGroup = cluster.cloudwatchLogGroups['error'];
+const auditLogGroup = cluster.cloudwatchLogGroups.audit;
+
 // Exporting logs from an instance
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({
@@ -966,8 +970,12 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   }),
   vpc,
   cloudwatchLogsExports: ['postgresql'], // Export the PostgreSQL logs
+  cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS, // Optional - default is to never expire logs
   // ...
 });
+
+// You can get the log group of a cluster
+const errorLogGroup = instance.cloudwatchLogGroups['postgresql'];
 ```
 
 ## Option Groups
