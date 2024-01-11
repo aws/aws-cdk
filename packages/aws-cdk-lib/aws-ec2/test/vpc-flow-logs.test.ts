@@ -573,7 +573,7 @@ describe('vpc flow logs', () => {
     }).toThrow(/trafficType is not supported for Transit Gateway and Transit Gateway Attachment/);
   });
 
-  test('create with transit gateway attachment id', () => {
+  test('create from transit gateway attachment', () => {
     const stack = getTestStack();
 
     new FlowLog(stack, 'FlowLogs', {
