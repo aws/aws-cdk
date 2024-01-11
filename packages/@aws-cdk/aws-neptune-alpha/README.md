@@ -100,7 +100,7 @@ const cluster = new neptune.DatabaseCluster(this, 'Database', {
 });
 ```
 
-Note: if you want to use Neptune engine `1.2.0.0` or later, you need to specify the corresponding `engineVersion` prop to `neptune.DatabaseCluster` and `family` prop of `ParameterGroupFamily.NEPTUNE_1_2` to `neptune.ClusterParameterGroup` and `neptune.ParameterGroup`.
+Note: To use the Neptune engine versions `1.2.0.0` or later, including the newly added `1.3` series, it's necessary to specify the appropriate `engineVersion` prop in `neptune.DatabaseCluster`. Additionally, for both 1.2 and 1.3 series, the corresponding `family` prop must be set to `ParameterGroupFamily.NEPTUNE_1_2` or `ParameterGroupFamily.NEPTUNE_1_3` respectively in `neptune.ClusterParameterGroup` and `neptune.ParameterGroup`.
 
 ## Adding replicas
 
