@@ -28,6 +28,7 @@ import {
   TrafficDirection,
   Vpc,
   IpAddresses,
+  Ipv6Addresses,
   InterfaceVpcEndpointAwsService,
   IpProtocol,
 } from '../lib';
@@ -2463,6 +2464,17 @@ describe('vpc', () => {
         Ref: Match.stringLikeRegexp('^Vpc.*'),
       },
     });
+  });
+
+  test('error should occur if IPv6 properties are provided for a non-dual-stack VPC', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'NonDualStackStack');
+
+    // WHEN
+    expect(() => new Vpc(stack, 'Vpc', {
+      ipv6Addresses: Ipv6Addresses.amazonProvided(),
+    })).toThrow();
   });
 });
 
