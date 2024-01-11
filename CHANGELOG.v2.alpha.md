@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.119.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.118.0-alpha.0...v2.119.0-alpha.0) (2024-01-11)
+
+
+### Features
+
+* **neptune-alpha:** engineVersion v1.3 ([#28647](https://github.com/aws/aws-cdk/issues/28647)) ([957598b](https://github.com/aws/aws-cdk/commit/957598b5fe08298a9ab52a1d0b2069d6a73d59c0)), closes [#28648](https://github.com/aws/aws-cdk/issues/28648)
+
 ## [2.118.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.117.0-alpha.0...v2.118.0-alpha.0) (2024-01-03)
 
 
