@@ -1795,10 +1795,23 @@ export class Vpc extends VpcBase {
 
       // call the create function with the updated allocated subnet list
       this.createSubnetResources(requestedSubnets, allocatedSubnetsIpv6.allocatedSubnets);
+
+      // add dependencies
+      (this.publicSubnets as PublicSubnet[]).forEach(publicSubnet => {
+        if (this.ipv6CidrBlock !== undefined) {
+          publicSubnet.node.addDependency(this.ipv6CidrBlock);
+        }
+      });
+      (this.privateSubnets as PrivateSubnet[]).forEach(privateSubnet => {
+        if (this.ipv6CidrBlock !== undefined) {
+          privateSubnet.node.addDependency(this.ipv6CidrBlock);
+        }
+      });
     } else {
       // keep default behavior without IPv6 CIDRs if not using IPv6
       this.createSubnetResources(requestedSubnets, allocatedSubnets);
     }
+
   }
 
   /**
@@ -1851,7 +1864,6 @@ export class Vpc extends VpcBase {
         mapPublicIpOnLaunch: this.calculateMapPublicIpOnLaunch(subnetConfig),
         ipv6CidrBlock: allocated.ipv6Cidr,
         assignIpv6AddressOnCreation: this.useIpv6 ? subnetConfig.ipv6AssignAddressOnCreation ?? true : undefined,
-        dependantIpv6CidrBlock: this.useIpv6 ? this.ipv6CidrBlock : undefined,
       } satisfies SubnetProps;
 
       let subnet: Subnet;
@@ -2000,13 +2012,6 @@ export interface SubnetProps {
    * @default false
    */
   readonly assignIpv6AddressOnCreation?: boolean;
-
-  /**
-   * Need to pass the construct to depend on for IPv6 enabled subnets to avoid race conditions.
-   *
-   * @default - no IPv6 CIDR block for subnets to depend on
-   */
-  readonly dependantIpv6CidrBlock?: IDependable;
 }
 
 /**
@@ -2106,9 +2111,6 @@ export class Subnet extends Resource implements ISubnet {
       ipv6CidrBlock: props.ipv6CidrBlock,
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation,
     });
-    if (props.dependantIpv6CidrBlock !== undefined) {
-      subnet.node.addDependency(props.dependantIpv6CidrBlock);
-    }
     this.subnetId = subnet.ref;
     this.subnetVpcId = subnet.attrVpcId;
     this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
