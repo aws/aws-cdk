@@ -744,7 +744,8 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   public readonly connections: ec2.Connections;
 
   /**
-   * The cloudwatch log groups created when cloudwatchLogsExports is set
+   * The log groups created when cloudwatchLogsExports is set. Each export value
+   * will create a separate log group.
    */
   public readonly cloudwatchLogGroups: {[engine: string]: logs.ILogGroup};
 

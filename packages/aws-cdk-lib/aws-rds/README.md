@@ -959,7 +959,8 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   // ...
 });
 
-// You can get the log group of a cluster
+// When 'cloudwatchLogsExports' is set, each export value creates its own log group in DB cluster. 
+// Specify an export value to access its log group.
 const errorLogGroup = cluster.cloudwatchLogGroups['error'];
 const auditLogGroup = cluster.cloudwatchLogGroups.audit;
 
@@ -974,7 +975,8 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   // ...
 });
 
-// You can get the log group of a cluster
+// When 'cloudwatchLogsExports' is set, each export value creates its own log group in DB instance. 
+// Specify an export value to access its log group.
 const errorLogGroup = instance.cloudwatchLogGroups['postgresql'];
 ```
 

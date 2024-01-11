@@ -503,7 +503,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   public readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * The log groups created when cloudwatchLogsExports is set
+   * The log groups created when cloudwatchLogsExports is set. Each export value
+   * will create a separate log group.
    */
   public readonly cloudwatchLogGroups: {[engine: string]: logs.ILogGroup};
 
