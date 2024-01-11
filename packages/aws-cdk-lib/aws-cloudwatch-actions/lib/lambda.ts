@@ -16,7 +16,7 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
   }
 
   /**
-   * Returns an alarm action configuration to use an Lambda action as an alarm action.
+   * Returns an alarm action configuration to use a Lambda action as an alarm action.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_PutMetricAlarm.html
    */
