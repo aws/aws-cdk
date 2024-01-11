@@ -50,13 +50,6 @@ export function printStackDiff(
         return true;
       });
     }
-
-    diff.resources = diff.resources.filter(change => {
-      if (!change) { return true; }
-      if (change.newResourceType === 'AWS::CloudFormation::Stack') { delete change.newValue?.Properties!.NestedTemplate; }
-      if (change.oldResourceType === 'AWS::CloudFormation::Stack') { delete change.oldValue?.Properties!.NestedTemplate; }
-      return true;
-    });
   }
 
   if (!diff.isEmpty) {

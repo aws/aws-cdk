@@ -182,6 +182,9 @@ class Formatter {
       const differenceCount = diff.differenceCount;
       let processedCount = 0;
       diff.forEachDifference((_, name, values) => {
+        if (name === 'NestedTemplate') {
+          return;
+        }
         processedCount += 1;
         this.formatTreeDiff(name, values, processedCount === differenceCount);
       });
