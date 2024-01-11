@@ -492,6 +492,9 @@ switch (stackSet) {
     stage.synth({ validateOnSynthesis: true });
     break;
 
+  case 'stage-with-no-stacks':
+    break;
+
   default:
     throw new Error(`Unrecognized INTEG_STACK_SET: '${stackSet}'`);
 }
