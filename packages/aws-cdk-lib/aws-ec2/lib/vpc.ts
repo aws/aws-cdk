@@ -1524,14 +1524,15 @@ export class Vpc extends VpcBase {
       throw new Error('supply at most one of ipAddresses or cidr');
     }
 
+    const ipProtocol = props.ipProtocol ?? IpProtocol.IPV4_ONLY;
     // this property can be set to false if an IPv6_ONLY VPC is implemented in the future
-    this.useIpv4 = props.ipProtocol === IpProtocol.IPV4_ONLY || props.ipProtocol === IpProtocol.DUAL_STACK;
+    this.useIpv4 = ipProtocol === IpProtocol.IPV4_ONLY || ipProtocol === IpProtocol.DUAL_STACK;
     // use property to avoid lint errors
     if (this.useIpv4) {
       ; // pass
     }
 
-    this.useIpv6 = props.ipProtocol === IpProtocol.DUAL_STACK;
+    this.useIpv6 = ipProtocol === IpProtocol.DUAL_STACK;
 
     const ipv6OnlyProps: Array<keyof VpcProps> = ['ipv6Addresses'];
     if (!this.useIpv6) {
