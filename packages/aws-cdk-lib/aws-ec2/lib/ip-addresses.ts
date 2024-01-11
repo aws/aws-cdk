@@ -1,9 +1,9 @@
-import { CfnVPCCidrBlock } from './ec2.generated';
+import { Construct } from 'constructs';
 import { CidrSplit, calculateCidrSplits } from './cidr-splits';
+import { CfnVPCCidrBlock } from './ec2.generated';
 import { NetworkBuilder } from './network-util';
 import { SubnetConfiguration } from './vpc';
 import { Fn, Token } from '../../core';
-import { Construct } from 'constructs';
 
 /**
  * An abstract Provider of IpAddresses
