@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.119.0](https://github.com/aws/aws-cdk/compare/v2.118.0...v2.119.0) (2024-01-11)
+
+
+### Features
+
+* **certificatemanager:** key algorithm support for `PrivateCertificate` and `Certificate` ([#28597](https://github.com/aws/aws-cdk/issues/28597)) ([1822cc9](https://github.com/aws/aws-cdk/commit/1822cc9164fb1ec638c8e8ed7f237548eea22c84)), closes [#22887](https://github.com/aws/aws-cdk/issues/22887)
+* **cli:** option to ignore no stacks ([#28387](https://github.com/aws/aws-cdk/issues/28387)) ([37c79b9](https://github.com/aws/aws-cdk/commit/37c79b94e3093b0cecc21c77e8bc79579ea002e5)), closes [#28371](https://github.com/aws/aws-cdk/issues/28371)
+* **cloudwatch-actions:** support alarm lambda action ([#28484](https://github.com/aws/aws-cdk/issues/28484)) ([b9f4923](https://github.com/aws/aws-cdk/commit/b9f49234d2c317d1c7dc143994d3e3b3b7bc430a)), closes [#28483](https://github.com/aws/aws-cdk/issues/28483)
+* **codebuild:** X-Large Linux compute type ([#28642](https://github.com/aws/aws-cdk/issues/28642)) ([7912d88](https://github.com/aws/aws-cdk/commit/7912d88a17b87c348e68250cbae2f6e0dc363429))
+* **opensearchservice:** TLS security policy for TLS 1.3 and perfect forward secrecy ([#28583](https://github.com/aws/aws-cdk/issues/28583)) ([9cf9baa](https://github.com/aws/aws-cdk/commit/9cf9baad5eca3790d7c0b351e0a6966a3ee4f881))
+* **pipelines:** expose crossRegionReplicationBuckets ([#28447](https://github.com/aws/aws-cdk/issues/28447)) ([d184ac2](https://github.com/aws/aws-cdk/commit/d184ac2c7dde4d40e39ea31a009ff0b31d064755)), closes [#28446](https://github.com/aws/aws-cdk/issues/28446)
+* **rds:** RDS for SQL Server 15.00.4345.5.v1 ([#28614](https://github.com/aws/aws-cdk/issues/28614)) ([0f38b6e](https://github.com/aws/aws-cdk/commit/0f38b6e283d3e8e471847ff691702a94675b340d))
+* **rds:** RDS for SQL Server 16 without a specific minor version ([#28615](https://github.com/aws/aws-cdk/issues/28615)) ([382d261](https://github.com/aws/aws-cdk/commit/382d261339c1910979982aa8faf00c3f5e066673))
+* **signer:** Notation-OCI-SHA384-ECDSA platform ([#28612](https://github.com/aws/aws-cdk/issues/28612)) ([d7aa196](https://github.com/aws/aws-cdk/commit/d7aa19677682d28592fe202a8065bd06d468fd12)), closes [#28580](https://github.com/aws/aws-cdk/issues/28580)
+* update L1 CloudFormation resource definitions ([#28613](https://github.com/aws/aws-cdk/issues/28613)) ([fdf4830](https://github.com/aws/aws-cdk/commit/fdf4830b28af379917ef6cbb46d4830da8910740))
+
+
+### Bug Fixes
+
+* **cli:** `cdk diff` falsely reports resource replacements on trivial template changes ([#28336](https://github.com/aws/aws-cdk/issues/28336)) ([10ed194](https://github.com/aws/aws-cdk/commit/10ed1948beb0f83c1b978da9c0a656aa01a382cb))
+* **core:** single-file bundling breaks due to left over temp dir ([#28566](https://github.com/aws/aws-cdk/issues/28566)) ([a74aacf](https://github.com/aws/aws-cdk/commit/a74aacfb362fac08ced4ebc3e176f89a71b57dd7))
+* **ec2:** passing keypair to instance unexpectedly does nothing ([#28482](https://github.com/aws/aws-cdk/issues/28482)) ([22e6ce8](https://github.com/aws/aws-cdk/commit/22e6ce8ad211955bcfa6d189f03e86c5a9727b36)), closes [#28478](https://github.com/aws/aws-cdk/issues/28478)
+* **ecs:** unnecessary CloudWatch logs ResourcePolicy ([#28495](https://github.com/aws/aws-cdk/issues/28495)) ([5f96d13](https://github.com/aws/aws-cdk/commit/5f96d13ea16e0ed7cbf2df3954c9b371371d3e5b)), closes [/github.com/aws/aws-cdk/blob/607dccb0fd920d25f0fe2613b83c9830322c439e/packages/aws-cdk-lib/aws-ecs/lib/log-drivers/aws-log-driver.ts#L138](https://github.com/aws//github.com/aws/aws-cdk/blob/607dccb0fd920d25f0fe2613b83c9830322c439e/packages/aws-cdk-lib/aws-ecs/lib/log-drivers/aws-log-driver.ts/issues/L138) [/github.com/aws/aws-cdk/blob/607dccb0fd920d25f0fe2613b83c9830322c439e/packages/aws-cdk-lib/aws-logs/lib/log-group.ts#L194](https://github.com/aws//github.com/aws/aws-cdk/blob/607dccb0fd920d25f0fe2613b83c9830322c439e/packages/aws-cdk-lib/aws-logs/lib/log-group.ts/issues/L194) [/github.com/aws/aws-cdk/blob/607dccb0fd920d25f0fe2613b83c9830322c439e/packages/aws-cdk-lib/aws-iam/lib/grant.ts#L122](https://github.com/aws//github.com/aws/aws-cdk/blob/607dccb0fd920d25f0fe2613b83c9830322c439e/packages/aws-cdk-lib/aws-iam/lib/grant.ts/issues/L122) [/github.com/aws/aws-cdk/blob/607dccb0fd920d25f0fe2613b83c9830322c439e/packages/aws-cdk-lib/aws-iam/lib/grant.ts#L141](https://github.com/aws//github.com/aws/aws-cdk/blob/607dccb0fd920d25f0fe2613b83c9830322c439e/packages/aws-cdk-lib/aws-iam/lib/grant.ts/issues/L141) [#22307](https://github.com/aws/aws-cdk/issues/22307) [#20313](https://github.com/aws/aws-cdk/issues/20313)
+* **stepfunctions:** retry block in CustomState is always empty ([#28598](https://github.com/aws/aws-cdk/issues/28598)) ([0042e53](https://github.com/aws/aws-cdk/commit/0042e531257eb6979e1e90117316004a643c60a8)), closes [#28586](https://github.com/aws/aws-cdk/issues/28586)
+
 ## [2.118.0](https://github.com/aws/aws-cdk/compare/v2.117.0...v2.118.0) (2024-01-03)
 
 
