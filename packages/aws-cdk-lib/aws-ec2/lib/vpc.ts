@@ -1767,7 +1767,7 @@ export class Vpc extends VpcBase {
       },
       )));
 
-    const { allocatedSubnets } = this.ipAddresses.allocateSubnetsCidr({
+    let { allocatedSubnets } = this.ipAddresses.allocateSubnetsCidr({
       vpcCidr: this.vpcCidrBlock,
       requestedSubnets,
     });
@@ -1795,9 +1795,13 @@ export class Vpc extends VpcBase {
         ipv6Cidrs: subnetIpv6Cidrs,
       });
 
-      // call the create function with the updated allocated subnet list
-      this.createSubnetResources(requestedSubnets, allocatedSubnetsIpv6.allocatedSubnets);
+      // assign allocated subnets to list with IPv6 addresses
+      allocatedSubnets = allocatedSubnetsIpv6.allocatedSubnets;
+    }
 
+    this.createSubnetResources(requestedSubnets, allocatedSubnets);
+
+    if (this.useIpv6) {
       // add dependencies
       (this.publicSubnets as PublicSubnet[]).forEach(publicSubnet => {
         if (this.ipv6CidrBlock !== undefined) {
@@ -1809,11 +1813,7 @@ export class Vpc extends VpcBase {
           privateSubnet.node.addDependency(this.ipv6CidrBlock);
         }
       });
-    } else {
-      // keep default behavior without IPv6 CIDRs if not using IPv6
-      this.createSubnetResources(requestedSubnets, allocatedSubnets);
     }
-
   }
 
   /**
