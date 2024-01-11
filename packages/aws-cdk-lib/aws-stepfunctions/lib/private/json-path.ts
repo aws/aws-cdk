@@ -331,7 +331,6 @@ function pathFromToken(token: IResolvable | undefined) {
  * Render a parameter null value
  */
 function renderNull(key: string, _value: null): {[key: string]: null} {
-  console.log("YEET");
   return { [key]: null };
 }
 
