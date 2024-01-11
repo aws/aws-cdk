@@ -1,7 +1,9 @@
+import { CfnVPCCidrBlock } from './ec2.generated';
 import { CidrSplit, calculateCidrSplits } from './cidr-splits';
 import { NetworkBuilder } from './network-util';
 import { SubnetConfiguration } from './vpc';
 import { Fn, Token } from '../../core';
+import { Construct } from 'constructs';
 
 /**
  * An abstract Provider of IpAddresses
@@ -437,6 +439,13 @@ export interface IIpv6Addresses {
   amazonProvided: boolean,
 
   /**
+   * Called by VPC to allocate IPv6 CIDR.
+   *
+   * Note this is specific to the IPv6 CIDR.
+   */
+  allocateVpcIpv6Cidr(scope: Construct): CfnVPCCidrBlock;
+
+  /**
    * Split IPv6 CIDR block up for subnets.
    *
    * Note this is specific to the IPv6 CIDR.
@@ -464,6 +473,19 @@ class AmazonProvided implements IIpv6Addresses {
 
   constructor() {
     this.amazonProvided = true;
+  }
+  /**
+   * Called by VPC to allocate IPv6 CIDR.
+   *
+   * Creates an Amazon provided CIDR block.
+   *
+   * Note this is specific to the IPv6 CIDR.
+   */
+  allocateVpcIpv6Cidr(scope: Construct): CfnVPCCidrBlock {
+    return new CfnVPCCidrBlock(scope, 'ipv6cidr', {
+      vpcId: (scope as any).vpcId,
+      amazonProvidedIpv6CidrBlock: this.amazonProvided,
+    });
   }
 
   /**

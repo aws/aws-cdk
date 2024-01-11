@@ -1599,16 +1599,9 @@ export class Vpc extends VpcBase {
     if (this.useIpv6) {
       this.ipv6Addresses = props.ipv6Addresses ?? Ipv6Addresses.amazonProvided();
 
-      if (this.ipv6Addresses.amazonProvided) {
-        // create the IPv6 CIDR block and associate it with the VPC
-        // create a dependency of the subnets on the CIDR block
-        this.ipv6CidrBlock = new CfnVPCCidrBlock(this, 'ipv6cidr', {
-          vpcId: this.vpcId,
-          amazonProvidedIpv6CidrBlock: this.ipv6Addresses.amazonProvided,
-        });
+      this.ipv6CidrBlock = this.ipv6Addresses.allocateVpcIpv6Cidr(this);
 
-        this.ipv6SelectedCidr = Fn.select(0, this.resource.attrIpv6CidrBlocks);
-      }
+      this.ipv6SelectedCidr = Fn.select(0, this.resource.attrIpv6CidrBlocks);
     }
 
     const includeResourceTypes = [CfnVPC.CFN_RESOURCE_TYPE_NAME];
