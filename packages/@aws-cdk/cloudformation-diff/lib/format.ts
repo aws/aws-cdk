@@ -1,6 +1,6 @@
 import { format } from 'util';
 import * as chalk from 'chalk';
-import { DifferenceCollection, TemplateDiff } from './diff/types';
+import { DifferenceCollection, NestedStackNames, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
 import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { formatTable } from './format-table';
@@ -31,8 +31,9 @@ export function formatDifferences(
   stream: FormatStream,
   templateDiff: TemplateDiff,
   logicalToPathMap: { [logicalId: string]: string } = { },
-  context: number = 3) {
-  const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
+  context: number = 3,
+  nestedStackNames?: { [nestedStackLogicalId: string]: NestedStackNames }) {
+  const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context, nestedStackNames);
 
   if (templateDiff.awsTemplateFormatVersion || templateDiff.transform || templateDiff.description) {
     formatter.printSectionHeader('Template');
@@ -51,6 +52,8 @@ export function formatDifferences(
   formatter.formatSection('Resources', 'Resource', templateDiff.resources, formatter.formatResourceDifference.bind(formatter));
   formatter.formatSection('Outputs', 'Output', templateDiff.outputs);
   formatter.formatSection('Other Changes', 'Unknown', templateDiff.unknown);
+
+  formatter.formatNestedChanges();
 }
 
 /**
@@ -75,17 +78,24 @@ function formatSecurityChangesWithBanner(formatter: Formatter, templateDiff: Tem
   formatter.printSectionFooter();
 }
 
+interface NestedStack {
+  diff: TemplateDiff;
+  name: string;
+}
+
 const ADDITION = chalk.green('[+]');
 const CONTEXT = chalk.grey('[ ]');
 const UPDATE = chalk.yellow('[~]');
 const REMOVAL = chalk.red('[-]');
 
 class Formatter {
+  private readonly nestedChanges: NestedStack[] = [];
   constructor(
     private readonly stream: FormatStream,
     private readonly logicalToPathMap: { [logicalId: string]: string },
     diff?: TemplateDiff,
-    private readonly context: number = 3) {
+    private readonly context: number = 3,
+    private readonly nestedStackNames?: { [nestedStackLogicalId: string]: NestedStackNames }) {
     // Read additional construct paths from the diff if it is supplied
     if (diff) {
       this.readConstructPathsFrom(diff);
@@ -158,8 +168,11 @@ class Formatter {
 
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
-    if (Object.keys(diff.nestedChanges).length > 0) {
-      formatDifferences(this.stream, diff.nestedChanges as TemplateDiff, this.logicalToPathMap, this.context);
+    if (Object.keys(diff.nestedChanges).length > 0 && this.nestedStackNames) {
+      this.nestedChanges.push({
+        diff: diff.nestedChanges as TemplateDiff,
+        name: this.nestedStackNames[logicalId].nestedStackPhysicalName!,
+      });
     }
 
     // eslint-disable-next-line max-len
@@ -180,6 +193,13 @@ class Formatter {
     if (diff.isUpdate) { return UPDATE; }
     if (diff.isRemoval) { return REMOVAL; }
     return chalk.white('[?]');
+  }
+
+  formatNestedChanges() {
+    for (const nestedStack of this.nestedChanges) {
+      this.print(format('Stack %s\n', chalk.bold(nestedStack.name)));
+      formatDifferences(this.stream, nestedStack.diff, this.logicalToPathMap, this.context);
+    }
   }
 
   /**

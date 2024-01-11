@@ -1,7 +1,7 @@
+import { NestedStackNames } from '@aws-cdk/cloudformation-diff';
 import * as AWS from 'aws-sdk';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { ISDK } from './aws-auth';
-import { NestedStackNames } from './nested-stack-helpers';
 
 export interface ListStackResources {
   listStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]>;

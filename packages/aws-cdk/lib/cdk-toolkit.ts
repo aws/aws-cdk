@@ -205,6 +205,7 @@ export class CdkToolkit {
         );
         const currentTemplate = templateWithNames.deployedTemplate;
         const nestedStackCount = templateWithNames.nestedStackCount;
+        const nestedStackNames = templateWithNames.nestedStackNames;
 
         const changeSet = options.changeSet ? await createDiffChangeSet({
           stack,
@@ -219,7 +220,7 @@ export class CdkToolkit {
         const stackCount =
         options.securityOnly
           ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)) > 0 ? 1 : 0)
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream) > 0 ? 1 : 0);
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream, nestedStackNames) > 0 ? 1 : 0);
 
         diffs += stackCount + nestedStackCount;
       }

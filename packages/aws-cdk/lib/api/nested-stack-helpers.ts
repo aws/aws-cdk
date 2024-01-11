@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { NestedChangeSet } from '@aws-cdk/cloudformation-diff';
+import { NestedChangeSet, NestedStackNames } from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import * as fs from 'fs-extra';
@@ -12,13 +12,9 @@ export interface TemplateWithNestedStackNames {
   readonly nestedStackNames: { [nestedStackLogicalId: string]: NestedStackNames };
 }
 
-export interface NestedStackNames {
-  readonly nestedStackPhysicalName: string | undefined;
-  readonly nestedChildStackNames: { [logicalId: string]: NestedStackNames };
-}
-
-export interface TemplateWithNestedStackCount {
+export interface TemplateWithNestedStacks {
   readonly deployedTemplate: Template;
+  readonly nestedStackNames: { [nestedStackLogicalId: string]: NestedStackNames };
   readonly nestedStackCount: number;
 }
 

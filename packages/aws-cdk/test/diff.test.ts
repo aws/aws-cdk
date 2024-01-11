@@ -58,11 +58,13 @@ describe('non-nested stacks', () => {
         return Promise.resolve({
           deployedTemplate: { resource: 'D' },
           nestedStackCount: 0,
+          nestedStackNames: {},
         });
       }
       return Promise.resolve({
         deployedTemplate: {},
         nestedStackCount: 0,
+        nestedStackNames: {},
       });
     });
     cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
@@ -288,11 +290,13 @@ describe('nested stacks', () => {
             },
           },
           nestedStackCount: 3,
+          nestedStackNames: {},
         });
       }
       return Promise.resolve({
         deployedTemplate: {},
         nestedStackCount: 0,
+        nestedStackNames: {},
       });
     });
   });

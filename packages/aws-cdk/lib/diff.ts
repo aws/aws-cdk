@@ -23,7 +23,8 @@ export function printStackDiff(
   context: number,
   quiet: boolean,
   changeSet?: CloudFormation.DescribeChangeSetOutput,
-  stream?: cfnDiff.FormatStream): number {
+  stream?: cfnDiff.FormatStream,
+  nestedStackNames?: { [nestedStackLogicalId: string]: cfnDiff.NestedStackNames }): number {
 
   let diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet);
 
@@ -39,11 +40,21 @@ export function printStackDiff(
   }
 
   // filter out 'AWS::CDK::Metadata' resources from the template
-  if (diff.resources && !strict) {
+  // TODO: refactor this to be usable in nested stacks
+  if (diff.resources) {
+    if (!strict) {
+      diff.resources = diff.resources.filter(change => {
+        if (!change) { return true; }
+        if (change.newResourceType === 'AWS::CDK::Metadata') { return false; }
+        if (change.oldResourceType === 'AWS::CDK::Metadata') { return false; }
+        return true;
+      });
+    }
+
     diff.resources = diff.resources.filter(change => {
       if (!change) { return true; }
-      if (change.newResourceType === 'AWS::CDK::Metadata') { return false; }
-      if (change.oldResourceType === 'AWS::CDK::Metadata') { return false; }
+      if (change.newResourceType === 'AWS::CloudFormation::Stack') { delete change.newValue?.Properties!.NestedTemplate; }
+      if (change.oldResourceType === 'AWS::CloudFormation::Stack') { delete change.oldValue?.Properties!.NestedTemplate; }
       return true;
     });
   }
@@ -52,7 +63,7 @@ export function printStackDiff(
     cfnDiff.formatDifferences(stream || process.stderr, diff, {
       ...logicalIdMapFromTemplate(oldTemplate),
       ...buildLogicalToPathMap(newTemplate),
-    }, context);
+    }, context, nestedStackNames);
   } else if (!quiet) {
     print(chalk.green('There were no differences'));
   }

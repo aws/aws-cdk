@@ -7,7 +7,7 @@ import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/s
 import { deployStack, DeployStackResult, destroyStack, DeploymentMethod } from './deploy-stack';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
 import { HotswapMode } from './hotswap/common';
-import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, flattenNestedStackNames, TemplateWithNestedStackCount } from './nested-stack-helpers';
+import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, flattenNestedStackNames, TemplateWithNestedStacks } from './nested-stack-helpers';
 import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { replaceEnvPlaceholders } from './util/placeholders';
@@ -313,12 +313,13 @@ export class Deployments {
   public async readCurrentTemplateWithNestedStacks(
     rootStackArtifact: cxapi.CloudFormationStackArtifact,
     retrieveProcessedTemplate: boolean = false,
-  ): Promise<TemplateWithNestedStackCount> {
+  ): Promise<TemplateWithNestedStacks> {
     const sdk = (await this.prepareSdkWithLookupOrDeployRole(rootStackArtifact)).stackSdk;
     const templateWithNestedStacks = await loadCurrentTemplateWithNestedStacks(rootStackArtifact, sdk, retrieveProcessedTemplate);
     return {
       deployedTemplate: templateWithNestedStacks.deployedTemplate,
       nestedStackCount: flattenNestedStackNames(templateWithNestedStacks.nestedStackNames).length,
+      nestedStackNames: templateWithNestedStacks.nestedStackNames,
     };
   }
 
