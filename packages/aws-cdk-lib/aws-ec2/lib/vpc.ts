@@ -1784,7 +1784,10 @@ export class Vpc extends VpcBase {
         throw new Error('No IPv6 IpAddresses were found');
       }
       // create the IPv6 CIDR blocks
-      const subnetIpv6Cidrs = Fn.cidr(this.ipv6SelectedCidr, allocatedSubnets.length, (128 - 64).toString());
+      const subnetIpv6Cidrs = this.ipv6Addresses.createIpv6CidrBlocks({
+        ipv6SelectedCidr: this.ipv6SelectedCidr,
+        subnetCount: allocatedSubnets.length,
+      });
 
       // copy the list of allocated subnets while assigning the IPv6 CIDR
       const allocatedSubnetsIpv6 = this.ipv6Addresses.allocateSubnetsIpv6Cidr({

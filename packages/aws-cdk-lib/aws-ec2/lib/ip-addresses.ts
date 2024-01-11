@@ -138,7 +138,7 @@ export interface AllocateCidrRequest {
 }
 
 /**
- * Request for subnet IPv6 CIDRs to be allocated for a VPC
+ * Request for subnet IPv6 CIDRs to be allocated for a VPC.
  */
 export interface AllocateIpv6CidrRequest {
   /**
@@ -150,6 +150,27 @@ export interface AllocateIpv6CidrRequest {
    * The IPv6 CIDRs to be allocated to the subnets
    */
   readonly ipv6Cidrs: string[];
+}
+
+/**
+ * Request for IPv6 CIDR block to be split up.
+ */
+export interface CreateIpv6CidrBlocksRequest {
+  /**
+   * The IPv6 CIDR block string representation.
+   */
+  readonly ipv6SelectedCidr: string,
+
+  /**
+   * The number of subnets to assign CIDRs to.
+   */
+  readonly subnetCount: number,
+
+  /**
+   * Size of the covered bits in the CIDR.
+   * @default - 128 - 64 = /64 CIDR.
+   */
+  readonly sizeMask?: string,
 }
 
 /**
@@ -421,6 +442,13 @@ export interface IIpv6Addresses {
    * Note this is specific to the IPv6 CIDR.
    */
   allocateSubnetsIpv6Cidr(input: AllocateIpv6CidrRequest): SubnetIpamOptions;
+
+  /**
+   * Split IPv6 CIDR block up for subnets.
+   *
+   * Note this is specific to the IPv6 CIDR.
+   */
+  createIpv6CidrBlocks(input: CreateIpv6CidrBlocksRequest): string[];
 }
 
 /**
@@ -460,5 +488,18 @@ class AmazonProvided implements IIpv6Addresses {
     return {
       allocatedSubnets: allocatedSubnets,
     };
+  }
+
+  /**
+   * Split IPv6 CIDR block up for subnets.
+   *
+   * Called by VPC when creating subnets with IPv6 enabled.
+   *
+   * Note this is specific to the IPv6 CIDR.
+   */
+  createIpv6CidrBlocks(input: CreateIpv6CidrBlocksRequest): string[] {
+    const sizeMask = input.sizeMask ?? '64'; // 128 - 64
+
+    return Fn.cidr(input.ipv6SelectedCidr, input.subnetCount, sizeMask);
   }
 }
