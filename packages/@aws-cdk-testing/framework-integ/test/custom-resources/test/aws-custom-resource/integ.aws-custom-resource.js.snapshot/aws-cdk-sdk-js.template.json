@@ -44,7 +44,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "PublishCustomResourcePolicyDF696FCA"
@@ -111,7 +111,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
+     "S3Key": "1b474110b3f79050ba8693912584a5d5bac8c7e94d63afa8c73f1d087444e7cc.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -138,7 +138,7 @@
     },
     "Create": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
     "Update": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "ListTopicsCustomResourcePolicy31A8396A",
@@ -211,7 +211,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "GetParameterCustomResourcePolicyD8E5D455"
@@ -311,7 +311,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -327,7 +327,7 @@
     },
     "Create": "{\"service\":\"EKS\",\"action\":\"describeCluster\",\"parameters\":{\"name\":\"fake-cluster\"},\"physicalResourceId\":{\"id\":\"fake-cluster\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
     "Update": "{\"service\":\"EKS\",\"action\":\"describeCluster\",\"parameters\":{\"name\":\"fake-cluster\"},\"physicalResourceId\":{\"id\":\"fake-cluster\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "DescribeClusterCustomResourcePolicyD7730CF4"

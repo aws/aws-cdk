@@ -780,6 +780,25 @@ integTest('deploy stack without resource', withDefaultFixture(async (fixture) =>
     .rejects.toThrow('conditional-resource does not exist');
 }));
 
+integTest('deploy no stacks with --ignore-no-stacks', withDefaultFixture(async (fixture) => {
+  // empty array for stack names
+  await fixture.cdkDeploy([], {
+    options: ['--ignore-no-stacks'],
+    modEnv: {
+      INTEG_STACK_SET: 'stage-with-no-stacks',
+    },
+  });
+}));
+
+integTest('deploy no stacks error', withDefaultFixture(async (fixture) => {
+  // empty array for stack names
+  await expect(fixture.cdkDeploy([], {
+    modEnv: {
+      INTEG_STACK_SET: 'stage-with-no-stacks',
+    },
+  })).rejects.toThrow('exited with error');
+}));
+
 integTest('IAM diff', withDefaultFixture(async (fixture) => {
   const output = await fixture.cdk(['diff', fixture.fullStackName('iam-test')]);
 

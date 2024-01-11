@@ -929,7 +929,7 @@ the user.
 Constructs that represent such resources should conform to the following
 guidelines.
 
-An optional prop called **role** of type **iam.IRole**should be exposed to allow
+An optional prop called **role** of type **iam.IRole** should be exposed to allow
 users to "bring their own role", and use either an owned or unowned role
 _[awslint:role-config-prop]_.
 

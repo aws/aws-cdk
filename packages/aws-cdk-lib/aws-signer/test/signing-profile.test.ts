@@ -4,15 +4,16 @@ import * as signer from '../lib';
 
 let app: cdk.App;
 let stack: cdk.Stack;
-beforeEach( () => {
-  app = new cdk.App( {} );
-  stack = new cdk.Stack( app );
-} );
+
+beforeEach(() => {
+  app = new cdk.App({});
+  stack = new cdk.Stack(app);
+});
 
 describe('signing profile', () => {
-  test( 'default', () => {
+  test('default', () => {
     const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
-    new signer.SigningProfile( stack, 'SigningProfile', { platform } );
+    new signer.SigningProfile(stack, 'SigningProfile', { platform });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Signer::SigningProfile', {
       PlatformId: platform.platformId,
@@ -23,12 +24,12 @@ describe('signing profile', () => {
     });
   });
 
-  test( 'default with signature validity period', () => {
+  test('default with signature validity period', () => {
     const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
-    new signer.SigningProfile( stack, 'SigningProfile', {
+    new signer.SigningProfile(stack, 'SigningProfile', {
       platform,
-      signatureValidity: cdk.Duration.days( 7 ),
-    } );
+      signatureValidity: cdk.Duration.days(7),
+    });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Signer::SigningProfile', {
       PlatformId: platform.platformId,
@@ -39,9 +40,9 @@ describe('signing profile', () => {
     });
   });
 
-  test( 'default with some tags', () => {
+  test('default with some tags', () => {
     const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
-    const signing = new signer.SigningProfile( stack, 'SigningProfile', { platform } );
+    const signing = new signer.SigningProfile(stack, 'SigningProfile', { platform });
 
     cdk.Tags.of(signing).add('tag1', 'value1');
     cdk.Tags.of(signing).add('tag2', 'value2');
@@ -67,6 +68,19 @@ describe('signing profile', () => {
           Value: '',
         },
       ],
+    });
+  });
+
+  test('default container registries with notation platform', () => {
+    const platform = signer.Platform.NOTATION_OCI_SHA384_ECDSA;
+    new signer.SigningProfile(stack, 'SigningProfile', { platform });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Signer::SigningProfile', {
+      PlatformId: platform.platformId,
+      SignatureValidityPeriod: {
+        Type: 'MONTHS',
+        Value: 135,
+      },
     });
   });
 
@@ -111,5 +125,5 @@ describe('signing profile', () => {
       });
       Template.fromStack(stack).templateMatches({});
     });
-  } );
+  });
 });

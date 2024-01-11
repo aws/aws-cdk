@@ -1,0 +1,259 @@
+{
+ "Resources": {
+  "inAlarmLambdaServiceRole970DE64C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "inAlarmLambda0920D101": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    console.log(JSON.stringify(event, undefined, 2));\n    return callback();\n}"
+    },
+    "FunctionName": "inAlarmLambda",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "inAlarmLambdaServiceRole970DE64C",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "inAlarmLambdaServiceRole970DE64C"
+   ]
+  },
+  "Alarm7103F465": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ActionsEnabled": true,
+    "AlarmActions": [
+     {
+      "Ref": "alarmLambdaCurrentVersionBDCE825C61967a018dfe55c69152d31b6e7ab40b"
+     },
+     {
+      "Ref": "alarmLambdaAliasaliasName41B27313"
+     },
+     {
+      "Fn::GetAtt": [
+       "alarmLambda131DB691",
+       "Arn"
+      ]
+     }
+    ],
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Ref": "inAlarmLambda0920D101"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 60,
+    "Statistic": "Sum",
+    "Threshold": 1,
+    "TreatMissingData": "notBreaching"
+   }
+  },
+  "alarmLambdaServiceRoleCDAABB9D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "alarmLambda131DB691": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ZipFile": "exports.handler = function handler(event, _context, callback) {\n    console.log(JSON.stringify(event, undefined, 2));\n    return callback();\n}"
+    },
+    "FunctionName": "alarmLambda",
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "alarmLambdaServiceRoleCDAABB9D",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "alarmLambdaServiceRoleCDAABB9D"
+   ]
+  },
+  "alarmLambdaCurrentVersionBDCE825C61967a018dfe55c69152d31b6e7ab40b": {
+   "Type": "AWS::Lambda::Version",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "alarmLambda131DB691"
+    }
+   }
+  },
+  "alarmLambdaCurrentVersionAlarmPermissionFEBD056F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Ref": "alarmLambdaCurrentVersionBDCE825C61967a018dfe55c69152d31b6e7ab40b"
+    },
+    "Principal": "lambda.alarms.cloudwatch.amazonaws.com",
+    "SourceAccount": {
+     "Ref": "AWS::AccountId"
+    },
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "Alarm7103F465",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "alarmLambdaAliasaliasName41B27313": {
+   "Type": "AWS::Lambda::Alias",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "alarmLambda131DB691"
+    },
+    "FunctionVersion": {
+     "Fn::GetAtt": [
+      "alarmLambdaCurrentVersionBDCE825C61967a018dfe55c69152d31b6e7ab40b",
+      "Version"
+     ]
+    },
+    "Name": "aliasName"
+   }
+  },
+  "alarmLambdaAliasaliasNameAlarmPermission64A91652": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Ref": "alarmLambdaAliasaliasName41B27313"
+    },
+    "Principal": "lambda.alarms.cloudwatch.amazonaws.com",
+    "SourceAccount": {
+     "Ref": "AWS::AccountId"
+    },
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "Alarm7103F465",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "alarmLambdaAlarmPermission43E41C89": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "alarmLambda131DB691",
+      "Arn"
+     ]
+    },
+    "Principal": "lambda.alarms.cloudwatch.amazonaws.com",
+    "SourceAccount": {
+     "Ref": "AWS::AccountId"
+    },
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "Alarm7103F465",
+      "Arn"
+     ]
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

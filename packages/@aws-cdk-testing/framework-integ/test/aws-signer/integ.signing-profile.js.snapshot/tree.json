@@ -1,0 +1,157 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-signer-signing-profile": {
+        "id": "aws-cdk-signer-signing-profile",
+        "path": "aws-cdk-signer-signing-profile",
+        "children": {
+          "SigningProfileLambda": {
+            "id": "SigningProfileLambda",
+            "path": "aws-cdk-signer-signing-profile/SigningProfileLambda",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-signer-signing-profile/SigningProfileLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Signer::SigningProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "platformId": "AWSLambda-SHA384-ECDSA",
+                    "signatureValidityPeriod": {
+                      "type": "MONTHS",
+                      "value": 135
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_signer.CfnSigningProfile",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_signer.SigningProfile",
+              "version": "0.0.0"
+            }
+          },
+          "SigningProfileOCI": {
+            "id": "SigningProfileOCI",
+            "path": "aws-cdk-signer-signing-profile/SigningProfileOCI",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-signer-signing-profile/SigningProfileOCI/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Signer::SigningProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "platformId": "Notation-OCI-SHA384-ECDSA",
+                    "signatureValidityPeriod": {
+                      "type": "DAYS",
+                      "value": 60
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_signer.CfnSigningProfile",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_signer.SigningProfile",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-signer-signing-profile/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-signer-signing-profile/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "cdk-integ-signer-signing-profile": {
+        "id": "cdk-integ-signer-signing-profile",
+        "path": "cdk-integ-signer-signing-profile",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-integ-signer-signing-profile/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-integ-signer-signing-profile/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-integ-signer-signing-profile/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-integ-signer-signing-profile/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-integ-signer-signing-profile/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

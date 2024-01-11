@@ -520,6 +520,26 @@ describe('instance', () => {
     })).toThrow('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
   });
 
+  it('correctly associates a key pair', () => {
+    // GIVEN
+    const keyPair = new KeyPair(stack, 'KeyPair', {
+      keyPairName: 'test-key-pair',
+    });
+
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      instanceType: new InstanceType('t2.micro'),
+      machineImage: new AmazonLinuxImage(),
+      keyPair,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      KeyName: stack.resolve(keyPair.keyPairName),
+    });
+  });
+
   describe('Detailed Monitoring', () => {
     test('instance with Detailed Monitoring enabled', () => {
       // WHEN
