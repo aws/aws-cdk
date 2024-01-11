@@ -61,30 +61,13 @@ export function fullDiff(
   normalize(newTemplate);
   const theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
-    filterFalsePositivies(theDiff, findResourceReplacements(changeSet));
+    filterFalsePositivies(theDiff, changeSet);
   }
 
   //removeNestedTemplates(theDiff);
 
   return theDiff;
 }
-
-/*
-function removeNestedTemplates(diff: types.TemplateDiff) {
-  diff.resources.forEachDifference((_logicalId: string, change: types.ResourceDifference) => {
-    if (change.resourceType === 'AWS::CloudFormation::Stack') {
-      change.setPropertyChange('NestedTemplate', {
-        isAddition: false,
-        isDifferent: false,
-        isRemoval: false,
-        isUpdate: false,
-        newValue: undefined,
-        oldValue: undefined,
-      });
-    }
-  });
-}
-*/
 
 export function diffTemplate(
   currentTemplate: { [key: string]: any },
@@ -236,7 +219,8 @@ function deepCopy(x: any): any {
   return x;
 }
 
-function filterFalsePositivies(diff: types.TemplateDiff, replacements: types.ResourceReplacements) {
+function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput | NestedChangeSet) {
+  const replacements = findResourceReplacements(changeSet);
   diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
     change.forEachDifference((type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {
       if (type === 'Property') {
@@ -245,16 +229,6 @@ function filterFalsePositivies(diff: types.TemplateDiff, replacements: types.Res
           (value as types.PropertyDifference<any>).isDifferent = false;
           return;
         }
-        // to make this work, diff needs to be aware that there can be nested templates. Currently, we don't really have this.
-
-        /*
-        if (name === 'NestedTemplate') {
-          (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_UPDATE;
-          filterFalsePositivies(diff, replacements[logicalId].nestedReplacements!);
-          return;
-        }
-        */
-
         switch (replacements[logicalId].propertiesReplaced[name]) {
           case 'Always':
             (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_REPLACE;
@@ -271,12 +245,6 @@ function filterFalsePositivies(diff: types.TemplateDiff, replacements: types.Res
             break;
           // otherwise, defer to the changeImpact from `diffTemplate`
         }
-
-        /*
-        if (replacements[logicalId].nestedReplacements) {
-          filterFalsePositivies(diff, replacements[logicalId].nestedReplacements!);
-        }
-        */
       } else if (type === 'Other') {
         switch (name) {
           case 'Metadata':
@@ -288,15 +256,14 @@ function filterFalsePositivies(diff: types.TemplateDiff, replacements: types.Res
   });
 }
 
-function findResourceReplacements(changeSet: NestedChangeSet): types.ResourceReplacements {
-  const replacements: types.ResourceReplacements = {};
-  for (const change of changeSet.Changes ?? []) {
+function findResourceReplacements(changeSet: NestedChangeSet, replacements: types.ResourceReplacements = {}): types.ResourceReplacements {
+  for (const resourceChange of changeSet.Changes ?? []) {
     const propertiesReplaced: { [propName: string]: types.ChangeSetReplacement } = {};
-    const resourceChange = change.ResourceChange;
-    if (!resourceChange) {
-      continue;
+    if (resourceChange.ResourceChange?.NestedChanges) {
+      // eslint-disable-next-line max-len
+      findResourceReplacements(resourceChange.ResourceChange.NestedChanges, replacements[resourceChange.ResourceChange!.LogicalResourceId!] as types.ResourceReplacements);
     }
-    for (const propertyChange of resourceChange.Details ?? []) {
+    for (const propertyChange of resourceChange.ResourceChange?.Details ?? []) {
       if (propertyChange.Target?.Attribute === 'Properties') {
         const requiresReplacement = propertyChange.Target.RequiresRecreation === 'Always';
         if (requiresReplacement && propertyChange.Evaluation === 'Static') {
@@ -310,10 +277,9 @@ function findResourceReplacements(changeSet: NestedChangeSet): types.ResourceRep
         }
       }
     }
-    replacements[resourceChange.LogicalResourceId!] = {
-      resourceReplaced: resourceChange.Replacement === 'True',
+    replacements[resourceChange.ResourceChange?.LogicalResourceId!] = {
+      resourceReplaced: resourceChange.ResourceChange?.Replacement === 'True',
       propertiesReplaced,
-      nestedReplacements: resourceChange.NestedChanges ? findResourceReplacements(resourceChange.NestedChanges) : undefined,
     };
   }
 

@@ -276,7 +276,6 @@ function makeRenameDifference(
       },
       propertyDiffs: (addChange as any).propertyDiffs,
       otherDiffs: (addChange as any).otherDiffs,
-      //nestedDiff: {}, // TODO: how does this work with hotswap???
     },
   );
 }
