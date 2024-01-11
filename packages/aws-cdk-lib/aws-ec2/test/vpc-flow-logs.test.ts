@@ -562,7 +562,7 @@ describe('vpc flow logs', () => {
     });
   });
 
-  test('create with transit gateway id and specifiy traffic type', () => {
+  test('throw if transit gateway with traffic type', () => {
     const stack = getTestStack();
 
     expect(() => {
