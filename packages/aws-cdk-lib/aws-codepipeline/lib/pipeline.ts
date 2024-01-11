@@ -173,6 +173,13 @@ export interface PipelineProps {
    * @default - true (Use the same support stack for all pipelines in App)
    */
   readonly reuseCrossRegionSupportStacks?: boolean;
+
+  /**
+   * Name of the pipeline.
+   *
+   * @default - AWS CloudFormation default.
+   */
+  readonly pipelineType?: string;
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -442,6 +449,7 @@ export class Pipeline extends PipelineBase {
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       name: this.physicalName,
+      pipelineType: props.pipelineType,
     });
 
     // this will produce a DependsOn for both the role and the policy resources.

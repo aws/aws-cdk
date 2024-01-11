@@ -6,7 +6,7 @@ module.exports = {
 
   // Different than usual
   testMatch: [
-    '<rootDir>/**/test/**/?(*.)+(test).ts',
+    '<rootDir>/**/aws-codepipeline/test/**/?(*.)+(test).ts',
   ],
 
   coverageThreshold: {

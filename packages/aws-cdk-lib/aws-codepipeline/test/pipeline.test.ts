@@ -13,6 +13,35 @@ import * as codepipeline from '../lib';
 
 describe('', () => {
   describe('Pipeline', () => {
+    test('can be passed PipelineType during pipeline creation', () => {
+      const stack = new cdk.Stack();
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: 'V1',
+      });
+
+      // Adding 2 stages with actions so pipeline validation will pass
+      const sourceArtifact = new codepipeline.Artifact();
+      pipeline.addStage({
+        stageName: 'Source',
+        actions: [new FakeSourceAction({
+          actionName: 'FakeSource',
+          output: sourceArtifact,
+        })],
+      });
+
+      pipeline.addStage({
+        stageName: 'Build',
+        actions: [new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        })],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        'PipelineType': 'V1',
+      });
+    });
+
     test('can be passed an IAM role during pipeline creation', () => {
       const stack = new cdk.Stack();
       const role = new iam.Role(stack, 'Role', {
