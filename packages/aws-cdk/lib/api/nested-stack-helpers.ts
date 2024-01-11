@@ -1,5 +1,4 @@
 import * as path from 'path';
-import { NestedChangeSet } from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import * as fs from 'fs-extra';
@@ -19,6 +18,14 @@ export interface RootTemplateWithNestedStacks {
   readonly nestedStacks: { [nestedStackLogicalId: string]: NestedStackTemplates };
   readonly nestedStackCount: number;
 }
+
+export type NestedChangeSet = CloudFormation.DescribeChangeSetOutput & {
+  Changes?: CloudFormation.Changes & {
+    ResourceChange?: {
+      NestedChanges?: CloudFormation.DescribeChangeSetOutput | NestedChangeSet,
+    },
+  }[],
+};
 
 /**
  * Reads the currently deployed template from CloudFormation and adds a
