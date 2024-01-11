@@ -100,27 +100,6 @@ async function loadNestedStacks(
         nestedStackTemplates,
       ),
     };
-
-    /*
-    generatedNestedStackResource.Properties.NestedTemplate = nestedStackTemplates.generatedTemplate;
-
-    const deployedParentTemplate = parentTemplates.deployedTemplate;
-    deployedParentTemplate.Resources = deployedParentTemplate.Resources ?? {};
-    const deployedNestedStackResource = deployedParentTemplate.Resources[nestedStackLogicalId] ?? {};
-    deployedParentTemplate.Resources[nestedStackLogicalId] = deployedNestedStackResource;
-    deployedNestedStackResource.Type = deployedNestedStackResource.Type ?? 'AWS::CloudFormation::Stack';
-    deployedNestedStackResource.Properties = deployedNestedStackResource.Properties ?? {};
-    deployedNestedStackResource.Properties.NestedTemplate = nestedStackTemplates.deployedTemplate;
-
-    nestedStacks[nestedStackLogicalId] = {
-      nestedStackPhysicalName: nestedStackTemplates.deployedStackName,
-      nestedStacks: await loadNestedStacks(
-        rootStackArtifact,
-        sdk,
-        nestedStackTemplates,
-      ),
-    };
-    */
   }
 
   return nestedStacks;

@@ -42,16 +42,13 @@ export function printStackDiff(
   }
 
   // filter out 'AWS::CDK::Metadata' resources from the template
-  // TODO: refactor this to be usable in nested stacks
-  if (diff.resources) {
-    if (!strict) {
-      diff.resources = diff.resources.filter(change => {
-        if (!change) { return true; }
-        if (change.newResourceType === 'AWS::CDK::Metadata') { return false; }
-        if (change.oldResourceType === 'AWS::CDK::Metadata') { return false; }
-        return true;
-      });
-    }
+  if (diff.resources && !strict) {
+    diff.resources = diff.resources.filter(change => {
+      if (!change) { return true; }
+      if (change.newResourceType === 'AWS::CDK::Metadata') { return false; }
+      if (change.oldResourceType === 'AWS::CDK::Metadata') { return false; }
+      return true;
+    });
   }
 
   if (!diff.isEmpty) {
