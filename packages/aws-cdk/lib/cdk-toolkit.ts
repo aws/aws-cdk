@@ -150,50 +150,6 @@ export class CdkToolkit {
         ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, changeSet))
         : printStackDiff(template, stacks.firstStack.template, strict, contextLines, quiet, changeSet, stream);
     } else {
-      if (options.changeSet) {
-        const stacksAndTheirAssetManifests = stacks.stackArtifacts.flatMap(stack => [
-          stack,
-          ...stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact),
-        ]);
-        const workGraph = new WorkGraphBuilder(true).build(stacksAndTheirAssetManifests);
-
-        /*
-        // Unless we are running with '--force', skip already published assets
-        if (!options.force) {
-          await this.removePublishedAssets(workGraph, options);
-        }
-        */
-
-        const graphConcurrency: Concurrency = {
-          'stack': 1,
-          'asset-build': 1, // This will be CPU-bound/memory bound, mostly matters for Docker builds
-          'asset-publish': (true) ? 8 : 1, // This will be I/O-bound, 8 in parallel seems reasonable
-        };
-
-        const buildAsset = async (assetNode: AssetBuildNode) => {
-          await this.props.deployments.buildSingleAsset(assetNode.assetManifestArtifact, assetNode.assetManifest, assetNode.asset, {
-            stack: assetNode.parentStack,
-            roleArn: undefined,
-            toolkitStackName: undefined,
-            stackName: assetNode.parentStack.stackName,
-          });
-        };
-
-        const publishAsset = async (assetNode: AssetPublishNode) => {
-          await this.props.deployments.publishSingleAsset(assetNode.assetManifest, assetNode.asset, {
-            stack: assetNode.parentStack,
-            roleArn: undefined,
-            toolkitStackName: undefined,
-            stackName: assetNode.parentStack.stackName,
-          });
-        };
-
-        await workGraph.doParallel(graphConcurrency, {
-          buildAsset,
-          publishAsset,
-        });
-      }
-
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
         if (!quiet) {

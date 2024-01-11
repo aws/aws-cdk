@@ -102,9 +102,7 @@ export class WorkGraph {
     return this.forAllArtifacts(concurrency, async (x: WorkNode) => {
       switch (x.type) {
         case 'stack':
-          if (actions.deployStack) {
-            await actions.deployStack(x);
-          }
+          await actions.deployStack(x);
           break;
         case 'asset-build':
           await actions.buildAsset(x);
@@ -375,7 +373,7 @@ export class WorkGraph {
 }
 
 export interface WorkGraphActions {
-  deployStack?: (stackNode: StackNode) => Promise<void>;
+  deployStack: (stackNode: StackNode) => Promise<void>;
   buildAsset: (assetNode: AssetBuildNode) => Promise<void>;
   publishAsset: (assetNode: AssetPublishNode) => Promise<void>;
 }
