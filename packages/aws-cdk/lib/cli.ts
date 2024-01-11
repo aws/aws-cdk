@@ -324,7 +324,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
   }
 
   // Debug should always imply tracing
-  if (argv.debug ||argv.verbose > 2) {
+  if (argv.debug || argv.verbose > 2) {
     enableTracing(true);
   }
 
