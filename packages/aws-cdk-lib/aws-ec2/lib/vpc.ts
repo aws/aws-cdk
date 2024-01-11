@@ -876,6 +876,11 @@ export interface SubnetAttributes {
 const NAME_TAG: string = 'Name';
 
 /**
+ * IpProtocol tag constant
+ */
+const IPPROTOCOL_TAG: string = 'aws-cdk:vpc-ip-protocol';
+
+/**
  * Configuration for Vpc
  */
 export interface VpcProps {
@@ -1609,7 +1614,8 @@ export class Vpc extends VpcBase {
       }
     }
 
-    // Add tag here too?
+    const includeResourceTypes = [CfnVPC.CFN_RESOURCE_TYPE_NAME];
+    Tags.of(this).add(IPPROTOCOL_TAG, protocolTagValue(this.useIpv4, this.useIpv6), { includeResourceTypes });
 
     // subnetConfiguration must be set before calling createSubnets
     this.createSubnets();
@@ -1876,6 +1882,7 @@ export class Vpc extends VpcBase {
       const includeResourceTypes = [CfnSubnet.CFN_RESOURCE_TYPE_NAME];
       Tags.of(subnet).add(SUBNETNAME_TAG, subnetConfig.name, { includeResourceTypes });
       Tags.of(subnet).add(SUBNETTYPE_TAG, subnetTypeTagValue(subnetConfig.subnetType), { includeResourceTypes });
+      Tags.of(subnet).add(SUBNETPROTOCOL_TAG, protocolTagValue(this.useIpv4, this.useIpv6), { includeResourceTypes });
     });
   }
 
@@ -1924,8 +1931,17 @@ export class Vpc extends VpcBase {
   }
 }
 
+function protocolTagValue(useIpv4: boolean, useIpv6: boolean) {
+  if (useIpv4) {
+    return useIpv6 ? 'DualStack' : 'IPv4';
+  } else {
+    throw new Error('useIpv4 should never be false.');
+  }
+}
+
 const SUBNETTYPE_TAG = 'aws-cdk:subnet-type';
 const SUBNETNAME_TAG = 'aws-cdk:subnet-name';
+const SUBNETPROTOCOL_TAG = 'aws-cdk:subnet-protocol';
 
 function subnetTypeTagValue(type: SubnetType) {
   switch (type) {
