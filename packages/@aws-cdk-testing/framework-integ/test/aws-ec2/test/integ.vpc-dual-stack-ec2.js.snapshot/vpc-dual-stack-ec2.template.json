@@ -9,6 +9,10 @@
     "InstanceTenancy": "default",
     "Tags": [
      {
+      "Key": "aws-cdk:vpc-ip-protocol",
+      "Value": "DualStack"
+     },
+     {
       "Key": "Name",
       "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack"
      }
@@ -64,6 +68,10 @@
      {
       "Key": "aws-cdk:subnet-name",
       "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-protocol",
+      "Value": "DualStack"
      },
      {
       "Key": "aws-cdk:subnet-type",
@@ -176,6 +184,10 @@
       "Value": "Public"
      },
      {
+      "Key": "aws-cdk:subnet-protocol",
+      "Value": "DualStack"
+     },
+     {
       "Key": "aws-cdk:subnet-type",
       "Value": "Public"
      },
@@ -286,6 +298,10 @@
       "Value": "Private"
      },
      {
+      "Key": "aws-cdk:subnet-protocol",
+      "Value": "DualStack"
+     },
+     {
       "Key": "aws-cdk:subnet-type",
       "Value": "Isolated"
      },
@@ -367,6 +383,10 @@
      {
       "Key": "aws-cdk:subnet-name",
       "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-protocol",
+      "Value": "DualStack"
      },
      {
       "Key": "aws-cdk:subnet-type",
