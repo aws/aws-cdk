@@ -1,15 +1,5 @@
 {
  "Resources": {
-  "ParameterGroup5E32DECB": {
-   "Type": "AWS::RDS::DBParameterGroup",
-   "Properties": {
-    "Description": "desc",
-    "Family": "postgres15",
-    "Parameters": {}
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  },
   "VPCB9E5F0B4": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
@@ -20,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-instance-with-parameter-group/VPC"
+      "Value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC"
      }
     ]
    }
@@ -49,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1"
+      "Value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -63,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1"
+      "Value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -104,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1"
+      "Value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1"
      }
     ]
    }
@@ -124,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1"
+      "Value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1"
      }
     ]
    },
@@ -157,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet2"
+      "Value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -171,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet2"
+      "Value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -205,6 +195,42 @@
     "VPCVPCGW99B986DC"
    ]
   },
+  "VPCPublicSubnet2EIP4947BC00": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2"
+     }
+    ]
+   }
+  },
+  "VPCPublicSubnet2NATGateway3C070193": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCPublicSubnet2EIP4947BC00",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
+  },
   "VPCPrivateSubnet1Subnet8BCA10E0": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
@@ -229,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -243,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -298,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -312,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -336,7 +362,7 @@
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
-     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+     "Ref": "VPCPublicSubnet2NATGateway3C070193"
     },
     "RouteTableId": {
      "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
@@ -349,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-rds-instance-with-parameter-group/VPC"
+      "Value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC"
      }
     ]
    }
@@ -365,6 +391,16 @@
     }
    }
   },
+  "ParameterGroup5E32DECB": {
+   "Type": "AWS::RDS::DBParameterGroup",
+   "Properties": {
+    "Description": "desc",
+    "Family": "postgres15",
+    "Parameters": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "InstanceSubnetGroupF2CBA54F": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
@@ -377,9 +413,7 @@
       "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
      }
     ]
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   }
   },
   "InstanceSecurityGroupB4E5FA83": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -445,7 +479,6 @@
     "DBSubnetGroupName": {
      "Ref": "InstanceSubnetGroupF2CBA54F"
     },
-    "DeletionProtection": true,
     "EnableIAMDatabaseAuthentication": true,
     "Engine": "postgres",
     "EngineVersion": "15.2",
@@ -485,8 +518,8 @@
      }
     ]
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {

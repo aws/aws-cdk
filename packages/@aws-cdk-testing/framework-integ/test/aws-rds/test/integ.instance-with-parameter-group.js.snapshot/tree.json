@@ -4,43 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-cdk-rds-instance-with-parameter-group": {
-        "id": "aws-cdk-rds-instance-with-parameter-group",
-        "path": "aws-cdk-rds-instance-with-parameter-group",
+      "aws-cdk-rds-instance-with-rds-parameter-group": {
+        "id": "aws-cdk-rds-instance-with-rds-parameter-group",
+        "path": "aws-cdk-rds-instance-with-rds-parameter-group",
         "children": {
-          "ParameterGroup": {
-            "id": "ParameterGroup",
-            "path": "aws-cdk-rds-instance-with-parameter-group/ParameterGroup",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-rds-instance-with-parameter-group/ParameterGroup/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::RDS::DBParameterGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "description": "desc",
-                    "family": "postgres15",
-                    "parameters": {}
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
-            }
-          },
           "VPC": {
             "id": "VPC",
-            "path": "aws-cdk-rds-instance-with-parameter-group/VPC",
+            "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-rds-instance-with-parameter-group/VPC/Resource",
+                "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -51,23 +25,23 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-cdk-rds-instance-with-parameter-group/VPC"
+                        "value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC"
                       }
                     ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
+                  "version": "0.0.0"
                 }
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1",
+                "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1/Subnet",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -92,7 +66,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1"
+                            "value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -101,28 +75,28 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "version": "0.0.0"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1/Acl",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1/RouteTable",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1"
+                            "value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -131,13 +105,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1/RouteTableAssociation",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -150,13 +124,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1/DefaultRoute",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -170,13 +144,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1/EIP",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -184,19 +158,19 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1"
+                            "value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
+                      "version": "0.0.0"
                     }
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1/NATGateway",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -212,29 +186,29 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet1"
+                            "value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet1"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
+                  "version": "0.0.0"
                 }
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet2",
+                "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet2/Subnet",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -259,7 +233,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet2"
+                            "value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -268,28 +242,28 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "version": "0.0.0"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet2/Acl",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet2/RouteTable",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet2"
+                            "value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -298,13 +272,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet2/RouteTableAssociation",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -317,13 +291,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PublicSubnet2/DefaultRoute",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -337,23 +311,71 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2/EIP",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "vpc",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "VPCPublicSubnet2EIP4947BC00",
+                            "AllocationId"
+                          ]
+                        },
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet2Subnet74179F39"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
+                  "version": "0.0.0"
                 }
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet1",
+                "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet1/Subnet",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -378,7 +400,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet1"
+                            "value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -387,28 +409,28 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "version": "0.0.0"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet1/Acl",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet1/RouteTable",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet1"
+                            "value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -417,13 +439,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet1/RouteTableAssociation",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -436,13 +458,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet1/DefaultRoute",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -456,23 +478,23 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
+                  "version": "0.0.0"
                 }
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet2",
+                "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet2/Subnet",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -497,7 +519,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet2"
+                            "value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -506,28 +528,28 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "version": "0.0.0"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet2/Acl",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet2/RouteTable",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet2"
+                            "value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -536,13 +558,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
                     }
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet2/RouteTableAssociation",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -555,19 +577,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/VPC/PrivateSubnet2/DefaultRoute",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
-                          "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+                          "Ref": "VPCPublicSubnet2NATGateway3C070193"
                         },
                         "routeTableId": {
                           "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
@@ -575,38 +597,38 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
+                  "version": "0.0.0"
                 }
               },
               "IGW": {
                 "id": "IGW",
-                "path": "aws-cdk-rds-instance-with-parameter-group/VPC/IGW",
+                "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-cdk-rds-instance-with-parameter-group/VPC"
+                        "value": "aws-cdk-rds-instance-with-rds-parameter-group/VPC"
                       }
                     ]
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
+                  "version": "0.0.0"
                 }
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "aws-cdk-rds-instance-with-parameter-group/VPC/VPCGW",
+                "path": "aws-cdk-rds-instance-with-rds-parameter-group/VPC/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -619,27 +641,53 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
+              "version": "0.0.0"
+            }
+          },
+          "ParameterGroup": {
+            "id": "ParameterGroup",
+            "path": "aws-cdk-rds-instance-with-rds-parameter-group/ParameterGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-rds-instance-with-rds-parameter-group/ParameterGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::RDS::DBParameterGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "desc",
+                    "family": "postgres15",
+                    "parameters": {}
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBParameterGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_rds.ParameterGroup",
+              "version": "0.0.0"
             }
           },
           "Instance": {
             "id": "Instance",
-            "path": "aws-cdk-rds-instance-with-parameter-group/Instance",
+            "path": "aws-cdk-rds-instance-with-rds-parameter-group/Instance",
             "children": {
               "SubnetGroup": {
                 "id": "SubnetGroup",
-                "path": "aws-cdk-rds-instance-with-parameter-group/Instance/SubnetGroup",
+                "path": "aws-cdk-rds-instance-with-rds-parameter-group/Instance/SubnetGroup",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/Instance/SubnetGroup/Default",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/Instance/SubnetGroup/Default",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                       "aws:cdk:cloudformation:props": {
@@ -655,23 +703,23 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_rds.CfnDBSubnetGroup",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_rds.SubnetGroup",
+                  "version": "0.0.0"
                 }
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "aws-cdk-rds-instance-with-parameter-group/Instance/SecurityGroup",
+                "path": "aws-cdk-rds-instance-with-rds-parameter-group/Instance/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/Instance/SecurityGroup/Resource",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/Instance/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
@@ -689,23 +737,23 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
                 }
               },
               "Secret": {
                 "id": "Secret",
-                "path": "aws-cdk-rds-instance-with-parameter-group/Instance/Secret",
+                "path": "aws-cdk-rds-instance-with-rds-parameter-group/Instance/Secret",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/Instance/Secret/Resource",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/Instance/Secret/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                       "aws:cdk:cloudformation:props": {
@@ -729,17 +777,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecret",
+                      "version": "0.0.0"
                     }
                   },
                   "Attachment": {
                     "id": "Attachment",
-                    "path": "aws-cdk-rds-instance-with-parameter-group/Instance/Secret/Attachment",
+                    "path": "aws-cdk-rds-instance-with-rds-parameter-group/Instance/Secret/Attachment",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-rds-instance-with-parameter-group/Instance/Secret/Attachment/Resource",
+                        "path": "aws-cdk-rds-instance-with-rds-parameter-group/Instance/Secret/Attachment/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                           "aws:cdk:cloudformation:props": {
@@ -753,25 +801,25 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
+                          "fqn": "aws-cdk-lib.aws_secretsmanager.CfnSecretTargetAttachment",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.aws_secretsmanager.SecretTargetAttachment",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_rds.DatabaseSecret",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-rds-instance-with-parameter-group/Instance/Resource",
+                "path": "aws-cdk-rds-instance-with-rds-parameter-group/Instance/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                   "aws:cdk:cloudformation:props": {
@@ -784,7 +832,6 @@
                     "dbSubnetGroupName": {
                       "Ref": "InstanceSubnetGroupF2CBA54F"
                     },
-                    "deletionProtection": true,
                     "enableIamDatabaseAuthentication": true,
                     "engine": "postgres",
                     "engineVersion": "15.2",
@@ -826,36 +873,36 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_rds.CfnDBInstance",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.aws_rds.DatabaseInstance",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-cdk-rds-instance-with-parameter-group/BootstrapVersion",
+            "path": "aws-cdk-rds-instance-with-rds-parameter-group/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-rds-instance-with-parameter-group/CheckBootstrapVersion",
+            "path": "aws-cdk-rds-instance-with-rds-parameter-group/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "rds-instance-with-parameter-group-integ-test": {
@@ -882,22 +929,22 @@
                     "id": "BootstrapVersion",
                     "path": "rds-instance-with-parameter-group-integ-test/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "rds-instance-with-parameter-group-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -922,8 +969,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.3.0"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

@@ -140,7 +140,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
     this.family = family;
     this.description = props.description;
     this.parameters = props.parameters ?? {};
-    this.removalPolicy = props.removalPolicy ?? RemovalPolicy.DESTROY;
+    this.removalPolicy = props.removalPolicy;
   }
 
   public bindToCluster(_options: ParameterGroupClusterBindOptions): ParameterGroupClusterConfig {
@@ -152,7 +152,9 @@ export class ParameterGroup extends Resource implements IParameterGroup {
         parameters: Lazy.any({ produce: () => this.parameters }),
       });
     }
-    this.clusterCfnGroup.applyRemovalPolicy(this.removalPolicy);
+    if (this.removalPolicy) {
+      this.clusterCfnGroup.applyRemovalPolicy(this.removalPolicy ?? RemovalPolicy.DESTROY);
+    }
     return {
       parameterGroupName: this.clusterCfnGroup.ref,
     };
@@ -167,7 +169,9 @@ export class ParameterGroup extends Resource implements IParameterGroup {
         parameters: Lazy.any({ produce: () => this.parameters }),
       });
     }
-    this.instanceCfnGroup.applyRemovalPolicy(this.removalPolicy);
+    if (this.removalPolicy) {
+      this.instanceCfnGroup.applyRemovalPolicy(this.removalPolicy ?? RemovalPolicy.DESTROY);
+    }
     return {
       parameterGroupName: this.instanceCfnGroup.ref,
     };

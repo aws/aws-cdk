@@ -3,7 +3,7 @@
   "testCases": {
     "rds-instance-with-parameter-group-integ-test/DefaultTest": {
       "stacks": [
-        "aws-cdk-rds-instance-with-parameter-group"
+        "aws-cdk-rds-instance-with-rds-parameter-group"
       ],
       "cdkCommandOptions": {
         "deploy": {

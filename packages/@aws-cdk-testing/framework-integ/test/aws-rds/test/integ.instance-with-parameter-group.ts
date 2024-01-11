@@ -4,7 +4,11 @@ import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-instance-with-parameter-group');
+const stack = new cdk.Stack(app, 'aws-cdk-rds-instance-with-rds-parameter-group', {
+  terminationProtection: false,
+});
+
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', {
   engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
@@ -14,7 +18,7 @@ const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', {
 
 new rds.DatabaseInstance(stack, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
-  vpc: new ec2.Vpc(stack, 'VPC', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false }),
+  vpc,
   multiAz: false,
   publiclyAccessible: true,
   iamAuthentication: true,
