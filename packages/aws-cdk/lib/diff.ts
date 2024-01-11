@@ -1,3 +1,4 @@
+import { format } from 'util';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -5,7 +6,6 @@ import { CloudFormation } from 'aws-sdk';
 import * as chalk from 'chalk';
 import { NestedStackTemplates } from './api/nested-stack-helpers';
 import { print, warning } from './logging';
-import { format } from 'util';
 
 /**
  * Pretty-prints the differences between two template states to the console.
