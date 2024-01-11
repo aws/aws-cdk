@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "DualStackVpc.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3d62b3f7b6057653a75f4bc7be1b3d8a6de6d0e90109c3ad26a30e270e24901a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5c9f2a47157dfae2daad088a10c10107f1d67b7a015b71ef11bad7338c6498cf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -46,148 +46,208 @@
             "data": "DualStackProtocolVpcipv6cidr449C49CD"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PublicSubnet1/Subnet": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub1Subnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPublicSubnet1Subnet833729C2"
+            "data": "DualStackProtocolVpcPub1Subnet1Subnet74CA4B8A"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PublicSubnet1/RouteTable": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub1Subnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPublicSubnet1RouteTable9CB5AD97"
+            "data": "DualStackProtocolVpcPub1Subnet1RouteTable67D20294"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PublicSubnet1/RouteTableAssociation": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub1Subnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPublicSubnet1RouteTableAssociation771E7E9B"
+            "data": "DualStackProtocolVpcPub1Subnet1RouteTableAssociation047F9491"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PublicSubnet1/DefaultRoute": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub1Subnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPublicSubnet1DefaultRouteCA9C1683"
+            "data": "DualStackProtocolVpcPub1Subnet1DefaultRoute95ED74BD"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PublicSubnet1/DefaultRoute6": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub1Subnet1/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPublicSubnet1DefaultRoute6970D4C05"
+            "data": "DualStackProtocolVpcPub1Subnet1DefaultRoute6C01F89FD"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PublicSubnet1/EIP": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub1Subnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPublicSubnet1EIP398A9CF7"
+            "data": "DualStackProtocolVpcPub1Subnet1EIP12EDF1FD"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PublicSubnet1/NATGateway": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub1Subnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPublicSubnet1NATGatewayBACCB761"
+            "data": "DualStackProtocolVpcPub1Subnet1NATGateway241D9A98"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PublicSubnet2/Subnet": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub1Subnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPublicSubnet2Subnet67CC66F5"
+            "data": "DualStackProtocolVpcPub1Subnet2Subnet8B1A85E2"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PublicSubnet2/RouteTable": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub1Subnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPublicSubnet2RouteTable08C51FD4"
+            "data": "DualStackProtocolVpcPub1Subnet2RouteTable63549985"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PublicSubnet2/RouteTableAssociation": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub1Subnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPublicSubnet2RouteTableAssociation1BA963D0"
+            "data": "DualStackProtocolVpcPub1Subnet2RouteTableAssociation12736FE3"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PublicSubnet2/DefaultRoute": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub1Subnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPublicSubnet2DefaultRoute25B1CA3C"
+            "data": "DualStackProtocolVpcPub1Subnet2DefaultRoute293C2941"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PublicSubnet2/DefaultRoute6": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub1Subnet2/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPublicSubnet2DefaultRoute63C872529"
+            "data": "DualStackProtocolVpcPub1Subnet2DefaultRoute67E6A8DC8"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PublicSubnet2/EIP": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub1Subnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPublicSubnet2EIP51AAF25A"
+            "data": "DualStackProtocolVpcPub1Subnet2EIP149FAFF5"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PublicSubnet2/NATGateway": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub1Subnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPublicSubnet2NATGateway74C738A1"
+            "data": "DualStackProtocolVpcPub1Subnet2NATGateway64DC713B"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PrivateSubnet1/Subnet": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub2Subnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPrivateSubnet1Subnet9E9EAE3F"
+            "data": "DualStackProtocolVpcPub2Subnet1Subnet483B9827"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PrivateSubnet1/RouteTable": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub2Subnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPrivateSubnet1RouteTable63AA1762"
+            "data": "DualStackProtocolVpcPub2Subnet1RouteTable95379836"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PrivateSubnet1/RouteTableAssociation": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub2Subnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPrivateSubnet1RouteTableAssociationB2DBB184"
+            "data": "DualStackProtocolVpcPub2Subnet1RouteTableAssociation24FAAE7F"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PrivateSubnet1/DefaultRoute": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub2Subnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPrivateSubnet1DefaultRoute6D2568D1"
+            "data": "DualStackProtocolVpcPub2Subnet1DefaultRouteB99615CA"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PrivateSubnet1/DefaultRoute6": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub2Subnet1/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPrivateSubnet1DefaultRoute66D82EFDF"
+            "data": "DualStackProtocolVpcPub2Subnet1DefaultRoute670D1366F"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PrivateSubnet2/Subnet": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub2Subnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPrivateSubnet2Subnet9E59D50E"
+            "data": "DualStackProtocolVpcPub2Subnet2SubnetCA5962A0"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PrivateSubnet2/RouteTable": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub2Subnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPrivateSubnet2RouteTableF8F882A5"
+            "data": "DualStackProtocolVpcPub2Subnet2RouteTable1300ACEE"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PrivateSubnet2/RouteTableAssociation": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub2Subnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPrivateSubnet2RouteTableAssociationE6AE5FE6"
+            "data": "DualStackProtocolVpcPub2Subnet2RouteTableAssociation7E1F73B5"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PrivateSubnet2/DefaultRoute": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub2Subnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPrivateSubnet2DefaultRouteE9EC7720"
+            "data": "DualStackProtocolVpcPub2Subnet2DefaultRoute6B98C127"
           }
         ],
-        "/DualStackVpc/DualStackProtocolVpc/PrivateSubnet2/DefaultRoute6": [
+        "/DualStackVpc/DualStackProtocolVpc/Pub2Subnet2/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DualStackProtocolVpcPrivateSubnet2DefaultRoute6E003FFF0"
+            "data": "DualStackProtocolVpcPub2Subnet2DefaultRoute60CFFE651"
+          }
+        ],
+        "/DualStackVpc/DualStackProtocolVpc/Priv1Subnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualStackProtocolVpcPriv1Subnet1Subnet6E77EDE7"
+          }
+        ],
+        "/DualStackVpc/DualStackProtocolVpc/Priv1Subnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualStackProtocolVpcPriv1Subnet1RouteTableB9D9FD11"
+          }
+        ],
+        "/DualStackVpc/DualStackProtocolVpc/Priv1Subnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualStackProtocolVpcPriv1Subnet1RouteTableAssociation9D52852A"
+          }
+        ],
+        "/DualStackVpc/DualStackProtocolVpc/Priv1Subnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualStackProtocolVpcPriv1Subnet1DefaultRouteEC60BBD4"
+          }
+        ],
+        "/DualStackVpc/DualStackProtocolVpc/Priv1Subnet1/DefaultRoute6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualStackProtocolVpcPriv1Subnet1DefaultRoute65CC26492"
+          }
+        ],
+        "/DualStackVpc/DualStackProtocolVpc/Priv1Subnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualStackProtocolVpcPriv1Subnet2SubnetBC65773F"
+          }
+        ],
+        "/DualStackVpc/DualStackProtocolVpc/Priv1Subnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualStackProtocolVpcPriv1Subnet2RouteTableC8DC5D06"
+          }
+        ],
+        "/DualStackVpc/DualStackProtocolVpc/Priv1Subnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualStackProtocolVpcPriv1Subnet2RouteTableAssociation0F224C80"
+          }
+        ],
+        "/DualStackVpc/DualStackProtocolVpc/Priv1Subnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualStackProtocolVpcPriv1Subnet2DefaultRouteD01D04E1"
+          }
+        ],
+        "/DualStackVpc/DualStackProtocolVpc/Priv1Subnet2/DefaultRoute6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualStackProtocolVpcPriv1Subnet2DefaultRoute63F529AA9"
           }
         ],
         "/DualStackVpc/DualStackProtocolVpc/IGW": [

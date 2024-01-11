@@ -24,6 +24,10 @@
                     "instanceTenancy": "default",
                     "tags": [
                       {
+                        "key": "aws-cdk:vpc-ip-protocol",
+                        "value": "DualStack"
+                      },
+                      {
                         "key": "Name",
                         "value": "DualStackVpc/DualStackProtocolVpc"
                       }
@@ -52,13 +56,13 @@
                   "version": "10.3.0"
                 }
               },
-              "PublicSubnet1": {
-                "id": "PublicSubnet1",
-                "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1",
+              "Pub1Subnet1": {
+                "id": "Pub1Subnet1",
+                "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1/Subnet",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -71,7 +75,7 @@
                             }
                           ]
                         },
-                        "cidrBlock": "10.0.0.0/18",
+                        "cidrBlock": "10.0.0.0/19",
                         "ipv6CidrBlock": {
                           "Fn::Select": [
                             0,
@@ -88,7 +92,7 @@
                                     }
                                   ]
                                 },
-                                4,
+                                6,
                                 "64"
                               ]
                             }
@@ -98,7 +102,11 @@
                         "tags": [
                           {
                             "key": "aws-cdk:subnet-name",
-                            "value": "Public"
+                            "value": "Pub1"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-protocol",
+                            "value": "DualStack"
                           },
                           {
                             "key": "aws-cdk:subnet-type",
@@ -106,7 +114,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1"
+                            "value": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet1"
                           }
                         ],
                         "vpcId": {
@@ -121,7 +129,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1/Acl",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet1/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -129,14 +137,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1/RouteTable",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1"
+                            "value": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet1"
                           }
                         ],
                         "vpcId": {
@@ -151,15 +159,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "DualStackProtocolVpcPublicSubnet1RouteTable9CB5AD97"
+                          "Ref": "DualStackProtocolVpcPub1Subnet1RouteTable67D20294"
                         },
                         "subnetId": {
-                          "Ref": "DualStackProtocolVpcPublicSubnet1Subnet833729C2"
+                          "Ref": "DualStackProtocolVpcPub1Subnet1Subnet74CA4B8A"
                         }
                       }
                     },
@@ -170,7 +178,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1/DefaultRoute",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -179,7 +187,7 @@
                           "Ref": "DualStackProtocolVpcIGW0F74732B"
                         },
                         "routeTableId": {
-                          "Ref": "DualStackProtocolVpcPublicSubnet1RouteTable9CB5AD97"
+                          "Ref": "DualStackProtocolVpcPub1Subnet1RouteTable67D20294"
                         }
                       }
                     },
@@ -190,7 +198,7 @@
                   },
                   "DefaultRoute6": {
                     "id": "DefaultRoute6",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1/DefaultRoute6",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet1/DefaultRoute6",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -199,7 +207,7 @@
                           "Ref": "DualStackProtocolVpcIGW0F74732B"
                         },
                         "routeTableId": {
-                          "Ref": "DualStackProtocolVpcPublicSubnet1RouteTable9CB5AD97"
+                          "Ref": "DualStackProtocolVpcPub1Subnet1RouteTable67D20294"
                         }
                       }
                     },
@@ -210,7 +218,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1/EIP",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -218,7 +226,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1"
+                            "value": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet1"
                           }
                         ]
                       }
@@ -230,23 +238,23 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1/NATGateway",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
                         "allocationId": {
                           "Fn::GetAtt": [
-                            "DualStackProtocolVpcPublicSubnet1EIP398A9CF7",
+                            "DualStackProtocolVpcPub1Subnet1EIP12EDF1FD",
                             "AllocationId"
                           ]
                         },
                         "subnetId": {
-                          "Ref": "DualStackProtocolVpcPublicSubnet1Subnet833729C2"
+                          "Ref": "DualStackProtocolVpcPub1Subnet1Subnet74CA4B8A"
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet1"
+                            "value": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet1"
                           }
                         ]
                       }
@@ -262,13 +270,13 @@
                   "version": "10.3.0"
                 }
               },
-              "PublicSubnet2": {
-                "id": "PublicSubnet2",
-                "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2",
+              "Pub1Subnet2": {
+                "id": "Pub1Subnet2",
+                "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2/Subnet",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -281,7 +289,7 @@
                             }
                           ]
                         },
-                        "cidrBlock": "10.0.64.0/18",
+                        "cidrBlock": "10.0.32.0/19",
                         "ipv6CidrBlock": {
                           "Fn::Select": [
                             1,
@@ -298,7 +306,7 @@
                                     }
                                   ]
                                 },
-                                4,
+                                6,
                                 "64"
                               ]
                             }
@@ -308,7 +316,11 @@
                         "tags": [
                           {
                             "key": "aws-cdk:subnet-name",
-                            "value": "Public"
+                            "value": "Pub1"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-protocol",
+                            "value": "DualStack"
                           },
                           {
                             "key": "aws-cdk:subnet-type",
@@ -316,7 +328,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2"
+                            "value": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet2"
                           }
                         ],
                         "vpcId": {
@@ -331,7 +343,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2/Acl",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet2/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -339,14 +351,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2/RouteTable",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2"
+                            "value": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet2"
                           }
                         ],
                         "vpcId": {
@@ -361,15 +373,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "DualStackProtocolVpcPublicSubnet2RouteTable08C51FD4"
+                          "Ref": "DualStackProtocolVpcPub1Subnet2RouteTable63549985"
                         },
                         "subnetId": {
-                          "Ref": "DualStackProtocolVpcPublicSubnet2Subnet67CC66F5"
+                          "Ref": "DualStackProtocolVpcPub1Subnet2Subnet8B1A85E2"
                         }
                       }
                     },
@@ -380,7 +392,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2/DefaultRoute",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -389,7 +401,7 @@
                           "Ref": "DualStackProtocolVpcIGW0F74732B"
                         },
                         "routeTableId": {
-                          "Ref": "DualStackProtocolVpcPublicSubnet2RouteTable08C51FD4"
+                          "Ref": "DualStackProtocolVpcPub1Subnet2RouteTable63549985"
                         }
                       }
                     },
@@ -400,7 +412,7 @@
                   },
                   "DefaultRoute6": {
                     "id": "DefaultRoute6",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2/DefaultRoute6",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet2/DefaultRoute6",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -409,7 +421,7 @@
                           "Ref": "DualStackProtocolVpcIGW0F74732B"
                         },
                         "routeTableId": {
-                          "Ref": "DualStackProtocolVpcPublicSubnet2RouteTable08C51FD4"
+                          "Ref": "DualStackProtocolVpcPub1Subnet2RouteTable63549985"
                         }
                       }
                     },
@@ -420,7 +432,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2/EIP",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -428,7 +440,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2"
+                            "value": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet2"
                           }
                         ]
                       }
@@ -440,23 +452,23 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2/NATGateway",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
                         "allocationId": {
                           "Fn::GetAtt": [
-                            "DualStackProtocolVpcPublicSubnet2EIP51AAF25A",
+                            "DualStackProtocolVpcPub1Subnet2EIP149FAFF5",
                             "AllocationId"
                           ]
                         },
                         "subnetId": {
-                          "Ref": "DualStackProtocolVpcPublicSubnet2Subnet67CC66F5"
+                          "Ref": "DualStackProtocolVpcPub1Subnet2Subnet8B1A85E2"
                         },
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "DualStackVpc/DualStackProtocolVpc/PublicSubnet2"
+                            "value": "DualStackVpc/DualStackProtocolVpc/Pub1Subnet2"
                           }
                         ]
                       }
@@ -472,13 +484,13 @@
                   "version": "10.3.0"
                 }
               },
-              "PrivateSubnet1": {
-                "id": "PrivateSubnet1",
-                "path": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet1",
+              "Pub2Subnet1": {
+                "id": "Pub2Subnet1",
+                "path": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet1/Subnet",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -491,7 +503,7 @@
                             }
                           ]
                         },
-                        "cidrBlock": "10.0.128.0/18",
+                        "cidrBlock": "10.0.64.0/19",
                         "ipv6CidrBlock": {
                           "Fn::Select": [
                             2,
@@ -508,7 +520,7 @@
                                     }
                                   ]
                                 },
-                                4,
+                                6,
                                 "64"
                               ]
                             }
@@ -518,15 +530,19 @@
                         "tags": [
                           {
                             "key": "aws-cdk:subnet-name",
-                            "value": "Private"
+                            "value": "Pub2"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-protocol",
+                            "value": "DualStack"
                           },
                           {
                             "key": "aws-cdk:subnet-type",
-                            "value": "Private"
+                            "value": "Public"
                           },
                           {
                             "key": "Name",
-                            "value": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet1"
+                            "value": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet1"
                           }
                         ],
                         "vpcId": {
@@ -541,7 +557,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet1/Acl",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet1/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -549,14 +565,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet1/RouteTable",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet1"
+                            "value": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet1"
                           }
                         ],
                         "vpcId": {
@@ -571,15 +587,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet1/RouteTableAssociation",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "DualStackProtocolVpcPrivateSubnet1RouteTable63AA1762"
+                          "Ref": "DualStackProtocolVpcPub2Subnet1RouteTable95379836"
                         },
                         "subnetId": {
-                          "Ref": "DualStackProtocolVpcPrivateSubnet1Subnet9E9EAE3F"
+                          "Ref": "DualStackProtocolVpcPub2Subnet1Subnet483B9827"
                         }
                       }
                     },
@@ -590,16 +606,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet1/DefaultRoute",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "destinationCidrBlock": "0.0.0.0/0",
-                        "natGatewayId": {
-                          "Ref": "DualStackProtocolVpcPublicSubnet1NATGatewayBACCB761"
+                        "gatewayId": {
+                          "Ref": "DualStackProtocolVpcIGW0F74732B"
                         },
                         "routeTableId": {
-                          "Ref": "DualStackProtocolVpcPrivateSubnet1RouteTable63AA1762"
+                          "Ref": "DualStackProtocolVpcPub2Subnet1RouteTable95379836"
                         }
                       }
                     },
@@ -610,16 +626,16 @@
                   },
                   "DefaultRoute6": {
                     "id": "DefaultRoute6",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet1/DefaultRoute6",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet1/DefaultRoute6",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "destinationIpv6CidrBlock": "::/0",
-                        "egressOnlyInternetGatewayId": {
-                          "Ref": "DualStackProtocolVpcEIGW64BED696A"
+                        "gatewayId": {
+                          "Ref": "DualStackProtocolVpcIGW0F74732B"
                         },
                         "routeTableId": {
-                          "Ref": "DualStackProtocolVpcPrivateSubnet1RouteTable63AA1762"
+                          "Ref": "DualStackProtocolVpcPub2Subnet1RouteTable95379836"
                         }
                       }
                     },
@@ -634,13 +650,13 @@
                   "version": "10.3.0"
                 }
               },
-              "PrivateSubnet2": {
-                "id": "PrivateSubnet2",
-                "path": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet2",
+              "Pub2Subnet2": {
+                "id": "Pub2Subnet2",
+                "path": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet2/Subnet",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -653,7 +669,7 @@
                             }
                           ]
                         },
-                        "cidrBlock": "10.0.192.0/18",
+                        "cidrBlock": "10.0.96.0/19",
                         "ipv6CidrBlock": {
                           "Fn::Select": [
                             3,
@@ -670,7 +686,7 @@
                                     }
                                   ]
                                 },
-                                4,
+                                6,
                                 "64"
                               ]
                             }
@@ -680,15 +696,19 @@
                         "tags": [
                           {
                             "key": "aws-cdk:subnet-name",
-                            "value": "Private"
+                            "value": "Pub2"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-protocol",
+                            "value": "DualStack"
                           },
                           {
                             "key": "aws-cdk:subnet-type",
-                            "value": "Private"
+                            "value": "Public"
                           },
                           {
                             "key": "Name",
-                            "value": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet2"
+                            "value": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet2"
                           }
                         ],
                         "vpcId": {
@@ -703,7 +723,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet2/Acl",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet2/Acl",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -711,14 +731,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet2/RouteTable",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet2"
+                            "value": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet2"
                           }
                         ],
                         "vpcId": {
@@ -733,15 +753,15 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet2/RouteTableAssociation",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
                         "routeTableId": {
-                          "Ref": "DualStackProtocolVpcPrivateSubnet2RouteTableF8F882A5"
+                          "Ref": "DualStackProtocolVpcPub2Subnet2RouteTable1300ACEE"
                         },
                         "subnetId": {
-                          "Ref": "DualStackProtocolVpcPrivateSubnet2Subnet9E59D50E"
+                          "Ref": "DualStackProtocolVpcPub2Subnet2SubnetCA5962A0"
                         }
                       }
                     },
@@ -752,16 +772,16 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet2/DefaultRoute",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
                         "destinationCidrBlock": "0.0.0.0/0",
-                        "natGatewayId": {
-                          "Ref": "DualStackProtocolVpcPublicSubnet2NATGateway74C738A1"
+                        "gatewayId": {
+                          "Ref": "DualStackProtocolVpcIGW0F74732B"
                         },
                         "routeTableId": {
-                          "Ref": "DualStackProtocolVpcPrivateSubnet2RouteTableF8F882A5"
+                          "Ref": "DualStackProtocolVpcPub2Subnet2RouteTable1300ACEE"
                         }
                       }
                     },
@@ -772,7 +792,173 @@
                   },
                   "DefaultRoute6": {
                     "id": "DefaultRoute6",
-                    "path": "DualStackVpc/DualStackProtocolVpc/PrivateSubnet2/DefaultRoute6",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Pub2Subnet2/DefaultRoute6",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationIpv6CidrBlock": "::/0",
+                        "gatewayId": {
+                          "Ref": "DualStackProtocolVpcIGW0F74732B"
+                        },
+                        "routeTableId": {
+                          "Ref": "DualStackProtocolVpcPub2Subnet2RouteTable1300ACEE"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Priv1Subnet1": {
+                "id": "Priv1Subnet1",
+                "path": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "assignIpv6AddressOnCreation": true,
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.128.0/19",
+                        "ipv6CidrBlock": {
+                          "Fn::Select": [
+                            4,
+                            {
+                              "Fn::Cidr": [
+                                {
+                                  "Fn::Select": [
+                                    0,
+                                    {
+                                      "Fn::GetAtt": [
+                                        "DualStackProtocolVpc85768F2C",
+                                        "Ipv6CidrBlocks"
+                                      ]
+                                    }
+                                  ]
+                                },
+                                6,
+                                "64"
+                              ]
+                            }
+                          ]
+                        },
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Priv1"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-protocol",
+                            "value": "DualStack"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "DualStackProtocolVpc85768F2C"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "DualStackProtocolVpc85768F2C"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "DualStackProtocolVpcPriv1Subnet1RouteTableB9D9FD11"
+                        },
+                        "subnetId": {
+                          "Ref": "DualStackProtocolVpcPriv1Subnet1Subnet6E77EDE7"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "DualStackProtocolVpcPub1Subnet1NATGateway241D9A98"
+                        },
+                        "routeTableId": {
+                          "Ref": "DualStackProtocolVpcPriv1Subnet1RouteTableB9D9FD11"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "DefaultRoute6": {
+                    "id": "DefaultRoute6",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet1/DefaultRoute6",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -781,7 +967,173 @@
                           "Ref": "DualStackProtocolVpcEIGW64BED696A"
                         },
                         "routeTableId": {
-                          "Ref": "DualStackProtocolVpcPrivateSubnet2RouteTableF8F882A5"
+                          "Ref": "DualStackProtocolVpcPriv1Subnet1RouteTableB9D9FD11"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Priv1Subnet2": {
+                "id": "Priv1Subnet2",
+                "path": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "assignIpv6AddressOnCreation": true,
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.160.0/19",
+                        "ipv6CidrBlock": {
+                          "Fn::Select": [
+                            5,
+                            {
+                              "Fn::Cidr": [
+                                {
+                                  "Fn::Select": [
+                                    0,
+                                    {
+                                      "Fn::GetAtt": [
+                                        "DualStackProtocolVpc85768F2C",
+                                        "Ipv6CidrBlocks"
+                                      ]
+                                    }
+                                  ]
+                                },
+                                6,
+                                "64"
+                              ]
+                            }
+                          ]
+                        },
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Priv1"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-protocol",
+                            "value": "DualStack"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet2"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "DualStackProtocolVpc85768F2C"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet2"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "DualStackProtocolVpc85768F2C"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "DualStackProtocolVpcPriv1Subnet2RouteTableC8DC5D06"
+                        },
+                        "subnetId": {
+                          "Ref": "DualStackProtocolVpcPriv1Subnet2SubnetBC65773F"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "DualStackProtocolVpcPub1Subnet2NATGateway64DC713B"
+                        },
+                        "routeTableId": {
+                          "Ref": "DualStackProtocolVpcPriv1Subnet2RouteTableC8DC5D06"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "DefaultRoute6": {
+                    "id": "DefaultRoute6",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet2/DefaultRoute6",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationIpv6CidrBlock": "::/0",
+                        "egressOnlyInternetGatewayId": {
+                          "Ref": "DualStackProtocolVpcEIGW64BED696A"
+                        },
+                        "routeTableId": {
+                          "Ref": "DualStackProtocolVpcPriv1Subnet2RouteTableC8DC5D06"
                         }
                       }
                     },

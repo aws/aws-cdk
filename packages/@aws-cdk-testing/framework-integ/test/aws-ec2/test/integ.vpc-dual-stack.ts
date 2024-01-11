@@ -7,6 +7,20 @@ const stack = new Stack(app, 'DualStackVpc');
 
 new ec2.Vpc(stack, 'DualStackProtocolVpc', {
   ipProtocol: ec2.IpProtocol.DUAL_STACK,
+  subnetConfiguration: [
+    {
+      name: 'Pub1',
+      subnetType: ec2.SubnetType.PUBLIC,
+    },
+    {
+      name: 'Pub2',
+      subnetType: ec2.SubnetType.PUBLIC,
+    },
+    {
+      name: 'Priv1',
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+    },
+  ],
 });
 
 new IntegTest(app, 'DualStackTesting', {
