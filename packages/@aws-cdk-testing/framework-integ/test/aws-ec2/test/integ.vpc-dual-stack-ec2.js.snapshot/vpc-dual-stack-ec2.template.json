@@ -9,12 +9,8 @@
     "InstanceTenancy": "default",
     "Tags": [
      {
-      "Key": "aws-cdk:vpc-ip-protocol",
-      "Value": "DualStack"
-     },
-     {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack"
+      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack"
      }
     ]
    }
@@ -70,16 +66,12 @@
       "Value": "Public"
      },
      {
-      "Key": "aws-cdk:subnet-protocol",
-      "Value": "DualStack"
-     },
-     {
       "Key": "aws-cdk:subnet-type",
       "Value": "Public"
      },
      {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet1"
+      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -96,7 +88,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet1"
+      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -194,16 +186,12 @@
       "Value": "Public"
      },
      {
-      "Key": "aws-cdk:subnet-protocol",
-      "Value": "DualStack"
-     },
-     {
       "Key": "aws-cdk:subnet-type",
       "Value": "Public"
      },
      {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet2"
+      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -220,7 +208,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PublicSubnet2"
+      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -318,16 +306,12 @@
       "Value": "Private"
      },
      {
-      "Key": "aws-cdk:subnet-protocol",
-      "Value": "DualStack"
-     },
-     {
       "Key": "aws-cdk:subnet-type",
       "Value": "Isolated"
      },
      {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PrivateSubnet1"
+      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -341,7 +325,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PrivateSubnet1"
+      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -402,16 +386,12 @@
       "Value": "Private"
      },
      {
-      "Key": "aws-cdk:subnet-protocol",
-      "Value": "DualStack"
-     },
-     {
       "Key": "aws-cdk:subnet-type",
       "Value": "Isolated"
      },
      {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PrivateSubnet2"
+      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -425,7 +405,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/PrivateSubnet2"
+      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -450,7 +430,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack"
+      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack"
      }
     ]
    }
@@ -492,7 +472,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/cloudwatchLogs"
+      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/cloudwatchLogs"
      }
     ]
    }
@@ -544,7 +524,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/cloudwatchLogs"
+      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/cloudwatchLogs"
      }
     ]
    },
@@ -571,7 +551,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/Ip6VpcDualStack/cloudwatchLogs"
+      "Value": "Vpc-Dual-Stack-Ec2/Ip6VpcDualStack/cloudwatchLogs"
      }
     ],
     "TrafficType": "ALL"
@@ -696,7 +676,7 @@
   "MyInstanceInstanceSecurityGroup3E7A7DD1": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "vpc-dual-stack-ec2/MyInstance/InstanceSecurityGroup",
+    "GroupDescription": "Vpc-Dual-Stack-Ec2/MyInstance/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -742,7 +722,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/MyInstance"
+      "Value": "Vpc-Dual-Stack-Ec2/MyInstance"
      }
     ],
     "VpcId": {
@@ -768,7 +748,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/MyInstance"
+      "Value": "Vpc-Dual-Stack-Ec2/MyInstance"
      }
     ]
    }
@@ -882,7 +862,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "vpc-dual-stack-ec2/MyInstance"
+      "Value": "Vpc-Dual-Stack-Ec2/MyInstance"
      }
     ],
     "UserData": {
@@ -999,7 +979,7 @@
     ]
    },
    "Export": {
-    "Name": "vpc-dual-stack-ec2:ExportsOutputFnGetAttMyInstanceA12EC128PublicIp4458147B"
+    "Name": "Vpc-Dual-Stack-Ec2:ExportsOutputFnGetAttMyInstanceA12EC128PublicIp4458147B"
    }
   }
  },
