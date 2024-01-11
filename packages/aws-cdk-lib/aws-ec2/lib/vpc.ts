@@ -1957,18 +1957,6 @@ function subnetTypeTagValue(type: SubnetType) {
 }
 
 /**
- * Wraps the CFN CIDR block which the IPv6 enabled subnets depend on.
- */
-export interface DependantIpv6CidrBlock {
-  /**
-   * CIDR block to pass.
-   *
-   * @default - no IPv6 CIDR block for subnets to depend on
-   */
-  readonly cidrBlock?: CfnVPCCidrBlock,
-}
-
-/**
  * Specify configuration parameters for a VPC subnet
  */
 export interface SubnetProps {
@@ -2018,7 +2006,7 @@ export interface SubnetProps {
    *
    * @default - no IPv6 CIDR block for subnets to depend on
    */
-  readonly dependantIpv6CidrBlock?: DependantIpv6CidrBlock;
+  readonly dependantIpv6CidrBlock?: IDependable;
 }
 
 /**
@@ -2118,8 +2106,8 @@ export class Subnet extends Resource implements ISubnet {
       ipv6CidrBlock: props.ipv6CidrBlock,
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation,
     });
-    if (props.dependantIpv6CidrBlock !== undefined && props.dependantIpv6CidrBlock.cidrBlock !== undefined) {
-      subnet.node.addDependency(props.dependantIpv6CidrBlock.cidrBlock);
+    if (props.dependantIpv6CidrBlock !== undefined) {
+      subnet.node.addDependency(props.dependantIpv6CidrBlock);
     }
     this.subnetId = subnet.ref;
     this.subnetVpcId = subnet.attrVpcId;
