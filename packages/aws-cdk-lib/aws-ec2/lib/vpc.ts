@@ -2212,6 +2212,15 @@ export class Subnet extends Resource implements ISubnet {
     });
   }
 
+  public addIpv6Nat64Route(natGatewayId: string) {
+    this.addRoute('Nat64', {
+      routerType: RouterType.NAT_GATEWAY,
+      routerId: natGatewayId,
+      enablesInternetConnectivity: true,
+      destinationIpv6CidrBlock: '64:ff9b::/96',
+    });
+  }
+
   /**
    * Adds an entry to this subnets route table
    */
