@@ -6,7 +6,7 @@ const app = new App();
 const stack = new Stack(app, 'DualStackVpc');
 
 new ec2.Vpc(stack, 'DualStackProtocolVpc', {
-  vpcProtocol: ec2.VpcProtocol.DUAL_STACK,
+  ipProtocol: ec2.IpProtocol.DUAL_STACK,
 });
 
 new IntegTest(app, 'DualStackTesting', {
