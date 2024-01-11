@@ -1,7 +1,7 @@
-import { NestedStackNames } from '@aws-cdk/cloudformation-diff';
 import * as AWS from 'aws-sdk';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { ISDK } from './aws-auth';
+import { NestedStackTemplates } from './nested-stack-helpers';
 
 export interface ListStackResources {
   listStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]>;
@@ -102,7 +102,7 @@ export interface EvaluateCloudFormationTemplateProps {
   readonly partition: string;
   readonly urlSuffix: (region: string) => string;
   readonly sdk: ISDK;
-  readonly nestedStackNames?: { [nestedStackLogicalId: string]: NestedStackNames };
+  readonly nestedStackNames?: { [nestedStackLogicalId: string]: NestedStackTemplates };
 }
 
 export class EvaluateCloudFormationTemplate {
@@ -114,7 +114,7 @@ export class EvaluateCloudFormationTemplate {
   private readonly partition: string;
   private readonly urlSuffix: (region: string) => string;
   private readonly sdk: ISDK;
-  private readonly nestedStackNames: { [nestedStackLogicalId: string]: NestedStackNames };
+  private readonly nestedStackNames: { [nestedStackLogicalId: string]: NestedStackTemplates };
   private readonly stackResources: ListStackResources;
   private readonly lookupExport: LookupExport;
 
@@ -407,9 +407,9 @@ export class EvaluateCloudFormationTemplate {
   }
 
   private findNestedStack(logicalId: string, nestedStackNames: {
-    [nestedStackLogicalId: string]: NestedStackNames;
+    [nestedStackLogicalId: string]: NestedStackTemplates;
   }): string | undefined {
-    for (const [nestedStackLogicalId, { nestedChildStackNames, nestedStackPhysicalName }] of Object.entries(nestedStackNames)) {
+    for (const [nestedStackLogicalId, { nestedStackTemplates: nestedChildStackNames, physicalName: nestedStackPhysicalName }] of Object.entries(nestedStackNames)) {
       if (nestedStackLogicalId === logicalId) {
         return nestedStackPhysicalName;
       }

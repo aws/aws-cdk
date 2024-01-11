@@ -1,7 +1,7 @@
 import { Resource } from '@aws-cdk/service-spec-types';
 import * as types from './types';
 import { deepEqual, diffKeyedEntities, loadResourceModel } from './util';
-import { diffTemplate } from '../diff-template';
+//import { diffTemplate } from '../diff-template';
 
 export function diffAttribute(oldValue: any, newValue: any): types.Difference<string> {
   return new types.Difference<string>(_asString(oldValue), _asString(newValue));
@@ -34,7 +34,7 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
   };
   let propertyDiffs: { [key: string]: types.PropertyDifference<any> } = {};
   let otherDiffs: { [key: string]: types.Difference<any> } = {};
-  let nestedDiff: types.ITemplateDiff = {};
+  //let nestedDiff: types.ITemplateDiff = {};
 
   if (resourceType.oldType !== undefined && resourceType.oldType === resourceType.newType) {
     // Only makes sense to inspect deeper if the types stayed the same
@@ -46,13 +46,15 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
     otherDiffs = diffKeyedEntities(oldValue, newValue, _diffOther);
     delete otherDiffs.Properties;
 
+    /*
     if (resourceType.newType === 'AWS::CloudFormation::Stack') {
       nestedDiff = diffTemplate(oldValue?.Properties!.NestedTemplate, newValue?.Properties!.NestedTemplate);
     }
+    */
   }
 
   return new types.ResourceDifference(oldValue, newValue, {
-    resourceType, propertyDiffs, otherDiffs, nestedDiff,
+    resourceType, propertyDiffs, otherDiffs, // nestedDiff,
   });
 
   function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: Resource) {

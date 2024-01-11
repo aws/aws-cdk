@@ -148,7 +148,7 @@ export class CdkToolkit {
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
         ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, changeSet))
-        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, changeSet, stream);
+        : printStackDiff(template, stacks.firstStack.template, strict, contextLines, quiet, changeSet, stream);
     } else {
       if (options.changeSet) {
         const stacksAndTheirAssetManifests = stacks.stackArtifacts.flatMap(stack => [
@@ -200,12 +200,12 @@ export class CdkToolkit {
           stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
         }
 
-        const templateWithNames = await this.props.deployments.readCurrentTemplateWithNestedStacks(
+        const templateWithNestedStacks = await this.props.deployments.readCurrentTemplateWithNestedStacks(
           stack, options.compareAgainstProcessedTemplate,
         );
-        const currentTemplate = templateWithNames.deployedTemplate;
-        const nestedStackCount = templateWithNames.nestedStackCount;
-        const nestedStackNames = templateWithNames.nestedStackNames;
+        const currentTemplate = templateWithNestedStacks.deployedRootTemplate;
+        const nestedStacks = templateWithNestedStacks.nestedStacks;
+        const nestedStackCount = templateWithNestedStacks.nestedStackCount;
 
         const changeSet = options.changeSet ? await createDiffChangeSet({
           stack,
@@ -220,7 +220,7 @@ export class CdkToolkit {
         const stackCount =
         options.securityOnly
           ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)) > 0 ? 1 : 0)
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream, nestedStackNames) > 0 ? 1 : 0);
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream, nestedStacks) > 0 ? 1 : 0);
 
         diffs += stackCount + nestedStackCount;
       }

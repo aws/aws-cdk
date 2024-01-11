@@ -541,7 +541,7 @@ export class ResourceDifference implements IDifference<Resource> {
   private readonly otherDiffs: { [key: string]: Difference<any> };
 
   /** Changes to the nested stack template, iff this resource is a nested stack */
-  private readonly nestedDiff: ITemplateDiff;
+  //private readonly nestedDiff: ITemplateDiff;
 
   /** The resource type (or old and new type if it has changed) */
   private readonly resourceTypes: { readonly oldType?: string, readonly newType?: string };
@@ -553,13 +553,13 @@ export class ResourceDifference implements IDifference<Resource> {
       resourceType: { oldType?: string, newType?: string },
       propertyDiffs: { [key: string]: PropertyDifference<any> },
       otherDiffs: { [key: string]: Difference<any> }
-      nestedDiff: ITemplateDiff,
+      //nestedDiff: ITemplateDiff,
     },
   ) {
     this.resourceTypes = args.resourceType;
     this.propertyDiffs = args.propertyDiffs;
     this.otherDiffs = args.otherDiffs;
-    this.nestedDiff = args.nestedDiff;
+    //this.nestedDiff = args.nestedDiff;
 
     this.isAddition = oldValue === undefined;
     this.isRemoval = newValue === undefined;
@@ -611,9 +611,10 @@ export class ResourceDifference implements IDifference<Resource> {
 
   //public get nestedChanges(): { [key: string]: Difference<any> } {
   //return onlyChanges(this.nestedDiff);
-  public get nestedChanges(): ITemplateDiff {
+  /*public get nestedChanges(): ITemplateDiff {
     return this.nestedDiff;
   }
+  */
 
   /**
    * Return whether the resource type was changed in this diff

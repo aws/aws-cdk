@@ -56,15 +56,15 @@ describe('non-nested stacks', () => {
     cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((stackArtifact: CloudFormationStackArtifact) => {
       if (stackArtifact.stackName === 'D') {
         return Promise.resolve({
-          deployedTemplate: { resource: 'D' },
+          deployedRootTemplate: { resource: 'D' },
           nestedStackCount: 0,
-          nestedStackNames: {},
+          nestedStacks: {},
         });
       }
       return Promise.resolve({
-        deployedTemplate: {},
+        deployedRootTemplate: {},
         nestedStackCount: 0,
-        nestedStackNames: {},
+        nestedStacks: {},
       });
     });
     cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
@@ -220,6 +220,8 @@ describe('nested stacks', () => {
       sdkProvider: cloudExecutable.sdkProvider,
     });
 
+    // TODO: we aren't mutating the stack artifact anymore...
+    /*
     cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((stackArtifact: CloudFormationStackArtifact) => {
       if (stackArtifact.stackName === 'Parent') {
         stackArtifact.template.Resources = {
@@ -299,6 +301,7 @@ describe('nested stacks', () => {
         nestedStackNames: {},
       });
     });
+    */
   });
 
   test('diff can diff nested stacks', async () => {

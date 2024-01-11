@@ -247,7 +247,7 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
 
   // WHEN
   const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
-  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedTemplate;
+  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedRootTemplate;
 
   // THEN
   expect(nestedStackCount).toEqual(1);
@@ -454,7 +454,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
 
   // WHEN
   const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
-  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedTemplate;
+  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedRootTemplate;
 
   // THEN
   expect(nestedStackCount).toEqual(3);
@@ -613,7 +613,7 @@ test('readCurrentTemplateWithNestedStacks() on an undeployed parent stack with a
 
   // WHEN
   const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
-  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedTemplate;
+  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedRootTemplate;
 
   // THEN
   expect(nestedStackCount).toEqual(2);
@@ -788,7 +788,7 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
 
   // WHEN
   const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
-  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedTemplate;
+  const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedRootTemplate;
 
   // THEN
   expect(nestedStackCount).toEqual(1);

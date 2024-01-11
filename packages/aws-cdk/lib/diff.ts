@@ -3,7 +3,9 @@ import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import * as chalk from 'chalk';
+import { NestedStackTemplates } from './api/nested-stack-helpers';
 import { print, warning } from './logging';
+import { format } from 'util';
 
 /**
  * Pretty-prints the differences between two template states to the console.
@@ -23,8 +25,8 @@ export function printStackDiff(
   context: number,
   quiet: boolean,
   changeSet?: CloudFormation.DescribeChangeSetOutput,
-  stream?: cfnDiff.FormatStream,
-  nestedStackNames?: { [nestedStackLogicalId: string]: cfnDiff.NestedStackNames }): number {
+  stream: cfnDiff.FormatStream = process.stderr,
+  nestedStackTemplates?: { [nestedStackLogicalId: string]: NestedStackTemplates }): number {
 
   let diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet);
 
@@ -53,15 +55,33 @@ export function printStackDiff(
   }
 
   if (!diff.isEmpty) {
-    cfnDiff.formatDifferences(stream || process.stderr, diff, {
+    cfnDiff.formatDifferences(stream, diff, {
       ...logicalIdMapFromTemplate(oldTemplate),
       ...buildLogicalToPathMap(newTemplate),
-    }, context, nestedStackNames);
+    }, context);
   } else if (!quiet) {
     print(chalk.green('There were no differences'));
   }
   if (filteredChangesCount > 0) {
     print(chalk.yellow(`Omitted ${filteredChangesCount} changes because they are likely mangled non-ASCII characters. Use --strict to print them.`));
+  }
+
+  for (const nestedStack of Object.values(nestedStackTemplates ?? {})) {
+    if (!quiet) {
+      stream.write(format('Stack %s\n', chalk.bold(nestedStack.physicalName)));
+    }
+    // lol
+    (newTemplate as any)._template = nestedStack.generatedTemplate;
+    printStackDiff(
+      nestedStack.deployedTemplate,
+      newTemplate,
+      strict,
+      context,
+      quiet,
+      undefined,
+      stream,
+      nestedStack.nestedStackTemplates,
+    );
   }
 
   return diff.differenceCount;

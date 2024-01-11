@@ -1,6 +1,6 @@
 import { format } from 'util';
 import * as chalk from 'chalk';
-import { DifferenceCollection, NestedStackNames, TemplateDiff } from './diff/types';
+import { DifferenceCollection, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
 import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { formatTable } from './format-table';
@@ -30,11 +30,9 @@ export interface FormatStream extends NodeJS.WritableStream {
 export function formatDifferences(
   stream: FormatStream,
   templateDiff: TemplateDiff,
-  logicalToPathMap: { [logicalId: string]: string } = { },
-  context: number = 3,
-  nestedStackNames?: { [nestedStackLogicalId: string]: NestedStackNames }) {
-
-  const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context, nestedStackNames);
+  logicalToPathMap: { [logicalId: string]: string } = {},
+  context: number = 3) {
+  const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
   if (templateDiff.awsTemplateFormatVersion || templateDiff.transform || templateDiff.description) {
     formatter.printSectionHeader('Template');
@@ -53,8 +51,6 @@ export function formatDifferences(
   formatter.formatSection('Resources', 'Resource', templateDiff.resources, formatter.formatResourceDifference.bind(formatter));
   formatter.formatSection('Outputs', 'Output', templateDiff.outputs);
   formatter.formatSection('Other Changes', 'Unknown', templateDiff.unknown);
-
-  formatter.formatNestedChanges();
 }
 
 /**
@@ -63,7 +59,7 @@ export function formatDifferences(
 export function formatSecurityChanges(
   stream: NodeJS.WritableStream,
   templateDiff: TemplateDiff,
-  logicalToPathMap: {[logicalId: string]: string} = {},
+  logicalToPathMap: { [logicalId: string]: string } = {},
   context?: number) {
   const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
@@ -79,24 +75,17 @@ function formatSecurityChangesWithBanner(formatter: Formatter, templateDiff: Tem
   formatter.printSectionFooter();
 }
 
-interface NestedStack {
-  diff: TemplateDiff;
-  name: string;
-}
-
 const ADDITION = chalk.green('[+]');
 const CONTEXT = chalk.grey('[ ]');
 const UPDATE = chalk.yellow('[~]');
 const REMOVAL = chalk.red('[-]');
 
 class Formatter {
-  private readonly nestedChanges: NestedStack[] = [];
   constructor(
     private readonly stream: FormatStream,
     private readonly logicalToPathMap: { [logicalId: string]: string },
     diff?: TemplateDiff,
-    private readonly context: number = 3,
-    private readonly nestedStackNames?: { [nestedStackLogicalId: string]: NestedStackNames }) {
+    private readonly context: number = 3) {
     // Read additional construct paths from the diff if it is supplied
     if (diff) {
       this.readConstructPathsFrom(diff);
@@ -169,21 +158,6 @@ class Formatter {
 
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
-    function magic(resourceDiff: ResourceDifference, formatter: Formatter) {
-      if (Object.keys(resourceDiff.nestedChanges).length > 0 && formatter.nestedStackNames) {
-        formatter.nestedChanges.push({
-          diff: resourceDiff.nestedChanges as TemplateDiff,
-          name: formatter.nestedStackNames[logicalId].nestedStackPhysicalName!,
-        });
-
-        resourceDiff.nestedChanges.resources?.forEachDifference((_logicalId: string, change: ResourceDifference) => {
-          magic(change, formatter);
-        });
-      }
-    }
-
-    magic(diff, this);
-
     // eslint-disable-next-line max-len
     this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
 
@@ -192,9 +166,6 @@ class Formatter {
       let processedCount = 0;
       diff.forEachDifference((_, name, values) => {
         processedCount += 1;
-        if (name === 'NestedTemplate') {
-          return;
-        }
         this.formatTreeDiff(name, values, processedCount === differenceCount);
       });
     }
@@ -205,13 +176,6 @@ class Formatter {
     if (diff.isUpdate) { return UPDATE; }
     if (diff.isRemoval) { return REMOVAL; }
     return chalk.white('[?]');
-  }
-
-  formatNestedChanges() {
-    for (const nestedStack of this.nestedChanges) {
-      this.print(format('Stack %s\n', chalk.bold(nestedStack.name)));
-      formatDifferences(this.stream, nestedStack.diff, this.logicalToPathMap, this.context);
-    }
   }
 
   /**
@@ -281,7 +245,7 @@ class Formatter {
           const oldStr = JSON.stringify(oldObject, null, 2);
           const newStr = JSON.stringify(newObject, null, 2);
           const diff = _diffStrings(oldStr, newStr, this.context);
-          for (let i = 0 ; i < diff.length ; i++) {
+          for (let i = 0; i < diff.length; i++) {
             this.print('%s   %s %s', linePrefix, i === 0 ? '└─' : '  ', diff[i]);
           }
         } else {
@@ -493,7 +457,7 @@ function _diffStrings(oldStr: string, newStr: string, context: number): string[]
   function _findIndent(lines: string[]): number {
     let indent = Number.MAX_SAFE_INTEGER;
     for (const line of lines) {
-      for (let i = 1 ; i < line.length ; i++) {
+      for (let i = 1; i < line.length; i++) {
         if (line.charAt(i) !== ' ') {
           indent = indent > i - 1 ? i - 1 : indent;
           break;
