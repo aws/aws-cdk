@@ -102,7 +102,10 @@
     "VpcId": {
      "Ref": "Ip6VpcDualStack350CEE6D"
     }
-   }
+   },
+   "DependsOn": [
+    "Ip6VpcDualStackipv6cidr40BE830A"
+   ]
   },
   "Ip6VpcDualStackPublicSubnet1RouteTableAssociation948F67F3": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -113,7 +116,10 @@
     "SubnetId": {
      "Ref": "Ip6VpcDualStackPublicSubnet1Subnet9E605B7E"
     }
-   }
+   },
+   "DependsOn": [
+    "Ip6VpcDualStackipv6cidr40BE830A"
+   ]
   },
   "Ip6VpcDualStackPublicSubnet1DefaultRoute81404AE5": {
    "Type": "AWS::EC2::Route",
@@ -127,6 +133,7 @@
     }
    },
    "DependsOn": [
+    "Ip6VpcDualStackipv6cidr40BE830A",
     "Ip6VpcDualStackVPCGW304156E6"
    ]
   },
@@ -140,7 +147,10 @@
     "RouteTableId": {
      "Ref": "Ip6VpcDualStackPublicSubnet1RouteTable8E0A0DA2"
     }
-   }
+   },
+   "DependsOn": [
+    "Ip6VpcDualStackipv6cidr40BE830A"
+   ]
   },
   "Ip6VpcDualStackPublicSubnet2SubnetCBBC1B43": {
    "Type": "AWS::EC2::Subnet",
@@ -216,7 +226,10 @@
     "VpcId": {
      "Ref": "Ip6VpcDualStack350CEE6D"
     }
-   }
+   },
+   "DependsOn": [
+    "Ip6VpcDualStackipv6cidr40BE830A"
+   ]
   },
   "Ip6VpcDualStackPublicSubnet2RouteTableAssociationE4B708C7": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -227,7 +240,10 @@
     "SubnetId": {
      "Ref": "Ip6VpcDualStackPublicSubnet2SubnetCBBC1B43"
     }
-   }
+   },
+   "DependsOn": [
+    "Ip6VpcDualStackipv6cidr40BE830A"
+   ]
   },
   "Ip6VpcDualStackPublicSubnet2DefaultRoute992F69E2": {
    "Type": "AWS::EC2::Route",
@@ -241,6 +257,7 @@
     }
    },
    "DependsOn": [
+    "Ip6VpcDualStackipv6cidr40BE830A",
     "Ip6VpcDualStackVPCGW304156E6"
    ]
   },
@@ -254,7 +271,10 @@
     "RouteTableId": {
      "Ref": "Ip6VpcDualStackPublicSubnet2RouteTable2D434A20"
     }
-   }
+   },
+   "DependsOn": [
+    "Ip6VpcDualStackipv6cidr40BE830A"
+   ]
   },
   "Ip6VpcDualStackPrivateSubnet1Subnet842B7F4C": {
    "Type": "AWS::EC2::Subnet",
@@ -313,10 +333,7 @@
     "VpcId": {
      "Ref": "Ip6VpcDualStack350CEE6D"
     }
-   },
-   "DependsOn": [
-    "Ip6VpcDualStackipv6cidr40BE830A"
-   ]
+   }
   },
   "Ip6VpcDualStackPrivateSubnet1RouteTable5326D239": {
    "Type": "AWS::EC2::RouteTable",
@@ -400,10 +417,7 @@
     "VpcId": {
      "Ref": "Ip6VpcDualStack350CEE6D"
     }
-   },
-   "DependsOn": [
-    "Ip6VpcDualStackipv6cidr40BE830A"
-   ]
+   }
   },
   "Ip6VpcDualStackPrivateSubnet2RouteTable56BF517C": {
    "Type": "AWS::EC2::RouteTable",
