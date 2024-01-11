@@ -48,8 +48,6 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
 
     if (resourceType.newType === 'AWS::CloudFormation::Stack') {
       nestedDiff = diffTemplate(oldValue?.Properties!.NestedTemplate, newValue?.Properties!.NestedTemplate);
-      //delete oldValue?.Properties!.NestedTemplate;
-      //delete newValue?.Properties!.NestedTemplate;
     }
   }
 

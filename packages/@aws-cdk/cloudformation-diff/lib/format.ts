@@ -33,6 +33,7 @@ export function formatDifferences(
   logicalToPathMap: { [logicalId: string]: string } = { },
   context: number = 3,
   nestedStackNames?: { [nestedStackLogicalId: string]: NestedStackNames }) {
+
   const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context, nestedStackNames);
 
   if (templateDiff.awsTemplateFormatVersion || templateDiff.transform || templateDiff.description) {
@@ -168,12 +169,20 @@ class Formatter {
 
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
-    if (Object.keys(diff.nestedChanges).length > 0 && this.nestedStackNames) {
-      this.nestedChanges.push({
-        diff: diff.nestedChanges as TemplateDiff,
-        name: this.nestedStackNames[logicalId].nestedStackPhysicalName!,
-      });
+    function magic(resourceDiff: ResourceDifference, formatter: Formatter) {
+      if (Object.keys(resourceDiff.nestedChanges).length > 0 && formatter.nestedStackNames) {
+        formatter.nestedChanges.push({
+          diff: resourceDiff.nestedChanges as TemplateDiff,
+          name: formatter.nestedStackNames[logicalId].nestedStackPhysicalName!,
+        });
+
+        resourceDiff.nestedChanges.resources?.forEachDifference((_logicalId: string, change: ResourceDifference) => {
+          magic(change, formatter);
+        });
+      }
     }
+
+    magic(diff, this);
 
     // eslint-disable-next-line max-len
     this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
@@ -182,10 +191,10 @@ class Formatter {
       const differenceCount = diff.differenceCount;
       let processedCount = 0;
       diff.forEachDifference((_, name, values) => {
+        processedCount += 1;
         if (name === 'NestedTemplate') {
           return;
         }
-        processedCount += 1;
         this.formatTreeDiff(name, values, processedCount === differenceCount);
       });
     }

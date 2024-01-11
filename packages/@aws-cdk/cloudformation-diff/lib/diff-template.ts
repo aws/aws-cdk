@@ -64,8 +64,27 @@ export function fullDiff(
     filterFalsePositivies(theDiff, findResourceReplacements(changeSet));
   }
 
+  //removeNestedTemplates(theDiff);
+
   return theDiff;
 }
+
+/*
+function removeNestedTemplates(diff: types.TemplateDiff) {
+  diff.resources.forEachDifference((_logicalId: string, change: types.ResourceDifference) => {
+    if (change.resourceType === 'AWS::CloudFormation::Stack') {
+      change.setPropertyChange('NestedTemplate', {
+        isAddition: false,
+        isDifferent: false,
+        isRemoval: false,
+        isUpdate: false,
+        newValue: undefined,
+        oldValue: undefined,
+      });
+    }
+  });
+}
+*/
 
 export function diffTemplate(
   currentTemplate: { [key: string]: any },
