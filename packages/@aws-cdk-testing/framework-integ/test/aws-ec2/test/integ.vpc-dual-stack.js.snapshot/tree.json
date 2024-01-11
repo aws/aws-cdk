@@ -975,6 +975,26 @@
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
                     }
+                  },
+                  "Nat64": {
+                    "id": "Nat64",
+                    "path": "DualStackVpc/DualStackProtocolVpc/Priv1Subnet1/Nat64",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationIpv6CidrBlock": "64:ff9b::/96",
+                        "natGatewayId": {
+                          "Ref": "DualStackProtocolVpcPub1Subnet1NATGateway241D9A98"
+                        },
+                        "routeTableId": {
+                          "Ref": "DualStackProtocolVpcPriv1Subnet1RouteTableB9D9FD11"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
                   }
                 },
                 "constructInfo": {

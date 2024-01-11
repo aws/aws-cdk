@@ -729,6 +729,21 @@
     "DualStackProtocolVpcipv6cidr449C49CD"
    ]
   },
+  "DualStackProtocolVpcPriv1Subnet1Nat649573F0A7": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationIpv6CidrBlock": "64:ff9b::/96",
+    "NatGatewayId": {
+     "Ref": "DualStackProtocolVpcPub1Subnet1NATGateway241D9A98"
+    },
+    "RouteTableId": {
+     "Ref": "DualStackProtocolVpcPriv1Subnet1RouteTableB9D9FD11"
+    }
+   },
+   "DependsOn": [
+    "DualStackProtocolVpcipv6cidr449C49CD"
+   ]
+  },
   "DualStackProtocolVpcPriv1Subnet2SubnetBC65773F": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {

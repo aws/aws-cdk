@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5c9f2a47157dfae2daad088a10c10107f1d67b7a015b71ef11bad7338c6498cf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/12c824892c4409507407afcf2adc61b607aaeec02ab2593150c54598070c33e0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -218,6 +218,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DualStackProtocolVpcPriv1Subnet1DefaultRoute65CC26492"
+          }
+        ],
+        "/DualStackVpc/DualStackProtocolVpc/Priv1Subnet1/Nat64": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DualStackProtocolVpcPriv1Subnet1Nat649573F0A7"
           }
         ],
         "/DualStackVpc/DualStackProtocolVpc/Priv1Subnet2/Subnet": [
