@@ -11,10 +11,6 @@ class FargateWithEbsStack extends cdk.Stack {
 
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
-    const cluster = new ecs.Cluster(this, 'Cluster', {
-      vpc,
-    });
-
     const ebs = new ecs.EbsVolume(this, 'EbsVolume', {
       volumeName: 'ebs-volume',
       encrypted: true,
@@ -30,6 +26,10 @@ class FargateWithEbsStack extends cdk.Stack {
       }],
       throughput: 100,
       volumeType: ecs.VolumeType.GP3,
+    });
+
+    const cluster = new ecs.Cluster(this, 'Cluster', {
+      vpc,
     });
 
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');

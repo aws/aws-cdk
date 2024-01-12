@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9edb7bcd0f080e2694e52107adfe8a2f97076b0a464bbc88973fc17cbc462ac0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/42cbbf517ac1922f883b813b88cc92c1567639430a0833c12fad973b39678941.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -178,6 +178,12 @@
             "data": "ClusterEB0386A7"
           }
         ],
+        "/aws-ecs-fargate-ebs/EbsVolume/EbsVolumeRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EbsVolumeEbsVolumeRole0E167CE3"
+          }
+        ],
         "/aws-ecs-fargate-ebs/TaskDef/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -188,12 +194,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TaskDef54694570"
-          }
-        ],
-        "/aws-ecs-fargate-ebs/Service/EbsVolumeRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ServiceEbsVolumeRoleE8DBBCBA"
           }
         ],
         "/aws-ecs-fargate-ebs/Service/Service": [
@@ -218,6 +218,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ServiceEbsVolumeRoleE8DBBCBA": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceEbsVolumeRoleE8DBBCBA",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

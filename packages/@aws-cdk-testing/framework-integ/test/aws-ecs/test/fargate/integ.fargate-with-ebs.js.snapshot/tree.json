@@ -673,6 +673,73 @@
               "version": "10.3.0"
             }
           },
+          "EbsVolume": {
+            "id": "EbsVolume",
+            "path": "aws-ecs-fargate-ebs/EbsVolume",
+            "children": {
+              "EbsVolumeRole": {
+                "id": "EbsVolumeRole",
+                "path": "aws-ecs-fargate-ebs/EbsVolume/EbsVolumeRole",
+                "children": {
+                  "ImportEbsVolumeRole": {
+                    "id": "ImportEbsVolumeRole",
+                    "path": "aws-ecs-fargate-ebs/EbsVolume/EbsVolumeRole/ImportEbsVolumeRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-fargate-ebs/EbsVolume/EbsVolumeRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AmazonECSInfrastructureRolePolicyForVolumes"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
           "TaskDef": {
             "id": "TaskDef",
             "path": "aws-ecs-fargate-ebs/TaskDef",
@@ -784,63 +851,6 @@
             "id": "Service",
             "path": "aws-ecs-fargate-ebs/Service",
             "children": {
-              "EbsVolumeRole": {
-                "id": "EbsVolumeRole",
-                "path": "aws-ecs-fargate-ebs/Service/EbsVolumeRole",
-                "children": {
-                  "ImportEbsVolumeRole": {
-                    "id": "ImportEbsVolumeRole",
-                    "path": "aws-ecs-fargate-ebs/Service/EbsVolumeRole/ImportEbsVolumeRole",
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-ecs-fargate-ebs/Service/EbsVolumeRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "ecs.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AmazonECSInfrastructureRolePolicyForVolumes"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
-                }
-              },
               "Service": {
                 "id": "Service",
                 "path": "aws-ecs-fargate-ebs/Service/Service",
@@ -894,7 +904,7 @@
                           "iops": 3000,
                           "roleArn": {
                             "Fn::GetAtt": [
-                              "ServiceEbsVolumeRoleE8DBBCBA",
+                              "EbsVolumeEbsVolumeRole0E167CE3",
                               "Arn"
                             ]
                           },
