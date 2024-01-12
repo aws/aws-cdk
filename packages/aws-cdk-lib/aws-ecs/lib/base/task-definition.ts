@@ -539,7 +539,7 @@ export class TaskDefinition extends TaskDefinitionBase {
           transitEncryption: spec.efsVolumeConfiguration.transitEncryption,
           transitEncryptionPort: spec.efsVolumeConfiguration.transitEncryptionPort,
         },
-        // configuredAtLaunch: spec.configuredAtLaunch,
+        configuredAtLaunch: spec.configuredAtLaunch,
       };
     }
   }
