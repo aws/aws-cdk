@@ -315,6 +315,30 @@ describe('task definition', () => {
         Template.fromStack(stack);
       }).toThrow("ECS Container Container must have at least one of 'memoryLimitMiB' or 'memoryReservationMiB' specified");
     });
+
+    test('A task definition with EC2 and configuredAtLaunch', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const def = new ecs.TaskDefinition(stack, 'TD', {
+        cpu: '512',
+        memoryMiB: '512',
+        compatibility: ecs.Compatibility.EC2_AND_FARGATE,
+      });
+      def.addVolume({
+        name: 'volume',
+        configuredAtLaunch: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        Volumes: [{
+          Name: 'volume',
+          ConfiguredAtLaunch: true,
+        }],
+      });
+    });
   });
 
   describe('When importing from an existing Task definition', () => {

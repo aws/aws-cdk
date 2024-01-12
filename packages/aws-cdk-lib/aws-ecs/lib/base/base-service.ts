@@ -504,6 +504,9 @@ export class EbsVolume extends Construct {
     }
   }
 
+  /**
+   * Render for CloudFormation property.
+   */
   public render(): CfnService.ServiceVolumeConfigurationProperty[] | undefined {
     if (!this) {
       return;
