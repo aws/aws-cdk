@@ -1,6 +1,6 @@
 "use strict";
 
-// packages/@aws-cdk/aws-amplify-alpha/custom-resource-handlers/dist/aws-amplify-alpha/asset-deployment-handler/index.js
+// packages/@aws-cdk/custom-resource-handlers/dist/aws-amplify-alpha/asset-deployment-handler/index.js
 var n = Object.defineProperty;
 var h = Object.getOwnPropertyDescriptor;
 var f = Object.getOwnPropertyNames;
@@ -54,17 +54,16 @@ var p = class {
   }
 };
 var i = class extends p {
-  constructor(s, o, r) {
-    super(r);
-    this.props = this.event.ResourceProperties, this.amplify = s, this.s3 = o;
+  constructor(e, s, o) {
+    super(o), this.props = this.event.ResourceProperties, this.amplify = e, this.s3 = s;
   }
   async onCreate() {
     console.log("deploying to Amplify with options:", JSON.stringify(this.props, void 0, 2));
-    let s = await this.amplify.listJobs({ appId: this.props.AppId, branchName: this.props.BranchName, maxResults: 1 });
-    if (s.jobSummaries && s.jobSummaries.find((y) => y.status === "PENDING"))
+    let e = await this.amplify.listJobs({ appId: this.props.AppId, branchName: this.props.BranchName, maxResults: 1 });
+    if (e.jobSummaries && e.jobSummaries.find((y) => y.status === "PENDING"))
       return Promise.reject("Amplify job already running. Aborting deployment.");
-    let o = new a.GetObjectCommand({ Bucket: this.props.S3BucketName, Key: this.props.S3ObjectKey }), r = await (0, m.getSignedUrl)(this.s3, o);
-    return { AmplifyJobId: (await this.amplify.startDeployment({ appId: this.props.AppId, branchName: this.props.BranchName, sourceUrl: r })).jobSummary?.jobId };
+    let s = new a.GetObjectCommand({ Bucket: this.props.S3BucketName, Key: this.props.S3ObjectKey }), o = await (0, m.getSignedUrl)(this.s3, s);
+    return { AmplifyJobId: (await this.amplify.startDeployment({ appId: this.props.AppId, branchName: this.props.BranchName, sourceUrl: o })).jobSummary?.jobId };
   }
   async isCreateComplete() {
     return this.isActive(this.event.AmplifyJobId);
@@ -80,14 +79,14 @@ var i = class extends p {
   async isUpdateComplete() {
     return this.isActive(this.event.AmplifyJobId);
   }
-  async isActive(s) {
-    if (!s)
+  async isActive(e) {
+    if (!e)
       throw new Error("Unable to determine Amplify job status without job id");
-    let o = await this.amplify.getJob({ appId: this.props.AppId, branchName: this.props.BranchName, jobId: s });
-    if (o.job?.summary?.status === "SUCCEED")
-      return { IsComplete: true, Data: { JobId: s, Status: o.job.summary.status } };
-    if (o.job?.summary?.status === "FAILED" || o.job?.summary?.status === "CANCELLED")
-      throw new Error(`Amplify job failed with status: ${o.job?.summary?.status}`);
+    let s = await this.amplify.getJob({ appId: this.props.AppId, branchName: this.props.BranchName, jobId: e });
+    if (s.job?.summary?.status === "SUCCEED")
+      return { IsComplete: true, Data: { JobId: e, Status: s.job.summary.status } };
+    if (s.job?.summary?.status === "FAILED" || s.job?.summary?.status === "CANCELLED")
+      throw new Error(`Amplify job failed with status: ${s.job?.summary?.status}`);
     return { IsComplete: false };
   }
 };
