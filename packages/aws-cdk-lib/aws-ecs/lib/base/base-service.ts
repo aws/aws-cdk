@@ -6,6 +6,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as elb from '../../../aws-elasticloadbalancing';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
+import * as kms from '../../../aws-kms';
 import * as cloudmap from '../../../aws-servicediscovery';
 import {
   Annotations,
@@ -222,6 +223,227 @@ export interface ServiceConnectService {
 }
 
 /**
+ * Filesystem Type for EBS Volume Configuration.
+ */
+export enum FilesystemType {
+  /**
+   * ext3 type
+   */
+  EXT3 = 'ext3',
+  /**
+   * ext4 type
+   */
+  EXT4 = 'ext4',
+  /**
+   * xfs type
+   */
+  XFS = 'xfs',
+}
+
+/**
+ * Volume Type for EBS Volume Configuration.
+ */
+export enum VolumeType {
+  /**
+   * General Purpose SSD: gp2
+   */
+  GP2 = 'gp2',
+  /**
+   * General Purpose SSD: gp3
+   */
+  GP3 = 'gp3',
+  /**
+   * Provisioned IOPS SSD: io1
+   */
+  IO1 = 'io1',
+  /**
+   * Provisioned IOPS SSD: io2
+   */
+  IO2 = 'io2',
+  /**
+   * Throughput Optimized HDD: st1
+   */
+  ST1 = 'st1',
+  /**
+   * Cold HDD: sc1
+   */
+  SC1 = 'sc1',
+  /**
+   * Magnetic: standard
+   *
+   * This volume type is not supported on Fargate.
+   */
+  STANDARD = 'standard',
+}
+
+/**
+ * Propagate tags for EBS Volume Configuration from either service or task definition.
+ */
+export enum EbsPropagatedTagSource {
+  /**
+   * SERVICE
+   */
+  SERVICE = 'SERVICE',
+  /**
+   * TASK_DEFINITION
+   */
+  TASK_DEFINITION = 'TASK_DEFINITION',
+}
+
+/**
+  * Metadata that you apply to a resource to help categorize and organize the resource.
+  *
+  * Each tag consists of a key and an optional value, both of which you define.
+  */
+export interface Tag {
+
+  /**
+   * Key is the name of the tag
+   */
+  readonly key: string;
+  /**
+   * Value is the metadata contents of the tag
+   */
+  readonly value: string;
+}
+
+/**
+ * Interface for Tag specifications for EBS Volume Configuration.
+ */
+export interface EbsTagSpecifications {
+  /**
+   * Determines whether to propagate the tags from the task definition to the Amazon EBS volume.
+   *
+   * @default - No value. The tags aren't propagated.
+   */
+  readonly propagateTags?: EbsPropagatedTagSource;
+
+  /**
+   * The tags applied to this Amazon EBS volume.
+   *
+   * `AmazonECSCreated` and `AmazonECSManaged` are reserved tags that can't be used.
+   *
+   * @default - No tags.
+   */
+  readonly tags?: Tag[];
+}
+
+/**
+ * Interface for EBS Volume Configuration.
+ */
+export interface EbsVolumeConfiguration {
+  /**
+   * The name of the volume.
+   * This value must match the volume name from the Volume object in the task definition.
+   */
+  readonly volumeName: string;
+
+  /**
+   * Indicates whether the volume should be encrypted.
+   *
+   * @default - encryption is turned on by default.
+   */
+  readonly encrypted?: boolean;
+
+  /**
+   * The Linux filesystem type for the volume.
+   *
+   * For volumes created from a snapshot, you must specify the same filesystem type that
+   * the volume was using when the snapshot was created.
+   *
+   * @default - FilesystemType.XFS
+   */
+  readonly filesystemType?: FilesystemType;
+
+  /**
+   * The number of I/O operations per second (IOPS).
+   *
+   * For gp3, io1, and io2 volumes, this represents the number of IOPS that are provisioned
+   * for the volume. For gp2 volumes, this represents the baseline performance of the volume
+   * and the rate at which the volume accumulates I/O credits for bursting.
+   *
+   * The following are the supported values for each volume type.
+   *   - gp3: 3,000 - 16,000 IOPS
+   *   - io1: 100 - 64,000 IOPS
+   *   - io2: 100 - 256,000 IOPS
+   *
+   * This parameter is required for io1 and io2 volume types. The default for gp3 volumes is
+   * 3,000 IOPS. This parameter is not supported for st1, sc1, or standard volume types.
+   *
+   * @default - FilesystemType.XFS
+   */
+  readonly iops?: number;
+
+  /**
+   * AWS Key Management Service key to use for Amazon EBS encryption.
+   *
+   * @default - When `encryption` is turned on and no `kmsKey` is specified,
+   * the default AWS managed key for Amazon EBS volumes is used.
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * IAM role to associate with this volume.
+   *
+   * This is the Amazon ECS infrastructure IAM role that is used to manage your AWS infrastructure.
+   * We recommend using the Amazon ECS-managed `AmazonECSInfrastructureRolePolicyForVolumes` IAM policy
+   * with this role.
+   *
+   * @default - automatically generated role.
+   */
+  readonly role?: iam.IRole;
+
+  /**
+   * The size of the volume in GiB.
+   *
+   * You must specify either `sizeInGiB` or `snapshotId`.
+   * You can optionally specify a volume size greater than or equal to the snapshot size.
+   *
+   * The following are the supported volume size values for each volume type.
+   *   - gp2 and gp3: 1-16,384
+   *   - io1 and io2: 4-16,384
+   *   - st1 and sc1: 125-16,384
+   *   - standard: 1-1,024
+   *
+   * @default - The snapshot size is used for the volume size if you specify `snapshotId`,
+   * otherwise this parameter is required.
+   */
+  readonly sizeInGiB?: number;
+
+  /**
+   * The snapshot that Amazon ECS uses to create the volume.
+   *
+   * You must specify either `sizeInGiB` or `snapshotId`.
+   *
+   * @default - No snapshot.
+   */
+  readonly snapshotId?: string;
+
+  /**
+   * The tags to apply to the volume.
+   *
+   * @default - service-managed tags will be applied.
+   */
+  readonly tagSpecifications?: EbsTagSpecifications[];
+
+  /**
+   * The throughput to provision for a volume, in MiB/s, with a maximum of 1,000 MiB/s.
+   *
+   * This parameter is only supported for the gp3 volume type.
+   *
+   * @default - No throughput.
+   */
+  readonly throughput?: number;
+
+  /**
+   * The volume type.
+   *
+   * @default - No volume type.
+   */
+  readonly volumeType?: VolumeType;
+}
+
+/**
  * The properties for the base Ec2Service or FargateService service.
  */
 export interface BaseServiceOptions {
@@ -357,6 +579,14 @@ export interface BaseServiceOptions {
    * @default - Uses the revision of the passed task definition deployed by CloudFormation
    */
   readonly taskDefinitionRevision?: TaskDefinitionRevision;
+
+  /**
+   * The configuration for EBS volume specified in the task definition as a volume that is configured
+   * at launch time.
+   *
+   * @default - No EBS volume configuration.
+   */
+  readonly ebsVolumeConfiguration?: EbsVolumeConfiguration;
 }
 
 /**
@@ -622,6 +852,7 @@ export abstract class BaseService extends Resource
       enableExecuteCommand: props.enableExecuteCommand,
       capacityProviderStrategy: props.capacityProviderStrategies,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
+      volumeConfigurations: this.renderVolumeConfigurations(props.ebsVolumeConfiguration),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
       serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
@@ -1399,6 +1630,48 @@ export abstract class BaseService extends Resource
       return !unsupportedPartitions.includes(currentRegion.partition);
     }
     return true;
+  }
+
+  private renderVolumeConfigurations(ebsVolumeConfiguration?: EbsVolumeConfiguration): CfnService.ServiceVolumeConfigurationProperty[] | undefined {
+    if (!ebsVolumeConfiguration) {
+      return;
+    }
+
+    const ebsVolumeRole = ebsVolumeConfiguration.role ?? new iam.Role(this, 'EbsVolumeRole', {
+      assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSInfrastructureRolePolicyForVolumes'),
+      ],
+    });
+
+    const tagSpecifications: CfnService.EBSTagSpecificationProperty[] | undefined = ebsVolumeConfiguration.tagSpecifications?.map(tagSpec => {
+      return {
+        propagateTags: tagSpec.propagateTags,
+        resourceType: 'volume',
+        tags: tagSpec.tags?.map(tag => {
+          return {
+            key: tag.key,
+            value: tag.value,
+          };
+        }),
+      };
+    });
+
+    return [{
+      name: ebsVolumeConfiguration?.volumeName,
+      managedEbsVolume: {
+        encrypted: ebsVolumeConfiguration.encrypted,
+        filesystemType: ebsVolumeConfiguration.filesystemType,
+        iops: ebsVolumeConfiguration.iops,
+        kmsKeyId: ebsVolumeConfiguration.kmsKey?.keyId,
+        roleArn: ebsVolumeRole.roleArn,
+        sizeInGiB: ebsVolumeConfiguration.sizeInGiB,
+        snapshotId: ebsVolumeConfiguration.snapshotId,
+        tagSpecifications: tagSpecifications,
+        throughput: ebsVolumeConfiguration.throughput,
+        volumeType: ebsVolumeConfiguration.volumeType,
+      },
+    }];
   }
 }
 

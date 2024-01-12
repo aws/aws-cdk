@@ -538,8 +538,8 @@ export class TaskDefinition extends TaskDefinitionBase {
           rootDirectory: spec.efsVolumeConfiguration.rootDirectory,
           transitEncryption: spec.efsVolumeConfiguration.transitEncryption,
           transitEncryptionPort: spec.efsVolumeConfiguration.transitEncryptionPort,
-
         },
+        // configuredAtLaunch: spec.configuredAtLaunch,
       };
     }
   }
@@ -999,6 +999,21 @@ export interface Volume {
    * @default No Elastic FileSystem is setup
    */
   readonly efsVolumeConfiguration?: EfsVolumeConfiguration;
+
+  /**
+   * This property is specified when you are using Amazon EBS.
+   *
+   * Indicates whether the volume should be configured at launch time. This is used to create
+   * Amazon EBS volumes for standalone tasks or tasks created as part of a service.
+   * Each task definition revision may only have one volume configured at launch in the volume
+   * configuration.
+   *
+   * To configure a volume at launch time, use this task definition revision and specify a
+   * `ebsVolumeConfiguration` in `BaseServiceProps` for ECS Service.
+   *
+   * @default false
+   */
+  readonly configuredAtLaunch?: boolean;
 }
 
 /**
