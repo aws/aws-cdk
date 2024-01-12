@@ -2130,8 +2130,8 @@
                                   }
                                 }
                               ],
-                              "includeExecutionData": true,
-                              "level": "ALL"
+                              "includeExecutionData": false,
+                              "level": "ERROR"
                             },
                             "roleArn": {
                               "Fn::GetAtt": [
