@@ -1,10 +1,10 @@
 import { Construct, Dependable, DependencyGroup, IConstruct, IDependable, Node } from 'constructs';
 import { ClientVpnEndpoint, ClientVpnEndpointOptions } from './client-vpn-endpoint';
 import {
-  CfnEIP, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
-  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
+  CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
+  CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCCidrBlock, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
 } from './ec2.generated';
-import { AllocatedSubnet, IIpAddresses, RequestedSubnet, IpAddresses } from './ip-addresses';
+import { AllocatedSubnet, IIpAddresses, RequestedSubnet, IpAddresses, IIpv6Addresses, Ipv6Addresses } from './ip-addresses';
 import { NatProvider } from './nat';
 import { INetworkAcl, NetworkAcl, SubnetNetworkAclAssociation } from './network-acl';
 import { SubnetFilter } from './subnet';
@@ -16,7 +16,7 @@ import { EnableVpnGatewayOptions, VpnConnection, VpnConnectionOptions, VpnConnec
 import * as cxschema from '../../cloud-assembly-schema';
 import {
   Arn, Annotations, ContextProvider,
-  IResource, Lazy, Resource, Stack, Token, Tags, Names, CustomResource, FeatureFlags,
+  IResource, Fn, Lazy, Resource, Stack, Token, Tags, Names, CustomResource, FeatureFlags,
 } from '../../core';
 import { RestrictDefaultSgProvider } from '../../custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated';
 import * as cxapi from '../../cx-api';
@@ -157,6 +157,27 @@ export interface IVpc extends IResource {
    * Adds a new Flow Log to this VPC
    */
   addFlowLog(id: string, options?: FlowLogOptions): FlowLog
+}
+
+/**
+ * The types of IP addresses provisioned in the VPC.
+ */
+export enum IpProtocol {
+  /**
+   * The vpc will be configured with only IPv4 addresses.
+   *
+   * This is the default protocol if unset.
+   */
+  IPV4_ONLY = 'Ipv4_Only',
+
+  /**
+   * The vpc will have both IPv4 and IPv6 addresses.
+   *
+   * Unless specified, public IPv4 addresses will not be auto assigned,
+   * an egress only internet gateway (EIGW) will be created and configured,
+   * and NATs and internet gateways (IGW) will be configured with IPv6 addresses.
+   */
+  DUAL_STACK = 'Dual_Stack',
 }
 
 /**
@@ -858,11 +879,21 @@ const NAME_TAG: string = 'Name';
  * Configuration for Vpc
  */
 export interface VpcProps {
+  /**
+   * The protocol of the vpc.
+   *
+   * Options are IPv4 only or dual stack.
+   *
+   * @default IpProtocol.IPV4_ONLY
+   */
+  readonly ipProtocol?: IpProtocol;
 
   /**
-   * The Provider to use to allocate IP Space to your VPC.
+   * The Provider to use to allocate IPv4 Space to your VPC.
    *
    * Options include static allocation or from a pool.
+   *
+   * Note this is specific to IPv4 addresses.
    *
    * @default ec2.IpAddresses.cidr
    */
@@ -1095,6 +1126,17 @@ export interface VpcProps {
    * @default true
    */
   readonly createInternetGateway?: boolean;
+
+  /**
+   * The Provider to use to allocate IPv6 Space to your VPC.
+   *
+   * Options include amazon provided CIDR block.
+   *
+   * Note this is specific to IPv6 addresses.
+   *
+   * @default Ipv6Addresses.amazonProvided
+   */
+  readonly ipv6Addresses?: IIpv6Addresses;
 }
 
 /**
@@ -1123,6 +1165,8 @@ export interface SubnetConfiguration {
    * will be equal to `2^(32 - cidrMask) - 2`.
    *
    * Valid values are `16--28`.
+   *
+   * Note this is specific to IPv4 addresses.
    *
    * @default - Available IP space is evenly divided across subnets.
    */
@@ -1157,11 +1201,24 @@ export interface SubnetConfiguration {
   readonly reserved?: boolean;
 
   /**
-   * Controls if a public IP is associated to an instance at launch
+   * Controls if a public IPv4 address is associated to an instance at launch
    *
-   * @default true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
+   * Note this is specific to IPv4 addresses.
+   *
+   * @default true in Subnet.Public of IPV4_ONLY VPCs, false otherwise
    */
   readonly mapPublicIpOnLaunch?: boolean;
+
+  /**
+   * This property is specific to dual stack VPCs.
+   *
+   * If set to false, then an IPv6 address will not be automatically assigned.
+   *
+   * Note this is specific to IPv6 addresses.
+   *
+   * @default true
+   */
+  readonly ipv6AssignAddressOnCreation?: boolean;
 }
 
 /**
@@ -1194,6 +1251,8 @@ export class Vpc extends VpcBase {
    * The default CIDR range used when creating VPCs.
    * This can be overridden using VpcProps when creating a VPCNetwork resource.
    * e.g. new VpcResource(this, { cidr: '192.168.0.0./16' })
+   *
+   * Note this is specific to the IPv4 CIDR.
    */
   public static readonly DEFAULT_CIDR_RANGE: string = '10.0.0.0/16';
 
@@ -1389,9 +1448,40 @@ export class Vpc extends VpcBase {
   private readonly resource: CfnVPC;
 
   /**
-   * The provider of ip addresses
+   * Indicates if IPv4 addresses will be used in the VPC.
+   *
+   * True for IPV4_ONLY and DUAL_STACK VPCs.
+   */
+  private readonly useIpv4: boolean;
+
+  /**
+   * Indicates if IPv6 addresses will be used in the VPC.
+   *
+   * True for DUAL_STACK VPCs. False for IPV4_ONLY VPCs.
+   */
+  private readonly useIpv6: boolean;
+
+  /**
+   * The provider of ipv4 addresses
    */
   private readonly ipAddresses: IIpAddresses;
+
+  /**
+   * The provider of IPv6 addresses.
+   */
+  private readonly ipv6Addresses?: IIpv6Addresses;
+
+  /**
+   * The IPv6 CIDR block CFN resource.
+   *
+   * Needed to create a dependency for the subnets.
+   */
+  private readonly ipv6CidrBlock?: CfnVPCCidrBlock;
+
+  /**
+   * The IPv6 CIDR block string representation.
+   */
+  private readonly ipv6SelectedCidr?: string;
 
   /**
    * Subnet configurations for this VPC
@@ -1427,6 +1517,21 @@ export class Vpc extends VpcBase {
 
     if (props.ipAddresses && props.cidr) {
       throw new Error('supply at most one of ipAddresses or cidr');
+    }
+
+    const ipProtocol = props.ipProtocol ?? IpProtocol.IPV4_ONLY;
+    // this property can be set to false if an IPv6_ONLY VPC is implemented in the future
+    this.useIpv4 = ipProtocol === IpProtocol.IPV4_ONLY || ipProtocol === IpProtocol.DUAL_STACK;
+
+    this.useIpv6 = ipProtocol === IpProtocol.DUAL_STACK;
+
+    const ipv6OnlyProps: Array<keyof VpcProps> = ['ipv6Addresses'];
+    if (!this.useIpv6) {
+      for (const prop of ipv6OnlyProps) {
+        if (props[prop] !== undefined) {
+          throw new Error(`${prop} can only be set if IPv6 is enabled. Set ipProtocol to DUAL_STACK`);
+        }
+      }
     }
 
     this.ipAddresses = props.ipAddresses ?? IpAddresses.cidr(cidrBlock);
@@ -1486,6 +1591,17 @@ export class Vpc extends VpcBase {
     const natGatewayPlacement = props.natGatewaySubnets || { subnetType: SubnetType.PUBLIC };
     const natGatewayCount = determineNatGatewayCount(props.natGateways, this.subnetConfiguration, this.availabilityZones.length);
 
+    if (this.useIpv6) {
+      this.ipv6Addresses = props.ipv6Addresses ?? Ipv6Addresses.amazonProvided();
+
+      this.ipv6CidrBlock = this.ipv6Addresses.allocateVpcIpv6Cidr({
+        scope: this,
+        vpcId: this.vpcId,
+      });
+
+      this.ipv6SelectedCidr = Fn.select(0, this.resource.attrIpv6CidrBlocks);
+    }
+
     // subnetConfiguration must be set before calling createSubnets
     this.createSubnets();
 
@@ -1507,7 +1623,14 @@ export class Vpc extends VpcBase {
       });
 
       (this.publicSubnets as PublicSubnet[]).forEach(publicSubnet => {
-        publicSubnet.addDefaultInternetRoute(igw.ref, att);
+        // configure IPv4 route
+        if (this.useIpv4) {
+          publicSubnet.addDefaultInternetRoute(igw.ref, att);
+        }
+        // configure IPv6 route if VPC is dual stack
+        if (this.useIpv6) {
+          publicSubnet.addIpv6DefaultInternetRoute(igw.ref);
+        }
       });
 
       // if gateways are needed create them
@@ -1515,6 +1638,17 @@ export class Vpc extends VpcBase {
         const provider = props.natGatewayProvider || NatProvider.gateway();
         this.createNatGateways(provider, natGatewayCount, natGatewayPlacement);
       }
+    }
+
+    // Create an Egress Only Internet Gateway and attach it if necessary
+    if (this.useIpv6 && this.privateSubnets) {
+      const eigw = new CfnEgressOnlyInternetGateway(this, 'EIGW6', {
+        vpcId: this.vpcId,
+      });
+
+      (this.privateSubnets as PrivateSubnet[]).forEach(privateSubnet => {
+        privateSubnet.addIpv6DefaultEgressOnlyInternetRoute(eigw.ref);
+      });
     }
 
     if (props.vpnGateway && this.publicSubnets.length === 0 && this.privateSubnets.length === 0 && this.isolatedSubnets.length === 0) {
@@ -1621,7 +1755,7 @@ export class Vpc extends VpcBase {
       },
       )));
 
-    const { allocatedSubnets } = this.ipAddresses.allocateSubnetsCidr({
+    let { allocatedSubnets } = this.ipAddresses.allocateSubnetsCidr({
       vpcCidr: this.vpcCidrBlock,
       requestedSubnets,
     });
@@ -1630,7 +1764,64 @@ export class Vpc extends VpcBase {
       throw new Error('Incomplete Subnet Allocation; response array dose not equal input array');
     }
 
+    if (this.useIpv6) {
+      if (this.ipv6SelectedCidr === undefined) {
+        throw new Error('No IPv6 CIDR block associated with this VPC could be found');
+      }
+      if (this.ipv6Addresses === undefined) {
+        throw new Error('No IPv6 IpAddresses were found');
+      }
+      // create the IPv6 CIDR blocks
+      const subnetIpv6Cidrs = this.ipv6Addresses.createIpv6CidrBlocks({
+        ipv6SelectedCidr: this.ipv6SelectedCidr,
+        subnetCount: allocatedSubnets.length,
+      });
+
+      // copy the list of allocated subnets while assigning the IPv6 CIDR
+      const allocatedSubnetsIpv6 = this.ipv6Addresses.allocateSubnetsIpv6Cidr({
+        allocatedSubnets: allocatedSubnets,
+        ipv6Cidrs: subnetIpv6Cidrs,
+      });
+
+      // assign allocated subnets to list with IPv6 addresses
+      allocatedSubnets = allocatedSubnetsIpv6.allocatedSubnets;
+    }
+
     this.createSubnetResources(requestedSubnets, allocatedSubnets);
+
+    if (this.useIpv6) {
+      // add dependencies
+      (this.publicSubnets as PublicSubnet[]).forEach(publicSubnet => {
+        if (this.ipv6CidrBlock !== undefined) {
+          publicSubnet.node.addDependency(this.ipv6CidrBlock);
+        }
+      });
+      (this.privateSubnets as PrivateSubnet[]).forEach(privateSubnet => {
+        if (this.ipv6CidrBlock !== undefined) {
+          privateSubnet.node.addDependency(this.ipv6CidrBlock);
+        }
+      });
+    }
+  }
+
+  /**
+   * Defaults to true in Subnet.Public for IPV4_ONLY VPCs.
+   *
+   * Defaults to false in Subnet.Public for DUAL_STACK VPCs.
+   *
+   * Always defaults to false in non-public subnets and will error if set.
+   */
+  private calculateMapPublicIpOnLaunch(subnetConfig: SubnetConfiguration) {
+    if (subnetConfig.subnetType === SubnetType.PUBLIC) {
+      return (subnetConfig.mapPublicIpOnLaunch !== undefined)
+        ? subnetConfig.mapPublicIpOnLaunch
+        : !this.useIpv6; // changes default based on protocol of vpc
+    } else {
+      if (subnetConfig.mapPublicIpOnLaunch !== undefined) {
+        throw new Error(`${subnetConfig.subnetType} subnet cannot include mapPublicIpOnLaunch parameter`);
+      }
+      return false;
+    }
   }
 
   private createSubnetResources(requestedSubnets: RequestedSubnet[], allocatedSubnets: AllocatedSubnet[]) {
@@ -1647,23 +1838,23 @@ export class Vpc extends VpcBase {
         return;
       }
 
-      // mapPublicIpOnLaunch true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
-      let mapPublicIpOnLaunch = false;
-      if (subnetConfig.subnetType !== SubnetType.PUBLIC && subnetConfig.mapPublicIpOnLaunch !== undefined) {
-        throw new Error(`${subnetConfig.subnetType} subnet cannot include mapPublicIpOnLaunch parameter`);
-      }
-      if (subnetConfig.subnetType === SubnetType.PUBLIC) {
-        mapPublicIpOnLaunch = (subnetConfig.mapPublicIpOnLaunch !== undefined)
-          ? subnetConfig.mapPublicIpOnLaunch
-          : true;
+      const ipv6OnlyProps: Array<keyof SubnetConfiguration> = ['ipv6AssignAddressOnCreation'];
+      if (!this.useIpv6) {
+        for (const prop of ipv6OnlyProps) {
+          if (subnetConfig[prop] !== undefined) {
+            throw new Error(`${prop} can only be set if IPv6 is enabled. Set ipProtocol to DUAL_STACK`);
+          }
+        }
       }
 
-      const subnetProps: SubnetProps = {
+      const subnetProps = {
         availabilityZone,
         vpcId: this.vpcId,
         cidrBlock: allocated.cidr,
-        mapPublicIpOnLaunch: mapPublicIpOnLaunch,
-      };
+        mapPublicIpOnLaunch: this.calculateMapPublicIpOnLaunch(subnetConfig),
+        ipv6CidrBlock: allocated.ipv6Cidr,
+        assignIpv6AddressOnCreation: this.useIpv6 ? subnetConfig.ipv6AssignAddressOnCreation ?? true : undefined,
+      } satisfies SubnetProps;
 
       let subnet: Subnet;
       switch (subnetConfig.subnetType) {
@@ -1783,6 +1974,24 @@ export interface SubnetProps {
    * @default true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
    */
   readonly mapPublicIpOnLaunch?: boolean;
+
+  /**
+   * The IPv6 CIDR block.
+   *
+   * If you specify AssignIpv6AddressOnCreation, you must also specify Ipv6CidrBlock.
+   *
+   * @default - no IPv6 CIDR block.
+   */
+  readonly ipv6CidrBlock?: string;
+
+  /**
+   * Indicates whether a network interface created in this subnet receives an IPv6 address.
+   *
+   * If you specify AssignIpv6AddressOnCreation, you must also specify Ipv6CidrBlock.
+   *
+   * @default false
+   */
+  readonly assignIpv6AddressOnCreation?: boolean;
 }
 
 /**
@@ -1879,6 +2088,8 @@ export class Subnet extends Resource implements ISubnet {
       cidrBlock: props.cidrBlock,
       availabilityZone: props.availabilityZone,
       mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
+      ipv6CidrBlock: props.ipv6CidrBlock,
+      assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation,
     });
     this.subnetId = subnet.ref;
     this.subnetVpcId = subnet.attrVpcId;
@@ -1928,6 +2139,34 @@ export class Subnet extends Resource implements ISubnet {
   }
 
   /**
+   * Create a default IPv6 route that points to a passed IGW.
+   *
+   * @param gatewayId the logical ID (ref) of the gateway attached to your VPC
+   */
+  public addIpv6DefaultInternetRoute(gatewayId: string) {
+    this.addRoute('DefaultRoute6', {
+      routerType: RouterType.GATEWAY,
+      routerId: gatewayId,
+      destinationIpv6CidrBlock: '::/0',
+      enablesInternetConnectivity: true,
+    });
+  }
+
+  /**
+   * Create a default IPv6 route that points to a passed EIGW.
+   *
+   * @param gatewayId the logical ID (ref) of the gateway attached to your VPC
+   */
+  public addIpv6DefaultEgressOnlyInternetRoute(gatewayId: string) {
+    this.addRoute('DefaultRoute6', {
+      routerType: RouterType.EGRESS_ONLY_INTERNET_GATEWAY,
+      routerId: gatewayId,
+      destinationIpv6CidrBlock: '::/0',
+      enablesInternetConnectivity: true,
+    });
+  }
+
+  /**
    * Network ACL associated with this Subnet
    *
    * Upon creation, this is the default ACL which allows all traffic, except
@@ -1950,6 +2189,20 @@ export class Subnet extends Resource implements ISubnet {
       routerType: RouterType.NAT_GATEWAY,
       routerId: natGatewayId,
       enablesInternetConnectivity: true,
+    });
+  }
+
+  /**
+   * Adds an entry to this subnets route table that points to the passed NATGatewayId.
+   * Uses the known 64:ff9b::/96 prefix.
+   * @param natGatewayId The ID of the NAT gateway
+   */
+  public addIpv6Nat64Route(natGatewayId: string) {
+    this.addRoute('Nat64', {
+      routerType: RouterType.NAT_GATEWAY,
+      routerId: natGatewayId,
+      enablesInternetConnectivity: true,
+      destinationIpv6CidrBlock: '64:ff9b::/96',
     });
   }
 
