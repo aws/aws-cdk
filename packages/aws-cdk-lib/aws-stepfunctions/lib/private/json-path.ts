@@ -131,12 +131,13 @@ interface FieldHandlers {
   handleBoolean(key: string, x: boolean): {[key: string]: boolean};
   handleResolvable(key: string, x: IResolvable): {[key: string]: any};
   handleNull(key: string, x: null): {[key: string]: null};
-}
+} 
 
 export function recurseObject(obj: object | undefined, handlers: FieldHandlers, visited: object[] = []): object | undefined {
-  // If the argument received is not actually an object (string, number, boolean, undefined, ...) or null
+  // If the argument received is not actually an object (string, number, boolean, undefined, ...)
   // just return it as is as there's nothing to be rendered. This should only happen in the original call to
   // recurseObject as any recursive calls to it are checking for typeof value === 'object' && value !== null
+  // To explicitly return null, set the value to JsonPath.DISCARD
   if (typeof obj !== 'object' || obj === null) {
     return obj;
   }
