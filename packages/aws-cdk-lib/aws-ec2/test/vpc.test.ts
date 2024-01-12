@@ -28,7 +28,9 @@ import {
   TrafficDirection,
   Vpc,
   IpAddresses,
+  Ipv6Addresses,
   InterfaceVpcEndpointAwsService,
+  IpProtocol,
 } from '../lib';
 
 describe('vpc', () => {
@@ -2443,6 +2445,36 @@ describe('vpc', () => {
         },
       });
     });
+  });
+
+  test('dual-stack default', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'DualStackStack');
+
+    // WHEN
+    const vpc = new Vpc(stack, 'Vpc', {
+      ipProtocol: IpProtocol.DUAL_STACK,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCCidrBlock', {
+      AmazonProvidedIpv6CidrBlock: true,
+      VpcId: {
+        Ref: Match.stringLikeRegexp('^Vpc.*'),
+      },
+    });
+  });
+
+  test('error should occur if IPv6 properties are provided for a non-dual-stack VPC', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'NonDualStackStack');
+
+    // WHEN
+    expect(() => new Vpc(stack, 'Vpc', {
+      ipv6Addresses: Ipv6Addresses.amazonProvided(),
+    })).toThrow();
   });
 });
 
