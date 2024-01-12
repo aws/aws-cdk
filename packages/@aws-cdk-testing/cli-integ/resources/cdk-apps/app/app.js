@@ -65,7 +65,7 @@ class YourStack extends cdk.Stack {
   }
 }
 
-class ImportableStack extends cdk.Stack {
+class MigrateStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
@@ -82,6 +82,12 @@ class ImportableStack extends cdk.Stack {
       });
     }
 
+  }
+}
+
+class ImportableStack extends MigrateStack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
     new cdk.CfnWaitConditionHandle(this, 'Handle');
   }
 }
@@ -469,6 +475,8 @@ switch (stackSet) {
     new BuiltinLambdaStack(app, `${stackPrefix}-builtin-lambda-function`);
 
     new ImportableStack(app, `${stackPrefix}-importable-stack`);
+
+    new MigrateStack(app, `${stackPrefix}-migrate-stack`);
 
     new ExportValueStack(app, `${stackPrefix}-export-value-stack`);
 
