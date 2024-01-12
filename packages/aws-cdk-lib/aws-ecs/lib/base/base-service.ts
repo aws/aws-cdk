@@ -1637,7 +1637,10 @@ export abstract class BaseService extends Resource
       return;
     }
 
-    if (config.throughput) { // No need to check tokens as it is good to know if they are specified or not.
+    if (config.sizeInGiB === undefined && config.snapshotId === undefined) {
+      throw new Error('sizeInGiB or snapshotId must be specified');
+    }
+    if (config.throughput) {
       if (config.volumeType !== VolumeType.GP3) {
         throw new Error(`throughput can only be configured with gp3 volume type, got ${config.volumeType}`);
       }
@@ -1645,13 +1648,13 @@ export abstract class BaseService extends Resource
         throw new Error(`throughput must be less than or equal to 1000 MiB/s, got ${config.throughput} MiB/s`);
       }
     }
-    if (config.iops) { // No need to check tokens as it is good to know if they are specified or not.
+    if (config.iops) {
       if ([VolumeType.SC1, VolumeType.ST1, VolumeType.STANDARD].some(type => config.volumeType === type)) {
         throw new Error(`iops cannot be specified with sc1, st1, and standard volume types, got ${config.volumeType}`);
       }
     } else {
       if ([VolumeType.IO1, VolumeType.IO2].some(type => config.volumeType === type)) {
-        throw new Error(`iops must be specified with io1 and io2 volume types, got ${config.volumeType}`);
+        throw new Error(`iops must be specified with io1 or io2 volume types, got ${config.volumeType}`);
       }
     }
 
@@ -1675,8 +1678,9 @@ export abstract class BaseService extends Resource
       };
     });
 
+    // only one EBS can be specified but return type is an array.
     return [{
-      name: config?.volumeName,
+      name: config.volumeName,
       managedEbsVolume: {
         encrypted: config.encrypted,
         filesystemType: config.filesystemType,
