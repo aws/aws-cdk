@@ -15,9 +15,26 @@ class FargateWithEbsStack extends cdk.Stack {
       vpc,
     });
 
+    const ebs = new ecs.EbsVolume(this, 'EbsVolume', {
+      volumeName: 'ebs-volume',
+      encrypted: true,
+      filesystemType: ecs.FilesystemType.XFS,
+      iops: 3000,
+      sizeInGiB: 1,
+      tagSpecifications: [{
+        propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
+        tags: [{
+          key: 'ebs',
+          value: 'volume',
+        }],
+      }],
+      throughput: 100,
+      volumeType: ecs.VolumeType.GP3,
+    });
+
     const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
     taskDefinition.addVolume({
-      name: 'ebs-volume',
+      name: ebs.volumeName,
       configuredAtLaunch: true,
     });
 
@@ -27,29 +44,14 @@ class FargateWithEbsStack extends cdk.Stack {
     });
     containerDefinition.addMountPoints({
       containerPath: '/mnt/ebs',
-      sourceVolume: 'ebs-volume',
+      sourceVolume: ebs.volumeName,
       readOnly: false,
     });
 
     new ecs.FargateService(this, 'Service', {
       cluster,
       taskDefinition,
-      ebsVolumeConfiguration: {
-        volumeName: 'ebs-volume',
-        encrypted: true,
-        filesystemType: ecs.FilesystemType.XFS,
-        iops: 3000,
-        sizeInGiB: 1,
-        tagSpecifications: [{
-          propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
-          tags: [{
-            key: 'ebs',
-            value: 'volume',
-          }],
-        }],
-        throughput: 100,
-        volumeType: ecs.VolumeType.GP3,
-      },
+      ebsVolumeConfiguration: ebs,
     });
   }
 }

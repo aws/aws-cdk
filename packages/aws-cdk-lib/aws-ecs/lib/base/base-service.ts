@@ -329,9 +329,9 @@ export interface EbsTagSpecifications {
 }
 
 /**
- * Interface for EBS Volume Configuration.
+ * EbsVolume props.
  */
-export interface EbsVolumeConfiguration {
+export interface EbsVolumeProps {
   /**
    * The name of the volume.
    * This value must match the volume name from the Volume object in the task definition.
@@ -441,6 +441,106 @@ export interface EbsVolumeConfiguration {
    * @default - VolumeType.GP2.
    */
   readonly volumeType?: VolumeType;
+}
+
+/**
+ * EBS Volume.
+ */
+export class EbsVolume extends Construct {
+  /**
+   * EBS volume name.
+   */
+  public readonly volumeName: string;
+  private readonly encrypted?: boolean;
+  private readonly filesystemType?: FilesystemType;
+  private readonly iops?: number;
+  private readonly kmsKey?: kms.IKey;
+  private readonly role: iam.IRole;
+  private readonly sizeInGiB?: number;
+  private readonly snapshotId?: string;
+  private readonly tagSpecifications?: EbsTagSpecifications[];
+  private readonly throughput?: number;
+  private readonly volumeType?: VolumeType;
+
+  constructor(scope: Construct, id: string, props: EbsVolumeProps) {
+    super(scope, id);
+
+    this.volumeName = props.volumeName;
+    this.encrypted = props.encrypted;
+    this.filesystemType = props.filesystemType;
+    this.iops = props.iops;
+    this.kmsKey = props.kmsKey;
+    this.role = props.role ?? new iam.Role(this, 'EbsVolumeRole', {
+      assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSInfrastructureRolePolicyForVolumes'),
+      ],
+    });
+    this.sizeInGiB = props.sizeInGiB;
+    this.snapshotId = props.snapshotId;
+    this.tagSpecifications = props.tagSpecifications;
+    this.throughput = props.throughput;
+    this.volumeType = props.volumeType;
+
+    this.validate();
+  }
+
+  private validate() {
+    if (this.sizeInGiB === undefined && this.snapshotId === undefined) {
+      throw new Error('sizeInGiB or snapshotId must be specified');
+    }
+    if (this.throughput) {
+      if (this.volumeType !== VolumeType.GP3) {
+        throw new Error(`throughput can only be thisured with gp3 volume type, got ${this.volumeType}`);
+      }
+      if (!Token.isUnresolved(this.throughput) && this.throughput > 1000) {
+        throw new Error(`throughput must be less than or equal to 1000 MiB/s, got ${this.throughput} MiB/s`);
+      }
+    }
+    if (this.iops) {
+      if ([VolumeType.SC1, VolumeType.ST1, VolumeType.STANDARD].some(type => this.volumeType === type)) {
+        throw new Error(`iops cannot be specified with sc1, st1, and standard volume types, got ${this.volumeType}`);
+      }
+    } else {
+      if ([VolumeType.IO1, VolumeType.IO2].some(type => this.volumeType === type)) {
+        throw new Error(`iops must be specified with io1 or io2 volume types, got ${this.volumeType}`);
+      }
+    }
+  }
+
+  public render(): CfnService.ServiceVolumeConfigurationProperty[] | undefined {
+    if (!this) {
+      return;
+    }
+
+    // only one EBS can be specified but return type is an array.
+    return [{
+      name: this.volumeName,
+      managedEbsVolume: {
+        encrypted: this.encrypted,
+        filesystemType: this.filesystemType,
+        iops: this.iops,
+        kmsKeyId: this.kmsKey?.keyId,
+        roleArn: this.role.roleArn,
+        sizeInGiB: this.sizeInGiB,
+        snapshotId: this.snapshotId,
+        tagSpecifications: this.tagSpecifications?.map(tagSpec => {
+          return {
+            propagateTags: tagSpec.propagateTags,
+            resourceType: 'volume',
+            tags: tagSpec.tags?.map(tag => {
+              return {
+                key: tag.key,
+                value: tag.value,
+              };
+            }),
+          };
+        }),
+        throughput: this.throughput,
+        volumeType: this.volumeType,
+      },
+    }];
+  }
 }
 
 /**
@@ -586,7 +686,7 @@ export interface BaseServiceOptions {
    *
    * @default - No EBS volume configuration.
    */
-  readonly ebsVolumeConfiguration?: EbsVolumeConfiguration;
+  readonly ebsVolumeConfiguration?: EbsVolume;
 }
 
 /**
@@ -852,7 +952,7 @@ export abstract class BaseService extends Resource
       enableExecuteCommand: props.enableExecuteCommand,
       capacityProviderStrategy: props.capacityProviderStrategies,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
-      volumeConfigurations: this.renderVolumeConfigurations(props.ebsVolumeConfiguration),
+      volumeConfigurations: props.ebsVolumeConfiguration?.render(),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
       serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
@@ -1630,70 +1730,6 @@ export abstract class BaseService extends Resource
       return !unsupportedPartitions.includes(currentRegion.partition);
     }
     return true;
-  }
-
-  private renderVolumeConfigurations(config?: EbsVolumeConfiguration): CfnService.ServiceVolumeConfigurationProperty[] | undefined {
-    if (!config) {
-      return;
-    }
-
-    if (config.sizeInGiB === undefined && config.snapshotId === undefined) {
-      throw new Error('sizeInGiB or snapshotId must be specified');
-    }
-    if (config.throughput) {
-      if (config.volumeType !== VolumeType.GP3) {
-        throw new Error(`throughput can only be configured with gp3 volume type, got ${config.volumeType}`);
-      }
-      if (!Token.isUnresolved(config.throughput) && config.throughput > 1000) {
-        throw new Error(`throughput must be less than or equal to 1000 MiB/s, got ${config.throughput} MiB/s`);
-      }
-    }
-    if (config.iops) {
-      if ([VolumeType.SC1, VolumeType.ST1, VolumeType.STANDARD].some(type => config.volumeType === type)) {
-        throw new Error(`iops cannot be specified with sc1, st1, and standard volume types, got ${config.volumeType}`);
-      }
-    } else {
-      if ([VolumeType.IO1, VolumeType.IO2].some(type => config.volumeType === type)) {
-        throw new Error(`iops must be specified with io1 or io2 volume types, got ${config.volumeType}`);
-      }
-    }
-
-    const ebsVolumeRole = config.role ?? new iam.Role(this, 'EbsVolumeRole', {
-      assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSInfrastructureRolePolicyForVolumes'),
-      ],
-    });
-
-    const tagSpecifications: CfnService.EBSTagSpecificationProperty[] | undefined = config.tagSpecifications?.map(tagSpec => {
-      return {
-        propagateTags: tagSpec.propagateTags,
-        resourceType: 'volume',
-        tags: tagSpec.tags?.map(tag => {
-          return {
-            key: tag.key,
-            value: tag.value,
-          };
-        }),
-      };
-    });
-
-    // only one EBS can be specified but return type is an array.
-    return [{
-      name: config.volumeName,
-      managedEbsVolume: {
-        encrypted: config.encrypted,
-        filesystemType: config.filesystemType,
-        iops: config.iops,
-        kmsKeyId: config.kmsKey?.keyId,
-        roleArn: ebsVolumeRole.roleArn,
-        sizeInGiB: config.sizeInGiB,
-        snapshotId: config.snapshotId,
-        tagSpecifications: tagSpecifications,
-        throughput: config.throughput,
-        volumeType: config.volumeType,
-      },
-    }];
   }
 }
 
