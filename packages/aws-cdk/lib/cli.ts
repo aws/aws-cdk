@@ -315,16 +315,17 @@ if (!process.stdout.isTTY) {
 export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
   const argv = await parseCommandLineArguments(args);
 
+  if (argv.verbose) {
+    setLogLevel(argv.verbose);
+  }
+
   if (argv.debug) {
     enableSourceMapSupport();
   }
 
-  if (argv.verbose) {
-    setLogLevel(argv.verbose);
-
-    if (argv.verbose > 2) {
-      enableTracing(true);
-    }
+  // Debug should always imply tracing
+  if (argv.debug || argv.verbose > 2) {
+    enableTracing(true);
   }
 
   if (argv.ci) {
