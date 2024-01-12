@@ -977,7 +977,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
 
 // When 'cloudwatchLogsExports' is set, each export value creates its own log group in DB instance. 
 // Specify an export value to access its log group.
-const errorLogGroup = instance.cloudwatchLogGroups['postgresql'];
+const postgresqlLogGroup = instance.cloudwatchLogGroups['postgresql'];
 ```
 
 ## Option Groups
