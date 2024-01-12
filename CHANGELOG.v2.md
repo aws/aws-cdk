@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.121.0](https://github.com/aws/aws-cdk/compare/v2.120.0...v2.121.0) (2024-01-12)
+
+
+### Features
+
+* **ec2:** add dual stack vpc support ([#28480](https://github.com/aws/aws-cdk/issues/28480)) ([754fd99](https://github.com/aws/aws-cdk/commit/754fd99e1963db9ec883c50784d3094cc463b70b)), closes [#894](https://github.com/aws/aws-cdk/issues/894)
+
+## [2.120.0](https://github.com/aws/aws-cdk/compare/v2.119.0...v2.120.0) (2024-01-12)
+
+
+### Features
+
+* **ecs:** support for capacity provider managed instance draining ([#28672](https://github.com/aws/aws-cdk/issues/28672)) ([cf97f47](https://github.com/aws/aws-cdk/commit/cf97f47d9f9a1a8716a1673eb9b906ab365ee11b))
+
 ## [2.119.0](https://github.com/aws/aws-cdk/compare/v2.118.0...v2.119.0) (2024-01-11)
 
 
