@@ -1224,8 +1224,9 @@ integTest('test migrate deployment for app with localfile source in migrate.json
   });
 
   const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
-  const queueName = outputs.QueueName;
-  const queueLogicalId = outputs.QueueLogicalId;
+  const stackName = fixture.fullStackName('migrate-stack');
+  const queueName = outputs[stackName].QueueName;
+  const queueLogicalId = outputs[stackName].QueueLogicalId;
   fixture.log(`Created queue ${queueName} in stack ${fixture.fullStackName}`);
 
   // Write the migrate file based on the ID from step one, then deploy the app with migrate
