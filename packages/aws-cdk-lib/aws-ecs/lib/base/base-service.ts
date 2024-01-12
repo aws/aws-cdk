@@ -438,7 +438,7 @@ export interface EbsVolumeConfiguration {
   /**
    * The volume type.
    *
-   * @default - No volume type.
+   * @default - VolumeType.GP2.
    */
   readonly volumeType?: VolumeType;
 }
@@ -1632,19 +1632,37 @@ export abstract class BaseService extends Resource
     return true;
   }
 
-  private renderVolumeConfigurations(ebsVolumeConfiguration?: EbsVolumeConfiguration): CfnService.ServiceVolumeConfigurationProperty[] | undefined {
-    if (!ebsVolumeConfiguration) {
+  private renderVolumeConfigurations(config?: EbsVolumeConfiguration): CfnService.ServiceVolumeConfigurationProperty[] | undefined {
+    if (!config) {
       return;
     }
 
-    const ebsVolumeRole = ebsVolumeConfiguration.role ?? new iam.Role(this, 'EbsVolumeRole', {
+    if (config.throughput) { // No need to check tokens as it is good to know if they are specified or not.
+      if (config.volumeType !== VolumeType.GP3) {
+        throw new Error(`throughput can only be configured with gp3 volume type, got ${config.volumeType}`);
+      }
+      if (!Token.isUnresolved(config.throughput) && config.throughput > 1000) {
+        throw new Error(`throughput must be less than or equal to 1000 MiB/s, got ${config.throughput} MiB/s`);
+      }
+    }
+    if (config.iops) { // No need to check tokens as it is good to know if they are specified or not.
+      if ([VolumeType.SC1, VolumeType.ST1, VolumeType.STANDARD].some(type => config.volumeType === type)) {
+        throw new Error(`iops cannot be specified with sc1, st1, and standard volume types, got ${config.volumeType}`);
+      }
+    } else {
+      if ([VolumeType.IO1, VolumeType.IO2].some(type => config.volumeType === type)) {
+        throw new Error(`iops must be specified with io1 and io2 volume types, got ${config.volumeType}`);
+      }
+    }
+
+    const ebsVolumeRole = config.role ?? new iam.Role(this, 'EbsVolumeRole', {
       assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
       managedPolicies: [
         iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSInfrastructureRolePolicyForVolumes'),
       ],
     });
 
-    const tagSpecifications: CfnService.EBSTagSpecificationProperty[] | undefined = ebsVolumeConfiguration.tagSpecifications?.map(tagSpec => {
+    const tagSpecifications: CfnService.EBSTagSpecificationProperty[] | undefined = config.tagSpecifications?.map(tagSpec => {
       return {
         propagateTags: tagSpec.propagateTags,
         resourceType: 'volume',
@@ -1658,18 +1676,18 @@ export abstract class BaseService extends Resource
     });
 
     return [{
-      name: ebsVolumeConfiguration?.volumeName,
+      name: config?.volumeName,
       managedEbsVolume: {
-        encrypted: ebsVolumeConfiguration.encrypted,
-        filesystemType: ebsVolumeConfiguration.filesystemType,
-        iops: ebsVolumeConfiguration.iops,
-        kmsKeyId: ebsVolumeConfiguration.kmsKey?.keyId,
+        encrypted: config.encrypted,
+        filesystemType: config.filesystemType,
+        iops: config.iops,
+        kmsKeyId: config.kmsKey?.keyId,
         roleArn: ebsVolumeRole.roleArn,
-        sizeInGiB: ebsVolumeConfiguration.sizeInGiB,
-        snapshotId: ebsVolumeConfiguration.snapshotId,
+        sizeInGiB: config.sizeInGiB,
+        snapshotId: config.snapshotId,
         tagSpecifications: tagSpecifications,
-        throughput: ebsVolumeConfiguration.throughput,
-        volumeType: ebsVolumeConfiguration.volumeType,
+        throughput: config.throughput,
+        volumeType: config.volumeType,
       },
     }];
   }
