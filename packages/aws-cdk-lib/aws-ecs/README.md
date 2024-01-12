@@ -984,6 +984,55 @@ const service = ecs.FargateService.fromFargateServiceAttributes(this, 'EcsServic
 const service = ecs.FargateService.fromFargateServiceArn(this, 'EcsService', 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
 ```
 
+### EBS attachments
+
+To attach EBS volume to ECS tasks, use `EbsVolume` for a task definition and a service.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const vpc: ec2.Vpc;
+
+const ebs = new ecs.EbsVolume(this, 'EbsVolume', {
+  volumeName: 'ebs-volume',
+  encrypted: true,
+  filesystemType: ecs.FilesystemType.XFS,
+  iops: 3000,
+  sizeInGiB: 1,
+  tagSpecifications: [{
+    propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
+    tags: [{
+      key: 'ebs',
+      value: 'volume',
+    }],
+  }],
+  throughput: 100,
+  volumeType: ecs.VolumeType.GP3,
+});
+
+const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
+taskDefinition.addVolume({
+  name: ebs.volumeName,
+  configuredAtLaunch: true,
+});
+
+const containerDefinition = new ecs.ContainerDefinition(this, 'Container', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  taskDefinition,
+});
+containerDefinition.addMountPoints({
+  containerPath: '/mnt/ebs',
+  sourceVolume: ebs.volumeName,
+  readOnly: false,
+});
+
+new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  ebsVolumeConfiguration: ebs,
+});
+```
+
 ## Task Auto-Scaling
 
 You can configure the task count of a service to match demand. Task auto-scaling is
