@@ -114,9 +114,9 @@ export interface ServiceManagedEBSVolumeConfiguration {
    * the volume was using when the snapshot was created.
    * The available filesystem types are ext3, ext4, and xfs.
    *
-   * @default - xfs.
+   * @default - FileSystemType.XFS
    */
-  readonly fileSystemType?: string;
+  readonly fileSystemType?: FileSystemType;
 
   /**
   * Specifies the tags to apply to the volume and whether to propagate those tags to the volume.
@@ -144,6 +144,24 @@ export interface EBSTagSpecification {
   * @default - undefined
   */
   readonly propagateTags?: PropagatedTagSource.SERVICE | PropagatedTagSource.TASK_DEFINITION;
+}
+
+/**
+ * FileSystemType for Service Managed EBS Volume Configuration.
+ */
+export enum FileSystemType {
+  /**
+   * ext3 type
+   */
+  EXT3 = 'ext3',
+  /**
+   * ext4 type
+   */
+  EXT4 = 'ext4',
+  /**
+   * xfs type
+   */
+  XFS = 'xfs',
 }
 
 /**

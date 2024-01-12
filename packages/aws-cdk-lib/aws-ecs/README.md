@@ -1666,7 +1666,7 @@ const volume = new ecs.ServiceManagedVolume({
     role: ebsRole,
     sizeInGiB: 10,
     volumeType: ec2.EbsDeviceVolumeType.GP3,
-    fileSystemType: 'xfs',
+    fileSystemType: ecs.FileSystemType.XFS,
     tagSpecifications: [{
       tags: {
         purpose: 'production',
@@ -1705,7 +1705,7 @@ const volumeFromSnapshot = new ecs.ServiceManagedVolume({
     role: ebsRole,
     snapShotId: 'snap-066877671789bd71b',
     volumeType: ec2.EbsDeviceVolumeType.GP3,
-    fileSystemType: 'xfs',
+    fileSystemType: ecs.FileSystemType.XFS,
   },
 });
 

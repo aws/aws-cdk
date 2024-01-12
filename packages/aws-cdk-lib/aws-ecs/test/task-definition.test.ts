@@ -298,7 +298,7 @@ describe('task definition', () => {
           role: ebsRole,
           sizeInGiB: 3,
           volumeType: EbsDeviceVolumeType.GP3,
-          fileSystemType: 'xfs',
+          fileSystemType: ecs.FileSystemType.XFS,
           tagSpecifications: [{
             tags: {
               purpose: 'production',
@@ -331,7 +331,7 @@ describe('task definition', () => {
           role: ebsRole,
           sizeInGiB: 3,
           volumeType: EbsDeviceVolumeType.GP3,
-          fileSystemType: 'xfs',
+          fileSystemType: ecs.FileSystemType.XFS,
           tagSpecifications: [{
             tags: {
               purpose: 'production',
@@ -351,7 +351,7 @@ describe('task definition', () => {
           role: ebsRole,
           sizeInGiB: 3,
           volumeType: EbsDeviceVolumeType.GP3,
-          fileSystemType: 'xfs',
+          fileSystemType: ecs.FileSystemType.XFS,
           tagSpecifications: [{
             tags: {
               purpose: 'production',

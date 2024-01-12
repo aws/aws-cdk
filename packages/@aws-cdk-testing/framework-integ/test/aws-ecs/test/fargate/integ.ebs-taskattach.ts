@@ -42,7 +42,7 @@ class TestStack extends cdk.Stack {
         sizeInGiB: 15,
         iops: 4000,
         throughput: 500,
-        fileSystemType: 'ext4',
+        fileSystemType: ecs.FileSystemType.EXT4,
         tagSpecifications: [{
           tags: {
             purpose: 'production',

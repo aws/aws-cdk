@@ -1493,6 +1493,7 @@ describe('fargate service', () => {
         managedEBSVolume: {
           role: role,
           sizeInGiB: 20,
+          fileSystemType: ecs.FileSystemType.XFS,
           tagSpecifications: [{
             tags: {
               purpose: 'production',
@@ -1509,6 +1510,7 @@ describe('fargate service', () => {
             ManagedEBSVolume: {
               RoleArn: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
               SizeInGiB: 20,
+              FilesystemType: 'xfs',
               TagSpecifications: [
                 {
                   PropagateTags: 'SERVICE',
