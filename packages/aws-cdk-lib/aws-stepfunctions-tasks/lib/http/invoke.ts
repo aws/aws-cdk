@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { IConnection } from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { integrationResourceArn } from '../private/task-utils';
@@ -38,10 +39,10 @@ export interface HttpInvokeProps extends sfn.TaskStateBaseProps {
   readonly method: string;
 
   /**
-   * The EventBridge Connection ARN to use for authentication.
+   * The EventBridge Connection to use for authentication.
    *
    */
-  readonly connectionArn: string;
+  readonly connection: IConnection;
 
   /**
    * The body to send to the HTTP endpoint.
@@ -91,7 +92,25 @@ export class HttpInvoke extends sfn.TaskStateBase {
   ) {
     super(scope, id, props);
 
-    this.taskPolicies = [];
+    this.taskPolicies = [
+      new iam.PolicyStatement({
+        actions: ['events:RetrieveConnectionCredentials'],
+        resources: [props.connection.connectionArn],
+      }),
+      new iam.PolicyStatement({
+        actions: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+        resources: [props.connection.connectionSecretArn],
+      }),
+      new iam.PolicyStatement({
+        actions: ['states:InvokeHTTPEndpoint'],
+        resources: ['*'],
+        conditions: {
+          StringLike: {
+            'states:HTTPEndpoint': props.apiEndpoint,
+          },
+        },
+      }),
+    ];
   }
 
   /**
@@ -107,7 +126,7 @@ export class HttpInvoke extends sfn.TaskStateBase {
         Method: this.props.method,
         ApiEndpoint: this.props.apiEndpoint,
         Authentication: {
-          ConnectionArn: this.props.connectionArn,
+          ConnectionArn: this.props.connection.connectionArn,
         },
         RequestBody: this.props.body,
         Headers: this.props.headers,

@@ -1,9 +1,9 @@
-import { Stack } from '../../../core';
+import * as events from '../../../aws-events';
+import { SecretValue, Stack } from '../../../core';
 import * as lib from '../../lib';
 
 let stack: Stack;
-const connectionArn =
-'arn:aws:events:us-test-1:123456789012:connection/connectionName';
+let connection: events.IConnection;
 
 const expectTaskWithParameters = (task: lib.HttpInvoke, parameters: any) => {
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -28,19 +28,23 @@ const expectTaskWithParameters = (task: lib.HttpInvoke, parameters: any) => {
 describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
   beforeEach(() => {
     stack = new Stack();
+    connection = new events.Connection(stack, 'Connection', {
+      authorization: events.Authorization.basic('username', SecretValue.unsafePlainText('password')),
+      connectionName: 'testConnection',
+    });
   });
 
   test('invoke with default props', () => {
     const task = new lib.HttpInvoke(stack, 'Task', {
       apiEndpoint: 'https://api.example.com',
-      connectionArn,
+      connection,
       method: 'POST',
     });
 
     expectTaskWithParameters(task, {
       ApiEndpoint: 'https://api.example.com',
       Authentication: {
-        ConnectionArn: connectionArn,
+        connection,
       },
       Method: 'POST',
     });
@@ -50,14 +54,14 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     const task = new lib.HttpInvoke(stack, 'Task', {
       apiEndpoint: 'https://api.example.com',
       body: JSON.stringify({ foo: 'bar' }),
-      connectionArn,
+      connection,
       method: 'POST',
     });
 
     expectTaskWithParameters(task, {
       ApiEndpoint: 'https://api.example.com',
       Authentication: {
-        ConnectionArn: connectionArn,
+        connection,
       },
       Method: 'POST',
       RequestBody: JSON.stringify({ foo: 'bar' }),
@@ -67,7 +71,7 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
   test('invoke with headers', () => {
     const task = new lib.HttpInvoke(stack, 'Task', {
       apiEndpoint: 'https://api.example.com',
-      connectionArn,
+      connection,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -77,7 +81,7 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     expectTaskWithParameters(task, {
       ApiEndpoint: 'https://api.example.com',
       Authentication: {
-        ConnectionArn: connectionArn,
+        connection,
       },
       Method: 'POST',
       Headers: {
@@ -89,7 +93,7 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
   test('invoke with query string parameters', () => {
     const task = new lib.HttpInvoke(stack, 'Task', {
       apiEndpoint: 'https://api.example.com',
-      connectionArn,
+      connection,
       method: 'POST',
       queryStringParameters: {
         foo: 'bar',
@@ -99,7 +103,7 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     expectTaskWithParameters(task, {
       ApiEndpoint: 'https://api.example.com',
       Authentication: {
-        ConnectionArn: connectionArn,
+        connection,
       },
       Method: 'POST',
       QueryParameters: {
@@ -112,14 +116,14 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     const task = new lib.HttpInvoke(stack, 'Task', {
       apiEndpoint: 'https://api.example.com',
       method: 'POST',
-      connectionArn,
+      connection,
       urlEncodeBody: true,
     });
 
     expectTaskWithParameters(task, {
       ApiEndpoint: 'https://api.example.com',
       Authentication: {
-        ConnectionArn: connectionArn,
+        connection,
       },
       Method: 'POST',
       Transform: {
@@ -135,7 +139,7 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     const task = new lib.HttpInvoke(stack, 'Task', {
       apiEndpoint: 'https://api.example.com',
       arrayEncodingFormat: lib.URLEncodingArrayFormat.BRACKETS,
-      connectionArn,
+      connection,
       method: 'POST',
       urlEncodeBody: true,
     });
@@ -143,7 +147,7 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     expectTaskWithParameters(task, {
       ApiEndpoint: 'https://api.example.com',
       Authentication: {
-        ConnectionArn: connectionArn,
+        connection,
       },
       Method: 'POST',
       Transform: {
