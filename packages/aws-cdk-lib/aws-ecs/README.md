@@ -1631,6 +1631,97 @@ const customService = new ecs.FargateService(this, 'CustomizedService', {
 });
 ```
 
+## ServiceManagedVolume
+
+Amazon ECS now supports the attachment of Amazon Elastic Block Store (EBS) volumes to ECS tasks,
+allowing you to utilize persistent, high-performance block storage with your ECS services. 
+This feature supports various use cases, such as using EBS volumes as extended ephemeral storage or 
+loading data from EBS snapshots. 
+You can also specify `encrypted: true` so that ECS will manage the KMS key. If you want to use your own KMS key, you may do so by providing both `encrypted: true` and `kmsKeyId`.
+
+You can only attach a single volume for each task in the ECS Service.
+
+To add an empty EBS Volume to an ECS Service, call service.addVolume().
+
+```ts
+declare const cluster: ecs.Cluster;
+const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
+
+const ebsRole = new iam.Role(this, 'EBSRole', {
+  assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+  managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2FullAccess')],
+});
+
+const container = taskDefinition.addContainer('web', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  portMappings: [{
+    containerPort: 80,
+    protocol: ecs.Protocol.TCP,
+  }],
+});
+
+const volume = new ecs.ServiceManagedVolume({
+  name: 'ebs1',
+  managedEBSVolume: {
+    role: ebsRole,
+    sizeInGiB: 10,
+    volumeType: ec2.EbsDeviceVolumeType.GP3,
+    fileSystemType: 'xfs',
+    tagSpecifications: [{
+      tags: {
+        purpose: 'production',
+      },
+      propagateTags: ecs.PropagatedTagSource.SERVICE,
+    }],
+  },
+});
+
+volume.mountIn(container, {
+  containerPath: '/var/lib',
+  readOnly: false,
+});
+
+taskDefinition.addVolume(volume);
+
+const service = new ecs.FargateService(this, 'FargateService', {
+  cluster,
+  taskDefinition,
+});
+
+service.addVolume(volume);
+```
+
+To create an EBS volume from an existing snapshot by specifying the `snapShotId` while adding a volume to the service.
+
+```ts
+declare const container: ecs.ContainerDefinition;
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const ebsRole: iam.IRole;
+
+const volumeFromSnapshot = new ecs.ServiceManagedVolume({
+  name: 'nginx-vol',
+  managedEBSVolume: {
+    role: ebsRole,
+    snapShotId: 'snap-066877671789bd71b',
+    volumeType: ec2.EbsDeviceVolumeType.GP3,
+    fileSystemType: 'xfs',
+  },
+});
+
+volumeFromSnapshot.mountIn(container, {
+  containerPath: '/var/lib',
+  readOnly: false,
+});
+taskDefinition.addVolume(volumeFromSnapshot);
+const service = new ecs.FargateService(this, 'FargateService', {
+  cluster,
+  taskDefinition,
+});
+
+service.addVolume(volumeFromSnapshot);
+```
+
 ## Enable pseudo-terminal (TTY) allocation
 
 You can allocate a pseudo-terminal (TTY) for a container passing `pseudoTerminal` option while adding the container

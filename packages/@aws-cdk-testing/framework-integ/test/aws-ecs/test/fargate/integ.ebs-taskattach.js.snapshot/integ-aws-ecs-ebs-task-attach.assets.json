@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "d5b503c183b8942f8aa867359c9075a4422b4890aa0a7bb19c100e5439bf07d1": {
+      "source": {
+        "path": "integ-aws-ecs-ebs-task-attach.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d5b503c183b8942f8aa867359c9075a4422b4890aa0a7bb19c100e5439bf07d1.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

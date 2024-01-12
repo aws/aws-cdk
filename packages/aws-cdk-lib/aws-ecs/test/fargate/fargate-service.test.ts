@@ -4,6 +4,7 @@ import * as appscaling from '../../../aws-applicationautoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
+import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
@@ -15,6 +16,7 @@ import * as cxapi from '../../../cx-api';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '../../../cx-api';
 import * as ecs from '../../lib';
 import { DeploymentControllerType, LaunchType, PropagatedTagSource, ServiceConnectProps } from '../../lib/base/base-service';
+import { ServiceManagedVolume } from '../../lib/base/service-managed-volume';
 import { addDefaultCapacityProvider } from '../util';
 
 describe('fargate service', () => {
@@ -1449,6 +1451,147 @@ describe('fargate service', () => {
             ],
           },
         });
+      });
+    });
+  });
+
+  describe('When setting up a service volume configurations', ()=>{
+    let service: ecs.FargateService;
+    let stack: cdk.Stack;
+    let cluster: ecs.Cluster;
+    let taskDefinition: ecs.TaskDefinition;
+    let container: ecs.ContainerDefinition;
+    let role: iam.IRole;
+
+    beforeEach(() => {
+      // GIVEN
+      stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+      });
+      container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+      service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+    });
+    test('success when adding a service volume', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      service.addVolume(new ServiceManagedVolume({
+        name: 'nginx-vol',
+        managedEBSVolume: {
+          role: role,
+          sizeInGiB: 20,
+          tagSpecifications: [{
+            tags: {
+              purpose: 'production',
+            },
+            propagateTags: ecs.PropagatedTagSource.SERVICE,
+          }],
+        },
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        VolumeConfigurations: [
+          {
+            ManagedEBSVolume: {
+              RoleArn: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
+              SizeInGiB: 20,
+              TagSpecifications: [
+                {
+                  PropagateTags: 'SERVICE',
+                  ResourceType: 'volume',
+                  Tags: [
+                    {
+                      Key: 'purpose',
+                      Value: 'production',
+                    },
+                  ],
+                },
+              ],
+            },
+            Name: 'nginx-vol',
+          },
+        ],
+      });
+    });
+
+    test('success when mounting via ServiceManagedVolume', () => {
+      // WHEN
+      const volume = new ServiceManagedVolume({
+        name: 'nginx-vol',
+        managedEBSVolume: {
+          role: role,
+          sizeInGiB: 20,
+          tagSpecifications: [{
+            tags: {
+              purpose: 'production',
+            },
+            propagateTags: ecs.PropagatedTagSource.SERVICE,
+          }],
+        },
+      });
+      taskDefinition.addVolume(volume);
+      service.addVolume(volume);
+      volume.mountIn(container, {
+        containerPath: '/var/lib',
+        readOnly: false,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        VolumeConfigurations: [
+          {
+            ManagedEBSVolume: {
+              RoleArn: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
+              SizeInGiB: 20,
+              TagSpecifications: [
+                {
+                  PropagateTags: 'SERVICE',
+                  ResourceType: 'volume',
+                  Tags: [
+                    {
+                      Key: 'purpose',
+                      Value: 'production',
+                    },
+                  ],
+                },
+              ],
+            },
+            Name: 'nginx-vol',
+          },
+        ],
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            MountPoints: [
+              {
+                ContainerPath: '/var/lib',
+                ReadOnly: false,
+                SourceVolume: 'nginx-vol',
+              },
+            ],
+          },
+        ],
+        Volumes: [
+          {
+            Name: 'nginx-vol',
+            ConfiguredAtLaunch: true,
+          },
+        ],
       });
     });
   });
