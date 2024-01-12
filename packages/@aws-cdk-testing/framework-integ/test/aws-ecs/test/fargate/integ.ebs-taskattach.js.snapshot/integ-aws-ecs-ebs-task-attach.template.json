@@ -351,13 +351,16 @@
     "VolumeConfigurations": [
      {
       "ManagedEBSVolume": {
+       "Encrypted": true,
+       "FilesystemType": "ext4",
+       "Iops": 4000,
        "RoleArn": {
         "Fn::GetAtt": [
          "EBSRole9CBFC881",
          "Arn"
         ]
        },
-       "SizeInGiB": 20,
+       "SizeInGiB": 15,
        "TagSpecifications": [
         {
          "PropagateTags": "SERVICE",
@@ -368,8 +371,20 @@
            "Value": "production"
           }
          ]
+        },
+        {
+         "PropagateTags": "TASK_DEFINITION",
+         "ResourceType": "volume",
+         "Tags": [
+          {
+           "Key": "purpose",
+           "Value": "development"
+          }
+         ]
         }
-       ]
+       ],
+       "Throughput": 500,
+       "VolumeType": "gp3"
       },
       "Name": "ebs1"
      }

@@ -37,12 +37,23 @@ class TestStack extends cdk.Stack {
       name: 'ebs1',
       managedEBSVolume: {
         role: ebsRole,
-        sizeInGiB: 20,
+        encrypted: true,
+        volumeType: ec2.EbsDeviceVolumeType.GP3,
+        sizeInGiB: 15,
+        iops: 4000,
+        throughput: 500,
+        fileSystemType: 'ext4',
         tagSpecifications: [{
           tags: {
             purpose: 'production',
           },
           propagateTags: ecs.PropagatedTagSource.SERVICE,
+        },
+        {
+          tags: {
+            purpose: 'development',
+          },
+          propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
         }],
       },
     });

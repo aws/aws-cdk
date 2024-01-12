@@ -613,7 +613,12 @@
                               "Arn"
                             ]
                           },
-                          "sizeInGiB": 20,
+                          "encrypted": true,
+                          "filesystemType": "ext4",
+                          "iops": 4000,
+                          "throughput": 500,
+                          "volumeType": "gp3",
+                          "sizeInGiB": 15,
                           "tagSpecifications": [
                             {
                               "resourceType": "volume",
@@ -622,6 +627,16 @@
                                 {
                                   "key": "purpose",
                                   "value": "production"
+                                }
+                              ]
+                            },
+                            {
+                              "resourceType": "volume",
+                              "propagateTags": "TASK_DEFINITION",
+                              "tags": [
+                                {
+                                  "key": "purpose",
+                                  "value": "development"
                                 }
                               ]
                             }
