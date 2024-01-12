@@ -134,10 +134,9 @@ interface FieldHandlers {
 } 
 
 export function recurseObject(obj: object | undefined, handlers: FieldHandlers, visited: object[] = []): object | undefined {
-  // If the argument received is not actually an object (string, number, boolean, undefined, ...)
+  // If the argument received is not actually an object (string, number, boolean, undefined, ...) or null
   // just return it as is as there's nothing to be rendered. This should only happen in the original call to
   // recurseObject as any recursive calls to it are checking for typeof value === 'object' && value !== null
-  // To explicitly return null, set the value to JsonPath.DISCARD
   if (typeof obj !== 'object' || obj === null) {
     return obj;
   }
@@ -150,6 +149,7 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
 
   const ret: any = {};
   for (const [key, value] of Object.entries(obj)) {
+    // Explictly return null if JsonPath.DISCARD is set as the value
     if (value === JsonPath.DISCARD) {
       Object.assign(ret, handlers.handleNull(key, null));
     } else if (typeof value === 'string') {
