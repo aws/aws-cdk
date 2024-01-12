@@ -397,7 +397,9 @@
     "Description": "desc",
     "Family": "postgres15",
     "Parameters": {}
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "InstanceSubnetGroupF2CBA54F": {
    "Type": "AWS::RDS::DBSubnetGroup",
