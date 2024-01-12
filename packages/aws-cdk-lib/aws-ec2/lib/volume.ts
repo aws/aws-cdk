@@ -691,11 +691,11 @@ export class Volume extends VolumeBase {
         );
       }
       // Enforce minimum & maximum IOPS:
-      // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
+      // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
       const iopsRanges: { [key: string]: { Min: number, Max: number } } = {};
       iopsRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 16000 };
       iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 100, Max: 64000 };
-      iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 64000 };
+      iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 256000 };
       const { Min, Max } = iopsRanges[volumeType];
       if (props.iops < Min || props.iops > Max) {
         throw new Error(`\`${volumeType}\` volumes iops must be between ${Min} and ${Max}.`);
