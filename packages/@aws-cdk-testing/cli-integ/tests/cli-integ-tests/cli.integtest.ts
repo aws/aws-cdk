@@ -1226,14 +1226,15 @@ integTest('test migrate deployment for app with localfile source in migrate.json
   const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
   const stackName = fixture.fullStackName('migrate-stack');
   const queueName = outputs[stackName].QueueName;
+  const queueUrl = outputs[stackName].QueueUrl;
   const queueLogicalId = outputs[stackName].QueueLogicalId;
-  fixture.log(`Created queue ${queueName} in stack ${fixture.fullStackName}`);
+  fixture.log(`Created queue ${queueUrl} in stack ${fixture.fullStackName}`);
 
   // Write the migrate file based on the ID from step one, then deploy the app with migrate
   const migrateFile = path.join(fixture.integTestDir, 'migrate.json');
   await fs.writeFile(
     migrateFile, JSON.stringify(
-      { Source: 'localfile', Resources: [{ ResourceType: 'AWS::SQS::Queue', LogicalResourceId: queueLogicalId, ResourceIdentifier: { QueueName: queueName } }] },
+      { Source: 'localfile', Resources: [{ ResourceType: 'AWS::SQS::Queue', LogicalResourceId: queueLogicalId, ResourceIdentifier: { QueueUrl: queueUrl } }] },
     ),
     { encoding: 'utf-8' },
   );

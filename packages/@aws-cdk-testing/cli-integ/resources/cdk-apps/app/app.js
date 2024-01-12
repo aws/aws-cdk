@@ -77,6 +77,11 @@ class MigrateStack extends cdk.Stack {
       new cdk.CfnOutput(this, 'QueueName', {
         value: queue.queueName,
       });
+
+      new cdk.CfnOutput(this, 'QueueUrl', {
+        value: queue.queueUrl,
+      });
+      
       new cdk.CfnOutput(this, 'QueueLogicalId', {
         value: queue.node.defaultChild.logicalId,
       });
