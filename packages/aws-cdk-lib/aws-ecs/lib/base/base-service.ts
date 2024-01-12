@@ -482,10 +482,6 @@ export class EbsVolume extends Construct {
     this.throughput = props.throughput;
     this.volumeType = props.volumeType;
 
-    this.validate();
-  }
-
-  private validate() {
     if (this.sizeInGiB === undefined && this.snapshotId === undefined) {
       throw new Error('sizeInGiB or snapshotId must be specified');
     }
