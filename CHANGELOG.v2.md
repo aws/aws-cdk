@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.120.0](https://github.com/aws/aws-cdk/compare/v2.119.0...v2.120.0) (2024-01-12)
+
+
+### Features
+
+* **ecs:** support for capacity provider managed instance draining ([#28672](https://github.com/aws/aws-cdk/issues/28672)) ([cf97f47](https://github.com/aws/aws-cdk/commit/cf97f47d9f9a1a8716a1673eb9b906ab365ee11b))
+
 ## [2.119.0](https://github.com/aws/aws-cdk/compare/v2.118.0...v2.119.0) (2024-01-11)
 
 
