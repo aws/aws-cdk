@@ -897,20 +897,6 @@ export class CdkToolkit {
     }
   }
 
-  private async tryGetResources(migrateDeployment: ResourceImporter) {
-    try {
-      const migrateFile = fs.readJsonSync('migrate.json', { encoding: 'utf-8' });
-      const sourceEnv = (migrateFile.Source as string).split(':');
-      const environment = await migrateDeployment.resolveEnvironment();
-      if (sourceEnv[0] === 'localfile' ||
-        (sourceEnv[4] === environment.account && sourceEnv[3] === environment.region)) {
-        return migrateFile.Resources;
-      }
-    } catch (e) {
-      // Nothing to do
-    }
-  }
-
   /**
    * Creates a new stack with just the resources to be migrated
    */
@@ -930,6 +916,20 @@ export class CdkToolkit {
 
     elapsedDeployTime = new Date().getTime() - startDeployTime;
     print('\n✨  Resource migration time: %ss\n', formatTime(elapsedDeployTime));
+  }
+
+  private async tryGetResources(migrateDeployment: ResourceImporter) {
+    try {
+      const migrateFile = fs.readJsonSync('migrate.json', { encoding: 'utf-8' });
+      const sourceEnv = (migrateFile.Source as string).split(':');
+      const environment = await migrateDeployment.resolveEnvironment();
+      if (sourceEnv[0] === 'localfile' ||
+        (sourceEnv[4] === environment.account && sourceEnv[3] === environment.region)) {
+        return migrateFile.Resources;
+      }
+    } catch (e) {
+      // Nothing to do
+    }
   }
 }
 
