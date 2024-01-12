@@ -1,0 +1,19 @@
+{
+  "version": "35.0.0",
+  "files": {
+    "72dd1ca10064654eb4724b599868f5b0d889dc243baed9bb832226e6da869796": {
+      "source": {
+        "path": "integ-ec2-capacity-provider-managed-draining.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "72dd1ca10064654eb4724b599868f5b0d889dc243baed9bb832226e6da869796.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
