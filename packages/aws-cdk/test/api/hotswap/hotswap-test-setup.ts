@@ -37,10 +37,10 @@ export function setupHotswapTests(): HotswapMockSdkProvider {
   return hotswapMockSdkProvider;
 }
 
-export function setupHotswapNestedStackTests(rootStackName: string) {
+export function setupHotswapNestedStackTests(rootStackName: string, sdkProvider?: MockSdkProvider) {
   jest.resetAllMocks();
   currentNestedCfnStackResources = {};
-  hotswapMockSdkProvider = new HotswapMockSdkProvider(rootStackName);
+  hotswapMockSdkProvider = new HotswapMockSdkProvider(rootStackName, sdkProvider);
   currentCfnStack = new FakeCloudformationStack({
     stackName: rootStackName,
     stackId: STACK_ID,
@@ -95,8 +95,8 @@ export function stackSummaryOf(logicalId: string, resourceType: string, physical
 export class HotswapMockSdkProvider {
   public readonly mockSdkProvider: MockSdkProvider;
 
-  constructor(rootStackName?: string) {
-    this.mockSdkProvider = new MockSdkProvider({ realSdk: false });
+  constructor(rootStackName?: string, sdkProvider?: MockSdkProvider) {
+    this.mockSdkProvider = sdkProvider ?? new MockSdkProvider({ realSdk: false });
 
     this.mockSdkProvider.stubCloudFormation({
       listStackResources: ({ StackName: stackName }) => {

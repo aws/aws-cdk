@@ -20,11 +20,6 @@ export interface RootTemplateWithNestedStacks {
 
 /**
  * Reads the currently deployed template from CloudFormation and adds a
- * property, `NestedTemplate`, to any nested stacks that appear in either
- * the deployed template or the newly synthesized template. `NestedTemplate`
- * is populated with contents of the nested template by mutating the
- * `template` property of `rootStackArtifact`. This is done for all
- * nested stack resources to arbitrary depths.
  */
 export async function loadCurrentTemplateWithNestedStacks(
   rootStackArtifact: cxapi.CloudFormationStackArtifact, sdk: ISDK,

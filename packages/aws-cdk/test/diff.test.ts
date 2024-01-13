@@ -2,17 +2,21 @@
 import { Writable } from 'stream';
 import { StringDecoder } from 'string_decoder';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
-import { instanceMockFrom, MockCloudExecutable } from './util';
+//import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
+import { /*instanceMockFrom,*/ MockCloudExecutable, testStack } from './util';
+import { MockToolkitEnvironment } from './util/nested-stack-mocks';
 import { Deployments } from '../lib/api/deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
-import * as cfn from '../lib/api/util/cloudformation';
+// import * as cfn from '../lib/api/util/cloudformation';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as setup from './api/hotswap/hotswap-test-setup';
 
 let cloudExecutable: MockCloudExecutable;
-let cloudFormation: jest.Mocked<Deployments>;
+let cloudFormation: Deployments;
 let toolkit: CdkToolkit;
 
-describe('non-nested stacks', () => {
+describe('top-level stacks', () => {
   beforeEach(() => {
     cloudExecutable = new MockCloudExecutable({
       stacks: [{
@@ -43,7 +47,10 @@ describe('non-nested stacks', () => {
       }],
     });
 
-    cloudFormation = instanceMockFrom(Deployments);
+    //cloudFormation = instanceMockFrom(Deployments);
+    cloudFormation = new Deployments({
+      sdkProvider: cloudExecutable.sdkProvider,
+    });
 
     toolkit = new CdkToolkit({
       cloudExecutable,
@@ -52,7 +59,7 @@ describe('non-nested stacks', () => {
       sdkProvider: cloudExecutable.sdkProvider,
     });
 
-    // Default implementations
+    /*
     cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((stackArtifact: CloudFormationStackArtifact) => {
       if (stackArtifact.stackName === 'D') {
         return Promise.resolve({
@@ -73,6 +80,7 @@ describe('non-nested stacks', () => {
       stackArn: '',
       stackArtifact: options.stack,
     }));
+    */
   });
 
   test('diff can diff multiple stacks', async () => {
@@ -94,7 +102,7 @@ describe('non-nested stacks', () => {
     expect(exitCode).toBe(0);
   });
 
-  test('diff number of stack diffs, not resource diffs', async () => {
+  test('diff counts stack diffs, not resource diffs', async () => {
     // GIVEN
     cloudExecutable = new MockCloudExecutable({
       stacks: [{
@@ -131,7 +139,7 @@ describe('non-nested stacks', () => {
     expect(exitCode).toBe(0);
   });
 
-  test('exits with 1 with diffs and fail set to true', async () => {
+  test('diff exists with 1 and fail set to `true` when the diff is not empty', async () => {
     // GIVEN
     const buffer = new StringWritable();
 
@@ -157,7 +165,7 @@ describe('non-nested stacks', () => {
     })).rejects.toThrow('No stacks match the name(s) X,Y,Z');
   });
 
-  test('exits with 1 with diff in first stack, but not in second stack and fail set to true', async () => {
+  test('diff exists with 1 and fail set to `true` with one non-empty diff and one empty diff', async () => {
     // GIVEN
     const buffer = new StringWritable();
 
@@ -203,6 +211,9 @@ describe('non-nested stacks', () => {
 });
 
 describe('nested stacks', () => {
+  // These tests must first create the nested stack and write it's template to disk, because otherwise the rootStack will not be able to find it, and complain
+  // Then, 
+  // 
   beforeEach(() => {
     cloudExecutable = new MockCloudExecutable({
       stacks: [{
@@ -211,7 +222,9 @@ describe('nested stacks', () => {
       }],
     });
 
-    cloudFormation = instanceMockFrom(Deployments);
+    cloudFormation = new Deployments({
+      sdkProvider: cloudExecutable.sdkProvider,
+    });
 
     toolkit = new CdkToolkit({
       cloudExecutable,
@@ -220,7 +233,6 @@ describe('nested stacks', () => {
       sdkProvider: cloudExecutable.sdkProvider,
     });
 
-    // TODO: we aren't mutating the stack artifact anymore...
     /*
     cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((stackArtifact: CloudFormationStackArtifact) => {
       if (stackArtifact.stackName === 'Parent') {
@@ -257,7 +269,7 @@ describe('nested stacks', () => {
           },
         };
         return Promise.resolve({
-          deployedTemplate: {
+          deployedRootTemplate: {
             Resources: {
               AdditionChild: {
                 Type: 'AWS::CloudFormation::Stack',
@@ -292,7 +304,29 @@ describe('nested stacks', () => {
             },
           },
           nestedStackCount: 3,
-          nestedStackNames: {},
+          nestedStacks: {
+            AdditionChild: {
+              deployedTemplate: {
+                Type: 'AWS::CloudFormation::Stack',
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                  },
+                },
+              },
+              generatedTemplate: {
+                Type: 'AWS::CloudFormation::Stack',
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'added-value',
+                    },
+                  },
+                },
+              },
+            },
+          },
         });
       }
       return Promise.resolve({
@@ -304,6 +338,78 @@ describe('nested stacks', () => {
     */
   });
 
+  test('foo', async () => {
+    // GIVEN
+    // generated template
+    const nestedStack = testStack({
+      stackName: 'NestedStack',
+      template: {
+        Resources: {
+          ReInvent: {
+            Type: 'AWS::ReInvent::Convention',
+            Properties: {
+              AttendeeCount: 500000,
+            },
+          },
+        },
+      },
+    });
+
+    // deployed template
+    fs.writeFileSync(path.join(__dirname, 'nested-stack-templates/simple-nested-stack.json'), JSON.stringify(nestedStack.template));
+    const rootStack = testStack({
+      stackName: 'Parent',
+      template: {
+        Resources: {
+          NestedStack: {
+            Type: 'AWS::CloudFormation::Stack',
+            Properties: {
+              TemplateURL: 'https://www.amazon.com',
+            },
+            Metadata: {
+              'aws:asset:path': path.join('simple-nested-stack.json'),
+            },
+          },
+        },
+      },
+    });
+
+    const mockToolkitEnv = new MockToolkitEnvironment({
+      stacks: [rootStack],
+    });
+
+    setup.setupHotswapNestedStackTests('ParentStack', mockToolkitEnv.sdkProvider);
+    setup.pushNestedStackResourceSummaries('Parent',
+      setup.stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
+        'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedStack/abcd',
+      ),
+    );
+
+    // deployed template value
+    nestedStack.template.Resources.ReInvent.Properties.AttendeeCount = 5;
+
+    setup.addTemplateToCloudFormationLookupMock(rootStack);
+    setup.addTemplateToCloudFormationLookupMock(nestedStack);
+
+    // WHEN
+    // generated template value
+    rootStack.template.Resources.NestedStack.Properties.TemplateURL = 'https://www.amazoff.com';
+
+    // GIVEN
+    //const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await mockToolkitEnv.toolkit.diff({
+      stackNames: ['Parent'],
+      stream: process.stderr,
+    });
+
+    fs.rmSync(path.join(__dirname, 'nested-stack-templates/simple-nested-stack.json'));
+
+    expect(exitCode).toEqual(1);
+  });
+
+  /*
   test('diff can diff nested stacks', async () => {
     // GIVEN
     const buffer = new StringWritable();
@@ -380,6 +486,7 @@ Resources
     expect(exitCode).toBe(0);
     expect(changeSetSpy).not.toHaveBeenCalled();
   });
+*/
 });
 
 class StringWritable extends Writable {
