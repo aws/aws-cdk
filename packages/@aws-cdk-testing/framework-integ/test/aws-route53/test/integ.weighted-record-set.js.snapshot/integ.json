@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "Route53WeightedRecordSetInteg/DefaultTest": {
+      "stacks": [
+        "weighted-record-set"
+      ],
+      "diffAssets": true,
+      "assertionStack": "Route53WeightedRecordSetInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "Route53WeightedRecordSetIntegDefaultTestDeployAssert89C74B87"
+    }
+  }
+}
