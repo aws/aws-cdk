@@ -125,7 +125,7 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
 
   /**
    * You can pass a `customEventRule` to set up a custom event rule for the CodeCommit source action.
-   * You must put the `eventPattern` and `target` properties in the `customEventRule` object.
+   * You must provide the `eventPattern` and `target` properties in the `customEventRule` object.
    * Check what `eventPattern` to put: https://docs.aws.amazon.com/codecommit/latest/userguide/monitoring-events.html
    * @default Event rule which is triggered by CodeCommit repository on commit
    */
