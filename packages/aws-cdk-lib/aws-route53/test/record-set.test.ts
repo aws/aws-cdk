@@ -1112,6 +1112,7 @@ describe('record set', () => {
       recordType: route53.RecordType.CNAME,
       target: route53.RecordTarget.fromValues('zzz'),
       weight: 50,
+      setIdentifier: 'uniqueId',
     });
 
     // THEN
