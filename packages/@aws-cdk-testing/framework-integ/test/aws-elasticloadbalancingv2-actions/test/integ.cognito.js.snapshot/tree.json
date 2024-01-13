@@ -669,11 +669,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CertificateManager::Certificate",
                   "aws:cdk:cloudformation:props": {
-                    "domainName": "*.example.com",
+                    "domainName": "sakurai-ryo.net",
                     "domainValidationOptions": [
                       {
-                        "domainName": "*.example.com",
-                        "hostedZoneId": "Z23ABC4XYZL05B"
+                        "domainName": "sakurai-ryo.net",
+                        "hostedZoneId": "Z00315131HIVC53IKGEOG"
                       }
                     ],
                     "tags": [
@@ -986,7 +986,7 @@
                       "openid"
                     ],
                     "callbackUrLs": [
-                      "https://*.example.com/oauth2/idpresponse"
+                      "https://sakurai-ryo.net/oauth2/idpresponse"
                     ],
                     "explicitAuthFlows": [
                       "ALLOW_USER_PASSWORD_AUTH",
@@ -1022,7 +1022,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolDomain",
                   "aws:cdk:cloudformation:props": {
-                    "domain": "z23abc4xyzl05b",
+                    "domain": "z00315131hivc53ikgeog",
                     "userPoolId": {
                       "Ref": "UserPool6BA7E5F2"
                     }
@@ -1071,8 +1071,8 @@
                         ]
                       }
                     },
-                    "hostedZoneId": "Z23ABC4XYZL05B",
-                    "name": "example.com.",
+                    "hostedZoneId": "Z00315131HIVC53IKGEOG",
+                    "name": "sakurai-ryo.net.",
                     "type": "A"
                   }
                 },
@@ -1362,7 +1362,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "1b474110b3f79050ba8693912584a5d5bac8c7e94d63afa8c73f1d087444e7cc.zip"
+                      "s3Key": "7d84d2f91215cb2f23932e0b0cf13173723fba8a57f1fa423a52a75b4d5e934c.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -1489,7 +1489,7 @@
                       "variables": {
                         "TEST_USERNAME": "test-user@example.com",
                         "TEST_PASSWORD": "TestUser@123",
-                        "TEST_URL": "https://*.example.com"
+                        "TEST_URL": "https://sakurai-ryo.net"
                       }
                     },
                     "functionName": "cdk-integ-alb-cognito-signin-handler",

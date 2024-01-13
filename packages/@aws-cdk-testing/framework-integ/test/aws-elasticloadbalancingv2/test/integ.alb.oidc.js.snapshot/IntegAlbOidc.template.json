@@ -510,11 +510,11 @@
   "Certificate4E7ABB08": {
    "Type": "AWS::CertificateManager::Certificate",
    "Properties": {
-    "DomainName": "*.example.com",
+    "DomainName": "sakurai-ryo.net",
     "DomainValidationOptions": [
      {
-      "DomainName": "*.example.com",
-      "HostedZoneId": "Z23ABC4XYZL05B"
+      "DomainName": "sakurai-ryo.net",
+      "HostedZoneId": "Z00315131HIVC53IKGEOG"
      }
     ],
     "Tags": [
@@ -566,7 +566,7 @@
   "UserPoolDomainD0EA232A": {
    "Type": "AWS::Cognito::UserPoolDomain",
    "Properties": {
-    "Domain": "z23abc4xyzl05b",
+    "Domain": "z00315131hivc53ikgeog",
     "UserPoolId": {
      "Ref": "UserPool6BA7E5F2"
     }
@@ -587,7 +587,7 @@
      "aws.cognito.signin.user.admin"
     ],
     "CallbackURLs": [
-     "https://*.example.com/oauth2/idpresponse"
+     "https://sakurai-ryo.net/oauth2/idpresponse"
     ],
     "GenerateSecret": true,
     "SupportedIdentityProviders": [
@@ -895,7 +895,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1b474110b3f79050ba8693912584a5d5bac8c7e94d63afa8c73f1d087444e7cc.zip"
+     "S3Key": "7d84d2f91215cb2f23932e0b0cf13173723fba8a57f1fa423a52a75b4d5e934c.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -936,8 +936,8 @@
       ]
      }
     },
-    "HostedZoneId": "Z23ABC4XYZL05B",
-    "Name": "example.com.",
+    "HostedZoneId": "Z00315131HIVC53IKGEOG",
+    "Name": "sakurai-ryo.net.",
     "Type": "A"
    }
   },
@@ -962,7 +962,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "UserCustomResourcePolicyC2EB5139"
@@ -1024,7 +1024,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "UserCustomResourcePolicyC2EB5139",
@@ -1108,7 +1108,7 @@
      "Variables": {
       "TEST_USERNAME": "test-user@example.com",
       "TEST_PASSWORD": "TestUser@123",
-      "TEST_URL": "https://*.example.com"
+      "TEST_URL": "https://sakurai-ryo.net"
      }
     },
     "FunctionName": "cdk-integ-alb-oidc-signin-handler",
