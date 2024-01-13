@@ -65,7 +65,7 @@ class YourStack extends cdk.Stack {
   }
 }
 
-class ImportableStack extends cdk.Stack {
+class MigrateStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
@@ -77,11 +77,22 @@ class ImportableStack extends cdk.Stack {
       new cdk.CfnOutput(this, 'QueueName', {
         value: queue.queueName,
       });
+
+      new cdk.CfnOutput(this, 'QueueUrl', {
+        value: queue.queueUrl,
+      });
+      
       new cdk.CfnOutput(this, 'QueueLogicalId', {
         value: queue.node.defaultChild.logicalId,
       });
     }
 
+  }
+}
+
+class ImportableStack extends MigrateStack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
     new cdk.CfnWaitConditionHandle(this, 'Handle');
   }
 }
@@ -470,6 +481,8 @@ switch (stackSet) {
 
     new ImportableStack(app, `${stackPrefix}-importable-stack`);
 
+    new MigrateStack(app, `${stackPrefix}-migrate-stack`);
+
     new ExportValueStack(app, `${stackPrefix}-export-value-stack`);
 
     new BundlingStage(app, `${stackPrefix}-bundling-stage`);
@@ -490,6 +503,9 @@ switch (stackSet) {
   case 'stage-with-errors':
     const stage = new StageWithError(app, `${stackPrefix}-stage-with-errors`);
     stage.synth({ validateOnSynthesis: true });
+    break;
+
+  case 'stage-with-no-stacks':
     break;
 
   default:

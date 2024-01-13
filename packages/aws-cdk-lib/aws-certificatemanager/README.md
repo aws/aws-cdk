@@ -142,6 +142,7 @@ new acm.PrivateCertificate(this, 'PrivateCertificate', {
   subjectAlternativeNames: ['cool.example.com', 'test.example.net'], // optional
   certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(this, 'CA',
     'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
+  keyAlgorithm: acm.KeyAlgorithm.RSA_2048, // optional, default algorithm is RSA_2048
 });
 ```
 
@@ -155,6 +156,24 @@ new acm.Certificate(this, 'Certificate', {
   transparencyLoggingEnabled: false,
 });
 ```
+
+## Key Algorithms
+
+To specify the algorithm of the public and private key pair that your certificate uses to encrypt data use the `keyAlgorithm` property.
+
+Algorithms supported for an ACM certificate request include:
+ * `RSA_2048`
+ * `EC_prime256v1`
+ * `EC_secp384r1`
+
+```ts
+new acm.Certificate(this, 'Certificate', {
+  domainName: 'test.example.com',
+  keyAlgorithm: acm.KeyAlgorithm.EC_PRIME256V1,
+});
+```
+
+> Visit [Key algorithms](https://docs.aws.amazon.com/acm/latest/userguide/acm-certificate.html#algorithms.title) for more details.
 
 ## Importing
 

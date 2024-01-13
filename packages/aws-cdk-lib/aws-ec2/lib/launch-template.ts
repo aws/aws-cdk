@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { Connections, IConnectable } from './connections';
 import { CfnLaunchTemplate } from './ec2.generated';
 import { InstanceType } from './instance-types';
+import { IKeyPair } from './key-pair';
 import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
 import { launchTemplateBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup } from './security-group';
@@ -332,8 +333,16 @@ export interface LaunchTemplateProps {
    * Name of SSH keypair to grant access to instance
    *
    * @default - No SSH access will be possible.
+   * @deprecated - Use `keyPair` instead - https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2-readme.html#using-an-existing-ec2-key-pair
    */
   readonly keyName?: string;
+
+  /**
+   * The SSK keypair to grant access to the instance.
+   *
+   * @default - No SSH access will be possible.
+   */
+  readonly keyPair?: IKeyPair;
 
   /**
    * If set to true, then detailed monitoring will be enabled on instances created with this
@@ -595,6 +604,10 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       throw new Error('You cannot provide both an instanceProfile and a role');
     }
 
+    if (props.keyName && props.keyPair) {
+      throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+    }
+
     // use provided instance profile or create one if a role was provided
     let iamProfileArn: string | undefined = undefined;
     if (props.instanceProfile) {
@@ -626,6 +639,10 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     if (imageConfig) {
       this.osType = imageConfig.osType;
       this.imageId = imageConfig.imageId;
+    }
+
+    if (this.osType && props.keyPair && !props.keyPair._isOsCompatible(this.osType)) {
+      throw new Error(`${props.keyPair.type} keys are not compatible with the chosen AMI`);
     }
 
     if (FeatureFlags.of(this).isEnabled(cxapi.EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA) ||
@@ -738,7 +755,7 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         instanceType: props?.instanceType?.toString(),
         instanceInitiatedShutdownBehavior: props?.instanceInitiatedShutdownBehavior,
         instanceMarketOptions: marketOptions,
-        keyName: props?.keyName,
+        keyName: props.keyPair?.keyPairName ?? props?.keyName,
         monitoring: props?.detailedMonitoring !== undefined ? {
           enabled: props.detailedMonitoring,
         } : undefined,
