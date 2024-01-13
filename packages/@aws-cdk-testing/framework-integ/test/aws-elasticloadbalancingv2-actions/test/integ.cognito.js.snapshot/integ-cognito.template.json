@@ -630,7 +630,7 @@
   "Domain66AC69E0": {
    "Type": "AWS::Cognito::UserPoolDomain",
    "Properties": {
-    "Domain": "Z23ABC4XYZL05B",
+    "Domain": "z23abc4xyzl05b",
     "UserPoolId": {
      "Ref": "UserPool6BA7E5F2"
     }

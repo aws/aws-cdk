@@ -1022,7 +1022,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolDomain",
                   "aws:cdk:cloudformation:props": {
-                    "domain": "Z23ABC4XYZL05B",
+                    "domain": "z23abc4xyzl05b",
                     "userPoolId": {
                       "Ref": "UserPool6BA7E5F2"
                     }
