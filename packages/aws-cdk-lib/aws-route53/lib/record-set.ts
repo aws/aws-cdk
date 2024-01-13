@@ -184,6 +184,21 @@ export interface RecordSetOptions {
    * @default false
    */
   readonly deleteExisting?: boolean;
+
+  /**
+   * Among resource record sets that have the same combination of DNS name and type,
+   * a value that determines the proportion of DNS queries that Amazon Route 53 responds to using the current resource record set.
+   *
+   * Route 53 calculates the sum of the weights for the resource record sets that have the same combination of DNS name and type.
+   * Route 53 then responds to queries based on the ratio of a resource's weight to the total.
+   *
+   * The weight can be a number between 0 and 255.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-weighted.html
+   *
+   * @default 1
+   */
+  readonly weight?: number;
 }
 
 /**
@@ -245,6 +260,10 @@ export class RecordSet extends Resource implements IRecordSet {
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
 
+    if (props.weight && (props.weight < 0 || props.weight > 255)) {
+      throw new Error(`Record weight must be between 0 and 255 inclusive, got: ${props.weight}`);
+    }
+
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
 
     const recordName = determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone);
@@ -263,6 +282,7 @@ export class RecordSet extends Resource implements IRecordSet {
         subdivisionCode: props.geoLocation.subdivisionCode,
       } : undefined,
       setIdentifier: props.geoLocation ? this.configureSetIdentifer(props.geoLocation) : undefined,
+      weight: props.weight,
     });
 
     this.domainName = recordSet.ref;

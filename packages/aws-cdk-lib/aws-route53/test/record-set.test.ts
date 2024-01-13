@@ -1096,4 +1096,55 @@ describe('record set', () => {
       ],
     });
   });
+
+  test('with weight', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.RecordSet(stack, 'Basic', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      weight: 50,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'CNAME',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        'zzz',
+      ],
+      TTL: '1800',
+      Weight: 50,
+    });
+  });
+
+  test.each([
+    [-1],
+    [256],
+  ])('throw error for invalid weight %s', (weight: number) => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // THEN
+    expect(() => new route53.RecordSet(stack, 'Basic', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      weight,
+    })).toThrow(`Record weight must be between 0 and 255 inclusive, got: ${weight}`);
+  });
 });
