@@ -712,11 +712,12 @@ export interface FlowLogOptions {
    * and aggregated into a flow log record.
    *
    * When creating flow logs for a Transit Gateway or Transit Gateway Attachment,
-   * it is not possible to specify TEN_MINUTES.
+   * this property must be ONE_MINUTES.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-flowlog.html#cfn-ec2-flowlog-maxaggregationinterval
    *
-   * @default FlowLogMaxAggregationInterval.TEN_MINUTES
+   * @default - FlowLogMaxAggregationInterval.ONE_MINUTES if Transit Gateway or
+   * Transit Gateway Attachment, otherwise FlowLogMaxAggregationInterval.TEN_MINUTES.
    */
   readonly maxAggregationInterval?: FlowLogMaxAggregationInterval;
 }
