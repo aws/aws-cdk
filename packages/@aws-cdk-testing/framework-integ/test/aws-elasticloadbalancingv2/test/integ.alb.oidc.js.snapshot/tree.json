@@ -721,11 +721,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CertificateManager::Certificate",
                   "aws:cdk:cloudformation:props": {
-                    "domainName": "sakurai-ryo.net",
+                    "domainName": "*.example.com",
                     "domainValidationOptions": [
                       {
-                        "domainName": "sakurai-ryo.net",
-                        "hostedZoneId": "Z00315131HIVC53IKGEOG"
+                        "domainName": "*.example.com",
+                        "hostedZoneId": "Z23ABC4XYZL05B"
                       }
                     ],
                     "tags": [
@@ -805,7 +805,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolDomain",
                       "aws:cdk:cloudformation:props": {
-                        "domain": "z00315131hivc53ikgeog",
+                        "domain": "Z23ABC4XYZL05B",
                         "userPoolId": {
                           "Ref": "UserPool6BA7E5F2"
                         }
@@ -844,7 +844,7 @@
                           "aws.cognito.signin.user.admin"
                         ],
                         "callbackUrLs": [
-                          "https://sakurai-ryo.net/oauth2/idpresponse"
+                          "https://*.example.com/oauth2/idpresponse"
                         ],
                         "generateSecret": true,
                         "supportedIdentityProviders": [
@@ -1321,8 +1321,8 @@
                         ]
                       }
                     },
-                    "hostedZoneId": "Z00315131HIVC53IKGEOG",
-                    "name": "sakurai-ryo.net.",
+                    "hostedZoneId": "Z23ABC4XYZL05B",
+                    "name": "example.com.",
                     "type": "A"
                   }
                 },
@@ -1610,7 +1610,7 @@
                       "variables": {
                         "TEST_USERNAME": "test-user@example.com",
                         "TEST_PASSWORD": "TestUser@123",
-                        "TEST_URL": "https://sakurai-ryo.net"
+                        "TEST_URL": "https://*.example.com"
                       }
                     },
                     "functionName": "cdk-integ-alb-oidc-signin-handler",
