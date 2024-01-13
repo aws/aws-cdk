@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9efb96d8186dd343e3f84c72cfbcaaf16aa5579bbac0c02c60d4f19f4300d832.zip"
+     "S3Key": "1b5aaa158e02216aa983cbf998d740faf1176f70b3769f77295e9bd20f543edf.zip"
     },
     "Description": "onEvent handler for EKS cluster resource provider",
     "Environment": {
@@ -115,7 +115,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9efb96d8186dd343e3f84c72cfbcaaf16aa5579bbac0c02c60d4f19f4300d832.zip"
+     "S3Key": "1b5aaa158e02216aa983cbf998d740faf1176f70b3769f77295e9bd20f543edf.zip"
     },
     "Description": "isComplete handler for EKS cluster resource provider",
     "Environment": {
@@ -249,7 +249,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -386,7 +386,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -520,7 +520,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (aws-stepfunctions-tasks-emr-containers-start-job-run/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
     "Environment": {
@@ -621,22 +621,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": [
-        "logs:CreateLogDelivery",
-        "logs:CreateLogStream",
-        "logs:DeleteLogDelivery",
-        "logs:DescribeLogGroups",
-        "logs:DescribeResourcePolicies",
-        "logs:GetLogDelivery",
-        "logs:ListLogDeliveries",
-        "logs:PutLogEvents",
-        "logs:PutResourcePolicy",
-        "logs:UpdateLogDelivery"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -648,14 +632,6 @@
      }
     ]
    }
-  },
-  "ProviderwaiterstatemachineLogGroupDD693A98": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
   },
   "Providerwaiterstatemachine5D4A9DF0": {
    "Type": "AWS::StepFunctions::StateMachine",
@@ -681,22 +657,6 @@
        "\"}}}"
       ]
      ]
-    },
-    "LoggingConfiguration": {
-     "Destinations": [
-      {
-       "CloudWatchLogsLogGroup": {
-        "LogGroupArn": {
-         "Fn::GetAtt": [
-          "ProviderwaiterstatemachineLogGroupDD693A98",
-          "Arn"
-         ]
-        }
-       }
-      }
-     ],
-     "IncludeExecutionData": false,
-     "Level": "ERROR"
     },
     "RoleArn": {
      "Fn::GetAtt": [

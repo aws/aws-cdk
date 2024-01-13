@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.121.1](https://github.com/aws/aws-cdk/compare/v2.121.0...v2.121.1) (2024-01-13)
+
+
+### Reverts
+
+* allowing log group config for SFN CR ([#28699](https://github.com/aws/aws-cdk/issues/28699)) ([f3f217e](https://github.com/aws/aws-cdk/commit/f3f217ee30ce4b7ef232a2a8caedb456415400a2)), closes [#27310](https://github.com/aws/aws-cdk/issues/27310)
+
 ## [2.121.0](https://github.com/aws/aws-cdk/compare/v2.120.0...v2.121.0) (2024-01-12)
 
 
