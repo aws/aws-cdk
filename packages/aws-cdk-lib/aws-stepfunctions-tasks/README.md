@@ -1066,6 +1066,26 @@ new tasks.GlueDataBrewStartJobRun(this, 'Task', {
 });
 ```
 
+## Invoke HTTP API
+
+Step Functions supports [calling third-party APIs](https://docs.aws.amazon.com/step-functions/latest/dg/connect-third-party-apis.html) with credentials managed by Amazon EventBridge [Connections](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_Connection.html).
+
+The following snippet creates a new API destination Connection, and uses it to make a POST request to the specified URL. The endpoint response is available at the `$.ResponseBody` path.
+
+```ts
+const connection = new events.Connection(this, 'Connection', {
+  connectionName: 'my-connection',
+  authorization: events.Authorization.basic('username', 'password'),
+});
+
+new tasks.HttpInvoke(this, 'Invoke HTTP API', {
+  apiEndpoint: 'https://example.com/api',
+  body: JSON.stringify({ foo: 'bar' }),
+  connection,
+  method: 'POST',
+});
+```
+
 ## Lambda
 
 [Invoke](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html) a Lambda function.
