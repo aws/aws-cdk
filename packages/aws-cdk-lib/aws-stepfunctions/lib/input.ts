@@ -17,8 +17,8 @@ export class TaskInput {
    * Use an object as task input
    *
    * This object may contain JSON path fields as object values, if desired.
-   * 
-   * Use `sfn.JsonPath.DISCARD` to explicitly set `null` for a field's value. 
+   *
+   * Use `sfn.JsonPath.DISCARD` in place of `null` for languages that do not support `null` (i.e. Python).
    */
   public static fromObject(obj: { [key: string]: any }) {
     return new TaskInput(InputType.OBJECT, obj);

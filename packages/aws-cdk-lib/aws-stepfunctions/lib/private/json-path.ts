@@ -124,7 +124,7 @@ interface FieldHandlers {
   handleNumber(key: string, x: number): {[key: string]: number | string};
   handleBoolean(key: string, x: boolean): {[key: string]: boolean};
   handleResolvable(key: string, x: IResolvable): {[key: string]: any};
-} 
+}
 
 export function recurseObject(obj: object | undefined, handlers: FieldHandlers, visited: object[] = []): object | undefined {
   // If the argument received is not actually an object (string, number, boolean, undefined, ...) or null

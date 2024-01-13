@@ -252,6 +252,7 @@ describe('Fields', () => {
       },
     });
   });
+});
 
 describe('intrinsics constructors', () => {
   test('array', () => {

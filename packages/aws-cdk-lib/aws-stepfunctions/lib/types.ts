@@ -239,8 +239,3 @@ export interface ProcessorConfig {
  * @deprecated use JsonPath.DISCARD
  */
 export const DISCARD = 'DISCARD';
-
-/**
- * Special string value to drop state
- */
-export const NULL_SUBSTITUTE = 'NULL_SUBSTITUTE';
