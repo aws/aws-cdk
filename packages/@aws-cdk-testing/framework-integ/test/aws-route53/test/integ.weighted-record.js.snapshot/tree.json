@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "weighted-record-set": {
-        "id": "weighted-record-set",
-        "path": "weighted-record-set",
+      "weighted-record": {
+        "id": "weighted-record",
+        "path": "weighted-record",
         "children": {
           "HostedZone": {
             "id": "HostedZone",
-            "path": "weighted-record-set/HostedZone",
+            "path": "weighted-record/HostedZone",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "weighted-record-set/HostedZone/Resource",
+                "path": "weighted-record/HostedZone/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
                   "aws:cdk:cloudformation:props": {
@@ -32,13 +32,13 @@
               "version": "0.0.0"
             }
           },
-          "WeightedRecordSet0": {
-            "id": "WeightedRecordSet0",
-            "path": "weighted-record-set/WeightedRecordSet0",
+          "WeightedRecord0": {
+            "id": "WeightedRecord0",
+            "path": "weighted-record/WeightedRecord0",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "weighted-record-set/WeightedRecordSet0/Resource",
+                "path": "weighted-record/WeightedRecord0/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
@@ -47,11 +47,11 @@
                     },
                     "name": "www.cdk.dev.",
                     "resourceRecords": [
-                      "xxx"
+                      "1.2.3.4"
                     ],
                     "setIdentifier": "id1",
                     "ttl": "10",
-                    "type": "CNAME",
+                    "type": "A",
                     "weight": 20
                   }
                 },
@@ -62,17 +62,17 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_route53.RecordSet",
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
               "version": "0.0.0"
             }
           },
-          "WeightedRecordSet1": {
-            "id": "WeightedRecordSet1",
-            "path": "weighted-record-set/WeightedRecordSet1",
+          "WeightedRecord1": {
+            "id": "WeightedRecord1",
+            "path": "weighted-record/WeightedRecord1",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "weighted-record-set/WeightedRecordSet1/Resource",
+                "path": "weighted-record/WeightedRecord1/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
@@ -81,11 +81,11 @@
                     },
                     "name": "www.cdk.dev.",
                     "resourceRecords": [
-                      "yyy"
+                      "2.3.4.5"
                     ],
                     "setIdentifier": "id2",
                     "ttl": "10",
-                    "type": "CNAME",
+                    "type": "A",
                     "weight": 30
                   }
                 },
@@ -96,17 +96,17 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_route53.RecordSet",
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
               "version": "0.0.0"
             }
           },
-          "WeightedRecordSet2": {
-            "id": "WeightedRecordSet2",
-            "path": "weighted-record-set/WeightedRecordSet2",
+          "WeightedRecord2": {
+            "id": "WeightedRecord2",
+            "path": "weighted-record/WeightedRecord2",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "weighted-record-set/WeightedRecordSet2/Resource",
+                "path": "weighted-record/WeightedRecord2/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
                   "aws:cdk:cloudformation:props": {
@@ -115,11 +115,11 @@
                     },
                     "name": "www.cdk.dev.",
                     "resourceRecords": [
-                      "zzz"
+                      "3.4.5.6"
                     ],
                     "setIdentifier": "id3",
                     "ttl": "10",
-                    "type": "CNAME",
+                    "type": "A",
                     "weight": 50
                   }
                 },
@@ -130,13 +130,13 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_route53.RecordSet",
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
               "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "weighted-record-set/BootstrapVersion",
+            "path": "weighted-record/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -144,7 +144,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "weighted-record-set/CheckBootstrapVersion",
+            "path": "weighted-record/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -156,17 +156,17 @@
           "version": "0.0.0"
         }
       },
-      "Route53WeightedRecordSetInteg": {
-        "id": "Route53WeightedRecordSetInteg",
-        "path": "Route53WeightedRecordSetInteg",
+      "Route53WeightedRecordInteg": {
+        "id": "Route53WeightedRecordInteg",
+        "path": "Route53WeightedRecordInteg",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "Route53WeightedRecordSetInteg/DefaultTest",
+            "path": "Route53WeightedRecordInteg/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "Route53WeightedRecordSetInteg/DefaultTest/Default",
+                "path": "Route53WeightedRecordInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -174,11 +174,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "Route53WeightedRecordSetInteg/DefaultTest/DeployAssert",
+                "path": "Route53WeightedRecordInteg/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "Route53WeightedRecordSetInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "Route53WeightedRecordInteg/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -186,7 +186,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "Route53WeightedRecordSetInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "Route53WeightedRecordInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

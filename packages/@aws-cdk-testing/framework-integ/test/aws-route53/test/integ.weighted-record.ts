@@ -12,27 +12,26 @@ class TestStack extends Stack {
     });
 
     [
-      { target: 'xxx', weight: 20, recordId: 'id1' },
-      { target: 'yyy', weight: 30, recordId: 'id2' },
-      { target: 'zzz', weight: 50, recordId: 'id3' },
+      { target: '1.2.3.4', weight: 20, recordId: 'id1' },
+      { target: '2.3.4.5', weight: 30, recordId: 'id2' },
+      { target: '3.4.5.6', weight: 50, recordId: 'id3' },
     ].forEach((data, index) => {
-      new route53.RecordSet(this, `WeightedRecordSet${index}`, {
+      new route53.ARecord(this, `WeightedRecord${index}`, {
         zone: hostedZone,
         recordName: 'www',
-        recordType: route53.RecordType.CNAME,
-        target: route53.RecordTarget.fromValues(data.target),
         weight: data.weight,
         ttl: Duration.seconds(10),
         setIdentifier: data.recordId,
+        target: route53.RecordTarget.fromIpAddresses(data.target),
       });
     });
   }
 }
 
 const app = new App();
-const stack = new TestStack(app, 'weighted-record-set');
+const stack = new TestStack(app, 'weighted-record');
 
-new IntegTest(app, 'Route53WeightedRecordSetInteg', {
+new IntegTest(app, 'Route53WeightedRecordInteg', {
   testCases: [stack],
   diffAssets: true,
 });
