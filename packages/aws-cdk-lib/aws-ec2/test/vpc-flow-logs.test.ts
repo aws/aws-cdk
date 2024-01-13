@@ -603,7 +603,7 @@ describe('vpc flow logs', () => {
     }).toThrow(/trafficType is not supported for Transit Gateway and Transit Gateway Attachment/);
   });
 
-  test('create with transit gateway id and specify maxAggregationInterval.TEN_MINUTES', () => {
+  test('throw if transit gateway with value other than maxAggregationInterval.ONE_MINUTES', () => {
     const stack = getTestStack();
 
     expect(() => {
