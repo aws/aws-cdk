@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-eks-cluster-bottlerocket-ng-test.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/da5b4cb16a680d700852480460ee87b1ad86ae6496a15b5c5dff24eb373c87f0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6877e57961db9251fc8e034d5853becb80c7bbc0f0a1c417d3f0717f8e425fcf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -362,12 +362,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A"
-          }
-        ],
-        "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProviderwaiterstatemachineLogGroupDD693A98"
           }
         ],
         "/aws-cdk-eks-cluster-bottlerocket-ng-test/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource": [
