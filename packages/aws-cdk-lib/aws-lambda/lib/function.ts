@@ -23,6 +23,7 @@ import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
 import * as ec2 from '../../aws-ec2';
+import * as efs from '../../aws-efs';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
@@ -1413,7 +1414,10 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
 
     if (props.filesystem) {
       if (props.filesystem.config.connections) {
-        props.filesystem.config.connections.allowDefaultPortFrom(this);
+        this.connections.allowTo(
+          props.filesystem.config.connections,
+          props.filesystem.config.connections.defaultPort ?? ec2.Port.tcp(efs.FileSystem.DEFAULT_PORT),
+        );
       }
     }
 

@@ -1,12 +1,13 @@
 {
-  "version": "33.0.0",
+  "version": "36.0.0",
   "testCases": {
-    "aws-ecs-fargate-test/DefaultTest": {
+    "aws-efs-lambda-test/DefaultTest": {
       "stacks": [
-        "aws-cdk-lambda-1"
+        "aws-cdk-efs",
+        "aws-cdk-lambda"
       ],
-      "assertionStack": "aws-ecs-fargate-test/DefaultTest/DeployAssert",
-      "assertionStackName": "awsecsfargatetestDefaultTestDeployAssert78ECD46B"
+      "assertionStack": "aws-efs-lambda-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awsefslambdatestDefaultTestDeployAssert5DC2C506"
     }
   }
 }
