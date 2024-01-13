@@ -450,6 +450,141 @@ describe('proxy', () => {
       ],
     });
   });
+
+  describe('clientPasswordAuthType', () => {
+    test('create a DB proxy with specified client password authentication type', () => {
+      // GIVEN
+      const instance = new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({
+          version: rds.MysqlEngineVersion.VER_5_7,
+        }),
+        vpc,
+      });
+
+      // WHEN
+      new rds.DatabaseProxy(stack, 'Proxy', {
+        proxyTarget: rds.ProxyTarget.fromInstance(instance),
+        secrets: [instance.secret!],
+        vpc,
+        clientPasswordAuthType: rds.ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
+        Auth: [
+          {
+            AuthScheme: 'SECRETS',
+            IAMAuth: 'DISABLED',
+            ClientPasswordAuthType: 'MYSQL_NATIVE_PASSWORD',
+            SecretArn: {
+              Ref: 'InstanceSecretAttachment83BEE581',
+            },
+          },
+        ],
+        DBProxyName: 'Proxy',
+        EngineFamily: 'MYSQL',
+        RequireTLS: true,
+        RoleArn: {
+          'Fn::GetAtt': [
+            'ProxyIAMRole2FE8AB0F',
+            'Arn',
+          ],
+        },
+        VpcSubnetIds: [
+          {
+            Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+          },
+          {
+            Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+          },
+        ],
+      });
+    });
+
+    test('MYSQL_NATIVE_PASSWORD clientPasswordAuthType requires MYSQL engine family', () => {
+      // GIVEN
+      const instance = new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.postgres({
+          version: rds.PostgresEngineVersion.VER_11,
+        }),
+        vpc,
+      });
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new rds.DatabaseProxy(stack, 'Proxy', {
+          proxyTarget: rds.ProxyTarget.fromInstance(instance),
+          secrets: [instance.secret!],
+          vpc,
+          clientPasswordAuthType: rds.ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD,
+        });
+      }).toThrow(/MYSQL_NATIVE_PASSWORD client password authentication type requires MYSQL engineFamily, got POSTGRESQL/);
+    });
+
+    test('POSTGRES_SCRAM_SHA_256 clientPasswordAuthType requires POSTGRESQL engine family', () => {
+      // GIVEN
+      const instance = new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({
+          version: rds.MysqlEngineVersion.VER_5_7,
+        }),
+        vpc,
+      });
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new rds.DatabaseProxy(stack, 'Proxy', {
+          proxyTarget: rds.ProxyTarget.fromInstance(instance),
+          secrets: [instance.secret!],
+          vpc,
+          clientPasswordAuthType: rds.ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256,
+        });
+      }).toThrow(/POSTGRES_SCRAM_SHA_256 client password authentication type requires POSTGRESQL engineFamily, got MYSQL/);
+    });
+
+    test('POSTGRES_MD5 clientPasswordAuthType requires POSTGRESQL engine family', () => {
+      // GIVEN
+      const instance = new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({
+          version: rds.MysqlEngineVersion.VER_5_7,
+        }),
+        vpc,
+      });
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new rds.DatabaseProxy(stack, 'Proxy', {
+          proxyTarget: rds.ProxyTarget.fromInstance(instance),
+          secrets: [instance.secret!],
+          vpc,
+          clientPasswordAuthType: rds.ClientPasswordAuthType.POSTGRES_MD5,
+        });
+      }).toThrow(/POSTGRES_MD5 client password authentication type requires POSTGRESQL engineFamily, got MYSQL/);
+    });
+
+    test('SQL_SERVER_AUTHENTICATION clientPasswordAuthType requires SQLSERVER engine family', () => {
+      // GIVEN
+      const instance = new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({
+          version: rds.MysqlEngineVersion.VER_5_7,
+        }),
+        vpc,
+      });
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new rds.DatabaseProxy(stack, 'Proxy', {
+          proxyTarget: rds.ProxyTarget.fromInstance(instance),
+          secrets: [instance.secret!],
+          vpc,
+          clientPasswordAuthType: rds.ClientPasswordAuthType.SQL_SERVER_AUTHENTICATION,
+        });
+      }).toThrow(/SQL_SERVER_AUTHENTICATION client password authentication type requires SQLSERVER engineFamily, got MYSQL/);
+    });
+  });
 });
 
 describe('feature flag @aws-cdk/aws-rds:databaseProxyUniqueResourceName', () => {

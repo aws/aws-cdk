@@ -77,7 +77,7 @@ export interface InstanceProps {
    * Name of SSH keypair to grant access to instance
    *
    * @default - No SSH access will be possible.
-   * @deprecated - Use {@link keyPair} instead
+   * @deprecated - Use `keyPair` instead - https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2-readme.html#using-an-existing-ec2-key-pair
    */
   readonly keyName?: string;
 
@@ -109,6 +109,14 @@ export interface InstanceProps {
    * @default true
    */
   readonly allowAllOutbound?: boolean;
+
+  /**
+   * Whether the instance could initiate IPv6 connections to anywhere by default.
+   * This property is only used when you do not provide a security group.
+   *
+   * @default false
+   */
+  readonly allowAllIpv6Outbound?: boolean;
 
   /**
    * The length of time to wait for the resourceSignalCount
@@ -368,6 +376,7 @@ export class Instance extends Resource implements IInstance {
       this.securityGroup = new SecurityGroup(this, 'InstanceSecurityGroup', {
         vpc: props.vpc,
         allowAllOutbound: props.allowAllOutbound !== false,
+        allowAllIpv6Outbound: props.allowAllIpv6Outbound,
       });
     }
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
@@ -437,7 +446,7 @@ export class Instance extends Resource implements IInstance {
     // there is no need to configure them on the instance level
     this.instance = new CfnInstance(this, 'Resource', {
       imageId: imageConfig.imageId,
-      keyName: props.keyName,
+      keyName: props.keyPair?.keyPairName ?? props?.keyName,
       instanceType: props.instanceType.toString(),
       subnetId: networkInterfaces ? undefined : subnet.subnetId,
       securityGroupIds: networkInterfaces ? undefined : securityGroupsToken,
