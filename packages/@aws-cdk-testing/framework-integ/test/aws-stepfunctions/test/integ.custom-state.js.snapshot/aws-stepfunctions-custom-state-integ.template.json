@@ -20,13 +20,13 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
+    "DefinitionString": "{\"StartAt\":\"my custom task\",\"States\":{\"my custom task\":{\"Next\":\"final step\",\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::dynamodb:putItem\",\"Parameters\":{\"TableName\":\"my-cool-table\",\"Item\":{\"id\":{\"S\":\"my-entry\"}}},\"ResultPath\":null,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":10,\"MaxAttempts\":5}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"failed\"}]},\"final step\":{\"Type\":\"Pass\",\"End\":true},\"failed\":{\"Type\":\"Fail\",\"Error\":\"DidNotWork\",\"Cause\":\"We got stuck\"}},\"TimeoutSeconds\":30}",
     "RoleArn": {
      "Fn::GetAtt": [
       "StateMachineRoleB840431D",
       "Arn"
      ]
-    },
-    "DefinitionString": "{\"StartAt\":\"my custom task\",\"States\":{\"my custom task\":{\"Next\":\"final step\",\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::dynamodb:putItem\",\"Parameters\":{\"TableName\":\"my-cool-table\",\"Item\":{\"id\":{\"S\":\"my-entry\"}}},\"ResultPath\":null},\"final step\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+    }
    },
    "DependsOn": [
     "StateMachineRoleB840431D"

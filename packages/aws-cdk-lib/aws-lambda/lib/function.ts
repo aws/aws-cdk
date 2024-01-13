@@ -23,6 +23,7 @@ import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
 import * as ec2 from '../../aws-ec2';
+import * as efs from '../../aws-efs';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
@@ -48,7 +49,7 @@ export enum Tracing {
   /**
    * Lambda will not trace any request.
    */
-  DISABLED = 'Disabled'
+  DISABLED = 'Disabled',
 }
 
 /**
@@ -68,7 +69,7 @@ export enum SystemLogLevel {
   /**
    * Lambda will capture only logs at warn level.
    */
-  WARN = 'WARN'
+  WARN = 'WARN',
 }
 
 /**
@@ -100,7 +101,7 @@ export enum ApplicationLogLevel {
   /**
    * Lambda will capture only logs at fatal level.
    */
-  FATAL = 'FATAL'
+  FATAL = 'FATAL',
 }
 
 /**
@@ -118,7 +119,7 @@ export enum LogFormat {
   /**
    * Lambda structured logging in Json format.
    */
-  JSON = 'JSON'
+  JSON = 'JSON',
 }
 
 /**
@@ -259,6 +260,9 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * If set to false, you must individually add traffic rules to allow the
    * Lambda to connect to network targets.
+   *
+   * Do not specify this property if the `securityGroups` or `securityGroup` property is set.
+   * Instead, configure `allowAllOutbound` directly on the security group.
    *
    * @default true
    */
@@ -1410,7 +1414,10 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
 
     if (props.filesystem) {
       if (props.filesystem.config.connections) {
-        props.filesystem.config.connections.allowDefaultPortFrom(this);
+        this.connections.allowTo(
+          props.filesystem.config.connections,
+          props.filesystem.config.connections.defaultPort ?? ec2.Port.tcp(efs.FileSystem.DEFAULT_PORT),
+        );
       }
     }
 

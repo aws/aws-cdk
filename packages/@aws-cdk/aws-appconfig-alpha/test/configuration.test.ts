@@ -149,6 +149,121 @@ describe('configuration', () => {
     Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 1);
   });
 
+  test('configuration using deploy method and no environment associated', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig', {
+      name: 'MyApplication',
+    });
+    app.addEnvironment('MyEnv1');
+    const env = app.addEnvironment('MyEnv2');
+    const config = new HostedConfiguration(stack, 'MyHostedConfig', {
+      content: ConfigurationContent.fromInlineText('This is my content'),
+      application: app,
+      deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
+      }),
+    });
+    config.deploy(env);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Deployment', {
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      EnvironmentId: {
+        Ref: 'MyAppConfigMyEnv2350437D6',
+      },
+      ConfigurationVersion: {
+        Ref: 'MyHostedConfig51D3877D',
+      },
+      ConfigurationProfileId: {
+        Ref: 'MyHostedConfigConfigurationProfile2E1A2BBC',
+      },
+      DeploymentStrategyId: {
+        Ref: 'MyDeploymentStrategy60D31FB0',
+      },
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 1);
+  });
+
+  test('configuration using deploy method with environment associated', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig', {
+      name: 'MyApplication',
+    });
+    const env1 = app.addEnvironment('MyEnv1');
+    const env2 = app.addEnvironment('MyEnv2');
+    const config = new HostedConfiguration(stack, 'MyHostedConfig', {
+      content: ConfigurationContent.fromInlineText('This is my content'),
+      application: app,
+      deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
+      }),
+      deployTo: [env1],
+    });
+    config.deploy(env2);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Deployment', {
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      EnvironmentId: {
+        Ref: 'MyAppConfigMyEnv1B9120FA1',
+      },
+      ConfigurationVersion: {
+        Ref: 'MyHostedConfig51D3877D',
+      },
+      ConfigurationProfileId: {
+        Ref: 'MyHostedConfigConfigurationProfile2E1A2BBC',
+      },
+      DeploymentStrategyId: {
+        Ref: 'MyDeploymentStrategy60D31FB0',
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Deployment', {
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      EnvironmentId: {
+        Ref: 'MyAppConfigMyEnv2350437D6',
+      },
+      ConfigurationVersion: {
+        Ref: 'MyHostedConfig51D3877D',
+      },
+      ConfigurationProfileId: {
+        Ref: 'MyHostedConfigConfigurationProfile2E1A2BBC',
+      },
+      DeploymentStrategyId: {
+        Ref: 'MyDeploymentStrategy60D31FB0',
+      },
+    });
+    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 2);
+  });
+
+  test('configuration with no environment associated and no deploy method used', () => {
+    const stack = new cdk.Stack();
+    const app = new Application(stack, 'MyAppConfig', {
+      name: 'MyApplication',
+    });
+    new HostedConfiguration(stack, 'MyHostedConfig', {
+      content: ConfigurationContent.fromInlineText('This is my content'),
+      application: app,
+      deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
+        rolloutStrategy: RolloutStrategy.linear({
+          growthFactor: 15,
+          deploymentDuration: cdk.Duration.minutes(30),
+        }),
+      }),
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::AppConfig::Deployment', 0);
+  });
+
   test('configuration with two configurations specified', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig', {
@@ -379,7 +494,7 @@ describe('configuration', () => {
         }),
       }),
       application: app,
-      content: ConfigurationContent.fromFile('./test/config.json'),
+      content: ConfigurationContent.fromFile('test/config.json'),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
@@ -763,6 +878,7 @@ describe('configuration', () => {
       application: app,
       validators: [
         JsonSchemaValidator.fromInline(validatorContent),
+        JsonSchemaValidator.fromFile('test/schema.json'),
       ],
       content: ConfigurationContent.fromInlineText('This is my content'),
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
@@ -782,6 +898,10 @@ describe('configuration', () => {
         {
           Type: 'JSON_SCHEMA',
           Content: '\n    {\n      \"type\": \"object\",\n      \"properties\": {\n        \"computeResource\": {\n          \"type\": \"object\",\n          \"properties\": {\n            \"ComputeAL1ImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            },\n            \"GPUImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            },\n            \"ARMImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            },\n            \"ComputeAL2ImageId\": {\n              \"type\": \"object\",\n              \"properties\": {\n                \"me-south-1\": { \"type\": \"string\" },\n                \"ap-east-1\": { \"type\": \"string\" },\n                \"ap-northeast-1\": { \"type\": \"string\" },\n                \"ap-northeast-2\": { \"type\": \"string\" },\n                \"ap-south-1\": { \"type\": \"string\" },\n                \"ap-southeast-1\": { \"type\": \"string\" },\n                \"ap-southeast-2\": { \"type\": \"string\" },\n                \"ca-central-1\": { \"type\": \"string\" },\n                \"cn-north-1\": { \"type\": \"string\" },\n                \"cn-northwest-1\": { \"type\": \"string\" },\n                \"eu-central-1\": { \"type\": \"string\" },\n                \"eu-north-1\": { \"type\": \"string\" },\n                \"eu-west-1\": { \"type\": \"string\" },\n                \"eu-west-2\": { \"type\": \"string\" },\n                \"eu-west-3\": { \"type\": \"string\" },\n                \"sa-east-1\": { \"type\": \"string\" },\n                \"us-east-1\": { \"type\": \"string\" },\n                \"us-east-2\": { \"type\": \"string\" },\n                \"us-gov-west-1\": { \"type\": \"string\" },\n                \"us-gov-east-1\": { \"type\": \"string\" },\n                \"us-west-1\": { \"type\": \"string\" },\n                \"us-west-2\": { \"type\": \"string\" },\n                \"eu-south-1\": { \"type\": \"string\" },\n                \"ap-northeast-3\": { \"type\": \"string\" },\n                \"af-south-1\": { \"type\": \"string\" }\n              }\n            }\n          }\n        }\n      }\n    }',
+        },
+        {
+          Type: 'JSON_SCHEMA',
+          Content: '{\n  \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n  \"type\": \"string\"\n}',
         },
       ],
       LocationUri: 'hosted',
