@@ -23,6 +23,13 @@ export interface IOpenIdConnectProvider2 extends IResource {
  */
 export interface OpenIdConnectProvider2Props {
   /**
+   * The name of the OIDC Provider.
+   *
+   * @default - A name is automatically generated.
+   */
+  readonly oidcProviderName?: string;
+
+  /**
    * The URL of the identity provider. The URL must begin with https:// and
    * should correspond to the iss claim in the provider's OpenID Connect ID
    * tokens. Per the OIDC standard, path components are allowed but query
@@ -107,7 +114,7 @@ export class OpenIdConnectProvider2
   ): IOpenIdConnectProvider2 {
     const resourceName = Arn.extractResourceName(
       openIdConnectProviderArn,
-      'oidc-provider2',
+      'oidc-provider',
     );
 
     class Import extends Resource implements IOpenIdConnectProvider2 {
@@ -141,7 +148,9 @@ export class OpenIdConnectProvider2
     id: string,
     props: OpenIdConnectProvider2Props,
   ) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.oidcProviderName,
+    });
 
     const resource = new CfnOIDCProvider(this, 'Resource', {
       url: props.url,
@@ -152,7 +161,7 @@ export class OpenIdConnectProvider2
     this.openIdConnectProviderArn = Token.asString(resource.ref);
     this.openIdConnectProviderIssuer = Arn.extractResourceName(
       this.openIdConnectProviderArn,
-      'oidc-provider2',
+      'oidc-provider',
     );
     this.openIdConnectProviderthumbprints = Token.asString(
       resource.getAtt('Thumbprints'),
