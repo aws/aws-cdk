@@ -66,14 +66,22 @@ export interface CodeCommitSourceVariables {
  * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events_targets-readme.html
  */
 export interface ICustomEventRule {
-  /** event pattern when this rule should be triggered */
-  eventPattern: EventPattern;
-  /** Target e.g. Lambda when event pattern is fulfilled */
-  target: IRuleTarget
-  /** Rulename */
-  ruleName?: string;
-  /** Description */
-  description?: string;
+  /**
+   * event pattern when this rule should be triggered 
+   */
+  readonly eventPattern: EventPattern;
+  /**
+   * Target e.g. Lambda when event pattern is fulfilled
+   */
+  readonly target: IRuleTarget
+  /**
+   * Rulename
+   */
+  readonly ruleName?: string;
+  /**
+   * Description
+   */
+  readonly description?: string;
 }
 
 /**
