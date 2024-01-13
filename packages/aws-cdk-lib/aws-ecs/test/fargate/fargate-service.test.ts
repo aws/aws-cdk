@@ -1488,7 +1488,7 @@ describe('fargate service', () => {
         sourceVolume: 'nginx-vol',
       });
 
-      service.addVolume(new ServiceManagedVolume({
+      service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
         name: 'nginx-vol',
         managedEBSVolume: {
           role: role,
@@ -1498,7 +1498,7 @@ describe('fargate service', () => {
             tags: {
               purpose: 'production',
             },
-            propagateTags: ecs.PropagatedTagSource.SERVICE,
+            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
           }],
         },
       }));
@@ -1532,7 +1532,7 @@ describe('fargate service', () => {
 
     test('success when mounting via ServiceManagedVolume', () => {
       // WHEN
-      const volume = new ServiceManagedVolume({
+      const volume = new ServiceManagedVolume(stack, 'EBS Volume', {
         name: 'nginx-vol',
         managedEBSVolume: {
           role: role,
@@ -1541,7 +1541,7 @@ describe('fargate service', () => {
             tags: {
               purpose: 'production',
             },
-            propagateTags: ecs.PropagatedTagSource.SERVICE,
+            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
           }],
         },
       });
@@ -1592,6 +1592,408 @@ describe('fargate service', () => {
           {
             Name: 'nginx-vol',
             ConfiguredAtLaunch: true,
+          },
+        ],
+      });
+    });
+
+    test('throw an error when multiple volume configurations are added to ECS service', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+      const vol1 = new ServiceManagedVolume(stack, 'EBSVolume', {
+        name: 'nginx-vol',
+        managedEBSVolume: {
+          fileSystemType: ecs.FileSystemType.XFS,
+          sizeInGiB: 15,
+        },
+      });
+      const vol2 = new ServiceManagedVolume(stack, 'ebs1', {
+        name: 'ebs1',
+        managedEBSVolume: {
+          fileSystemType: ecs.FileSystemType.XFS,
+          sizeInGiB: 15,
+        },
+      });
+      service.addVolume(vol1);
+      // Attempt to add a second volume and expect an error
+      expect(() => {
+        service.addVolume(vol2);
+      }).toThrow('Invalid VolumeConfiguration. Only one volume can be configured at launch.');
+    });
+
+    test('create a default ebsrole when not provided', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+        name: 'nginx-vol',
+        managedEBSVolume: {
+          sizeInGiB: 20,
+          fileSystemType: ecs.FileSystemType.XFS,
+          tagSpecifications: [{
+            tags: {
+              purpose: 'production',
+            },
+            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
+          }],
+        },
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        VolumeConfigurations: [
+          {
+            ManagedEBSVolume: {
+              RoleArn: { 'Fn::GetAtt': ['EBSVolumeEBSRoleD38B9F31', 'Arn'] },
+              SizeInGiB: 20,
+              FilesystemType: 'xfs',
+              TagSpecifications: [
+                {
+                  PropagateTags: 'SERVICE',
+                  ResourceType: 'volume',
+                  Tags: [
+                    {
+                      Key: 'purpose',
+                      Value: 'production',
+                    },
+                  ],
+                },
+              ],
+            },
+            Name: 'nginx-vol',
+          },
+        ],
+      });
+    });
+
+    test('throw an error when both sizeInGIB and snapshotId are not provided', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+          },
+        }));
+      }).toThrow(/sizeInGiB or snapShotId must be specified/);
+    });
+
+    test('throw an error snapshot does not match pattern', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            snapShotId: 'snap-0d48decab5c493eee_',
+          },
+        }));
+      }).toThrow('`snapshotId` does match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token');
+    });
+
+    test('success when snapshotId matches the pattern', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+      const vol = new ServiceManagedVolume(stack, 'EBS Volume', {
+        name: 'nginx-vol',
+        managedEBSVolume: {
+          fileSystemType: ecs.FileSystemType.XFS,
+          snapShotId: 'snap-0d48decab5c493eee',
+        },
+      });
+      service.addVolume(vol);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        VolumeConfigurations: [
+          {
+            ManagedEBSVolume: {
+              RoleArn: { 'Fn::GetAtt': ['EBSVolumeEBSRoleD38B9F31', 'Arn'] },
+              SnapshotId: 'snap-0d48decab5c493eee',
+              FilesystemType: 'xfs',
+            },
+            Name: 'nginx-vol',
+          },
+        ],
+      });
+    });
+
+    test('throw an error when sizeInGiB is greater than 16384 for gp2', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            sizeInGiB: 16390,
+          },
+        }));
+      }).toThrow(/'gp2' volumes must have a size between 1 and 16384 GiB, got 16390 GiB/);
+    });
+
+    test('throw an error when sizeInGiB is less than 4 for volume type io1', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.IO1,
+            sizeInGiB: 0,
+          },
+        }));
+      }).toThrow(/'io1' volumes must have a size between 4 and 16384 GiB, got 0 GiB/);
+    });
+    test('throw an error when sizeInGiB is greater than 1024 for volume type standard', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.STANDARD,
+            sizeInGiB: 1500,
+          },
+        }));
+      }).toThrow(/'standard' volumes must have a size between 1 and 1024 GiB, got 1500 GiB/);
+    });
+
+    test('throw an error if throughput is configured for volumetype gp2', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            sizeInGiB: 10,
+            throughput: 0,
+          },
+        }));
+      }).toThrow(/'throughput' can only be configured with gp3 volume type, got gp2/);
+    });
+
+    test('throw an error if throughput is greater tahn 1000 for volume type gp3', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.GP3,
+            sizeInGiB: 10,
+            throughput: 10001,
+          },
+        }));
+      }).toThrow("'throughput' must be less than or equal to 1000 MiB/s, got 10001 MiB/s");
+    });
+
+    test('throw an error if throughput is greater tahn 1000 for volume type gp3', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.GP3,
+            sizeInGiB: 10,
+            throughput: 10001,
+          },
+        }));
+      }).toThrow("'throughput' must be less than or equal to 1000 MiB/s, got 10001 MiB/s");
+    });
+
+    test('throw an error if iops is not supported for volume type sc1', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.SC1,
+            sizeInGiB: 125,
+            iops: 0,
+          },
+        }));
+      }).toThrow("'iops' cannot be specified with 'sc1' volume type");
+    });
+
+    test('throw an error if iops is not supported for volume type sc1', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            sizeInGiB: 125,
+            iops: 0,
+          },
+        }));
+      }).toThrow("'iops' cannot be specified with 'gp2' volume type");
+    });
+
+    test('throw an error if if iops is required but not provided for volume type io2', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.IO2,
+            sizeInGiB: 125,
+          },
+        }));
+      }).toThrow("'iops' must be specified with 'io2' volume type");
+    });
+
+    test('throw an error if if iops is less than 100 for volume type io2', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.IO2,
+            sizeInGiB: 125,
+            iops: 0,
+          },
+        }));
+      }).toThrow("io2' volumes must have 'iops' between 100 and 256000, got 0");
+    });
+
+    test('throw an error if if iops is greater than 256000 for volume type io2', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.IO2,
+            sizeInGiB: 125,
+            iops: 256001,
+          },
+        }));
+      }).toThrow("io2' volumes must have 'iops' between 100 and 256000, got 256001");
+    });
+
+    test('success adding gp3 volume with throughput 0', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+        name: 'nginx-vol',
+        managedEBSVolume: {
+          fileSystemType: ecs.FileSystemType.XFS,
+          volumeType: ec2.EbsDeviceVolumeType.GP3,
+          sizeInGiB: 15,
+          throughput: 0,
+        },
+      }));
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        VolumeConfigurations: [
+          {
+            ManagedEBSVolume: {
+              RoleArn: { 'Fn::GetAtt': ['EBSVolumeEBSRoleC27DD941', 'Arn'] },
+              SizeInGiB: 15,
+              FilesystemType: 'xfs',
+              VolumeType: 'gp3',
+              Throughput: 0,
+            },
+            Name: 'nginx-vol',
           },
         ],
       });

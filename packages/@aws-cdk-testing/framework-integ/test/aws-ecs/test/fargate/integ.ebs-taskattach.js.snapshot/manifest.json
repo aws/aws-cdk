@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fdd06654e90c1ee28a4e562b297f23152c4973e0a4d0699c38d020df6a14ba22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/114105e2d29626a5303e48c5ab4b3be1059592f803b1d317c99665664cd954a9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -112,12 +112,6 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/integ-aws-ecs-ebs-task-attach/EBSRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EBSRole9CBFC881"
-          }
-        ],
         "/integ-aws-ecs-ebs-task-attach/FargateCluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -134,6 +128,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TaskDef54694570"
+          }
+        ],
+        "/integ-aws-ecs-ebs-task-attach/EBSVolume/EBSRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EBSVolumeEBSRoleC27DD941"
           }
         ],
         "/integ-aws-ecs-ebs-task-attach/FargateService/Service": [

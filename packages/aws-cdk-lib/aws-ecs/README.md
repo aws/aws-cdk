@@ -1647,11 +1647,6 @@ To add an empty EBS Volume to an ECS Service, call service.addVolume().
 declare const cluster: ecs.Cluster;
 const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
 
-const ebsRole = new iam.Role(this, 'EBSRole', {
-  assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
-  managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2FullAccess')],
-});
-
 const container = taskDefinition.addContainer('web', {
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   portMappings: [{
@@ -1660,10 +1655,9 @@ const container = taskDefinition.addContainer('web', {
   }],
 });
 
-const volume = new ecs.ServiceManagedVolume({
+const volume = new ecs.ServiceManagedVolume(this, 'EBSVolume', {
   name: 'ebs1',
   managedEBSVolume: {
-    role: ebsRole,
     sizeInGiB: 10,
     volumeType: ec2.EbsDeviceVolumeType.GP3,
     fileSystemType: ecs.FileSystemType.XFS,
@@ -1671,7 +1665,7 @@ const volume = new ecs.ServiceManagedVolume({
       tags: {
         purpose: 'production',
       },
-      propagateTags: ecs.PropagatedTagSource.SERVICE,
+      propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
     }],
   },
 });
@@ -1697,12 +1691,10 @@ To create an EBS volume from an existing snapshot by specifying the `snapShotId`
 declare const container: ecs.ContainerDefinition;
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
-declare const ebsRole: iam.IRole;
 
-const volumeFromSnapshot = new ecs.ServiceManagedVolume({
+const volumeFromSnapshot = new ecs.ServiceManagedVolume(this, 'EBSVolume', {
   name: 'nginx-vol',
   managedEBSVolume: {
-    role: ebsRole,
     snapShotId: 'snap-066877671789bd71b',
     volumeType: ec2.EbsDeviceVolumeType.GP3,
     fileSystemType: ecs.FileSystemType.XFS,

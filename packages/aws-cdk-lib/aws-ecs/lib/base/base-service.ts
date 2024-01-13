@@ -744,6 +744,10 @@ export abstract class BaseService extends Resource
    * Adds a volume to the Service.
    */
   public addVolume(volume: ServiceManagedVolume) {
+    // only one ServiceVolumeConfiguration can be specified.
+    if (this.volumes.length >= 1) {
+      throw new Error('Invalid VolumeConfiguration. Only one volume can be configured at launch.');
+    }
     this.volumes.push(volume);
   }
 
@@ -765,7 +769,7 @@ export abstract class BaseService extends Resource
       return {
         name: spec.name,
         managedEbsVolume: spec.config && {
-          roleArn: spec.config.role.roleArn,
+          roleArn: spec.role.roleArn,
           encrypted: spec.config.encrypted,
           filesystemType: spec.config.fileSystemType,
           iops: spec.config.iops,

@@ -292,7 +292,7 @@ describe('task definition', () => {
       taskDefinition.addContainer('db', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       });
-      const serviceManagedVolume = new ServiceManagedVolume({
+      const serviceManagedVolume = new ServiceManagedVolume(stack, 'EBS Volume', {
         name: 'nginx-vol',
         managedEBSVolume: {
           role: ebsRole,
@@ -303,7 +303,7 @@ describe('task definition', () => {
             tags: {
               purpose: 'production',
             },
-            propagateTags: ecs.PropagatedTagSource.SERVICE,
+            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
           }],
         },
       });
@@ -325,7 +325,7 @@ describe('task definition', () => {
       const containerDef = taskDefinition.addContainer('db', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       });
-      const volume1 = new ServiceManagedVolume({
+      const volume1 = new ServiceManagedVolume(stack, 'EBS Volume1', {
         name: 'nginx-vol',
         managedEBSVolume: {
           role: ebsRole,
@@ -336,7 +336,7 @@ describe('task definition', () => {
             tags: {
               purpose: 'production',
             },
-            propagateTags: ecs.PropagatedTagSource.SERVICE,
+            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
           }],
         },
       });
@@ -345,7 +345,7 @@ describe('task definition', () => {
         containerPath: 'var/lib',
       });
       taskDefinition.addVolume(volume1);
-      const volume2 = new ServiceManagedVolume({
+      const volume2 = new ServiceManagedVolume(stack, 'EBS Volume2', {
         name: 'nginx-vol1',
         managedEBSVolume: {
           role: ebsRole,
@@ -356,7 +356,7 @@ describe('task definition', () => {
             tags: {
               purpose: 'production',
             },
-            propagateTags: ecs.PropagatedTagSource.SERVICE,
+            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
           }],
         },
       });

@@ -1,7 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
-import * as iam from 'aws-cdk-lib/aws-iam';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 
@@ -12,11 +11,6 @@ class TestStack extends cdk.Stack {
     const vpc = new ec2.Vpc(this, 'Vpc', {
       maxAzs: 1,
       restrictDefaultSecurityGroup: false,
-    });
-
-    const ebsRole = new iam.Role(this, 'EBSRole', {
-      assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
-      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2FullAccess')],
     });
 
     const cluster = new ecs.Cluster(this, 'FargateCluster', {
@@ -33,10 +27,9 @@ class TestStack extends cdk.Stack {
       }],
     });
 
-    const volume = new ecs.ServiceManagedVolume({
+    const volume = new ecs.ServiceManagedVolume(this, 'EBSVolume', {
       name: 'ebs1',
       managedEBSVolume: {
-        role: ebsRole,
         encrypted: true,
         volumeType: ec2.EbsDeviceVolumeType.GP3,
         sizeInGiB: 15,
@@ -47,13 +40,13 @@ class TestStack extends cdk.Stack {
           tags: {
             purpose: 'production',
           },
-          propagateTags: ecs.PropagatedTagSource.SERVICE,
+          propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
         },
         {
           tags: {
             purpose: 'development',
           },
-          propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+          propagateTags: ecs.EbsPropagatedTagSource.TASK_DEFINITION,
         }],
       },
     });

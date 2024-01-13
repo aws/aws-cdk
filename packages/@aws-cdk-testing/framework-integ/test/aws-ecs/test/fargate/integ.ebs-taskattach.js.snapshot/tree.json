@@ -365,63 +365,6 @@
               "version": "0.0.0"
             }
           },
-          "EBSRole": {
-            "id": "EBSRole",
-            "path": "integ-aws-ecs-ebs-task-attach/EBSRole",
-            "children": {
-              "ImportEBSRole": {
-                "id": "ImportEBSRole",
-                "path": "integ-aws-ecs-ebs-task-attach/EBSRole/ImportEBSRole",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "integ-aws-ecs-ebs-task-attach/EBSRole/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                  "aws:cdk:cloudformation:props": {
-                    "assumeRolePolicyDocument": {
-                      "Statement": [
-                        {
-                          "Action": "sts:AssumeRole",
-                          "Effect": "Allow",
-                          "Principal": {
-                            "Service": "ecs.amazonaws.com"
-                          }
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    },
-                    "managedPolicyArns": [
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":iam::aws:policy/AmazonEC2FullAccess"
-                          ]
-                        ]
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
-            }
-          },
           "FargateCluster": {
             "id": "FargateCluster",
             "path": "integ-aws-ecs-ebs-task-attach/FargateCluster",
@@ -557,6 +500,73 @@
               "version": "0.0.0"
             }
           },
+          "EBSVolume": {
+            "id": "EBSVolume",
+            "path": "integ-aws-ecs-ebs-task-attach/EBSVolume",
+            "children": {
+              "EBSRole": {
+                "id": "EBSRole",
+                "path": "integ-aws-ecs-ebs-task-attach/EBSVolume/EBSRole",
+                "children": {
+                  "ImportEBSRole": {
+                    "id": "ImportEBSRole",
+                    "path": "integ-aws-ecs-ebs-task-attach/EBSVolume/EBSRole/ImportEBSRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-aws-ecs-ebs-task-attach/EBSVolume/EBSRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AmazonECSInfrastructureRolePolicyForVolumes"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecs.ServiceManagedVolume",
+              "version": "0.0.0"
+            }
+          },
           "FargateService": {
             "id": "FargateService",
             "path": "integ-aws-ecs-ebs-task-attach/FargateService",
@@ -609,7 +619,7 @@
                         "managedEbsVolume": {
                           "roleArn": {
                             "Fn::GetAtt": [
-                              "EBSRole9CBFC881",
+                              "EBSVolumeEBSRoleC27DD941",
                               "Arn"
                             ]
                           },

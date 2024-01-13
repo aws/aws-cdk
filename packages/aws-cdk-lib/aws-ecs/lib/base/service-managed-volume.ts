@@ -1,13 +1,14 @@
-import { PropagatedTagSource } from './base-service';
+import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
+import { Token } from '../../../core';
 import { BaseMountPoint, ContainerDefinition } from '../container-definition';
 
 /**
 * Represents the Volume configuration for an ECS service.
 */
-export interface ServiceVolumeProps {
+export interface ServiceManagedVolumeProps {
   /**
   * The name of the volume. This corresponds to the name provided in the ECS TaskDefinition.
   */
@@ -28,8 +29,10 @@ export interface ServiceManagedEBSVolumeConfiguration {
   /**
   * An IAM role that allows ECS to make calls to EBS APIs on your behalf.
   * This role is required to create and manage the Amazon EBS volume.
+  *
+  * @default - automatically generated role.
   */
-  readonly role: iam.IRole;
+  readonly role?: iam.IRole;
 
   /**
    * Indicates whether the volume should be encrypted.
@@ -133,7 +136,7 @@ export interface EBSTagSpecification {
   /**
   * The tags to apply to the volume.
   *
-  * @default none
+  * @default - No tags
   */
   readonly tags?: {[key: string]: string};
 
@@ -143,7 +146,7 @@ export interface EBSTagSpecification {
   *
   * @default - undefined
   */
-  readonly propagateTags?: PropagatedTagSource.SERVICE | PropagatedTagSource.TASK_DEFINITION;
+  readonly propagateTags?: EbsPropagatedTagSource;
 }
 
 /**
@@ -165,6 +168,20 @@ export enum FileSystemType {
 }
 
 /**
+ * Propagate tags for EBS Volume Configuration from either service or task definition.
+ */
+export enum EbsPropagatedTagSource {
+  /**
+   * SERVICE
+   */
+  SERVICE = 'SERVICE',
+  /**
+   * TASK_DEFINITION
+   */
+  TASK_DEFINITION = 'TASK_DEFINITION',
+}
+
+/**
  * Defines the mount point details for attaching a volume to a container.
  */
 export interface ContainerMountPoint extends BaseMountPoint {
@@ -173,7 +190,7 @@ export interface ContainerMountPoint extends BaseMountPoint {
 /**
  * Represents a service-managed volume and always configured at launch.
  */
-export class ServiceManagedVolume {
+export class ServiceManagedVolume extends Construct {
   /**
   * Name of the volume, referenced by taskdefintion and mount point.
   */
@@ -189,9 +206,26 @@ export class ServiceManagedVolume {
    */
   public readonly configuredAtLaunch: boolean = true;
 
-  constructor(props: ServiceVolumeProps) {
+  /**
+   * An IAM role that allows ECS to make calls to EBS APIs.
+   * If not provided, a new role with appropriate permissions will be created by default.
+   */
+  public readonly role: iam.IRole;
+
+  constructor(scope: Construct, id: string, props: ServiceManagedVolumeProps) {
+    super(scope, id);
+    this.validateVolumeConfiguration(props.managedEBSVolume);
     this.name = props.name;
-    this.config = props.managedEBSVolume;
+    this.role = props.managedEBSVolume?.role ?? new iam.Role(this, 'EBSRole', {
+      assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSInfrastructureRolePolicyForVolumes'),
+      ],
+    });
+    this.config = {
+      ...props.managedEBSVolume,
+      role: this.role,
+    };
   }
 
   /**
@@ -204,5 +238,73 @@ export class ServiceManagedVolume {
       sourceVolume: this.name,
       ...mountPoint,
     });
+  }
+
+  private validateVolumeConfiguration(volumeConfig?: ServiceManagedEBSVolumeConfiguration) {
+    if (!volumeConfig) return;
+
+    const { volumeType = ec2.EbsDeviceVolumeType.GP2, iops, sizeInGiB, throughput, snapShotId } = volumeConfig;
+
+    // Validate if both sizeInGiB and snapShotId are not specified.
+    if (sizeInGiB === undefined && snapShotId === undefined) {
+      throw new Error('sizeInGiB or snapShotId must be specified');
+    }
+
+    if (snapShotId && !Token.isUnresolved(snapShotId) && !/^snap-[0-9a-fA-F]+$/.test(snapShotId)) {
+      throw new Error('`snapshotId` does match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token');
+    }
+
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-servicemanagedebsvolumeconfiguration.html#cfn-ecs-service-servicemanagedebsvolumeconfiguration-sizeingib
+    const sizeInGiBRanges = {
+      [ec2.EbsDeviceVolumeType.GP2]: { minSize: 1, maxSize: 16384 },
+      [ec2.EbsDeviceVolumeType.GP3]: { minSize: 1, maxSize: 16384 },
+      [ec2.EbsDeviceVolumeType.IO1]: { minSize: 4, maxSize: 16384 },
+      [ec2.EbsDeviceVolumeType.IO2]: { minSize: 4, maxSize: 16384 },
+      [ec2.EbsDeviceVolumeType.SC1]: { minSize: 125, maxSize: 16384 },
+      [ec2.EbsDeviceVolumeType.ST1]: { minSize: 125, maxSize: 16384 },
+      [ec2.EbsDeviceVolumeType.STANDARD]: { minSize: 1, maxSize: 1024 },
+    };
+
+    // Validate volume sizeInGiB ranges.
+    if (sizeInGiB !== undefined) {
+      const { minSize, maxSize } = sizeInGiBRanges[volumeType];
+      if (sizeInGiB < minSize || sizeInGiB > maxSize) {
+        throw new Error(`'${volumeType}' volumes must have a size between ${minSize} and ${maxSize} GiB, got ${sizeInGiB} GiB`);
+      }
+    }
+
+    // Validate throughput.
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-servicemanagedebsvolumeconfiguration.html#cfn-ecs-service-servicemanagedebsvolumeconfiguration-throughput
+    if (throughput !== undefined) {
+      if (volumeType !== ec2.EbsDeviceVolumeType.GP3) {
+        throw new Error(`'throughput' can only be configured with gp3 volume type, got ${volumeType}`);
+      } else if (throughput > 1000) {
+        throw new Error(`'throughput' must be less than or equal to 1000 MiB/s, got ${throughput} MiB/s`);
+      }
+    }
+
+    // Check if IOPS is not supported for the volume type.
+    // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-servicemanagedebsvolumeconfiguration.html#cfn-ecs-service-servicemanagedebsvolumeconfiguration-iops
+    if ([ec2.EbsDeviceVolumeType.SC1, ec2.EbsDeviceVolumeType.ST1, ec2.EbsDeviceVolumeType.STANDARD,
+      ec2.EbsDeviceVolumeType.GP2].includes(volumeType) && iops !== undefined) {
+      throw new Error(`'iops' cannot be specified with '${volumeType}' volume type`);
+    }
+
+    // Check if IOPS is required but not provided.
+    if ([ec2.EbsDeviceVolumeType.IO1, ec2.EbsDeviceVolumeType.IO2].includes(volumeType) && iops === undefined) {
+      throw new Error(`'iops' must be specified with '${volumeType}' volume type`);
+    }
+
+    // Validate IOPS range if specified.
+    const iopsRanges: { [key: string]: { min: number, max: number } } = {};
+    iopsRanges[ec2.EbsDeviceVolumeType.GP3]= { min: 3000, max: 16000 };
+    iopsRanges[ec2.EbsDeviceVolumeType.IO1]= { min: 100, max: 64000 };
+    iopsRanges[ec2.EbsDeviceVolumeType.IO2]= { min: 100, max: 256000 };
+    if (iops !== undefined) {
+      const { min, max } = iopsRanges[volumeType];
+      if ((iops < min || iops > max)) {
+        throw new Error(`'${volumeType}' volumes must have 'iops' between ${min} and ${max}, got ${iops}`);
+      }
+    }
   }
 }
