@@ -192,13 +192,23 @@ export interface RecordSetOptions {
    * Route 53 calculates the sum of the weights for the resource record sets that have the same combination of DNS name and type.
    * Route 53 then responds to queries based on the ratio of a resource's weight to the total.
    *
-   * The weight can be a number between 0 and 255.
+   * This value can be a number between 0 and 255.
    *
    * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-weighted.html
    *
-   * @default 1
+   * @default - no weight
    */
   readonly weight?: number;
+
+  /**
+   * A string used to distinguish between different records with the same combination of DNS name and type.
+   * This parameter is mandatory when the `weight` is set.
+   *
+   * This parameter must be between 1 and 128 characters in length.
+   *
+   * @default - Auto generated string if `geoLocation` is defined, otherwise no set identifier
+   */
+  readonly setIdentifier?: string;
 }
 
 /**
@@ -261,7 +271,13 @@ export class RecordSet extends Resource implements IRecordSet {
     super(scope, id);
 
     if (props.weight && (props.weight < 0 || props.weight > 255)) {
-      throw new Error(`Record weight must be between 0 and 255 inclusive, got: ${props.weight}`);
+      throw new Error(`weight must be between 0 and 255 inclusive, got: ${props.weight}`);
+    }
+    if ((props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128) || props.setIdentifier === '')) {
+      throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
+    }
+    if (props.weight && !props.setIdentifier) {
+      throw new Error('setIdentifier is required when weight is defined');
     }
 
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
@@ -281,7 +297,7 @@ export class RecordSet extends Resource implements IRecordSet {
         countryCode: props.geoLocation.countryCode,
         subdivisionCode: props.geoLocation.subdivisionCode,
       } : undefined,
-      setIdentifier: props.geoLocation ? this.configureSetIdentifer(props.geoLocation) : undefined,
+      setIdentifier: props.setIdentifier ?? (props.geoLocation ? this.configureSetIdentifer(props.geoLocation) : undefined),
       weight: props.weight,
     });
 
