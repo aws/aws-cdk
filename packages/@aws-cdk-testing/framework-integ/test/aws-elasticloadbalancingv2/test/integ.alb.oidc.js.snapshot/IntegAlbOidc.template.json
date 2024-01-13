@@ -514,7 +514,7 @@
     "DomainValidationOptions": [
      {
       "DomainName": "*.example.com",
-      "HostedZoneId": "Z23ABC4XYZL05B"
+      "HostedZoneId": "z23abc4xyzl05b"
      }
     ],
     "Tags": [
@@ -566,7 +566,7 @@
   "UserPoolDomainD0EA232A": {
    "Type": "AWS::Cognito::UserPoolDomain",
    "Properties": {
-    "Domain": "Z23ABC4XYZL05B",
+    "Domain": "z23abc4xyzl05b",
     "UserPoolId": {
      "Ref": "UserPool6BA7E5F2"
     }
@@ -936,7 +936,7 @@
       ]
      }
     },
-    "HostedZoneId": "Z23ABC4XYZL05B",
+    "HostedZoneId": "z23abc4xyzl05b",
     "Name": "example.com.",
     "Type": "A"
    }
