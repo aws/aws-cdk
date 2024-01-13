@@ -1,0 +1,92 @@
+{
+ "Resources": {
+  "HostedZoneDB99F866": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.dev."
+   }
+  },
+  "WeightedRecordSet097184DC7": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "xxx"
+    ],
+    "SetIdentifier": "id1",
+    "TTL": "10",
+    "Type": "CNAME",
+    "Weight": 20
+   }
+  },
+  "WeightedRecordSet101A8C6C5": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "yyy"
+    ],
+    "SetIdentifier": "id2",
+    "TTL": "10",
+    "Type": "CNAME",
+    "Weight": 30
+   }
+  },
+  "WeightedRecordSet26C41EE89": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "zzz"
+    ],
+    "SetIdentifier": "id3",
+    "TTL": "10",
+    "Type": "CNAME",
+    "Weight": 50
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
