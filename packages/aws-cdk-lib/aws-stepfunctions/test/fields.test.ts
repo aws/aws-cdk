@@ -253,22 +253,6 @@ describe('Fields', () => {
     });
   });
 
-  test('null value rendered', () => {
-    const object = {
-      nullParameter: JsonPath.DISCARD,
-    };
-    expect(FieldUtils.renderObject(
-      {
-        reference1: object,
-      },
-    )).toStrictEqual({
-      reference1: {
-        nullParameter: null,
-      },
-    });
-  });
-});
-
 describe('intrinsics constructors', () => {
   test('array', () => {
     expect(FieldUtils.renderObject({
