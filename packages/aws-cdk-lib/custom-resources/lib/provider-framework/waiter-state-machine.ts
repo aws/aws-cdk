@@ -175,6 +175,10 @@ export class WaiterStateMachine extends Construct {
     }));
 
     const logGroup = logOptions?.destination ?? new LogGroup(this, 'LogGroup', {
+      // Log group name should start with `/aws/vendedlogs/` to not exceed Cloudwatch Logs Resource Policy
+      // size limit.
+      // https://docs.aws.amazon.com/step-functions/latest/dg/bp-cwl.html
+      //
       // By using the auto-generated name of the Lambda created in the `Provider` that calls this
       // `WaiterStateMachine` construct, even if the `Provider` (or its parent) is deleted and then
       // created again, the log group name will not duplicate previously created one with removal
