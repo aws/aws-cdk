@@ -1200,4 +1200,22 @@ describe('record set', () => {
       setIdentifier: 'uniqueId',
     })).toThrow('setIdentifier can only be specified when either weight or geoLocation is defined');
   });
+
+  test('throw error for the simultaneous definition of weight and geoLocation', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // THEN
+    expect(() => new route53.RecordSet(stack, 'Basic', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      weight: 50,
+      geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE),
+      setIdentifier: 'uniqueId',
+    })).toThrow('weight and geoLocation cannot be defined simultaneously');
+  });
 });
