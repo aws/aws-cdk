@@ -673,9 +673,9 @@ export interface DomainProps {
    * Specify whether to create a CloudWatch Logs resource policy or not.
    *
    * When logging is enabled for the domain, a CloudWatch Logs resource policy is created by default.
-   * However, there is a limit of 10 resource policies per region.
-   * If you enable logging for several domains, it may hit the resource limit and cause an error.
-   * By setting this property to true, creating a resource policy is suppressed, allowing you to avoid this issue.
+   * However, CloudWatch Logs supports only 10 resource policies per region.
+   * If you enable logging for several domains, it may hit the quota and cause an error.
+   * By setting this property to true, creating a resource policy is suppressed, allowing you to avoid this problem.
    *
    * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createdomain-configure-slow-logs.html
    *
