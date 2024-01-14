@@ -6,21 +6,6 @@ const arnOfProvider =
   'arn:aws:iam::1234567:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/someid';
 
 describe('OpenIdConnectProvider2 resource', () => {
-  test('minimal configuration (no clients and no thumbprint)', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    new iam.OpenIdConnectProvider2(stack, 'MyProvider', {
-      url: 'https://openid-endpoint',
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::OIDCProvider', {
-      Url: 'https://openid-endpoint',
-    });
-  });
-
   test('"openIdConnectProviderArn" resolves to the ref', () => {
     // GIVEN
     const stack = new Stack();
@@ -28,6 +13,7 @@ describe('OpenIdConnectProvider2 resource', () => {
     // WHEN
     const provider = new iam.OpenIdConnectProvider2(stack, 'MyProvider', {
       url: 'https://openid-endpoint',
+      thumbprints: ['thumbprint'],
     });
 
     // THEN
@@ -81,6 +67,7 @@ describe('OIDC issuer', () => {
     // WHEN
     const provider = new iam.OpenIdConnectProvider2(stack, 'MyProvider', {
       url: 'https://my-issuer',
+      thumbprints: ['thumb1'],
     });
 
     // THEN
