@@ -3,42 +3,40 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
 const app = new App();
-const stack = new Stack(app, 'oidc-provider2-integ-test');
+const stack = new Stack(app, 'OidcProviderIntegStack');
 
-const noClients = new iam.OpenIdConnectProvider2(
-  stack,
-  'NoClientsNoThumbprint',
-  {
-    url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test2',
-  },
-);
-
-const clients = new iam.OpenIdConnectProvider2(stack, 'Clients', {
-  url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test3',
+const provider = new iam.OpenIdConnectProvider2(stack, 'Provider', {
+  oidcProviderName: 'MyProvider',
+  url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test1',
   clientIds: ['foo', 'bar'],
-});
-
-const thumbprints = new iam.OpenIdConnectProvider2(stack, 'Thumbprints', {
-  url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test4',
   thumbprints: [
     'aa00aa1122aa00aa1122aa00aa1122aa00aa1122',
     'aa00aa1122aa00aa1122aa00aa1122aa00aa1111',
   ],
 });
 
-new CfnOutput(stack, 'NoClientsThumbprints', {
-  value: `${noClients.openIdConnectProviderthumbprints}`,
+const minimal = new iam.OpenIdConnectProvider2(stack, 'Minimal', {
+  url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test2',
+  thumbprints: ['aa00aa1122aa00aa1122aa00aa1122aa00aa1122'],
 });
 
-new CfnOutput(stack, 'ClientsThumbprints', {
-  value: `${clients.openIdConnectProviderthumbprints}`,
+new CfnOutput(stack, 'Arn', {
+  value: `${provider.openIdConnectProviderArn}`,
 });
 
-new CfnOutput(stack, 'ThumbprintsThumbprints', {
-  value: `${thumbprints.openIdConnectProviderthumbprints}`,
+new CfnOutput(stack, 'Issuer', {
+  value: `${provider.openIdConnectProviderIssuer}`,
 });
 
-new IntegTest(app, 'iodc-provider2-test', {
+new CfnOutput(stack, 'MinimalArn', {
+  value: `${minimal.openIdConnectProviderArn}`,
+});
+
+new CfnOutput(stack, 'MinimalIssuer', {
+  value: `${minimal.openIdConnectProviderIssuer}`,
+});
+
+new IntegTest(app, 'OidcProviderInteg', {
   testCases: [stack],
   diffAssets: true,
 });
