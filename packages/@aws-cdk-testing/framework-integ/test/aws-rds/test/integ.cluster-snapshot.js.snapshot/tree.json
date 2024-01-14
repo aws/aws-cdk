@@ -2020,22 +2020,6 @@
                                               ]
                                             }
                                           ]
-                                        },
-                                        {
-                                          "Action": [
-                                            "logs:CreateLogDelivery",
-                                            "logs:CreateLogStream",
-                                            "logs:DeleteLogDelivery",
-                                            "logs:DescribeLogGroups",
-                                            "logs:DescribeResourcePolicies",
-                                            "logs:GetLogDelivery",
-                                            "logs:ListLogDeliveries",
-                                            "logs:PutLogEvents",
-                                            "logs:PutResourcePolicy",
-                                            "logs:UpdateLogDelivery"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": "*"
                                         }
                                       ],
                                       "Version": "2012-10-17"
@@ -2065,103 +2049,18 @@
                           "version": "0.0.0"
                         }
                       },
-                      "LogGroup": {
-                        "id": "LogGroup",
-                        "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/LogGroup",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/LogGroup/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                              "aws:cdk:cloudformation:props": {
-                                "logGroupName": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "/aws/vendedlogs/states/waiter-state-machine-",
-                                      {
-                                        "Ref": "SnapshoterSnapshotProviderframeworkisComplete803B4F1B"
-                                      },
-                                      "-c8913d7ae55807b42206686ba5c74df4ca169c2f9e"
-                                    ]
-                                  ]
-                                },
-                                "retentionInDays": 731
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-                          "version": "0.0.0"
-                        }
-                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
-                          "aws:cdk:cloudformation:props": {
-                            "definitionString": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":360,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "SnapshoterSnapshotProviderframeworkisComplete803B4F1B",
-                                      "Arn"
-                                    ]
-                                  },
-                                  "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "SnapshoterSnapshotProviderframeworkonTimeout04342B00",
-                                      "Arn"
-                                    ]
-                                  },
-                                  "\"}}}"
-                                ]
-                              ]
-                            },
-                            "loggingConfiguration": {
-                              "destinations": [
-                                {
-                                  "cloudWatchLogsLogGroup": {
-                                    "logGroupArn": {
-                                      "Fn::GetAtt": [
-                                        "SnapshoterSnapshotProviderwaiterstatemachineLogGroup5A64CAF9",
-                                        "Arn"
-                                      ]
-                                    }
-                                  }
-                                }
-                              ],
-                              "includeExecutionData": true,
-                              "level": "ALL"
-                            },
-                            "roleArn": {
-                              "Fn::GetAtt": [
-                                "SnapshoterSnapshotProviderwaiterstatemachineRole76E414C5",
-                                "Arn"
-                              ]
-                            }
-                          }
-                        },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.custom_resources.WaiterStateMachine",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
