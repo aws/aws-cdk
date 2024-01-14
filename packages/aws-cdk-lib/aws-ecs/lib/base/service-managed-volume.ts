@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
-import { Token } from '../../../core';
+import { Size, Token } from '../../../core';
 import { BaseMountPoint, ContainerDefinition } from '../container-definition';
 
 /**
@@ -71,7 +71,7 @@ export interface ServiceManagedEBSVolumeConfiguration {
    * @default - The snapshot size is used for the volume size if you specify `snapshotId`,
    * otherwise this parameter is required.
    */
-  readonly sizeInGiB?: number;
+  readonly sizeInGiB?: Size;
 
   /**
    * The snapshot that Amazon ECS uses to create the volume.
@@ -268,8 +268,8 @@ export class ServiceManagedVolume extends Construct {
     // Validate volume sizeInGiB ranges.
     if (sizeInGiB !== undefined) {
       const { minSize, maxSize } = sizeInGiBRanges[volumeType];
-      if (sizeInGiB < minSize || sizeInGiB > maxSize) {
-        throw new Error(`'${volumeType}' volumes must have a size between ${minSize} and ${maxSize} GiB, got ${sizeInGiB} GiB`);
+      if (sizeInGiB.toGibibytes() < minSize || sizeInGiB.toGibibytes() > maxSize) {
+        throw new Error(`'${volumeType}' volumes must have a size between ${minSize} and ${maxSize} GiB, got ${sizeInGiB.toGibibytes()} GiB`);
       }
     }
 

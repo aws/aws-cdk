@@ -32,7 +32,7 @@ class TestStack extends cdk.Stack {
       managedEBSVolume: {
         encrypted: true,
         volumeType: ec2.EbsDeviceVolumeType.GP3,
-        sizeInGiB: 15,
+        sizeInGiB: cdk.Size.gibibytes(15),
         iops: 4000,
         throughput: 500,
         fileSystemType: ecs.FileSystemType.EXT4,

@@ -1494,7 +1494,7 @@ describe('fargate service', () => {
         name: 'nginx-vol',
         managedEBSVolume: {
           role: role,
-          sizeInGiB: 20,
+          sizeInGiB: cdk.Size.gibibytes(20),
           fileSystemType: ecs.FileSystemType.XFS,
           tagSpecifications: [{
             tags: {
@@ -1538,7 +1538,7 @@ describe('fargate service', () => {
         name: 'nginx-vol',
         managedEBSVolume: {
           role: role,
-          sizeInGiB: 20,
+          sizeInGiB: cdk.Size.gibibytes(20),
           tagSpecifications: [{
             tags: {
               purpose: 'production',
@@ -1610,14 +1610,14 @@ describe('fargate service', () => {
         name: 'nginx-vol',
         managedEBSVolume: {
           fileSystemType: ecs.FileSystemType.XFS,
-          sizeInGiB: 15,
+          sizeInGiB: cdk.Size.gibibytes(15),
         },
       });
       const vol2 = new ServiceManagedVolume(stack, 'ebs1', {
         name: 'ebs1',
         managedEBSVolume: {
           fileSystemType: ecs.FileSystemType.XFS,
-          sizeInGiB: 15,
+          sizeInGiB: cdk.Size.gibibytes(15),
         },
       });
       service.addVolume(vol1);
@@ -1638,7 +1638,7 @@ describe('fargate service', () => {
       service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
         name: 'nginx-vol',
         managedEBSVolume: {
-          sizeInGiB: 20,
+          sizeInGiB: cdk.Size.gibibytes(20),
           fileSystemType: ecs.FileSystemType.XFS,
           tagSpecifications: [{
             tags: {
@@ -1757,7 +1757,7 @@ describe('fargate service', () => {
           name: 'nginx-vol',
           managedEBSVolume: {
             fileSystemType: ecs.FileSystemType.XFS,
-            sizeInGiB: 16390,
+            sizeInGiB: cdk.Size.gibibytes(16390),
           },
         }));
       }).toThrow(/'gp2' volumes must have a size between 1 and 16384 GiB, got 16390 GiB/);
@@ -1777,7 +1777,7 @@ describe('fargate service', () => {
           managedEBSVolume: {
             fileSystemType: ecs.FileSystemType.XFS,
             volumeType: ec2.EbsDeviceVolumeType.IO1,
-            sizeInGiB: 0,
+            sizeInGiB: cdk.Size.gibibytes(0),
           },
         }));
       }).toThrow(/'io1' volumes must have a size between 4 and 16384 GiB, got 0 GiB/);
@@ -1796,7 +1796,7 @@ describe('fargate service', () => {
           managedEBSVolume: {
             fileSystemType: ecs.FileSystemType.XFS,
             volumeType: ec2.EbsDeviceVolumeType.STANDARD,
-            sizeInGiB: 1500,
+            sizeInGiB: cdk.Size.gibibytes(1500),
           },
         }));
       }).toThrow(/'standard' volumes must have a size between 1 and 1024 GiB, got 1500 GiB/);
@@ -1815,7 +1815,7 @@ describe('fargate service', () => {
           name: 'nginx-vol',
           managedEBSVolume: {
             fileSystemType: ecs.FileSystemType.XFS,
-            sizeInGiB: 10,
+            sizeInGiB: cdk.Size.gibibytes(10),
             throughput: 0,
           },
         }));
@@ -1836,7 +1836,7 @@ describe('fargate service', () => {
           managedEBSVolume: {
             fileSystemType: ecs.FileSystemType.XFS,
             volumeType: ec2.EbsDeviceVolumeType.GP3,
-            sizeInGiB: 10,
+            sizeInGiB: cdk.Size.gibibytes(10),
             throughput: 10001,
           },
         }));
@@ -1857,7 +1857,7 @@ describe('fargate service', () => {
           managedEBSVolume: {
             fileSystemType: ecs.FileSystemType.XFS,
             volumeType: ec2.EbsDeviceVolumeType.GP3,
-            sizeInGiB: 10,
+            sizeInGiB: cdk.Size.gibibytes(10),
             throughput: 10001,
           },
         }));
@@ -1878,7 +1878,7 @@ describe('fargate service', () => {
           managedEBSVolume: {
             fileSystemType: ecs.FileSystemType.XFS,
             volumeType: ec2.EbsDeviceVolumeType.SC1,
-            sizeInGiB: 125,
+            sizeInGiB: cdk.Size.gibibytes(125),
             iops: 0,
           },
         }));
@@ -1898,7 +1898,7 @@ describe('fargate service', () => {
           name: 'nginx-vol',
           managedEBSVolume: {
             fileSystemType: ecs.FileSystemType.XFS,
-            sizeInGiB: 125,
+            sizeInGiB: cdk.Size.gibibytes(125),
             iops: 0,
           },
         }));
@@ -1919,7 +1919,7 @@ describe('fargate service', () => {
           managedEBSVolume: {
             fileSystemType: ecs.FileSystemType.XFS,
             volumeType: ec2.EbsDeviceVolumeType.IO2,
-            sizeInGiB: 125,
+            sizeInGiB: cdk.Size.gibibytes(125),
           },
         }));
       }).toThrow(/iops must be specified with io1 or io2 volume types, got io2/);
@@ -1939,7 +1939,7 @@ describe('fargate service', () => {
           managedEBSVolume: {
             fileSystemType: ecs.FileSystemType.XFS,
             volumeType: ec2.EbsDeviceVolumeType.IO2,
-            sizeInGiB: 125,
+            sizeInGiB: cdk.Size.gibibytes(125),
             iops: 0,
           },
         }));
@@ -1960,7 +1960,7 @@ describe('fargate service', () => {
           managedEBSVolume: {
             fileSystemType: ecs.FileSystemType.XFS,
             volumeType: ec2.EbsDeviceVolumeType.IO2,
-            sizeInGiB: 125,
+            sizeInGiB: cdk.Size.gibibytes(125),
             iops: 256001,
           },
         }));
@@ -1980,7 +1980,7 @@ describe('fargate service', () => {
         managedEBSVolume: {
           fileSystemType: ecs.FileSystemType.XFS,
           volumeType: ec2.EbsDeviceVolumeType.GP3,
-          sizeInGiB: 15,
+          sizeInGiB: cdk.Size.gibibytes(15),
           throughput: 0,
         },
       }));
