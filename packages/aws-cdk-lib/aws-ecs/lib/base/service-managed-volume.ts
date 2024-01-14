@@ -214,7 +214,7 @@ export class ServiceManagedVolume extends Construct {
 
   constructor(scope: Construct, id: string, props: ServiceManagedVolumeProps) {
     super(scope, id);
-    this.validateVolumeConfiguration(props.managedEBSVolume);
+    this.validateEbsVolumeConfiguration(props.managedEBSVolume);
     this.name = props.name;
     this.role = props.managedEBSVolume?.role ?? new iam.Role(this, 'EBSRole', {
       assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
@@ -240,7 +240,7 @@ export class ServiceManagedVolume extends Construct {
     });
   }
 
-  private validateVolumeConfiguration(volumeConfig?: ServiceManagedEBSVolumeConfiguration) {
+  private validateEbsVolumeConfiguration(volumeConfig?: ServiceManagedEBSVolumeConfiguration) {
     if (!volumeConfig) return;
 
     const { volumeType = ec2.EbsDeviceVolumeType.GP2, iops, sizeInGiB, throughput, snapShotId } = volumeConfig;
