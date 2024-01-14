@@ -273,7 +273,7 @@ export class RecordSet extends Resource implements IRecordSet {
     if (props.weight && (props.weight < 0 || props.weight > 255)) {
       throw new Error(`weight must be between 0 and 255 inclusive, got: ${props.weight}`);
     }
-    if ((props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128) || props.setIdentifier === '')) {
+    if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
       throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
     }
     if (props.weight && !props.setIdentifier) {
