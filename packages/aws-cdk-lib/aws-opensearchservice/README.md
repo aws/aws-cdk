@@ -349,6 +349,36 @@ const domain = new Domain(this, 'Domain', {
 });
 ```
 
+## Suppress CloudWatch Logs resource policy
+
+When logging is enabled for the domain, the CloudWatch Logs resource policy is created by default.
+This resource policy is necessary for logging, but since only a maximum of 10 resource policies can be created per region,
+the maximum number of resource policies may be a problem when enabling logging for several domains.
+By setting the `suppressLogsResourcePolicy` option to true, you can suppress the creation of a CloudWatch Logs resource policy.
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
+  enforceHttps: true,
+  nodeToNodeEncryption: true,
+  encryptionAtRest: {
+    enabled: true,
+  },
+  fineGrainedAccessControl: {
+    masterUserName: 'master-user',
+  },
+  logging: {
+    auditLogEnabled: true,
+    slowSearchLogEnabled: true,
+    appLogEnabled: true,
+    slowIndexLogEnabled: true,
+  },
+  suppressLogsResourcePolicy: true,
+});
+```
+
+> Visit [Monitoring OpenSearch logs with Amazon CloudWatch Logs](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createdomain-configure-slow-logs.html) for more details.
+
 ## UltraWarm
 
 UltraWarm nodes can be enabled to provide a cost-effective way to store large amounts of read-only data.

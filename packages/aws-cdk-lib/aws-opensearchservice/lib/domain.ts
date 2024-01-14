@@ -668,6 +668,20 @@ export interface DomainProps {
    * @default - IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
+
+  /**
+   * Specify whether to create a CloudWatch Logs resource policy or not.
+   *
+   * When logging is enabled for the domain, a CloudWatch Logs resource policy is created by default.
+   * However, there is a limit of 10 resource policies per region.
+   * If you enable logging for several domains, it may hit the resource limit and cause an error.
+   * By setting this property to true, creating a resource policy is suppressed, allowing you to avoid this issue.
+   *
+   * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createdomain-configure-slow-logs.html
+   *
+   * @default - false
+   */
+  readonly suppressLogsResourcePolicy?: boolean;
 }
 
 /**
@@ -1730,7 +1744,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     };
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
-    if (logGroups.length > 0) {
+    if (logGroups.length > 0 && !props.suppressLogsResourcePolicy) {
       const logPolicyStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
