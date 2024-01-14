@@ -279,6 +279,9 @@ export class RecordSet extends Resource implements IRecordSet {
     if (props.weight && !props.setIdentifier) {
       throw new Error('setIdentifier is required when weight is defined');
     }
+    if (props.weight && props.geoLocation) {
+      throw new Error('weight and geoLocation cannot be defined simultaneously');
+    }
 
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
 

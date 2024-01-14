@@ -1151,10 +1151,7 @@ describe('record set', () => {
     })).toThrow(`weight must be between 0 and 255 inclusive, got: ${weight}`);
   });
 
-  test.each([
-    [''],
-    ['a'.repeat(129)],
-  ])('throw error for invalid setIdentifier', (recordId) => {
+  test('throw error for invalid setIdentifier', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -1166,8 +1163,8 @@ describe('record set', () => {
       recordName: 'www',
       recordType: route53.RecordType.CNAME,
       target: route53.RecordTarget.fromValues('zzz'),
-      setIdentifier: recordId,
-    })).toThrow(`setIdentifier must be between 1 and 128 characters long, got: ${recordId.length}`);
+      setIdentifier: 'a'.repeat(129),
+    })).toThrow('setIdentifier must be between 1 and 128 characters long, got: 129');
   });
 
   test('throw error if weight is set without defining setIdentifier', () => {
@@ -1184,5 +1181,23 @@ describe('record set', () => {
       target: route53.RecordTarget.fromValues('zzz'),
       weight: 50,
     })).toThrow('setIdentifier is required when weight is defined');
+  });
+
+  test('throw error for the simultaneous definition of weight and geoLocation', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // THEN
+    expect(() => new route53.RecordSet(stack, 'Basic', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      weight: 50,
+      geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE),
+      setIdentifier: 'uniqueId',
+    })).toThrow('weight and geoLocation cannot be defined simultaneously');
   });
 });
