@@ -77,11 +77,10 @@ export interface OpenIdConnectProvider2Props {
    * thumbprint string would be the hex-encoded SHA-1 hash value of the
    * certificate used by https://keys.server.example.com.
    *
-   * @default - If no thumbprints are specified (an empty array or `undefined`),
-   * the thumbprint of the root certificate authority will be obtained from the
-   * provider's server as described in https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
+   * Obtain the thumbprint of the root certificate authority from the provider's
+   * server as described in https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc_verify-thumbprint.html
    */
-  readonly thumbprints?: string[];
+  readonly thumbprints: string[];
 }
 
 /**
@@ -155,7 +154,7 @@ export class OpenIdConnectProvider2
     const resource = new CfnOIDCProvider(this, 'Resource', {
       url: props.url,
       clientIdList: props.clientIds,
-      thumbprintList: props.thumbprints == undefined ? [] : props.thumbprints,
+      thumbprintList: props.thumbprints,
     });
 
     this.openIdConnectProviderArn = Token.asString(resource.ref);
@@ -163,8 +162,7 @@ export class OpenIdConnectProvider2
       this.openIdConnectProviderArn,
       'oidc-provider',
     );
-    this.openIdConnectProviderthumbprints = Token.asString(
-      resource.getAtt('Thumbprints'),
-    );
+
+    this.openIdConnectProviderthumbprints = Token.asString(props.thumbprints);
   }
 }
