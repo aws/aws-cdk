@@ -1913,6 +1913,1012 @@
               "version": "0.0.0"
             }
           },
+          "MyProviderWithoutLogOptions": {
+            "id": "MyProviderWithoutLogOptions",
+            "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions",
+            "children": {
+              "framework-onEvent": {
+                "id": "framework-onEvent",
+                "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "lambda.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "managedPolicyArns": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                  ]
+                                ]
+                              },
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "lambda:InvokeFunction",
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "IsComplete544AE5AD",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "OnEvent74718524",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "IsComplete544AE5AD",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              ":*"
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "OnEvent74718524",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              ":*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "Action": "states:StartExecution",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Ref": "MyProviderWithoutLogOptionswaiterstatemachine72EFA8B2"
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "MyProviderWithoutLogOptionsframeworkonEventServiceRoleDefaultPolicy03CDAD2E",
+                                "roles": [
+                                  {
+                                    "Ref": "MyProviderWithoutLogOptionsframeworkonEventServiceRole42DA2E00"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Code": {
+                    "id": "Code",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/Code",
+                    "children": {
+                      "Stage": {
+                        "id": "Stage",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/Code/Stage",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssetBucket": {
+                        "id": "AssetBucket",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/Code/AssetBucket",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onEvent/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                      "aws:cdk:cloudformation:props": {
+                        "code": {
+                          "s3Bucket": {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "s3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+                        },
+                        "description": "AWS CDK resource provider framework - onEvent (integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions)",
+                        "environment": {
+                          "variables": {
+                            "USER_ON_EVENT_FUNCTION_ARN": {
+                              "Fn::GetAtt": [
+                                "OnEvent74718524",
+                                "Arn"
+                              ]
+                            },
+                            "USER_IS_COMPLETE_FUNCTION_ARN": {
+                              "Fn::GetAtt": [
+                                "IsComplete544AE5AD",
+                                "Arn"
+                              ]
+                            },
+                            "WAITER_STATE_MACHINE_ARN": {
+                              "Ref": "MyProviderWithoutLogOptionswaiterstatemachine72EFA8B2"
+                            }
+                          }
+                        },
+                        "handler": "framework.onEvent",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "MyProviderWithoutLogOptionsframeworkonEventServiceRole42DA2E00",
+                            "Arn"
+                          ]
+                        },
+                        "runtime": "nodejs18.x",
+                        "timeout": 900,
+                        "vpcConfig": {
+                          "subnetIds": [
+                            {
+                              "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                            },
+                            {
+                              "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                            }
+                          ],
+                          "securityGroupIds": [
+                            {
+                              "Fn::GetAtt": [
+                                "SecurityGroupDD263621",
+                                "GroupId"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.Function",
+                  "version": "0.0.0"
+                }
+              },
+              "framework-isComplete": {
+                "id": "framework-isComplete",
+                "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "lambda.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "managedPolicyArns": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                  ]
+                                ]
+                              },
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "lambda:InvokeFunction",
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "IsComplete544AE5AD",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "OnEvent74718524",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "IsComplete544AE5AD",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              ":*"
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "OnEvent74718524",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              ":*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "MyProviderWithoutLogOptionsframeworkisCompleteServiceRoleDefaultPolicy51B53947",
+                                "roles": [
+                                  {
+                                    "Ref": "MyProviderWithoutLogOptionsframeworkisCompleteServiceRole731825B1"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Code": {
+                    "id": "Code",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/Code",
+                    "children": {
+                      "Stage": {
+                        "id": "Stage",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/Code/Stage",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssetBucket": {
+                        "id": "AssetBucket",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/Code/AssetBucket",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-isComplete/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                      "aws:cdk:cloudformation:props": {
+                        "code": {
+                          "s3Bucket": {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "s3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+                        },
+                        "description": "AWS CDK resource provider framework - isComplete (integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions)",
+                        "environment": {
+                          "variables": {
+                            "USER_ON_EVENT_FUNCTION_ARN": {
+                              "Fn::GetAtt": [
+                                "OnEvent74718524",
+                                "Arn"
+                              ]
+                            },
+                            "USER_IS_COMPLETE_FUNCTION_ARN": {
+                              "Fn::GetAtt": [
+                                "IsComplete544AE5AD",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        },
+                        "handler": "framework.isComplete",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "MyProviderWithoutLogOptionsframeworkisCompleteServiceRole731825B1",
+                            "Arn"
+                          ]
+                        },
+                        "runtime": "nodejs18.x",
+                        "timeout": 900,
+                        "vpcConfig": {
+                          "subnetIds": [
+                            {
+                              "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                            },
+                            {
+                              "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                            }
+                          ],
+                          "securityGroupIds": [
+                            {
+                              "Fn::GetAtt": [
+                                "SecurityGroupDD263621",
+                                "GroupId"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.Function",
+                  "version": "0.0.0"
+                }
+              },
+              "framework-onTimeout": {
+                "id": "framework-onTimeout",
+                "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "lambda.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "managedPolicyArns": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                  ]
+                                ]
+                              },
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "lambda:InvokeFunction",
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "IsComplete544AE5AD",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "OnEvent74718524",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "IsComplete544AE5AD",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              ":*"
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "OnEvent74718524",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              ":*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleDefaultPolicy891DADC3",
+                                "roles": [
+                                  {
+                                    "Ref": "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleC30A6329"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Code": {
+                    "id": "Code",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/Code",
+                    "children": {
+                      "Stage": {
+                        "id": "Stage",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/Code/Stage",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssetBucket": {
+                        "id": "AssetBucket",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/Code/AssetBucket",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/framework-onTimeout/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                      "aws:cdk:cloudformation:props": {
+                        "code": {
+                          "s3Bucket": {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "s3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+                        },
+                        "description": "AWS CDK resource provider framework - onTimeout (integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions)",
+                        "environment": {
+                          "variables": {
+                            "USER_ON_EVENT_FUNCTION_ARN": {
+                              "Fn::GetAtt": [
+                                "OnEvent74718524",
+                                "Arn"
+                              ]
+                            },
+                            "USER_IS_COMPLETE_FUNCTION_ARN": {
+                              "Fn::GetAtt": [
+                                "IsComplete544AE5AD",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        },
+                        "handler": "framework.onTimeout",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleC30A6329",
+                            "Arn"
+                          ]
+                        },
+                        "runtime": "nodejs18.x",
+                        "timeout": 900,
+                        "vpcConfig": {
+                          "subnetIds": [
+                            {
+                              "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                            },
+                            {
+                              "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                            }
+                          ],
+                          "securityGroupIds": [
+                            {
+                              "Fn::GetAtt": [
+                                "SecurityGroupDD263621",
+                                "GroupId"
+                              ]
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.Function",
+                  "version": "0.0.0"
+                }
+              },
+              "waiter-state-machine": {
+                "id": "waiter-state-machine",
+                "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/waiter-state-machine",
+                "children": {
+                  "Role": {
+                    "id": "Role",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/waiter-state-machine/Role",
+                    "children": {
+                      "ImportRole": {
+                        "id": "ImportRole",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/waiter-state-machine/Role/ImportRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/waiter-state-machine/Role/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "states.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/waiter-state-machine/Role/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/waiter-state-machine/Role/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "lambda:InvokeFunction",
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "MyProviderWithoutLogOptionsframeworkisComplete81812F27",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::GetAtt": [
+                                            "MyProviderWithoutLogOptionsframeworkonTimeout5860EE91",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "MyProviderWithoutLogOptionsframeworkisComplete81812F27",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              ":*"
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "MyProviderWithoutLogOptionsframeworkonTimeout5860EE91",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              ":*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "Action": [
+                                        "logs:CreateLogDelivery",
+                                        "logs:CreateLogStream",
+                                        "logs:DeleteLogDelivery",
+                                        "logs:DescribeLogGroups",
+                                        "logs:DescribeResourcePolicies",
+                                        "logs:GetLogDelivery",
+                                        "logs:ListLogDeliveries",
+                                        "logs:PutLogEvents",
+                                        "logs:PutResourcePolicy",
+                                        "logs:UpdateLogDelivery"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": "*"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "MyProviderWithoutLogOptionswaiterstatemachineRoleDefaultPolicy57D9D4D8",
+                                "roles": [
+                                  {
+                                    "Ref": "MyProviderWithoutLogOptionswaiterstatemachineRole9043F015"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "LogGroup": {
+                    "id": "LogGroup",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/waiter-state-machine/LogGroup",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/waiter-state-machine/LogGroup/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                          "aws:cdk:cloudformation:props": {
+                            "logGroupName": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "/aws/vendedlogs/states/waiter-state-machine-",
+                                  {
+                                    "Ref": "MyProviderWithoutLogOptionsframeworkisComplete81812F27"
+                                  },
+                                  "-c8a3b241fa9e878008e2b0db7c52069f261a806506"
+                                ]
+                              ]
+                            },
+                            "retentionInDays": 731
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions/waiter-state-machine/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                      "aws:cdk:cloudformation:props": {
+                        "definitionString": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":360,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+                              {
+                                "Fn::GetAtt": [
+                                  "MyProviderWithoutLogOptionsframeworkisComplete81812F27",
+                                  "Arn"
+                                ]
+                              },
+                              "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+                              {
+                                "Fn::GetAtt": [
+                                  "MyProviderWithoutLogOptionsframeworkonTimeout5860EE91",
+                                  "Arn"
+                                ]
+                              },
+                              "\"}}}"
+                            ]
+                          ]
+                        },
+                        "loggingConfiguration": {
+                          "destinations": [
+                            {
+                              "cloudWatchLogsLogGroup": {
+                                "logGroupArn": {
+                                  "Fn::GetAtt": [
+                                    "MyProviderWithoutLogOptionswaiterstatemachineLogGroupEDE99092",
+                                    "Arn"
+                                  ]
+                                }
+                              }
+                            }
+                          ],
+                          "includeExecutionData": false,
+                          "level": "ERROR"
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "MyProviderWithoutLogOptionswaiterstatemachineRole9043F015",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.custom_resources.WaiterStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.custom_resources.Provider",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "integ-provider-with-waiter-state-machine/BootstrapVersion",

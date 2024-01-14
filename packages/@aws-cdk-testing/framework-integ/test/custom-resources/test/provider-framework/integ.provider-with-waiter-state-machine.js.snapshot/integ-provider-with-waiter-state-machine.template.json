@@ -1328,6 +1328,724 @@
     "MyProviderwaiterstatemachineRoleDefaultPolicy5EE07C3D",
     "MyProviderwaiterstatemachineRole6453DD81"
    ]
+  },
+  "MyProviderWithoutLogOptionsframeworkonEventServiceRole42DA2E00": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderWithoutLogOptionsframeworkonEventServiceRoleDefaultPolicy03CDAD2E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsComplete544AE5AD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnEvent74718524",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "IsComplete544AE5AD",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "OnEvent74718524",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "states:StartExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "MyProviderWithoutLogOptionswaiterstatemachine72EFA8B2"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderWithoutLogOptionsframeworkonEventServiceRoleDefaultPolicy03CDAD2E",
+    "Roles": [
+     {
+      "Ref": "MyProviderWithoutLogOptionsframeworkonEventServiceRole42DA2E00"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderWithoutLogOptionsframeworkonEvent6E5DE0A9": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "OnEvent74718524",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "IsComplete544AE5AD",
+        "Arn"
+       ]
+      },
+      "WAITER_STATE_MACHINE_ARN": {
+       "Ref": "MyProviderWithoutLogOptionswaiterstatemachine72EFA8B2"
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "Role": {
+     "Fn::GetAtt": [
+      "MyProviderWithoutLogOptionsframeworkonEventServiceRole42DA2E00",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 900,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "SecurityGroupDD263621",
+        "GroupId"
+       ]
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "MyProviderWithoutLogOptionsframeworkonEventServiceRoleDefaultPolicy03CDAD2E",
+    "MyProviderWithoutLogOptionsframeworkonEventServiceRole42DA2E00",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderWithoutLogOptionsframeworkisCompleteServiceRole731825B1": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderWithoutLogOptionsframeworkisCompleteServiceRoleDefaultPolicy51B53947": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsComplete544AE5AD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnEvent74718524",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "IsComplete544AE5AD",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "OnEvent74718524",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderWithoutLogOptionsframeworkisCompleteServiceRoleDefaultPolicy51B53947",
+    "Roles": [
+     {
+      "Ref": "MyProviderWithoutLogOptionsframeworkisCompleteServiceRole731825B1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderWithoutLogOptionsframeworkisComplete81812F27": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+    },
+    "Description": "AWS CDK resource provider framework - isComplete (integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "OnEvent74718524",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "IsComplete544AE5AD",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.isComplete",
+    "Role": {
+     "Fn::GetAtt": [
+      "MyProviderWithoutLogOptionsframeworkisCompleteServiceRole731825B1",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 900,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "SecurityGroupDD263621",
+        "GroupId"
+       ]
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "MyProviderWithoutLogOptionsframeworkisCompleteServiceRoleDefaultPolicy51B53947",
+    "MyProviderWithoutLogOptionsframeworkisCompleteServiceRole731825B1",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleC30A6329": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleDefaultPolicy891DADC3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IsComplete544AE5AD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OnEvent74718524",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "IsComplete544AE5AD",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "OnEvent74718524",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleDefaultPolicy891DADC3",
+    "Roles": [
+     {
+      "Ref": "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleC30A6329"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderWithoutLogOptionsframeworkonTimeout5860EE91": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onTimeout (integ-provider-with-waiter-state-machine/MyProviderWithoutLogOptions)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "OnEvent74718524",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "IsComplete544AE5AD",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onTimeout",
+    "Role": {
+     "Fn::GetAtt": [
+      "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleC30A6329",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 900,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "SecurityGroupDD263621",
+        "GroupId"
+       ]
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Ref": "VpcPrivateSubnet1Subnet536B997A"
+      },
+      {
+       "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleDefaultPolicy891DADC3",
+    "MyProviderWithoutLogOptionsframeworkonTimeoutServiceRoleC30A6329",
+    "VpcPrivateSubnet1DefaultRouteBE02A9ED",
+    "VpcPrivateSubnet1RouteTableAssociation70C59FA6",
+    "VpcPrivateSubnet2DefaultRoute060D2087",
+    "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+   ]
+  },
+  "MyProviderWithoutLogOptionswaiterstatemachineRole9043F015": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyProviderWithoutLogOptionswaiterstatemachineRoleDefaultPolicy57D9D4D8": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyProviderWithoutLogOptionsframeworkisComplete81812F27",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "MyProviderWithoutLogOptionsframeworkonTimeout5860EE91",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyProviderWithoutLogOptionsframeworkisComplete81812F27",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyProviderWithoutLogOptionsframeworkonTimeout5860EE91",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogDelivery",
+        "logs:CreateLogStream",
+        "logs:DeleteLogDelivery",
+        "logs:DescribeLogGroups",
+        "logs:DescribeResourcePolicies",
+        "logs:GetLogDelivery",
+        "logs:ListLogDeliveries",
+        "logs:PutLogEvents",
+        "logs:PutResourcePolicy",
+        "logs:UpdateLogDelivery"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyProviderWithoutLogOptionswaiterstatemachineRoleDefaultPolicy57D9D4D8",
+    "Roles": [
+     {
+      "Ref": "MyProviderWithoutLogOptionswaiterstatemachineRole9043F015"
+     }
+    ]
+   }
+  },
+  "MyProviderWithoutLogOptionswaiterstatemachineLogGroupEDE99092": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/vendedlogs/states/waiter-state-machine-",
+       {
+        "Ref": "MyProviderWithoutLogOptionsframeworkisComplete81812F27"
+       },
+       "-c8a3b241fa9e878008e2b0db7c52069f261a806506"
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "MyProviderWithoutLogOptionswaiterstatemachine72EFA8B2": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":360,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "MyProviderWithoutLogOptionsframeworkisComplete81812F27",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "MyProviderWithoutLogOptionsframeworkonTimeout5860EE91",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "LoggingConfiguration": {
+     "Destinations": [
+      {
+       "CloudWatchLogsLogGroup": {
+        "LogGroupArn": {
+         "Fn::GetAtt": [
+          "MyProviderWithoutLogOptionswaiterstatemachineLogGroupEDE99092",
+          "Arn"
+         ]
+        }
+       }
+      }
+     ],
+     "IncludeExecutionData": false,
+     "Level": "ERROR"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "MyProviderWithoutLogOptionswaiterstatemachineRole9043F015",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "MyProviderWithoutLogOptionswaiterstatemachineRoleDefaultPolicy57D9D4D8",
+    "MyProviderWithoutLogOptionswaiterstatemachineRole9043F015"
+   ]
   }
  },
  "Parameters": {
