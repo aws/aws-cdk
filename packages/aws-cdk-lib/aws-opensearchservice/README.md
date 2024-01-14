@@ -349,7 +349,7 @@ const domain = new Domain(this, 'Domain', {
 });
 ```
 
-## Suppress CloudWatch Logs resource policy
+## Suppress creating CloudWatch Logs resource policy
 
 When logging is enabled for the domain, the CloudWatch Logs resource policy is created by default.
 This resource policy is necessary for logging, but since only a maximum of 10 resource policies can be created per region,
