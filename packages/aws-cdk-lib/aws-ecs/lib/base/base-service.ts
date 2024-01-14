@@ -744,16 +744,14 @@ export abstract class BaseService extends Resource
    * Adds a volume to the Service.
    */
   public addVolume(volume: ServiceManagedVolume) {
-    // only one ServiceVolumeConfiguration can be specified.
-    if (this.volumes.length >= 1) {
-      throw new Error('Invalid VolumeConfiguration. Only one volume can be configured at launch.');
-    }
     this.volumes.push(volume);
   }
 
   private renderVolumes(): CfnService.ServiceVolumeConfigurationProperty[] {
+    if (this.volumes.length > 1) {
+      throw new Error(`Invalid VolumeConfiguration. Only one volume can be configured at launch, got: ${this.volumes.length}`);
+    }
     return this.volumes.map(renderVolume);
-
     function renderVolume(spec: ServiceManagedVolume): CfnService.ServiceVolumeConfigurationProperty {
       const tagSpecifications = spec.config?.tagSpecifications?.map(ebsTagSpec => {
         return {

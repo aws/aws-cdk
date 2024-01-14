@@ -1462,10 +1462,12 @@ describe('fargate service', () => {
     let taskDefinition: ecs.TaskDefinition;
     let container: ecs.ContainerDefinition;
     let role: iam.IRole;
+    let app: cdk.App;
 
     beforeEach(() => {
       // GIVEN
-      stack = new cdk.Stack();
+      app = new cdk.App();
+      stack = new cdk.Stack(app);
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
       taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -1619,10 +1621,10 @@ describe('fargate service', () => {
         },
       });
       service.addVolume(vol1);
-      // Attempt to add a second volume and expect an error
+      service.addVolume(vol2);
       expect(() => {
-        service.addVolume(vol2);
-      }).toThrow('Invalid VolumeConfiguration. Only one volume can be configured at launch.');
+        app.synth();
+      }).toThrow(/Invalid VolumeConfiguration. Only one volume can be configured at launch, got: 2/);
     });
 
     test('create a default ebsrole when not provided', ()=> {
@@ -1689,7 +1691,7 @@ describe('fargate service', () => {
             fileSystemType: ecs.FileSystemType.XFS,
           },
         }));
-      }).toThrow(/sizeInGiB or snapShotId must be specified/);
+      }).toThrow("'sizeInGiB' or 'snapShotId' must be specified");
     });
 
     test('throw an error snapshot does not match pattern', ()=> {
@@ -1708,7 +1710,7 @@ describe('fargate service', () => {
             snapShotId: 'snap-0d48decab5c493eee_',
           },
         }));
-      }).toThrow('`snapshotId` does match expected pattern. Expected `snap-<hexadecmial value>` (ex: `snap-05abe246af`) or Token');
+      }).toThrow("'snapshotId' does match expected pattern. Expected 'snap-<hexadecmial value>' (ex: 'snap-05abe246af') or Token, got: snap-0d48decab5c493eee_");
     });
 
     test('success when snapshotId matches the pattern', ()=> {
@@ -1880,7 +1882,7 @@ describe('fargate service', () => {
             iops: 0,
           },
         }));
-      }).toThrow("'iops' cannot be specified with 'sc1' volume type");
+      }).toThrow(/iops cannot be specified with sc1, st1, gp2 and standard volume types, got sc1/);
     });
 
     test('throw an error if iops is not supported for volume type sc1', ()=> {
@@ -1900,7 +1902,7 @@ describe('fargate service', () => {
             iops: 0,
           },
         }));
-      }).toThrow("'iops' cannot be specified with 'gp2' volume type");
+      }).toThrow(/iops cannot be specified with sc1, st1, gp2 and standard volume types, got gp2/);
     });
 
     test('throw an error if if iops is required but not provided for volume type io2', ()=> {
@@ -1920,7 +1922,7 @@ describe('fargate service', () => {
             sizeInGiB: 125,
           },
         }));
-      }).toThrow("'iops' must be specified with 'io2' volume type");
+      }).toThrow(/iops must be specified with io1 or io2 volume types, got io2/);
     });
 
     test('throw an error if if iops is less than 100 for volume type io2', ()=> {
