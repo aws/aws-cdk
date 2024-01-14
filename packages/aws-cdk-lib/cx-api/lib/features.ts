@@ -97,6 +97,7 @@ export const RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS = '@aws-cdk/aws-rds:pr
 export const AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS = '@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters';
 export const APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION = '@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier';
 export const CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME = '@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource';
+export const CLOUDFRONT_FUNCTION_STABLE_GENERATED_NAME = '@aws-cdk/aws-cloudfront:useStableGeneratedFunctionName';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -974,6 +975,23 @@ export const FLAGS: Record<string, FlagInfo> = {
       However, with the activation of this feature flag, the default branch is updated to \'main\'.
     `,
     introducedIn: { v2: '2.103.1' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CLOUDFRONT_FUNCTION_STABLE_GENERATED_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the method used to generate CloudFront function names is more consistent across deployments',
+    detailsMd: `
+      The method used to generated CloudFront function names can be unstable (may change from
+      one deployment to another) for functions with long IDs or that are deeply nested within
+      a stack, especially if the region is not specified at deployment time.
+
+      Enable this flag to use a more deterministic means of generating \`functionName\`s that does
+      not include the region. You will need to specify \`functionName\` prop directly if including
+      the region in the function name is necessary for your use case.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 };

@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { Template } from '../../assertions';
 import { App, Stack } from '../../core';
+import { CLOUDFRONT_FUNCTION_STABLE_GENERATED_NAME } from '../../cx-api';
 import { Function, FunctionCode, FunctionRuntime } from '../lib';
 
 describe('CloudFront Function', () => {
@@ -77,9 +78,10 @@ describe('CloudFront Function', () => {
     });
   });
 
-  test('long stack and resource id in environment agnostic stack', () => {
+  test('long stack and resource id in environment agnostic stack with feature flag set', () => {
     const app = new App();
     const stack = new Stack(app, 'test-stack-name-longer-than-thirtytwo-characters');
+    stack.node.setContext(CLOUDFRONT_FUNCTION_STABLE_GENERATED_NAME, true);
     new Function(stack, 'test-resoruce-id-also-longer-but-with-different-end', {
       code: FunctionCode.fromInline('code'),
     });
@@ -89,31 +91,11 @@ describe('CloudFront Function', () => {
         testresoruceidalsolongerbutwithdifferentendFD0687C9: {
           Type: 'AWS::CloudFront::Function',
           Properties: {
-            Name: {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    Ref: 'AWS::Region',
-                  },
-                  'teststacknamelongertherbutwithdifferentend3C400F7C',
-                ],
-              ],
-            },
+            Name: 'test-stack-name-longer-than-onger-but-with-different-end3C400F7C',
             AutoPublish: true,
             FunctionCode: 'code',
             FunctionConfig: {
-              Comment: {
-                'Fn::Join': [
-                  '',
-                  [
-                    {
-                      Ref: 'AWS::Region',
-                    },
-                    'teststacknamelongertherbutwithdifferentend3C400F7C',
-                  ],
-                ],
-              },
+              Comment: 'test-stack-name-longer-than-onger-but-with-different-end3C400F7C',
               Runtime: 'cloudfront-js-1.0',
             },
           },
@@ -122,9 +104,10 @@ describe('CloudFront Function', () => {
     });
   });
 
-  test('long stack and resource id with region specified', () => {
+  test('long stack and resource id with region specified with feature flag set', () => {
     const app = new App();
-    const stack = new Stack(app, 'test-stack-name-longer-than-thirtytwo-characters', { env: { region: 'test-east-1' } });
+    const stack = new Stack(app, 'test-stack-name-longer-than-thirtytwo-characters', { env: { region: 'test-region-1' } });
+    stack.node.setContext(CLOUDFRONT_FUNCTION_STABLE_GENERATED_NAME, true);
     new Function(stack, 'test-resoruce-id-also-longer-but-with-different-end', {
       code: FunctionCode.fromInline('code'),
     });
@@ -134,11 +117,11 @@ describe('CloudFront Function', () => {
         testresoruceidalsolongerbutwithdifferentendFD0687C9: {
           Type: 'AWS::CloudFront::Function',
           Properties: {
-            Name: 'test-east-1teststacknamelongerthagerbutwithdifferentend3C400F7C',
+            Name: 'test-stack-name-longer-than-onger-but-with-different-end3C400F7C',
             AutoPublish: true,
             FunctionCode: 'code',
             FunctionConfig: {
-              Comment: 'test-east-1teststacknamelongerthagerbutwithdifferentend3C400F7C',
+              Comment: 'test-stack-name-longer-than-onger-but-with-different-end3C400F7C',
               Runtime: 'cloudfront-js-1.0',
             },
           },

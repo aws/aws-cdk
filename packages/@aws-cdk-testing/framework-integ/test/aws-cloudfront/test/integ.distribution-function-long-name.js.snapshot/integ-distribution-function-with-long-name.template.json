@@ -6,30 +6,10 @@
     "AutoPublish": true,
     "FunctionCode": "function handler(event) { return event.request }",
     "FunctionConfig": {
-     "Comment": {
-      "Fn::Join": [
-       "",
-       [
-        {
-         "Ref": "AWS::Region"
-        },
-        "integdistributionfuncestfunctionidnamelong0C1A86EF"
-       ]
-      ]
-     },
+     "Comment": "integ-distribution-function-metest-function-id-name-long0C1A86EF",
      "Runtime": "cloudfront-js-1.0"
     },
-    "Name": {
-     "Fn::Join": [
-      "",
-      [
-       {
-        "Ref": "AWS::Region"
-       },
-       "integdistributionfuncestfunctionidnamelong0C1A86EF"
-      ]
-     ]
-    }
+    "Name": "integ-distribution-function-metest-function-id-name-long0C1A86EF"
    }
   }
  },
