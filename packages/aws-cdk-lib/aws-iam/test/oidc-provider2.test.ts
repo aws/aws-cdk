@@ -53,7 +53,7 @@ describe('OpenIdConnectProvider2 resource', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::OIDCProvider', {
       Url: 'https://my-url',
-      ClientIDList: ['client1', 'client2'],
+      ClientIdList: ['client1', 'client2'],
       ThumbprintList: ['thumb1'],
     });
   });
