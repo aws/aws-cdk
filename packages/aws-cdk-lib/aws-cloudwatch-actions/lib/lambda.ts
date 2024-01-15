@@ -2,7 +2,8 @@ import { Construct } from 'constructs';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
-import { Stack } from '../../core';
+import { FeatureFlags, Stack } from '../../core';
+import { LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION } from '../../cx-api';
 
 /**
  * Use a Lambda action as an Alarm action
@@ -21,7 +22,8 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_PutMetricAlarm.html
    */
   bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
-    this.lambdaFunction.addPermission(`${_alarm.node.id}AlarmPermission`, {
+    const idPrefix = FeatureFlags.of(_scope).isEnabled(LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION) ? _alarm.node.id : '';
+    this.lambdaFunction.addPermission(`${idPrefix}AlarmPermission`, {
       sourceAccount: Stack.of(_scope).account,
       action: 'lambda:InvokeFunction',
       sourceArn: _alarm.alarmArn,
