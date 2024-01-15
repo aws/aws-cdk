@@ -775,7 +775,7 @@ export abstract class BaseService extends Resource
           throughput: spec.config.throughput,
           volumeType: spec.config.volumeType,
           snapshotId: spec.config.snapShotId,
-          sizeInGiB: spec.config.sizeInGiB?.toGibibytes(),
+          sizeInGiB: spec.config.size?.toGibibytes(),
           tagSpecifications: tagSpecifications,
         },
       };

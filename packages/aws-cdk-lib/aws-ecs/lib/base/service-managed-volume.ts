@@ -59,7 +59,7 @@ export interface ServiceManagedEBSVolumeConfiguration {
   /**
    * The size of the volume in GiB.
    *
-   * You must specify either `sizeInGiB` or `snapshotId`.
+   * You must specify either `size` or `snapshotId`.
    * You can optionally specify a volume size greater than or equal to the snapshot size.
    *
    * The following are the supported volume size values for each volume type.
@@ -71,12 +71,12 @@ export interface ServiceManagedEBSVolumeConfiguration {
    * @default - The snapshot size is used for the volume size if you specify `snapshotId`,
    * otherwise this parameter is required.
    */
-  readonly sizeInGiB?: Size;
+  readonly size?: Size;
 
   /**
    * The snapshot that Amazon ECS uses to create the volume.
    *
-   * You must specify either `sizeInGiB` or `snapshotId`.
+   * You must specify either `size` or `snapshotId`.
    *
    * @default - No snapshot.
    */
@@ -243,11 +243,11 @@ export class ServiceManagedVolume extends Construct {
   private validateEbsVolumeConfiguration(volumeConfig?: ServiceManagedEBSVolumeConfiguration) {
     if (!volumeConfig) return;
 
-    const { volumeType = ec2.EbsDeviceVolumeType.GP2, iops, sizeInGiB, throughput, snapShotId } = volumeConfig;
+    const { volumeType = ec2.EbsDeviceVolumeType.GP2, iops, size, throughput, snapShotId } = volumeConfig;
 
-    // Validate if both sizeInGiB and snapShotId are not specified.
-    if (sizeInGiB === undefined && snapShotId === undefined) {
-      throw new Error('\'sizeInGiB\' or \'snapShotId\' must be specified');
+    // Validate if both size and snapShotId are not specified.
+    if (size === undefined && snapShotId === undefined) {
+      throw new Error('\'size\' or \'snapShotId\' must be specified');
     }
 
     if (snapShotId && !Token.isUnresolved(snapShotId) && !/^snap-[0-9a-fA-F]+$/.test(snapShotId)) {
@@ -265,11 +265,11 @@ export class ServiceManagedVolume extends Construct {
       [ec2.EbsDeviceVolumeType.STANDARD]: { minSize: 1, maxSize: 1024 },
     };
 
-    // Validate volume sizeInGiB ranges.
-    if (sizeInGiB !== undefined) {
+    // Validate volume size ranges.
+    if (size !== undefined) {
       const { minSize, maxSize } = sizeInGiBRanges[volumeType];
-      if (sizeInGiB.toGibibytes() < minSize || sizeInGiB.toGibibytes() > maxSize) {
-        throw new Error(`'${volumeType}' volumes must have a size between ${minSize} and ${maxSize} GiB, got ${sizeInGiB.toGibibytes()} GiB`);
+      if (size.toGibibytes() < minSize || size.toGibibytes() > maxSize) {
+        throw new Error(`'${volumeType}' volumes must have a size between ${minSize} and ${maxSize} GiB, got ${size.toGibibytes()} GiB`);
       }
     }
 

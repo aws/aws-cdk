@@ -1658,7 +1658,7 @@ const container = taskDefinition.addContainer('web', {
 const volume = new ecs.ServiceManagedVolume(this, 'EBSVolume', {
   name: 'ebs1',
   managedEBSVolume: {
-    sizeInGiB: Size.gibibytes(15),
+    size: Size.gibibytes(15),
     volumeType: ec2.EbsDeviceVolumeType.GP3,
     fileSystemType: ecs.FileSystemType.XFS,
     tagSpecifications: [{

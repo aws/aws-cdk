@@ -296,7 +296,7 @@ describe('task definition', () => {
         name: 'nginx-vol',
         managedEBSVolume: {
           role: ebsRole,
-          sizeInGiB: cdk.Size.gibibytes(3),
+          size: cdk.Size.gibibytes(3),
           volumeType: EbsDeviceVolumeType.GP3,
           fileSystemType: ecs.FileSystemType.XFS,
           tagSpecifications: [{
@@ -329,7 +329,7 @@ describe('task definition', () => {
         name: 'nginx-vol',
         managedEBSVolume: {
           role: ebsRole,
-          sizeInGiB: cdk.Size.gibibytes(3),
+          size: cdk.Size.gibibytes(3),
           volumeType: EbsDeviceVolumeType.GP3,
           fileSystemType: ecs.FileSystemType.XFS,
           tagSpecifications: [{
@@ -349,7 +349,7 @@ describe('task definition', () => {
         name: 'nginx-vol1',
         managedEBSVolume: {
           role: ebsRole,
-          sizeInGiB: cdk.Size.gibibytes(3),
+          size: cdk.Size.gibibytes(3),
           volumeType: EbsDeviceVolumeType.GP3,
           fileSystemType: ecs.FileSystemType.XFS,
           tagSpecifications: [{
