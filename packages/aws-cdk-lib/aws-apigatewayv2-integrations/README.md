@@ -210,3 +210,53 @@ webSocketApi.addRoute('sendMessage', {
   integration: new WebSocketLambdaIntegration('SendMessageIntegration', messageHandler),
 });
 ```
+
+
+### AWS WebSocket Integration
+
+AWS integrations enable integrating with an AWS service action, including the Lambda function-invoking action. With the Lambda function-invoking action, this is referred to as the Lambda custom integration. With any other AWS service action, this is known as AWS integration. Supported only for WebSocket APIs.
+
+The following code configures a `$connect` route with a AWS integration that integrates with a dynamodb table. On websocket api connect,
+it will write new entry to the dynamodb table. 
+
+```ts
+import { WebSocketAwsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+// Create a dynamodb table
+const table = new dynamodb.Table(stack, 'MyTable', {
+  tableName: 'MyTable',
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+});
+
+// Create an IAM role for API Gateway to write to a DB
+const apiRole = new iam.Role(stack, 'ApiGatewayRole', {
+  assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+  managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonDynamoDBFullAccess')],
+});
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
+new apigwv2.WebSocketStage(this, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
+});
+
+webSocketApi.addRoute('$connect', {
+  integration: new WebSocketAwsIntegration('DynamodbPutItem', {
+    integrationUri: `arn:aws:apigateway:${stack.region}:dynamodb:action/PutItem`,
+    integrationMethod: HttpMethod.POST,
+    credentialsRole: apiRole,
+    requestTemplates: {
+      'application/json': JSON.stringify({
+        TableName: table.tableName,
+        Item: {
+          id: {
+            S: '$context.requestId',
+          },
+        },
+      }),
+    },
+  }),
+});
+```
