@@ -749,7 +749,7 @@ export abstract class BaseService extends Resource
 
   private renderVolumes(): CfnService.ServiceVolumeConfigurationProperty[] {
     if (this.volumes.length > 1) {
-      throw new Error(`Invalid VolumeConfiguration. Only one volume can be configured at launch, got: ${this.volumes.length}`);
+      throw new Error(`Only one EBS volume can be specified for 'volumeConfigurations', got: ${this.volumes.length}`);
     }
     return this.volumes.map(renderVolume);
     function renderVolume(spec: ServiceManagedVolume): CfnService.ServiceVolumeConfigurationProperty {

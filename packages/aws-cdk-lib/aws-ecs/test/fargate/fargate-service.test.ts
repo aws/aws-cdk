@@ -1624,7 +1624,7 @@ describe('fargate service', () => {
       service.addVolume(vol2);
       expect(() => {
         app.synth();
-      }).toThrow(/Invalid VolumeConfiguration. Only one volume can be configured at launch, got: 2/);
+      }).toThrow(/Only one EBS volume can be specified for 'volumeConfigurations', got: 2/);
     });
 
     test('create a default ebsrole when not provided', ()=> {
@@ -1882,7 +1882,7 @@ describe('fargate service', () => {
             iops: 0,
           },
         }));
-      }).toThrow(/iops cannot be specified with sc1, st1, gp2 and standard volume types, got sc1/);
+      }).toThrow(/'iops' cannot be specified with sc1, st1, gp2 and standard volume types, got sc1/);
     });
 
     test('throw an error if iops is not supported for volume type sc1', ()=> {
@@ -1902,7 +1902,7 @@ describe('fargate service', () => {
             iops: 0,
           },
         }));
-      }).toThrow(/iops cannot be specified with sc1, st1, gp2 and standard volume types, got gp2/);
+      }).toThrow(/'iops' cannot be specified with sc1, st1, gp2 and standard volume types, got gp2/);
     });
 
     test('throw an error if if iops is required but not provided for volume type io2', ()=> {
@@ -1922,7 +1922,7 @@ describe('fargate service', () => {
             sizeInGiB: cdk.Size.gibibytes(125),
           },
         }));
-      }).toThrow(/iops must be specified with io1 or io2 volume types, got io2/);
+      }).toThrow(/'iops' must be specified with io1 or io2 volume types, got io2/);
     });
 
     test('throw an error if if iops is less than 100 for volume type io2', ()=> {

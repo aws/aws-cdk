@@ -287,12 +287,12 @@ export class ServiceManagedVolume extends Construct {
     // https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateVolume.html
     if ([ec2.EbsDeviceVolumeType.SC1, ec2.EbsDeviceVolumeType.ST1, ec2.EbsDeviceVolumeType.STANDARD,
       ec2.EbsDeviceVolumeType.GP2].includes(volumeType) && iops !== undefined) {
-      throw new Error(`iops cannot be specified with sc1, st1, gp2 and standard volume types, got ${volumeType}`);
+      throw new Error(`'iops' cannot be specified with sc1, st1, gp2 and standard volume types, got ${volumeType}`);
     }
 
     // Check if IOPS is required but not provided.
     if ([ec2.EbsDeviceVolumeType.IO1, ec2.EbsDeviceVolumeType.IO2].includes(volumeType) && iops === undefined) {
-      throw new Error(`iops must be specified with io1 or io2 volume types, got ${volumeType}`);
+      throw new Error(`'iops' must be specified with io1 or io2 volume types, got ${volumeType}`);
     }
 
     // Validate IOPS range if specified.
