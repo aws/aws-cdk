@@ -335,6 +335,77 @@ describe('instance', () => {
     });
   });
 
+  test('instance with cloudwatchLogsExports', () => {
+    // WHEN
+    const cloudwatchTraceLog = 'trace';
+    const cloudwatchAuditLog = 'audit';
+    const cloudwatchAlertLog = 'alert';
+    const cloudwatchListenerLog = 'listener';
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      cloudwatchLogsExports: [cloudwatchTraceLog, cloudwatchAuditLog, cloudwatchAlertLog, cloudwatchListenerLog],
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnableCloudwatchLogsExports: [cloudwatchTraceLog, cloudwatchAuditLog, cloudwatchAlertLog, cloudwatchListenerLog],
+    });
+
+    expect(Object.keys(instance.cloudwatchLogGroups).length).toEqual(4);
+    expect(instance.cloudwatchLogGroups[cloudwatchTraceLog].logGroupName).toEqual(`/aws/rds/instance/${instance.instanceIdentifier}/${cloudwatchTraceLog}`);
+    expect(instance.cloudwatchLogGroups[cloudwatchAuditLog].logGroupName).toEqual(`/aws/rds/instance/${instance.instanceIdentifier}/${cloudwatchAuditLog}`);
+    expect(instance.cloudwatchLogGroups[cloudwatchAlertLog].logGroupName).toEqual(`/aws/rds/instance/${instance.instanceIdentifier}/${cloudwatchAlertLog}`);
+    expect(instance.cloudwatchLogGroups[cloudwatchListenerLog].logGroupName).toEqual(`/aws/rds/instance/${instance.instanceIdentifier}/${cloudwatchListenerLog}`);
+  });
+
+  test('instance replica with cloudwatchLogsExports', () => {
+    const cloudwatchTraceLog = 'trace';
+    const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+    });
+
+    // WHEN
+    const replicaInstance = new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+      sourceDatabaseInstance: sourceInstance,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      cloudwatchLogsExports: [cloudwatchTraceLog],
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnableCloudwatchLogsExports: [cloudwatchTraceLog],
+    });
+
+    expect(Object.keys(replicaInstance.cloudwatchLogGroups).length).toEqual(1);
+    expect(replicaInstance.cloudwatchLogGroups[cloudwatchTraceLog].logGroupName).toEqual(`/aws/rds/instance/${replicaInstance.instanceIdentifier}/${cloudwatchTraceLog}`);
+  });
+
+  test('instance snapshot with cloudwatchLogsExports', () => {
+    // WHEN
+    const instance = new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      cloudwatchLogsExports: [],
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnableCloudwatchLogsExports: [],
+    });
+
+    expect(Object.keys(instance.cloudwatchLogGroups).length).toEqual(0);
+  });
+
   test('instance with dual-stack network type', () => {
     // WHEN
     new rds.DatabaseInstance(stack, 'Database', {
