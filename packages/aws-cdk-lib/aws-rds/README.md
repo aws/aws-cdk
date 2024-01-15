@@ -959,6 +959,11 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   // ...
 });
 
+// When 'cloudwatchLogsExports' is set, each export value creates its own log group in DB cluster. 
+// Specify an export value to access its log group.
+const errorLogGroup = cluster.cloudwatchLogGroups['error'];
+const auditLogGroup = cluster.cloudwatchLogGroups.audit;
+
 // Exporting logs from an instance
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({
@@ -966,8 +971,13 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   }),
   vpc,
   cloudwatchLogsExports: ['postgresql'], // Export the PostgreSQL logs
+  cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS, // Optional - default is to never expire logs
   // ...
 });
+
+// When 'cloudwatchLogsExports' is set, each export value creates its own log group in DB instance. 
+// Specify an export value to access its log group.
+const postgresqlLogGroup = instance.cloudwatchLogGroups['postgresql'];
 ```
 
 ## Option Groups

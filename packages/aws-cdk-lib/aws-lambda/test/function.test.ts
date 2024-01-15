@@ -2677,6 +2677,43 @@ describe('function', () => {
         ],
       });
     });
+
+    test('correct security group is created when deployed in separate stacks', () => {
+      const app = new cdk.App();
+
+      // EfsStack
+      const efsStack = new cdk.Stack(app, 'EfsStack');
+      const vpc = new ec2.Vpc(efsStack, 'Vpc');
+      const fs = new efs.FileSystem(efsStack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // LambdaStack
+      const lambdaStack = new cdk.Stack(app, 'LambdaStack');
+      new lambda.Function(lambdaStack, 'MyFunction', {
+        vpc,
+        handler: 'foo',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+      });
+
+      Template.fromStack(lambdaStack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            IpProtocol: '-1',
+          },
+        ],
+      });
+
+      Template.fromStack(lambdaStack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+        FromPort: 2049,
+        ToPort: 2049,
+        IpProtocol: 'tcp',
+      });
+    });
   });
 
   describe('code config', () => {
