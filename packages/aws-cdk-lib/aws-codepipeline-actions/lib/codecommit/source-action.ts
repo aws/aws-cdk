@@ -67,7 +67,7 @@ export interface CodeCommitSourceVariables {
  */
 export interface ICustomEventRule {
   /**
-   * event pattern when this rule should be triggered 
+   * event pattern when this rule should be triggered
    */
   readonly eventPattern: EventPattern;
   /**
