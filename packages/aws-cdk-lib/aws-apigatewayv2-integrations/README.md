@@ -9,6 +9,7 @@
   - [Request Parameters](#request-parameters)
 - [WebSocket APIs](#websocket-apis)
   - [Lambda WebSocket Integration](#lambda-websocket-integration)
+  - [AWS WebSocket Integration](#aws-websocket-integration)
 
 ## HTTP APIs
 
@@ -211,7 +212,6 @@ webSocketApi.addRoute('sendMessage', {
 });
 ```
 
-
 ### AWS WebSocket Integration
 
 AWS integrations enable integrating with an AWS service action, including the Lambda function-invoking action. With the Lambda function-invoking action, this is referred to as the Lambda custom integration. With any other AWS service action, this is known as AWS integration. Supported only for WebSocket APIs.
@@ -221,19 +221,8 @@ it will write new entry to the dynamodb table.
 
 ```ts
 import { WebSocketAwsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
-
-// Create a dynamodb table
-const table = new dynamodb.Table(stack, 'MyTable', {
-  tableName: 'MyTable',
-  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
-  billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-});
-
-// Create an IAM role for API Gateway to write to a DB
-const apiRole = new iam.Role(stack, 'ApiGatewayRole', {
-  assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-  managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonDynamoDBFullAccess')],
-});
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
 new apigwv2.WebSocketStage(this, 'mystage', {
@@ -242,10 +231,12 @@ new apigwv2.WebSocketStage(this, 'mystage', {
   autoDeploy: true,
 });
 
+declare const apiRole: iam.Role;
+declare const table: dynamodb: Table;
 webSocketApi.addRoute('$connect', {
   integration: new WebSocketAwsIntegration('DynamodbPutItem', {
-    integrationUri: `arn:aws:apigateway:${stack.region}:dynamodb:action/PutItem`,
-    integrationMethod: HttpMethod.POST,
+    integrationUri: `arn:aws:apigateway:${this.region}:dynamodb:action/PutItem`,
+    integrationMethod: apigwv2.HttpMethod.POST,
     credentialsRole: apiRole,
     requestTemplates: {
       'application/json': JSON.stringify({
