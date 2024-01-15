@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { IWebSocketRoute } from './route';
 import { CfnIntegration } from '.././index';
+import { IRole } from '../../../aws-iam';
 import { Resource } from '../../../core';
 import { IIntegration } from '../common';
 
@@ -24,7 +25,11 @@ export enum WebSocketIntegrationType {
   /**
    * Mock Integration Type
    */
-  MOCK = 'MOCK'
+  MOCK = 'MOCK',
+  /**
+   * AWS Integration Type
+   */
+  AWS = 'AWS'
 }
 
 /**
@@ -45,6 +50,48 @@ export interface WebSocketIntegrationProps {
    * Integration URI.
    */
   readonly integrationUri: string;
+
+  /**
+ * Specifies the integration's HTTP method type.
+ *
+ * @default None.
+ */
+  readonly integrationMethod?: string;
+
+  /**
+   * Specifies the IAM role required for the integration.
+   *
+   * @default None.
+   */
+  readonly credentialsRole?: IRole;
+
+  /**
+   * The request parameters that API Gateway sends with the backend request.
+   * Specify request parameters as key-value pairs (string-to-string
+   * mappings), with a destination as the key and a source as the value.
+   *
+   * @default None.
+   */
+  readonly requestParameters?: { [dest: string]: string };
+
+  /**
+   * A map of Apache Velocity templates that are applied on the request
+   * payload.
+   *
+   * ```
+   *   { "application/json": "{ \"statusCode\": 200 }" }
+   * ```
+   *
+   * @default None.
+  */
+  readonly requestTemplates?: { [contentType: string]: string };
+
+  /**
+   * The template selection expression for the integration.
+   *
+   * @default None.
+   */
+  readonly templateSelectionExpression?: string;
 }
 
 /**
@@ -61,6 +108,11 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
       apiId: props.webSocketApi.apiId,
       integrationType: props.integrationType,
       integrationUri: props.integrationUri,
+      integrationMethod: props.integrationMethod,
+      credentialsArn: props.credentialsRole?.roleArn,
+      requestParameters: props.requestParameters,
+      requestTemplates: props.requestTemplates,
+      templateSelectionExpression: props.templateSelectionExpression,
     });
     this.integrationId = integ.ref;
     this.webSocketApi = props.webSocketApi;
@@ -112,6 +164,11 @@ export abstract class WebSocketRouteIntegration {
         webSocketApi: options.route.webSocketApi,
         integrationType: config.type,
         integrationUri: config.uri,
+        integrationMethod: config.method,
+        credentialsRole: config.credentialsRole,
+        requestTemplates: config.requestTemplates,
+        requestParameters: config.requestParameters,
+        templateSelectionExpression: config.templateSelectionExpression,
       });
     }
 
@@ -137,4 +194,39 @@ export interface WebSocketRouteIntegrationConfig {
    * Integration URI
    */
   readonly uri: string;
+
+  /**
+   * Integration method
+   *
+   * @default None.
+   */
+  readonly method?: string;
+
+  /**
+   * Credentials role
+   *
+   * @default None.
+   */
+  readonly credentialsRole?: IRole;
+
+  /**
+   * Request template
+   *
+   * @default None.
+   */
+  readonly requestTemplates?: { [contentType: string]: string };
+
+  /**
+   * Request parameters
+   *
+   * @default None.
+   */
+  readonly requestParameters?: { [dest: string]: string };
+
+  /**
+   * Template selection expression
+   *
+   * @default None.
+   */
+  readonly templateSelectionExpression?: string;
 }
