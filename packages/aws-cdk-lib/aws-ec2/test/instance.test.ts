@@ -627,7 +627,7 @@ describe('instance', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       InstanceType: 't3.large',
       CreditSpecification: {
-        CpuCredits: 'standard',
+        CPUCredits: 'standard',
       },
     });
   });
