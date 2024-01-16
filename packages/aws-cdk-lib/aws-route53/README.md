@@ -151,7 +151,7 @@ new route53.ARecord(this, 'ARecordGeoLocationDefault', {
 });
 ```
 
-To enable [weighted routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-weighted.html), use the `weight` parameter.
+To enable [weighted routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-weighted.html), use the `weight` parameter:
 
 ```ts
 declare const myZone: route53.HostedZone;
