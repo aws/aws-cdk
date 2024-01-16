@@ -1106,13 +1106,12 @@ describe('record set', () => {
     });
 
     // WHEN
-    new route53.RecordSet(stack, 'Basic', {
+    new route53.RecordSet(stack, 'RecordSet', {
       zone,
       recordName: 'www',
       recordType: route53.RecordType.CNAME,
       target: route53.RecordTarget.fromValues('zzz'),
       weight: 50,
-      setIdentifier: 'uniqueId',
     });
 
     // THEN
@@ -1127,7 +1126,7 @@ describe('record set', () => {
       ],
       TTL: '1800',
       Weight: 50,
-      SetIdentifier: 'uniqueId',
+      SetIdentifier: 'WEIGHT_50_ID_RecordSet',
     });
   });
 
@@ -1147,7 +1146,6 @@ describe('record set', () => {
       recordType: route53.RecordType.CNAME,
       target: route53.RecordTarget.fromValues('zzz'),
       weight,
-      setIdentifier: 'uniqueId',
     })).toThrow(`weight must be between 0 and 255 inclusive, got: ${weight}`);
   });
 
@@ -1165,22 +1163,6 @@ describe('record set', () => {
       target: route53.RecordTarget.fromValues('zzz'),
       setIdentifier: 'a'.repeat(129),
     })).toThrow('setIdentifier must be between 1 and 128 characters long, got: 129');
-  });
-
-  test('throw error if weight is set without defining setIdentifier', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
-
-    // THEN
-    expect(() => new route53.RecordSet(stack, 'Basic', {
-      zone,
-      recordName: 'www',
-      recordType: route53.RecordType.CNAME,
-      target: route53.RecordTarget.fromValues('zzz'),
-      weight: 50,
-    })).toThrow('setIdentifier is required when weight is defined');
   });
 
   test('throw error for the simultaneous definition of weight and geoLocation', () => {
