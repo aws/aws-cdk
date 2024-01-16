@@ -301,7 +301,7 @@ export class RecordSet extends Resource implements IRecordSet {
         countryCode: props.geoLocation.countryCode,
         subdivisionCode: props.geoLocation.subdivisionCode,
       } : undefined,
-      setIdentifier: props.setIdentifier ?? this.configureSetIdentifer(),
+      setIdentifier: props.setIdentifier ?? this.configureSetIdentifier(),
       weight: props.weight,
     });
 
@@ -348,7 +348,7 @@ export class RecordSet extends Resource implements IRecordSet {
     }
   }
 
-  private configureSetIdentifer(): string | undefined {
+  private configureSetIdentifier(): string | undefined {
     if (this.geoLocation) {
       let identifier = 'GEO';
       if (this.geoLocation.continentCode) {
