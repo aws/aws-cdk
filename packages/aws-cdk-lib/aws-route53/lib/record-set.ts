@@ -288,6 +288,9 @@ export class RecordSet extends Resource implements IRecordSet {
     this.geoLocation = props.geoLocation;
     this.weight = props.weight;
 
+    this.geoLocation = props.geoLocation;
+    this.weight = props.weight;
+
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
 
     const recordName = determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone);
