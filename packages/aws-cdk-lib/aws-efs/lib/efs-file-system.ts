@@ -53,12 +53,12 @@ export enum LifecyclePolicy {
   /**
    * After 270 days of not being accessed.
    */
-  AFTER_270_DAYS='AFTER_270_DAYS',
+  AFTER_270_DAYS = 'AFTER_270_DAYS',
 
   /**
    * After 365 days of not being accessed.
    */
-  AFTER_365_DAYS='AFTER_365_DAYS',
+  AFTER_365_DAYS = 'AFTER_365_DAYS',
 }
 
 /**
@@ -531,7 +531,7 @@ export class FileSystem extends FileSystemBase {
     const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
       cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
 
-    // LifecyclePolicies is an array of lists containing a single policy
+    // LifecyclePolicies must be an array of objects, each containing a single policy
     const lifecyclePolicies: CfnFileSystem.LifecyclePolicyProperty[] = [];
 
     if (props.lifecyclePolicy) {
