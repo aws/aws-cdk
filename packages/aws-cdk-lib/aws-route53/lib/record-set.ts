@@ -196,7 +196,7 @@ export interface RecordSetOptions {
    *
    * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-weighted.html
    *
-   * @default - no weight
+   * @default - Do not set weighted routing
    */
   readonly weight?: number;
 
