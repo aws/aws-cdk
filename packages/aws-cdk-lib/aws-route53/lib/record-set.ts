@@ -202,10 +202,11 @@ export interface RecordSetOptions {
 
   /**
    * A string used to distinguish between different records with the same combination of DNS name and type.
+   * It can only be set when either weight or geoLocation is defined.
    *
    * This parameter must be between 1 and 128 characters in length.
    *
-   * @default - Auto generated string if `geoLocation` or `weight` is defined, otherwise no set identifier
+   * @default - Auto generated string
    */
   readonly setIdentifier?: string;
 }
@@ -279,6 +280,9 @@ export class RecordSet extends Resource implements IRecordSet {
     }
     if (props.weight && props.geoLocation) {
       throw new Error('Only one of weight or geoLocation can be specified, not both');
+    }
+    if (props.setIdentifier && !props.weight && !props.geoLocation) {
+      throw new Error('setIdentifier can only be specified when either weight or geoLocation is defined');
     }
 
     this.geoLocation = props.geoLocation;
