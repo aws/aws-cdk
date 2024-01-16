@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-firehose-delivery-stream-s3-all-properties.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a05127e41968d710aab4219add6693dd03376b7bae654f9ffe291a21f2aa7c68.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0019f412b05fd0b891fa582b76ccab00d7ae0e38c531e41719fd3e93febbb3e4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -152,6 +152,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "awscdkawskinesisfirehoseCidrBlocks"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/S3 Destination Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ZeroBufferingDeliveryStreamS3DestinationRole606BB6E3"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/S3 Destination Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ZeroBufferingDeliveryStreamS3DestinationRoleDefaultPolicyC03FC12E"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ZeroBufferingDeliveryStreamLogGroupFA68202E"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/LogGroup/S3Destination/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ZeroBufferingDeliveryStreamLogGroupS3Destination806CFD96"
+          }
+        ],
+        "/aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ZeroBufferingDeliveryStream7C2555C9"
           }
         ],
         "/aws-cdk-firehose-delivery-stream-s3-all-properties/BootstrapVersion": [
