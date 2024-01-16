@@ -51,6 +51,29 @@ const importedFileSystem = efs.FileSystem.fromFileSystemAttributes(this, 'existi
 });
 ```
 
+### One Zone file system
+
+To initialize a One Zone file system use the `oneZone` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new efs.FileSystem(this, 'OneZoneFileSystem', {
+  vpc,
+  oneZone: true,
+})
+```
+
+⚠️ One Zone file systems are not compatible with the MAX_IO performance mode.
+
+⚠️ When `oneZone` is enabled, the file system is automatically placed in the first availability zone of the VPC.
+It is not currently possible to specify a different availability zone.
+
+⚠️ When `oneZone` is enabled, mount targets will be created only in the specified availability zone.
+This is to prevent deployment failures due to cross-AZ configurations.
+
+⚠️ When `oneZone` is enabled, `vpcSubnets` cannot be specified.
+
 ### IAM to control file system data access
 
 You can use both IAM identity policies and resource policies to control client access to Amazon EFS resources in a way that is scalable and optimized for cloud environments. Using IAM, you can permit clients to perform specific actions on a file system, including read-only, write, and root access.

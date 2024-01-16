@@ -875,3 +875,49 @@ test('anonymous access is prohibited by the @aws-cdk/aws-efs:denyAnonymousAccess
     },
   });
 });
+
+test('specify availabilityZoneName to create mount targets in a specific AZ', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    oneZone: true,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::EFS::FileSystem', {
+    AvailabilityZoneName: {
+      'Fn::Select': [
+        0,
+        {
+          'Fn::GetAZs': '',
+        },
+      ],
+    },
+  });
+
+  // make sure only one mount target is created.
+  template.resourceCountIs('AWS::EFS::MountTarget', 1);
+});
+
+test('one zone file system with MAX_IO performance mode is not supported', () => {
+  // THEN
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      oneZone: true,
+      performanceMode: PerformanceMode.MAX_IO,
+    });
+  }).toThrow(/performanceMode MAX_IO is not supported for One Zone file systems./);
+});
+
+test('one zone file system with vpcSubnets is not supported', () => {
+  // THEN
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      oneZone: true,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    });
+  }).toThrow(/vpcSubnets cannot be specified when oneZone is enabled./);
+});
