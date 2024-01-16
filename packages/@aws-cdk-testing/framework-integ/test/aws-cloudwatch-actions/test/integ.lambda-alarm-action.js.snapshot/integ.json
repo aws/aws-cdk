@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "LambdaAlarmActionIntegrationTest/DefaultTest": {
+      "stacks": [
+        "LambdaAlarmActionIntegrationTestStack"
+      ],
+      "assertionStack": "LambdaAlarmActionIntegrationTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaAlarmActionIntegrationTestDefaultTestDeployAssertF9F882E5"
+    }
+  }
+}
