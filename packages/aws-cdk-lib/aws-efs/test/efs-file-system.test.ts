@@ -138,7 +138,7 @@ test('file system with transition to archive is created correctly', () => {
     vpc,
     transitionToArchivePolicy: LifecyclePolicy.AFTER_1_DAY,
   });
-
+  // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
     LifecyclePolicies: [
       {
