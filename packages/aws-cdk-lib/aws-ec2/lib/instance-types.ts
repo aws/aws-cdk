@@ -1555,4 +1555,11 @@ export class InstanceType {
     return instanceClassId[1] === otherInstanceClassId[1];
   }
 
+  /**
+   * Return whether this instance type is a burstable instance type
+   */
+  public isBurstable(): boolean {
+    return this.instanceTypeIdentifier.startsWith('t3') || this.instanceTypeIdentifier.startsWith('t4g') || this.instanceTypeIdentifier.startsWith('t2');
+  }
+
 }

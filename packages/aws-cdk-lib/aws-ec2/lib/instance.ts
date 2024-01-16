@@ -379,6 +379,11 @@ export class Instance extends Resource implements IInstance {
       throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
     }
 
+    // if credit specification is set, then the instance type must be burstable
+    if (props.creditSpecification && !props.instanceType.isBurstable()) {
+      throw new Error(`creditSpecification is not supported for ${props.instanceType.toString()} instance type`);
+    }
+
     if (props.securityGroup) {
       this.securityGroup = props.securityGroup;
     } else {

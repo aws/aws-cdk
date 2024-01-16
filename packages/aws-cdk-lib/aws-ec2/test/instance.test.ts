@@ -631,6 +631,18 @@ describe('instance', () => {
       },
     });
   });
+
+  test('throw if creditSpecification is defined for a non-burstable instance type', () => {
+    // THEN
+    expect(() => {
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(InstanceClass.M5, InstanceSize.LARGE),
+        creditSpecification: CpuCredits.STANDARD,
+      });
+    }).toThrow('creditSpecification is not supported for m5.large instance type');
+  });
 });
 
 test('add CloudFormation Init to instance', () => {
