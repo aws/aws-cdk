@@ -172,8 +172,11 @@ new route53.ARecord(this, 'ARecordWeighted1', {
   zone: myZone,
   target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
   weight: 10,
-  setIdentifier: 'weighted-record-id',
+  setIdentifier: 'weighted-record-id', 
 });
+```
+**Warning** It is not possible to specify `setIdentifier` in simple routing.
+
 Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
