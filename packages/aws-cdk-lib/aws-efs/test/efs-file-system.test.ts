@@ -114,7 +114,7 @@ test('file system LifecyclePolicies is created correctly', () => {
     vpc,
     lifecyclePolicy: LifecyclePolicy.AFTER_7_DAYS,
     outOfInfrequentAccessPolicy: OutOfInfrequentAccessPolicy.AFTER_1_ACCESS,
-    transitionToArchive: LifecyclePolicy.AFTER_14_DAYS,
+    transitionToArchivePolicy: LifecyclePolicy.AFTER_14_DAYS,
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
@@ -136,7 +136,7 @@ test('file system with transition to archive is created correctly', () => {
   // WHEN
   new FileSystem(stack, 'EfsFileSystem', {
     vpc,
-    transitionToArchive: LifecyclePolicy.AFTER_1_DAY,
+    transitionToArchivePolicy: LifecyclePolicy.AFTER_1_DAY,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {

@@ -11,7 +11,7 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1, restrictDefau
 new FileSystem(stack, 'FileSystem', {
   vpc,
   lifecyclePolicy: LifecyclePolicy.AFTER_14_DAYS,
-  transitionToArchive: LifecyclePolicy.AFTER_90_DAYS,
+  transitionToArchivePolicy: LifecyclePolicy.AFTER_90_DAYS,
   outOfInfrequentAccessPolicy: OutOfInfrequentAccessPolicy.AFTER_1_ACCESS,
 });
 

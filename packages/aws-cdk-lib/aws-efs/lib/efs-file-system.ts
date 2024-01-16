@@ -234,7 +234,7 @@ export interface FileSystemProps {
    *
    * @default - None. EFS will not transition files to Archive storage class.
    */
-  readonly transitionToArchive?: LifecyclePolicy;
+  readonly transitionToArchivePolicy?: LifecyclePolicy;
   /**
    * The performance mode that the file system will operate under.
    * An Amazon EFS file system's performance mode can't be changed after the file system has been created.
@@ -542,8 +542,8 @@ export class FileSystem extends FileSystemBase {
       lifecyclePolicies.push({ transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy });
     }
 
-    if (props.transitionToArchive) {
-      lifecyclePolicies.push({ transitionToArchive: props.transitionToArchive });
+    if (props.transitionToArchivePolicy) {
+      lifecyclePolicies.push({ transitionToArchive: props.transitionToArchivePolicy });
     }
 
     const oneZoneAzName = props.vpc.availabilityZones[0];
