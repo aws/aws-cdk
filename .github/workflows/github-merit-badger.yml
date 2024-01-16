@@ -17,4 +17,4 @@ jobs:
           badges: '[beginning-contributor,repeat-contributor,valued-contributor,admired-contributor,star-contributor,distinguished-contributor]'
           thresholds: '[0,3,6,13,25,50]'
           badge-type: 'achievement'
-          ignore-usernames: '[rix0rrr,MrArnoldPalmer,iliapolo,otaviomacedo,madeline-k,kaizencc,comcalvi,corymhall,peterwoodworth,TheRealAmazonKendra,vinayak-kukreja,mrgrain,pahud,cgarvis,kellertk,HBobertz,sumupitchayan,SankyRed,udaypant,colifran,khushail,scanlonp,mikewrighton,moelasmar,aws-cdk-automation,dependabot[bot],mergify[bot]]'
+          ignore-usernames: '[rix0rrr,MrArnoldPalmer,iliapolo,otaviomacedo,madeline-k,kaizencc,comcalvi,TheRealAmazonKendra,vinayak-kukreja,mrgrain,pahud,cgarvis,kellertk,HBobertz,sumupitchayan,SankyRed,udaypant,colifran,khushail,scanlonp,mikewrighton,moelasmar,paulhcsun,awsmjs,evgenyka,GavinZZ,aaythapa,xazhao,ConnorRobertson,ssenchenko,gracelu0,jfuss,SimonCMoore,aws-cdk-automation,dependabot[bot],mergify[bot]]'

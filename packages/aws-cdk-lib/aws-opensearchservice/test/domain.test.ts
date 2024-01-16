@@ -10,7 +10,7 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Domain, DomainProps, EngineVersion } from '../lib';
+import { Domain, DomainProps, EngineVersion, IpAddressType } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -40,6 +40,8 @@ const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_2_5,
   EngineVersion.OPENSEARCH_2_7,
   EngineVersion.OPENSEARCH_2_9,
+  EngineVersion.OPENSEARCH_2_10,
+  EngineVersion.OPENSEARCH_2_11,
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
@@ -203,6 +205,8 @@ each([
   [EngineVersion.OPENSEARCH_2_5, 'OpenSearch_2.5'],
   [EngineVersion.OPENSEARCH_2_7, 'OpenSearch_2.7'],
   [EngineVersion.OPENSEARCH_2_9, 'OpenSearch_2.9'],
+  [EngineVersion.OPENSEARCH_2_10, 'OpenSearch_2.10'],
+  [EngineVersion.OPENSEARCH_2_11, 'OpenSearch_2.11'],
 ]).test('minimal example renders correctly', (engineVersion, expectedCfVersion) => {
   new Domain(stack, 'Domain', { version: engineVersion });
 
@@ -2461,6 +2465,20 @@ describe('EBS Options Configurations', () => {
       };
       new Domain(stack, `Domain${idx++}`, domainProps);
     }).toThrow('throughput property takes a minimum of 125 and a maximum of 1000.');
+  });
+});
+
+each([
+  [IpAddressType.IPV4, 'ipv4'],
+  [IpAddressType.DUAL_STACK, 'dualstack'],
+]).test('ip address type', (type, expected) => {
+  new Domain(stack, 'Domain', {
+    version: EngineVersion.OPENSEARCH_2_5,
+    ipAddressType: type,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    IPAddressType: expected,
   });
 });
 

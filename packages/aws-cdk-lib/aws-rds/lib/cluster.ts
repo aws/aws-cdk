@@ -12,12 +12,13 @@ import { CfnDBCluster, CfnDBClusterProps, CfnDBInstance } from './rds.generated'
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { Annotations, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Token } from '../../core';
+import { Annotations, ArnFormat, Duration, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -457,6 +458,19 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
       targetType: secretsmanager.AttachmentTargetType.RDS_DB_CLUSTER,
     };
   }
+
+  public grantConnect(grantee: iam.IGrantable, dbUser: string): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      actions: ['rds-db:connect'],
+      grantee,
+      resourceArns: [Stack.of(this).formatArn({
+        service: 'rds-db',
+        resource: 'dbuser',
+        resourceName: `${this.clusterResourceIdentifier}/${dbUser}`,
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      })],
+    });
+  }
 }
 
 /**
@@ -489,6 +503,13 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   public readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
+   * The log group is created when `cloudwatchLogsExports` is set.
+   *
+   * Each export value will create a separate log group.
+   */
+  public readonly cloudwatchLogGroups: {[engine: string]: logs.ILogGroup};
+
+  /**
    * Application for single user rotation of the master password to this cluster.
    */
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
@@ -516,6 +537,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     }
     this.vpc = props.instanceProps?.vpc ?? props.vpc!;
     this.vpcSubnets = props.instanceProps?.vpcSubnets ?? props.vpcSubnets;
+
+    this.cloudwatchLogGroups = {};
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
@@ -1209,11 +1232,13 @@ function setLogRetention(cluster: DatabaseClusterNew, props: DatabaseClusterBase
 
     if (props.cloudwatchLogsRetention) {
       for (const log of props.cloudwatchLogsExports) {
+        const logGroupName = `/aws/rds/cluster/${cluster.clusterIdentifier}/${log}`;
         new logs.LogRetention(cluster, `LogRetention${log}`, {
-          logGroupName: `/aws/rds/cluster/${cluster.clusterIdentifier}/${log}`,
+          logGroupName,
           retention: props.cloudwatchLogsRetention,
           role: props.cloudwatchLogsRetentionRole,
         });
+        cluster.cloudwatchLogGroups[log] = logs.LogGroup.fromLogGroupName(cluster, `LogGroup${cluster.clusterIdentifier}${log}`, logGroupName);
       }
     }
   }

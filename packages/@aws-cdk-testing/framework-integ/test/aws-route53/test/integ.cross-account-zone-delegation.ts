@@ -4,6 +4,31 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
+/**
+ * Notes on how to run this integ test
+ * (All regions are flexible, my testing used account A with af-south-1 not enabled)
+ * Replace 123456789012 and 234567890123 with your own account numbers
+ *
+ * 1. Configure Accounts
+ *   a. Account A (123456789012) should be bootstrapped for us-east-1
+ *      and needs to set trust permissions for account B (234567890123)
+ *      - `cdk bootstrap --trust 234567890123 --cloudformation-execution-policies 'arn:aws:iam::aws:policy/AdministratorAccess'`
+ *      - assuming this is the default profile for aws credentials
+ *   b. Account B (234567890123) should be bootstrapped for us-east-1 and af-south-1
+ *     - note Account B needs to have af-south-1 enabled as it is an opt-in region
+ *     - assuming this account is configured with the profile 'cross-account' for aws credentials
+ *
+ * 2. Set environment variables
+ *   a. `export CDK_INTEG_ACCOUNT=123456789012`
+ *   b. `export CDK_INTEG_CROSS_ACCOUNT=234567890123`
+ *
+ * 3. Run the integ test (from the @aws-cdk-testing/framework-integ/test directory)
+ *   a. Get temporary console access credentials for account B
+ *     - `yarn integ aws-route53/test/integ.cross-account-zone-delegation.js`
+ *   b. Fall back if temp credentials do not work (account info may be in snapshot)
+ *     - `yarn integ aws-route53/test/integ.cross-account-zone-delegation.js --profiles cross-account`
+*/
+
 const app = new cdk.App();
 
 const account = process.env.CDK_INTEG_ACCOUNT || '123456789012'; // this account should NOT have af-south-1 enabled

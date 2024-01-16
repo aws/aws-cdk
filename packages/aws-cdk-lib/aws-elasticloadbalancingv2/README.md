@@ -217,6 +217,9 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   // How the load balancer handles requests that might
   // pose a security risk to your application
   desyncMitigationMode: elbv2.DesyncMitigationMode.DEFENSIVE,
+
+  // The type of IP addresses to use.
+  ipAddressType: elbv2.IpAddressType.IPV4,
 });
 ```
 
@@ -230,13 +233,17 @@ Balancers:
 ```ts
 declare const vpc: ec2.Vpc;
 declare const asg: autoscaling.AutoScalingGroup;
+declare const sg1: ec2.ISecurityGroup;
+declare const sg2: ec2.ISecurityGroup;
 
 // Create the load balancer in a VPC. 'internetFacing' is 'false'
 // by default, which creates an internal load balancer.
 const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   vpc,
-  internetFacing: true
+  internetFacing: true,
+  securityGroups: [sg1],
 });
+lb.addSecurityGroup(sg2);
 
 // Add a listener on a particular port.
 const listener = lb.addListener('Listener', {
@@ -259,6 +266,21 @@ Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-
 and [Register targets with your Target
 Group](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html)
 for more information.
+
+### Dualstack Network Load Balancer
+
+You can create a dualstack Network Load Balancer using the `ipAddressType` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+```
+
+You cannot add UDP or TCP_UDP listeners to a dualstack Network Load Balancer.
 
 ## Targets and Target Groups
 

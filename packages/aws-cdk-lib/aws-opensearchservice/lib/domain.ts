@@ -281,7 +281,9 @@ export enum TLSSecurityPolicy {
   /** Cipher suite TLS 1.0 */
   TLS_1_0 = 'Policy-Min-TLS-1-0-2019-07',
   /** Cipher suite TLS 1.2 */
-  TLS_1_2 = 'Policy-Min-TLS-1-2-2019-07'
+  TLS_1_2 = 'Policy-Min-TLS-1-2-2019-07',
+  /** Cipher suite TLS 1.2 to 1.3 with perfect forward secrecy (PFS) */
+  TLS_1_2_PFS = 'Policy-Min-TLS-1-2-PFS-2023-10',
 }
 
 /**
@@ -421,6 +423,20 @@ export interface WindowStartTime {
    * @default - 0
    */
   readonly minutes: number;
+}
+
+/**
+ * The IP address type for the domain.
+ */
+export enum IpAddressType {
+  /**
+   * IPv4 addresses only
+   */
+  IPV4 = 'ipv4',
+  /**
+   * IPv4 and IPv6 addresses
+   */
+  DUAL_STACK = 'dualstack',
 }
 
 /**
@@ -642,6 +658,16 @@ export interface DomainProps {
    * @default - false
    */
   readonly enableAutoSoftwareUpdate?: boolean;
+
+  /**
+   * Specify either dual stack or IPv4 as your IP address type.
+   * Dual stack allows you to share domain resources across IPv4 and IPv6 address types, and is the recommended option.
+   *
+   * If you set your IP address type to dual stack, you can't change your address type later.
+   *
+   * @default - IpAddressType.IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
 }
 
 /**
@@ -1883,6 +1909,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       softwareUpdateOptions: props.enableAutoSoftwareUpdate ? {
         autoSoftwareUpdateEnabled: props.enableAutoSoftwareUpdate,
       } : undefined,
+      ipAddressType: props.ipAddressType,
     });
     this.domain.applyRemovalPolicy(props.removalPolicy);
 
