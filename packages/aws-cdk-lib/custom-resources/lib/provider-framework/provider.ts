@@ -2,7 +2,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import * as consts from './runtime/consts';
 import { calculateRetryPolicy } from './util';
-import { LogOptions, WaiterStateMachine } from './waiter-state-machine';
+import { WaiterStateMachine } from './waiter-state-machine';
 import { CustomResourceProviderConfig, ICustomResourceProvider } from '../../../aws-cloudformation';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
@@ -126,20 +126,6 @@ export interface ProviderProps {
    * @default -  AWS Lambda creates and uses an AWS managed customer master key (CMK)
    */
   readonly providerFunctionEnvEncryption?: kms.IKey;
-
-  /**
-   * Defines what execution history events of the waiter state machine are logged and where they are logged.
-   *
-   * @default - A default log group will be created if logging for the waiter state machine is enabled.
-   */
-  readonly waiterStateMachineLogOptions?: LogOptions;
-
-  /**
-   * Whether logging for the waiter state machine is disabled.
-   *
-   * @default - false
-   */
-  readonly disableWaiterStateMachineLogging?: boolean;
 }
 
 /**
@@ -176,17 +162,9 @@ export class Provider extends Construct implements ICustomResourceProvider {
   constructor(scope: Construct, id: string, props: ProviderProps) {
     super(scope, id);
 
-    if (!props.isCompleteHandler) {
-      if (
-        props.queryInterval
-        || props.totalTimeout
-        || props.waiterStateMachineLogOptions
-        || props.disableWaiterStateMachineLogging !== undefined
-      ) {
-        throw new Error('"queryInterval", "totalTimeout", "waiterStateMachineLogOptions", and "disableWaiterStateMachineLogging" '
-          + 'can only be configured if "isCompleteHandler" is specified. '
-          + 'Otherwise, they have no meaning');
-      }
+    if (!props.isCompleteHandler && (props.queryInterval || props.totalTimeout)) {
+      throw new Error('"queryInterval" and "totalTimeout" can only be configured if "isCompleteHandler" is specified. '
+        + 'Otherwise, they have no meaning');
     }
 
     this.onEventHandler = props.onEventHandler;
@@ -213,8 +191,6 @@ export class Provider extends Construct implements ICustomResourceProvider {
         backoffRate: retry.backoffRate,
         interval: retry.interval,
         maxAttempts: retry.maxAttempts,
-        logOptions: props.waiterStateMachineLogOptions,
-        disableLogging: props.disableWaiterStateMachineLogging,
       });
       // the on-event entrypoint is going to start the execution of the waiter
       onEventFunction.addEnvironment(consts.WAITER_STATE_MACHINE_ARN_ENV, waiterStateMachine.stateMachineArn);
