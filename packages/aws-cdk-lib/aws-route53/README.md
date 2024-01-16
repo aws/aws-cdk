@@ -163,6 +163,17 @@ new route53.ARecord(this, 'ARecordWeighted1', {
 });
 ```
 
+To specify a unique identifier to differentiate among multiple resource record sets that have the same combination of name and type, use the `setIdentifier` parameter:
+
+```ts
+declare const myZone: route53.HostedZone;
+
+new route53.ARecord(this, 'ARecordWeighted1', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+  weight: 10,
+  setIdentifier: 'weighted-record-id',
+});
 Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
