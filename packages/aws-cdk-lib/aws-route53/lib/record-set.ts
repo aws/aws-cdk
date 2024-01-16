@@ -361,13 +361,15 @@ export class RecordSet extends Resource implements IRecordSet {
         identifier = identifier.concat('_SUBDIVISION_', this.geoLocation.subdivisionCode);
       }
       return identifier;
-    } else if (this.weight) {
+    }
+
+    if (this.weight) {
       const idPrefix = `WEIGHT_${this.weight}_ID_`;
       const identifier = `${idPrefix}${Names.uniqueResourceName(this, { maxLength: 64 - idPrefix.length })}`;
       return identifier;
-    } else {
-      return undefined;
     }
+
+    return undefined;
   }
 }
 
