@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-elbv2-StackWithLb.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://12345678/test-region",
       "properties": {
         "templateFile": "aws-cdk-elbv2-StackWithLb.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/6ad4c46c9b2688341a64b901149113b860270b54a02e718637959ebf672835b5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/f1e050ba32e6a454732cd4c1528331d0514e20eb81e2e55a72e6ef6886aa5009.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -171,6 +172,12 @@
             "data": "VPCVPCGW99B986DC"
           }
         ],
+        "/aws-cdk-elbv2-StackWithLb/SG/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SGADB53937"
+          }
+        ],
         "/aws-cdk-elbv2-StackWithLb/LB/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -199,6 +206,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TgArn"
+          }
+        ],
+        "/aws-cdk-elbv2-StackWithLb/SgId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SgId"
+          }
+        ],
+        "/aws-cdk-elbv2-StackWithLb/Exports/Output{\"Fn::GetAtt\":[\"SGADB53937\",\"GroupId\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttSGADB53937GroupId97E49F2D"
           }
         ],
         "/aws-cdk-elbv2-StackWithLb/Exports/Output{\"Ref\":\"LB8A12904C\"}": [
@@ -241,6 +260,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "awscdkelbv2integStackUnderTestDeployAssert483BFB1A.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -288,6 +308,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "awscdkelbv2integStackUnderTestawscdkelbv2integStackUnderTestTestCaseDeployAssert8C1D9093.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -335,10 +356,11 @@
       "environment": "aws://12345678/test-region",
       "properties": {
         "templateFile": "aws-cdk-elbv2-integ-StackUnderTest.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/f26cf09b3a4b15b339d4d26f3d761938d15ff95bb2fce098b9559d13f55e6b94.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/c3565e1b0b0473ea6a48a3f26f392eeca391548afd1bf7b8b0a7b0e2b2c0e6b7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -355,16 +377,34 @@
         "aws-cdk-elbv2-integ-StackUnderTest.assets"
       ],
       "metadata": {
+        "/aws-cdk-elbv2-integ-StackUnderTest/NlbByHardcodedArn/SecurityGroup-0/from 0.0.0.0_0:443": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NlbByHardcodedArnSecurityGroup0from00000443BE5EDB93"
+          }
+        ],
         "/aws-cdk-elbv2-integ-StackUnderTest/NlbByHardcodedArn_AlarmFlowCount/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NlbByHardcodedArnAlarmFlowCount60A46641"
           }
         ],
+        "/aws-cdk-elbv2-integ-StackUnderTest/NlbByCfnOutputsFromAnotherStackOutsideCdk/SecurityGroup-0/from 0.0.0.0_0:443": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NlbByCfnOutputsFromAnotherStackOutsideCdkSecurityGroup0from0000044343E5A61F"
+          }
+        ],
         "/aws-cdk-elbv2-integ-StackUnderTest/NlbByCfnOutputsFromAnotherStackOutsideCdk_AlarmFlowCount/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "NlbByCfnOutputsFromAnotherStackOutsideCdkAlarmFlowCountD9A1D5AC"
+          }
+        ],
+        "/aws-cdk-elbv2-integ-StackUnderTest/NlbByCfnOutputsFromAnotherStackWithinCdk/SecurityGroup-0/from 0.0.0.0_0:443": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NlbByCfnOutputsFromAnotherStackWithinCdkSecurityGroup0from000004437639F0E5"
           }
         ],
         "/aws-cdk-elbv2-integ-StackUnderTest/NlbByCfnOutputsFromAnotherStackWithinCdk_AlarmFlowCount/Resource": [
@@ -419,6 +459,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "elbv2integDefaultTestDeployAssert6120E394.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
