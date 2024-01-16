@@ -8,7 +8,8 @@ import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Ta
 import * as cxapi from '../../cx-api';
 
 /**
- * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access.
+ * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access
+ * or Archive storage.
  *
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
  */
