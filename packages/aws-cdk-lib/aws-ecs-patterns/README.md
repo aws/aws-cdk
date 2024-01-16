@@ -582,6 +582,19 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
 });
 ```
 
+### Set Cooldown parameter for QueueProcessingFargateService
+
+```ts
+declare const vpc: ec2.Vpc;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+  vpc,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  assignPublicIp: true,
+  cooldown: Duration.seconds(500)
+});
+```
+
 ### Set capacityProviderStrategies for QueueProcessingFargateService
 
 ```ts
