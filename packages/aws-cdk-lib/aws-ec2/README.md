@@ -1764,19 +1764,19 @@ You can set the [credit configuration mode](https://docs.aws.amazon.com/AWSEC2/l
 ```ts
 const instance = new ec2.Instance(this, 'Instance', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
-  creditSpecification: CpuCredits.STANDARD,
+  creditSpecification: ec2.CpuCredits.STANDARD,
 });
 ```
 
 It is also possible to set the credit configuration mode for NAT instances.
 
 ```ts
-const natInstanceProvider = NatProvider.instance({
-  instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.LARGE),
-  machineImage: new AmazonLinuxImage(),
-  creditSpecification: CpuCredits.UNLIMITED,
+const natInstanceProvider = ec2.NatProvider.instance({
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.LARGE),
+  machineImage: new ec2.AmazonLinuxImage(),
+  creditSpecification: ec2.CpuCredits.UNLIMITED,
 });
-new Vpc(stack, 'VPC', {
+new ec2.Vpc(this, 'VPC', {
   natGatewayProvider: natInstanceProvider,
 });
 ```
