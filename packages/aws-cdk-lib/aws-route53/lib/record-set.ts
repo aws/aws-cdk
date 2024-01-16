@@ -292,9 +292,6 @@ export class RecordSet extends Resource implements IRecordSet {
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
       throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
     }
-    if (props.weight && props.geoLocation) {
-      throw new Error('Only one of weight or geoLocation can be specified, not both');
-    }
     if (props.setIdentifier && !props.weight && !props.geoLocation) {
       throw new Error('setIdentifier can only be specified when either weight or geoLocation is defined');
     }
@@ -307,7 +304,7 @@ export class RecordSet extends Resource implements IRecordSet {
       }
     });
     if (definedPropsCount > 1) {
-      throw new Error('Only one of region, weight, or geoLocation can be defined');
+      throw new Error('only one of region, weight, or geoLocation can be defined');
     }
 
     this.geoLocation = props.geoLocation;
