@@ -281,6 +281,7 @@ export class RecordSet extends Resource implements IRecordSet {
   public readonly domainName: string;
   private readonly geoLocation?: GeoLocation;
   private readonly weight?: number;
+  private readonly region?: string;
 
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
@@ -298,8 +299,20 @@ export class RecordSet extends Resource implements IRecordSet {
       throw new Error('setIdentifier can only be specified when either weight or geoLocation is defined');
     }
 
+    const propsToCheck = ['region', 'weight', 'geoLocation'];
+    let definedPropsCount = 0;
+    propsToCheck.forEach(prop => {
+      if (props[prop as keyof RecordSetProps] !== undefined) {
+        definedPropsCount++;
+      }
+    });
+    if (definedPropsCount > 1) {
+      throw new Error('Only one of region, weight, or geoLocation can be defined');
+    }
+
     this.geoLocation = props.geoLocation;
     this.weight = props.weight;
+    this.region = props.region;
 
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
 
@@ -320,6 +333,7 @@ export class RecordSet extends Resource implements IRecordSet {
       } : undefined,
       setIdentifier: props.setIdentifier ?? this.configureSetIdentifier(),
       weight: props.weight,
+      region: props.region,
     });
 
     this.domainName = recordSet.ref;
@@ -382,11 +396,20 @@ export class RecordSet extends Resource implements IRecordSet {
 
     if (this.weight) {
       const idPrefix = `WEIGHT_${this.weight}_ID_`;
-      const identifier = `${idPrefix}${Names.uniqueResourceName(this, { maxLength: 64 - idPrefix.length })}`;
-      return identifier;
+      return this.createIdentifier(idPrefix);
+    }
+
+    if (this.region) {
+      const idPrefix= `REGION_${this.region}_ID_`;
+      return this.createIdentifier(idPrefix);
     }
 
     return undefined;
+  }
+
+  private createIdentifier(prefix: string): string {
+    const identifier = `${prefix}${Names.uniqueResourceName(this, { maxLength: 64 - prefix.length })}`;
+    return identifier;
   }
 }
 
