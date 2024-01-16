@@ -1197,6 +1197,6 @@ describe('record set', () => {
       recordType: route53.RecordType.CNAME,
       target: route53.RecordTarget.fromValues('zzz'),
       setIdentifier: 'uniqueId',
-    })).toThrow('setIdentifier can only be specified if either weight or geoLocation is specified');
+    })).toThrow('setIdentifier can only be specified when either weight or geoLocation is defined');
   });
 });
