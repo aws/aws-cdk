@@ -611,7 +611,7 @@ function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] 
   const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));
 
   if (architectures.size === 0) { // protective code, the current implementation will never result in this.
-    throw new Error(`Cannot determine any ami type comptaible with instance types: ${instanceTypes.map(i => i.toString).join(', ')}`);
+    throw new Error(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString).join(', ')}`);
   }
 
   if (architectures.size > 1) {
