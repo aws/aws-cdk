@@ -311,7 +311,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
   /**
    * Grace period after scaling activity.
    */
-  readonly cooldown?: Duration;
+  private readonly cooldown?: Duration;
 
   /**
    * The AwsLogDriver to use for logging if logging is enabled.
@@ -366,8 +366,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     const defaultScalingSteps = [{ upper: 0, change: -1 }, { lower: 100, change: +1 }, { lower: 500, change: +5 }];
     this.scalingSteps = props.scalingSteps ?? defaultScalingSteps;
 
-    // Setup cooldown
-    this.cooldown = props.cooldown ?? undefined;
+    this.cooldown = props.cooldown;
 
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging ?? true;
