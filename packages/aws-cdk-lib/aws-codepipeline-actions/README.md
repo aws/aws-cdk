@@ -97,8 +97,8 @@ new codepipeline_actions.CodeBuildAction({
 });
 ```
 
-If you want to need a custom event for your `CodeCommitSourceAction`, you can pass in
-a `customEventRule` which needs an event pattern (see [here](https://docs.aws.amazon.com/codecommit/latest/userguide/monitoring-events.html)) and a `IRuleTarget` (see [here](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events_targets-readme.html))
+If you want to use a custom event for your `CodeCommitSourceAction`, you can pass in
+a `customEventRule` which needs an event pattern (see [here](https://docs.aws.amazon.com/codecommit/latest/userguide/monitoring-events.html)) and an `IRuleTarget` (see [here](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events_targets-readme.html))
 
 ```ts
 const eventPattern = {
