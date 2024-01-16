@@ -201,6 +201,19 @@ export interface RecordSetOptions {
   readonly weight?: number;
 
   /**
+   * The Amazon EC2 Region where you created the resource that this resource record set refers to.
+   * The resource typically is an AWS resource, such as an EC2 instance or an ELB load balancer,
+   * and is referred to by an IP address or a DNS domain name, depending on the record type.
+   *
+   * When Amazon Route 53 receives a DNS query for a domain name and type for which you have created latency resource record sets,
+   * Route 53 selects the latency resource record set that has the lowest latency between the end user and the associated Amazon EC2 Region.
+   * Route 53 then returns the value that is associated with the selected resource record set.
+   *
+   * @default - Do not set latency based routing
+   */
+  readonly region?: string;
+
+  /**
    * A string used to distinguish between different records with the same combination of DNS name and type.
    * It can only be set when either weight or geoLocation is defined.
    *
