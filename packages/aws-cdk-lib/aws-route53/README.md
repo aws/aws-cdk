@@ -152,7 +152,6 @@ new route53.ARecord(this, 'ARecordGeoLocationDefault', {
 ```
 
 To enable [weighted routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-weighted.html), use the `weight` parameter.
-In this case, it is also necessary to set the setIdentifier along with it.
 
 ```ts
 declare const myZone: route53.HostedZone;
@@ -161,7 +160,6 @@ new route53.ARecord(this, 'ARecordWeighted1', {
   zone: myZone,
   target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
   weight: 10,
-  setIdentifier: 'uniqueId',
 });
 ```
 
