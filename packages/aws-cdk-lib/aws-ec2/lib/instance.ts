@@ -15,6 +15,7 @@ import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import { CpuCredits } from './launch-template';
 
 /**
  * Name tag constant
@@ -295,6 +296,13 @@ export interface InstanceProps {
    * @default - public IP address is automatically assigned based on default behavior
    */
   readonly associatePublicIpAddress?: boolean;
+
+  /**
+   * Specifying the CPU credit type for burstable EC2 instance types (T2, T3, T3a, etc).
+   *
+   * @default - T2 instances are standard, while T3, T4g, and T3a instances are unlimited.
+   */
+  readonly creditSpecification?: CpuCredits;
 }
 
 /**
@@ -459,6 +467,7 @@ export class Instance extends Resource implements IInstance {
       privateIpAddress: networkInterfaces ? undefined : props.privateIpAddress,
       propagateTagsToVolumeOnCreation: props.propagateTagsToVolumeOnCreation,
       monitoring: props.detailedMonitoring,
+      creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
     });
     this.instance.node.addDependency(this.role);
 
