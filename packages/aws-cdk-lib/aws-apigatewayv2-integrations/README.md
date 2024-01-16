@@ -232,7 +232,7 @@ new apigwv2.WebSocketStage(this, 'mystage', {
 });
 
 declare const apiRole: iam.Role;
-declare const table: dynamodb: Table;
+declare const table: dynamodb.Table;
 webSocketApi.addRoute('$connect', {
   integration: new WebSocketAwsIntegration('DynamodbPutItem', {
     integrationUri: `arn:aws:apigateway:${this.region}:dynamodb:action/PutItem`,
