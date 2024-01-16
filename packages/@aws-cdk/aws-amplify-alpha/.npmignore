@@ -31,3 +31,6 @@ junit.xml
 test/
 !*.lit.ts
 **/*.snapshot
+
+# include custom-resource-handlers
+!custom-resource-handlers/*
