@@ -108,12 +108,13 @@ test('file system is created correctly with a life cycle property', () => {
   });
 });
 
-test('file system is created correctly with a life cycle property and out of infrequent access property', () => {
+test('file system LifecyclePolicies is created correctly', () => {
   // WHEN
   new FileSystem(stack, 'EfsFileSystem', {
     vpc,
     lifecyclePolicy: LifecyclePolicy.AFTER_7_DAYS,
     outOfInfrequentAccessPolicy: OutOfInfrequentAccessPolicy.AFTER_1_ACCESS,
+    transitionToArchive: LifecyclePolicy.AFTER_14_DAYS,
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
@@ -123,6 +124,25 @@ test('file system is created correctly with a life cycle property and out of inf
       },
       {
         TransitionToPrimaryStorageClass: 'AFTER_1_ACCESS',
+      },
+      {
+        TransitionToArchive: 'AFTER_14_DAYS',
+      },
+    ],
+  });
+});
+
+test('file system with transition to archive is created correctly', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    transitionToArchive: LifecyclePolicy.AFTER_1_DAY,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    LifecyclePolicies: [
+      {
+        TransitionToArchive: 'AFTER_1_DAY',
       },
     ],
   });

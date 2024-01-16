@@ -211,6 +211,14 @@ export interface FileSystemProps {
    * @default - None. EFS will not transition files from IA storage to primary storage.
    */
   readonly outOfInfrequentAccessPolicy?: OutOfInfrequentAccessPolicy;
+
+  /**
+   * The number of days after files were last accessed in primary storage (the Standard storage class) at which to move them to Archive storage.
+   * Metadata operations such as listing the contents of a directory don't count as file access events.
+   *
+   * @default - None. EFS will not transition files to Archive storage class.
+   */
+  readonly transitionToArchive?: LifecyclePolicy;
   /**
    * The performance mode that the file system will operate under.
    * An Amazon EFS file system's performance mode can't be changed after the file system has been created.
@@ -491,7 +499,7 @@ export class FileSystem extends FileSystemBase {
       cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
 
     // LifecyclePolicies is an array of lists containing a single policy
-    let lifecyclePolicies = [];
+    const lifecyclePolicies: CfnFileSystem.LifecyclePolicyProperty[] = [];
 
     if (props.lifecyclePolicy) {
       lifecyclePolicies.push({ transitionToIa: props.lifecyclePolicy });
@@ -499,6 +507,10 @@ export class FileSystem extends FileSystemBase {
 
     if (props.outOfInfrequentAccessPolicy) {
       lifecyclePolicies.push({ transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy });
+    }
+
+    if (props.transitionToArchive) {
+      lifecyclePolicies.push({ transitionToArchive: props.transitionToArchive });
     }
 
     this._resource = new CfnFileSystem(this, 'Resource', {
