@@ -264,6 +264,15 @@ export interface FileSystemProps {
    * or set `@aws-cdk/aws-efs:denyAnonymousAccess` feature flag, otherwise true
    */
   readonly allowAnonymousAccess?: boolean;
+
+  /**
+   * Whether this is a One Zone file system.
+   * If enabled, `performanceMode` must be set to `GENERAL_PURPOSE` and `vpcSubnets` cannot be set.
+   *
+   * @default false
+   * @link https://docs.aws.amazon.com/efs/latest/ug/availability-durability.html#file-system-type
+   */
+  readonly oneZone?: boolean;
 }
 
 /**
@@ -478,6 +487,14 @@ export class FileSystem extends FileSystemBase {
   constructor(scope: Construct, id: string, props: FileSystemProps) {
     super(scope, id);
 
+    if (props.performanceMode === PerformanceMode.MAX_IO && props.oneZone) {
+      throw new Error('performanceMode MAX_IO is not supported for One Zone file systems.');
+    }
+
+    if (props.oneZone && props.vpcSubnets) {
+      throw new Error('vpcSubnets cannot be specified when oneZone is enabled.');
+    }
+
     if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
       throw new Error('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED');
     }
@@ -500,6 +517,8 @@ export class FileSystem extends FileSystemBase {
     if (props.outOfInfrequentAccessPolicy) {
       lifecyclePolicies.push({ transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy });
     }
+
+    const oneZoneAzName = props.vpc.availabilityZones[0];
 
     this._resource = new CfnFileSystem(this, 'Resource', {
       encrypted: encrypted,
@@ -531,6 +550,7 @@ export class FileSystem extends FileSystemBase {
           return this._fileSystemPolicy;
         },
       }),
+      availabilityZoneName: props.oneZone ? oneZoneAzName : undefined,
     });
     this._resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -549,7 +569,16 @@ export class FileSystem extends FileSystemBase {
       defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
     });
 
-    const subnets = props.vpc.selectSubnets(props.vpcSubnets ?? { onePerAz: true });
+    // When oneZone is specified, to avoid deployment failure, mountTarget should also be created only in the specified AZ.
+    let subnetSelection: ec2.SubnetSelection;
+    if (props.oneZone) {
+      subnetSelection = {
+        availabilityZones: [oneZoneAzName],
+      };
+    } else {
+      subnetSelection = props.vpcSubnets ?? { onePerAz: true };
+    }
+    const subnets = props.vpc.selectSubnets(subnetSelection);
 
     // We now have to create the mount target for each of the mentioned subnet
 
