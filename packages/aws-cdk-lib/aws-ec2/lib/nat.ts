@@ -8,6 +8,7 @@ import { ISecurityGroup, SecurityGroup } from './security-group';
 import { PrivateSubnet, PublicSubnet, RouterType, Vpc } from './vpc';
 import * as iam from '../../aws-iam';
 import { Fn, Token } from '../../core';
+import { CpuCredits } from './launch-template';
 
 /**
  * Direction of traffic to allow all by default.
@@ -218,6 +219,14 @@ export interface NatInstanceProps {
    * @default NatTrafficDirection.INBOUND_AND_OUTBOUND
    */
   readonly defaultAllowedTraffic?: NatTrafficDirection;
+
+  /**
+   * Specifying the CPU credit type for burstable EC2 instance types (T2, T3, T3a, etc).
+   * T3 instances with `host` tenancy do not support the unlimited CPU credit option.
+   *
+   * @default - T2 instances are standard, while T3, T4g, and T3a instances are unlimited.
+   */
+  readonly creditSpecification?: CpuCredits;
 }
 
 /**
@@ -323,6 +332,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
         role,
         keyPair: this.props.keyPair,
         keyName: this.props.keyName,
+        creditSpecification: this.props.creditSpecification,
       });
       // NAT instance routes all traffic, both ways
       this.gateways.add(sub.availabilityZone, natInstance);

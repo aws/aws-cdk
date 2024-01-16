@@ -25,6 +25,7 @@ import {
   WindowsVersion,
   KeyPair,
   KeyPairType,
+  CpuCredits,
 } from '../lib';
 
 let stack: Stack;
@@ -858,4 +859,22 @@ test('associate public IP address with instance and no public subnet', () => {
       associatePublicIpAddress: true,
     });
   }).toThrow("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
+});
+
+test('burstable instance with explicit credit specification', () => {
+  // WHEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    creditSpecification: CpuCredits.STANDARD,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+    InstanceType: 't3.large',
+    CreditSpecification: {
+      CpuCredits: 'standard',
+    },
+  });
 });

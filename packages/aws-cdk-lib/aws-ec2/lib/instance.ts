@@ -299,6 +299,7 @@ export interface InstanceProps {
 
   /**
    * Specifying the CPU credit type for burstable EC2 instance types (T2, T3, T3a, etc).
+   * T3 instances with `host` tenancy do not support the unlimited CPU credit option.
    *
    * @default - T2 instances are standard, while T3, T4g, and T3a instances are unlimited.
    */
