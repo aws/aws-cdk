@@ -278,7 +278,7 @@ export class RecordSet extends Resource implements IRecordSet {
       throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
     }
     if (props.weight && props.geoLocation) {
-      throw new Error('weight and geoLocation cannot be defined simultaneously');
+      throw new Error('Only one of weight or geoLocation can be specified, not both');
     }
 
     this.geoLocation = props.geoLocation;
