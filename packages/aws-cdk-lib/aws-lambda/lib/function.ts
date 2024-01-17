@@ -385,11 +385,11 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * remove the retention policy, set the value to `INFINITE`.
    *
    * @default logs.RetentionDays.INFINITE
-   * 
+   *
    * @deprecated instead create a fully customizable log group with `logs.LogGroup` and use the `logGroup` property to instruct the Lambda function to send logs to it.
    * Migrating from `logRetention` to `logGroup` will cause the name of the log group to change.
    * Users and code and referencing the name verbatim will have to adjust.\
-   * In AWS CDK code, you can access the log group name directly from the LogGroup construct: 
+   * In AWS CDK code, you can access the log group name directly from the LogGroup construct:
    * ```ts
    * declare const myLogGroup: logs.LogGroup;
    * myLogGroup.logGroupName;
@@ -402,7 +402,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * that sets the retention policy.
    *
    * @default - A new role is created.
-   * 
+   *
    * @deprecated instead use `logGroup` to create a fully customizable log group and instruct the Lambda function to send logs to it.
    */
   readonly logRetentionRole?: iam.IRole;
@@ -412,7 +412,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * These options control the retry policy when interacting with CloudWatch APIs.
    *
    * @default - Default AWS SDK retry options.
-   * 
+   *
    * @deprecated instead use `logGroup` to create a fully customizable log group and instruct the Lambda function to send logs to it.
    */
   readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
@@ -475,12 +475,12 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
 
   /**
    * The log group the function sends logs to.
-   * 
+   *
    * By default, Lambda functions send logs to an automatically created default log group named /aws/lambda/<function name>.
    * However you cannot change the properties of this auto-created log group using the AWS CDK, e.g. you cannot set a different log retention.
-   * 
+   *
    * Use the `logGroup` property to create a fully customizable LogGroup ahead of time, and instruct the Lambda function to send logs to it.
-   * 
+   *
    * @default `/aws/lambda/${this.functionName}` - default log group created by Lambda
    */
   readonly logGroup?: logs.ILogGroup;
