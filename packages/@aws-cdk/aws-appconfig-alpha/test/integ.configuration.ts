@@ -38,7 +38,7 @@ const stack = new Stack(app, 'aws-appconfig-configuration');
 
 // create application for config profile
 const appConfigApp = new Application(stack, 'MyAppConfig', {
-  name: 'AppForConfigTest',
+  applicationName: 'AppForConfigTest',
 });
 
 const deploymentStrategy = new DeploymentStrategy(stack, 'MyDeployStrategy', {

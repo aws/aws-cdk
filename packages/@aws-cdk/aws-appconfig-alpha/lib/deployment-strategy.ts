@@ -18,7 +18,7 @@ export interface DeploymentStrategyProps {
    *
    * @default - A name is generated.
    */
-  readonly name?: string;
+  readonly deploymentStrategyName?: string;
 
   /**
    * A description of the deployment strategy.
@@ -130,7 +130,7 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
 
   constructor(scope: Construct, id: string, props: DeploymentStrategyProps) {
     super(scope, id, {
-      physicalName: props.name,
+      physicalName: props.deploymentStrategyName,
     });
 
     this.deploymentDurationInMinutes = props.rolloutStrategy.deploymentDuration.toMinutes();
@@ -138,7 +138,7 @@ export class DeploymentStrategy extends Resource implements IDeploymentStrategy 
     this.description = props.description;
     this.finalBakeTimeInMinutes = props.rolloutStrategy.finalBakeTime?.toMinutes();
     this.growthType = props.rolloutStrategy.growthType;
-    this.name = props.name || Names.uniqueResourceName(this, {
+    this.name = props.deploymentStrategyName || Names.uniqueResourceName(this, {
       maxLength: 64,
       separator: '-',
     });
