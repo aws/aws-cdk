@@ -15,7 +15,7 @@ and included as part of the `aws-cdk-lib` package.
 
 ### Experimental:
 
-- None currently
+- aws-amplify-alpha/asset-deployment-handler
 
 These handlers are excluded from `aws-cdk-lib/custom-resource-handlers` and are individually
 copied into their respective `-alpha` packages at build time. When an `-alpha` package is
