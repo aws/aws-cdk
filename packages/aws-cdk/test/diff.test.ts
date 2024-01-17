@@ -347,9 +347,6 @@ describe('nested stacks', () => {
           Properties: {
             TemplateURL: 'https://www.amazon.com',
           },
-          //Metadata: {
-          //  'aws:asset:path': path.join('simple-nested-stack.json'),
-          //},
         },
       },
     };
@@ -358,6 +355,19 @@ describe('nested stacks', () => {
     newRootTemplate.Resources.NestedStack.Properties.TemplateURL = 'https://www.amazoff.com';
 
     const oldNestedTemplate = {
+      Resources: {
+        GrandNestedStack: {
+          Type: 'AWS::CloudFormation::Stack',
+          Properties: {
+            TemplateURL: 'https://www.amazin.com',
+          },
+        },
+      },
+    };
+    const newNestedTemplate = JSON.parse(JSON.stringify(oldNestedTemplate));
+    newNestedTemplate.Resources.GrandNestedStack.Properties.TemplateURL = 'https://www.amazoing.com';
+
+    const oldGrandNestedTemplate = {
       Resources: {
         ReInvent: {
           Type: 'AWS::ReInvent::Convention',
@@ -368,8 +378,8 @@ describe('nested stacks', () => {
       },
     };
 
-    const newNestedTemplate = JSON.parse(JSON.stringify(oldNestedTemplate));
-    newNestedTemplate.Resources.ReInvent.Properties.AttendeeCount = 5;
+    const newGrandNestedTemplate = JSON.parse(JSON.stringify(oldGrandNestedTemplate));
+    newGrandNestedTemplate.Resources.ReInvent.Properties.AttendeeCount = 5;
 
     // WHEN
     const exitCode = await diffStacks({
@@ -381,7 +391,14 @@ describe('nested stacks', () => {
           oldTemplate: oldNestedTemplate,
           newTemplate: newNestedTemplate,
           stackName: 'NestedStack',
-          nestedStacks: {},
+          nestedStacks: {
+            GrandNestedStack: {
+              stackName: 'GrandNestedStack',
+              oldTemplate: oldGrandNestedTemplate,
+              newTemplate: newGrandNestedTemplate,
+              nestedStacks: {},
+            },
+          },
         },
       },
     },
@@ -514,7 +531,7 @@ async function diffStacks(templatesToDiff: TemplatesToDiff, _buffer: StringWrita
   const stacksToDiff = createStacks(templatesToDiff);
   const mockToolkitEnv = new MockToolkitEnvironment({ stacks: [stacksToDiff.newStack] }, sdkProvider);
 
-  prepNestedStacks(stacksToDiff);
+  addMetadataToNestedStacks(stacksToDiff);
 
   setup.addTemplateToCloudFormationLookupMock(stacksToDiff.oldStack);
 
@@ -567,25 +584,35 @@ function createStacksHelper(templatesToDiff: { [key: string]: TemplatesToDiff },
   }
 }
 
-function prepNestedStacks(stacksToDiff: StacksToDiff) {
+function addMetadataToNestedStacks(stacksToDiff: StacksToDiff) {
   for (const nestedStackId of Object.keys(stacksToDiff.nestedStacks)) {
     const nestedStack = stacksToDiff.nestedStacks[nestedStackId];
 
-    fs.writeFileSync(path.join(__dirname, `nested-stack-templates/${nestedStack.newStack.stackName}.json`), JSON.stringify(nestedStack.newStack.template));
-
+    const templateFileName = `${nestedStack.oldStack.stackName}.json`;
     stacksToDiff.oldStack.template.Resources[nestedStackId].Metadata = {
-      'aws:asset:path': path.join(`${nestedStack.oldStack.stackName}.json`),
+      'aws:asset:path': templateFileName,
     };
     stacksToDiff.newStack.template.Resources[nestedStackId].Metadata = stacksToDiff.oldStack.template.Resources[nestedStackId].Metadata;
 
     setup.pushNestedStackResourceSummaries(stacksToDiff.newStack.stackName,
-      setup.stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
+      setup.stackSummaryOf(nestedStack.newStack.stackName, 'AWS::CloudFormation::Stack',
         `arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/${nestedStack.newStack.stackName}/abcd`,
       ),
     );
-    setup.addTemplateToCloudFormationLookupMock(nestedStack.oldStack);
 
-    prepNestedStacks(nestedStack);
+    addMetadataToNestedStacks(nestedStack);
+  }
+
+  // must write the stacks after all the metadata has been updated, otherwise the mutations are lost
+  placeGeneratedAndDeployedTemplates(stacksToDiff);
+}
+
+function placeGeneratedAndDeployedTemplates(stacksToDiff: StacksToDiff) {
+  for (const nestedStackId of Object.keys(stacksToDiff.nestedStacks)) {
+    const nestedStack = stacksToDiff.nestedStacks[nestedStackId];
+    const templateFileName = stacksToDiff.newStack.template.Resources[nestedStackId].Metadata['aws:asset:path'];
+    fs.writeFileSync(path.join(__dirname, path.join('nested-stack-templates', `${templateFileName}`)), JSON.stringify(nestedStack.newStack.template));
+    setup.addTemplateToCloudFormationLookupMock(nestedStack.oldStack);
   }
 }
 
