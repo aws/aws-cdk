@@ -2,6 +2,7 @@ import { Construct, IConstruct } from 'constructs';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 import { Match, Template } from '../../assertions';
+import { CodeStarConnectionsSourceAction } from '../../aws-codepipeline-actions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
@@ -754,6 +755,286 @@ describe('', () => {
           defaultValue: 'default',
         });
       }).toThrow(/Description for variable 'var-name' must not be greater than 200 characters long, got 201/);
+    });
+
+    test('can specify triggers', () => {
+      const stack = new cdk.Stack();
+
+      const sourceArtifact = new codepipeline.Artifact();
+      const sourceAction = new CodeStarConnectionsSourceAction({
+        actionName: 'CodeStarConnectionsSourceAction',
+        output: sourceArtifact,
+        connectionArn: 'connection',
+        owner: 'owner',
+        repo: 'repo',
+      });
+
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              excludedTags: ['exclude1', 'exclude2'],
+              includedTags: ['include1', 'include2'],
+            }],
+          },
+        }],
+      });
+
+      // Adding 2 stages with actions so pipeline validation will pass
+      pipeline.addStage({
+        stageName: 'Source',
+        actions: [sourceAction],
+      });
+
+      pipeline.addStage({
+        stageName: 'Build',
+        actions: [new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        })],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        PipelineType: 'V2',
+        Triggers: [{
+          GitConfiguration: {
+            SourceActionName: 'CodeStarConnectionsSourceAction',
+            Push: [{
+              Tags: {
+                Excludes: ['exclude1', 'exclude2'],
+                Includes: ['include1', 'include2'],
+              },
+            }],
+          },
+          ProviderType: 'CodeStarSourceConnection',
+        }],
+      });
+    });
+
+    test('empty excludedTags for trigger is set to undefined', () => {
+      const stack = new cdk.Stack();
+
+      const sourceArtifact = new codepipeline.Artifact();
+      const sourceAction = new CodeStarConnectionsSourceAction({
+        actionName: 'CodeStarConnectionsSourceAction',
+        output: sourceArtifact,
+        connectionArn: 'connection',
+        owner: 'owner',
+        repo: 'repo',
+      });
+
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              excludedTags: [],
+              includedTags: ['include1', 'include2'],
+            }],
+          },
+        }],
+      });
+
+      // Adding 2 stages with actions so pipeline validation will pass
+      pipeline.addStage({
+        stageName: 'Source',
+        actions: [sourceAction],
+      });
+
+      pipeline.addStage({
+        stageName: 'Build',
+        actions: [new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        })],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        PipelineType: 'V2',
+        Triggers: [{
+          GitConfiguration: {
+            SourceActionName: 'CodeStarConnectionsSourceAction',
+            Push: [{
+              Tags: {
+                Excludes: Match.absent(),
+                Includes: ['include1', 'include2'],
+              },
+            }],
+          },
+          ProviderType: 'CodeStarSourceConnection',
+        }],
+      });
+    });
+
+    test('empty includedTags for trigger is set to undefined', () => {
+      const stack = new cdk.Stack();
+
+      const sourceArtifact = new codepipeline.Artifact();
+      const sourceAction = new CodeStarConnectionsSourceAction({
+        actionName: 'CodeStarConnectionsSourceAction',
+        output: sourceArtifact,
+        connectionArn: 'connection',
+        owner: 'owner',
+        repo: 'repo',
+      });
+
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              excludedTags: ['excluded1', 'excluded2'],
+              includedTags: [],
+            }],
+          },
+        }],
+      });
+
+      // Adding 2 stages with actions so pipeline validation will pass
+      pipeline.addStage({
+        stageName: 'Source',
+        actions: [sourceAction],
+      });
+
+      pipeline.addStage({
+        stageName: 'Build',
+        actions: [new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        })],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        PipelineType: 'V2',
+        Triggers: [{
+          GitConfiguration: {
+            SourceActionName: 'CodeStarConnectionsSourceAction',
+            Push: [{
+              Tags: {
+                Excludes: ['excluded1', 'excluded2'],
+                Includes: Match.absent(),
+              },
+            }],
+          },
+          ProviderType: 'CodeStarSourceConnection',
+        }],
+      });
+    });
+
+    test('throw if length of excludes is greater than 8', () => {
+      const stack = new cdk.Stack();
+      const sourceArtifact = new codepipeline.Artifact();
+      const sourceAction = new CodeStarConnectionsSourceAction({
+        actionName: 'CodeStarConnectionsSourceAction',
+        output: sourceArtifact,
+        connectionArn: 'connection',
+        owner: 'owner',
+        repo: 'repo',
+      });
+
+      expect(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          pipelineType: codepipeline.PipelineType.V2,
+          triggers: [{
+            providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+            gitConfiguration: {
+              sourceAction,
+              pushFilter: [{
+                excludedTags: ['exclude1', 'exclude2', 'exclude3', 'exclude4', 'exclude5', 'exclude6', 'exclude7', 'exclude8', 'exclude9'],
+                includedTags: ['include1', 'include2'],
+              }],
+            },
+          }],
+        });
+      }).toThrow(/maximum length of excludedTags is 8, got 9 at triggers\[0\].gitConfiguration.pushFilter\[0\]/);
+    });
+
+    test('throw if length of excludes is greater than 8', () => {
+      const stack = new cdk.Stack();
+      const sourceArtifact = new codepipeline.Artifact();
+      const sourceAction = new CodeStarConnectionsSourceAction({
+        actionName: 'CodeStarConnectionsSourceAction',
+        output: sourceArtifact,
+        connectionArn: 'connection',
+        owner: 'owner',
+        repo: 'repo',
+      });
+
+      expect(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          pipelineType: codepipeline.PipelineType.V2,
+          triggers: [{
+            providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+            gitConfiguration: {
+              sourceAction,
+              pushFilter: [{
+                excludedTags: ['exclude1', 'exclude2'],
+                includedTags: ['include1', 'include2', 'include3', 'include4', 'include5', 'include6', 'include7', 'include8', 'include9'],
+              }],
+            },
+          }],
+        });
+      }).toThrow(/maximum length of includedTags is 8, got 9 at triggers\[0\].gitConfiguration.pushFilter\[0\]/);
+    });
+
+    test('throw if provider of sourceAction is not \'CodeStarSourceConnection\'', () => {
+      const stack = new cdk.Stack();
+      const sourceArtifact = new codepipeline.Artifact();
+      const sourceAction = new FakeSourceAction({
+        actionName: 'FakeSource',
+        output: sourceArtifact,
+      });
+
+      expect(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          pipelineType: codepipeline.PipelineType.V2,
+          triggers: [{
+            providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+            gitConfiguration: {
+              sourceAction,
+              pushFilter: [{
+                excludedTags: ['exclude1', 'exclude2'],
+                includedTags: ['include1', 'include2'],
+              }],
+            },
+          }],
+        });
+      }).toThrow(/provider for actionProperties in sourceAction must be 'CodeStarSourceConnection', got 'Fake' at triggers\[0\]/);
+    });
+
+    test('throw if triggers are specified when pipelineType is not set to V2', () => {
+      const stack = new cdk.Stack();
+      const sourceArtifact = new codepipeline.Artifact();
+      const sourceAction = new CodeStarConnectionsSourceAction({
+        actionName: 'CodeStarConnectionsSourceAction',
+        output: sourceArtifact,
+        connectionArn: 'connection',
+        owner: 'owner',
+        repo: 'repo',
+      });
+
+      expect(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          pipelineType: codepipeline.PipelineType.V1,
+          triggers: [{
+            providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+            gitConfiguration: {
+              sourceAction,
+              pushFilter: [{
+                excludedTags: ['exclude1', 'exclude2'],
+                includedTags: ['include1', 'include2'],
+              }],
+            },
+          }],
+        });
+      }).toThrow(/triggers can only be used with V2 pipelines/);
     });
   });
 

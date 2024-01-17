@@ -527,3 +527,41 @@ const target = new chatbot.SlackChannelConfiguration(this, 'MySlackChannel', {
 declare const pipeline: codepipeline.Pipeline;
 const rule = pipeline.notifyOnExecutionStateChange('NotifyOnExecutionStateChange', target);
 ```
+
+## Trigger
+
+To trigger a pipeline with Git tags, specify the `triggers` property. When a Git tag is pushed,
+your pipeline starts. You can filter with glob patterns. The `excludedTags` takes priority over
+the `includedTags`.
+
+The triggers can only be used with pipeline type V2.
+
+```ts
+declare const sourceOutput: codepipeline.Artifact;
+declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
+declare const buildAction: codepipeline_actions.CodeBuildAction;
+
+new codepipeline.Pipeline(this, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Build',
+      actions: [buildAction],
+    },
+  ],
+  triggers: [{
+    providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+    gitConfiguration: {
+      sourceAction,
+      pushFilter: [{
+        excludedTags: ['exclude1', 'exclude2'],
+        includedTags: ['include*'],
+      }],
+    },
+  }],
+});
+```
