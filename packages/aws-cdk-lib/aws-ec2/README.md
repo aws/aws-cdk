@@ -1762,8 +1762,12 @@ Additionally, IPv6 support varies by instance type. Most instance types have IPv
 You can set the [credit configuration mode](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-credits-baseline-concepts.html) for burstable instances (T2, T3, T3a and T4g instance types):
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 const instance = new ec2.Instance(this, 'Instance', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
+  vpc: vpc,
   creditSpecification: ec2.CpuCredits.STANDARD,
 });
 ```
