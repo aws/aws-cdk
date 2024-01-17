@@ -25,7 +25,7 @@ describe('environment', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig');
     new Environment(stack, 'MyEnvironment', {
-      name: 'TestEnv',
+      environmentName: 'TestEnv',
       application: app,
     });
 
@@ -41,7 +41,7 @@ describe('environment', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig');
     new Environment(stack, 'MyEnvironment', {
-      name: 'TestEnv',
+      environmentName: 'TestEnv',
       application: app,
       description: 'This is my description',
     });
@@ -72,7 +72,7 @@ describe('environment', () => {
       assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
     });
     const env = new Environment(stack, 'MyEnvironment', {
-      name: 'TestEnv',
+      environmentName: 'TestEnv',
       application: app,
       monitors: [Monitor.fromCloudWatchAlarm(alarm, alarmRole)],
     });
@@ -118,7 +118,7 @@ describe('environment', () => {
     });
     const app = new Application(stack, 'MyAppConfig');
     const env = new Environment(stack, 'MyEnvironment', {
-      name: 'TestEnv',
+      environmentName: 'TestEnv',
       application: app,
       monitors: [Monitor.fromCloudWatchAlarm(alarm)],
     });
@@ -174,7 +174,7 @@ describe('environment', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig');
     const env = new Environment(stack, 'MyEnvironment', {
-      name: 'TestEnv',
+      environmentName: 'TestEnv',
       application: app,
       monitors: [
         Monitor.fromCfnMonitorsProperty({
@@ -203,7 +203,7 @@ describe('environment', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig');
     const env = new Environment(stack, 'MyEnvironment', {
-      name: 'TestEnv',
+      environmentName: 'TestEnv',
       application: app,
       monitors: [
         Monitor.fromCfnMonitorsProperty({
@@ -247,7 +247,7 @@ describe('environment', () => {
       alarmRule: alarm,
     });
     const env = new Environment(stack, 'MyEnvironment', {
-      name: 'TestEnv',
+      environmentName: 'TestEnv',
       application: app,
       monitors: [
         Monitor.fromCloudWatchAlarm(compositeAlarm),
@@ -330,7 +330,7 @@ describe('environment', () => {
       alarmRule: alarm,
     });
     const env = new Environment(stack, 'MyEnvironment', {
-      name: 'TestEnv',
+      environmentName: 'TestEnv',
       application: app,
       monitors: [
         Monitor.fromCloudWatchAlarm(compositeAlarm1),
@@ -433,7 +433,7 @@ describe('environment', () => {
       ),
     });
     new Environment(stack, 'MyEnvironment', {
-      name: 'TestEnv',
+      environmentName: 'TestEnv',
       application: app,
       monitors: [
         Monitor.fromCloudWatchAlarm(alarm1),

@@ -11,11 +11,15 @@ jobs:
 
   # Check for the presence of a PROJEN_GITHUB_TOKEN secret.
   #
-  # This is expected to contain a personal access token of someone
-  # who pas permissions to bypass branch protection rules.
+  # This is expected to contain a personal access token of someone who has
+  # permissions to bypass branch protection rules.
   #
-  # If not present, we will use GitHub Actions Token permissions,
-  # but those are bound by branch protection rules.
+  # If not present, we can only use GitHub Actions Token permissions,
+  # but this has the following downsides:
+  #
+  # - Those are bound by branch protection rules (so automated pushing won't work).
+  # - As soon as a workflow file needs to be changed, GitHub will reject the push.
+  #   Only Apps and Users can be allowed to modify workflows.
   check-secret:
     # Don't run on the target repo itself, only forks
     if: github.repository != 'aws/aws-cdk'
@@ -52,7 +56,7 @@ jobs:
       - name: Sync from aws/aws-cdk
         run: |-
           git remote add upstream https://github.com/aws/aws-cdk.git
-          git fetch upstream
+          git fetch upstream $BRANCHES
 
           for branch in $BRANCHES; do
             git push origin --force refs/remotes/upstream/$branch:refs/heads/$branch
