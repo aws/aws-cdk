@@ -175,7 +175,7 @@ new route53.ARecord(this, 'ARecordWeighted1', {
   setIdentifier: 'weighted-record-id', 
 });
 ```
-**Warning** It is not possible to specify `setIdentifier` in simple routing.
+**Warning** It is not possible to specify `setIdentifier` in a simple routing without one of `weight` or `geoLocation` defined.
 
 Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 
