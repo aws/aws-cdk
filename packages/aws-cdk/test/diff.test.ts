@@ -7,7 +7,7 @@ import { /*instanceMockFrom,*/ MockCloudExecutable, testStack } from './util';
 import { MockToolkitEnvironment } from './util/nested-stack-mocks';
 import { Deployments } from '../lib/api/deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
-// import * as cfn from '../lib/api/util/cloudformation';
+import * as cfn from '../lib/api/util/cloudformation';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as setup from './api/hotswap/hotswap-test-setup';
@@ -406,40 +406,148 @@ describe('nested stacks', () => {
     // GIVEN
     //const buffer = new StringWritable();
 
+    // THEN
     expect(exitCode).toEqual(1);
   });
 
-  /*
   test('diff can diff nested stacks', async () => {
     // GIVEN
     const buffer = new StringWritable();
+    // GIVEN
+    const oldRootTemplate = {
+      Resources: {
+        AdditionChild: {
+          Type: 'AWS::CloudFormation::Stack',
+          Properties: {
+            TemplateURL: 'old-addition-child',
+          },
+        },
+        DeletionChild: {
+          Type: 'AWS::CloudFormation::Stack',
+          Properties: {
+            TemplateURL: 'old-deletion-child',
+          },
+        },
+        ChangedChild: {
+          Type: 'AWS::CloudFormation::Stack',
+          Properties: {
+            TemplateURL: 'old-changed-child',
+          },
+        },
+      },
+    };
+
+    const newRootTemplate = JSON.parse(JSON.stringify(oldRootTemplate));
+    newRootTemplate.Resources.AdditionChild.Properties.TemplateURL = 'new-addition-child';
+    newRootTemplate.Resources.DeletionChild.Properties.TemplateURL = 'new-deletion-child';
+    newRootTemplate.Resources.ChangedChild.Properties.TemplateURL = 'new-changed-child';
+
+    const oldAdditionChildTemplate = {
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::SomeService::SomeType',
+          Properties: {},
+        },
+      },
+    };
+    const newAdditionChildTemplate = JSON.parse(JSON.stringify(oldAdditionChildTemplate));
+    newAdditionChildTemplate.Resources.SomeResource.Properties = {
+      newProp: 'new-value',
+    };
+
+    const oldDeletionChildTemplate = {
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::SomeService::SomeType',
+          Properties: {
+            PropToBeRemoved: 'value-to-be-removed',
+          },
+        },
+      },
+    };
+    const newDeletionChildTemplate = JSON.parse(JSON.stringify(oldDeletionChildTemplate));
+    newDeletionChildTemplate.Resources.SomeResource.Properties = {};
+
+    const oldChangedChildTemplate = {
+      Resources: {
+        SomeResource: {
+          Type: 'AWS::SomeService::SomeType',
+          Properties: {
+            PropToBeChanged: 'old-value',
+          },
+        },
+      },
+    };
+    const newChangedChildTemplate = JSON.parse(JSON.stringify(oldChangedChildTemplate));
+    newChangedChildTemplate.Resources.SomeResource.Properties.PropToBeChanged = 'new-value';
 
     // WHEN
-    const exitCode = await toolkit.diff({
-      stackNames: ['Parent'],
-      stream: buffer,
-    });
+    const exitCode = await diffStacks({
+      stackName: 'Parent',
+      oldTemplate: oldRootTemplate,
+      newTemplate: newRootTemplate,
+      nestedStacks: {
+        AdditionChild: {
+          oldTemplate: oldAdditionChildTemplate,
+          newTemplate: newAdditionChildTemplate,
+          stackName: 'AdditionChild',
+          nestedStacks: {},
+        },
+        DeletionChild: {
+          oldTemplate: oldDeletionChildTemplate,
+          newTemplate: newDeletionChildTemplate,
+          stackName: 'DeletionChild',
+          nestedStacks: {},
+        },
+        ChangedChild: {
+          oldTemplate: oldChangedChildTemplate,
+          newTemplate: newChangedChildTemplate,
+          stackName: 'ChangedChild',
+          nestedStacks: {},
+        },
+      },
+    },
+    buffer);
+
+    // THEN
+    expect(exitCode).toEqual(0);
 
     // THEN
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
       .replace(/[ \t]+$/mg, '');
     expect(plainTextOutput.trim()).toEqual(`Stack Parent
 Resources
-[~] AWS::CloudFormation::Stack AdditionChild
- └─ [~] Resources
-     └─ [~] .SomeResource:
-         └─ [+] Added: .Properties
-[~] AWS::CloudFormation::Stack DeletionChild
- └─ [~] Resources
-     └─ [~] .SomeResource:
-         └─ [-] Removed: .Properties
-[~] AWS::CloudFormation::Stack ChangedChild
- └─ [~] Resources
-     └─ [~] .SomeResource:
-         └─ [~] .Properties:
-             └─ [~] .Prop:
-                 ├─ [-] old-value
-                 └─ [+] new-value
+[~] AWS::CloudFormation::Stack AdditionChild 
+ └─ [~] TemplateURL
+     ├─ [-] old-addition-child
+     └─ [+] new-addition-child
+[~] AWS::CloudFormation::Stack DeletionChild 
+ └─ [~] TemplateURL
+     ├─ [-] old-deletion-child
+     └─ [+] new-deletion-child
+[~] AWS::CloudFormation::Stack ChangedChild 
+ └─ [~] TemplateURL
+     ├─ [-] old-changed-child
+     └─ [+] new-changed-child
+
+Stack AdditionChild
+Resources
+[~] AWS::SomeService::SomeType SomeResource 
+ └─ [+] newProp
+     └─ new-value
+
+Stack DeletionChild
+Resources
+[~] AWS::SomeService::SomeType SomeResource 
+ └─ [-] PropToBeRemoved
+     └─ value-to-be-removed
+
+Stack ChangedChild
+Resources
+[~] AWS::SomeService::SomeType SomeResource 
+ └─ [~] PropToBeChanged
+     ├─ [-] old-value
+     └─ [+] new-value
 
 
 ✨  Number of stacks with differences: 4`);
@@ -486,7 +594,6 @@ Resources
     expect(exitCode).toBe(0);
     expect(changeSetSpy).not.toHaveBeenCalled();
   });
-*/
 });
 
 class StringWritable extends Writable {
@@ -526,7 +633,7 @@ interface StacksToDiff {
   nestedStacks: { [logicalId: string]: StacksToDiff };
 }
 
-async function diffStacks(templatesToDiff: TemplatesToDiff, _buffer: StringWritable) {
+async function diffStacks(templatesToDiff: TemplatesToDiff, buffer: StringWritable) {
   const sdkProvider = setup.setupHotswapNestedStackTests(templatesToDiff.stackName).mockSdkProvider;
   const stacksToDiff = createStacks(templatesToDiff);
   const mockToolkitEnv = new MockToolkitEnvironment({ stacks: [stacksToDiff.newStack] }, sdkProvider);
@@ -537,7 +644,7 @@ async function diffStacks(templatesToDiff: TemplatesToDiff, _buffer: StringWrita
 
   const exitCode = await mockToolkitEnv.toolkit.diff({
     stackNames: [templatesToDiff.stackName],
-    stream: process.stderr,
+    stream: buffer,
   });
 
   tearDownNestedStacks(stacksToDiff);
@@ -603,7 +710,6 @@ function addMetadataToNestedStacks(stacksToDiff: StacksToDiff) {
     addMetadataToNestedStacks(nestedStack);
   }
 
-  // must write the stacks after all the metadata has been updated so the parent stack of each nested stack has the correct metadata
   placeGeneratedAndDeployedTemplates(stacksToDiff);
 }
 
