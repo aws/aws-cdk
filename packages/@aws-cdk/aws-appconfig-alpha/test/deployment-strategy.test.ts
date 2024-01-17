@@ -25,7 +25,7 @@ describe('deployment strategy', () => {
   test('deployment strategy with name', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-      name: 'TestDeploymentStrategy',
+      deploymentStrategyName: 'TestDeploymentStrategy',
       rolloutStrategy: RolloutStrategy.linear({
         growthFactor: 10,
         deploymentDuration: cdk.Duration.minutes(10),
@@ -44,7 +44,7 @@ describe('deployment strategy', () => {
   test('deployment strategy duration in seconds', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-      name: 'TestDeploymentStrategy',
+      deploymentStrategyName: 'TestDeploymentStrategy',
       rolloutStrategy: RolloutStrategy.linear({
         growthFactor: 10,
         deploymentDuration: cdk.Duration.seconds(120),
@@ -63,7 +63,7 @@ describe('deployment strategy', () => {
   test('deployment strategy with description', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-      name: 'TestDeploymentStrategy',
+      deploymentStrategyName: 'TestDeploymentStrategy',
       rolloutStrategy: RolloutStrategy.linear({
         growthFactor: 10,
         deploymentDuration: cdk.Duration.minutes(10),
@@ -84,7 +84,7 @@ describe('deployment strategy', () => {
   test('deployment strategy with final bake time', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-      name: 'TestDeploymentStrategy',
+      deploymentStrategyName: 'TestDeploymentStrategy',
       rolloutStrategy: RolloutStrategy.linear({
         growthFactor: 10,
         deploymentDuration: cdk.Duration.minutes(10),
@@ -105,7 +105,7 @@ describe('deployment strategy', () => {
   test('deployment strategy with growth type', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-      name: 'TestDeploymentStrategy',
+      deploymentStrategyName: 'TestDeploymentStrategy',
       rolloutStrategy: RolloutStrategy.exponential({
         growthFactor: 10,
         deploymentDuration: cdk.Duration.minutes(10),
@@ -124,7 +124,7 @@ describe('deployment strategy', () => {
   test('deployment strategy with replicate to', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-      name: 'TestDeploymentStrategy',
+      deploymentStrategyName: 'TestDeploymentStrategy',
       rolloutStrategy: RolloutStrategy.linear({
         growthFactor: 10,
         deploymentDuration: cdk.Duration.minutes(10),
