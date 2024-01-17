@@ -374,7 +374,10 @@ export abstract class QueueProcessingServiceBase extends Construct {
     const defaultScalingSteps = [{ upper: 0, change: -1 }, { lower: 100, change: +1 }, { lower: 500, change: +5 }];
     this.scalingSteps = props.scalingSteps ?? defaultScalingSteps;
 
-    this.cooldown = props.cooldown;
+    if (props.cooldown && props.cooldown.toSeconds() > Duration.seconds(999999999).toSeconds()) {
+      throw new Error(`cooldown cannot be more than 999999999, found: ${props.cooldown.toSeconds()}`);
+    }
+    this.cooldown = props.cooldown ?? undefined;
 
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging ?? true;
