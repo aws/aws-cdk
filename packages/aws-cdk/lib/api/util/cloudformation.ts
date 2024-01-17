@@ -317,7 +317,7 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
       // eslint-disable-next-line no-console
       debug('This stack contains one or more nested stacks, falling back to template-only diff...');
 
-      return undefined;
+      //return undefined;
     }
   }
 
@@ -350,7 +350,7 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
     });
   } catch (e: any) {
     debug(e.message);
-    options.stream.write('Could not create a change set, will base the diff on template differences (run again with -v to see the reason)');
+    options.stream.write('Could not create a change set, will base the diff on template differences (run again with -v to see the reason)\n');
 
     return undefined;
   }
