@@ -94,14 +94,14 @@ declare const sourceQueue: sqs.IQueue;
 
 // Only the sourceQueue can specify this queue as the dead-letter queue.
 const queue1 = new sqs.Queue(this, 'Queue2', {
-  deadLetterQueuePermissions: {
+  deadLetterSourceQueuePermissions: {
     sourceQueues: [sourceQueue],
   }
 });
 
 // No source queues can specify this queue as the dead-letter queue.
 const queue2 = new sqs.Queue(this, 'Queue', {
-  deadLetterQueuePermissions: {
+  deadLetterSourceQueuePermissions: {
     redrivePermission: sqs.RedrivePermission.DENY_ALL,
   }
 });
