@@ -48,8 +48,8 @@ Security and stability of the CDK is a top priority. If you think you’ve found
 * 👂🏽 [CDK CLI Triggers](https://github.com/aws/aws-cdk-rfcs/issues/228) - CLI enhancements are also being considered for post command hooks. 
 
 ### L2 Abstractions
+* 🚀 [Enabling IPv6 on Resources and VPCs](https://github.com/aws/aws-cdk/pull/28366)
 * 🔍 [CloudFront Origin Access Control L2](https://github.com/aws/aws-cdk-rfcs/issues/491)
-* 🛠️ [Enabling IPv6 on Resources and VPCs](https://github.com/aws/aws-cdk/pull/28366)
 * 🔍 [Rewrite EKS L2](https://github.com/aws/aws-cdk-rfcs/issues/605) - drop the custom resource implementation in favor of the native L1.
 
 We are currently investigating other L2s to build out next. Feel free to create an RFC to request.
