@@ -202,9 +202,12 @@ export interface DeadLetterQueue {
   readonly maxReceiveCount: number;
 }
 
+/**
+ * Permission settings for the dead letter source queue
+ */
 export interface DeadLetterSourceQueuePermission {
   /**
-   * The permissions for the dead-letter queue redrive permission
+   * Permission settings for source queues that can designate this queue as their dead letter queue
    *
    * @default - `RedrivePermission.BY_QUEUE` if `sourceQueues` is specified; otherwise, `RedrivePermission.ALLOW_ALL`.
    */
@@ -214,6 +217,7 @@ export interface DeadLetterSourceQueuePermission {
    * Source queues that can designate this queue as their Dead Letter Queue
    *
    * When RedrivePermission is set to BY_QUEUE, it is mandatory to configure sourceQueues.
+   *
    * You can specify up to 10 source queues.
    * To allow more than 10 source queues to specify dead-letter queues, set the `redrivePermission` to `ALLOW_ALL`.
    *
