@@ -79,7 +79,11 @@ appconfig.DeploymentStrategy.fromDeploymentStrategyId(this, 'MyImportedDeploymen
 Importing an AWS AppConfig predefined deployment strategy by ID:
 
 ```ts
-appconfig.DeploymentStrategy.fromDeploymentStrategyId(this, 'MyImportedPredefinedDeploymentStrategy', appconfig.DeploymentStrategyId.CANARY_10_PERCENT_20_MINUTES);
+appconfig.DeploymentStrategy.fromDeploymentStrategyId(
+  this,
+  'MyImportedPredefinedDeploymentStrategy',
+  appconfig.DeploymentStrategyId.CANARY_10_PERCENT_20_MINUTES,
+);
 ```
 
 ## Configuration
