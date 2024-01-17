@@ -70,6 +70,18 @@ new appconfig.DeploymentStrategy(this, 'MyDeploymentStrategy', {
 });
 ```
 
+Importing a deployment strategy by ID:
+
+```ts
+appconfig.DeploymentStrategy.fromDeploymentStrategyId(this, 'MyImportedDeploymentStrategy', appconfig.DeploymentStrategyId.fromString('abc123'));
+```
+
+Importing an AWS AppConfig predefined deployment strategy by ID:
+
+```ts
+appconfig.DeploymentStrategy.fromDeploymentStrategyId(this, 'MyImportedPredefinedDeploymentStrategy', appconfig.DeploymentStrategyId.CANARY_10_PERCENT_20_MINUTES);
+```
+
 ## Configuration
 
 A configuration is a higher-level construct that can either be a `HostedConfiguration` (stored internally through AWS 
