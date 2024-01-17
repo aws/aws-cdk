@@ -12,19 +12,19 @@ import { IRole } from '../../../aws-iam';
 export interface WebSocketAwsIntegrationProps {
   /**
    * Integration URI.
-  */
+   */
   readonly integrationUri: string;
 
   /**
    * Specifies the integration's HTTP method type.
-  */
+   */
   readonly integrationMethod: string;
 
   /**
    * Specifies the credentials role required for the integration.
    *
    * @default - No credential role provided.
-  */
+   */
   readonly credentialsRole?: IRole;
 
   /**
@@ -33,7 +33,7 @@ export interface WebSocketAwsIntegrationProps {
    * mappings), with a destination as the key and a source as the value.
    *
    * @default - No request parameter provided to the integration.
-  */
+   */
   readonly requestParameters?: { [dest: string]: string };
 
   /**
@@ -45,14 +45,14 @@ export interface WebSocketAwsIntegrationProps {
    * ```
    *
    * @default - No request template provided to the integration.
-  */
+   */
   readonly requestTemplates?: { [contentType: string]: string };
 
   /**
    * The template selection expression for the integration.
    *
    * @default - No template selection expression provided.
-  */
+   */
   readonly templateSelectionExpression?: string;
 }
 
@@ -67,9 +67,7 @@ export class WebSocketAwsIntegration extends WebSocketRouteIntegration {
     super(id);
   }
 
-  bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig {
-    options;
-
+  bind(_options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig {
     return {
       type: WebSocketIntegrationType.AWS,
       uri: this.props.integrationUri,

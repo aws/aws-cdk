@@ -52,10 +52,10 @@ export interface WebSocketIntegrationProps {
   readonly integrationUri: string;
 
   /**
- * Specifies the integration's HTTP method type.
- *
- * @default - No HTTP method required.
- */
+   * Specifies the integration's HTTP method type.
+   *
+   * @default - No HTTP method required.
+   */
   readonly integrationMethod?: string;
 
   /**
@@ -83,7 +83,7 @@ export interface WebSocketIntegrationProps {
    * ```
    *
    * @default - No request templates required.
-  */
+   */
   readonly requestTemplates?: { [contentType: string]: string };
 
   /**
