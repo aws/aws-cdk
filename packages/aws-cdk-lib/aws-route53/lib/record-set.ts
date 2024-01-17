@@ -5,7 +5,7 @@ import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
-import { CustomResource, Duration, IResource, RemovalPolicy, Resource, Token } from '../../core';
+import { CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
 
@@ -184,6 +184,31 @@ export interface RecordSetOptions {
    * @default false
    */
   readonly deleteExisting?: boolean;
+
+  /**
+   * Among resource record sets that have the same combination of DNS name and type,
+   * a value that determines the proportion of DNS queries that Amazon Route 53 responds to using the current resource record set.
+   *
+   * Route 53 calculates the sum of the weights for the resource record sets that have the same combination of DNS name and type.
+   * Route 53 then responds to queries based on the ratio of a resource's weight to the total.
+   *
+   * This value can be a number between 0 and 255.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-weighted.html
+   *
+   * @default - Do not set weighted routing
+   */
+  readonly weight?: number;
+
+  /**
+   * A string used to distinguish between different records with the same combination of DNS name and type.
+   * It can only be set when either weight or geoLocation is defined.
+   *
+   * This parameter must be between 1 and 128 characters in length.
+   *
+   * @default - Auto generated string
+   */
+  readonly setIdentifier?: string;
 }
 
 /**
@@ -241,9 +266,27 @@ export interface RecordSetProps extends RecordSetOptions {
  */
 export class RecordSet extends Resource implements IRecordSet {
   public readonly domainName: string;
+  private readonly geoLocation?: GeoLocation;
+  private readonly weight?: number;
 
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
+
+    if (props.weight && (props.weight < 0 || props.weight > 255)) {
+      throw new Error(`weight must be between 0 and 255 inclusive, got: ${props.weight}`);
+    }
+    if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
+      throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
+    }
+    if (props.weight && props.geoLocation) {
+      throw new Error('Only one of weight or geoLocation can be specified, not both');
+    }
+    if (props.setIdentifier && !props.weight && !props.geoLocation) {
+      throw new Error('setIdentifier can only be specified when either weight or geoLocation is defined');
+    }
+
+    this.geoLocation = props.geoLocation;
+    this.weight = props.weight;
 
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
 
@@ -262,7 +305,8 @@ export class RecordSet extends Resource implements IRecordSet {
         countryCode: props.geoLocation.countryCode,
         subdivisionCode: props.geoLocation.subdivisionCode,
       } : undefined,
-      setIdentifier: props.geoLocation ? this.configureSetIdentifer(props.geoLocation) : undefined,
+      setIdentifier: props.setIdentifier ?? this.configureSetIdentifier(),
+      weight: props.weight,
     });
 
     this.domainName = recordSet.ref;
@@ -308,18 +352,28 @@ export class RecordSet extends Resource implements IRecordSet {
     }
   }
 
-  private configureSetIdentifer(props: GeoLocation): string | undefined {
-    let identifier = 'GEO';
-    if (props.continentCode) {
-      identifier = identifier.concat('_CONTINENT_', props.continentCode);
+  private configureSetIdentifier(): string | undefined {
+    if (this.geoLocation) {
+      let identifier = 'GEO';
+      if (this.geoLocation.continentCode) {
+        identifier = identifier.concat('_CONTINENT_', this.geoLocation.continentCode);
+      }
+      if (this.geoLocation.countryCode) {
+        identifier = identifier.concat('_COUNTRY_', this.geoLocation.countryCode);
+      }
+      if (this.geoLocation.subdivisionCode) {
+        identifier = identifier.concat('_SUBDIVISION_', this.geoLocation.subdivisionCode);
+      }
+      return identifier;
     }
-    if (props.countryCode) {
-      identifier = identifier.concat('_COUNTRY_', props.countryCode);
+
+    if (this.weight) {
+      const idPrefix = `WEIGHT_${this.weight}_ID_`;
+      const identifier = `${idPrefix}${Names.uniqueResourceName(this, { maxLength: 64 - idPrefix.length })}`;
+      return identifier;
     }
-    if (props.subdivisionCode) {
-      identifier = identifier.concat('_SUBDIVISION_', props.subdivisionCode);
-    }
-    return identifier;
+
+    return undefined;
   }
 }
 

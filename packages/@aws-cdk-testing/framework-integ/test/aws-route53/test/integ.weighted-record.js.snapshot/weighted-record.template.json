@@ -1,0 +1,92 @@
+{
+ "Resources": {
+  "HostedZoneDB99F866": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.dev."
+   }
+  },
+  "WeightedRecord0183C6356": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "SetIdentifier": "WEIGHT_20_ID_weightedrecordWeightedRecord036EC06FB",
+    "TTL": "10",
+    "Type": "A",
+    "Weight": 20
+   }
+  },
+  "WeightedRecord1901777B1": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "2.3.4.5"
+    ],
+    "SetIdentifier": "WEIGHT_30_ID_weightedrecordWeightedRecord1AB70F3F7",
+    "TTL": "10",
+    "Type": "A",
+    "Weight": 30
+   }
+  },
+  "WeightedRecord2D4D415A2": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "3.4.5.6"
+    ],
+    "SetIdentifier": "WEIGHT_50_ID_weightedrecordWeightedRecord2896F8B34",
+    "TTL": "10",
+    "Type": "A",
+    "Weight": 50
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

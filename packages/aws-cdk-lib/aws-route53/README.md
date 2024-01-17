@@ -151,6 +151,32 @@ new route53.ARecord(this, 'ARecordGeoLocationDefault', {
 });
 ```
 
+To enable [weighted routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-weighted.html), use the `weight` parameter:
+
+```ts
+declare const myZone: route53.HostedZone;
+
+new route53.ARecord(this, 'ARecordWeighted1', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+  weight: 10,
+});
+```
+
+To specify a unique identifier to differentiate among multiple resource record sets that have the same combination of name and type, use the `setIdentifier` parameter:
+
+```ts
+declare const myZone: route53.HostedZone;
+
+new route53.ARecord(this, 'ARecordWeighted1', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+  weight: 10,
+  setIdentifier: 'weighted-record-id', 
+});
+```
+**Warning** It is not possible to specify `setIdentifier` in a simple routing without one of `weight` or `geoLocation` defined.
+
 Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
