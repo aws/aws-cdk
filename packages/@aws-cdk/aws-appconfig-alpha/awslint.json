@@ -25,10 +25,10 @@
         "docs-public-apis:@aws-cdk/aws-appconfig-alpha.IConfiguration",
         "docs-public-apis:@aws-cdk/aws-appconfig-alpha.IApplication",
 
-        "no-unused-type:@aws-cdk/aws-appconfig-alpha.PredefinedDeploymentStrategyId",
         "ref-via-interface:@aws-cdk/aws-appconfig-alpha.Application.addAgentToEcs.taskDef",
         "events-in-interface",
         "events-method-signature",
-        "events-generic"
+        "events-generic",
+        "from-signature:@aws-cdk/aws-appconfig-alpha.DeploymentStrategy.fromDeploymentStrategyId.params[2]"
     ]
 }
