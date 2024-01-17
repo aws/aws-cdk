@@ -97,6 +97,34 @@ new codepipeline_actions.CodeBuildAction({
 });
 ```
 
+If you want to use a custom event for your `CodeCommitSourceAction`, you can pass in
+a `customEventRule` which needs an event pattern (see [here](https://docs.aws.amazon.com/codecommit/latest/userguide/monitoring-events.html)) and an `IRuleTarget` (see [here](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events_targets-readme.html))
+
+```ts
+const eventPattern = {
+  'detail-type': ['CodeCommit Repository State Change'],
+  'resources': ['foo'],
+  'source': ['aws.codecommit'],
+  'detail': {
+    referenceType: ['branch'],
+    event: ['referenceCreated', 'referenceUpdated'],
+    referenceName: ['master'],
+  },
+};
+declare const repo: codecommit.Repository;
+declare const lambdaFuntion: lambda.Function;
+const sourceOutput = new codepipeline.Artifact();
+const sourceAction = new codepipeline_actions.CodeCommitSourceAction({
+  actionName: 'CodeCommit',
+  repository: repo,
+  output: sourceOutput,
+  customEventRule: {
+    eventPattern,
+    target: new targets.LambdaFunction(lambdaFuntion),
+  }
+});
+```
+
 ### GitHub
 
 If you want to use a GitHub repository as the source, you must create:

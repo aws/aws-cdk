@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "cdk-integ-elasticsearch-custom-kms-key.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8d7067361ab5456ded4a61cba47a3d5afd400efb0de83e4c1345e33d390d9074.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/07b30049803cb672b94efff3c9c269fc6bb7d1add26419ae9c9001442e33d9f4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -52,12 +52,6 @@
             "data": "DomainAppLogs21698C1B"
           }
         ],
-        "/cdk-integ-elasticsearch-custom-kms-key/Domain/ESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
-          }
-        ],
         "/cdk-integ-elasticsearch-custom-kms-key/Domain/ESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -74,12 +68,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain66AC69E0"
-          }
-        ],
-        "/cdk-integ-elasticsearch-custom-kms-key/Domain/ESAccessPolicy": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
           }
         ],
         "/cdk-integ-elasticsearch-custom-kms-key/Domain/ESAccessPolicy/Resource/Default": [

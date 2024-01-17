@@ -21,10 +21,10 @@ describe('ADOT Lambda Layer', () => {
     });
 
     test('is added properly when the region information is available at synthesis time', () => {
-      const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.V1_31_0.layerArn(fn.stack, fn.architecture);
+      const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.V1_32_0.layerArn(fn.stack, fn.architecture);
 
       expect(layerArn).toEqual(
-        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-31-0:1',
+        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:1',
       );
     });
 
@@ -32,7 +32,7 @@ describe('ADOT Lambda Layer', () => {
       const layerArn = lambda.AdotLambdaLayerJavaSdkVersion.LATEST.layerArn(fn.stack, fn.architecture);
 
       expect(layerArn).toEqual(
-        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-31-0:1',
+        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:1',
       );
     });
   });
@@ -53,10 +53,10 @@ describe('ADOT Lambda Layer', () => {
     });
 
     test('is added properly when the region information is available at synthesis time', () => {
-      const layerArn = lambda.AdotLambdaLayerPythonSdkVersion.V1_20_0_1.layerArn(fn.stack, fn.architecture);
+      const layerArn = lambda.AdotLambdaLayerPythonSdkVersion.V1_21_0.layerArn(fn.stack, fn.architecture);
 
       expect(layerArn).toEqual(
-        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-20-0:3',
+        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-21-0:1',
       );
     });
 
@@ -64,7 +64,7 @@ describe('ADOT Lambda Layer', () => {
       const layerArn = lambda.AdotLambdaLayerPythonSdkVersion.LATEST.layerArn(fn.stack, fn.architecture);
 
       expect(layerArn).toEqual(
-        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-20-0:3',
+        'arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-21-0:1',
       );
     });
   });
@@ -114,7 +114,7 @@ describe('ADOT Lambda Layer', () => {
               {
                 Ref: 'AWS::Region',
               },
-              ':901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-31-0:1',
+              ':901920570463:layer:aws-otel-java-wrapper-arm64-ver-1-32-0:1',
             ],
           ],
         },

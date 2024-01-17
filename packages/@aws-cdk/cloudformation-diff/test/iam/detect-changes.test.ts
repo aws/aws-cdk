@@ -1,4 +1,4 @@
-import { diffTemplate } from '../../lib';
+import { fullDiff } from '../../lib';
 import { MaybeParsed } from '../../lib/diff/maybe-parsed';
 import { IamChangesJson } from '../../lib/iam/iam-changes';
 import { deepRemoveUndefined } from '../../lib/util';
@@ -6,7 +6,7 @@ import { poldoc, policy, resource, role, template } from '../util';
 
 test('shows new AssumeRolePolicyDocument', () => {
   // WHEN
-  const diff = diffTemplate({}, template({
+  const diff = fullDiff({}, template({
     MyRole: role({
       AssumeRolePolicyDocument: poldoc({
         Action: 'sts:AssumeRole',
@@ -32,7 +32,7 @@ test('shows new AssumeRolePolicyDocument', () => {
 test('implicitly knows principal of identity policy for all resource types', () => {
   for (const attr of ['Roles', 'Users', 'Groups']) {
     // WHEN
-    const diff = diffTemplate({}, template({
+    const diff = fullDiff({}, template({
       MyPolicy: policy({
         [attr]: [{ Ref: 'MyRole' }],
         PolicyDocument: poldoc({
@@ -60,7 +60,7 @@ test('implicitly knows principal of identity policy for all resource types', () 
 test('policies on an identity object', () => {
   for (const resourceType of ['Role', 'User', 'Group']) {
     // WHEN
-    const diff = diffTemplate({}, template({
+    const diff = fullDiff({}, template({
       MyIdentity: resource(`AWS::IAM::${resourceType}`, {
         Policies: [
           {
@@ -90,7 +90,7 @@ test('policies on an identity object', () => {
 });
 
 test('statement is an intrinsic', () => {
-  const diff = diffTemplate({}, template({
+  const diff = fullDiff({}, template({
     MyIdentity: resource('AWS::IAM::User', {
       Policies: [
         {
@@ -124,7 +124,7 @@ test('statement is an intrinsic', () => {
 
 test('if policy is attached to multiple roles all are shown', () => {
   // WHEN
-  const diff = diffTemplate({}, template({
+  const diff = fullDiff({}, template({
     MyPolicy: policy({
       Roles: [{ Ref: 'MyRole' }, { Ref: 'ThyRole' }],
       PolicyDocument: poldoc({
@@ -156,7 +156,7 @@ test('if policy is attached to multiple roles all are shown', () => {
 
 test('correctly parses Lambda permissions', () => {
   // WHEN
-  const diff = diffTemplate({}, template({
+  const diff = fullDiff({}, template({
     MyPermission: resource('AWS::Lambda::Permission', {
       Action: 'lambda:InvokeFunction',
       FunctionName: { Ref: 'MyFunction' },
@@ -185,7 +185,7 @@ test('correctly parses Lambda permissions', () => {
 
 test('implicitly knows resource of (queue) resource policy even if * given', () => {
   // WHEN
-  const diff = diffTemplate({}, template({
+  const diff = fullDiff({}, template({
     QueuePolicy: resource('AWS::SQS::QueuePolicy', {
       Queues: [{ Ref: 'MyQueue' }],
       PolicyDocument: poldoc({
@@ -212,7 +212,7 @@ test('implicitly knows resource of (queue) resource policy even if * given', () 
 
 test('finds sole statement removals', () => {
   // WHEN
-  const diff = diffTemplate(template({
+  const diff = fullDiff(template({
     BucketPolicy: resource('AWS::S3::BucketPolicy', {
       Bucket: { Ref: 'MyBucket' },
       PolicyDocument: poldoc({
@@ -239,7 +239,7 @@ test('finds sole statement removals', () => {
 
 test('finds one of many statement removals', () => {
   // WHEN
-  const diff = diffTemplate(
+  const diff = fullDiff(
     template({
       BucketPolicy: resource('AWS::S3::BucketPolicy', {
         Bucket: { Ref: 'MyBucket' },
@@ -283,7 +283,7 @@ test('finds one of many statement removals', () => {
 
 test('finds policy attachments', () => {
   // WHEN
-  const diff = diffTemplate({}, template({
+  const diff = fullDiff({}, template({
     SomeRole: resource('AWS::IAM::Role', {
       ManagedPolicyArns: ['arn:policy'],
     }),
@@ -302,7 +302,7 @@ test('finds policy attachments', () => {
 
 test('finds policy removals', () => {
   // WHEN
-  const diff = diffTemplate(
+  const diff = fullDiff(
     template({
       SomeRole: resource('AWS::IAM::Role', {
         ManagedPolicyArns: ['arn:policy', 'arn:policy2'],
@@ -327,7 +327,7 @@ test('finds policy removals', () => {
 
 test('queuepolicy queue change counts as removal+addition', () => {
   // WHEN
-  const diff = diffTemplate(template({
+  const diff = fullDiff(template({
     QueuePolicy: resource('AWS::SQS::QueuePolicy', {
       Queues: [{ Ref: 'MyQueue1' }],
       PolicyDocument: poldoc({
@@ -372,7 +372,7 @@ test('queuepolicy queue change counts as removal+addition', () => {
 
 test('supports Fn::If in the top-level property value of Role', () => {
   // WHEN
-  const diff = diffTemplate({}, template({
+  const diff = fullDiff({}, template({
     MyRole: role({
       AssumeRolePolicyDocument: poldoc({
         Action: 'sts:AssumeRole',
@@ -413,7 +413,7 @@ test('supports Fn::If in the top-level property value of Role', () => {
 
 test('supports Fn::If in the elements of an array-typed property of Role', () => {
   // WHEN
-  const diff = diffTemplate({}, template({
+  const diff = fullDiff({}, template({
     MyRole: role({
       AssumeRolePolicyDocument: poldoc({
         Action: 'sts:AssumeRole',
