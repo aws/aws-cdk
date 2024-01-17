@@ -582,7 +582,7 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
 });
 ```
 
-### Set Cooldown parameter for QueueProcessingFargateService
+### Set cooldown for QueueProcessingFargateService
 ### This will specify the amount of time, in seconds, to wait for a previous scaling activity to take effect.
 
 ```ts
