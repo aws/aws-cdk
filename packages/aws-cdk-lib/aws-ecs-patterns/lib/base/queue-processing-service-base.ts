@@ -310,14 +310,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
 
   /**
    * Grace period after scaling activity in seconds.
-   *
-   * Subsequent scale outs during the cooldown period are squashed so that only
-   * the biggest scale out happens.
-   *
-   * Subsequent scale ins during the cooldown period are ignored.
-   *
-   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_StepScalingPolicyConfiguration.html
-   * @default No cooldown
+   * @default 300 seconds
    */
   private readonly cooldown?: Duration;
 
