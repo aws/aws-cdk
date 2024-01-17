@@ -999,7 +999,7 @@ This way you can use the full features set supported by Amazon CloudWatch Logs.
 ```ts
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
 
-const myLogGroup = new logs.LogGroup(stack, 'MyLogGroupWithLogGroupName', {
+const myLogGroup = new LogGroup(this, 'MyLogGroupWithLogGroupName', {
   logGroupName: 'customLogGroup',
 });
 
