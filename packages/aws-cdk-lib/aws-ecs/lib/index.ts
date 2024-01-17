@@ -1,6 +1,7 @@
 export * from './base/base-service';
 export * from './base/scalable-task-count';
 export * from './base/task-definition';
+export * from './base/service-managed-volume';
 
 export * from './container-definition';
 export * from './container-image';
