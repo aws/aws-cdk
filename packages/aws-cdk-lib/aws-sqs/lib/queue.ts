@@ -180,24 +180,11 @@ export interface QueueProps {
   readonly enforceSSL?: boolean;
 
   /**
-   * The permissions for the dead-letter queue redrive permission
+   * Settings related to queues that designate this queue as their Dead Letter Queue
    *
-   * @default - `RedrivePermission.BY_QUEUE` if `sourceQueueArns` is specified; otherwise, `RedrivePermission.ALLOW_ALL`.
+   * @default - Capable of setting all queues within the same region and account as source queues.
    */
-  readonly redrivePermission?: RedrivePermission;
-
-  /**
-   * Source queues can specify dead-letter queues.
-   *
-   * When RedrivePermission is set to BY_QUEUE, it is mandatory to configure sourceQueueArns.
-   * You can specify up to 10 source queue ARNs.
-   * To allow more than 10 source queues to specify dead-letter queues, set the `redrivePermission` to `ALLOW_ALL`.
-   *
-   * When either ALLOW_ALL or DENY_ALL is set in RedrivePermission, sourceQueueArns cannot be configured.
-   *
-   * @default - To not specify certain queues as source queues allowed for redrive.
-   */
-  readonly sourceQueueArns?: string[];
+  readonly deadLetterSourceQueuePermission?: DeadLetterSourceQueuePermission;
 }
 
 /**
@@ -213,6 +200,28 @@ export interface DeadLetterQueue {
    * The number of times a message can be unsuccesfully dequeued before being moved to the dead-letter queue.
    */
   readonly maxReceiveCount: number;
+}
+
+export interface DeadLetterSourceQueuePermission {
+  /**
+   * The permissions for the dead-letter queue redrive permission
+   *
+   * @default - `RedrivePermission.BY_QUEUE` if `sourceQueues` is specified; otherwise, `RedrivePermission.ALLOW_ALL`.
+   */
+  readonly redrivePermission?: RedrivePermission;
+
+  /**
+   * Source queues that can designate this queue as their Dead Letter Queue
+   *
+   * When RedrivePermission is set to BY_QUEUE, it is mandatory to configure sourceQueues.
+   * You can specify up to 10 source queues.
+   * To allow more than 10 source queues to specify dead-letter queues, set the `redrivePermission` to `ALLOW_ALL`.
+   *
+   * When either ALLOW_ALL or DENY_ALL is set in RedrivePermission, sourceQueues cannot be configured.
+   *
+   * @default - To not specify certain queues as source queues allowed for redrive.
+   */
+  readonly sourceQueues?: IQueue[];
 }
 
 /**
@@ -369,12 +378,35 @@ export class Queue extends QueueBase {
 
     validateProps(props);
 
+    if (props.deadLetterSourceQueuePermission) {
+      const permission = props.deadLetterSourceQueuePermission.redrivePermission;
+      const sourceQueues = props.deadLetterSourceQueuePermission.sourceQueues;
+      if (permission === RedrivePermission.BY_QUEUE && !sourceQueues) {
+        throw new Error('sourceQueues must be configured when RedrivePermission is set to BY_QUEUE');
+      }
+      if (permission && permission !== RedrivePermission.BY_QUEUE && sourceQueues) {
+        throw new Error('sourceQueues cannot be configured when RedrivePermission is set to ALLOW_ALL or DENY_ALL');
+      }
+      if (sourceQueues && sourceQueues.length > 10) {
+        throw new Error('Up to 10 sourceQueues can be specified. Set RedrivePermission to ALLOW_ALL to specify more');
+      }
+      if (permission === RedrivePermission.BY_QUEUE && sourceQueues && sourceQueues.length === 0) {
+        throw new Error('At least one source queue must be specified when RedrivePermission is set to BY_QUEUE');
+      }
+    }
+
     const redrivePolicy = props.deadLetterQueue
       ? {
         deadLetterTargetArn: props.deadLetterQueue.queue.queueArn,
         maxReceiveCount: props.deadLetterQueue.maxReceiveCount,
       }
       : undefined;
+
+    const redriveAllowPolicy = props.deadLetterSourceQueuePermission ? {
+      redrivePermission: props.deadLetterSourceQueuePermission.redrivePermission
+        ?? props.deadLetterSourceQueuePermission.sourceQueues ? RedrivePermission.BY_QUEUE : RedrivePermission.ALLOW_ALL,
+      sourceQueueArns: props.deadLetterSourceQueuePermission.sourceQueues?.map(q => q.queueArn),
+    } : undefined;
 
     const { encryptionMasterKey, encryptionProps, encryptionType } = _determineEncryptionProps.call(this);
 
@@ -386,6 +418,7 @@ export class Queue extends QueueBase {
       ...fifoProps,
       ...encryptionProps,
       redrivePolicy,
+      redriveAllowPolicy,
       delaySeconds: props.deliveryDelay && props.deliveryDelay.toSeconds(),
       maximumMessageSize: props.maxMessageSizeBytes,
       messageRetentionPeriod: props.retentionPeriod && props.retentionPeriod.toSeconds(),
