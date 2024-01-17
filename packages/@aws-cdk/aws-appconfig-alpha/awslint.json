@@ -26,10 +26,6 @@
         "docs-public-apis:@aws-cdk/aws-appconfig-alpha.IApplication",
 
         "ref-via-interface:@aws-cdk/aws-appconfig-alpha.Application.addAgentToEcs.taskDef",
-        "props-physical-name:@aws-cdk/aws-appconfig-alpha.ApplicationProps",
-        "props-physical-name:@aws-cdk/aws-appconfig-alpha.DeploymentStrategyProps",
-        "props-physical-name:@aws-cdk/aws-appconfig-alpha.EnvironmentProps",
-        "props-physical-name:@aws-cdk/aws-appconfig-alpha.ExtensionProps",
         "events-in-interface",
         "events-method-signature",
         "events-generic",

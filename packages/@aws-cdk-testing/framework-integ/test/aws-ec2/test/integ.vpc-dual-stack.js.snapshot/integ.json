@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "DualStackTesting/DefaultTest": {
+      "stacks": [
+        "DualStackVpc"
+      ],
+      "assertionStack": "DualStackTesting/DefaultTest/DeployAssert",
+      "assertionStackName": "DualStackTestingDefaultTestDeployAssert8ACBFB2C"
+    }
+  }
+}

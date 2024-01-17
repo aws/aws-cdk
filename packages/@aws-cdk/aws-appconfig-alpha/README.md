@@ -39,7 +39,7 @@ Create an application with a name and description:
 
 ```ts
 new appconfig.Application(this, 'MyApplication', {
-  name: 'App1',
+  applicationName: 'App1',
   description: 'This is my application created through CDK.',
 });
 ```

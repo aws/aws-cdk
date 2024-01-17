@@ -503,6 +503,13 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   public readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
+   * The log group is created when `cloudwatchLogsExports` is set.
+   *
+   * Each export value will create a separate log group.
+   */
+  public readonly cloudwatchLogGroups: {[engine: string]: logs.ILogGroup};
+
+  /**
    * Application for single user rotation of the master password to this cluster.
    */
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
@@ -530,6 +537,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     }
     this.vpc = props.instanceProps?.vpc ?? props.vpc!;
     this.vpcSubnets = props.instanceProps?.vpcSubnets ?? props.vpcSubnets;
+
+    this.cloudwatchLogGroups = {};
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
@@ -1223,11 +1232,13 @@ function setLogRetention(cluster: DatabaseClusterNew, props: DatabaseClusterBase
 
     if (props.cloudwatchLogsRetention) {
       for (const log of props.cloudwatchLogsExports) {
+        const logGroupName = `/aws/rds/cluster/${cluster.clusterIdentifier}/${log}`;
         new logs.LogRetention(cluster, `LogRetention${log}`, {
-          logGroupName: `/aws/rds/cluster/${cluster.clusterIdentifier}/${log}`,
+          logGroupName,
           retention: props.cloudwatchLogsRetention,
           role: props.cloudwatchLogsRetentionRole,
         });
+        cluster.cloudwatchLogGroups[log] = logs.LogGroup.fromLogGroupName(cluster, `LogGroup${cluster.clusterIdentifier}${log}`, logGroupName);
       }
     }
   }
