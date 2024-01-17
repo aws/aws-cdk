@@ -214,7 +214,8 @@ webSocketApi.addRoute('sendMessage', {
 
 ### AWS WebSocket Integration
 
-AWS integrations enable integrating with an AWS service action, including the Lambda function-invoking action. With the Lambda function-invoking action, this is referred to as the Lambda custom integration. With any other AWS service action, this is known as AWS integration. Supported only for WebSocket APIs.
+AWS type integrations enable integrating with any supported AWS service. This is only supported for WebSocket APIs. When a client 
+connects/disconnects or sends a message specific to a route, the API Gateway service forwards the request to the specified AWS service.
 
 The following code configures a `$connect` route with a AWS integration that integrates with a dynamodb table. On websocket api connect,
 it will write new entry to the dynamodb table. 

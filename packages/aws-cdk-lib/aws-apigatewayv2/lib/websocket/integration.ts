@@ -29,7 +29,7 @@ export enum WebSocketIntegrationType {
   /**
    * AWS Integration Type
    */
-  AWS = 'AWS'
+  AWS = 'AWS',
 }
 
 /**
@@ -54,14 +54,14 @@ export interface WebSocketIntegrationProps {
   /**
  * Specifies the integration's HTTP method type.
  *
- * @default None.
+ * @default - No HTTP method required.
  */
   readonly integrationMethod?: string;
 
   /**
    * Specifies the IAM role required for the integration.
    *
-   * @default None.
+   * @default - No IAM role required.
    */
   readonly credentialsRole?: IRole;
 
@@ -70,7 +70,7 @@ export interface WebSocketIntegrationProps {
    * Specify request parameters as key-value pairs (string-to-string
    * mappings), with a destination as the key and a source as the value.
    *
-   * @default None.
+   * @default - No request parameters required.
    */
   readonly requestParameters?: { [dest: string]: string };
 
@@ -82,14 +82,14 @@ export interface WebSocketIntegrationProps {
    *   { "application/json": "{ \"statusCode\": 200 }" }
    * ```
    *
-   * @default None.
+   * @default - No request templates required.
   */
   readonly requestTemplates?: { [contentType: string]: string };
 
   /**
    * The template selection expression for the integration.
    *
-   * @default None.
+   * @default - No template selection expression required.
    */
   readonly templateSelectionExpression?: string;
 }
@@ -198,35 +198,35 @@ export interface WebSocketRouteIntegrationConfig {
   /**
    * Integration method
    *
-   * @default None.
+   * @default - No integration method.
    */
   readonly method?: string;
 
   /**
    * Credentials role
    *
-   * @default None.
+   * @default - No role provided.
    */
   readonly credentialsRole?: IRole;
 
   /**
    * Request template
    *
-   * @default None.
+   * @default - No request template provided.
    */
   readonly requestTemplates?: { [contentType: string]: string };
 
   /**
    * Request parameters
    *
-   * @default None.
+   * @default - No request parameters provided.
    */
   readonly requestParameters?: { [dest: string]: string };
 
   /**
    * Template selection expression
    *
-   * @default None.
+   * @default - No template selection expression.
    */
   readonly templateSelectionExpression?: string;
 }

@@ -12,23 +12,19 @@ import { IRole } from '../../../aws-iam';
 export interface WebSocketAwsIntegrationProps {
   /**
    * Integration URI.
-   *
-   * @default None.
-   */
-  readonly integrationUri?: string;
+  */
+  readonly integrationUri: string;
 
   /**
    * Specifies the integration's HTTP method type.
-   *
-   * @default None.
-   */
-  readonly integrationMethod?: string;
+  */
+  readonly integrationMethod: string;
 
   /**
    * Specifies the credentials role required for the integration.
    *
-   * @default None.
-   */
+   * @default - No credential role provided.
+  */
   readonly credentialsRole?: IRole;
 
   /**
@@ -36,8 +32,8 @@ export interface WebSocketAwsIntegrationProps {
    * Specify request parameters as key-value pairs (string-to-string
    * mappings), with a destination as the key and a source as the value.
    *
-   * @default None.
-   */
+   * @default - No request parameter provided to the integration.
+  */
   readonly requestParameters?: { [dest: string]: string };
 
   /**
@@ -48,15 +44,15 @@ export interface WebSocketAwsIntegrationProps {
    *   { "application/json": "{ \"statusCode\": 200 }" }
    * ```
    *
-   * @default None.
+   * @default - No request template provided to the integration.
   */
   readonly requestTemplates?: { [contentType: string]: string };
 
   /**
    * The template selection expression for the integration.
    *
-   * @default None.
-   */
+   * @default - No template selection expression provided.
+  */
   readonly templateSelectionExpression?: string;
 }
 
@@ -73,10 +69,6 @@ export class WebSocketAwsIntegration extends WebSocketRouteIntegration {
 
   bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig {
     options;
-
-    if (!this.props.integrationUri) {
-      throw new Error('integrationUri is required for AWS integration types.');
-    }
 
     return {
       type: WebSocketIntegrationType.AWS,
