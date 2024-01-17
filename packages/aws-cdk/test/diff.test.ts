@@ -603,7 +603,7 @@ function addMetadataToNestedStacks(stacksToDiff: StacksToDiff) {
     addMetadataToNestedStacks(nestedStack);
   }
 
-  // must write the stacks after all the metadata has been updated, otherwise the mutations are lost
+  // must write the stacks after all the metadata has been updated so the parent stack of each nested stack has the correct metadata
   placeGeneratedAndDeployedTemplates(stacksToDiff);
 }
 
