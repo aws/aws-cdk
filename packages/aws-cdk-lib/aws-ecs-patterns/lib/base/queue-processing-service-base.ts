@@ -158,7 +158,7 @@ export interface QueueProcessingServiceBaseProps {
    * Subsequent scale ins during the cooldown period are ignored.
    *
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_StepScalingPolicyConfiguration.html
-   * @default No cooldown
+   * @default 300 seconds
    */
   readonly cooldown?: Duration;
 
