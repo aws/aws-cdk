@@ -178,6 +178,26 @@ export interface QueueProps {
    * @default false
    */
   readonly enforceSSL?: boolean;
+
+  /**
+   * The permissions for the dead-letter queue redrive permission
+   *
+   * @default - `RedrivePermission.BY_QUEUE` if `sourceQueueArns` is specified; otherwise, `RedrivePermission.ALLOW_ALL`.
+   */
+  readonly redrivePermission?: RedrivePermission;
+
+  /**
+   * Source queues can specify dead-letter queues.
+   *
+   * When RedrivePermission is set to BY_QUEUE, it is mandatory to configure sourceQueueArns.
+   * You can specify up to 10 source queue ARNs.
+   * To allow more than 10 source queues to specify dead-letter queues, set the `redrivePermission` to `ALLOW_ALL`.
+   *
+   * When either ALLOW_ALL or DENY_ALL is set in RedrivePermission, sourceQueueArns cannot be configured.
+   *
+   * @default - To not specify certain queues as source queues allowed for redrive.
+   */
+  readonly sourceQueueArns?: string[];
 }
 
 /**
@@ -221,6 +241,24 @@ export enum FifoThroughputLimit {
    * Throughput quota applies per message group id
    */
   PER_MESSAGE_GROUP_ID = 'perMessageGroupId',
+}
+
+/**
+ * The permission type that defines which source queues can specify the current queue as the dead-letter queue
+ */
+export enum RedrivePermission {
+  /**
+   * Any source queues in this AWS account in the same Region can specify this queue as the dead-letter queue
+   */
+  ALLOW_ALL = 'allowAll',
+  /**
+   * No source queues can specify this queue as the dead-letter queue
+   */
+  DENY_ALL = 'denyAll',
+  /**
+   * Only queues specified by the `sourceQueueArns` parameter can specify this queue as the dead-letter queue
+   */
+  BY_QUEUE = 'byQueue',
 }
 
 /**
