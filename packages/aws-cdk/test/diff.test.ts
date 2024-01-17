@@ -11,6 +11,7 @@ import { CdkToolkit } from '../lib/cdk-toolkit';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as setup from './api/hotswap/hotswap-test-setup';
+import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: Deployments;
@@ -211,10 +212,8 @@ describe('top-level stacks', () => {
 });
 
 describe('nested stacks', () => {
-  // These tests must first create the nested stack and write it's template to disk, because otherwise the rootStack will not be able to find it, and complain
-  // Then, 
-  // 
   beforeEach(() => {
+    /*
     cloudExecutable = new MockCloudExecutable({
       stacks: [{
         stackName: 'Parent',
@@ -232,6 +231,7 @@ describe('nested stacks', () => {
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
     });
+    */
 
     /*
     cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((stackArtifact: CloudFormationStackArtifact) => {
@@ -340,71 +340,54 @@ describe('nested stacks', () => {
 
   test('foo', async () => {
     // GIVEN
-    // generated template
-    const nestedStack = testStack({
-      stackName: 'NestedStack',
-      template: {
-        Resources: {
-          ReInvent: {
-            Type: 'AWS::ReInvent::Convention',
-            Properties: {
-              AttendeeCount: 500000,
-            },
+    const oldRootTemplate = {
+      Resources: {
+        NestedStack: {
+          Type: 'AWS::CloudFormation::Stack',
+          Properties: {
+            TemplateURL: 'https://www.amazon.com',
+          },
+          //Metadata: {
+          //  'aws:asset:path': path.join('simple-nested-stack.json'),
+          //},
+        },
+      },
+    };
+
+    const newRootTemplate = JSON.parse(JSON.stringify(oldRootTemplate));
+    newRootTemplate.Resources.NestedStack.Properties.TemplateURL = 'https://www.amazoff.com';
+
+    const oldNestedTemplate = {
+      Resources: {
+        ReInvent: {
+          Type: 'AWS::ReInvent::Convention',
+          Properties: {
+            AttendeeCount: 500000,
           },
         },
       },
-    });
+    };
 
-    // deployed template
-    fs.writeFileSync(path.join(__dirname, 'nested-stack-templates/simple-nested-stack.json'), JSON.stringify(nestedStack.template));
-    const rootStack = testStack({
-      stackName: 'Parent',
-      template: {
-        Resources: {
-          NestedStack: {
-            Type: 'AWS::CloudFormation::Stack',
-            Properties: {
-              TemplateURL: 'https://www.amazon.com',
-            },
-            Metadata: {
-              'aws:asset:path': path.join('simple-nested-stack.json'),
-            },
-          },
-        },
-      },
-    });
-
-    const mockToolkitEnv = new MockToolkitEnvironment({
-      stacks: [rootStack],
-    });
-
-    setup.setupHotswapNestedStackTests('ParentStack', mockToolkitEnv.sdkProvider);
-    setup.pushNestedStackResourceSummaries('Parent',
-      setup.stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
-        'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedStack/abcd',
-      ),
-    );
-
-    // deployed template value
-    nestedStack.template.Resources.ReInvent.Properties.AttendeeCount = 5;
-
-    setup.addTemplateToCloudFormationLookupMock(rootStack);
-    setup.addTemplateToCloudFormationLookupMock(nestedStack);
+    const newNestedTemplate = JSON.parse(JSON.stringify(oldNestedTemplate));
+    newNestedTemplate.Resources.ReInvent.Properties.AttendeeCount = 5;
 
     // WHEN
-    // generated template value
-    rootStack.template.Resources.NestedStack.Properties.TemplateURL = 'https://www.amazoff.com';
-
+    const exitCode = await diffStacks({
+      stackName: 'Parent',
+      oldTemplate: oldRootTemplate,
+      newTemplate: newRootTemplate,
+      nestedStacks: {
+        NestedStack: {
+          oldTemplate: oldNestedTemplate,
+          newTemplate: newNestedTemplate,
+          stackName: 'NestedStack',
+          nestedStacks: {},
+        },
+      },
+    },
+    process.stderr as any);
     // GIVEN
     //const buffer = new StringWritable();
-
-    // WHEN
-    const exitCode = await mockToolkitEnv.toolkit.diff({
-      stackNames: ['Parent'],
-      stream: process.stderr,
-    });
-
-    fs.rmSync(path.join(__dirname, 'nested-stack-templates/simple-nested-stack.json'));
 
     expect(exitCode).toEqual(1);
   });
@@ -510,5 +493,108 @@ class StringWritable extends Writable {
   public _final(callback: (error?: Error | null) => void) {
     this.data += this._decoder.end();
     callback();
+  }
+}
+
+interface TemplatesToDiff {
+  stackName: string;
+  oldTemplate: any;
+  newTemplate: any;
+  nestedStacks: { [logicalId: string]: TemplatesToDiff };
+}
+
+interface StacksToDiff {
+  oldStack: CloudFormationStackArtifact;
+  newStack: CloudFormationStackArtifact;
+  nestedStacks: { [logicalId: string]: StacksToDiff };
+}
+
+async function diffStacks(templatesToDiff: TemplatesToDiff, _buffer: StringWritable) {
+  const sdkProvider = setup.setupHotswapNestedStackTests(templatesToDiff.stackName).mockSdkProvider;
+  const stacksToDiff = createStacks(templatesToDiff);
+  const mockToolkitEnv = new MockToolkitEnvironment({ stacks: [stacksToDiff.newStack] }, sdkProvider);
+
+  prepNestedStacks(stacksToDiff);
+
+  setup.addTemplateToCloudFormationLookupMock(stacksToDiff.oldStack);
+
+  const exitCode = await mockToolkitEnv.toolkit.diff({
+    stackNames: [templatesToDiff.stackName],
+    stream: process.stderr,
+  });
+
+  tearDownNestedStacks(stacksToDiff);
+
+  return exitCode;
+}
+
+function createStacks(templatesToDiff: TemplatesToDiff): StacksToDiff {
+  const oldStack = testStack({
+    stackName: templatesToDiff.stackName,
+    template: templatesToDiff.oldTemplate,
+  });
+
+  const newStack = testStack({
+    stackName: templatesToDiff.stackName,
+    template: templatesToDiff.newTemplate,
+  });
+  const stacksToDiff: StacksToDiff = {
+    oldStack,
+    newStack,
+    nestedStacks: {},
+  };
+
+  createStacksHelper(templatesToDiff.nestedStacks, stacksToDiff);
+
+  return stacksToDiff;
+}
+
+function createStacksHelper(templatesToDiff: { [key: string]: TemplatesToDiff }, stacksToDiff: StacksToDiff) {
+  for (const [nestedStackId, nestedTemplate] of Object.entries(templatesToDiff)) {
+    stacksToDiff.nestedStacks[nestedStackId] = {
+      oldStack: testStack({
+        stackName: nestedTemplate.stackName,
+        template: nestedTemplate.oldTemplate,
+      }),
+      newStack: testStack({
+        stackName: nestedTemplate.stackName,
+        template: nestedTemplate.newTemplate,
+      }),
+      nestedStacks: {},
+    };
+
+    createStacksHelper(nestedTemplate.nestedStacks, stacksToDiff.nestedStacks[nestedStackId]);
+  }
+}
+
+function prepNestedStacks(stacksToDiff: StacksToDiff) {
+  for (const nestedStackId of Object.keys(stacksToDiff.nestedStacks)) {
+    const nestedStack = stacksToDiff.nestedStacks[nestedStackId];
+
+    fs.writeFileSync(path.join(__dirname, `nested-stack-templates/${nestedStack.newStack.stackName}.json`), JSON.stringify(nestedStack.newStack.template));
+
+    stacksToDiff.oldStack.template.Resources[nestedStackId].Metadata = {
+      'aws:asset:path': path.join(`${nestedStack.oldStack.stackName}.json`),
+    };
+    stacksToDiff.newStack.template.Resources[nestedStackId].Metadata = stacksToDiff.oldStack.template.Resources[nestedStackId].Metadata;
+
+    setup.pushNestedStackResourceSummaries(stacksToDiff.newStack.stackName,
+      setup.stackSummaryOf('NestedStack', 'AWS::CloudFormation::Stack',
+        `arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/${nestedStack.newStack.stackName}/abcd`,
+      ),
+    );
+    setup.addTemplateToCloudFormationLookupMock(nestedStack.oldStack);
+
+    prepNestedStacks(nestedStack);
+  }
+}
+
+function tearDownNestedStacks(stacksToDiff: StacksToDiff) {
+  for (const nestedStackId of Object.keys(stacksToDiff.nestedStacks)) {
+    const nestedStack = stacksToDiff.nestedStacks[nestedStackId];
+
+    fs.rmSync(path.join(__dirname, `nested-stack-templates/${nestedStack.newStack.stackName}.json`));
+
+    tearDownNestedStacks(nestedStack);
   }
 }

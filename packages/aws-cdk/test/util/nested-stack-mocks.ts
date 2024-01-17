@@ -42,16 +42,16 @@ export class MockToolkitEnvironment {
   public sdkProvider: MockSdkProvider;
   public toolkit: CdkToolkit;
 
-  public constructor(asm: TestAssembly) {
-    this.cloudExecutable = new MockCloudExecutable(asm);
+  public constructor(asm: TestAssembly, sdkProvider: MockSdkProvider) {
+    this.cloudExecutable = new MockCloudExecutable(asm, sdkProvider);
     this.cloudFormation = new Deployments({
-      sdkProvider: this.cloudExecutable.sdkProvider,
+      sdkProvider: sdkProvider,
     });
     this.toolkit = new CdkToolkit({
       cloudExecutable: this.cloudExecutable,
       deployments: this.cloudFormation,
       configuration: this.cloudExecutable.configuration,
-      sdkProvider: this.cloudExecutable.sdkProvider,
+      sdkProvider: sdkProvider,
     });
     this.sdkProvider = this.cloudExecutable.sdkProvider;
   }
