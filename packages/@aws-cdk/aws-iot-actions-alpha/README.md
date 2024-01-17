@@ -355,20 +355,38 @@ to an HTTPS endpoint when it is triggered:
 
 ```ts
 const topicRule = new iot.TopicRule(this, 'TopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323(
-      "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'",
-    ),
-  });
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'",
+  ),
+});
 
-  topicRule.addAction(
-    new actions.HttpsAction('https://example.com/endpoint', {
-      confirmationUrl: 'https://example.com',
-      headers: [
-        { key: 'key0', value: 'value0' },
-        { key: 'key1', value: 'value1' },
-      ],
-      auth: { serviceName: 'serviceName', signingRegion: 'us-east-1' },
-    }),
-  );
-}
+topicRule.addAction(
+  new actions.HttpsAction('https://example.com/endpoint', {
+    confirmationUrl: 'https://example.com',
+    headers: [
+      { key: 'key0', value: 'value0' },
+      { key: 'key1', value: 'value1' },
+    ],
+    auth: { serviceName: 'serviceName', signingRegion: 'us-east-1' },
+  }),
+);
+```
+
+## Write Data to Open Search Service
+
+The code snippet below creates an AWS IoT Rule that write data
+to an Open Search Service when it is triggered:
+
+```ts
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'",
+  ),
+});
+
+topicRule.addAction(new actions.OpenSearchAction(domain, {
+  id: 'my-id',
+  index: 'my-index',
+  type: 'my-type',
+}));
 ```
