@@ -123,6 +123,24 @@ export enum LogFormat {
 }
 
 /**
+ * This field takes in 2 values either Text or JSON. By setting this value to Text,
+ * will result in the current structure of logs format, whereas, by setting this value to JSON,
+ * Lambda will print the logs as Structured JSON Logs, with the corresponding timestamp and log level
+ * of each event. Selecting ‘JSON’ format will only allow customer’s to have different log level
+ * Application log level and the System log level.
+ */
+export enum LoggingFormat {
+  /**
+   * Lambda Logs text format.
+   */
+  TEXT = 'Text',
+  /**
+   * Lambda structured logging in Json format.
+   */
+  JSON = 'JSON',
+}
+
+/**
  * Non runtime options
  */
 export interface FunctionOptions extends EventInvokeConfigOptions {
@@ -301,11 +319,11 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly tracing?: Tracing;
 
   /**
-  * Enable SnapStart for Lambda Function.
-  * SnapStart is currently supported only for Java 11, 17 runtime
-  *
-  * @default - No snapstart
-  */
+   * Enable SnapStart for Lambda Function.
+   * SnapStart is currently supported only for Java 11, 17 runtime
+   *
+   * @default - No snapstart
+   */
   readonly snapStart?: SnapStartConf;
 
   /**
@@ -471,6 +489,12 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default Text format
    */
   readonly logFormat?: string;
+
+  /**
+   * Sets the loggingFormat for the function.
+   * @default Text format
+   */
+  readonly loggingFormat?: LoggingFormat;
 
   /**
    * Sets the application log level for the function.
@@ -1093,10 +1117,15 @@ export class Function extends FunctionBase {
       throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`);
     }
 
+    if ((props.applicationLogLevel || props.systemLogLevel) && props.loggingFormat !== LoggingFormat.JSON) {
+      throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LoggingFormat to '${LoggingFormat.JSON}', got '${props.loggingFormat}'.`);
+    }
+
     let loggingConfig: CfnFunction.LoggingConfigProperty;
     if (props.logFormat || props.logGroup) {
       loggingConfig = {
         logFormat: props.logFormat,
+        loggingFormat: props.loggingFormat,
         systemLogLevel: props.systemLogLevel,
         applicationLogLevel: props.applicationLogLevel,
         logGroup: props.logGroup?.logGroupName,
