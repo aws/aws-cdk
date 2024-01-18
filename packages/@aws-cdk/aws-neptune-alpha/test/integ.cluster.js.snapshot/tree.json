@@ -873,13 +873,13 @@
                   "version": "0.0.0"
                 }
               },
-              "auditLogRetention": {
-                "id": "auditLogRetention",
-                "path": "aws-cdk-neptune-integ/Database/auditLogRetention",
+              "[object Object]LogRetention": {
+                "id": "[object Object]LogRetention",
+                "path": "aws-cdk-neptune-integ/Database/[object Object]LogRetention",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-neptune-integ/Database/auditLogRetention/Resource",
+                    "path": "aws-cdk-neptune-integ/Database/[object Object]LogRetention/Resource",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"

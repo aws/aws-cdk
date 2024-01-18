@@ -636,7 +636,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       props.cloudwatchLogsExports?.forEach(logType => {
         new logs.LogRetention(
           this,
-          `${FeatureFlags.of(this).isEnabled(NEPTUNE_ALPHA_USE_LOG_TYPE_IN_LOG_RETENTION_ID) ? logType : logType.value}LogRetention`,
+          `${FeatureFlags.of(this).isEnabled(NEPTUNE_ALPHA_USE_LOG_TYPE_IN_LOG_RETENTION_ID) ? logType.value : logType }LogRetention`,
           {
             logGroupName: `/aws/neptune/${this.clusterIdentifier}/${logType.value}`,
             role: props.cloudwatchLogsRetentionRole,
