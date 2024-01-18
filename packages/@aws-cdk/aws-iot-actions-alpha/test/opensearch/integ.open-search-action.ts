@@ -5,7 +5,7 @@ import * as actions from '../../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
-const stack = new Stack(app, 'integ-aws-iot-opensearch6');
+const stack = new Stack(app, 'aws-iot-opensearch-integ-stack');
 
 // Adding a domain with cognito dashboards auth configured
 const domain = new opensearch.Domain(stack, 'Domain', {

@@ -16,7 +16,7 @@
     },
     "b1cadfbe0b632eff2814c33fe38330af6def0ccc4f1652bb5539bd5af2c69ef9": {
       "source": {
-        "path": "integ-aws-iot-opensearch6.template.json",
+        "path": "aws-iot-opensearch-integ-stack.template.json",
         "packaging": "file"
       },
       "destinations": {

@@ -4,21 +4,21 @@
     "id": "App",
     "path": "",
     "children": {
-      "integ-aws-iot-opensearch6": {
-        "id": "integ-aws-iot-opensearch6",
-        "path": "integ-aws-iot-opensearch6",
+      "aws-iot-opensearch-integ-stack": {
+        "id": "aws-iot-opensearch-integ-stack",
+        "path": "aws-iot-opensearch-integ-stack",
         "children": {
           "Domain": {
             "id": "Domain",
-            "path": "integ-aws-iot-opensearch6/Domain",
+            "path": "aws-iot-opensearch-integ-stack/Domain",
             "children": {
               "MasterUser": {
                 "id": "MasterUser",
-                "path": "integ-aws-iot-opensearch6/Domain/MasterUser",
+                "path": "aws-iot-opensearch-integ-stack/Domain/MasterUser",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-aws-iot-opensearch6/Domain/MasterUser/Resource",
+                    "path": "aws-iot-opensearch-integ-stack/Domain/MasterUser/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                       "aws:cdk:cloudformation:props": {
@@ -42,7 +42,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "integ-aws-iot-opensearch6/Domain/Resource",
+                "path": "aws-iot-opensearch-integ-stack/Domain/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::OpenSearchService::Domain",
                   "aws:cdk:cloudformation:props": {
@@ -98,11 +98,11 @@
               },
               "AccessPolicy": {
                 "id": "AccessPolicy",
-                "path": "integ-aws-iot-opensearch6/Domain/AccessPolicy",
+                "path": "aws-iot-opensearch-integ-stack/Domain/AccessPolicy",
                 "children": {
                   "Provider": {
                     "id": "Provider",
-                    "path": "integ-aws-iot-opensearch6/Domain/AccessPolicy/Provider",
+                    "path": "aws-iot-opensearch-integ-stack/Domain/AccessPolicy/Provider",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0"
@@ -110,11 +110,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-aws-iot-opensearch6/Domain/AccessPolicy/Resource",
+                    "path": "aws-iot-opensearch-integ-stack/Domain/AccessPolicy/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "integ-aws-iot-opensearch6/Domain/AccessPolicy/Resource/Default",
+                        "path": "aws-iot-opensearch-integ-stack/Domain/AccessPolicy/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -128,11 +128,11 @@
                   },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
-                    "path": "integ-aws-iot-opensearch6/Domain/AccessPolicy/CustomResourcePolicy",
+                    "path": "aws-iot-opensearch-integ-stack/Domain/AccessPolicy/CustomResourcePolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-aws-iot-opensearch6/Domain/AccessPolicy/CustomResourcePolicy/Resource",
+                        "path": "aws-iot-opensearch-integ-stack/Domain/AccessPolicy/CustomResourcePolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -184,15 +184,15 @@
           },
           "AWS679f53fac002430cb0da5b7982bd2287": {
             "id": "AWS679f53fac002430cb0da5b7982bd2287",
-            "path": "integ-aws-iot-opensearch6/AWS679f53fac002430cb0da5b7982bd2287",
+            "path": "aws-iot-opensearch-integ-stack/AWS679f53fac002430cb0da5b7982bd2287",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "integ-aws-iot-opensearch6/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
+                "path": "aws-iot-opensearch-integ-stack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "integ-aws-iot-opensearch6/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
+                    "path": "aws-iot-opensearch-integ-stack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -200,7 +200,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-aws-iot-opensearch6/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
+                    "path": "aws-iot-opensearch-integ-stack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -245,11 +245,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "integ-aws-iot-opensearch6/AWS679f53fac002430cb0da5b7982bd2287/Code",
+                "path": "aws-iot-opensearch-integ-stack/AWS679f53fac002430cb0da5b7982bd2287/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-aws-iot-opensearch6/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
+                    "path": "aws-iot-opensearch-integ-stack/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -257,7 +257,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-aws-iot-opensearch6/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
+                    "path": "aws-iot-opensearch-integ-stack/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -271,7 +271,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "integ-aws-iot-opensearch6/AWS679f53fac002430cb0da5b7982bd2287/Resource",
+                "path": "aws-iot-opensearch-integ-stack/AWS679f53fac002430cb0da5b7982bd2287/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -305,11 +305,11 @@
           },
           "TopicRule": {
             "id": "TopicRule",
-            "path": "integ-aws-iot-opensearch6/TopicRule",
+            "path": "aws-iot-opensearch-integ-stack/TopicRule",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-aws-iot-opensearch6/TopicRule/Resource",
+                "path": "aws-iot-opensearch-integ-stack/TopicRule/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IoT::TopicRule",
                   "aws:cdk:cloudformation:props": {
@@ -355,11 +355,11 @@
               },
               "TopicRuleActionRole": {
                 "id": "TopicRuleActionRole",
-                "path": "integ-aws-iot-opensearch6/TopicRule/TopicRuleActionRole",
+                "path": "aws-iot-opensearch-integ-stack/TopicRule/TopicRuleActionRole",
                 "children": {
                   "ImportTopicRuleActionRole": {
                     "id": "ImportTopicRuleActionRole",
-                    "path": "integ-aws-iot-opensearch6/TopicRule/TopicRuleActionRole/ImportTopicRuleActionRole",
+                    "path": "aws-iot-opensearch-integ-stack/TopicRule/TopicRuleActionRole/ImportTopicRuleActionRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -367,7 +367,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-aws-iot-opensearch6/TopicRule/TopicRuleActionRole/Resource",
+                    "path": "aws-iot-opensearch-integ-stack/TopicRule/TopicRuleActionRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -392,11 +392,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "integ-aws-iot-opensearch6/TopicRule/TopicRuleActionRole/DefaultPolicy",
+                    "path": "aws-iot-opensearch-integ-stack/TopicRule/TopicRuleActionRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-aws-iot-opensearch6/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource",
+                        "path": "aws-iot-opensearch-integ-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -464,7 +464,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "integ-aws-iot-opensearch6/BootstrapVersion",
+            "path": "aws-iot-opensearch-integ-stack/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -472,7 +472,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "integ-aws-iot-opensearch6/CheckBootstrapVersion",
+            "path": "aws-iot-opensearch-integ-stack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"

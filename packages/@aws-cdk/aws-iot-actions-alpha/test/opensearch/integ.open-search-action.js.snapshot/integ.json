@@ -3,7 +3,7 @@
   "testCases": {
     "iot-opensearch-action-integ-test/DefaultTest": {
       "stacks": [
-        "integ-aws-iot-opensearch6"
+        "aws-iot-opensearch-integ-stack"
       ],
       "cdkCommandOptions": {
         "deploy": {

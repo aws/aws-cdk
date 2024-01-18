@@ -1,19 +1,19 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "integ-aws-iot-opensearch6.assets": {
+    "aws-iot-opensearch-integ-stack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integ-aws-iot-opensearch6.assets.json",
+        "file": "aws-iot-opensearch-integ-stack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integ-aws-iot-opensearch6": {
+    "aws-iot-opensearch-integ-stack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integ-aws-iot-opensearch6.template.json",
+        "templateFile": "aws-iot-opensearch-integ-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -22,7 +22,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integ-aws-iot-opensearch6.assets"
+          "aws-iot-opensearch-integ-stack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,77 +31,77 @@
         }
       },
       "dependencies": [
-        "integ-aws-iot-opensearch6.assets"
+        "aws-iot-opensearch-integ-stack.assets"
       ],
       "metadata": {
-        "/integ-aws-iot-opensearch6/Domain/MasterUser/Resource": [
+        "/aws-iot-opensearch-integ-stack/Domain/MasterUser/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DomainMasterUserBFAFA7D9"
           }
         ],
-        "/integ-aws-iot-opensearch6/Domain/Resource": [
+        "/aws-iot-opensearch-integ-stack/Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Domain66AC69E0"
           }
         ],
-        "/integ-aws-iot-opensearch6/Domain/AccessPolicy/Resource/Default": [
+        "/aws-iot-opensearch-integ-stack/Domain/AccessPolicy/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DomainAccessPolicyEE735B04"
           }
         ],
-        "/integ-aws-iot-opensearch6/Domain/AccessPolicy/CustomResourcePolicy/Resource": [
+        "/aws-iot-opensearch-integ-stack/Domain/AccessPolicy/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DomainAccessPolicyCustomResourcePolicyE61F1845"
           }
         ],
-        "/integ-aws-iot-opensearch6/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+        "/aws-iot-opensearch-integ-stack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ],
-        "/integ-aws-iot-opensearch6/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+        "/aws-iot-opensearch-integ-stack/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
-        "/integ-aws-iot-opensearch6/TopicRule/Resource": [
+        "/aws-iot-opensearch-integ-stack/TopicRule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TopicRule40A4EA44"
           }
         ],
-        "/integ-aws-iot-opensearch6/TopicRule/TopicRuleActionRole/Resource": [
+        "/aws-iot-opensearch-integ-stack/TopicRule/TopicRuleActionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TopicRuleTopicRuleActionRole246C4F77"
           }
         ],
-        "/integ-aws-iot-opensearch6/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource": [
+        "/aws-iot-opensearch-integ-stack/TopicRule/TopicRuleActionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687"
           }
         ],
-        "/integ-aws-iot-opensearch6/BootstrapVersion": [
+        "/aws-iot-opensearch-integ-stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-aws-iot-opensearch6/CheckBootstrapVersion": [
+        "/aws-iot-opensearch-integ-stack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-aws-iot-opensearch6"
+      "displayName": "aws-iot-opensearch-integ-stack"
     },
     "iotopensearchactionintegtestDefaultTestDeployAssertD02B4332.assets": {
       "type": "cdk:asset-manifest",
