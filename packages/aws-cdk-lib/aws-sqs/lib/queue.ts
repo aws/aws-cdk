@@ -385,19 +385,16 @@ export class Queue extends QueueBase {
     validateProps(props);
 
     if (props.sourceQueuePermission) {
-      const permission = props.sourceQueuePermission.redrivePermission;
-      const sourceQueues = props.sourceQueuePermission.sourceQueues;
-      if (permission === RedrivePermission.BY_QUEUE && !sourceQueues) {
-        throw new Error('sourceQueues must be configured when RedrivePermission is set to BY_QUEUE');
-      }
-      if (permission && permission !== RedrivePermission.BY_QUEUE && sourceQueues) {
-        throw new Error('sourceQueues cannot be configured when RedrivePermission is set to ALLOW_ALL or DENY_ALL');
-      }
-      if (sourceQueues && sourceQueues.length > 10) {
-        throw new Error('Up to 10 sourceQueues can be specified. Set RedrivePermission to ALLOW_ALL to specify more');
-      }
-      if (permission === RedrivePermission.BY_QUEUE && sourceQueues && sourceQueues.length === 0) {
-        throw new Error('At least one source queue must be specified when RedrivePermission is set to BY_QUEUE');
+      const { redrivePermission,  sourceQueues } = props.redriveAllowPolicy;
+      if (redrivePermission === RedrivePermission.BY_QUEUE) {
+        if (!sourceQueues || sourceQueues.length === 0) {
+          throw new Error('At least one source queue must be specified when RedrivePermission is set to \'byQueue\'');
+        }
+        if (sourceQueues && sourceQueues.length > 10) {
+          throw new Error('Up to 10 sourceQueues can be specified. Set RedrivePermission to \'allowAll\' to specify more');
+        }
+      } else if (redrivePermission && sourceQueues) {
+        throw new Error('sourceQueues cannot be configured when RedrivePermission is set to \'allowAll\' or \'denyAll\'');
       }
     }
 
