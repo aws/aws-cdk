@@ -87,7 +87,8 @@ deduplication scope or fifo throughput limit.
 
 ## Dead letter source queues permission
 
-You can configure the permission settings for queues that can designate the created queue as their Dead Letter Queue. By default, all queues within the same account and region are permitted as source queues.
+You can configure the permission settings for queues that can designate the created queue as their dead-letter queue using the `redriveAllowPolicy` attribute.
+ By default, all queues within the same account and region are permitted as source queues.
 
 ```ts
 declare const sourceQueue: sqs.IQueue;
