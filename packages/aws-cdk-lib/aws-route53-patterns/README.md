@@ -46,7 +46,7 @@ new patterns.HttpsRedirect(this, 'Redirect', {
 
 To have `HttpsRedirect` use the `Certificate` construct as the default
 created certificate instead of the deprecated `DnsValidatedCertificate`
-construct, enable the `@aws-cdk/aws-route53-patters:useCertificate`
+construct, enable the `@aws-cdk/aws-route53-patterns:useCertificate`
 feature flag. If you are creating the stack in a region other than `us-east-1`
 you must also enable `crossRegionReferences` on the stack.
 
