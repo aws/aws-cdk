@@ -874,11 +874,9 @@ export class Function extends FunctionBase {
       this.validateProfiling(props);
       props.profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
-        AWS_CODEGURU_PROFILER_GROUP_ARN: Stack.of(scope).formatArn({
-          service: 'codeguru-profiler',
-          resource: 'profilingGroup',
-          resourceName: props.profilingGroup.profilingGroupName,
-        }),
+        AWS_CODEGURU_PROFILER_GROUP_NAME: props.profilingGroup.profilingGroupName,
+        AWS_CODEGURU_PROFILER_TARGET_REGION: props.profilingGroup.env.region,
+        AWS_CODEGURU_PROFILER_GROUP_ARN: props.profilingGroup.profilingGroupArn,
         AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
       };
     } else if (props.profiling) {
@@ -888,6 +886,8 @@ export class Function extends FunctionBase {
       });
       profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
+        AWS_CODEGURU_PROFILER_GROUP_NAME: profilingGroup.profilingGroupName,
+        AWS_CODEGURU_PROFILER_TARGET_REGION: profilingGroup.env.region,
         AWS_CODEGURU_PROFILER_GROUP_ARN: profilingGroup.profilingGroupArn,
         AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
       };
@@ -1557,8 +1557,11 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     if (!props.runtime.supportsCodeGuruProfiling) {
       throw new Error(`CodeGuru profiling is not supported by runtime ${props.runtime.name}`);
     }
-    if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
-      throw new Error('AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled');
+    if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_NAME
+      || props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN
+      || props.environment.AWS_CODEGURU_PROFILER_TARGET_REGION
+      || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
+      Annotations.of(this).addWarning('AWS_CODEGURU_PROFILER_GROUP_NAME, AWS_CODEGURU_PROFILER_GROUP_ARN, AWS_CODEGURU_PROFILER_TARGET_REGION, and AWS_CODEGURU_PROFILER_ENABLED should not be set when profiling options enabled');
     }
   }
 }
