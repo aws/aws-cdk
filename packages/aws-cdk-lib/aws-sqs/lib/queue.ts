@@ -214,16 +214,18 @@ export interface SourceQueuePermission {
   readonly redrivePermission?: RedrivePermission;
 
   /**
-   * Source queues that can designate this queue as their Dead Letter Queue
+   * Source queues that can designate this queue as their dead-letter queue.
    *
-   * When RedrivePermission is set to BY_QUEUE, it is mandatory to configure sourceQueues.
+   * When `redrivePermission` is set to `RedrivePermission.BY_QUEUE`, this parameter is required.
    *
    * You can specify up to 10 source queues.
-   * To allow more than 10 source queues to specify dead-letter queues, set the `redrivePermission` to `ALLOW_ALL`.
+   * To allow more than 10 source queues to specify dead-letter queues, set the `redrivePermission` to
+   * `RedrivePermission.ALLOW_ALL`.
    *
-   * When either ALLOW_ALL or DENY_ALL is set in RedrivePermission, sourceQueues cannot be configured.
+   * When `redrivePermission` is either `RedrivePermission.ALLOW_ALL` or `RedrivePermission.DENY_ALL`,
+   * this parameter cannot be set.
    *
-   * @default - To not specify certain queues as source queues allowed for redrive.
+   * @default - Required when `redrivePermission` is `RedrivePermission.BY_QUEUE`, cannot be defined otherwise.
    */
   readonly sourceQueues?: IQueue[];
 }
