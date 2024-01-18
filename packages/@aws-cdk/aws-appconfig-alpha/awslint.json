@@ -25,11 +25,7 @@
         "docs-public-apis:@aws-cdk/aws-appconfig-alpha.IConfiguration",
         "docs-public-apis:@aws-cdk/aws-appconfig-alpha.IApplication",
 
-        "no-unused-type:@aws-cdk/aws-appconfig-alpha.PredefinedDeploymentStrategyId",
-        "props-physical-name:@aws-cdk/aws-appconfig-alpha.ApplicationProps",
-        "props-physical-name:@aws-cdk/aws-appconfig-alpha.DeploymentStrategyProps",
-        "props-physical-name:@aws-cdk/aws-appconfig-alpha.EnvironmentProps",
-        "props-physical-name:@aws-cdk/aws-appconfig-alpha.ExtensionProps",
+        "from-signature:@aws-cdk/aws-appconfig-alpha.DeploymentStrategy.fromDeploymentStrategyId.params[2]",
         "events-method-signature:@aws-cdk/aws-appconfig-alpha.Application.on",
         "events-method-signature:@aws-cdk/aws-appconfig-alpha.Application.onDeploymentBaking*",
         "events-method-signature:@aws-cdk/aws-appconfig-alpha.Application.onDeploymentComplete*",

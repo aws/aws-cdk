@@ -163,7 +163,7 @@ export interface ApplicationProps {
    *
    * @default - A name is generated.
    */
-  readonly name?: string;
+  readonly applicationName?: string;
 
   /**
    * The description for the application.
@@ -415,7 +415,7 @@ export class Application extends ApplicationBase {
     super(scope, id);
 
     this.description = props.description;
-    this.name = props.name || Names.uniqueResourceName(this, {
+    this.name = props.applicationName || Names.uniqueResourceName(this, {
       maxLength: 64,
       separator: '-',
     });
