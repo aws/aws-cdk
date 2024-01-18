@@ -3080,7 +3080,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new DatabaseCluster(stack, 'Database', {
+    const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       credentials: {
         username: 'admin',
@@ -3115,6 +3115,9 @@ describe('cluster', () => {
       LogGroupName: { 'Fn::Join': ['', ['/aws/rds/cluster/', { Ref: 'DatabaseB269D8BB' }, '/general']] },
       RetentionInDays: 90,
     });
+    expect(Object.keys(cluster.cloudwatchLogGroups).length).toEqual(2);
+    expect(cluster.cloudwatchLogGroups.error.logGroupName).toEqual(`/aws/rds/cluster/${cluster.clusterIdentifier}/error`);
+    expect(cluster.cloudwatchLogGroups.general.logGroupName).toEqual(`/aws/rds/cluster/${cluster.clusterIdentifier}/general`);
   });
 
   test('throws if given unsupported CloudWatch log exports', () => {
