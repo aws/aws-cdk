@@ -187,7 +187,6 @@ test('test fargate queue worker service construct - with cooldown more than 9999
       cooldown: cdk.Duration.seconds(1000000000),
     });
   }).toThrow(new Error('cooldown cannot be more than 999999999, found: 1000000000'));
-
 });
 
 test('test fargate queue worker service construct - with remove default desiredCount feature flag', () => {
