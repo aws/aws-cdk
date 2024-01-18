@@ -97,6 +97,7 @@ export const RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS = '@aws-cdk/aws-rds:pr
 export const AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS = '@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters';
 export const APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION = '@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier';
 export const CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME = '@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource';
+export const NEPTUNE_ALPHA_USE_LOG_TYPE_IN_LOG_RETENTION_ID = '@aws-cdk/aws-neptune-alpha:useLogTypeInLogRetentionId';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -974,6 +975,19 @@ export const FLAGS: Record<string, FlagInfo> = {
       However, with the activation of this feature flag, the default branch is updated to \'main\'.
     `,
     introducedIn: { v2: '2.103.1' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [NEPTUNE_ALPHA_USE_LOG_TYPE_IN_LOG_RETENTION_ID]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the Neptune log retention ID will include the log type.',
+    detailsMd: `
+      When this feature flag is enabled, setting \`LogRetention\` during the creation of a \`DatabaseCluster\` 
+      will include the \`logType\` in the logical ID of the generated \`LogRetention\`.
+      If the flag is set to false, the logical ID of \`LogRetention\` will contain the string 'objectObject' regardless of the logType.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 };
