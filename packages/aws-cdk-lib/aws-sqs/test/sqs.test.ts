@@ -733,7 +733,7 @@ test('fails if queue policy has no IAM principals', () => {
 test('Default settings for the dead letter source queue permission', () => {
   const stack = new Stack();
   new sqs.Queue(stack, 'Queue', {
-    deadLetterSourceQueuePermission: {},
+    sourceQueuePermission: {},
   });
 
   Template.fromStack(stack).templateMatches({
@@ -756,7 +756,7 @@ test('explicit specification of dead letter source queues', () => {
   const stack = new Stack();
   const sourceQueue1 = new sqs.Queue(stack, 'SourceQueue1');
   const sourceQueue2 = new sqs.Queue(stack, 'SourceQueue2');
-  new sqs.Queue(stack, 'Queue', { deadLetterSourceQueuePermission: { sourceQueues: [sourceQueue1, sourceQueue2] } });
+  new sqs.Queue(stack, 'Queue', { sourceQueuePermission: { sourceQueues: [sourceQueue1, sourceQueue2] } });
 
   Template.fromStack(stack).templateMatches({
     'Resources': {
@@ -802,7 +802,7 @@ test('throw if sourceQueues is not specified when redrivePermission is byQueue',
   const stack = new Stack();
   expect(() => {
     new sqs.Queue(stack, 'Queue', {
-      deadLetterSourceQueuePermission: {
+      sourceQueuePermission: {
         redrivePermission: sqs.RedrivePermission.BY_QUEUE,
       },
     });
@@ -814,7 +814,7 @@ test('throw if dead letter source queues are specified with allowAll permission'
   const sourceQueue1 = new sqs.Queue(stack, 'SourceQueue1');
   expect(() => {
     new sqs.Queue(stack, 'Queue', {
-      deadLetterSourceQueuePermission: {
+      sourceQueuePermission: {
         sourceQueues: [sourceQueue1],
         redrivePermission: sqs.RedrivePermission.ALLOW_ALL,
       },
@@ -830,7 +830,7 @@ test('throw if souceQueues length is greater than 10', () => {
   }
   expect(() => {
     new sqs.Queue(stack, 'Queue', {
-      deadLetterSourceQueuePermission: {
+      sourceQueuePermission: {
         sourceQueues,
         redrivePermission: sqs.RedrivePermission.BY_QUEUE,
       },
@@ -842,7 +842,7 @@ test('throw if sourceQueues is blank array when redrivePermission is byQueue', (
   const stack = new Stack();
   expect(() => {
     new sqs.Queue(stack, 'Queue', {
-      deadLetterSourceQueuePermission: {
+      sourceQueuePermission: {
         sourceQueues: [],
         redrivePermission: sqs.RedrivePermission.BY_QUEUE,
       },

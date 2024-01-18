@@ -184,7 +184,7 @@ export interface QueueProps {
    *
    * @default - Capable of setting all queues within the same region and account as source queues.
    */
-  readonly deadLetterSourceQueuePermission?: DeadLetterSourceQueuePermission;
+  readonly sourceQueuePermission?: SourceQueuePermission;
 }
 
 /**
@@ -205,7 +205,7 @@ export interface DeadLetterQueue {
 /**
  * Permission settings for the dead letter source queue
  */
-export interface DeadLetterSourceQueuePermission {
+export interface SourceQueuePermission {
   /**
    * Permission settings for source queues that can designate this queue as their dead letter queue
    *
@@ -382,9 +382,9 @@ export class Queue extends QueueBase {
 
     validateProps(props);
 
-    if (props.deadLetterSourceQueuePermission) {
-      const permission = props.deadLetterSourceQueuePermission.redrivePermission;
-      const sourceQueues = props.deadLetterSourceQueuePermission.sourceQueues;
+    if (props.sourceQueuePermission) {
+      const permission = props.sourceQueuePermission.redrivePermission;
+      const sourceQueues = props.sourceQueuePermission.sourceQueues;
       if (permission === RedrivePermission.BY_QUEUE && !sourceQueues) {
         throw new Error('sourceQueues must be configured when RedrivePermission is set to BY_QUEUE');
       }
@@ -406,10 +406,10 @@ export class Queue extends QueueBase {
       }
       : undefined;
 
-    const redriveAllowPolicy = props.deadLetterSourceQueuePermission ? {
-      redrivePermission: props.deadLetterSourceQueuePermission.redrivePermission
-        ?? props.deadLetterSourceQueuePermission.sourceQueues ? RedrivePermission.BY_QUEUE : RedrivePermission.ALLOW_ALL,
-      sourceQueueArns: props.deadLetterSourceQueuePermission.sourceQueues?.map(q => q.queueArn),
+    const redriveAllowPolicy = props.sourceQueuePermission ? {
+      redrivePermission: props.sourceQueuePermission.redrivePermission
+        ?? props.sourceQueuePermission.sourceQueues ? RedrivePermission.BY_QUEUE : RedrivePermission.ALLOW_ALL,
+      sourceQueueArns: props.sourceQueuePermission.sourceQueues?.map(q => q.queueArn),
     } : undefined;
 
     const { encryptionMasterKey, encryptionProps, encryptionType } = _determineEncryptionProps.call(this);
