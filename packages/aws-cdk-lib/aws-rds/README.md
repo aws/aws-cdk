@@ -788,6 +788,27 @@ proxy.grantConnect(role, 'admin'); // Grant the role connection access to the DB
 **Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html> for setup instructions.
 
+To specify the details of authentication used by a proxy to log in as a specific database
+user use the `clientPasswordAuthType` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
+  writer: rds.ClusterInstance.provisioned('writer'),
+  vpc,
+});
+
+const proxy = new rds.DatabaseProxy(this, 'Proxy', {
+  proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+  secrets: [cluster.secret!],
+  vpc,
+  clientPasswordAuthType: rds.ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD,
+});
+```
+
 ### Cluster
 
 The following example shows granting connection access for an IAM role to an Aurora Cluster.
@@ -938,6 +959,11 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   // ...
 });
 
+// When 'cloudwatchLogsExports' is set, each export value creates its own log group in DB cluster. 
+// Specify an export value to access its log group.
+const errorLogGroup = cluster.cloudwatchLogGroups['error'];
+const auditLogGroup = cluster.cloudwatchLogGroups.audit;
+
 // Exporting logs from an instance
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({
@@ -945,8 +971,13 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   }),
   vpc,
   cloudwatchLogsExports: ['postgresql'], // Export the PostgreSQL logs
+  cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS, // Optional - default is to never expire logs
   // ...
 });
+
+// When 'cloudwatchLogsExports' is set, each export value creates its own log group in DB instance. 
+// Specify an export value to access its log group.
+const postgresqlLogGroup = instance.cloudwatchLogGroups['postgresql'];
 ```
 
 ## Option Groups
@@ -1042,6 +1073,8 @@ const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
     autoPause: Duration.minutes(10), // default is to pause after 5 minutes of idle time
     minCapacity: rds.AuroraCapacityUnit.ACU_8, // default is 2 Aurora capacity units (ACUs)
     maxCapacity: rds.AuroraCapacityUnit.ACU_32, // default is 16 Aurora capacity units (ACUs)
+    timeout: Duration.seconds(100), // default is 5 minutes
+    timeoutAction: rds.TimeoutAction.FORCE_APPLY_CAPACITY_CHANGE // default is ROLLBACK_CAPACITY_CHANGE
   }
 });
 ```

@@ -634,7 +634,7 @@ new tasks.EmrCreateCluster(this, 'SpotSpecification', {
         spotSpecification: {
           allocationStrategy: tasks.EmrCreateCluster.SpotAllocationStrategy.CAPACITY_OPTIMIZED,
           timeoutAction: tasks.EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
-          timeoutDurationMinutes: 60,
+          timeout: Duration.minutes(5),
         },
       },
     }],

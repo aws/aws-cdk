@@ -1,0 +1,14 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "cdk-integ-codepipeline-with-cross-region-replication-buckets/DefaultTest": {
+      "stacks": [
+        "PipelineStack",
+        "usEast1S3Stack",
+        "usWest2S3Stack"
+      ],
+      "assertionStack": "cdk-integ-codepipeline-with-cross-region-replication-buckets/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegcodepipelinewithcrossregionreplicationbucketsDefaultTestDeployAssertFB66B33F"
+    }
+  }
+}
