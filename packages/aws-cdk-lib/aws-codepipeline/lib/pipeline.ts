@@ -191,7 +191,7 @@ export interface GitPushFilter {
    * The list of patterns of Git tags that, when pushed, are to be excluded from
    * starting the pipeline.
    *
-   * You can use a wild card pattern for filtering. The `excludedTags` takes priority
+   * You can filter with glob patterns. The `excludedTags` takes priority
    * over the `includedTags`.
    *
    * Maximum length of this array is 8.
@@ -204,7 +204,7 @@ export interface GitPushFilter {
    * The list of patterns of Git tags that, when pushed, are to be included as
    * criteria that starts the pipeline.
    *
-   * You can use a wild card pattern for filtering. The `excludedTags` takes priority
+   * You can filter with glob patterns. The `excludedTags` takes priority
    * over the `includedTags`.
    *
    * Maximum length of this array is 8.
