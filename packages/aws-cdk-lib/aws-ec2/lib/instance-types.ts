@@ -1522,7 +1522,7 @@ export class InstanceType {
    */
   public get architecture(): InstanceArchitecture {
     // capture the family, generation, capabilities, and size portions of the instance type id
-    const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z]*)\.([a-z0-9]+)$/);
+    const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z\-]*)\.([a-z0-9\-]+)$/);
     if (instanceTypeComponents == null) {
       throw new Error('Malformed instance type identifier');
     }
@@ -1540,7 +1540,7 @@ export class InstanceType {
   }
 
   public sameInstanceClassAs(other: InstanceType): boolean {
-    const instanceClass: RegExp = /^([a-z]+\d{1,2}[a-z]*)\.([a-z0-9]+)$/;
+    const instanceClass: RegExp = /^([a-z]+\d{1,2}[a-z\-]*)\.([a-z0-9\-]+)$/;
     const instanceClassId = this.instanceTypeIdentifier.match(instanceClass);
     const otherInstanceClassId = other.instanceTypeIdentifier.match(instanceClass);
     if (instanceClassId == null || otherInstanceClassId == null) {
