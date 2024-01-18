@@ -807,7 +807,7 @@ describe('redriveAllowPolicy', () => {
           redrivePermission: sqs.RedrivePermission.BY_QUEUE,
         },
       });
-    }).toThrow(/sourceQueues must be configured when RedrivePermission is set to BY_QUEUE/);
+    }).toThrow(/At least one source queue must be specified when RedrivePermission is set to 'byQueue'/);
   });
 
   test('throw if dead letter source queues are specified with allowAll permission', () => {
@@ -820,7 +820,7 @@ describe('redriveAllowPolicy', () => {
           redrivePermission: sqs.RedrivePermission.ALLOW_ALL,
         },
       });
-    }).toThrow(/sourceQueues cannot be configured when RedrivePermission is set to ALLOW_ALL or DENY_ALL/);
+    }).toThrow(/sourceQueues cannot be configured when RedrivePermission is set to 'allowAll' or 'denyAll'/);
   });
 
   test('throw if souceQueues length is greater than 10', () => {
@@ -836,7 +836,7 @@ describe('redriveAllowPolicy', () => {
           redrivePermission: sqs.RedrivePermission.BY_QUEUE,
         },
       });
-    }).toThrow(/Up to 10 sourceQueues can be specified. Set RedrivePermission to ALLOW_ALL to specify more/);
+    }).toThrow(/Up to 10 sourceQueues can be specified. Set RedrivePermission to 'allowAll' to specify more/);
   });
 
   test('throw if sourceQueues is blank array when redrivePermission is byQueue', () => {
@@ -848,7 +848,7 @@ describe('redriveAllowPolicy', () => {
           redrivePermission: sqs.RedrivePermission.BY_QUEUE,
         },
       });
-    }).toThrow(/At least one source queue must be specified when RedrivePermission is set to BY_QUEUE/);
+    }).toThrow(/At least one source queue must be specified when RedrivePermission is set to 'byQueue'/);
   });
 });
 
