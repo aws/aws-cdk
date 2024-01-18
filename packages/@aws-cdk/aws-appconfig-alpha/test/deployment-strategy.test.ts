@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { App } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { DeploymentStrategy, PredefinedDeploymentStrategyId, RolloutStrategy } from '../lib';
+import { DeploymentStrategy, DeploymentStrategyId, RolloutStrategy } from '../lib';
 
 describe('deployment strategy', () => {
   test('default deployment strategy', () => {
@@ -25,7 +25,7 @@ describe('deployment strategy', () => {
   test('deployment strategy with name', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-      name: 'TestDeploymentStrategy',
+      deploymentStrategyName: 'TestDeploymentStrategy',
       rolloutStrategy: RolloutStrategy.linear({
         growthFactor: 10,
         deploymentDuration: cdk.Duration.minutes(10),
@@ -44,7 +44,7 @@ describe('deployment strategy', () => {
   test('deployment strategy duration in seconds', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-      name: 'TestDeploymentStrategy',
+      deploymentStrategyName: 'TestDeploymentStrategy',
       rolloutStrategy: RolloutStrategy.linear({
         growthFactor: 10,
         deploymentDuration: cdk.Duration.seconds(120),
@@ -63,7 +63,7 @@ describe('deployment strategy', () => {
   test('deployment strategy with description', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-      name: 'TestDeploymentStrategy',
+      deploymentStrategyName: 'TestDeploymentStrategy',
       rolloutStrategy: RolloutStrategy.linear({
         growthFactor: 10,
         deploymentDuration: cdk.Duration.minutes(10),
@@ -84,7 +84,7 @@ describe('deployment strategy', () => {
   test('deployment strategy with final bake time', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-      name: 'TestDeploymentStrategy',
+      deploymentStrategyName: 'TestDeploymentStrategy',
       rolloutStrategy: RolloutStrategy.linear({
         growthFactor: 10,
         deploymentDuration: cdk.Duration.minutes(10),
@@ -105,7 +105,7 @@ describe('deployment strategy', () => {
   test('deployment strategy with growth type', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-      name: 'TestDeploymentStrategy',
+      deploymentStrategyName: 'TestDeploymentStrategy',
       rolloutStrategy: RolloutStrategy.exponential({
         growthFactor: 10,
         deploymentDuration: cdk.Duration.minutes(10),
@@ -124,7 +124,7 @@ describe('deployment strategy', () => {
   test('deployment strategy with replicate to', () => {
     const stack = new cdk.Stack();
     new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
-      name: 'TestDeploymentStrategy',
+      deploymentStrategyName: 'TestDeploymentStrategy',
       rolloutStrategy: RolloutStrategy.linear({
         growthFactor: 10,
         deploymentDuration: cdk.Duration.minutes(10),
@@ -166,7 +166,7 @@ describe('deployment strategy', () => {
         account: '123456789012',
       },
     });
-    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(stack, 'MyDeploymentStrategy', 'abc123');
+    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(stack, 'MyDeploymentStrategy', DeploymentStrategyId.fromString('abc123'));
 
     expect(deploymentStrategy.deploymentStrategyId).toEqual('abc123');
     expect(deploymentStrategy.env.account).toEqual('123456789012');
@@ -181,7 +181,7 @@ describe('deployment strategy', () => {
         account: '123456789012',
       },
     });
-    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(stack, 'MyDeploymentStrategy', PredefinedDeploymentStrategyId.ALL_AT_ONCE);
+    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(stack, 'MyDeploymentStrategy', DeploymentStrategyId.ALL_AT_ONCE);
 
     expect(deploymentStrategy.deploymentStrategyId).toEqual('AppConfig.AllAtOnce');
     expect(deploymentStrategy.env.account).toEqual('123456789012');
@@ -196,7 +196,7 @@ describe('deployment strategy', () => {
         account: '123456789012',
       },
     });
-    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(stack, 'MyDeploymentStrategy', PredefinedDeploymentStrategyId.CANARY_10_PERCENT_20_MINUTES);
+    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(stack, 'MyDeploymentStrategy', DeploymentStrategyId.CANARY_10_PERCENT_20_MINUTES);
 
     expect(deploymentStrategy.deploymentStrategyId).toEqual('AppConfig.Canary10Percent20Minutes');
     expect(deploymentStrategy.env.account).toEqual('123456789012');
@@ -211,7 +211,7 @@ describe('deployment strategy', () => {
         account: '123456789012',
       },
     });
-    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(stack, 'MyDeploymentStrategy', PredefinedDeploymentStrategyId.LINEAR_50_PERCENT_EVERY_30_SECONDS);
+    const deploymentStrategy = DeploymentStrategy.fromDeploymentStrategyId(stack, 'MyDeploymentStrategy', DeploymentStrategyId.LINEAR_50_PERCENT_EVERY_30_SECONDS);
 
     expect(deploymentStrategy.deploymentStrategyId).toEqual('AppConfig.Linear50PercentEvery30Seconds');
     expect(deploymentStrategy.env.account).toEqual('123456789012');
