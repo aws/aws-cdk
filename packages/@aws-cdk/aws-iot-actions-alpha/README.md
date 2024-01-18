@@ -378,6 +378,9 @@ The code snippet below creates an AWS IoT Rule that write data
 to an Open Search Service when it is triggered:
 
 ```ts
+import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
+declare const domain: opensearch.Domain;
+
 const topicRule = new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323(
     "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'",
