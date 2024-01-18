@@ -11,7 +11,7 @@ const sourceQueue1 = new Queue(stack, 'SourceQueue1');
 const sourceQueue2 = new Queue(stack, 'SourceQueue2');
 
 new Queue(stack, 'DeadLetterQueue', {
-  sourceQueuePermission: {
+  redriveAllowPolicy: {
     sourceQueues: [sourceQueue1, sourceQueue2],
     redrivePermission: RedrivePermission.BY_QUEUE,
   },
