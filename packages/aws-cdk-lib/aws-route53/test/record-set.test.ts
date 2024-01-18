@@ -1166,7 +1166,12 @@ describe('record set', () => {
     })).toThrow('setIdentifier must be between 1 and 128 characters long, got: 129');
   });
 
-  test('throw error for the simultaneous definition of weight and geoLocation', () => {
+  test.each([
+    { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE) },
+    { weight: 20, region: 'us-east-1' },
+    { geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1' },
+    { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1' },
+  ])('throw error for the simultaneous definition of weight, geoLocation and region', (props) => {
     // GIVEN
     const stack = new Stack();
 
@@ -1178,13 +1183,12 @@ describe('record set', () => {
       recordName: 'www',
       recordType: route53.RecordType.CNAME,
       target: route53.RecordTarget.fromValues('zzz'),
-      weight: 50,
-      geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE),
       setIdentifier: 'uniqueId',
+      ...props,
     })).toThrow('Only one of region, weight, or geoLocation can be defined');
   });
 
-  test('throw error for the simultaneous definition of weight and geoLocation', () => {
+  test('throw error for definition of setIdentifier without weight, geoLocation and region', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -1196,9 +1200,7 @@ describe('record set', () => {
       recordName: 'www',
       recordType: route53.RecordType.CNAME,
       target: route53.RecordTarget.fromValues('zzz'),
-      weight: 50,
-      geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE),
       setIdentifier: 'uniqueId',
-    })).toThrow('weight and geoLocation cannot be defined simultaneously');
+    })).toThrow('setIdentifier can only be specified when either weight, geoLocation or region is specified');
   });
 });
