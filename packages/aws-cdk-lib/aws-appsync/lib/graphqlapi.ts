@@ -707,14 +707,16 @@ export class GraphqlApi extends GraphqlApiBase {
 
     const logGroupName = `/aws/appsync/apis/${this.apiId}`;
 
-    this.logGroup = LogGroup.fromLogGroupName(this, 'LogGroup', logGroupName);
-
-    if (props.logConfig?.retention) {
-      new LogRetention(this, 'LogRetention', {
-        logGroupName: this.logGroup.logGroupName,
-        retention: props.logConfig.retention,
+    if (props.logConfig) {
+      const logRetention = new LogRetention(this, 'LogRetention', {
+        logGroupName: logGroupName,
+        retention: props.logConfig?.retention ?? RetentionDays.INFINITE,
       });
-    };
+      this.logGroup = LogGroup.fromLogGroupArn(this, 'LogGroup', logRetention.logGroupArn);
+    } else {
+      this.logGroup = LogGroup.fromLogGroupName(this, 'LogGroup', logGroupName);
+    }
+
   }
 
   private setupSourceApiAssociations() {
