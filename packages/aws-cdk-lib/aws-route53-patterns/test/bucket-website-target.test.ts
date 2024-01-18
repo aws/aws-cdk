@@ -155,7 +155,7 @@ test('throws when certificate in region other than us-east-1 is supplied', () =>
   }).toThrow(/The certificate must be in the us-east-1 region and the certificate you provided is in us-east-2./);
 });
 
-describe('Uses Certificate when @aws-cdk/aws-route53-patters:useCertificate=true', () => {
+describe('Uses Certificate when @aws-cdk/aws-route53-patterns:useCertificate=true', () => {
   test('explicit different region', () => {
     // GIVEN
     const app = new App({
@@ -292,6 +292,6 @@ describe('Uses Certificate when @aws-cdk/aws-route53-patters:useCertificate=true
         }),
       });
 
-    }).toThrow(/When @aws-cdk\/aws-route53-patters:useCertificate is enabled, a region must be defined on the Stack/);
+    }).toThrow(/When @aws-cdk\/aws-route53-patterns:useCertificate is enabled, a region must be defined on the Stack/);
   });
 });
