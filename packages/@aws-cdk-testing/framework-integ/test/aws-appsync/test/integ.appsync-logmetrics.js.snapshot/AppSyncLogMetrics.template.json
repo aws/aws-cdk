@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "GraphqlApiApiLogsRoleBB9E6BAD": {
+  "ApiApiLogsRole90293F72": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -31,14 +31,14 @@
     ]
    }
   },
-  "GraphqlApi1B6CF24C": {
+  "ApiF70053CD": {
    "Type": "AWS::AppSync::GraphQLApi",
    "Properties": {
     "AuthenticationType": "API_KEY",
     "LogConfig": {
      "CloudWatchLogsRoleArn": {
       "Fn::GetAtt": [
-       "GraphqlApiApiLogsRoleBB9E6BAD",
+       "ApiApiLogsRole90293F72",
        "Arn"
       ]
      },
@@ -47,33 +47,33 @@
     "Name": "IntegLogRetention"
    }
   },
-  "GraphqlApiSchema1B71CE4F": {
+  "ApiSchema510EECD7": {
    "Type": "AWS::AppSync::GraphQLSchema",
    "Properties": {
     "ApiId": {
      "Fn::GetAtt": [
-      "GraphqlApi1B6CF24C",
+      "ApiF70053CD",
       "ApiId"
      ]
     },
     "Definition": "type test {\n  version: String!\n}\ntype Query {\n  getTests: [test]!\n}\ntype Mutation {\n  addTest(version: String!): test\n}\n"
    }
   },
-  "GraphqlApiDefaultApiKey47EE7128": {
+  "ApiDefaultApiKeyF991C37B": {
    "Type": "AWS::AppSync::ApiKey",
    "Properties": {
     "ApiId": {
      "Fn::GetAtt": [
-      "GraphqlApi1B6CF24C",
+      "ApiF70053CD",
       "ApiId"
      ]
     }
    },
    "DependsOn": [
-    "GraphqlApiSchema1B71CE4F"
+    "ApiSchema510EECD7"
    ]
   },
-  "GraphqlApiLogRetention082A7017": {
+  "ApiLogRetention94272E33": {
    "Type": "Custom::LogRetention",
    "Properties": {
     "ServiceToken": {
@@ -89,7 +89,7 @@
        "/aws/appsync/apis/",
        {
         "Fn::GetAtt": [
-         "GraphqlApi1B6CF24C",
+         "ApiF70053CD",
          "ApiId"
         ]
        }
@@ -97,6 +97,25 @@
      ]
     },
     "RetentionInDays": 7
+   }
+  },
+  "ApiLogGroupMetricFilter996FD830": {
+   "Type": "AWS::Logs::MetricFilter",
+   "Properties": {
+    "FilterPattern": "{ $.fieldName = \"myQuery\" && $.fieldInError IS TRUE }",
+    "LogGroupName": {
+     "Fn::GetAtt": [
+      "ApiLogRetention94272E33",
+      "LogGroupName"
+     ]
+    },
+    "MetricTransformations": [
+     {
+      "MetricName": "ErrorCount",
+      "MetricNamespace": "MyNamespace",
+      "MetricValue": "1"
+     }
+    ]
    }
   },
   "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
@@ -177,19 +196,6 @@
     "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
     "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
    ]
-  }
- },
- "Outputs": {
-  "ExportsOutputFnGetAttGraphqlApiLogRetention082A7017LogGroupName1AF00191": {
-   "Value": {
-    "Fn::GetAtt": [
-     "GraphqlApiLogRetention082A7017",
-     "LogGroupName"
-    ]
-   },
-   "Export": {
-    "Name": "AppSyncIntegLogRetention:ExportsOutputFnGetAttGraphqlApiLogRetention082A7017LogGroupName1AF00191"
-   }
   }
  },
  "Parameters": {

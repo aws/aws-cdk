@@ -4,21 +4,21 @@
     "id": "App",
     "path": "",
     "children": {
-      "AppSyncIntegLogRetention": {
-        "id": "AppSyncIntegLogRetention",
-        "path": "AppSyncIntegLogRetention",
+      "AppSyncLogMetrics": {
+        "id": "AppSyncLogMetrics",
+        "path": "AppSyncLogMetrics",
         "children": {
-          "GraphqlApi": {
-            "id": "GraphqlApi",
-            "path": "AppSyncIntegLogRetention/GraphqlApi",
+          "Api": {
+            "id": "Api",
+            "path": "AppSyncLogMetrics/Api",
             "children": {
               "ApiLogsRole": {
                 "id": "ApiLogsRole",
-                "path": "AppSyncIntegLogRetention/GraphqlApi/ApiLogsRole",
+                "path": "AppSyncLogMetrics/Api/ApiLogsRole",
                 "children": {
                   "ImportApiLogsRole": {
                     "id": "ImportApiLogsRole",
-                    "path": "AppSyncIntegLogRetention/GraphqlApi/ApiLogsRole/ImportApiLogsRole",
+                    "path": "AppSyncLogMetrics/Api/ApiLogsRole/ImportApiLogsRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -26,7 +26,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "AppSyncIntegLogRetention/GraphqlApi/ApiLogsRole/Resource",
+                    "path": "AppSyncLogMetrics/Api/ApiLogsRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -71,7 +71,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "AppSyncIntegLogRetention/GraphqlApi/Resource",
+                "path": "AppSyncLogMetrics/Api/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
                   "aws:cdk:cloudformation:props": {
@@ -79,7 +79,7 @@
                     "logConfig": {
                       "cloudWatchLogsRoleArn": {
                         "Fn::GetAtt": [
-                          "GraphqlApiApiLogsRoleBB9E6BAD",
+                          "ApiApiLogsRole90293F72",
                           "Arn"
                         ]
                       },
@@ -95,13 +95,13 @@
               },
               "Schema": {
                 "id": "Schema",
-                "path": "AppSyncIntegLogRetention/GraphqlApi/Schema",
+                "path": "AppSyncLogMetrics/Api/Schema",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLSchema",
                   "aws:cdk:cloudformation:props": {
                     "apiId": {
                       "Fn::GetAtt": [
-                        "GraphqlApi1B6CF24C",
+                        "ApiF70053CD",
                         "ApiId"
                       ]
                     },
@@ -115,13 +115,13 @@
               },
               "DefaultApiKey": {
                 "id": "DefaultApiKey",
-                "path": "AppSyncIntegLogRetention/GraphqlApi/DefaultApiKey",
+                "path": "AppSyncLogMetrics/Api/DefaultApiKey",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppSync::ApiKey",
                   "aws:cdk:cloudformation:props": {
                     "apiId": {
                       "Fn::GetAtt": [
-                        "GraphqlApi1B6CF24C",
+                        "ApiF70053CD",
                         "ApiId"
                       ]
                     }
@@ -134,11 +134,11 @@
               },
               "LogRetention": {
                 "id": "LogRetention",
-                "path": "AppSyncIntegLogRetention/GraphqlApi/LogRetention",
+                "path": "AppSyncLogMetrics/Api/LogRetention",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "AppSyncIntegLogRetention/GraphqlApi/LogRetention/Resource",
+                    "path": "AppSyncLogMetrics/Api/LogRetention/Resource",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -152,7 +152,46 @@
               },
               "LogGroup": {
                 "id": "LogGroup",
-                "path": "AppSyncIntegLogRetention/GraphqlApi/LogGroup",
+                "path": "AppSyncLogMetrics/Api/LogGroup",
+                "children": {
+                  "MetricFilter": {
+                    "id": "MetricFilter",
+                    "path": "AppSyncLogMetrics/Api/LogGroup/MetricFilter",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "AppSyncLogMetrics/Api/LogGroup/MetricFilter/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Logs::MetricFilter",
+                          "aws:cdk:cloudformation:props": {
+                            "filterPattern": "{ $.fieldName = \"myQuery\" && $.fieldInError IS TRUE }",
+                            "logGroupName": {
+                              "Fn::GetAtt": [
+                                "ApiLogRetention94272E33",
+                                "LogGroupName"
+                              ]
+                            },
+                            "metricTransformations": [
+                              {
+                                "metricNamespace": "MyNamespace",
+                                "metricName": "ErrorCount",
+                                "metricValue": "1"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_logs.CfnMetricFilter",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.MetricFilter",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -166,15 +205,15 @@
           },
           "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a": {
             "id": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
-            "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
+            "path": "AppSyncLogMetrics/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a",
             "children": {
               "Code": {
                 "id": "Code",
-                "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
+                "path": "AppSyncLogMetrics/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/Stage",
+                    "path": "AppSyncLogMetrics/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -182,7 +221,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/AssetBucket",
+                    "path": "AppSyncLogMetrics/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -196,11 +235,11 @@
               },
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole",
+                "path": "AppSyncLogMetrics/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole",
+                    "path": "AppSyncLogMetrics/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -208,7 +247,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource",
+                    "path": "AppSyncLogMetrics/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -247,11 +286,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy",
+                    "path": "AppSyncLogMetrics/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource",
+                        "path": "AppSyncLogMetrics/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -295,7 +334,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "AppSyncIntegLogRetention/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
+                "path": "AppSyncLogMetrics/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Resource",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -307,27 +346,9 @@
               "version": "10.3.0"
             }
           },
-          "Exports": {
-            "id": "Exports",
-            "path": "AppSyncIntegLogRetention/Exports",
-            "children": {
-              "Output{\"Fn::GetAtt\":[\"GraphqlApiLogRetention082A7017\",\"LogGroupName\"]}": {
-                "id": "Output{\"Fn::GetAtt\":[\"GraphqlApiLogRetention082A7017\",\"LogGroupName\"]}",
-                "path": "AppSyncIntegLogRetention/Exports/Output{\"Fn::GetAtt\":[\"GraphqlApiLogRetention082A7017\",\"LogGroupName\"]}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
-            }
-          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "AppSyncIntegLogRetention/BootstrapVersion",
+            "path": "AppSyncLogMetrics/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -335,7 +356,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "AppSyncIntegLogRetention/CheckBootstrapVersion",
+            "path": "AppSyncLogMetrics/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -367,94 +388,6 @@
                 "id": "DeployAssert",
                 "path": "Integ/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallCloudWatchLogsdescribeLogGroups8bf25a7acd37f39f7e35df44651487d5": {
-                    "id": "AwsApiCallCloudWatchLogsdescribeLogGroups8bf25a7acd37f39f7e35df44651487d5",
-                    "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups8bf25a7acd37f39f7e35df44651487d5",
-                    "children": {
-                      "SdkProvider": {
-                        "id": "SdkProvider",
-                        "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups8bf25a7acd37f39f7e35df44651487d5/SdkProvider",
-                        "children": {
-                          "AssertionsProvider": {
-                            "id": "AssertionsProvider",
-                            "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups8bf25a7acd37f39f7e35df44651487d5/SdkProvider/AssertionsProvider",
-                            "constructInfo": {
-                              "fqn": "constructs.Construct",
-                              "version": "10.3.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Default": {
-                        "id": "Default",
-                        "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups8bf25a7acd37f39f7e35df44651487d5/Default",
-                        "children": {
-                          "Default": {
-                            "id": "Default",
-                            "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups8bf25a7acd37f39f7e35df44651487d5/Default/Default",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "AssertionResults": {
-                        "id": "AssertionResults",
-                        "path": "Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups8bf25a7acd37f39f7e35df44651487d5/AssertionResults",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnOutput",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
-                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
-                    "path": "Integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
-                    "children": {
-                      "Staging": {
-                        "id": "Staging",
-                        "path": "Integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Role": {
-                        "id": "Role",
-                        "path": "Integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Handler": {
-                        "id": "Handler",
-                        "path": "Integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
-                    }
-                  },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "Integ/DefaultTest/DeployAssert/BootstrapVersion",
