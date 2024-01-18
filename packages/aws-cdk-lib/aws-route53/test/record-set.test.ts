@@ -3,6 +3,11 @@ import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { Duration, RemovalPolicy, Stack } from '../../core';
 import * as route53 from '../lib';
+import * as targets from '../../aws-route53-targets';
+import * as cloudfront from '../../aws-cloudfront';
+import * as origins from '../../aws-cloudfront-origins';
+import { Resource } from '../../../@aws-cdk/cloudformation-diff/lib/diff/types';
+import { Type } from '../../assertions/lib/private/type';
 
 describe('record set', () => {
   test('with default ttl', () => {
@@ -1170,7 +1175,10 @@ describe('record set', () => {
     { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE) },
     { weight: 20, region: 'us-east-1' },
     { geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1' },
-    { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1' },
+    { multiValueAnswer: true, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE) },
+    { multiValueAnswer: true, region: 'us-east-1' },
+    { multiValueAnswer: true, weight: 20 },
+    { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1', multiValueAnswer: true },
   ])('throw error for the simultaneous definition of weight, geoLocation and region', (props) => {
     // GIVEN
     const stack = new Stack();
@@ -1185,7 +1193,7 @@ describe('record set', () => {
       target: route53.RecordTarget.fromValues('zzz'),
       setIdentifier: 'uniqueId',
       ...props,
-    })).toThrow('Only one of region, weight, or geoLocation can be defined');
+    })).toThrow('Only one of region, weight, multiValueAnswer or geoLocation can be defined');
   });
 
   test('throw error for the definition of setIdentifier without weight, geoLocation or region', () => {
@@ -1203,4 +1211,57 @@ describe('record set', () => {
       setIdentifier: 'uniqueId',
     })).toThrow('setIdentifier can only be specified for non-simple routing policies');
   });
+
+  test('with multiValueAnswer', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // WHEN
+    new route53.RecordSet(stack, 'RecordSet', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      multiValueAnswer: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      MultiValueAnswer: true,
+      Name: 'www.myzone.',
+      ResourceRecords: [
+        'zzz',
+      ],
+      SetIdentifier: 'MVA_ID_RecordSet',
+      TTL: '1800',
+      Type: 'CNAME',
+    });
+  });
+
+  test('throw error for the definition of multiValueAnswer for alias record', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: {
+        origin: new origins.HttpOrigin('www.example.com'),
+      },
+    });
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // THEN
+    expect(() => new route53.RecordSet(stack, 'Basic', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.A,
+      target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+      multiValueAnswer: true,
+    })).toThrow('multiValueAnswer cannot be specified for alias record');
+  });
 });
+
