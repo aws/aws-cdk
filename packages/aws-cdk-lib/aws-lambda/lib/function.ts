@@ -388,7 +388,8 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @deprecated instead create a fully customizable log group with `logs.LogGroup` and use the `logGroup` property to instruct the Lambda function to send logs to it.
    * Migrating from `logRetention` to `logGroup` will cause the name of the log group to change.
-   * Users and code and referencing the name verbatim will have to adjust.\
+   * Users and code and referencing the name verbatim will have to adjust.
+   *
    * In AWS CDK code, you can access the log group name directly from the LogGroup construct:
    * ```ts
    * declare const myLogGroup: logs.LogGroup;
