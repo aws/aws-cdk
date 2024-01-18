@@ -919,12 +919,28 @@
    "Properties": {
     "ContainerDefinitions": [
      {
+      "Environment": [
+       {
+        "Name": "AWS_REGION",
+        "Value": {
+         "Ref": "AWS::Region"
+        }
+       }
+      ],
       "Essential": true,
       "Image": "amazon/amazon-ecs-sample",
       "Memory": 256,
       "Name": "web"
      },
      {
+      "Environment": [
+       {
+        "Name": "AWS_REGION",
+        "Value": {
+         "Ref": "AWS::Region"
+        }
+       }
+      ],
       "Essential": true,
       "Image": "envoyproxy/envoy:v1.16.2",
       "Memory": 256,

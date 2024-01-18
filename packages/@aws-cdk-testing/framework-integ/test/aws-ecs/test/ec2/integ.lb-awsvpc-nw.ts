@@ -20,6 +20,9 @@ const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef', {
 const container = taskDefinition.addContainer('web', {
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   memoryLimitMiB: 256,
+  environment: {
+    SOME_VARIABLE: 'value',
+  },
 });
 
 container.addPortMappings({
