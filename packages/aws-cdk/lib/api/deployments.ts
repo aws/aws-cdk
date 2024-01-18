@@ -317,6 +317,13 @@ export class Deployments {
     this.environmentResources = new EnvironmentResourcesRegistry(props.toolkitStackName);
   }
 
+  /**
+   * Resolves the environment for a stack.
+   */
+  public async resolveEnvironment(stack: cxapi.CloudFormationStackArtifact): Promise<cxapi.Environment> {
+    return this.sdkProvider.resolveEnvironment(stack.environment);
+  }
+
   public async readCurrentTemplateWithNestedStacks(
     rootStackArtifact: cxapi.CloudFormationStackArtifact,
     retrieveProcessedTemplate: boolean = false,
@@ -470,7 +477,7 @@ export class Deployments {
       throw new Error(`The stack ${stack.displayName} does not have an environment`);
     }
 
-    const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment);
+    const resolvedEnvironment = await this.resolveEnvironment(stack);
 
     // Substitute any placeholders with information about the current environment
     const arns = await replaceEnvPlaceholders({

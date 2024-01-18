@@ -162,6 +162,45 @@ describe('fargate task definition', () => {
       // THEN
     });
   });
+  describe('When configuredAtLaunch in the Volume', ()=> {
+    test('do not throw when configuredAtLaunch is false', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // THEN
+      expect(() => {
+        const taskDefinition =new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+        taskDefinition.addVolume({
+          name: 'nginx-vol',
+          efsVolumeConfiguration: {
+            fileSystemId: 'fs-1234',
+          },
+        });
+        taskDefinition.addVolume({
+          name: 'nginx-vol1',
+          efsVolumeConfiguration: {
+            fileSystemId: 'fs-456',
+          },
+        });
+      });
+    });
+    test('throws when other volume configuration set with configuredAtLaunch', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // THEN
+      expect(() => {
+        const taskDefinition =new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+        taskDefinition.addVolume({
+          name: 'nginx-vol',
+          configuredAtLaunch: true,
+          efsVolumeConfiguration: {
+            fileSystemId: 'fs-1234',
+          },
+        });
+      }).toThrow(/Volume Configurations must not be specified for 'nginx-vol' when 'configuredAtLaunch' is set to true/);
+    });
+  });
 
   describe('When importing from an existing Fargate TaskDefinition', () => {
     test('can succeed using TaskDefinition Arn', () => {

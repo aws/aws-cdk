@@ -23,7 +23,7 @@ describe('appconfig', () => {
   test('appconfig with name', () => {
     const stack = new cdk.Stack();
     new Application(stack, 'MyAppConfig', {
-      name: 'TestApp',
+      applicationName: 'TestApp',
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Application', {
@@ -121,7 +121,7 @@ describe('appconfig', () => {
     });
     appconfig.preCreateHostedConfigurationVersion(new LambdaDestination(func), {
       description: 'This is my description',
-      name: 'MyExtension',
+      extensionName: 'MyExtension',
       latestVersionNumber: 1,
       parameters: [
         Parameter.required('myparam', 'val'),

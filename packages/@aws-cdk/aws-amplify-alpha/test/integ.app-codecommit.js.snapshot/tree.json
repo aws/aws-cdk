@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "cdk-amplify-codecommit-app": {
         "id": "cdk-amplify-codecommit-app",
         "path": "cdk-amplify-codecommit-app",
@@ -30,13 +22,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-codecommit.CfnRepository",
+                  "fqn": "aws-cdk-lib.aws_codecommit.CfnRepository",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-codecommit.Repository",
+              "fqn": "aws-cdk-lib.aws_codecommit.Repository",
               "version": "0.0.0"
             }
           },
@@ -48,6 +40,14 @@
                 "id": "Role",
                 "path": "cdk-amplify-codecommit-app/App/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "cdk-amplify-codecommit-app/App/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "cdk-amplify-codecommit-app/App/Role/Resource",
@@ -69,7 +69,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -107,19 +107,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -129,7 +129,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Amplify::App",
                   "aws:cdk:cloudformation:props": {
-                    "name": "App",
                     "basicAuthConfig": {
                       "enableBasicAuth": false
                     },
@@ -139,6 +138,8 @@
                         "Arn"
                       ]
                     },
+                    "name": "App",
+                    "platform": "WEB",
                     "repository": {
                       "Fn::GetAtt": [
                         "Repo02AC86CF",
@@ -148,7 +149,7 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-amplify.CfnApp",
+                  "fqn": "aws-cdk-lib.aws_amplify.CfnApp",
                   "version": "0.0.0"
                 }
               },
@@ -174,32 +175,56 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-amplify.CfnBranch",
+                      "fqn": "aws-cdk-lib.aws_amplify.CfnBranch",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-amplify.Branch",
+                  "fqn": "@aws-cdk/aws-amplify-alpha.Branch",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-amplify.App",
+              "fqn": "@aws-cdk/aws-amplify-alpha.App",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-amplify-codecommit-app/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-amplify-codecommit-app/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }

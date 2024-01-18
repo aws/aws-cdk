@@ -39,7 +39,7 @@ Create an application with a name and description:
 
 ```ts
 new appconfig.Application(this, 'MyApplication', {
-  name: 'App1',
+  applicationName: 'App1',
   description: 'This is my application created through CDK.',
 });
 ```
@@ -68,6 +68,22 @@ new appconfig.DeploymentStrategy(this, 'MyDeploymentStrategy', {
     finalBakeTime: Duration.minutes(30),
   }),
 });
+```
+
+Importing a deployment strategy by ID:
+
+```ts
+appconfig.DeploymentStrategy.fromDeploymentStrategyId(this, 'MyImportedDeploymentStrategy', appconfig.DeploymentStrategyId.fromString('abc123'));
+```
+
+Importing an AWS AppConfig predefined deployment strategy by ID:
+
+```ts
+appconfig.DeploymentStrategy.fromDeploymentStrategyId(
+  this,
+  'MyImportedPredefinedDeploymentStrategy',
+  appconfig.DeploymentStrategyId.CANARY_10_PERCENT_20_MINUTES,
+);
 ```
 
 ## Configuration

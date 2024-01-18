@@ -743,6 +743,13 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
   public readonly connections: ec2.Connections;
 
+  /**
+   * The log group is created when `cloudwatchLogsExports` is set.
+   *
+   * Each export value will create a separate log group.
+   */
+  public readonly cloudwatchLogGroups: {[engine: string]: logs.ILogGroup};
+
   protected abstract readonly instanceType: ec2.InstanceType;
 
   protected readonly vpcPlacement?: ec2.SubnetSelection;
@@ -814,6 +821,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       throw new Error(`The maximum ratio of storage throughput to IOPS is 0.25. Got ${props.storageThroughput/iops}.`);
     }
 
+    this.cloudwatchLogGroups = {};
     this.cloudwatchLogsExports = props.cloudwatchLogsExports;
     this.cloudwatchLogsRetention = props.cloudwatchLogsRetention;
     this.cloudwatchLogsRetentionRole = props.cloudwatchLogsRetentionRole;
@@ -890,11 +898,13 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   protected setLogRetention() {
     if (this.cloudwatchLogsExports && this.cloudwatchLogsRetention) {
       for (const log of this.cloudwatchLogsExports) {
+        const logGroupName = `/aws/rds/instance/${this.instanceIdentifier}/${log}`;
         new logs.LogRetention(this, `LogRetention${log}`, {
-          logGroupName: `/aws/rds/instance/${this.instanceIdentifier}/${log}`,
+          logGroupName,
           retention: this.cloudwatchLogsRetention,
           role: this.cloudwatchLogsRetentionRole,
         });
+        this.cloudwatchLogGroups[log] = logs.LogGroup.fromLogGroupName(this, `LogGroup${this.instanceIdentifier}${log}`, logGroupName);
       }
     }
   }

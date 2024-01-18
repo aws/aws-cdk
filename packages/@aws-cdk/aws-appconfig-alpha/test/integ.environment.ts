@@ -10,7 +10,7 @@ const stack = new Stack(app, 'aws-appconfig-environment');
 
 // create resources needed for environment
 const appForEnv = new Application(stack, 'MyApplicationForEnv', {
-  name: 'AppForEnvTest',
+  applicationName: 'AppForEnvTest',
 });
 const alarm = new Alarm(stack, 'MyAlarm', {
   metric: new Metric({

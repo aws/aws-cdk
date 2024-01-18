@@ -31,7 +31,6 @@
   "AppF1B96344": {
    "Type": "AWS::Amplify::App",
    "Properties": {
-    "Name": "App",
     "AutoBranchCreationConfig": {
      "BasicAuthConfig": {
       "EnableBasicAuth": false
@@ -80,6 +79,7 @@
       "Arn"
      ]
     },
+    "Name": "App",
     "Platform": "WEB_COMPUTE"
    }
   },

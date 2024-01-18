@@ -155,7 +155,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
               "version": "0.0.0"
             }
           },
@@ -961,6 +961,237 @@
               "version": "0.0.0"
             }
           },
+          "ZeroBufferingDeliveryStream": {
+            "id": "ZeroBufferingDeliveryStream",
+            "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream",
+            "children": {
+              "S3 Destination Role": {
+                "id": "S3 Destination Role",
+                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/S3 Destination Role",
+                "children": {
+                  "ImportS3 Destination Role": {
+                    "id": "ImportS3 Destination Role",
+                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/S3 Destination Role/ImportS3 Destination Role",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/S3 Destination Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "firehose.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/S3 Destination Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/S3 Destination Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "s3:Abort*",
+                                    "s3:DeleteObject*",
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "Bucket83908E77",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "Bucket83908E77",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "ZeroBufferingDeliveryStreamLogGroupFA68202E",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ZeroBufferingDeliveryStreamS3DestinationRoleDefaultPolicyC03FC12E",
+                            "roles": [
+                              {
+                                "Ref": "ZeroBufferingDeliveryStreamS3DestinationRole606BB6E3"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/LogGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/LogGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 731
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "S3Destination": {
+                    "id": "S3Destination",
+                    "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/LogGroup/S3Destination",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/LogGroup/S3Destination/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::Logs::LogStream",
+                          "aws:cdk:cloudformation:props": {
+                            "logGroupName": {
+                              "Ref": "ZeroBufferingDeliveryStreamLogGroupFA68202E"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_logs.CfnLogStream",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.LogStream",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/ZeroBufferingDeliveryStream/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KinesisFirehose::DeliveryStream",
+                  "aws:cdk:cloudformation:props": {
+                    "deliveryStreamType": "DirectPut",
+                    "extendedS3DestinationConfiguration": {
+                      "cloudWatchLoggingOptions": {
+                        "enabled": true,
+                        "logGroupName": {
+                          "Ref": "ZeroBufferingDeliveryStreamLogGroupFA68202E"
+                        },
+                        "logStreamName": {
+                          "Ref": "ZeroBufferingDeliveryStreamLogGroupS3Destination806CFD96"
+                        }
+                      },
+                      "roleArn": {
+                        "Fn::GetAtt": [
+                          "ZeroBufferingDeliveryStreamS3DestinationRole606BB6E3",
+                          "Arn"
+                        ]
+                      },
+                      "bufferingHints": {
+                        "intervalInSeconds": 0,
+                        "sizeInMBs": 5
+                      },
+                      "bucketArn": {
+                        "Fn::GetAtt": [
+                          "Bucket83908E77",
+                          "Arn"
+                        ]
+                      },
+                      "compressionFormat": "GZIP",
+                      "errorOutputPrefix": "errorPrefix",
+                      "prefix": "regularPrefix"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kinesisfirehose.CfnDeliveryStream",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-kinesisfirehose-alpha.DeliveryStream",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/BootstrapVersion",
@@ -988,7 +1219,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

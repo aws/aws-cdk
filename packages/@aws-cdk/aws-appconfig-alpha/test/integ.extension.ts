@@ -31,7 +31,7 @@ const lambda = new Function(stack, 'MyFunction', {
   code: Code.fromInline('def handler(event, context):\n\tprint(\'The function has been invoked.\')'),
 });
 const app = new Application(stack, 'MyApplication', {
-  name: 'AppForExtensionTest',
+  applicationName: 'AppForExtensionTest',
 });
 const lambdaExtension = new Extension(stack, 'MyLambdaExtension', {
   actions: [

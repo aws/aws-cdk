@@ -964,6 +964,14 @@
       "Name": "log_router"
      },
      {
+      "Environment": [
+       {
+        "Name": "AWS_REGION",
+        "Value": {
+         "Ref": "AWS::Region"
+        }
+       }
+      ],
       "Essential": true,
       "Image": "nginx",
       "LogConfiguration": {

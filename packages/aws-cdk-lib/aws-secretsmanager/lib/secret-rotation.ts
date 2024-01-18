@@ -162,7 +162,7 @@ export class SecretRotationApplication {
     if (partition === 'aws') {
       return this.semanticVersion;
     } else if (partition === 'aws-cn') {
-      return '1.1.37';
+      return '1.1.212';
     } else if (partition === 'aws-us-gov') {
       return '1.1.93';
     } else {

@@ -79,7 +79,7 @@
         {
          "Ref": "AWS::Region"
         },
-        ":901920570463:layer:aws-otel-nodejs-amd64-ver-1-17-1:1"
+        ":901920570463:layer:aws-otel-nodejs-amd64-ver-1-18-1:1"
        ]
       ]
      }
@@ -176,7 +176,7 @@
         {
          "Ref": "AWS::Region"
         },
-        ":901920570463:layer:aws-otel-python-amd64-ver-1-20-0:3"
+        ":901920570463:layer:aws-otel-python-amd64-ver-1-21-0:1"
        ]
       ]
      }
@@ -273,7 +273,7 @@
         {
          "Ref": "AWS::Region"
         },
-        ":901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-31-0:1"
+        ":901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:1"
        ]
       ]
      }
@@ -370,7 +370,7 @@
         {
          "Ref": "AWS::Region"
         },
-        ":901920570463:layer:aws-otel-java-agent-amd64-ver-1-31-0:1"
+        ":901920570463:layer:aws-otel-java-agent-amd64-ver-1-32-0:1"
        ]
       ]
      }
@@ -467,7 +467,7 @@
         {
          "Ref": "AWS::Region"
         },
-        ":901920570463:layer:aws-otel-collector-amd64-ver-0-88-0:1"
+        ":901920570463:layer:aws-otel-collector-amd64-ver-0-90-1:1"
        ]
       ]
      }

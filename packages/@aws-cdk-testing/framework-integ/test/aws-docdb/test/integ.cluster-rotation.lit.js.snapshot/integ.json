@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "testCases": {
     "integ.cluster-rotation.lit": {
       "stacks": [

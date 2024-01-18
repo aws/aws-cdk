@@ -299,6 +299,22 @@ new firehose.DeliveryStream(this, 'Delivery Stream', {
 See: [Data Delivery Frequency](https://docs.aws.amazon.com/firehose/latest/dev/basic-deliver.html#frequency)
 in the *Kinesis Data Firehose Developer Guide*.
 
+Zero buffering, where Amazon Kinesis Data Firehose stream can be configured to not buffer data before delivery, is supported by
+setting the "buffer interval" to 0.
+
+```ts
+// Setup zero buffering
+declare const bucket: s3.Bucket;
+const destination = new destinations.S3Bucket(bucket, {
+  bufferingInterval: Duration.seconds(0),
+});
+new firehose.DeliveryStream(this, 'ZeroBufferDeliveryStream', {
+  destinations: [destination],
+});
+```
+
+See: [Buffering Hints](https://docs.aws.amazon.com/firehose/latest/dev/buffering-hints.html).
+
 ## Destination Encryption
 
 Your data can be automatically encrypted when it is delivered to S3 as a final or an
