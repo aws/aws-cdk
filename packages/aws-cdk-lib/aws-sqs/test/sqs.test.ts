@@ -734,7 +734,7 @@ describe('redriveAllowPolicy', () => {
   test('Default settings for the dead letter source queue permission', () => {
     const stack = new Stack();
     new sqs.Queue(stack, 'Queue', {
-      sourceQueuePermission: {},
+      redriveAllowPolicy: {},
     });
 
     Template.fromStack(stack).templateMatches({
@@ -757,7 +757,7 @@ describe('redriveAllowPolicy', () => {
     const stack = new Stack();
     const sourceQueue1 = new sqs.Queue(stack, 'SourceQueue1');
     const sourceQueue2 = new sqs.Queue(stack, 'SourceQueue2');
-    new sqs.Queue(stack, 'Queue', { sourceQueuePermission: { sourceQueues: [sourceQueue1, sourceQueue2] } });
+    new sqs.Queue(stack, 'Queue', { redriveAllowPolicy: { sourceQueues: [sourceQueue1, sourceQueue2] } });
 
     Template.fromStack(stack).templateMatches({
       'Resources': {
@@ -803,7 +803,7 @@ describe('redriveAllowPolicy', () => {
     const stack = new Stack();
     expect(() => {
       new sqs.Queue(stack, 'Queue', {
-        sourceQueuePermission: {
+        redriveAllowPolicy: {
           redrivePermission: sqs.RedrivePermission.BY_QUEUE,
         },
       });
@@ -815,7 +815,7 @@ describe('redriveAllowPolicy', () => {
     const sourceQueue1 = new sqs.Queue(stack, 'SourceQueue1');
     expect(() => {
       new sqs.Queue(stack, 'Queue', {
-        sourceQueuePermission: {
+        redriveAllowPolicy: {
           sourceQueues: [sourceQueue1],
           redrivePermission: sqs.RedrivePermission.ALLOW_ALL,
         },
@@ -831,7 +831,7 @@ describe('redriveAllowPolicy', () => {
     }
     expect(() => {
       new sqs.Queue(stack, 'Queue', {
-        sourceQueuePermission: {
+        redriveAllowPolicy: {
           sourceQueues,
           redrivePermission: sqs.RedrivePermission.BY_QUEUE,
         },
@@ -843,7 +843,7 @@ describe('redriveAllowPolicy', () => {
     const stack = new Stack();
     expect(() => {
       new sqs.Queue(stack, 'Queue', {
-        sourceQueuePermission: {
+        redriveAllowPolicy: {
           sourceQueues: [],
           redrivePermission: sqs.RedrivePermission.BY_QUEUE,
         },

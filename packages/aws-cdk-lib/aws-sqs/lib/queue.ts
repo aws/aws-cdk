@@ -180,11 +180,12 @@ export interface QueueProps {
   readonly enforceSSL?: boolean;
 
   /**
-   * Settings related to queues that designate this queue as their Dead Letter Queue
+   * The string that includes the parameters for the permissions for the dead-letter queue
+   * redrive permission and which source queues can specify dead-letter queues as a JSON object.
    *
-   * @default - Capable of setting all queues within the same region and account as source queues.
+   * @default - no dead-letter queue redrive permissions.
    */
-  readonly sourceQueuePermission?: SourceQueuePermission;
+  readonly redriveAllowPolicy?: RedriveAllowPolicy;
 }
 
 /**
@@ -205,7 +206,7 @@ export interface DeadLetterQueue {
 /**
  * Permission settings for the dead letter source queue
  */
-export interface SourceQueuePermission {
+export interface RedriveAllowPolicy {
   /**
    * Permission settings for source queues that can designate this queue as their dead-letter queue.
    *
@@ -384,7 +385,7 @@ export class Queue extends QueueBase {
 
     validateProps(props);
 
-    if (props.sourceQueuePermission) {
+    if (props.redriveAllowPolicy) {
       const { redrivePermission,  sourceQueues } = props.redriveAllowPolicy;
       if (redrivePermission === RedrivePermission.BY_QUEUE) {
         if (!sourceQueues || sourceQueues.length === 0) {
@@ -405,10 +406,10 @@ export class Queue extends QueueBase {
       }
       : undefined;
 
-    const redriveAllowPolicy = props.sourceQueuePermission ? {
-      redrivePermission: props.sourceQueuePermission.redrivePermission
-        ?? props.sourceQueuePermission.sourceQueues ? RedrivePermission.BY_QUEUE : RedrivePermission.ALLOW_ALL,
-      sourceQueueArns: props.sourceQueuePermission.sourceQueues?.map(q => q.queueArn),
+    const redriveAllowPolicy = props.redriveAllowPolicy ? {
+      redrivePermission: props.redriveAllowPolicy.redrivePermission
+        ?? props.redriveAllowPolicy.sourceQueues ? RedrivePermission.BY_QUEUE : RedrivePermission.ALLOW_ALL,
+      sourceQueueArns: props.redriveAllowPolicy.sourceQueues?.map(q => q.queueArn),
     } : undefined;
 
     const { encryptionMasterKey, encryptionProps, encryptionType } = _determineEncryptionProps.call(this);
