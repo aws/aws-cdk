@@ -5,6 +5,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { DatabaseCluster, EngineVersion, InstanceType, LogType } from '../lib';
 import { ClusterParameterGroup, ParameterGroupFamily } from '../lib/parameter-group';
+import { NEPTUNE_ALPHA_USE_LOG_TYPE_IN_LOG_RETENTION_ID } from 'aws-cdk-lib/cx-api';
 
 /*
  * Test creating a cluster without specifying engine version.
@@ -15,8 +16,8 @@ import { ClusterParameterGroup, ParameterGroupFamily } from '../lib/parameter-gr
  */
 
 const app = new cdk.App();
-
 const stack = new cdk.Stack(app, 'aws-cdk-neptune-integ');
+stack.node.setContext(NEPTUNE_ALPHA_USE_LOG_TYPE_IN_LOG_RETENTION_ID, true);
 
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
