@@ -338,11 +338,11 @@ describe('nested stacks', () => {
     */
   });
 
-  test('foo', async () => {
+  test('diff can diff deeply nested stacks', async () => {
     // GIVEN
     const oldRootTemplate = {
       Resources: {
-        NestedStack: {
+        ChildStack: {
           Type: 'AWS::CloudFormation::Stack',
           Properties: {
             TemplateURL: 'https://www.amazon.com',
@@ -352,11 +352,11 @@ describe('nested stacks', () => {
     };
 
     const newRootTemplate = JSON.parse(JSON.stringify(oldRootTemplate));
-    newRootTemplate.Resources.NestedStack.Properties.TemplateURL = 'https://www.amazoff.com';
+    newRootTemplate.Resources.ChildStack.Properties.TemplateURL = 'https://www.amazoff.com';
 
-    const oldNestedTemplate = {
+    const oldChildTemplate = {
       Resources: {
-        GrandNestedStack: {
+        GrandChildStack: {
           Type: 'AWS::CloudFormation::Stack',
           Properties: {
             TemplateURL: 'https://www.amazin.com',
@@ -364,10 +364,24 @@ describe('nested stacks', () => {
         },
       },
     };
-    const newNestedTemplate = JSON.parse(JSON.stringify(oldNestedTemplate));
-    newNestedTemplate.Resources.GrandNestedStack.Properties.TemplateURL = 'https://www.amazoing.com';
+    const newChildTemplate = JSON.parse(JSON.stringify(oldChildTemplate));
+    newChildTemplate.Resources.GrandChildStack.Properties.TemplateURL = 'https://www.amazoing.com';
 
-    const oldGrandNestedTemplate = {
+    const oldGrandChildTemplate = {
+      Resources: {
+        Grand2ChildStack: {
+          Type: 'AWS::CloudFormation::Stack',
+          Properties: {
+            TemplateURL: 'https://www.amazop.com',
+          },
+        },
+      },
+    };
+
+    const newGrandChildTemplate = JSON.parse(JSON.stringify(oldGrandChildTemplate));
+    newGrandChildTemplate.Resources.Grand2ChildStack.Properties.TemplateURL = 'https://www.amazoop.com';
+
+    const oldGrand2ChildTemplate = {
       Resources: {
         ReInvent: {
           Type: 'AWS::ReInvent::Convention',
@@ -378,8 +392,8 @@ describe('nested stacks', () => {
       },
     };
 
-    const newGrandNestedTemplate = JSON.parse(JSON.stringify(oldGrandNestedTemplate));
-    newGrandNestedTemplate.Resources.ReInvent.Properties.AttendeeCount = 5;
+    const newGrand2ChildTemplate = JSON.parse(JSON.stringify(oldGrand2ChildTemplate));
+    newGrand2ChildTemplate.Resources.ReInvent.Properties.AttendeeCount = 5;
 
     // WHEN
     const exitCode = await diffStacks({
@@ -388,14 +402,14 @@ describe('nested stacks', () => {
       newTemplate: newRootTemplate,
       nestedStacks: {
         NestedStack: {
-          oldTemplate: oldNestedTemplate,
-          newTemplate: newNestedTemplate,
+          oldTemplate: oldChildTemplate,
+          newTemplate: newChildTemplate,
           stackName: 'NestedStack',
           nestedStacks: {
             GrandNestedStack: {
               stackName: 'GrandNestedStack',
               oldTemplate: oldGrandNestedTemplate,
-              newTemplate: newGrandNestedTemplate,
+              newTemplate: newGrandChildTemplate,
               nestedStacks: {},
             },
           },
@@ -517,34 +531,34 @@ describe('nested stacks', () => {
       .replace(/[ \t]+$/mg, '');
     expect(plainTextOutput.trim()).toEqual(`Stack Parent
 Resources
-[~] AWS::CloudFormation::Stack AdditionChild 
+[~] AWS::CloudFormation::Stack AdditionChild
  └─ [~] TemplateURL
      ├─ [-] old-addition-child
      └─ [+] new-addition-child
-[~] AWS::CloudFormation::Stack DeletionChild 
+[~] AWS::CloudFormation::Stack DeletionChild
  └─ [~] TemplateURL
      ├─ [-] old-deletion-child
      └─ [+] new-deletion-child
-[~] AWS::CloudFormation::Stack ChangedChild 
+[~] AWS::CloudFormation::Stack ChangedChild
  └─ [~] TemplateURL
      ├─ [-] old-changed-child
      └─ [+] new-changed-child
 
 Stack AdditionChild
 Resources
-[~] AWS::SomeService::SomeType SomeResource 
+[~] AWS::SomeService::SomeType SomeResource
  └─ [+] newProp
      └─ new-value
 
 Stack DeletionChild
 Resources
-[~] AWS::SomeService::SomeType SomeResource 
+[~] AWS::SomeService::SomeType SomeResource
  └─ [-] PropToBeRemoved
      └─ value-to-be-removed
 
 Stack ChangedChild
 Resources
-[~] AWS::SomeService::SomeType SomeResource 
+[~] AWS::SomeService::SomeType SomeResource
  └─ [~] PropToBeChanged
      ├─ [-] old-value
      └─ [+] new-value
