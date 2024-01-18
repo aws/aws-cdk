@@ -207,9 +207,9 @@ export interface DeadLetterQueue {
  */
 export interface SourceQueuePermission {
   /**
-   * Permission settings for source queues that can designate this queue as their dead letter queue
+   * Permission settings for source queues that can designate this queue as their dead-letter queue.
    *
-   * @default - `RedrivePermission.BY_QUEUE` if `sourceQueues` is specified; otherwise, `RedrivePermission.ALLOW_ALL`.
+   * @default - `RedrivePermission.BY_QUEUE` if `sourceQueues` is specified,`RedrivePermission.ALLOW_ALL` otherwise.
    */
   readonly redrivePermission?: RedrivePermission;
 
