@@ -386,7 +386,7 @@ export class Queue extends QueueBase {
     validateProps(props);
 
     if (props.redriveAllowPolicy) {
-      const { redrivePermission,  sourceQueues } = props.redriveAllowPolicy;
+      const { redrivePermission, sourceQueues } = props.redriveAllowPolicy;
       if (redrivePermission === RedrivePermission.BY_QUEUE) {
         if (!sourceQueues || sourceQueues.length === 0) {
           throw new Error('At least one source queue must be specified when RedrivePermission is set to \'byQueue\'');
