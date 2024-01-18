@@ -1188,7 +1188,7 @@ describe('record set', () => {
     })).toThrow('Only one of region, weight, or geoLocation can be defined');
   });
 
-  test('throw error for definition of setIdentifier without weight, geoLocation and region', () => {
+  test('throw error for the definition of setIdentifier without weight, geoLocation and region', () => {
     // GIVEN
     const stack = new Stack();
 
