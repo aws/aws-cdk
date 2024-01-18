@@ -7,11 +7,8 @@ import { Runtime, InlineCode, Function } from 'aws-cdk-lib/aws-lambda';
 
 const app = new App();
 
-interface StackUnderTestProps extends StackProps {
-}
-
 class StackUnderTest extends Stack {
-  constructor(scope: Construct, id: string, props: StackUnderTestProps) {
+  constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 
     new Function(this, 'MyLambda', {
