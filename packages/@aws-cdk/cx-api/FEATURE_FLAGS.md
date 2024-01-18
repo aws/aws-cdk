@@ -42,7 +42,7 @@ Flags come in three types:
 | [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | (fix) |
 | [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.60.0 | (fix) |
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | (default) |
-| [@aws-cdk/aws-route53-patters:useCertificate](#aws-cdkaws-route53-pattersusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | 2.61.0 | (default) |
+| [@aws-cdk/aws-route53-patterns:useCertificate](#aws-cdkaws-route53-patternsusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | 2.61.0 | (default) |
 | [@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup](#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup) | Remove CloudWatch alarms from deployment group | 2.65.0 | (fix) |
 | [@aws-cdk/aws-rds:databaseProxyUniqueResourceName](#aws-cdkaws-rdsdatabaseproxyuniqueresourcename) | Use unique resource name for Database Proxy | 2.65.0 | (fix) |
 | [@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId](#aws-cdkaws-apigatewayauthorizerchangedeploymentlogicalid) | Include authorizer configuration in the calculation of the API deployment logical ID. | 2.66.0 | (fix) |
@@ -95,7 +95,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
     "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
-    "@aws-cdk/aws-route53-patters:useCertificate": true,
+    "@aws-cdk/aws-route53-patterns:useCertificate": true,
     "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
     "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true,
     "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
@@ -800,7 +800,7 @@ flag on a resource-by-resource basis to enable it if necessary.
 **Compatibility with old behavior:** Set installLatestAwsSdk: true on all resources that need it.
 
 
-### @aws-cdk/aws-route53-patters:useCertificate
+### @aws-cdk/aws-route53-patterns:useCertificate
 
 *Use the official `Certificate` resource instead of `DnsValidatedCertificate`* (default)
 
