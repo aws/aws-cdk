@@ -9,6 +9,7 @@
   - [Request Parameters](#request-parameters)
 - [WebSocket APIs](#websocket-apis)
   - [Lambda WebSocket Integration](#lambda-websocket-integration)
+  - [AWS WebSocket Integration](#aws-websocket-integration)
 
 ## HTTP APIs
 
@@ -208,5 +209,46 @@ new apigwv2.WebSocketStage(this, 'mystage', {
 declare const messageHandler: lambda.Function;
 webSocketApi.addRoute('sendMessage', {
   integration: new WebSocketLambdaIntegration('SendMessageIntegration', messageHandler),
+});
+```
+
+### AWS WebSocket Integration
+
+AWS type integrations enable integrating with any supported AWS service. This is only supported for WebSocket APIs. When a client 
+connects/disconnects or sends a message specific to a route, the API Gateway service forwards the request to the specified AWS service.
+
+The following code configures a `$connect` route with a AWS integration that integrates with a dynamodb table. On websocket api connect,
+it will write new entry to the dynamodb table. 
+
+```ts
+import { WebSocketAwsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
+new apigwv2.WebSocketStage(this, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
+});
+
+declare const apiRole: iam.Role;
+declare const table: dynamodb.Table;
+webSocketApi.addRoute('$connect', {
+  integration: new WebSocketAwsIntegration('DynamodbPutItem', {
+    integrationUri: `arn:aws:apigateway:${this.region}:dynamodb:action/PutItem`,
+    integrationMethod: apigwv2.HttpMethod.POST,
+    credentialsRole: apiRole,
+    requestTemplates: {
+      'application/json': JSON.stringify({
+        TableName: table.tableName,
+        Item: {
+          id: {
+            S: '$context.requestId',
+          },
+        },
+      }),
+    },
+  }),
 });
 ```

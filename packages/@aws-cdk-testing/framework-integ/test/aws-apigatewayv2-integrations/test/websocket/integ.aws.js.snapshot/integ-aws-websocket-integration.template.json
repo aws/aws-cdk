@@ -1,0 +1,202 @@
+{
+ "Resources": {
+  "MyTable794EDED1": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "id",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "id",
+      "KeyType": "HASH"
+     }
+    ],
+    "TableName": "MyTable"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ApiGatewayRoleD2518903": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonDynamoDBFullAccess"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "mywsapi32E6CE11": {
+   "Type": "AWS::ApiGatewayV2::Api",
+   "Properties": {
+    "Name": "mywsapi",
+    "ProtocolType": "WEBSOCKET",
+    "RouteSelectionExpression": "$request.body.action"
+   }
+  },
+  "mywsapidefaultRouteDefaultIntegrationFFCB3BA9": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "IntegrationType": "MOCK",
+    "IntegrationUri": ""
+   }
+  },
+  "mywsapidefaultRouteE9382DF8": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "$default",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "mywsapidefaultRouteDefaultIntegrationFFCB3BA9"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "mywsapiconnectRouteDynamodbPutItem9E189A39": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "CredentialsArn": {
+     "Fn::GetAtt": [
+      "ApiGatewayRoleD2518903",
+      "Arn"
+     ]
+    },
+    "IntegrationMethod": "POST",
+    "IntegrationType": "AWS",
+    "IntegrationUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:apigateway:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":dynamodb:action/PutItem"
+      ]
+     ]
+    },
+    "RequestTemplates": {
+     "application/json": {
+      "Fn::Join": [
+       "",
+       [
+        "{\"TableName\":\"",
+        {
+         "Ref": "MyTable794EDED1"
+        },
+        "\",\"Item\":{\"id\":{\"S\":\"$context.requestId\"}}}"
+       ]
+      ]
+     }
+    }
+   }
+  },
+  "mywsapiconnectRoute45A0ED6A": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "$connect",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "mywsapiconnectRouteDynamodbPutItem9E189A39"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "DevStage520A913F": {
+   "Type": "AWS::ApiGatewayV2::Stage",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "AutoDeploy": true,
+    "StageName": "dev"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
