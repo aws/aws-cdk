@@ -356,6 +356,9 @@ This resource policy is necessary for logging, but since only a maximum of 10 re
 the maximum number of resource policies may be a problem when enabling logging for several domains.
 By setting the `suppressLogsResourcePolicy` option to true, you can suppress the creation of a CloudWatch Logs resource policy.
 
+If you set the `suppressLogsResourcePolicy` option to true, you must create a resource policy before deployment.
+Also, to avoid reaching this limit, consider reusing a broader policy that includes multiple log groups.
+
 ```ts
 const domain = new Domain(this, 'Domain', {
   version: EngineVersion.OPENSEARCH_1_0,

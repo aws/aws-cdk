@@ -677,6 +677,8 @@ export interface DomainProps {
    * If you enable logging for several domains, it may hit the quota and cause an error.
    * By setting this property to true, creating a resource policy is suppressed, allowing you to avoid this problem.
    *
+   * If you set this option to true, you must create a resource policy before deployment.
+   *
    * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createdomain-configure-slow-logs.html
    *
    * @default - false
