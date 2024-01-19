@@ -7,7 +7,6 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib';
 
 import { ClusterParameterGroup, DatabaseCluster, EngineVersion, InstanceType, LogType } from '../lib';
-import { NEPTUNE_ALPHA_USE_LOG_TYPE_IN_LOG_RETENTION_ID } from 'aws-cdk-lib/cx-api';
 
 describe('DatabaseCluster', () => {
 
@@ -835,7 +834,6 @@ describe('DatabaseCluster', () => {
   test('cloudwatchLogsExports log retention is enabled when configured for multiple logs exports', () => {
     // GIVEN
     const stack = testStack();
-    stack.node.setContext(NEPTUNE_ALPHA_USE_LOG_TYPE_IN_LOG_RETENTION_ID, true);
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN

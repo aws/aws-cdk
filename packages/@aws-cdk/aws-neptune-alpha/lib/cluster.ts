@@ -3,14 +3,13 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import { Aws, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Token } from 'aws-cdk-lib/core';
+import { Aws, Duration, IResource, Lazy, RemovalPolicy, Resource, Token } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Endpoint } from './endpoint';
 import { InstanceType } from './instance';
 import { CfnDBCluster, CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import { IClusterParameterGroup, IParameterGroup } from './parameter-group';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
-import { NEPTUNE_ALPHA_USE_LOG_TYPE_IN_LOG_RETENTION_ID } from 'aws-cdk-lib/cx-api';
 
 /**
  * Possible Instances Types to use in Neptune cluster
@@ -634,14 +633,11 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     const retention = props.cloudwatchLogsRetention;
     if (retention) {
       props.cloudwatchLogsExports?.forEach(logType => {
-        new logs.LogRetention(
-          this,
-          `${FeatureFlags.of(this).isEnabled(NEPTUNE_ALPHA_USE_LOG_TYPE_IN_LOG_RETENTION_ID) ? logType : logType.value}LogRetention`,
-          {
-            logGroupName: `/aws/neptune/${this.clusterIdentifier}/${logType.value}`,
-            role: props.cloudwatchLogsRetentionRole,
-            retention,
-          });
+        new logs.LogRetention(this, `${logType.value}LogRetention`, {
+          logGroupName: `/aws/neptune/${this.clusterIdentifier}/${logType.value}`,
+          role: props.cloudwatchLogsRetentionRole,
+          retention,
+        });
       });
     }
 
