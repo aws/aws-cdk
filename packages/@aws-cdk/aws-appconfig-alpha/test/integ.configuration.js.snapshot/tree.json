@@ -434,9 +434,9 @@
                   "version": "0.0.0"
                 }
               },
-              "DeploymentE4742": {
-                "id": "DeploymentE4742",
-                "path": "aws-appconfig-configuration/MyHostedConfig/DeploymentE4742",
+              "Deploymentawsappconfigconfiguration-MyAppConfig-HostedEnv-D1EED3BE": {
+                "id": "Deploymentawsappconfigconfiguration-MyAppConfig-HostedEnv-D1EED3BE",
+                "path": "aws-appconfig-configuration/MyHostedConfig/Deploymentawsappconfigconfiguration-MyAppConfig-HostedEnv-D1EED3BE",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
                   "aws:cdk:cloudformation:props": {
@@ -511,9 +511,9 @@
                   "version": "0.0.0"
                 }
               },
-              "DeploymentCD82E": {
-                "id": "DeploymentCD82E",
-                "path": "aws-appconfig-configuration/MyHostedConfigFromJson/DeploymentCD82E",
+              "Deploymentawsappconfigconfiguration-MyAppConfig-HostedEnvFromJson-140D2DDD": {
+                "id": "Deploymentawsappconfigconfiguration-MyAppConfig-HostedEnvFromJson-140D2DDD",
+                "path": "aws-appconfig-configuration/MyHostedConfigFromJson/Deploymentawsappconfigconfiguration-MyAppConfig-HostedEnvFromJson-140D2DDD",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
                   "aws:cdk:cloudformation:props": {
@@ -539,9 +539,9 @@
                   "version": "0.0.0"
                 }
               },
-              "DeploymentEFECD": {
-                "id": "DeploymentEFECD",
-                "path": "aws-appconfig-configuration/MyHostedConfigFromJson/DeploymentEFECD",
+              "Deploymentawsappconfigconfiguration-MyAppConfig-EnvDeployLater-91038922": {
+                "id": "Deploymentawsappconfigconfiguration-MyAppConfig-EnvDeployLater-91038922",
+                "path": "aws-appconfig-configuration/MyHostedConfigFromJson/Deploymentawsappconfigconfiguration-MyAppConfig-EnvDeployLater-91038922",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
                   "aws:cdk:cloudformation:props": {
@@ -616,9 +616,9 @@
                   "version": "0.0.0"
                 }
               },
-              "DeploymentFE962": {
-                "id": "DeploymentFE962",
-                "path": "aws-appconfig-configuration/MyHostedConfigFromYaml/DeploymentFE962",
+              "Deploymentawsappconfigconfiguration-MyAppConfig-HostedEnvFromYaml-BB2C802A": {
+                "id": "Deploymentawsappconfigconfiguration-MyAppConfig-HostedEnvFromYaml-BB2C802A",
+                "path": "aws-appconfig-configuration/MyHostedConfigFromYaml/Deploymentawsappconfigconfiguration-MyAppConfig-HostedEnvFromYaml-BB2C802A",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
                   "aws:cdk:cloudformation:props": {
@@ -929,9 +929,9 @@
                   "version": "0.0.0"
                 }
               },
-              "Deployment0C84B": {
-                "id": "Deployment0C84B",
-                "path": "aws-appconfig-configuration/MyConfigFromParameter/Deployment0C84B",
+              "Deploymentawsappconfigconfiguration-MyAppConfig-ParameterEnv-803E803A": {
+                "id": "Deploymentawsappconfigconfiguration-MyAppConfig-ParameterEnv-803E803A",
+                "path": "aws-appconfig-configuration/MyConfigFromParameter/Deploymentawsappconfigconfiguration-MyAppConfig-ParameterEnv-803E803A",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
                   "aws:cdk:cloudformation:props": {
@@ -1110,9 +1110,9 @@
                   "version": "0.0.0"
                 }
               },
-              "Deployment1520E": {
-                "id": "Deployment1520E",
-                "path": "aws-appconfig-configuration/MyConfigFromDocument/Deployment1520E",
+              "Deploymentawsappconfigconfiguration-MyAppConfig-DocumentEnv-5B0DCEC5": {
+                "id": "Deploymentawsappconfigconfiguration-MyAppConfig-DocumentEnv-5B0DCEC5",
+                "path": "aws-appconfig-configuration/MyConfigFromDocument/Deploymentawsappconfigconfiguration-MyAppConfig-DocumentEnv-5B0DCEC5",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
                   "aws:cdk:cloudformation:props": {

@@ -15,7 +15,6 @@ import { IApplication } from './application';
 import { DeploymentStrategy, IDeploymentStrategy, RolloutStrategy } from './deployment-strategy';
 import { IEnvironment } from './environment';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
-import { getHash } from './private/hash';
 
 /**
  * Options for the Configuration construct
@@ -203,8 +202,6 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
     });
   }
 
-  protected abstract getDeploymentHash(environment: IEnvironment): string;
-
   /**
    * Adds an extension defined by the action point and event destination
    * and also creates an extension association to the configuration profile.
@@ -309,8 +306,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    * @param environment The environment to deploy the configuration to
    */
   public deploy(environment: IEnvironment) {
-    const logicalId = `Deployment${this.getDeploymentHash(environment)}`;
-    new CfnDeployment(this, logicalId, {
+    new CfnDeployment(this, `Deployment${environment.name!}`, {
       applicationId: this.application.applicationId,
       configurationProfileId: this.configurationProfileId,
       deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
@@ -482,16 +478,6 @@ export class HostedConfiguration extends ConfigurationBase {
     this.addExistingEnvironmentsToApplication();
     this.deployConfigToEnvironments();
   }
-
-  protected getDeploymentHash(environment: IEnvironment): string {
-    const combinedString = `
-      ${this.application!.name!}
-      ${this.name!}
-      ${environment.name!}
-      ${this.content}
-    `;
-    return getHash(combinedString);
-  }
 }
 
 /**
@@ -621,17 +607,6 @@ export class SourcedConfiguration extends ConfigurationBase {
 
     this.addExistingEnvironmentsToApplication();
     this.deployConfigToEnvironments();
-  }
-
-  protected getDeploymentHash(environment: IEnvironment): string {
-    const combinedString = `
-      ${this.application!.name!}
-      ${this.name!}
-      ${environment.name!}
-      ${this.versionNumber}
-      ${this.location.type}
-    `;
-    return getHash(combinedString);
   }
 
   private getPolicyForRole(): iam.PolicyDocument {
