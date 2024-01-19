@@ -525,7 +525,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DatabaseobjectObjectLogRetentionA247AF0C": {
+  "DatabaseauditLogRetention8A29F5CC": {
    "Type": "Custom::LogRetention",
    "Properties": {
     "ServiceToken": {
