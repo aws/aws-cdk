@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "test-efs-one-zone-integ-test/DefaultTest": {
+      "stacks": [
+        "test-efs-one-zone-integ"
+      ],
+      "assertionStack": "test-efs-one-zone-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "testefsonezoneintegtestDefaultTestDeployAssert9CBE8B7F"
+    }
+  }
+}

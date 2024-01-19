@@ -252,6 +252,14 @@ export interface ContainerDefinitionOptions {
   readonly hostname?: string;
 
   /**
+   * When this parameter is true, you can deploy containerized applications that require stdin or a tty to be allocated.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinition.html#cfn-ecs-taskdefinition-containerdefinition-interactive
+   * @default - false
+   */
+  readonly interactive?: boolean;
+
+  /**
    * The amount (in MiB) of memory to present to the container.
    *
    * If your container attempts to exceed the allocated memory, the container
@@ -797,6 +805,7 @@ export class ContainerDefinition extends Construct {
       essential: this.essential,
       hostname: this.props.hostname,
       image: this.imageConfig.imageName,
+      interactive: this.props.interactive,
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
       mountPoints: cdk.Lazy.any({ produce: () => this.mountPoints.map(renderMountPoint) }, { omitEmptyArray: true }),
@@ -1355,9 +1364,9 @@ export interface ScratchSpace {
 }
 
 /**
- * The details of data volume mount points for a container.
+ * The base details of where a volume will be mounted within a container
  */
-export interface MountPoint {
+export interface BaseMountPoint {
   /**
    * The path on the container to mount the host volume at.
    */
@@ -1369,6 +1378,12 @@ export interface MountPoint {
    * If this value is false, then the container can write to the volume.
    */
   readonly readOnly: boolean,
+}
+
+/**
+ * The details of data volume mount points for a container.
+ */
+export interface MountPoint extends BaseMountPoint {
   /**
    * The name of the volume to mount.
    *
