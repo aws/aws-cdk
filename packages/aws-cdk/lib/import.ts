@@ -393,6 +393,17 @@ export class ResourceImporter {
 }
 
 /**
+ * Removes CDKMetadata and Outputs in the template so that only resources for importing are left.
+ * @returns template with import resources only
+ */
+export function removeNonImportResources(stack: cxapi.CloudFormationStackArtifact) {
+  const template = stack.template;
+  delete template.Resources.CDKMetadata;
+  delete template.Outputs;
+  return template;
+}
+
+/**
  * Information about a resource in the template that is importable
  */
 export interface ImportableResource {
