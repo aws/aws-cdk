@@ -6,6 +6,7 @@ import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, Duration, Stack } from '../../core';
+import { hasResource } from '../../assertions/lib/private/resources';
 import {
   CfnDistribution,
   Distribution,
@@ -1240,4 +1241,43 @@ test('render distribution behavior with realtime log config - multiple behaviors
         }],
       },
     }));
+});
+
+test('with publish additional metrics', () => {
+  const origin = defaultOrigin();
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: { origin },
+    publishAdditionalMetrics: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
+        TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+        ViewerProtocolPolicy: 'allow-all',
+      },
+      Enabled: true,
+      HttpVersion: 'http2',
+      IPV6Enabled: true,
+      Origins: [{
+        DomainName: 'www.example.com',
+        Id: 'StackMyDistOrigin1D6D5E535',
+        CustomOriginConfig: {
+          OriginProtocolPolicy: 'https-only',
+        },
+      }],
+    },
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::MonitoringSubscription', {
+    DistributionId: {
+      Ref: 'MyDistDB88FD9A',
+    },
+    MonitoringSubscription: {
+      RealtimeMetricsSubscriptionConfig: {
+        RealtimeMetricsSubscriptionStatus: 'Enabled',
+      },
+    },
+  });
 });

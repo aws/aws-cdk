@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
-import { CfnDistribution } from './cloudfront.generated';
+import { CfnDistribution, CfnMonitoringSubscription } from './cloudfront.generated';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
@@ -255,6 +255,15 @@ export interface DistributionProps {
     * @default SSLMethod.SNI
     */
   readonly sslSupportMethod?: SSLMethod;
+
+  /**
+   * Whether to enable additional CloudWatch metrics.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/viewing-cloudfront-metrics.html
+   *
+   * @default false
+   */
+  readonly publishAdditionalMetrics?: boolean;
 }
 
 /**
@@ -355,6 +364,17 @@ export class Distribution extends Resource implements IDistribution {
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
+
+    if (props.publishAdditionalMetrics) {
+      new CfnMonitoringSubscription(this, 'MonitoringSubscription', {
+        distributionId: this.distributionId,
+        monitoringSubscription: {
+          realtimeMetricsSubscriptionConfig: {
+            realtimeMetricsSubscriptionStatus: 'Enabled',
+          },
+        },
+      });
+    }
   }
 
   /**
