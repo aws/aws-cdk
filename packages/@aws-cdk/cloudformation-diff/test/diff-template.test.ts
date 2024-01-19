@@ -1120,14 +1120,7 @@ describe('changeset', () => {
 
   test('imports are respected', async () => {
     // GIVEN
-    const currentTemplate = {
-      Resources: {
-        BucketResource: {
-          Type: 'AWS::S3::Bucket',
-          BucketName: 'Foo',
-        },
-      },
-    };
+    const currentTemplate = {};
 
     // WHEN
     const newTemplate = {
