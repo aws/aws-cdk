@@ -178,7 +178,9 @@ export class CdkToolkit {
           stream,
         }) : undefined;
 
-        //stream.write(JSON.stringify(changeSet ?? {}, undefined, 2));
+        if (resourcesToImport) {
+          stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
+        }
 
         const stackCount =
         options.securityOnly

@@ -12,6 +12,84 @@ let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<Deployments>;
 let toolkit: CdkToolkit;
 
+jest.mock('../lib/api/util/cloudformation', () => {
+  return {
+    createDiffChangeSet: jest.fn(() => {
+      throw new Error('wat');
+      return {
+        Changes: [{
+
+        }],
+      };
+    }),
+  };
+});
+
+describe('imports', () => {
+  beforeEach(() => {
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [{
+        stackName: 'A',
+        template: {
+          Resources: {
+            Queue: {
+              Type: 'AWS::SQS::Queue',
+              Properties: {
+                foo: 'bar',
+              },
+            },
+          },
+        },
+      }],
+    });
+
+    cloudFormation = instanceMockFrom(Deployments);
+
+    toolkit = new CdkToolkit({
+      cloudExecutable,
+      deployments: cloudFormation,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+    });
+
+    // Default implementations
+    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((_stackArtifact: CloudFormationStackArtifact) => {
+      return Promise.resolve({
+        deployedTemplate: {},
+        nestedStackCount: 0,
+      });
+    });
+    cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
+      noOp: true,
+      outputs: {},
+      stackArn: '',
+      stackArtifact: options.stack,
+    }));
+  });
+
+  test('cringeAF', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: process.stderr,
+      changeSet: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput).toContain(`Stack A
+Resources
+[] AWS::SQS::Queue Queue import
+`);
+
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 2');
+    expect(exitCode).toBe(0);
+  });
+});
+
 describe('non-nested stacks', () => {
   beforeEach(() => {
     cloudExecutable = new MockCloudExecutable({
