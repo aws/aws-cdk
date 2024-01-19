@@ -385,10 +385,7 @@ export class ResourceImporter {
    * @returns template with import resources only
    */
   private removeNonImportResources() {
-    const template = this.stack.template;
-    delete template.Resources.CDKMetadata;
-    delete template.Outputs;
-    return template;
+    return removeNonImportResources(this.stack);
   }
 }
 

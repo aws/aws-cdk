@@ -532,7 +532,7 @@ export class ResourceDifference implements IDifference<Resource> {
   public readonly isRemoval: boolean;
 
   /**
-   * Whether this resource was removed
+   * Whether this resource was imported
    */
   public isImport?: boolean;
 
