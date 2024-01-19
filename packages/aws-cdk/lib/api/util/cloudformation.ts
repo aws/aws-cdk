@@ -342,7 +342,7 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
 
     const executionRoleArn = preparedSdk.cloudFormationRoleArn;
     options.stream.write('Hold on while we create a read-only change set to get a diff with accurate replacement information (use --no-change-set to use a less accurate but faster template-only diff)\n');
-    
+
     return await createChangeSet({
       cfn,
       changeSetName: 'cdk-diff-change-set',
