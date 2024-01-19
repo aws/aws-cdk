@@ -19,8 +19,8 @@ class NatGatewayStack extends cdk.Stack {
     new ec2.CfnRoute(this, 'NewRoute', {
       routeTableId: vpc.publicSubnets[0].routeTable.routeTableId,
       destinationCidrBlock: '1.2.3.4/32',
-      natGatewayId: natGatewayProvider.configuredGateways.find(x => (x.az === vpc.publicSubnets[0].availabilityZone))!.gatewayId
-    })
+      natGatewayId: natGatewayProvider.configuredGateways.find(x => (x.az === vpc.publicSubnets[0].availabilityZone))!.gatewayId,
+    });
     /// !hide
 
     Array.isArray(vpc);
