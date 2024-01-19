@@ -3,7 +3,7 @@
 Unit tests are automatically run as part of the regular build. Integration tests
 aren't run automatically since they have nontrivial requirements to run.
 
-### Looking for the CDK CLI integration tests?
+#### Looking for the CDK CLI integration tests?
 
 The CDK CLI integration tests live in @aws-cdk-testing. See [here](../../packages/%40aws-cdk-testing/cli-integ/README.md) for more information on the tests and how to run them.
 
