@@ -12,16 +12,30 @@ let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<Deployments>;
 let toolkit: CdkToolkit;
 
-jest.mock('../lib/api/util/cloudformation', () => {
+const cfnMock = jest.mock('../lib/api/util/cloudformation', () => {
   return {
     createDiffChangeSet: jest.fn(() => {
       return {
-        Changes: [{
-          ResourceChange: {
-            Action: 'Import',
-            LogicalResourceId: 'Queue',
+        Changes: [
+          {
+            ResourceChange: {
+              Action: 'Import',
+              LogicalResourceId: 'Queue',
+            },
           },
-        }],
+          {
+            ResourceChange: {
+              Action: 'Import',
+              LogicalResourceId: 'Bucket',
+            },
+          },
+          {
+            ResourceChange: {
+              Action: 'Import',
+              LogicalResourceId: 'Queue2',
+            },
+          },
+        ],
       };
     }),
     waitForChangeSet: jest.fn(),
@@ -37,9 +51,12 @@ describe('imports', () => {
           Resources: {
             Queue: {
               Type: 'AWS::SQS::Queue',
-              Properties: {
-                foo: 'bar',
-              },
+            },
+            Queue2: {
+              Type: 'AWS::SQS::Queue',
+            },
+            Bucket: {
+              Type: 'AWS::SQS::Queue',
             },
           },
         },
@@ -70,7 +87,7 @@ describe('imports', () => {
     }));
   });
 
-  test('cringeAF', async () => {
+  test('imports', async () => {
     // GIVEN
     const buffer = new StringWritable();
 
@@ -417,6 +434,7 @@ Resources
 
   test('diff falls back to non-changeset diff for nested stacks', async () => {
     // GIVEN
+    cfnMock.restoreAllMocks();
     const changeSetSpy = jest.spyOn(cfn, 'waitForChangeSet');
     const buffer = new StringWritable();
 
