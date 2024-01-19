@@ -584,6 +584,22 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+### Additional CloudWatch metrics
+
+You can enable [additional CloudWatch metrics](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/viewing-cloudfront-metrics.html), which include the following metrics:
+
+- 4xx and 5xx error rates: View 4xx and 5xx error rates by the specific HTTP status code, as a percentage of total requests.
+- Origin latency: See the total time spent from when CloudFront receives a request to when it provides a response to the network (not the viewer), for responses that are served from the origin, not the CloudFront cache.
+- Cache hit rate: View cache hits as a percentage of total cacheable requests, excluding errors.
+
+```ts
+// Enable additional CloudWatch metrics for Distributions
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
+  publishAdditionalMetrics: true,
+});
+```
+
 ### HTTP Versions
 
 You can configure CloudFront to use a particular version of the HTTP protocol. By default,
