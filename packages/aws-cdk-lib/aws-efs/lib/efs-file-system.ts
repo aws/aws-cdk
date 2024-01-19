@@ -8,7 +8,8 @@ import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Ta
 import * as cxapi from '../../cx-api';
 
 /**
- * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access.
+ * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access
+ * or Archive storage.
  *
  * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
  */
@@ -42,7 +43,22 @@ export enum LifecyclePolicy {
   /**
    * After 90 days of not being accessed.
    */
-  AFTER_90_DAYS = 'AFTER_90_DAYS'
+  AFTER_90_DAYS = 'AFTER_90_DAYS',
+
+  /**
+   * After 180 days of not being accessed.
+   */
+  AFTER_180_DAYS = 'AFTER_180_DAYS',
+
+  /**
+   * After 270 days of not being accessed.
+   */
+  AFTER_270_DAYS = 'AFTER_270_DAYS',
+
+  /**
+   * After 365 days of not being accessed.
+   */
+  AFTER_365_DAYS = 'AFTER_365_DAYS',
 }
 
 /**
@@ -211,6 +227,14 @@ export interface FileSystemProps {
    * @default - None. EFS will not transition files from IA storage to primary storage.
    */
   readonly outOfInfrequentAccessPolicy?: OutOfInfrequentAccessPolicy;
+
+  /**
+   * The number of days after files were last accessed in primary storage (the Standard storage class) at which to move them to Archive storage.
+   * Metadata operations such as listing the contents of a directory don't count as file access events.
+   *
+   * @default - None. EFS will not transition files to Archive storage class.
+   */
+  readonly transitionToArchivePolicy?: LifecyclePolicy;
   /**
    * The performance mode that the file system will operate under.
    * An Amazon EFS file system's performance mode can't be changed after the file system has been created.
@@ -507,8 +531,8 @@ export class FileSystem extends FileSystemBase {
     const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
       cxapi.EFS_DEFAULT_ENCRYPTION_AT_REST) ? true : undefined);
 
-    // LifecyclePolicies is an array of lists containing a single policy
-    let lifecyclePolicies = [];
+    // LifecyclePolicies must be an array of objects, each containing a single policy
+    const lifecyclePolicies: CfnFileSystem.LifecyclePolicyProperty[] = [];
 
     if (props.lifecyclePolicy) {
       lifecyclePolicies.push({ transitionToIa: props.lifecyclePolicy });
@@ -516,6 +540,10 @@ export class FileSystem extends FileSystemBase {
 
     if (props.outOfInfrequentAccessPolicy) {
       lifecyclePolicies.push({ transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy });
+    }
+
+    if (props.transitionToArchivePolicy) {
+      lifecyclePolicies.push({ transitionToArchive: props.transitionToArchivePolicy });
     }
 
     const oneZoneAzName = props.vpc.availabilityZones[0];
