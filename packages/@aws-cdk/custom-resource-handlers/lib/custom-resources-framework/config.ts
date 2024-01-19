@@ -226,7 +226,7 @@ export const config: HandlerFrameworkConfig = {
   'aws-redshift-alpha': {
     'cluster-reboot-provider': [
       {
-        type: ComponentType.SINGLETON_FUNCTION,
+        type: ComponentType.NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-redshift-alpha', 'cluster-parameter-change-reboot-handler', 'index.ts'),
       },
     ],
