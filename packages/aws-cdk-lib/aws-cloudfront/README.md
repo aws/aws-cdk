@@ -586,7 +586,7 @@ new cloudfront.Distribution(this, 'myDist', {
 
 ### Additional CloudFront distribution metrics
 
-You can enable [additional CloudFront distribution metrics](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/viewing-cloudfront-metrics.html), which include the following metrics:
+You can enable [additional CloudFront distribution metrics](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/viewing-cloudfront-metrics.html#monitoring-console.distributions-additional), which include the following metrics:
 
 - 4xx and 5xx error rates: View 4xx and 5xx error rates by the specific HTTP status code, as a percentage of total requests.
 - Origin latency: See the total time spent from when CloudFront receives a request to when it provides a response to the network (not the viewer), for responses that are served from the origin, not the CloudFront cache.
