@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import { ProfilingGroup } from 'aws-cdk-lib/aws-codeguruprofiler';
@@ -18,7 +17,7 @@ class StackUnderTest extends Stack {
       profiling: true,
     });
 
-    const importedProfilingGroup = ProfilingGroup.fromProfilingGroupArn(this, 'ImportedProfilingGroup', 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup');
+    const importedProfilingGroup = new ProfilingGroup(this, 'MyImportedProfilingGroup');
 
     new Function(this, 'MyOtherLambda', {
       code: new InlineCode('foo'),
