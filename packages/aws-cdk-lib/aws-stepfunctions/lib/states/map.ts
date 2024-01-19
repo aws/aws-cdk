@@ -63,7 +63,7 @@ export interface MapProps {
   readonly itemsPath?: string;
 
   /**
-   * The JSON that you want to override your default iteration input
+   * The JSON that you want to override your default iteration input (mutually exclusive  with `itemSelector`).
    *
    * @deprecated Step Functions has deprecated the `parameters` field in favor of
    * the new `itemSelector` field
@@ -76,10 +76,7 @@ export interface MapProps {
   readonly parameters?: { [key: string]: any };
 
   /**
-   * The JSON that you want to override your default iteration input
-   *
-   * Step Functions has deprecated the `parameters` field in favor of
-   * the new `itemSelector` field.
+   * The JSON that you want to override your default iteration input (mutually exclusive  with `parameters`).
    *
    * @see
    * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-itemselector.html
@@ -184,7 +181,7 @@ export class Map extends State implements INextable {
   /**
    * Define iterator state machine in Map.
    *
-   * A Map must either have a non-empty iterator or a non-empty item processor, not both.
+   * A Map must either have a non-empty iterator or a non-empty item processor (mutually exclusive  with `itemProcessor`).
    *
    * @deprecated - use `itemProcessor` instead.
    */
@@ -197,7 +194,7 @@ export class Map extends State implements INextable {
   /**
    * Define item processor in Map.
    *
-   * A Map must either have a non-empty iterator or a non-empty item processor, not both.
+   * A Map must either have a non-empty iterator or a non-empty item processor (mutually exclusive  with `iterator`).
    */
   public itemProcessor(processor: IChainable, config: ProcessorConfig = {}): Map {
     const name = `Map ${this.stateId} Item Processor`;
