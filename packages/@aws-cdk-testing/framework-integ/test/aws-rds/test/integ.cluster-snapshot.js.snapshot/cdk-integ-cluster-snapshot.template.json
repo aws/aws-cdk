@@ -858,7 +858,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -995,7 +995,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -1129,7 +1129,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -1230,22 +1230,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": [
-        "logs:CreateLogDelivery",
-        "logs:CreateLogStream",
-        "logs:DeleteLogDelivery",
-        "logs:DescribeLogGroups",
-        "logs:DescribeResourcePolicies",
-        "logs:GetLogDelivery",
-        "logs:ListLogDeliveries",
-        "logs:PutLogEvents",
-        "logs:PutResourcePolicy",
-        "logs:UpdateLogDelivery"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -1257,14 +1241,6 @@
      }
     ]
    }
-  },
-  "SnapshoterSnapshotProviderwaiterstatemachineLogGroup5A64CAF9": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
   },
   "SnapshoterSnapshotProviderwaiterstatemachineE1F05D1F": {
    "Type": "AWS::StepFunctions::StateMachine",
@@ -1290,22 +1266,6 @@
        "\"}}}"
       ]
      ]
-    },
-    "LoggingConfiguration": {
-     "Destinations": [
-      {
-       "CloudWatchLogsLogGroup": {
-        "LogGroupArn": {
-         "Fn::GetAtt": [
-          "SnapshoterSnapshotProviderwaiterstatemachineLogGroup5A64CAF9",
-          "Arn"
-         ]
-        }
-       }
-      }
-     ],
-     "IncludeExecutionData": true,
-     "Level": "ALL"
     },
     "RoleArn": {
      "Fn::GetAtt": [
@@ -1659,7 +1619,7 @@
    },
    "aws-cn": {
     "applicationId": "arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/SecretsManagerRDSMySQLRotationSingleUser",
-    "semanticVersion": "1.1.37"
+    "semanticVersion": "1.1.212"
    },
    "aws-us-gov": {
     "applicationId": "arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/SecretsManagerRDSMySQLRotationSingleUser",
