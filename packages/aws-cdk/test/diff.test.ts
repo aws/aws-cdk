@@ -15,13 +15,16 @@ let toolkit: CdkToolkit;
 jest.mock('../lib/api/util/cloudformation', () => {
   return {
     createDiffChangeSet: jest.fn(() => {
-      throw new Error('wat');
       return {
         Changes: [{
-
+          ResourceChange: {
+            Action: 'Import',
+            LogicalResourceId: 'Queue',
+          },
         }],
       };
     }),
+    waitForChangeSet: jest.fn(),
   };
 });
 
@@ -74,7 +77,7 @@ describe('imports', () => {
     // WHEN
     const exitCode = await toolkit.diff({
       stackNames: ['A'],
-      stream: process.stderr,
+      stream: buffer,
       changeSet: true,
     });
 
@@ -82,10 +85,10 @@ describe('imports', () => {
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
     expect(plainTextOutput).toContain(`Stack A
 Resources
-[] AWS::SQS::Queue Queue import
+[←] AWS::SQS::Queue Queue import
 `);
 
-    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 2');
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
     expect(exitCode).toBe(0);
   });
 });
