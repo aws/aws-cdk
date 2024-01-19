@@ -230,6 +230,9 @@ removed:aws-cdk-lib.aws_backup.BackupPlanRuleProps.schedule
 # This data identifer was added by mistake; it had never worked.
 removed:aws-cdk-lib.aws_logs.DataIdentifier.PHONENUMBER
 
+# This interface should not have been exported, it is not used in any public way.
+removed:aws-cdk-lib.aws_logs.DataProtectionPolicyConfig
+
 # These newly exported classes have been reverted and are no longer publicly consumeable
 removed:aws-cdk-lib.custom_resources.WaiterStateMachine
 removed:aws-cdk-lib.custom_resources.LogOptions
