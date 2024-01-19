@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "58b8bc82dcb966b859400e60b336f9cbf8ce1ea8a23fc25216eb704614cb45fc": {
+      "source": {
+        "path": "cdk-integ-docdb-cluster-instance-ca-certificate.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "58b8bc82dcb966b859400e60b336f9cbf8ce1ea8a23fc25216eb704614cb45fc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
