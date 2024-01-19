@@ -6,7 +6,6 @@ import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, Duration, Stack } from '../../core';
-import { hasResource } from '../../assertions/lib/private/resources';
 import {
   CfnDistribution,
   Distribution,
