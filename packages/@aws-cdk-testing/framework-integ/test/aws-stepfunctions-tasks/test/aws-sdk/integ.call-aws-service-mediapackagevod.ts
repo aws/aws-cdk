@@ -6,9 +6,9 @@ import { CallAwsService } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-call-aws-service-mediapackagevod-integ');
 
-const task = new CallAwsService(stack, 'DeleteMediaPackageVoDAsset', {
+const task = new CallAwsService(stack, 'ListMediaPackageVoDPackagingGroups', {
   service: 'mediapackagevod',
-  action: 'deleteAsset',
+  action: 'listPackagingGroups',
   resultPath: sfn.JsonPath.DISCARD,
   iamResources: ['*'],
 });

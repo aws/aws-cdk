@@ -292,9 +292,9 @@ test('IAM policy for cloudwatchlogs', () => {
 
 test('IAM policy for mediapackagevod', () => {
   // WHEN
-  const task = new tasks.CallAwsService(stack, 'DeleteMediaPackageVoDAsset', {
+  const task = new tasks.CallAwsService(stack, 'ListMediaPackageVoDPackagingGroups', {
     service: 'mediapackagevod',
-    action: 'deleteAsset',
+    action: 'listPackagingGroups',
     resultPath: sfn.JsonPath.DISCARD,
     iamResources: ['*'],
   });
@@ -308,7 +308,7 @@ test('IAM policy for mediapackagevod', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: 'mediapackage-vod:deleteAsset',
+          Action: 'mediapackage-vod:listPackagingGroups',
           Effect: 'Allow',
           Resource: '*',
         },
