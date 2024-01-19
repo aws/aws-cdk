@@ -344,7 +344,9 @@ export class BucketDeployment extends Construct {
         accessPoint,
         mountPath,
       ) : undefined,
-      logRetention: props.logRetention,
+      // props.logRetention is deprecated, make sure we only set it if it is actually provided
+      // otherwise jsii will print warnings even for users that don't use this directly
+      ...(props.logRetention ? { logRetention: props.logRetention } : {}),
       logGroup: props.logGroup,
     });
 

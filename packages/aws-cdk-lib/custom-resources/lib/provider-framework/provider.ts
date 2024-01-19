@@ -230,7 +230,9 @@ export class Provider extends Construct implements ICustomResourceProvider {
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
-      logRetention: this.logRetention,
+      // props.logRetention is deprecated, make sure we only set it if it is actually provided
+      // otherwise jsii will print warnings even for users that don't use this directly
+      ...(this.logRetention ? { logRetention: this.logRetention } : {}),
       logGroup: this.logGroup,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,

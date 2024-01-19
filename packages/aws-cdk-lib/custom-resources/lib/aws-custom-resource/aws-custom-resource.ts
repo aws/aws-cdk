@@ -458,7 +458,9 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       lambdaPurpose: 'AWS',
       timeout: props.timeout || cdk.Duration.minutes(2),
       role: props.role,
-      logRetention: props.logRetention,
+      // props.logRetention is deprecated, make sure we only set it if it is actually provided
+      // otherwise jsii will print warnings even for users that don't use this directly
+      ...(props.logRetention ? { logRetention: props.logRetention } : {}),
       logGroup: props.logGroup,
       functionName: props.functionName,
       vpc: props.vpc,
