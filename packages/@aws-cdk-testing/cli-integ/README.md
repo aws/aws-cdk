@@ -35,6 +35,17 @@ Each subdirectory contains one test **suite**, and in the development pipeline e
 
 Test suites are written as a collection of Jest tests, and they are run using Jest, using the code in the `lib/` directory as helpers.
 
+### Setup
+
+Building the @aws-cdk-testing package is not very different from building the rest of the CDK. However, If you are having issues with the tests, you can ensure your enviornment is built properly by following the steps below:
+
+```shell
+yarn install # Install dependencies
+npx lerna run build --scope=aws-cdk # Build the CDK cli
+yarn build # Build the @aws-cdk-testing/cli-integ package
+../../../scripts/align-version.sh # Align the versions of CDK packages
+```
+
 ### Running a test suite
 
 You run a suite using the `bin/run-suite` tool. You must select either a version of the CLI and framework which can be `npm install`ed, or point to the root of the source tree:
