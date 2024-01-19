@@ -1127,7 +1127,6 @@ describe('changeset', () => {
       Resources: {
         BucketResource: {
           Type: 'AWS::S3::Bucket',
-          BucketName: 'Bar',
         },
       },
     };
