@@ -1117,4 +1117,40 @@ describe('changeset', () => {
     });
     expect(differences.resources.differenceCount).toBe(1);
   });
+
+  test('imports are respected', async () => {
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          BucketName: 'Foo',
+        },
+      },
+    };
+
+    // WHEN
+    const newTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+          BucketName: 'Bar',
+        },
+      },
+    };
+
+    let differences = fullDiff(currentTemplate, newTemplate, {
+      Changes: [
+        {
+          Type: 'Resource',
+          ResourceChange: {
+            Action: 'Import',
+            LogicalResourceId: 'BucketResource',
+          },
+        },
+      ],
+    });
+    expect(differences.resources.differenceCount).toBe(1);
+    expect(differences.resources.get('BucketResource').changeImpact === ResourceImpact.WILL_IMPORT);
+  });
 });
