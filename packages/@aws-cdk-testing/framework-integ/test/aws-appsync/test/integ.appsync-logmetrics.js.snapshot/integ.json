@@ -3,7 +3,7 @@
   "testCases": {
     "Integ/DefaultTest": {
       "stacks": [
-        "AppSyncIntegLogRetention"
+        "AppSyncLogMetrics"
       ],
       "assertionStack": "Integ/DefaultTest/DeployAssert",
       "assertionStackName": "IntegDefaultTestDeployAssert4E6713E1"
