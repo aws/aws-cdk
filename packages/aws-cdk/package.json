@@ -102,7 +102,7 @@
     "@aws-cdk/region-info": "0.0.0",
     "@jsii/check-node": "1.94.0",
     "archiver": "^5.3.2",
-    "aws-sdk": "^2.1537.0",
+    "aws-sdk": "^2.1540.0",
     "camelcase": "^6.3.0",
     "cdk-assets": "0.0.0",
     "cdk-from-cfn": "^0.122.0",
