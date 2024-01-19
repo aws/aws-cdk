@@ -984,7 +984,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     summary: 'When enabled, the logical ID of a Lambda permission for a Lambda action includes an alarm ID.',
     detailsMd: `
       When this feature flag is enabled, a logical ID of \`LambdaPermission\` for a
-      \`LambdaAction\` will include an alarm ID. So multiple alarms for the same Lambda
+      \`LambdaAction\` will include an alarm ID. Therefore multiple alarms for the same Lambda
       can be created with \`LambdaAction\`.
       
       If the flag is set to false then it can only make one alarm for the Lambda with
