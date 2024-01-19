@@ -16,14 +16,14 @@ and included as part of the `aws-cdk-lib` package.
 ### Experimental:
 
 - aws-amplify-alpha/asset-deployment-handler
-- aws-amplify-alpha/asset-deployment-handler
+- aws-redshift-alpha/asset-deployment-handler
 
 These handlers are excluded from `aws-cdk-lib/custom-resource-handlers` and are individually
 copied into their respective `-alpha` packages at build time. When an `-alpha` package is
 stabilized, part of the stabilization process **must** be to remove `-alpha` from the folder
 name, so that it is included in `aws-cdk-lib`.
 
-`*/generated.ts` files are not supported for alpha modules due to import paths that only work for stable modules in `aws-cdk-lib`.
+`*/generated.ts` files are not supported for alpha modules due to import paths that only work for stable modules in `aws-cdk-lib`. These files must be added to `custom-resources-framework/config.ts` as `ComponentType.NO_OP`.
 
 ## Nodejs Entrypoint
 

@@ -5,7 +5,6 @@ customresourcedir=$(node -p "path.dirname(require.resolve('@aws-cdk/custom-resou
 awscdklibdir=${scriptdir}/..
 
 function airlift() {
-  # core needs to be airlifted directly to core to prevent circular dependencies
   if [[ $1 != dist/core/nodejs-entrypoint-handler && ($1 = dist/core || $1 = dist/core/*) ]];
     then
       mkdir -p $awscdklibdir/core/lib/$1
