@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "34.0.0",
   "artifacts": {
     "AppSyncIntegLogRetention.assets": {
       "type": "cdk:asset-manifest",
@@ -14,11 +14,10 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "AppSyncIntegLogRetention.template.json",
-        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3d1ebf9ca89e6066ce0d6a049536e975397fc62d1cd7ff5c75ba851328169a34.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b2c44470595b4a4fc5e8be9f7fc467dc2ca5e1c86bfdee79389a6196b2077a24.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -82,10 +81,10 @@
             "data": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A"
           }
         ],
-        "/AppSyncIntegLogRetention/Exports/Output{\"Fn::GetAtt\":[\"GraphqlApiLogRetention082A7017\",\"LogGroupName\"]}": [
+        "/AppSyncIntegLogRetention/Exports/Output{\"Fn::GetAtt\":[\"GraphqlApi1B6CF24C\",\"ApiId\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttGraphqlApiLogRetention082A7017LogGroupName1AF00191"
+            "data": "ExportsOutputFnGetAttGraphqlApi1B6CF24CApiIdE34D50AD"
           }
         ],
         "/AppSyncIntegLogRetention/BootstrapVersion": [
@@ -116,11 +115,10 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "IntegDefaultTestDeployAssert4E6713E1.template.json",
-        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3ffc8e696313dc850424cc354c66c0f6064b18b62636fce58e7e0bd6641ba4b4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6e888267dce80479493591bf1ff3b6c6bb9a2acc1b1942e0c50a60342478f132.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -137,16 +135,16 @@
         "IntegDefaultTestDeployAssert4E6713E1.assets"
       ],
       "metadata": {
-        "/Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups8bf25a7acd37f39f7e35df44651487d5/Default/Default": [
+        "/Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroupsb47bd431584c5dacce67df7a7092125e/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudWatchLogsdescribeLogGroups8bf25a7acd37f39f7e35df44651487d5"
+            "data": "AwsApiCallCloudWatchLogsdescribeLogGroupsb47bd431584c5dacce67df7a7092125e"
           }
         ],
-        "/Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroups8bf25a7acd37f39f7e35df44651487d5/AssertionResults": [
+        "/Integ/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeLogGroupsb47bd431584c5dacce67df7a7092125e/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCloudWatchLogsdescribeLogGroups8bf25a7acd37f39f7e35df44651487d5"
+            "data": "AssertionResultsAwsApiCallCloudWatchLogsdescribeLogGroupsb47bd431584c5dacce67df7a7092125e"
           }
         ],
         "/Integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [

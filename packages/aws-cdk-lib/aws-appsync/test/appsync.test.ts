@@ -228,7 +228,7 @@ test('log retention should be configured with given retention time when specifie
   });
 });
 
-test('log retention will appear whenever logconfig is set', () => {
+test('log retention should not appear when no retention time is specified', () => {
   // WHEN
   new appsync.GraphqlApi(stack, 'no-log-retention', {
     authorizationConfig: {},
@@ -237,7 +237,7 @@ test('log retention will appear whenever logconfig is set', () => {
   });
 
   // THEN
-  Template.fromStack(stack).resourceCountIs('Custom::LogRetention', 1);
+  Template.fromStack(stack).resourceCountIs('Custom::LogRetention', 0);
 });
 
 test('when visibility is set it should be used when creating the API', () => {
