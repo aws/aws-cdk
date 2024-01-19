@@ -104,6 +104,12 @@
     "MyLambdaServiceRole4539ECB6"
    ]
   },
+  "MyImportedProfilingGroup175F0B7F": {
+   "Type": "AWS::CodeGuruProfiler::ProfilingGroup",
+   "Properties": {
+    "ProfilingGroupName": "Stack1MyImportedProfilingGroupAD6F50FF"
+   }
+  },
   "MyOtherLambdaServiceRoleF8A9A330": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -146,7 +152,12 @@
         "codeguru-profiler:PostAgentProfile"
        ],
        "Effect": "Allow",
-       "Resource": "arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup"
+       "Resource": {
+        "Fn::GetAtt": [
+         "MyImportedProfilingGroup175F0B7F",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -167,9 +178,18 @@
     },
     "Environment": {
      "Variables": {
-      "AWS_CODEGURU_PROFILER_GROUP_NAME": "MyAwesomeProfilingGroup",
-      "AWS_CODEGURU_PROFILER_TARGET_REGION": "us-east-1",
-      "AWS_CODEGURU_PROFILER_GROUP_ARN": "arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup",
+      "AWS_CODEGURU_PROFILER_GROUP_NAME": {
+       "Ref": "MyImportedProfilingGroup175F0B7F"
+      },
+      "AWS_CODEGURU_PROFILER_TARGET_REGION": {
+       "Ref": "AWS::Region"
+      },
+      "AWS_CODEGURU_PROFILER_GROUP_ARN": {
+       "Fn::GetAtt": [
+        "MyImportedProfilingGroup175F0B7F",
+        "Arn"
+       ]
+      },
       "AWS_CODEGURU_PROFILER_ENABLED": "TRUE"
      }
     },

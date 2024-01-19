@@ -188,11 +188,27 @@
               "version": "0.0.0"
             }
           },
-          "ImportedProfilingGroup": {
-            "id": "ImportedProfilingGroup",
-            "path": "Stack1/ImportedProfilingGroup",
+          "MyImportedProfilingGroup": {
+            "id": "MyImportedProfilingGroup",
+            "path": "Stack1/MyImportedProfilingGroup",
+            "children": {
+              "ProfilingGroup": {
+                "id": "ProfilingGroup",
+                "path": "Stack1/MyImportedProfilingGroup/ProfilingGroup",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CodeGuruProfiler::ProfilingGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "profilingGroupName": "Stack1MyImportedProfilingGroupAD6F50FF"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_codeguruprofiler.CfnProfilingGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_codeguruprofiler.ProfilingGroup",
               "version": "0.0.0"
             }
           },
@@ -269,7 +285,12 @@
                                     "codeguru-profiler:PostAgentProfile"
                                   ],
                                   "Effect": "Allow",
-                                  "Resource": "arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup"
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyImportedProfilingGroup175F0B7F",
+                                      "Arn"
+                                    ]
+                                  }
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -310,9 +331,18 @@
                     },
                     "environment": {
                       "variables": {
-                        "AWS_CODEGURU_PROFILER_GROUP_NAME": "MyAwesomeProfilingGroup",
-                        "AWS_CODEGURU_PROFILER_TARGET_REGION": "us-east-1",
-                        "AWS_CODEGURU_PROFILER_GROUP_ARN": "arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup",
+                        "AWS_CODEGURU_PROFILER_GROUP_NAME": {
+                          "Ref": "MyImportedProfilingGroup175F0B7F"
+                        },
+                        "AWS_CODEGURU_PROFILER_TARGET_REGION": {
+                          "Ref": "AWS::Region"
+                        },
+                        "AWS_CODEGURU_PROFILER_GROUP_ARN": {
+                          "Fn::GetAtt": [
+                            "MyImportedProfilingGroup175F0B7F",
+                            "Arn"
+                          ]
+                        },
                         "AWS_CODEGURU_PROFILER_ENABLED": "TRUE"
                       }
                     },

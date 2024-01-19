@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d5aa9172ce5b8ec04510c2ed3bb2318c3c684d4a5a654778bd811c4a2b4eb3bf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/52af0081d54137cbe9650c1955858462946202703b2cd945f528dc2ad754428c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -56,6 +56,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaCCE802FB"
+          }
+        ],
+        "/Stack1/MyImportedProfilingGroup/ProfilingGroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyImportedProfilingGroup175F0B7F"
           }
         ],
         "/Stack1/MyOtherLambda/ServiceRole/Resource": [
