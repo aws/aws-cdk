@@ -7,15 +7,14 @@ import { instanceMockFrom, MockCloudExecutable } from './util';
 import { Deployments } from '../lib/api/deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import * as cfn from '../lib/api/util/cloudformation';
-import { createDiffChangeSet } from '../lib/api/util/cloudformation';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<Deployments>;
 let toolkit: CdkToolkit;
 
-/*const cfnMock =*/ jest.mock('../lib/api/util/cloudformation', () => {
-  return {
-    createDiffChangeSet: jest.fn(() => {
+describe('imports', () => {
+  beforeEach(() => {
+    jest.spyOn(cfn, 'createDiffChangeSet').mockImplementation(async () => {
       return {
         Changes: [
           {
@@ -38,34 +37,6 @@ let toolkit: CdkToolkit;
           },
         ],
       };
-    }),
-    waitForChangeSet: jest.fn(),
-  };
-});
-
-describe('imports', () => {
-  beforeEach(() => {
-    (createDiffChangeSet as any).mockReturnValue({
-      Changes: [
-        {
-          ResourceChange: {
-            Action: 'Import',
-            LogicalResourceId: 'Queue',
-          },
-        },
-        {
-          ResourceChange: {
-            Action: 'Import',
-            LogicalResourceId: 'Bucket',
-          },
-        },
-        {
-          ResourceChange: {
-            Action: 'Import',
-            LogicalResourceId: 'Queue2',
-          },
-        },
-      ],
     });
     cloudExecutable = new MockCloudExecutable({
       stacks: [{
@@ -79,7 +50,7 @@ describe('imports', () => {
               Type: 'AWS::SQS::Queue',
             },
             Bucket: {
-              Type: 'AWS::SQS::Queue',
+              Type: 'AWS::S3::Bucket',
             },
           },
         },
@@ -126,6 +97,8 @@ describe('imports', () => {
     expect(plainTextOutput).toContain(`Stack A
 Resources
 [←] AWS::SQS::Queue Queue import
+[←] AWS::SQS::Queue Queue2 import
+[←] AWS::S3::Bucket Bucket import
 `);
 
     expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
@@ -457,7 +430,6 @@ Resources
 
   test('diff falls back to non-changeset diff for nested stacks', async () => {
     // GIVEN
-    (createDiffChangeSet as any).mockReturnValue(undefined);
     const changeSetSpy = jest.spyOn(cfn, 'waitForChangeSet');
     const buffer = new StringWritable();
 
