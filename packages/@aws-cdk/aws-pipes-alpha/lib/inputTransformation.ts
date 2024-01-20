@@ -85,7 +85,6 @@ export class InputTransformation implements IInputTransformation {
 
   private unquoteDynamicInputs(sub: string) {
 
-    // TODO can we use the Token.asString() here?
     return Lazy.uncachedString({ produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))) });
 
     /**
