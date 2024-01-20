@@ -94,7 +94,7 @@ export interface EnvironmentOptions {
    *
    * @default - A name is generated.
    */
-  readonly name?: string;
+  readonly environmentName?: string;
 
   /**
    * The description of the environment.
@@ -236,10 +236,10 @@ export class Environment extends EnvironmentBase {
 
   constructor(scope: Construct, id: string, props: EnvironmentProps) {
     super(scope, id, {
-      physicalName: props.name,
+      physicalName: props.environmentName,
     });
 
-    this.name = props.name || Names.uniqueResourceName(this, {
+    this.name = props.environmentName || Names.uniqueResourceName(this, {
       maxLength: 64,
       separator: '-',
     });
@@ -256,7 +256,7 @@ export class Environment extends EnvironmentBase {
         return {
           alarmArn: monitor.alarmArn,
           ...(monitor.monitorType === MonitorType.CLOUDWATCH
-            ? { alarmRoleArn: monitor.alarmRoleArn || this.createAlarmRole(monitor.alarmArn, index).roleArn }
+            ? { alarmRoleArn: monitor.alarmRoleArn || this.createAlarmRole(monitor, index).roleArn }
             : { alarmRoleArn: monitor.alarmRoleArn }),
         };
       }),
@@ -269,12 +269,25 @@ export class Environment extends EnvironmentBase {
       resource: 'application',
       resourceName: `${this.applicationId}/environment/${this.environmentId}`,
     });
-    this.extensible = new ExtensibleBase(scope, this.environmentArn, this.name);
+    this.extensible = new ExtensibleBase(this, this.environmentArn, this.name);
 
     this.application.addExistingEnvironment(this);
   }
 
-  private createAlarmRole(alarmArn: string, index: number): iam.IRole {
+  private createAlarmRole(monitor: Monitor, index: number): iam.IRole {
+    const logicalId = monitor.isCompositeAlarm ? 'RoleCompositeAlarm' : `Role${index}`;
+    const existingRole = this.node.tryFindChild(logicalId) as iam.IRole;
+    if (existingRole) {
+      return existingRole;
+    }
+    const alarmArn = monitor.isCompositeAlarm
+      ? this.stack.formatArn({
+        service: 'cloudwatch',
+        resource: 'alarm',
+        resourceName: '*',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      })
+      : monitor.alarmArn;
     const policy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['cloudwatch:DescribeAlarms'],
@@ -283,7 +296,7 @@ export class Environment extends EnvironmentBase {
     const document = new iam.PolicyDocument({
       statements: [policy],
     });
-    const role = new iam.Role(this, `Role${index}`, {
+    const role = new iam.Role(this, logicalId, {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.ServicePrincipal('appconfig.amazonaws.com'),
       inlinePolicies: {
@@ -325,6 +338,7 @@ export abstract class Monitor {
       alarmArn: alarm.alarmArn,
       alarmRoleArn: alarmRole?.roleArn,
       monitorType: MonitorType.CLOUDWATCH,
+      isCompositeAlarm: alarm instanceof cloudwatch.CompositeAlarm,
     };
   }
 
@@ -355,6 +369,11 @@ export abstract class Monitor {
    * The IAM role ARN for AWS AppConfig to view the alarm state.
    */
   public abstract readonly alarmRoleArn?: string;
+
+  /**
+   * Indicates whether a CloudWatch alarm is a composite alarm.
+   */
+  public abstract readonly isCompositeAlarm?: boolean;
 }
 
 export interface IEnvironment extends IResource {

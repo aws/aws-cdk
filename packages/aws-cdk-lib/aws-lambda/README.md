@@ -173,6 +173,8 @@ new lambda.Function(this, 'Lambda', {
 });
 ```
 
+To use `applicationLogLevel` and/or `systemLogLevel` you must set `logFormat` to `LogFormat.JSON`.
+
 ## Resource-based Policies
 
 AWS Lambda supports resource-based policies for controlling access to Lambda
@@ -784,9 +786,9 @@ const fn = lambda.Function.fromFunctionAttributes(this, 'Function', {
 });
 ```
 
-If `fromFunctionArn()` causes an error related to having to provide an account and/or region in a different construct,
-and the lambda is in the same account and region as the stack you're importing it into,
-you can use `Function.fromFunctionName()` instead:
+`Function.fromFunctionArn()` and `Function.fromFunctionAttributes()` will attempt to parse the Function's Region and Account ID from the ARN. `addPermissions` will only work on the `Function` object if the Region and Account ID are deterministically the same as the scope of the Stack the referenced `Function` object is created in.
+If the containing Stack is environment-agnostic or the Function ARN is a Token, this comparison will fail, and calls to `Function.addPermission` will do nothing.
+If you know Function permissions can safely be added, you can use `Function.fromFunctionName()` instead, or pass `sameEnvironment: true` to `Function.fromFunctionAttributes()`.
 
 ```ts
 const fn = lambda.Function.fromFunctionName(this, 'Function', 'MyFn');
@@ -986,24 +988,28 @@ See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/invocat
 
 ## Log Group
 
-Lambda functions automatically create a log group with the name `/aws/lambda/<function-name>` upon first execution with
+By default, Lambda functions automatically create a log group with the name `/aws/lambda/<function-name>` upon first execution with
 log data set to never expire.
+This is convenient, but prevents you from changing any of the properties of this auto-created log group using the AWS CDK.
+For example you cannot set log retention or assign a data protection policy.
 
-The `logRetention` property can be used to set a different expiration period.
+To fully customize the logging behavior of your Lambda function, create a `logs.LogGroup` ahead of time and use the `logGroup` property to instruct the Lambda function to send logs to it.
+This way you can use the full features set supported by Amazon CloudWatch Logs.
 
-It is possible to obtain the function's log group as a `logs.ILogGroup` by calling the `logGroup` property of the
-`Function` construct.
+```ts
+import { LogGroup } from 'aws-cdk-lib/aws-logs';
 
-By default, CDK uses the AWS SDK retry options when creating a log group. The `logRetentionRetryOptions` property
-allows you to customize the maximum number of retries and base backoff duration.
+const myLogGroup = new LogGroup(this, 'MyLogGroupWithLogGroupName', {
+  logGroupName: 'customLogGroup',
+});
 
-*Note* that, if either `logRetention` is set or `logGroup` property is called, a [CloudFormation custom
-resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html) is added
-to the stack that pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the
-correct log retention period (never expire, by default).
-
-*Further note* that, if the log group already exists and the `logRetention` is not set, the custom resource will reset
-the log retention to never expire even if it was configured with a different value.
+new lambda.Function(this, 'Lambda', {
+  code: new lambda.InlineCode('foo'),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_18_X,
+  logGroup: myLogGroup,
+});
+```
 
 ## FileSystem Access
 
@@ -1080,8 +1086,7 @@ A typical use case of this function is when a higher level construct needs to de
 needs to guarantee that the function is declared once. However, a user of this higher level construct can declare it any
 number of times and with different properties. Using `SingletonFunction` here with a fixed `uuid` will guarantee this.
 
-For example, the `LogRetention` construct requires only one single lambda function for all different log groups whose
-retention it seeks to manage.
+For example, the `AwsCustomResource` construct requires only one single lambda function for all api calls that are made.
 
 ## Bundling Asset Code
 

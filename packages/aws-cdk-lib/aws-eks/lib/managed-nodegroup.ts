@@ -17,9 +17,13 @@ export interface INodegroup extends IResource {
 }
 
 /**
- * The AMI type for your node group. GPU instance types should use the `AL2_x86_64_GPU` AMI type, which uses the
- * Amazon EKS-optimized Linux AMI with GPU support. Non-GPU instances should use the `AL2_x86_64` AMI type, which
- * uses the Amazon EKS-optimized Linux AMI.
+ * The AMI type for your node group.
+ *
+ * GPU instance types should use the `AL2_x86_64_GPU` AMI type, which uses the
+ * Amazon EKS-optimized Linux AMI with GPU support or the `BOTTLEROCKET_ARM_64_NVIDIA` or `BOTTLEROCKET_X86_64_NVIDIA`
+ * AMI types, which uses the Amazon EKS-optimized Linux AMI with Nvidia-GPU support.
+ *
+ * Non-GPU instances should use the `AL2_x86_64` AMI type, which uses the Amazon EKS-optimized Linux AMI.
  */
 export enum NodegroupAmiType {
   /**
@@ -35,13 +39,21 @@ export enum NodegroupAmiType {
    */
   AL2_ARM_64 = 'AL2_ARM_64',
   /**
-   *  Bottlerocket Linux(ARM-64)
+   *  Bottlerocket Linux (ARM-64)
    */
   BOTTLEROCKET_ARM_64 = 'BOTTLEROCKET_ARM_64',
   /**
-   * Bottlerocket(x86-64)
+   * Bottlerocket (x86-64)
    */
   BOTTLEROCKET_X86_64 = 'BOTTLEROCKET_x86_64',
+  /**
+   *  Bottlerocket Linux with Nvidia-GPU support (ARM-64)
+   */
+  BOTTLEROCKET_ARM_64_NVIDIA = 'BOTTLEROCKET_ARM_64_NVIDIA',
+  /**
+   * Bottlerocket with Nvidia-GPU support (x86-64)
+   */
+  BOTTLEROCKET_X86_64_NVIDIA = 'BOTTLEROCKET_x86_64_NVIDIA',
   /**
    * Windows Core 2019 (x86-64)
    */
@@ -215,7 +227,7 @@ export interface NodegroupOptions {
   /**
    * The instance type to use for your node group. Currently, you can specify a single instance type for a node group.
    * The default value for this parameter is `t3.medium`. If you choose a GPU instance type, be sure to specify the
-   * `AL2_x86_64_GPU` with the amiType parameter.
+   * `AL2_x86_64_GPU`, `BOTTLEROCKET_ARM_64_NVIDIA`, or `BOTTLEROCKET_x86_64_NVIDIA` with the amiType parameter.
    *
    * @default t3.medium
    * @deprecated Use `instanceTypes` instead.
@@ -409,7 +421,7 @@ export class Nodegroup extends Resource implements INodegroup {
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
-        throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes} or don't specify any`);
+        throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`);
       }
 
       //if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
@@ -550,7 +562,8 @@ const x8664AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64, Nodegrou
 const windowsAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
   NodegroupAmiType.WINDOWS_CORE_2022_X86_64, NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
   NodegroupAmiType.WINDOWS_FULL_2022_X86_64];
-const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU];
+const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU,
+  NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA, NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA];
 
 /**
  * This function check if the instanceType is GPU instance.
@@ -598,7 +611,7 @@ function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] 
   const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));
 
   if (architectures.size === 0) { // protective code, the current implementation will never result in this.
-    throw new Error(`Cannot determine any ami type comptaible with instance types: ${instanceTypes.map(i => i.toString).join(',')}`);
+    throw new Error(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString).join(', ')}`);
   }
 
   if (architectures.size > 1) {

@@ -6,6 +6,7 @@ import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { instanceMockFrom, MockCloudExecutable } from './util';
 import { Deployments } from '../lib/api/deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
+import * as cfn from '../lib/api/util/cloudformation';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<Deployments>;
@@ -331,6 +332,47 @@ Resources
 ✨  Number of stacks with differences: 4`);
 
     expect(exitCode).toBe(0);
+  });
+
+  test('diff falls back to non-changeset diff for nested stacks', async () => {
+    // GIVEN
+    const changeSetSpy = jest.spyOn(cfn, 'waitForChangeSet');
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['Parent'],
+      stream: buffer,
+      changeSet: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
+      .replace(/[ \t]+$/mg, '');
+    expect(plainTextOutput.trim()).toEqual(`Stack Parent
+Could not create a change set, will base the diff on template differences (run again with -v to see the reason)
+Resources
+[~] AWS::CloudFormation::Stack AdditionChild
+ └─ [~] Resources
+     └─ [~] .SomeResource:
+         └─ [+] Added: .Properties
+[~] AWS::CloudFormation::Stack DeletionChild
+ └─ [~] Resources
+     └─ [~] .SomeResource:
+         └─ [-] Removed: .Properties
+[~] AWS::CloudFormation::Stack ChangedChild
+ └─ [~] Resources
+     └─ [~] .SomeResource:
+         └─ [~] .Properties:
+             └─ [~] .Prop:
+                 ├─ [-] old-value
+                 └─ [+] new-value
+
+
+✨  Number of stacks with differences: 4`);
+
+    expect(exitCode).toBe(0);
+    expect(changeSetSpy).not.toHaveBeenCalled();
   });
 });
 

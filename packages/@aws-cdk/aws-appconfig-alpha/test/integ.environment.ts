@@ -1,7 +1,7 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import { Application, Environment, Monitor } from '../lib';
-import { Alarm, Metric } from 'aws-cdk-lib/aws-cloudwatch';
+import { Alarm, CompositeAlarm, Metric } from 'aws-cdk-lib/aws-cloudwatch';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 const app = new App();
@@ -10,7 +10,7 @@ const stack = new Stack(app, 'aws-appconfig-environment');
 
 // create resources needed for environment
 const appForEnv = new Application(stack, 'MyApplicationForEnv', {
-  name: 'AppForEnvTest',
+  applicationName: 'AppForEnvTest',
 });
 const alarm = new Alarm(stack, 'MyAlarm', {
   metric: new Metric({
@@ -23,6 +23,9 @@ const alarm = new Alarm(stack, 'MyAlarm', {
 const role = new Role(stack, 'MyRole', {
   assumedBy: new ServicePrincipal('appconfig.amazonaws.com'),
 });
+const compositeAlarm = new CompositeAlarm(stack, 'MyCompositeAlarm', {
+  alarmRule: alarm,
+});
 
 // create environment with all props defined
 new Environment(stack, 'MyEnvironment', {
@@ -34,6 +37,7 @@ new Environment(stack, 'MyEnvironment', {
       alarmArn: alarm.alarmArn,
       alarmRoleArn: role.roleArn,
     }),
+    Monitor.fromCloudWatchAlarm(compositeAlarm),
   ],
 });
 

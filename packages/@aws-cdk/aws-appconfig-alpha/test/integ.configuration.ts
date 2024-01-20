@@ -38,7 +38,7 @@ const stack = new Stack(app, 'aws-appconfig-configuration');
 
 // create application for config profile
 const appConfigApp = new Application(stack, 'MyAppConfig', {
-  name: 'AppForConfigTest',
+  applicationName: 'AppForConfigTest',
 });
 
 const deploymentStrategy = new DeploymentStrategy(stack, 'MyDeployStrategy', {
@@ -46,6 +46,12 @@ const deploymentStrategy = new DeploymentStrategy(stack, 'MyDeployStrategy', {
     growthFactor: 100,
     deploymentDuration: Duration.minutes(0),
   }),
+});
+
+// hosted config from file
+new HostedConfiguration(stack, 'MyHostedConfigFromFile', {
+  application: appConfigApp,
+  content: ConfigurationContent.fromFile('config.json'),
 });
 
 // create basic config profile and add config version
@@ -56,14 +62,14 @@ new HostedConfiguration(stack, 'MyHostedConfig', {
   deployTo: [hostedEnv],
   validators: [
     JsonSchemaValidator.fromInline(SCHEMA_STR),
-    // JsonSchemaValidator.fromAsset('/Users/chenjane/Documents/appconfig-l2-constructs/test/schema.json'),
+    JsonSchemaValidator.fromFile('schema.json'),
   ],
   deploymentStrategy,
 });
 
 // create basic config profile from add config version from file
 const hostedEnvFromJson = appConfigApp.addEnvironment('HostedEnvFromJson');
-new HostedConfiguration(stack, 'MyHostedConfigFromJson', {
+const config = new HostedConfiguration(stack, 'MyHostedConfigFromJson', {
   application: appConfigApp,
   content: ConfigurationContent.fromInlineText('This is the configuration content'),
   deployTo: [hostedEnvFromJson],
@@ -77,6 +83,10 @@ new HostedConfiguration(stack, 'MyHostedConfigFromYaml', {
   deployTo: [hostedEnvFromYaml],
   deploymentStrategy,
 });
+
+// verify a configuration can be deployed through the deploy method
+const envToDeployLater = appConfigApp.addEnvironment('EnvDeployLater');
+config.deploy(envToDeployLater);
 
 // ssm paramter as configuration source
 const func = new Function(stack, 'MyValidatorFunction', {
@@ -134,6 +144,7 @@ new SourcedConfiguration(stack, 'MyConfigFromDocument', {
 const bucketEnv = appConfigApp.addEnvironment('BucketEnv');
 const bucket = new Bucket(stack, 'MyBucket', {
   versioned: true,
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 bucket.applyRemovalPolicy(RemovalPolicy.DESTROY);
 const deployment = new s3Deployment.BucketDeployment(stack, 'DeployConfigInBucket', {

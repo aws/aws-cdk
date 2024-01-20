@@ -25,8 +25,20 @@ const stateJson = {
   ResultPath: null,
 };
 
+const failure = new sfn.Fail(stack, 'failed', {
+  error: 'DidNotWork',
+  cause: 'We got stuck',
+});
+
 const custom = new sfn.CustomState(stack, 'my custom task', {
   stateJson,
+});
+
+custom.addCatch(failure);
+custom.addRetry({
+  errors: [sfn.Errors.ALL],
+  interval: cdk.Duration.seconds(10),
+  maxAttempts: 5,
 });
 
 const chain = sfn.Chain.start(custom).next(finalStatus);

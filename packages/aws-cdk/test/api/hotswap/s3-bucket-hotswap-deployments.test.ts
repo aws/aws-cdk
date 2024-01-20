@@ -618,6 +618,26 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
 
     test('calls the lambdaInvoke() API when it receives an asset difference in two S3 bucket deployments and IAM Policy differences using old-style synthesis', async () => {
       // GIVEN
+      const deploymentLambda2Old = {
+        Type: 'AWS::Lambda::Function',
+        Role: {
+          'Fn::GetAtt': [
+            'ServiceRole',
+            'Arn',
+          ],
+        },
+      };
+
+      const deploymentLambda2New = {
+        Type: 'AWS::Lambda::Function',
+        Role: {
+          'Fn::GetAtt': [
+            'ServiceRole2',
+            'Arn',
+          ],
+        },
+      };
+
       const s3Deployment2Old = {
         Type: 'Custom::CDKBucketDeployment',
         Properties: {
@@ -655,7 +675,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
           Policy1: policyOld,
           Policy2: policy2Old,
           S3DeploymentLambda: deploymentLambda,
-          S3DeploymentLambda2: deploymentLambda,
+          S3DeploymentLambda2: deploymentLambda2Old,
           S3Deployment: s3DeploymentOld,
           S3Deployment2: s3Deployment2Old,
         },
@@ -670,7 +690,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
             Policy1: policyNew,
             Policy2: policy2New,
             S3DeploymentLambda: deploymentLambda,
-            S3DeploymentLambda2: deploymentLambda,
+            S3DeploymentLambda2: deploymentLambda2New,
             S3Deployment: s3DeploymentNew,
             S3Deployment2: s3Deployment2New,
           },

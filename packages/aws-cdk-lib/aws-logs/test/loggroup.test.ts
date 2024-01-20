@@ -1,10 +1,10 @@
 import { Construct } from 'constructs';
-import { Template } from '../../assertions';
+import { Annotations, Template, Match } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
-import { CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
-import { LogGroup, RetentionDays, DataProtectionPolicy, DataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern } from '../lib';
+import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
+import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern } from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -112,6 +112,74 @@ describe('log group', () => {
         Ref: 'RetentionInDays',
       },
     });
+  });
+
+  test('with INFREQUENT_ACCESS log group class', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      logGroupClass: LogGroupClass.INFREQUENT_ACCESS,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupClass: LogGroupClass.INFREQUENT_ACCESS,
+    });
+  });
+
+  test('with STANDARD log group class', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      logGroupClass: LogGroupClass.STANDARD,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupClass: LogGroupClass.STANDARD,
+    });
+  });
+
+  // when LogGroupClass is not specified, leave it to CFN and/or backend to default to STANDARD
+  test('with default log group class', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup');
+
+    // THEN
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::Logs::LogGroup', {
+      LogGroupClass: LogGroupClass.STANDARD,
+    }, 0);
+
+    Template.fromStack(stack).resourcePropertiesCountIs('AWS::Logs::LogGroup', {
+      LogGroupClass: LogGroupClass.INFREQUENT_ACCESS,
+    }, 0);
+  });
+
+  test('with log group class in a non-supported region', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'TestStack', {
+      env: {
+        region: 'us-isob-east-1',
+      },
+    });
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      logGroupClass: LogGroupClass.STANDARD,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp(/The LogGroupClass property is not supported in the following regions.+us-isob-east-1/));
   });
 
   test('will delete log group if asked to', () => {
@@ -409,6 +477,32 @@ describe('log group', () => {
     });
   });
 
+  test('log groups accept the AnyPrincipal policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    lg.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['logs:PutLogEvents'],
+      principals: [new iam.AnyPrincipal()],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: JSON.stringify({
+        Statement: [{
+          Action: 'logs:PutLogEvents',
+          Effect: 'Allow',
+          Principal: { AWS: '*' },
+          Resource: '*',
+        }],
+        Version: '2012-10-17',
+      }),
+    });
+  });
+
   test('imported values are treated as if they are ARNs and converted to account IDs via CFN pseudo parameters', () => {
     // GIVEN
     const stack = new Stack();
@@ -664,6 +758,146 @@ describe('log group', () => {
           {
             sid: 'redact-statement-cdk',
             dataIdentifier: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/EmailAddress',
+                  ],
+                ],
+              },
+            ],
+            operation: {
+              deidentify: {
+                maskConfig: {},
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('set data protection policy with custom data identifier', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const dataProtectionPolicy = new DataProtectionPolicy({
+      name: 'test-policy-name',
+      description: 'test description',
+      identifiers: [new CustomDataIdentifier('EmployeeId', 'EmployeeId-\\d{9}')],
+    });
+
+    // WHEN
+    const logGroupName = 'test-log-group';
+    new LogGroup(stack, 'LogGroup', {
+      logGroupName: logGroupName,
+      dataProtectionPolicy: dataProtectionPolicy,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: logGroupName,
+      DataProtectionPolicy: {
+        name: 'test-policy-name',
+        description: 'test description',
+        version: '2021-06-01',
+        configuration: {
+          customDataIdentifier: [
+            {
+              name: 'EmployeeId',
+              regex: 'EmployeeId-\\d{9}',
+            },
+          ],
+        },
+        statement: [
+          {
+            sid: 'audit-statement-cdk',
+            dataIdentifier: [
+              'EmployeeId',
+            ],
+            operation: {
+              audit: {
+                findingsDestination: {},
+              },
+            },
+          },
+          {
+            sid: 'redact-statement-cdk',
+            dataIdentifier: [
+              'EmployeeId',
+            ],
+            operation: {
+              deidentify: {
+                maskConfig: {},
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('set data protection policy with mix of managed and custom data identifiers', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const dataProtectionPolicy = new DataProtectionPolicy({
+      name: 'test-policy-name',
+      description: 'test description',
+      identifiers: [new CustomDataIdentifier('EmployeeId', 'EmployeeId-\\d{9}'), DataIdentifier.EMAILADDRESS],
+    });
+
+    // WHEN
+    const logGroupName = 'test-log-group';
+    new LogGroup(stack, 'LogGroup', {
+      logGroupName: logGroupName,
+      dataProtectionPolicy: dataProtectionPolicy,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: logGroupName,
+      DataProtectionPolicy: {
+        name: 'test-policy-name',
+        description: 'test description',
+        version: '2021-06-01',
+        configuration: {
+          customDataIdentifier: [
+            {
+              name: 'EmployeeId',
+              regex: 'EmployeeId-\\d{9}',
+            },
+          ],
+        },
+        statement: [
+          {
+            sid: 'audit-statement-cdk',
+            dataIdentifier: [
+              'EmployeeId',
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/EmailAddress',
+                  ],
+                ],
+              },
+            ],
+            operation: {
+              audit: {
+                findingsDestination: {},
+              },
+            },
+          },
+          {
+            sid: 'redact-statement-cdk',
+            dataIdentifier: [
+              'EmployeeId',
               {
                 'Fn::Join': [
                   '',

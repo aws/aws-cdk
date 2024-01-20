@@ -599,7 +599,7 @@
      ]
     },
     "RotationRules": {
-     "AutomaticallyAfterDays": 30
+     "ScheduleExpression": "rate(30 days)"
     },
     "SecretId": {
      "Ref": "DatabaseSecretAttachmentE5D1B020"
@@ -920,7 +920,7 @@
      ]
     },
     "RotationRules": {
-     "AutomaticallyAfterDays": 7
+     "ScheduleExpression": "rate(7 days)"
     },
     "SecretId": {
      "Ref": "CustomRotationOptionsSecretAttachment697A23BF"
@@ -1130,7 +1130,7 @@
    },
    "aws-cn": {
     "applicationId": "arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/SecretsManagerRDSMySQLRotationSingleUser",
-    "semanticVersion": "1.1.37"
+    "semanticVersion": "1.1.212"
    },
    "aws-us-gov": {
     "applicationId": "arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/SecretsManagerRDSMySQLRotationSingleUser",
@@ -1144,7 +1144,7 @@
    },
    "aws-cn": {
     "applicationId": "arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/SecretsManagerRDSMySQLRotationSingleUser",
-    "semanticVersion": "1.1.37"
+    "semanticVersion": "1.1.212"
    },
    "aws-us-gov": {
     "applicationId": "arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/SecretsManagerRDSMySQLRotationSingleUser",

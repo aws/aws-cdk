@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-scheduler-schedule.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eac1c2181558fb8d64de1b029b3b58376b7191ef29b61b4585bdc8f7a45b3671.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e85511e5051d124b858b12d793cf362aeaa393047d83195843b1ab4d1bcac9ee.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -58,10 +58,34 @@
             "data": "RoleDefaultPolicy5FFB7DAB"
           }
         ],
+        "/aws-cdk-scheduler-schedule/NamedGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamedGroupA3ABC879"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/UnnamedGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UnnamedGroupBE3E48EE"
+          }
+        ],
         "/aws-cdk-scheduler-schedule/DefaultSchedule/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DefaultSchedule597B0B2C"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/NamedGroupSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NamedGroupScheduleD7EEFEBC"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/UnnamedGroupSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UnnamedGroupSchedule19260E9B"
           }
         ],
         "/aws-cdk-scheduler-schedule/DisabledSchedule/Resource": [
@@ -92,6 +116,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomerKmsSchedule12B1FEFE"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/UseFlexibleTimeWindow/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UseFlexibleTimeWindowBF55D3ED"
+          }
+        ],
+        "/aws-cdk-scheduler-schedule/ScheduleWithTimeFrame/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduleWithTimeFrameC1C8BDCC"
           }
         ],
         "/aws-cdk-scheduler-schedule/BootstrapVersion": [

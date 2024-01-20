@@ -1,0 +1,13 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "IntegTestSnsPublish/DefaultTest": {
+      "stacks": [
+        "AwsSchedulerTargetsSnsPublish"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "IntegTestSnsPublish/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestSnsPublishDefaultTestDeployAssert36D5D430"
+    }
+  }
+}

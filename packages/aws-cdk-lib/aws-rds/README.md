@@ -518,11 +518,13 @@ new rds.DatabaseInstance(this, 'Instance', {
 
 ## Setting Public Accessibility
 
-You can set public accessibility for the database instance or cluster using the `publiclyAccessible` property.
+You can set public accessibility for the `DatabaseInstance` or the `ClusterInstance` using the `publiclyAccessible` property.
 If you specify `true`, it creates an instance with a publicly resolvable DNS name, which resolves to a public IP address.
 If you specify `false`, it creates an internal instance with a DNS name that resolves to a private IP address.
-The default value depends on `vpcSubnets`.
-It will be `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise.
+
+The default value will be `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise. In the case of a
+cluster, the default value will be determined on the vpc placement of the `DatabaseCluster` otherwise it will be determined
+based on the vpc placement of standalone `DatabaseInstance`.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -538,17 +540,17 @@ new rds.DatabaseInstance(this, 'Instance', {
   publiclyAccessible: true,
 });
 
-// Setting public accessibility for DB cluster
+// Setting public accessibility for DB cluster instance
 new rds.DatabaseCluster(this, 'DatabaseCluster', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
   }),
-  instanceProps: {
-    vpc,
-    vpcSubnets: {
-      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-    },
+  writer: rds.ClusterInstance.serverlessV2('Writer', {
     publiclyAccessible: true,
+  }),
+  vpc,
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
   },
 });
 ```
@@ -744,9 +746,9 @@ You can also authenticate to a database instance using AWS Identity and Access M
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html> for more information
 and a list of supported versions and limitations.
 
-**Note**: `grantConnect()` does not currently work - see [this GitHub issue](https://github.com/aws/aws-cdk/issues/11851).
-
 The following example shows enabling IAM authentication for a database instance and granting connection access to an IAM role.
+
+### Instance
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -758,6 +760,8 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
 const role = new iam.Role(this, 'DBRole', { assumedBy: new iam.AccountPrincipal(this.account) });
 instance.grantConnect(role); // Grant the role connection access to the DB.
 ```
+
+### Proxy
 
 The following example shows granting connection access for RDS Proxy to an IAM role.
 
@@ -779,6 +783,47 @@ const proxy = new rds.DatabaseProxy(this, 'Proxy', {
 
 const role = new iam.Role(this, 'DBProxyRole', { assumedBy: new iam.AccountPrincipal(this.account) });
 proxy.grantConnect(role, 'admin'); // Grant the role connection access to the DB Proxy for database user 'admin'.
+```
+
+**Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
+See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html> for setup instructions.
+
+To specify the details of authentication used by a proxy to log in as a specific database
+user use the `clientPasswordAuthType` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
+  writer: rds.ClusterInstance.provisioned('writer'),
+  vpc,
+});
+
+const proxy = new rds.DatabaseProxy(this, 'Proxy', {
+  proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+  secrets: [cluster.secret!],
+  vpc,
+  clientPasswordAuthType: rds.ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD,
+});
+```
+
+### Cluster
+
+The following example shows granting connection access for an IAM role to an Aurora Cluster.
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
+  writer: rds.ClusterInstance.provisioned('writer'),
+  vpc,
+});
+const role = new iam.Role(this, 'AppRole', { assumedBy: new iam.ServicePrincipal('someservice.amazonaws.com') });
+cluster.grantConnect(role, 'somedbuser');
 ```
 
 **Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
@@ -914,6 +959,11 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   // ...
 });
 
+// When 'cloudwatchLogsExports' is set, each export value creates its own log group in DB cluster. 
+// Specify an export value to access its log group.
+const errorLogGroup = cluster.cloudwatchLogGroups['error'];
+const auditLogGroup = cluster.cloudwatchLogGroups.audit;
+
 // Exporting logs from an instance
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({
@@ -921,8 +971,13 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   }),
   vpc,
   cloudwatchLogsExports: ['postgresql'], // Export the PostgreSQL logs
+  cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS, // Optional - default is to never expire logs
   // ...
 });
+
+// When 'cloudwatchLogsExports' is set, each export value creates its own log group in DB instance. 
+// Specify an export value to access its log group.
+const postgresqlLogGroup = instance.cloudwatchLogGroups['postgresql'];
 ```
 
 ## Option Groups
@@ -1018,6 +1073,8 @@ const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
     autoPause: Duration.minutes(10), // default is to pause after 5 minutes of idle time
     minCapacity: rds.AuroraCapacityUnit.ACU_8, // default is 2 Aurora capacity units (ACUs)
     maxCapacity: rds.AuroraCapacityUnit.ACU_32, // default is 16 Aurora capacity units (ACUs)
+    timeout: Duration.seconds(100), // default is 5 minutes
+    timeoutAction: rds.TimeoutAction.FORCE_APPLY_CAPACITY_CHANGE // default is ROLLBACK_CAPACITY_CHANGE
   }
 });
 ```

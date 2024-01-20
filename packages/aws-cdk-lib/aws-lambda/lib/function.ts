@@ -23,6 +23,7 @@ import { addAlias } from './util';
 import * as cloudwatch from '../../aws-cloudwatch';
 import { IProfilingGroup, ProfilingGroup, ComputePlatform } from '../../aws-codeguruprofiler';
 import * as ec2 from '../../aws-ec2';
+import * as efs from '../../aws-efs';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
@@ -48,7 +49,7 @@ export enum Tracing {
   /**
    * Lambda will not trace any request.
    */
-  DISABLED = 'Disabled'
+  DISABLED = 'Disabled',
 }
 
 /**
@@ -68,7 +69,7 @@ export enum SystemLogLevel {
   /**
    * Lambda will capture only logs at warn level.
    */
-  WARN = 'WARN'
+  WARN = 'WARN',
 }
 
 /**
@@ -100,7 +101,7 @@ export enum ApplicationLogLevel {
   /**
    * Lambda will capture only logs at fatal level.
    */
-  FATAL = 'FATAL'
+  FATAL = 'FATAL',
 }
 
 /**
@@ -118,7 +119,7 @@ export enum LogFormat {
   /**
    * Lambda structured logging in Json format.
    */
-  JSON = 'JSON'
+  JSON = 'JSON',
 }
 
 /**
@@ -260,6 +261,9 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * If set to false, you must individually add traffic rules to allow the
    * Lambda to connect to network targets.
    *
+   * Do not specify this property if the `securityGroups` or `securityGroup` property is set.
+   * Instead, configure `allowAllOutbound` directly on the security group.
+   *
    * @default true
    */
   readonly allowAllOutbound?: boolean;
@@ -381,6 +385,16 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * remove the retention policy, set the value to `INFINITE`.
    *
    * @default logs.RetentionDays.INFINITE
+   *
+   * @deprecated instead create a fully customizable log group with `logs.LogGroup` and use the `logGroup` property to instruct the Lambda function to send logs to it.
+   * Migrating from `logRetention` to `logGroup` will cause the name of the log group to change.
+   * Users and code and referencing the name verbatim will have to adjust.
+   *
+   * In AWS CDK code, you can access the log group name directly from the LogGroup construct:
+   * ```ts
+   * declare const myLogGroup: logs.LogGroup;
+   * myLogGroup.logGroupName;
+   * ```
    */
   readonly logRetention?: logs.RetentionDays;
 
@@ -389,6 +403,8 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * that sets the retention policy.
    *
    * @default - A new role is created.
+   *
+   * @deprecated instead use `logGroup` to create a fully customizable log group and instruct the Lambda function to send logs to it.
    */
   readonly logRetentionRole?: iam.IRole;
 
@@ -397,6 +413,8 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * These options control the retry policy when interacting with CloudWatch APIs.
    *
    * @default - Default AWS SDK retry options.
+   *
+   * @deprecated instead use `logGroup` to create a fully customizable log group and instruct the Lambda function to send logs to it.
    */
   readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
 
@@ -457,26 +475,32 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly runtimeManagementMode?: RuntimeManagementMode;
 
   /**
-   * Sets the log group name for the function.
-   * @default `/aws/lambda/${this.functionName}` default log group name created by Lambda
+   * The log group the function sends logs to.
+   *
+   * By default, Lambda functions send logs to an automatically created default log group named /aws/lambda/<function name>.
+   * However you cannot change the properties of this auto-created log group using the AWS CDK, e.g. you cannot set a different log retention.
+   *
+   * Use the `logGroup` property to create a fully customizable LogGroup ahead of time, and instruct the Lambda function to send logs to it.
+   *
+   * @default `/aws/lambda/${this.functionName}` - default log group created by Lambda
    */
   readonly logGroup?: logs.ILogGroup;
 
   /**
    * Sets the logFormat for the function.
-   * @default Text format
+   * @default "Text"
    */
   readonly logFormat?: string;
 
   /**
    * Sets the application log level for the function.
-   * @default INFO
+   * @default "INFO"
    */
   readonly applicationLogLevel?: string;
 
   /**
    * Sets the system log level for the function.
-   * @default INFO
+   * @default "INFO"
    */
   readonly systemLogLevel?: string;
 }
@@ -594,11 +618,15 @@ export class Function extends FunctionBase {
         resourceName: functionName,
         arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       }),
+      sameEnvironment: true,
     });
   }
 
   /**
-   * Import a lambda function into the CDK using its ARN
+   * Import a lambda function into the CDK using its ARN.
+   *
+   * For `Function.addPermissions()` to work on this imported lambda, make sure that is
+   * in the same account and region as the stack you are importing it into.
    */
   public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
     return Function.fromFunctionAttributes(scope, id, { functionArn });
@@ -607,6 +635,9 @@ export class Function extends FunctionBase {
   /**
    * Creates a Lambda function object which represents a function not defined
    * within this stack.
+   *
+   * For `Function.addPermissions()` to work on this imported lambda, set the sameEnvironment property to true
+   * if this imported lambda is in the same account and region as the stack you are importing it into.
    *
    * @param scope The parent construct
    * @param id The name of the lambda construct
@@ -844,11 +875,9 @@ export class Function extends FunctionBase {
       this.validateProfiling(props);
       props.profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
-        AWS_CODEGURU_PROFILER_GROUP_ARN: Stack.of(scope).formatArn({
-          service: 'codeguru-profiler',
-          resource: 'profilingGroup',
-          resourceName: props.profilingGroup.profilingGroupName,
-        }),
+        AWS_CODEGURU_PROFILER_GROUP_NAME: props.profilingGroup.profilingGroupName,
+        AWS_CODEGURU_PROFILER_TARGET_REGION: props.profilingGroup.env.region,
+        AWS_CODEGURU_PROFILER_GROUP_ARN: props.profilingGroup.profilingGroupArn,
         AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
       };
     } else if (props.profiling) {
@@ -858,6 +887,8 @@ export class Function extends FunctionBase {
       });
       profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
+        AWS_CODEGURU_PROFILER_GROUP_NAME: profilingGroup.profilingGroupName,
+        AWS_CODEGURU_PROFILER_TARGET_REGION: profilingGroup.env.region,
         AWS_CODEGURU_PROFILER_GROUP_ARN: profilingGroup.profilingGroupArn,
         AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
       };
@@ -1078,6 +1109,10 @@ export class Function extends FunctionBase {
    * function and undefined if not.
    */
   private getLoggingConfig(props: FunctionProps): CfnFunction.LoggingConfigProperty | undefined {
+    if ((props.applicationLogLevel || props.systemLogLevel) && props.logFormat !== LogFormat.JSON) {
+      throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`);
+    }
+
     let loggingConfig: CfnFunction.LoggingConfigProperty;
     if (props.logFormat || props.logGroup) {
       loggingConfig = {
@@ -1399,7 +1434,10 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
 
     if (props.filesystem) {
       if (props.filesystem.config.connections) {
-        props.filesystem.config.connections.allowDefaultPortFrom(this);
+        this.connections.allowTo(
+          props.filesystem.config.connections,
+          props.filesystem.config.connections.defaultPort ?? ec2.Port.tcp(efs.FileSystem.DEFAULT_PORT),
+        );
       }
     }
 
@@ -1520,8 +1558,11 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     if (!props.runtime.supportsCodeGuruProfiling) {
       throw new Error(`CodeGuru profiling is not supported by runtime ${props.runtime.name}`);
     }
-    if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
-      throw new Error('AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled');
+    if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_NAME
+      || props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN
+      || props.environment.AWS_CODEGURU_PROFILER_TARGET_REGION
+      || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
+      Annotations.of(this).addWarning('AWS_CODEGURU_PROFILER_GROUP_NAME, AWS_CODEGURU_PROFILER_GROUP_ARN, AWS_CODEGURU_PROFILER_TARGET_REGION, and AWS_CODEGURU_PROFILER_ENABLED should not be set when profiling options enabled');
     }
   }
 }
