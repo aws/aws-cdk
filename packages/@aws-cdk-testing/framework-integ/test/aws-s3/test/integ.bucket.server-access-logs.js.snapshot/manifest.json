@@ -1,5 +1,5 @@
 {
-  "version": "30.1.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-s3-access-logs.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-s3-access-logs.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f58a2b25314952a1a5a6b42c6b9092caf2710430af09ba4f5d807e60f2fd3542.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1e864d28ce4b6485c2f33c2ae301f5a43b674db7f30f7938fc7df5ce80cf8499.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -51,6 +52,24 @@
             "data": "MyBucketF68F3FF0"
           }
         ],
+        "/aws-cdk-s3-access-logs/MyBucket2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucket26E0C3623"
+          }
+        ],
+        "/aws-cdk-s3-access-logs/MyBucket3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucket3CC4F8735"
+          }
+        ],
+        "/aws-cdk-s3-access-logs/MyBucket4/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucket43E0A113B"
+          }
+        ],
         "/aws-cdk-s3-access-logs/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -79,6 +98,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "cdkintegs3accesslogsDefaultTestDeployAssert37A16466.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

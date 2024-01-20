@@ -402,6 +402,42 @@ const bucket = new s3.Bucket(this, 'MyBucket', {
 });
 ```
 
+You have two options for the log object key format.
+`Non-date-based partitioning` is the default log object key format and appears as follows:
+
+```txt
+[DestinationPrefix][YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]
+```
+
+```ts
+const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket');
+
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  serverAccessLogsBucket: accessLogsBucket,
+  serverAccessLogsPrefix: 'logs',
+  // You can use a simple prefix with `LogObjectKeyFormat.simplePrefix()`, but it is the same even if you do not specify it.
+  logObjectKeyFormat: s3.LogObjectKeyFormat.simplePrefix(),
+});
+```
+
+Another option is `Date-based partitioning`.
+If you choose this format, you can select either the event time or the delivery time of the log file as the date source used in the log format.
+This format appears as follows:
+
+```txt
+[DestinationPrefix][SourceAccountId]/[SourceRegion]/[SourceBucket]/[YYYY]/[MM]/[DD]/[YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]
+```
+
+```ts
+const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket');
+
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  serverAccessLogsBucket: accessLogsBucket,
+  serverAccessLogsPrefix: 'logs',
+  logObjectKeyFormat: s3.LogObjectKeyFormat.partitionedPrefix(s3.PartitionDateSource.EVENT_TIME),
+});
+```
+
 ### Allowing access log delivery using a Bucket Policy (recommended)
 
 When possible, it is recommended to use a bucket policy to grant access instead of

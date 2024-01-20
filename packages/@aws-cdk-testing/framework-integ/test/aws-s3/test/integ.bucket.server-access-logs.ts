@@ -17,6 +17,27 @@ new s3.Bucket(stack, 'MyBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
+new s3.Bucket(stack, 'MyBucket2', {
+  serverAccessLogsBucket: accessLogBucket,
+  serverAccessLogsPrefix: 'example',
+  logObjectKeyFormat: s3.LogObjectKeyFormat.simplePrefix(),
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
+new s3.Bucket(stack, 'MyBucket3', {
+  serverAccessLogsBucket: accessLogBucket,
+  serverAccessLogsPrefix: 'example',
+  logObjectKeyFormat: s3.LogObjectKeyFormat.partitionedPrefix(s3.PartitionDateSource.EVENT_TIME),
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
+new s3.Bucket(stack, 'MyBucket4', {
+  serverAccessLogsBucket: accessLogBucket,
+  serverAccessLogsPrefix: 'example',
+  logObjectKeyFormat: s3.LogObjectKeyFormat.partitionedPrefix(s3.PartitionDateSource.DELIVERY_TIME),
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
 new IntegTest(app, 'cdk-integ-s3-access-logs', {
   testCases: [stack],
 });
