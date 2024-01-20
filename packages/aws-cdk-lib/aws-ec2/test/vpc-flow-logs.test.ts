@@ -614,7 +614,7 @@ describe('vpc flow logs', () => {
     }).toThrow(/maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment/);
   });
 
-  test('throw if transit gateway attachment with value other than maxAggregationInterval.ONE_MINUTES', () => {
+  test('throw if transit gateway attachment with maxAggregationInterval value other than maxAggregationInterval.ONE_MINUTES', () => {
     const stack = getTestStack();
 
     expect(() => {
