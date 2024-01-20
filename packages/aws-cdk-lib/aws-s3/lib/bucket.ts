@@ -1352,7 +1352,7 @@ export enum PartitionDateSource {
 }
 
 /**
- * The key format of the log object.
+ * The key format for the log object.
  */
 export abstract class LogObjectKeyFormat {
   /**
