@@ -80,7 +80,7 @@
             "Arn"
            ]
           },
-          "/example*"
+          "/example2*"
          ]
         ]
        }
@@ -116,7 +116,7 @@
             "Arn"
            ]
           },
-          "/example*"
+          "/example3*"
          ]
         ]
        }
@@ -152,7 +152,7 @@
             "Arn"
            ]
           },
-          "/example*"
+          "/example4*"
          ]
         ]
        }
@@ -182,7 +182,7 @@
      "DestinationBucketName": {
       "Ref": "MyAccessLogsBucketF7FE6635"
      },
-     "LogFilePrefix": "example",
+     "LogFilePrefix": "example2",
      "TargetObjectKeyFormat": {
       "SimplePrefix": {}
      }
@@ -198,7 +198,7 @@
      "DestinationBucketName": {
       "Ref": "MyAccessLogsBucketF7FE6635"
      },
-     "LogFilePrefix": "example",
+     "LogFilePrefix": "example3",
      "TargetObjectKeyFormat": {
       "PartitionedPrefix": {
        "PartitionDateSource": "EventTime"
@@ -216,7 +216,7 @@
      "DestinationBucketName": {
       "Ref": "MyAccessLogsBucketF7FE6635"
      },
-     "LogFilePrefix": "example",
+     "LogFilePrefix": "example4",
      "TargetObjectKeyFormat": {
       "PartitionedPrefix": {
        "PartitionDateSource": "DeliveryTime"

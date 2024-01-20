@@ -106,7 +106,7 @@
                                         "Arn"
                                       ]
                                     },
-                                    "/example*"
+                                    "/example2*"
                                   ]
                                 ]
                               }
@@ -142,7 +142,7 @@
                                         "Arn"
                                       ]
                                     },
-                                    "/example*"
+                                    "/example3*"
                                   ]
                                 ]
                               }
@@ -178,7 +178,7 @@
                                         "Arn"
                                       ]
                                     },
-                                    "/example*"
+                                    "/example4*"
                                   ]
                                 ]
                               }
@@ -248,7 +248,7 @@
                       "destinationBucketName": {
                         "Ref": "MyAccessLogsBucketF7FE6635"
                       },
-                      "logFilePrefix": "example",
+                      "logFilePrefix": "example2",
                       "targetObjectKeyFormat": {
                         "simplePrefix": {}
                       }
@@ -280,7 +280,7 @@
                       "destinationBucketName": {
                         "Ref": "MyAccessLogsBucketF7FE6635"
                       },
-                      "logFilePrefix": "example",
+                      "logFilePrefix": "example3",
                       "targetObjectKeyFormat": {
                         "partitionedPrefix": {
                           "partitionDateSource": "EventTime"
@@ -314,7 +314,7 @@
                       "destinationBucketName": {
                         "Ref": "MyAccessLogsBucketF7FE6635"
                       },
-                      "logFilePrefix": "example",
+                      "logFilePrefix": "example4",
                       "targetObjectKeyFormat": {
                         "partitionedPrefix": {
                           "partitionDateSource": "DeliveryTime"

@@ -19,21 +19,21 @@ new s3.Bucket(stack, 'MyBucket', {
 
 new s3.Bucket(stack, 'MyBucket2', {
   serverAccessLogsBucket: accessLogBucket,
-  serverAccessLogsPrefix: 'example',
+  serverAccessLogsPrefix: 'example2',
   logObjectKeyFormat: s3.LogObjectKeyFormat.simplePrefix(),
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new s3.Bucket(stack, 'MyBucket3', {
   serverAccessLogsBucket: accessLogBucket,
-  serverAccessLogsPrefix: 'example',
+  serverAccessLogsPrefix: 'example3',
   logObjectKeyFormat: s3.LogObjectKeyFormat.partitionedPrefix(s3.PartitionDateSource.EVENT_TIME),
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
 new s3.Bucket(stack, 'MyBucket4', {
   serverAccessLogsBucket: accessLogBucket,
-  serverAccessLogsPrefix: 'example',
+  serverAccessLogsPrefix: 'example4',
   logObjectKeyFormat: s3.LogObjectKeyFormat.partitionedPrefix(s3.PartitionDateSource.DELIVERY_TIME),
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });

@@ -1390,7 +1390,7 @@ export abstract class LogObjectKeyFormat {
   }
 
   /**
-   * Render the log file key format.
+   * Render the log object key format.
    *
    * @internal
    */

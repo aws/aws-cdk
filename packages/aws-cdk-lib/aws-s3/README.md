@@ -415,7 +415,7 @@ const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket');
 const bucket = new s3.Bucket(this, 'MyBucket', {
   serverAccessLogsBucket: accessLogsBucket,
   serverAccessLogsPrefix: 'logs',
-  // You can use a simple prefix with `LogObjectKeyFormat.simplePrefix()`, but it is the same even if you do not specify it.
+  // You can use a simple prefix with `LogObjectKeyFormat.simplePrefix()`, but it is the same even if you do not specify `logObjectKeyFormat` property.
   logObjectKeyFormat: s3.LogObjectKeyFormat.simplePrefix(),
 });
 ```
