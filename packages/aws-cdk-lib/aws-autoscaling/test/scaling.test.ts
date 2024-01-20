@@ -327,6 +327,62 @@ test('step scaling with evaluation period configured', () => {
   });
 });
 
+test('step scaling with evaluation period and data points to alarm configured', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const fixture = new ASGFixture(stack, 'Fixture');
+
+  // WHEN
+  fixture.asg.scaleOnMetric('Tracking', {
+    metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+    scalingSteps: [
+      { upper: 0, change: -1 },
+      { lower: 100, change: +1 },
+      { lower: 500, change: +5 },
+    ],
+    evaluationPeriods: 10,
+    datapointsToAlarm: 6,
+    metricAggregationType: autoscaling.MetricAggregationType.MAXIMUM,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
+    PolicyType: 'StepScaling',
+    MetricAggregationType: 'Maximum',
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+    EvaluationPeriods: 10,
+    DatapointsToAlarm: 6,
+    ExtendedStatistic: 'p99',
+    MetricName: 'Metric',
+    Namespace: 'Test',
+    Threshold: 100,
+  });
+});
+
+test('step scaling with invalid datapointsToAlarm throws error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const fixture = new ASGFixture(stack, 'Fixture');
+
+  // THEN
+  expect(() => {
+    fixture.asg.scaleOnMetric('Tracking', {
+      metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+      scalingSteps: [
+        { upper: 0, change: -1 },
+        { lower: 100, change: +1 },
+        { lower: 500, change: +5 },
+      ],
+      evaluationPeriods: 10,
+      datapointsToAlarm: 0,
+      metricAggregationType: autoscaling.MetricAggregationType.MAXIMUM,
+    });
+  }).toThrow(/datapointsToAlarm cannot be less than 1, got: 0/);
+});
+
 describe('step-scaling-policy scalingSteps length validation checks', () => {
   test('scalingSteps must have at least 2 steps', () => {
     // GIVEN
