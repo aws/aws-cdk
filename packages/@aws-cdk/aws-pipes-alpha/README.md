@@ -39,6 +39,24 @@ to each other, or to connect AWS services to external services.
 A Pipe has a Source and a Target. The source events can be filtered and enriched
 before reaching the target.
 
+## Example
+
+```ts
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as pipes from '@aws-cdk/aws-pipes-alpha';
+import * as sources from '@aws-cdk/aws-pipes-sources-alpha';
+import * as targets from '@aws-cdk/aws-pipes-targets-alpha';
+
+const sourceQueue = new sqs.Queue(stack, 'SourceQueue');
+const targetQueue = new sqs.Queue(stack, 'TargetQueue');
+
+
+const pipe = new Pipe(stack, 'Pipe', {
+  source: new sources.Queue(sourceQueue),
+  target: new targets.Queue(targetQueue),
+});
+```
+
 ## Source
 
 A source is a AWS Service that needs to be polled. The following Sources are
@@ -59,6 +77,188 @@ A Filter can be used to filter the events from the source before they are
 forwarded to the enrichment step. Multiple filter expressions are possible. If
 one of the filter expressions matches the event is forwarded to the enrichment
 or target step.
+
+```ts
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as pipes from '@aws-cdk/aws-pipes-alpha';
+import * as sources from '@aws-cdk/aws-pipes-sources-alpha';
+import * as targets from '@aws-cdk/aws-pipes-targets-alpha';
+
+const sourceQueue = new sqs.Queue(stack, 'SourceQueue');
+const targetQueue = new sqs.Queue(stack, 'TargetQueue');
+
+const filter = new pipes.Filter(
+  [
+    pipes.FilterPattern.fromObject({
+      body: {
+        // only forward events with customerType B2B or B2C
+        customerType: ['B2B', 'B2C'] 
+      },
+    })
+  ]
+)
+
+const pipe = new Pipe(stack, 'Pipe', {
+  source: new sources.Queue(sourceQueue),
+  target: new targets.Queue(targetQueue),
+  filters: [filter], 
+});
+```
+
+## Input Transformation
+
+For enrichments and targets the input event can be transformed. The transformation is applied for each item of the batch.
+A transformation has access to the input event as well to some context information of the pipe itself like the name of the pipe.
+
+### From object 
+
+The input transformation can be created from an object. The object can contain static values, dynamic values or pipe variables.
+
+```ts
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as pipes from '@aws-cdk/aws-pipes-alpha';
+import * as sources from '@aws-cdk/aws-pipes-sources-alpha';
+import * as targets from '@aws-cdk/aws-pipes-targets-alpha';
+
+const sourceQueue = new sqs.Queue(stack, 'SourceQueue');
+const targetQueue = new sqs.Queue(stack, 'TargetQueue');
+
+const pipe = new Pipe(stack, 'Pipe', {
+  pipeName: 'MyPipe',
+  source: new sources.Queue(sourceQueue),
+  target: new targets.Queue(targetQueue, {
+    inputTransformation: pipes.InputTransformation.fromObject({
+      staticField: 'static value',
+      dynamicField: pipes.DynamicInput.fromEventPath('$.body.payload'),
+      pipeVariable: pipes.PipeVariable.pipeName(),
+    }), 
+  }),
+});
+```
+
+The following example shows the input event and the result of the transformation.
+
+```json
+[
+  {
+    ...
+    "body": "{\"payload\": \"Test message.\"}",
+    ...
+  }
+]
+```
+
+```json
+[
+  {
+    ...
+    "staticField": "static value",
+    "dynamicField": "Test message.",
+    "pipeVariable": "MyPipe",
+    ...
+  }
+]
+```
+
+If the transformation is applied to a target it might be converted to a string representation. E.g. the resulting SQS message body looks like this.
+
+```json
+[
+  {
+    ...
+    "body": "{\"staticField\": \"static value\", \"dynamicField\": \"Test message.\", \"pipeVariable\": \"MyPipe\"}",
+    ...
+  }
+]
+```
+
+
+### From event path
+
+In cases where you want to forward only a part of the event to the target you can use the transformation event path.
+
+> This only works for targets because the enrichment needs to have a valid json as input. 
+
+
+```ts
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as pipes from '@aws-cdk/aws-pipes-alpha';
+import * as sources from '@aws-cdk/aws-pipes-sources-alpha';
+import * as targets from '@aws-cdk/aws-pipes-targets-alpha';
+
+const sourceQueue = new sqs.Queue(stack, 'SourceQueue');
+const targetQueue = new sqs.Queue(stack, 'TargetQueue');
+
+const pipe = new Pipe(stack, 'Pipe', {
+  source: new sources.Queue(sourceQueue),
+  target: new targets.Queue(targetQueue, {
+    inputTransformation: InputTransformation.fromEventPath('$.body.payload'), 
+  }),
+});
+```
+
+This transformation extracts the body of the event.
+
+So when the following batch of input events is processed by the pipe 
+
+```json
+ [
+  {
+    ...
+    "body": "\"{\"payload\": \"Test message.\"}\"",
+    ...
+  }
+]
+```
+
+it is converted into the following target payload.
+
+```json
+[
+  {
+    ...
+    "body": "Test message."
+    ...
+  }
+]
+```
+
+> The implicit payload parsing (e.g. SQS message body to JSON) only works if the input is the source payload. Implicit body parsing is not applied on enrichment results.
+
+### From text
+
+In cases where you want to forward a static text to the target or use your own formatted `inputTemplate` you can use the transformation from text.
+
+```ts
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as pipes from '@aws-cdk/aws-pipes-alpha';
+import * as sources from '@aws-cdk/aws-pipes-sources-alpha';
+import * as targets from '@aws-cdk/aws-pipes-targets-alpha';
+
+const sourceQueue = new sqs.Queue(stack, 'SourceQueue');
+const targetQueue = new sqs.Queue(stack, 'TargetQueue');
+
+const pipe = new Pipe(stack, 'Pipe', {
+  source: new sources.Queue(sourceQueue),
+  target: new targets.Queue(targetQueue, {
+    inputTransformation: InputTransformation.fromText('My static text'), 
+  }),
+});
+```
+
+This transformation forwards the static text to the target.
+
+```json
+[
+  {
+    ...
+    "body": "My static text"
+    ...
+  }
+]
+```
+
+
 
 ## Enrichment
 

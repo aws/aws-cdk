@@ -1,10 +1,7 @@
-// TODO
-
 // Fixture with packages imported, but nothing else
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { App, Stack, TimeZone, Duration } from 'aws-cdk-lib';
-import { ScheduleExpression, ScheduleTargetInput, ContextAttribute, Group, Schedule, TimeWindow } from '@aws-cdk/aws-scheduler-alpha';
 
 class Fixture extends cdk.Stack {
   constructor(scope: Construct, id: string) {
