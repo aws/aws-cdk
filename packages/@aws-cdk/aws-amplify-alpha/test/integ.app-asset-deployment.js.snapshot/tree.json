@@ -151,13 +151,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-amplify-alpha.Branch",
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-amplify-alpha.App",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -470,7 +470,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "9307ab790c544d7c4d94504a1c950222bbfc119c2c12b44440ad46939e0b6364.zip"
+                          "s3Key": "85f7bb0ac0b4da3571afd49c891d631f4f07c0ef710a02046d3a9abd8d9d4604.zip"
                         },
                         "environment": {
                           "variables": {
@@ -1454,7 +1454,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/96605d4b709725b34e8cd2584f7aea8f924b33d089b20f25888f1deb1d09309f.json"
+                          "/cdaba89a96e3396f2c6e83b79694b6d37797dac240b5862bd96d55b1e9f0b315.json"
                         ]
                       ]
                     }
