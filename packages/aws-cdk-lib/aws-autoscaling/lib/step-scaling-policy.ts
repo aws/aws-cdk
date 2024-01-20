@@ -119,7 +119,7 @@ export class StepScalingPolicy extends Construct {
     }
 
     if (props.datapointsToAlarm !== undefined && !Token.isUnresolved(props.datapointsToAlarm) && props.datapointsToAlarm < 1) {
-      throw new RangeError(`datapointsToAlarm cannot be less than 1, got: ${props.datapointsToAlarm}`);
+      throw new Error(`datapointsToAlarm cannot be less than 1, got: ${props.datapointsToAlarm}`);
     }
 
     const adjustmentType = props.adjustmentType || AdjustmentType.CHANGE_IN_CAPACITY;
