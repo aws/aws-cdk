@@ -1,4 +1,4 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Stack, Token } from 'aws-cdk-lib';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { TestSource, TestTarget } from './test-classes';
 import { DynamicInput, Pipe } from '../lib';
@@ -63,6 +63,19 @@ describe('InputTransformation', () => {
 
       // THEN
       expect(resolvedResult.inputTemplate).toEqual({ 'Fn::Join': ['', ['role-name ', { Ref: 'Role1ABCC5F0' }, ' text']] });
+    });
+
+    it('should work with token values', () => {
+      // GIVEN
+
+      const tokenString = Token.asString('tokenString');
+      const result = InputTransformation.fromText(tokenString).bind(pipe);
+
+      // WHEN
+      const resolvedResult = stack.resolve(result);
+
+      // THEN
+      expect(resolvedResult.inputTemplate).toEqual('tokenString');
     });
   });
 
