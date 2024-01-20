@@ -716,8 +716,7 @@ export interface FlowLogOptions {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-flowlog.html#cfn-ec2-flowlog-maxaggregationinterval
    *
-   * @default - FlowLogMaxAggregationInterval.ONE_MINUTES if Transit Gateway or
-   * Transit Gateway Attachment, otherwise FlowLogMaxAggregationInterval.TEN_MINUTES.
+   * @default - FlowLogMaxAggregationInterval.ONE_MINUTES if creating flow logs for Transit Gateway, otherwise FlowLogMaxAggregationInterval.TEN_MINUTES.
    */
   readonly maxAggregationInterval?: FlowLogMaxAggregationInterval;
 }
