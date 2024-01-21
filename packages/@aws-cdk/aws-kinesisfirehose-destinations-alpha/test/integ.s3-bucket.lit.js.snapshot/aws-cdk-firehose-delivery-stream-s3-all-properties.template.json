@@ -680,6 +680,146 @@
    "DependsOn": [
     "DeliveryStreamS3DestinationRoleDefaultPolicy3015D8C7"
    ]
+  },
+  "ZeroBufferingDeliveryStreamS3DestinationRole606BB6E3": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "firehose.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ZeroBufferingDeliveryStreamS3DestinationRoleDefaultPolicyC03FC12E": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket83908E77",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ZeroBufferingDeliveryStreamLogGroupFA68202E",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ZeroBufferingDeliveryStreamS3DestinationRoleDefaultPolicyC03FC12E",
+    "Roles": [
+     {
+      "Ref": "ZeroBufferingDeliveryStreamS3DestinationRole606BB6E3"
+     }
+    ]
+   }
+  },
+  "ZeroBufferingDeliveryStreamLogGroupFA68202E": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "ZeroBufferingDeliveryStreamLogGroupS3Destination806CFD96": {
+   "Type": "AWS::Logs::LogStream",
+   "Properties": {
+    "LogGroupName": {
+     "Ref": "ZeroBufferingDeliveryStreamLogGroupFA68202E"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "ZeroBufferingDeliveryStream7C2555C9": {
+   "Type": "AWS::KinesisFirehose::DeliveryStream",
+   "Properties": {
+    "DeliveryStreamType": "DirectPut",
+    "ExtendedS3DestinationConfiguration": {
+     "BucketARN": {
+      "Fn::GetAtt": [
+       "Bucket83908E77",
+       "Arn"
+      ]
+     },
+     "BufferingHints": {
+      "IntervalInSeconds": 0,
+      "SizeInMBs": 5
+     },
+     "CloudWatchLoggingOptions": {
+      "Enabled": true,
+      "LogGroupName": {
+       "Ref": "ZeroBufferingDeliveryStreamLogGroupFA68202E"
+      },
+      "LogStreamName": {
+       "Ref": "ZeroBufferingDeliveryStreamLogGroupS3Destination806CFD96"
+      }
+     },
+     "CompressionFormat": "GZIP",
+     "ErrorOutputPrefix": "errorPrefix",
+     "Prefix": "regularPrefix",
+     "RoleARN": {
+      "Fn::GetAtt": [
+       "ZeroBufferingDeliveryStreamS3DestinationRole606BB6E3",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "DependsOn": [
+    "ZeroBufferingDeliveryStreamS3DestinationRoleDefaultPolicyC03FC12E"
+   ]
   }
  },
  "Mappings": {
