@@ -874,7 +874,7 @@ new rds.DatabaseCluster(this, 'Database', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   }),
   vpc,
-  domain: 'd-????????', // The ID of the domain for the instance to join.
+  domain: 'd-????????', // The ID of the domain for the cluster to join.
   domainRole: iamRole, // Optional - will be create automatically if not provided.
 });
 ```
