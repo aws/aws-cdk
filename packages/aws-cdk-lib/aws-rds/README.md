@@ -854,7 +854,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
 });
 ```
 
-The following example shows enabling domain support for a Aurora databse cluster and creating an IAM role to access Directory Services.
+You can also use the Kerberos authentication for an Aurora database cluster.
 
 ```ts
 declare const vpc: ec2.Vpc;
