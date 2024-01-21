@@ -404,8 +404,7 @@ export class RecordSet extends Resource implements IRecordSet {
   }
 
   private createIdentifier(prefix: string): string {
-    const identifier = `${prefix}${Names.uniqueResourceName(this, { maxLength: 64 - prefix.length })}`;
-    return identifier;
+    return `${prefix}${Names.uniqueResourceName(this, { maxLength: 64 - prefix.length })}`;
   }
 }
 
