@@ -36,9 +36,12 @@
   }
  },
  "Outputs": {
-  "StateMachineARN": {
+  "ExportsOutputRefStateMachine2E01A3A5BA46F753": {
    "Value": {
     "Ref": "StateMachine2E01A3A5"
+   },
+   "Export": {
+    "Name": "cdk-stepfunctions-map-itemselector-stack:ExportsOutputRefStateMachine2E01A3A5BA46F753"
    }
   }
  },
