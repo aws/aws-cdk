@@ -71,7 +71,8 @@ export interface BasicStepScalingPolicyProps {
    * Creates an "M out of N" alarm, where this property is the M and the value set for
    * `evaluationPeriods` is the N value.
    *
-   * Only has meaning if `evaluationPeriods != 1`.
+   * Only has meaning if `evaluationPeriods != 1`. Must be less than or equal to
+   * `evaluationPeriods`.
    *
    * @default - Same as `evaluationPeriods`
    */
@@ -118,8 +119,16 @@ export class StepScalingPolicy extends Construct {
       throw new Error(`'scalingSteps' can have at most 40 steps, got ${props.scalingSteps.length}`);
     }
 
-    if (props.datapointsToAlarm !== undefined && !Token.isUnresolved(props.datapointsToAlarm) && props.datapointsToAlarm < 1) {
-      throw new Error(`datapointsToAlarm cannot be less than 1, got: ${props.datapointsToAlarm}`);
+    if (props.datapointsToAlarm !== undefined && !Token.isUnresolved(props.datapointsToAlarm)) {
+      if (props.datapointsToAlarm < 1) {
+        throw new Error(`datapointsToAlarm cannot be less than 1, got: ${props.datapointsToAlarm}`);
+      }
+      if (props.evaluationPeriods !== undefined
+        && !Token.isUnresolved(props.evaluationPeriods)
+        && props.evaluationPeriods < props.datapointsToAlarm
+      ) {
+        throw new Error(`datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: ${props.datapointsToAlarm}, evaluationPeriods: ${props.evaluationPeriods}`);
+      }
     }
 
     const adjustmentType = props.adjustmentType || AdjustmentType.CHANGE_IN_CAPACITY;

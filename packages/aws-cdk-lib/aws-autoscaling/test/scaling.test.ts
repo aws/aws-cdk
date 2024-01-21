@@ -342,7 +342,7 @@ describe('datapointsToAlarm', () => {
         { lower: 500, change: +5 },
       ],
       evaluationPeriods: 10,
-      datapointsToAlarm: 6,
+      datapointsToAlarm: 10,
       metricAggregationType: autoscaling.MetricAggregationType.MAXIMUM,
     });
 
@@ -355,7 +355,7 @@ describe('datapointsToAlarm', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       EvaluationPeriods: 10,
-      DatapointsToAlarm: 6,
+      DatapointsToAlarm: 10,
       ExtendedStatistic: 'p99',
       MetricName: 'Metric',
       Namespace: 'Test',
@@ -382,6 +382,27 @@ describe('datapointsToAlarm', () => {
         metricAggregationType: autoscaling.MetricAggregationType.MAXIMUM,
       });
     }).toThrow(/datapointsToAlarm cannot be less than 1, got: 0/);
+  });
+
+  test('step scaling with datapointsToAlarm is greater than evaluationPeriods throws error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fixture = new ASGFixture(stack, 'Fixture');
+
+    // THEN
+    expect(() => {
+      fixture.asg.scaleOnMetric('Tracking', {
+        metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+        scalingSteps: [
+          { upper: 0, change: -1 },
+          { lower: 100, change: +1 },
+          { lower: 500, change: +5 },
+        ],
+        evaluationPeriods: 10,
+        datapointsToAlarm: 15,
+        metricAggregationType: autoscaling.MetricAggregationType.MAXIMUM,
+      });
+    }).toThrow(/datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: 15, evaluationPeriods: 10/);
   });
 });
 
