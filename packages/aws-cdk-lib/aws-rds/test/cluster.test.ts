@@ -3988,7 +3988,7 @@ describe('cluster', () => {
         new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
       ),
       managedPolicies: [
-        iam.ManagedPolicy.fromManagedPolicyArn(stack, 'RdsRole', 'arn:aws:iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess'),
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
       ],
     });
 
