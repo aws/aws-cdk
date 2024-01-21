@@ -1201,6 +1201,6 @@ describe('record set', () => {
       recordType: route53.RecordType.CNAME,
       target: route53.RecordTarget.fromValues('zzz'),
       setIdentifier: 'uniqueId',
-    })).toThrow('setIdentifier can only be specified when either weight, geoLocation or region is specified');
+    })).toThrow('setIdentifier can only be specified for non-simple routing policies');
   });
 });
