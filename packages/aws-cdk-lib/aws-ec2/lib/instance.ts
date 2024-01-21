@@ -381,7 +381,7 @@ export class Instance extends Resource implements IInstance {
 
     // if credit specification is set, then the instance type must be burstable
     if (props.creditSpecification && !props.instanceType.isBurstable()) {
-      throw new Error(`creditSpecification is not supported for ${props.instanceType.toString()} instance type`);
+      throw new Error(`creditSpecification is supported only for T4g, T3a, T3, T2 instance type. got: ${props.instanceType.toString()}`);
     }
 
     if (props.securityGroup) {

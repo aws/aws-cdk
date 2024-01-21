@@ -641,7 +641,7 @@ describe('instance', () => {
         instanceType: InstanceType.of(InstanceClass.M5, InstanceSize.LARGE),
         creditSpecification: CpuCredits.STANDARD,
       });
-    }).toThrow('creditSpecification is not supported for m5.large instance type');
+    }).toThrow('creditSpecification is supported only for T4g, T3a, T3, T2 instance type. got: m5.large');
   });
 });
 
