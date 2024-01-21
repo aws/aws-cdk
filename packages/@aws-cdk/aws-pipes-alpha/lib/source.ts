@@ -74,11 +74,6 @@ export interface SourceParameters {
  */
 export interface SourceConfig {
   /**
-   * The ARN of the source resource.
-   */
-  readonly sourceArn: string;
-
-  /**
    * The parameters required to set up a source for your pipe.
    *
    * @default - none
@@ -90,6 +85,11 @@ export interface SourceConfig {
  * Source interface
  */
 export interface ISource {
+  /**
+   * The ARN of the source resource.
+   */
+  readonly sourceArn: string;
+
   /**
    * Bind the source to a pipe.
    */

@@ -7,11 +7,6 @@ import { IPipe } from '.';
  */
 export interface TargetConfig {
   /**
-   * The ARN of the target resource.
-   */
-  readonly targetArn: string;
-
-  /**
    * The parameters required to set up a target for your pipe.
    */
   readonly targetParameters: CfnPipe.PipeTargetParametersProperty;
@@ -21,6 +16,11 @@ export interface TargetConfig {
  * Target configuration.
  */
 export interface ITarget {
+  /**
+   * The ARN of the target resource.
+   */
+  readonly targetArn: string;
+
   /**
    * Grant the pipe role to push to the target.
    */

@@ -27,7 +27,6 @@ class TestSource implements ISource {
   }
   bind(_pipe: IPipe): SourceConfig {
     return {
-      sourceArn: this.sourceArn,
       sourceParameters: this.sourceParameters,
     };
   }
@@ -47,7 +46,6 @@ class TestTarget implements ITarget {
 
   bind(_pipe: Pipe): TargetConfig {
     return {
-      targetArn: this.targetArn,
       targetParameters: {
         inputTemplate: this.inputTransformation.bind(_pipe).inputTemplate,
       },
@@ -72,7 +70,6 @@ class TestEnrichment implements IEnrichment {
   }
   bind(pipe: IPipe): EnrichmentParametersConfig {
     return {
-      enrichmentArn: this.enrichmentArn,
       enrichmentParameters: {
         inputTemplate: this.inputTransformation.bind(pipe).inputTemplate,
       },

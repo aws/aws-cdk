@@ -2,7 +2,7 @@ import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 import { EnrichmentParametersConfig, IEnrichment, ILogDestination, IPipe, ISource, ITarget, LogDestinationConfig, SourceConfig, SourceParameters } from '../lib';
 
 export class TestSource implements ISource {
-  private sourceArn = 'source-arn';
+  readonly sourceArn = 'source-arn';
   private sourceParameters = {};
   public grantRead = jest.fn();
 
@@ -14,14 +14,13 @@ export class TestSource implements ISource {
 
   bind(_pipe: IPipe): SourceConfig {
     return {
-      sourceArn: this.sourceArn,
       sourceParameters: this.sourceParameters,
     };
   }
 }
 
 export class TestTarget implements ITarget {
-  private targetArn: string = 'target-arn';
+  readonly targetArn: string = 'target-arn';
   private targetParameters: CfnPipe.PipeTargetParametersProperty = {};
   public grantPush = jest.fn();
 
@@ -31,13 +30,12 @@ export class TestTarget implements ITarget {
     }
   }
   public bind = (_pipe: IPipe)=>({
-    targetArn: this.targetArn,
     targetParameters: this.targetParameters,
   });
 }
 
 export class TestEnrichment implements IEnrichment {
-  private enrichmentArn= 'enrichment-arn'
+  readonly enrichmentArn= 'enrichment-arn'
   private enrichmentParameters = {};
   public grantInvoke = jest.fn();
 
@@ -47,7 +45,6 @@ export class TestEnrichment implements IEnrichment {
     }
   }
   bind = (_pipe: IPipe)=>({
-    enrichmentArn: this.enrichmentArn,
     enrichmentParameters: this.enrichmentParameters,
   });
 }
