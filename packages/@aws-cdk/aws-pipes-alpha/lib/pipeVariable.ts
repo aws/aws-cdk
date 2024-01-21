@@ -47,6 +47,9 @@ export class DynamicInput implements IResolvable {
    * Value from the event payload at jsonPath.
    */
   static fromEventPath(path: string): DynamicInput {
+    if (!path.startsWith('$.')) {
+      throw new Error('jsonPathExpression start with "$."');
+    }
     return new DynamicInput(`<${path}>`);
   }
 
