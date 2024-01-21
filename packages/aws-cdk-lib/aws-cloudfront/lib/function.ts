@@ -143,7 +143,7 @@ export interface FunctionProps {
    * In order to associate a Key Value Store, the `runtime` must be
    * `cloudfront-js-2.0` or newer.
    *
-   * @default no key value store is associated
+   * @default - no key value store is associated
    */
   readonly keyValueStore?: IKeyValueStore;
 }
@@ -205,7 +205,7 @@ export class Function extends Resource implements IFunction {
       functionConfig: {
         comment: props.comment ?? this.functionName,
         runtime: this.functionRuntime,
-        keyValueStoreAssociations: props.keyValueStore ? [{ keyValueStoreArn: props.keyValueStore?.keyValueStoreArn }] : undefined,
+        keyValueStoreAssociations: props.keyValueStore ? [{ keyValueStoreArn: props.keyValueStore.keyValueStoreArn }] : undefined,
       },
       name: this.functionName,
     });

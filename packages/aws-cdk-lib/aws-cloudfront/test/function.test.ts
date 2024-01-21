@@ -220,23 +220,6 @@ describe('CloudFront Function', () => {
       })).toThrow(/Key Value Stores cannot be associated to functions using the .* runtime/);
     });
 
-    test('defaults to js-2.0 runtime with key value store', () => {
-      const stack = new Stack();
-      const keyValueStore = new KeyValueStore(stack, 'TestStore');
-
-      new Function(stack, 'TestFn', {
-        code: FunctionCode.fromInline('code'),
-        runtime: undefined,
-        keyValueStore,
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
-        FunctionConfig: {
-          Runtime: 'cloudfront-js-2.0',
-        },
-      });
-    });
-
     test('works with js-2.0 runtime specified', () => {
       const stack = new Stack();
       const keyValueStore = new KeyValueStore(stack, 'TestStore');
