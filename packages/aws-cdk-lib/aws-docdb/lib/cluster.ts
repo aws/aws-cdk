@@ -421,14 +421,18 @@ export class DatabaseCluster extends DatabaseClusterBase {
         vpc: this.vpc,
       });
       // HACK: Use an escape-hatch to apply a consistent removal policy to the
-      // security group so we don't get errors when trying to delete the stack
-      (securityGroup.node.defaultChild as CfnResource).applyRemovalPolicy(props.removalPolicy, {
+      // security group so we don't get errors when trying to delete the stack.
+      // AWS::EC2::SecurityGroup does not support snapshot removal policy
+      // see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
+      const securityGroupRemovalPolicy = !props.removalPolicy || props.removalPolicy !== RemovalPolicy.SNAPSHOT ?
+        props.removalPolicy : RemovalPolicy.DESTROY;
+      (securityGroup.node.defaultChild as CfnResource).applyRemovalPolicy(securityGroupRemovalPolicy, {
         applyToUpdateReplacePolicy: true,
       });
     }
     this.securityGroupId = securityGroup.securityGroupId;
 
-    // Create the CloudwatchLogsConfiguratoin
+    // Create the CloudwatchLogsConfiguration
     const enableCloudwatchLogsExports: string[] = [];
     if (props.exportAuditLogsToCloudWatch) {
       enableCloudwatchLogsExports.push('audit');
@@ -504,6 +508,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
       throw new Error('At least one instance is required');
     }
 
+    // AWS::DocDB::DBInstance does not support SNAPSHOT removal policy
+    // see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
+    const instanceRemovalPolicy = !props.removalPolicy || props.removalPolicy !== RemovalPolicy.SNAPSHOT ?
+      props.removalPolicy : RemovalPolicy.DESTROY;
+
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
@@ -519,7 +528,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         enablePerformanceInsights: props.enablePerformanceInsights,
       });
 
-      instance.applyRemovalPolicy(props.removalPolicy, {
+      instance.applyRemovalPolicy(instanceRemovalPolicy, {
         applyToUpdateReplacePolicy: true,
       });
 
