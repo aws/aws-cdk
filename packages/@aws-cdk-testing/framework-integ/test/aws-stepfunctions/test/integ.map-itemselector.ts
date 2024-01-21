@@ -1,4 +1,4 @@
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 
@@ -26,12 +26,14 @@ const sm = new sfn.StateMachine(stack, 'StateMachine', {
   timeout: cdk.Duration.seconds(30),
 });
 
-new cdk.CfnOutput(stack, 'StateMachineARN', {
-  value: sm.stateMachineArn,
-});
-
-new IntegTest(app, 'cdk-stepfunctions-map-itemselector-integ', {
+const testCase = new IntegTest(app, 'cdk-stepfunctions-map-itemselector-integ', {
   testCases: [stack],
 });
+
+testCase.assertions.awsApiCall('StepFunctions', 'describeStateMachine', {
+  stateMachineArn: sm.stateMachineArn,
+}).expect(ExpectedResult.objectLike({
+  status: 'ACTIVE',
+}));
 
 app.synth();
