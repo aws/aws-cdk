@@ -293,7 +293,7 @@ export class RecordSet extends Resource implements IRecordSet {
       throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
     }
     if (props.setIdentifier && !props.weight && !props.geoLocation && !props.region) {
-      throw new Error('setIdentifier can only be specified when either weight, geoLocation or region is specified');
+      throw new Error('setIdentifier can only be specified for non-simple routing policies');
     }
 
     const propsToCheck = ['region', 'weight', 'geoLocation'];
