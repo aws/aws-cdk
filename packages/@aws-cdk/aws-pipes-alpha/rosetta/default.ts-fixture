@@ -1,7 +1,91 @@
 // Fixture with packages imported, but nothing else
 import * as cdk from 'aws-cdk-lib';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as logs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
-import { App, Stack, TimeZone, Duration } from 'aws-cdk-lib';
+import * as pipes from '@aws-cdk/aws-pipes-alpha';
+
+class SqsSource implements pipes.ISource {
+  sourceArn: string;
+  sourceParameters = undefined;
+  constructor(private readonly queue: sqs.Queue) {
+    this.queue = queue;
+    this.sourceArn = queue.queueArn;
+  }
+  bind(_pipe: pipes.IPipe): pipes.SourceConfig {
+    return {
+      sourceParameters: this.sourceParameters,
+    };
+  }
+  grantRead(pipeRole: cdk.aws_iam.IRole): void {
+    this.queue.grantConsumeMessages(pipeRole);
+  }
+}
+
+class SqsTarget implements pipes.ITarget {
+  targetArn: string;
+  inputTransformation: pipes.InputTransformation | undefined;
+
+  constructor(private readonly queue: sqs.Queue, props: {inputTransformation?: pipes.InputTransformation} = {}) {
+    this.inputTransformation = props?.inputTransformation
+    this.queue = queue;
+    this.targetArn = queue.queueArn;
+  }
+
+  bind(_pipe: pipes.IPipe): pipes.TargetConfig {
+    return {
+      targetParameters: {
+        inputTemplate: this.inputTransformation?.bind(_pipe).inputTemplate,
+      },
+    };
+  }
+
+  grantPush(pipeRole: cdk.aws_iam.IRole): void {
+    this.queue.grantSendMessages(pipeRole);
+  }
+}
+
+class LambdaEnrichment implements pipes.IEnrichment {
+  enrichmentArn: string;
+
+  private inputTransformation: pipes.InputTransformation  | undefined;
+  constructor(private readonly lambda: lambda.Function, props: {inputTransformation?: pipes.InputTransformation} = {}) {
+    this.enrichmentArn = lambda.functionArn;
+    this.inputTransformation = props?.inputTransformation
+  }
+  bind(pipe: pipes.IPipe): pipes.EnrichmentParametersConfig {
+    return {
+      enrichmentParameters: {
+        inputTemplate: this.inputTransformation?.bind(pipe).inputTemplate,
+      },
+    };
+  }
+  grantInvoke(pipeRole: cdk.aws_iam.IRole): void {
+    this.lambda.grantInvoke(pipeRole);
+  }
+}
+
+class CloudwatchDestination implements pipes.ILogDestination {
+  parameters: pipes.LogDestinationParameters;
+  constructor(private readonly logGroup: cdk.aws_logs.LogGroup) {
+    this.logGroup = logGroup;
+    this.parameters = {
+      cloudwatchLogsLogDestination: {
+        logGroupArn: logGroup.logGroupArn,
+      },
+    };
+  }
+  bind(_pipe: pipes.IPipe): pipes.LogDestinationConfig {
+    return {
+      parameters: this.parameters,
+    };
+  }
+
+  grantPush(pipeRole: cdk.aws_iam.IRole): void {
+    this.logGroup.grantWrite(pipeRole);
+  }
+}
 
 class Fixture extends cdk.Stack {
   constructor(scope: Construct, id: string) {
