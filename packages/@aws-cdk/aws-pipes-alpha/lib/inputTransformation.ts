@@ -1,14 +1,8 @@
 import { DefaultTokenResolver, IResolveContext, Lazy, StringConcat, Token, Tokenization } from 'aws-cdk-lib';
 import { IPipe } from './pipe';
-import { DynamicInput, PipeVariable } from './pipeVariable';
 import { unquote } from './unquote';
 
-type StaticString = string;
-type KeyValue = Record<string, string | PipeVariable>;
-type StaticJsonFlat = Record<string, StaticString | KeyValue>;
-type InputTransformJson = Record<string, StaticString | KeyValue | StaticJsonFlat | IInputTransformation[] | StaticString [] | DynamicInput>;
-
-type InputTransformationValue = StaticString | InputTransformJson;
+type InputTransformationValue = string | Record<string, any>;
 
 /**
  * The inputTemplate that is used to transform the input event payload with unquoted variables
@@ -42,7 +36,7 @@ export class InputTransformation implements IInputTransformation {
   /**
    * Creates an InputTransformation from a string.
    */
-  static fromText(inputTemplate: StaticString): InputTransformation {
+  static fromText(inputTemplate: string): InputTransformation {
     return new InputTransformation(inputTemplate, TemplateType.TEXT);
   }
 
@@ -60,7 +54,7 @@ export class InputTransformation implements IInputTransformation {
   /**
    * Creates an InputTransformation from a pipe variable.
    */
-  static fromObject(inputTemplate: InputTransformJson): InputTransformation {
+  static fromObject(inputTemplate: Record<string, any>): InputTransformation {
     return new InputTransformation(inputTemplate, TemplateType.OBJECT);
   }
 
