@@ -721,11 +721,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CertificateManager::Certificate",
                   "aws:cdk:cloudformation:props": {
-                    "domainName": "*.example.com",
+                    "domainName": "test.testing4cdk.com",
                     "domainValidationOptions": [
                       {
-                        "domainName": "*.example.com",
-                        "hostedZoneId": "Z23ABC4XYZL05B"
+                        "domainName": "test.testing4cdk.com",
+                        "hostedZoneId": "Z05520592RNQT3W4E29EA"
                       }
                     ],
                     "tags": [
@@ -805,7 +805,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolDomain",
                       "aws:cdk:cloudformation:props": {
-                        "domain": "z23abc4xyzl05b",
+                        "domain": "z05520592rnqt3w4e29ea",
                         "userPoolId": {
                           "Ref": "UserPool6BA7E5F2"
                         }
@@ -844,7 +844,7 @@
                           "aws.cognito.signin.user.admin"
                         ],
                         "callbackUrLs": [
-                          "https://*.example.com/oauth2/idpresponse"
+                          "https://test.testing4cdk.com/oauth2/idpresponse"
                         ],
                         "generateSecret": true,
                         "supportedIdentityProviders": [
@@ -857,86 +857,6 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolClient",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DescribeCognitoUserPoolClient": {
-                    "id": "DescribeCognitoUserPoolClient",
-                    "path": "IntegAlbOidc/UserPool/UserPoolClient/DescribeCognitoUserPoolClient",
-                    "children": {
-                      "Provider": {
-                        "id": "Provider",
-                        "path": "IntegAlbOidc/UserPool/UserPoolClient/DescribeCognitoUserPoolClient/Provider",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "IntegAlbOidc/UserPool/UserPoolClient/DescribeCognitoUserPoolClient/Resource",
-                        "children": {
-                          "Default": {
-                            "id": "Default",
-                            "path": "IntegAlbOidc/UserPool/UserPoolClient/DescribeCognitoUserPoolClient/Resource/Default",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "CustomResourcePolicy": {
-                        "id": "CustomResourcePolicy",
-                        "path": "IntegAlbOidc/UserPool/UserPoolClient/DescribeCognitoUserPoolClient/CustomResourcePolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "IntegAlbOidc/UserPool/UserPoolClient/DescribeCognitoUserPoolClient/CustomResourcePolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "cognito-idp:DescribeUserPoolClient",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Fn::GetAtt": [
-                                          "UserPool6BA7E5F2",
-                                          "Arn"
-                                        ]
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "UserPoolUserPoolClientDescribeCognitoUserPoolClientCustomResourcePolicyFFF2174F",
-                                "roles": [
-                                  {
-                                    "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.custom_resources.AwsCustomResource",
                       "version": "0.0.0"
                     }
                   }
@@ -1080,8 +1000,8 @@
                               },
                               "clientSecret": {
                                 "Fn::GetAtt": [
-                                  "UserPoolUserPoolClientDescribeCognitoUserPoolClientA6EA22D2",
-                                  "UserPoolClient.ClientSecret"
+                                  "UserPoolUserPoolClient40176907",
+                                  "ClientSecret"
                                 ]
                               },
                               "issuer": {
@@ -1168,127 +1088,6 @@
               "version": "0.0.0"
             }
           },
-          "AWS679f53fac002430cb0da5b7982bd2287": {
-            "id": "AWS679f53fac002430cb0da5b7982bd2287",
-            "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287",
-            "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
-                "children": {
-                  "ImportServiceRole": {
-                    "id": "ImportServiceRole",
-                    "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "Code": {
-                "id": "Code",
-                "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/Code",
-                "children": {
-                  "Stage": {
-                    "id": "Stage",
-                    "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "AssetBucket": {
-                    "id": "AssetBucket",
-                    "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                  "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "s3Bucket": {
-                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                      },
-                      "s3Key": "1b474110b3f79050ba8693912584a5d5bac8c7e94d63afa8c73f1d087444e7cc.zip"
-                    },
-                    "handler": "index.handler",
-                    "role": {
-                      "Fn::GetAtt": [
-                        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
-                        "Arn"
-                      ]
-                    },
-                    "runtime": "nodejs18.x",
-                    "timeout": 120
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
-            }
-          },
           "ARecord": {
             "id": "ARecord",
             "path": "IntegAlbOidc/ARecord",
@@ -1321,8 +1120,8 @@
                         ]
                       }
                     },
-                    "hostedZoneId": "Z23ABC4XYZL05B",
-                    "name": "example.com.",
+                    "hostedZoneId": "Z05520592RNQT3W4E29EA",
+                    "name": "test.testing4cdk.com.",
                     "type": "A"
                   }
                 },
@@ -1507,6 +1306,127 @@
               "version": "10.3.0"
             }
           },
+          "AWS679f53fac002430cb0da5b7982bd2287": {
+            "id": "AWS679f53fac002430cb0da5b7982bd2287",
+            "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "1b474110b3f79050ba8693912584a5d5bac8c7e94d63afa8c73f1d087444e7cc.zip"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x",
+                    "timeout": 120
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
           "Signin": {
             "id": "Signin",
             "path": "IntegAlbOidc/Signin",
@@ -1610,7 +1530,7 @@
                       "variables": {
                         "TEST_USERNAME": "test-user@example.com",
                         "TEST_PASSWORD": "TestUser@123",
-                        "TEST_URL": "https://*.example.com"
+                        "TEST_URL": "https://test.testing4cdk.com"
                       }
                     },
                     "functionName": "cdk-integ-alb-oidc-signin-handler",

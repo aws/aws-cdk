@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "integ-user-pool-client-secret.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-user-pool-client-secret.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/361c01e90165ab5a65b22b352d8cd87e3af7ee4411fb11e492c6ba2b456a2acb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eac1506a641a8213e825e50a9f40cef6521c26564e83404b47ce540491247dbe.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -45,30 +46,6 @@
             "data": "poolclient2623294C"
           }
         ],
-        "/integ-user-pool-client-secret/pool/client/DescribeCognitoUserPoolClient/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "poolclientDescribeCognitoUserPoolClient51F12EBD"
-          }
-        ],
-        "/integ-user-pool-client-secret/pool/client/DescribeCognitoUserPoolClient/CustomResourcePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "poolclientDescribeCognitoUserPoolClientCustomResourcePolicy5C0049D2"
-          }
-        ],
-        "/integ-user-pool-client-secret/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-          }
-        ],
-        "/integ-user-pool-client-secret/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
-          }
-        ],
         "/integ-user-pool-client-secret/secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -92,6 +69,42 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "poolclientDescribeCognitoUserPoolClient51F12EBD": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "poolclientDescribeCognitoUserPoolClient51F12EBD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "poolclientDescribeCognitoUserPoolClientCustomResourcePolicy5C0049D2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "poolclientDescribeCognitoUserPoolClientCustomResourcePolicy5C0049D2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "AWS679f53fac002430cb0da5b7982bd22872D164C4C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "integ-user-pool-client-secret"
@@ -109,6 +122,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integuserpoolclientsecrettestDefaultTestDeployAssert4FDD1661.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

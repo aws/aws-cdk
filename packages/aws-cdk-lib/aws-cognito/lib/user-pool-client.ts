@@ -3,8 +3,7 @@ import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
-import { IResource, Resource, Duration, Stack, SecretValue } from '../../core';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
+import { IResource, Resource, Duration, SecretValue } from '../../core';
 
 /**
  * Types of authentication flow
@@ -360,9 +359,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
   public readonly userPoolClientId: string;
 
-  private _generateSecret?: boolean;
-  private readonly userPool: IUserPool;
-  private _userPoolClientSecret?: SecretValue;
+  private readonly _generateSecret?: boolean;
+  private readonly _userPoolClientSecret: SecretValue;
 
   /**
    * The OAuth flows enabled for this client.
@@ -400,7 +398,6 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
     }
 
     this._generateSecret = props.generateSecret;
-    this.userPool = props.userPool;
 
     const resource = new CfnUserPoolClient(this, 'Resource', {
       clientName: props.userPoolClientName,
@@ -423,6 +420,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
     this.userPoolClientId = resource.ref;
     this._userPoolClientName = props.userPoolClientName;
+    this._userPoolClientSecret = SecretValue.resourceAttribute(resource.attrClientSecret);
   }
 
   /**
@@ -438,38 +436,8 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
 
   public get userPoolClientSecret(): SecretValue {
     if (!this._generateSecret) {
-      throw new Error(
-        'userPoolClientSecret is available only if generateSecret is set to true.',
-      );
+      throw new Error('userPoolClientSecret is available only if generateSecret is set to true.');
     }
-
-    // Create the Custom Resource that assists in resolving the User Pool Client secret
-    // just once, no matter how many times this method is called
-    if (!this._userPoolClientSecret) {
-      this._userPoolClientSecret = SecretValue.resourceAttribute(new AwsCustomResource(
-        this,
-        'DescribeCognitoUserPoolClient',
-        {
-          resourceType: 'Custom::DescribeCognitoUserPoolClient',
-          onUpdate: {
-            region: Stack.of(this).region,
-            service: 'CognitoIdentityServiceProvider',
-            action: 'describeUserPoolClient',
-            parameters: {
-              UserPoolId: this.userPool.userPoolId,
-              ClientId: this.userPoolClientId,
-            },
-            physicalResourceId: PhysicalResourceId.of(this.userPoolClientId),
-          },
-          policy: AwsCustomResourcePolicy.fromSdkCalls({
-            resources: [this.userPool.userPoolArn],
-          }),
-          // APIs are available in 2.1055.0
-          installLatestAwsSdk: false,
-        },
-      ).getResponseField('UserPoolClient.ClientSecret'));
-    }
-
     return this._userPoolClientSecret;
   }
 

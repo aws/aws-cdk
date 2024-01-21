@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/40c1fb812e79544767558704cfcc1fdb85b2ce9af9dfecf654e1e951378e0738.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94c9bad599f21a34e40c4b30eb1a1b3472443a737f4357ce1647eb36167d9db5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -214,18 +214,6 @@
             "data": "UserPoolUserPoolClient40176907"
           }
         ],
-        "/IntegAlbOidc/UserPool/UserPoolClient/DescribeCognitoUserPoolClient/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "UserPoolUserPoolClientDescribeCognitoUserPoolClientA6EA22D2"
-          }
-        ],
-        "/IntegAlbOidc/UserPool/UserPoolClient/DescribeCognitoUserPoolClient/CustomResourcePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "UserPoolUserPoolClientDescribeCognitoUserPoolClientCustomResourcePolicyFFF2174F"
-          }
-        ],
         "/IntegAlbOidc/LoadBalancer/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -244,22 +232,16 @@
             "data": "LoadBalancerListenerE1A099B9"
           }
         ],
-        "/IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-          }
-        ],
-        "/IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
-          }
-        ],
         "/IntegAlbOidc/ARecord/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ARecordE7B57761"
+          }
+        ],
+        "/IntegAlbOidc/User/Resource": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
           }
         ],
         "/IntegAlbOidc/User/Resource/Resource/Default": [
@@ -274,6 +256,12 @@
             "data": "UserCustomResourcePolicyC2EB5139"
           }
         ],
+        "/IntegAlbOidc/User/SetUserPassword": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
+          }
+        ],
         "/IntegAlbOidc/User/SetUserPassword/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -284,6 +272,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "UserSetUserPasswordCustomResourcePolicy7B250C76"
+          }
+        ],
+        "/IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ],
+        "/IntegAlbOidc/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
         "/IntegAlbOidc/Signin/ServiceRole/Resource": [
@@ -315,6 +315,24 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "UserPoolUserPoolClientDescribeCognitoUserPoolClientA6EA22D2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolUserPoolClientDescribeCognitoUserPoolClientA6EA22D2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "UserPoolUserPoolClientDescribeCognitoUserPoolClientCustomResourcePolicyFFF2174F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolUserPoolClientDescribeCognitoUserPoolClientCustomResourcePolicyFFF2174F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "IntegAlbOidc"
@@ -336,7 +354,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7f5f0305930478da23a765018a4288272f1a974766a2739467cc7bd8d263f0f3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7f3d6e53f3a044a5ac858733b60b8850899f8eea03531f5178eafd00c80d2917.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
