@@ -107,10 +107,6 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderOidcProps) {
     super(scope, id, props);
 
-    if (props.name && !Token.isUnresolved(props.name) && (props.name.length < 3 || props.name.length > 32)) {
-      throw new Error(`Expected provider name to be between 3 and 32 characters, received ${props.name} (${props.name.length} characters)`);
-    }
-
     const scopes = props.scopes ?? ['openid'];
 
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
@@ -139,6 +135,9 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
     if (name) {
       if (!Token.isUnresolved(name) && (name.length < 3 || name.length > 32)) {
         throw new Error(`Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`);
+      }
+      if (!name.match(/[^_\p{Z}][\p{L}\p{M}\p{S}\p{N}\p{P}][^_\p{Z}]+/)) {
+        throw new Error(`Expected provider name must match [^_\p{Z}][\p{L}\p{M}\p{S}\p{N}\p{P}][^_\p{Z}]+, received ${name}`);
       }
       return name;
     }
