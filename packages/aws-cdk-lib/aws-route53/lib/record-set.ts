@@ -209,6 +209,8 @@ export interface RecordSetOptions {
    * Route 53 selects the latency resource record set that has the lowest latency between the end user and the associated Amazon EC2 Region.
    * Route 53 then returns the value that is associated with the selected resource record set.
    *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-recordset.html#cfn-route53-recordset-region
+   *
    * @default - Do not set latency based routing
    */
   readonly region?: string;
