@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-codepipeline-elastic-beanstalk-deploy.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d5a9903a85a52740c85e194574b89446dc1c7784a21296c04f889b413e020c5c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9edc1578b855e247f4723f91c43c4e241e4cf1f8b0dafd970aadd7b1914b587a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -121,7 +121,10 @@
         "/aws-cdk-codepipeline-elastic-beanstalk-deploy/beanstlk-env": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "beanstlkenv"
+            "data": "beanstlkenv",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-codepipeline-elastic-beanstalk-deploy/Pipeline/Role/Resource": [
