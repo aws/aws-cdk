@@ -165,6 +165,10 @@ $ # Diff against the currently deployed stack with quiet parameter enabled
 $ cdk diff --quiet --app='node bin/main.js' MyStackName
 ```
 
+The `change-set` flag will make `diff` create a change set and extract resource replacement data from it. This is a bit slower, but will provide no false positives for resource replacement.
+The `--no-change-set` mode will consider any change to a property that requires replacement to be a resource replacement,
+even if the change is purely cosmetic (like replacing a resource reference with a hardcoded arn).
+
 ### `cdk deploy`
 
 Deploys a stack of your CDK app to its environment. During the deployment, the toolkit will output progress
@@ -415,6 +419,20 @@ To import resources that do not accept custom names, such as EC2 instances,
 use the `cdk import` instead. 
 Visit [Bringing existing resources into CloudFormation management](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import.html)
 for more details.
+
+#### Ignore No Stacks
+
+You may have an app with multiple environments, e.g., dev and prod. When starting
+development, your prod app may not have any resources or the resources are commented
+out. In this scenario, you will receive an error message stating that the app has no
+stacks.
+
+To bypass this error messages, you can pass the `--ignore-no-stacks` flag to the 
+`deploy` command:
+
+```console
+$ cdk deploy --ignore-no-stacks
+```
 
 #### Hotswap deployments for faster development
 

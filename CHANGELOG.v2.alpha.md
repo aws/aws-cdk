@@ -2,6 +2,57 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.122.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.121.1-alpha.0...v2.122.0-alpha.0) (2024-01-18)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **appconfig:** `deploymentStrategyId` prop in `fromDeploymentStrategyId` now takes a `DeploymentStrategyId` rather than a `string`. To import a predefined deployment strategy id, use `DeploymentStrategyId.CANARY_10_PERCENT_20_MINUTES`. Otherwise, use `DeploymentStrategyId.fromString('abc123')`.
+* **appconfig:** `ApplicationProps.name` renamed to `ApplicationProps.applicationName`
+  - **appconfig**: `EnvironmentProps.name` renamed to `EnvironmentProps.environmentName`
+  - **appconfig**: `DeploymentStrategyProps.name` renamed to `DeploymentStrategyProps.deploymentStrategyName`
+  - **appconfig**: `ExtensionProps.name` renamed to `ExtensionProps.extensionName`
+
+### Bug Fixes
+
+* **amplify:** addBranch fails synth with "cannot find entry file..." ([#28658](https://github.com/aws/aws-cdk/issues/28658)) ([0f2b8f8](https://github.com/aws/aws-cdk/commit/0f2b8f8e329480cd35db1dc9792bff6d2f0a990a)), closes [#27955](https://github.com/aws/aws-cdk/issues/27955) [#28633](https://github.com/aws/aws-cdk/issues/28633) [#28089](https://github.com/aws/aws-cdk/issues/28089)
+* **appconfig:** fromDeploymentStrategyId takes an enum-like class rather than a string ([#28743](https://github.com/aws/aws-cdk/issues/28743)) ([2b59ed1](https://github.com/aws/aws-cdk/commit/2b59ed1b54b5b83f22020ed5f2c4b77c6a1292f8)), closes [#28671](https://github.com/aws/aws-cdk/issues/28671)
+* **appconfig:** prefix names with resource name ([#28742](https://github.com/aws/aws-cdk/issues/28742)) ([3960720](https://github.com/aws/aws-cdk/commit/396072025ea1282dd28e14158afe339c393bf0d5)), closes [#28671](https://github.com/aws/aws-cdk/issues/28671)
+
+## [2.121.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.121.0-alpha.0...v2.121.1-alpha.0) (2024-01-13)
+
+## [2.121.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.120.0-alpha.0...v2.121.0-alpha.0) (2024-01-12)
+
+## [2.120.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.119.0-alpha.0...v2.120.0-alpha.0) (2024-01-12)
+
+## [2.119.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.118.0-alpha.0...v2.119.0-alpha.0) (2024-01-11)
+
+
+### Features
+
+* **neptune-alpha:** engineVersion v1.3 ([#28647](https://github.com/aws/aws-cdk/issues/28647)) ([957598b](https://github.com/aws/aws-cdk/commit/957598b5fe08298a9ab52a1d0b2069d6a73d59c0)), closes [#28648](https://github.com/aws/aws-cdk/issues/28648)
+
+## [2.118.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.117.0-alpha.0...v2.118.0-alpha.0) (2024-01-03)
+
+
+### Features
+
+* **glue:** database description property ([#27744](https://github.com/aws/aws-cdk/issues/27744)) ([cbac240](https://github.com/aws/aws-cdk/commit/cbac24041db7dbc39b4ae1d6da4902b3443528cb)), closes [#27740](https://github.com/aws/aws-cdk/issues/27740)
+* **glue-alpha:** add `cfn-glue-table-tableinput-parameters` to Glue table construct ([#27643](https://github.com/aws/aws-cdk/issues/27643)) ([8e15482](https://github.com/aws/aws-cdk/commit/8e15482295c1324eefea020faeb11e4c686357c6))
+
+
+### Bug Fixes
+
+* **lambda-go:** path with space breaks go build ([#28554](https://github.com/aws/aws-cdk/issues/28554)) ([a8a639e](https://github.com/aws/aws-cdk/commit/a8a639e2a2114162db240361c32c40a596a7a19e)), closes [#28555](https://github.com/aws/aws-cdk/issues/28555)
+
+## [2.117.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.116.1-alpha.0...v2.117.0-alpha.0) (2023-12-26)
+
+
+### Bug Fixes
+
+* **lambda-python-alpha:** bundling hash logic includes auth tokens in PIP urls, causing an unnecessary rebuild ([#27903](https://github.com/aws/aws-cdk/issues/27903)) ([00331a7](https://github.com/aws/aws-cdk/commit/00331a7292a3e60ea5ba3caf2a4fd4cca2fe7dc5)), closes [#27331](https://github.com/aws/aws-cdk/issues/27331)
+* **lambda-python-alpha:** use function architecture ([#18696](https://github.com/aws/aws-cdk/issues/18696)) ([#28449](https://github.com/aws/aws-cdk/issues/28449)) ([c724d27](https://github.com/aws/aws-cdk/commit/c724d277277c45b421dcd89ee1a6d4b54f942d3b))
+
 ## [2.116.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.116.0-alpha.0...v2.116.1-alpha.0) (2023-12-22)
 
 ## [2.116.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.115.0-alpha.0...v2.116.0-alpha.0) (2023-12-21)

@@ -228,7 +228,7 @@ test('log retention should be configured with given retention time when specifie
   });
 });
 
-test('log retention should not appear when no retention time is specified', () => {
+test('log retention will appear whenever logconfig is set', () => {
   // WHEN
   new appsync.GraphqlApi(stack, 'no-log-retention', {
     authorizationConfig: {},
@@ -237,7 +237,7 @@ test('log retention should not appear when no retention time is specified', () =
   });
 
   // THEN
-  Template.fromStack(stack).resourceCountIs('Custom::LogRetention', 0);
+  Template.fromStack(stack).resourceCountIs('Custom::LogRetention', 1);
 });
 
 test('when visibility is set it should be used when creating the API', () => {
@@ -298,4 +298,19 @@ test('appsync fails when specifing schema and definition', () => {
       definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
     });
   }).toThrowError('You cannot specify both properties schema and definition.');
+});
+
+test('when introspectionConfig is set it should be used when creating the API', () => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'disabled-introspection', {
+    authorizationConfig: {},
+    name: 'disabled-introspection',
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    introspectionConfig: appsync.IntrospectionConfig.DISABLED,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+    IntrospectionConfig: 'DISABLED',
+  });
 });
