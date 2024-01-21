@@ -263,7 +263,9 @@ export class Map extends State implements INextable {
    * Render Parameters in ASL JSON format
    */
   private renderParameters(): any {
-    if (!this.parameters) return undefined;
+    if (!this.parameters) {
+      return undefined;
+    }
     return FieldUtils.renderObject({
       Parameters: this.parameters,
     });
@@ -273,7 +275,9 @@ export class Map extends State implements INextable {
    * Render ItemSelector in ASL JSON format
    */
   private renderItemSelector(): any {
-    if (!this.itemSelector) return undefined;
+    if (!this.itemSelector) {
+      return undefined;
+    }
     return FieldUtils.renderObject({
       ItemSelector: this.itemSelector,
     });
