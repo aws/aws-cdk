@@ -73,7 +73,7 @@ export interface BasicStepScalingPolicyProps {
    *
    * Only has meaning if `evaluationPeriods != 1`.
    *
-   * @default `evaluationPeriods`
+   * @default - Same as `evaluationPeriods`
    */
   readonly datapointsToAlarm?: number;
 
