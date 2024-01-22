@@ -145,6 +145,7 @@ class AlbOidcStack extends Stack {
     new route53.ARecord(this, 'ARecord', {
       target: route53.RecordTarget.fromAlias(new route53targets.LoadBalancerTarget(lb)),
       zone: hostedZone,
+      recordName: props.domainName + '.',
     });
   }
 }
