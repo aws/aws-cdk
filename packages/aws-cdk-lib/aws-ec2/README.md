@@ -1797,6 +1797,28 @@ vpc.addFlowLog('FlowLogCloudWatch', {
 });
 ```
 
+To create a Transit Gateway flow log, you can use the `fromTransitGatewayId` method:
+
+```ts
+declare const tgw: ec2.CfnTransitGateway;
+
+new ec2.FlowLog(this, 'TransitGatewayFlowLog', {
+  resourceType: ec2.FlowLogResourceType.fromTransitGatewayId(tgw.ref)
+})
+```
+
+To create a Transit Gateway Attachment flow log, you can use the `fromTransitGatewayAttachmentId` method:
+
+```ts
+declare const tgwAttachment: ec2.CfnTransitGatewayAttachment;
+
+new ec2.FlowLog(this, 'TransitGatewayAttachmentFlowLog', {
+  resourceType: ec2.FlowLogResourceType.fromTransitGatewayAttachmentId(tgwAttachment.ref)
+})
+```
+
+For flow logs targeting TransitGateway and TransitGatewayAttachment, specifying the `trafficType` is not possible.
+
 ### Custom Formatting
 
 You can also custom format flow logs.
