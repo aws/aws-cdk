@@ -133,7 +133,7 @@
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.0.42",
+    "@aws-cdk/aws-service-spec": "^0.0.43",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -281,6 +281,7 @@
     "./aws-databrew": "./aws-databrew/index.js",
     "./aws-datapipeline": "./aws-datapipeline/index.js",
     "./aws-datasync": "./aws-datasync/index.js",
+    "./aws-datazone": "./aws-datazone/index.js",
     "./aws-dax": "./aws-dax/index.js",
     "./aws-detective": "./aws-detective/index.js",
     "./aws-devicefarm": "./aws-devicefarm/index.js",
