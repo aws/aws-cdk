@@ -1364,9 +1364,9 @@ export interface ScratchSpace {
 }
 
 /**
- * The details of data volume mount points for a container.
+ * The base details of where a volume will be mounted within a container
  */
-export interface MountPoint {
+export interface BaseMountPoint {
   /**
    * The path on the container to mount the host volume at.
    */
@@ -1378,6 +1378,12 @@ export interface MountPoint {
    * If this value is false, then the container can write to the volume.
    */
   readonly readOnly: boolean,
+}
+
+/**
+ * The details of data volume mount points for a container.
+ */
+export interface MountPoint extends BaseMountPoint {
   /**
    * The name of the volume to mount.
    *

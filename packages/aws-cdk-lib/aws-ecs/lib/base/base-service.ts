@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { ScalableTaskCount } from './scalable-task-count';
+import { ServiceManagedVolume } from './service-managed-volume';
 import * as appscaling from '../../../aws-applicationautoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
@@ -364,6 +365,14 @@ export interface BaseServiceOptions {
    * @default - Uses the revision of the passed task definition deployed by CloudFormation
    */
   readonly taskDefinitionRevision?: TaskDefinitionRevision;
+
+  /**
+   * Configuration details for a volume used by the service. This allows you to specify
+   * details about the EBS volume that can be attched to ECS tasks.
+   *
+   * @default - undefined
+   */
+  readonly volumeConfigurations?: ServiceManagedVolume[];
 }
 
 /**
@@ -584,6 +593,11 @@ export abstract class BaseService extends Resource
   private scalableTaskCount?: ScalableTaskCount;
 
   /**
+   * All volumes
+   */
+  private readonly volumes: ServiceManagedVolume[] = [];
+
+  /**
    * Constructs a new instance of the BaseService class.
    */
   constructor(
@@ -633,6 +647,7 @@ export abstract class BaseService extends Resource
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
       serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
       serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
+      volumeConfigurations: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
       ...additionalProps,
     });
 
@@ -693,6 +708,10 @@ export abstract class BaseService extends Resource
       this.enableServiceConnect(props.serviceConnectConfiguration);
     }
 
+    if (props.volumeConfigurations) {
+      props.volumeConfigurations.forEach(v => this.addVolume(v));
+    }
+
     if (props.enableExecuteCommand) {
       this.enableExecuteCommand();
 
@@ -726,6 +745,48 @@ export abstract class BaseService extends Resource
     }
 
     this.node.defaultChild = this.resource;
+  }
+
+  /**
+   * Adds a volume to the Service.
+   */
+  public addVolume(volume: ServiceManagedVolume) {
+    this.volumes.push(volume);
+  }
+
+  private renderVolumes(): CfnService.ServiceVolumeConfigurationProperty[] {
+    if (this.volumes.length > 1) {
+      throw new Error(`Only one EBS volume can be specified for 'volumeConfigurations', got: ${this.volumes.length}`);
+    }
+    return this.volumes.map(renderVolume);
+    function renderVolume(spec: ServiceManagedVolume): CfnService.ServiceVolumeConfigurationProperty {
+      const tagSpecifications = spec.config?.tagSpecifications?.map(ebsTagSpec => {
+        return {
+          resourceType: 'volume',
+          propagateTags: ebsTagSpec.propagateTags,
+          tags: ebsTagSpec.tags ? Object.entries(ebsTagSpec.tags).map(([key, value]) => ({
+            key: key,
+            value: value,
+          })) : undefined,
+        } as CfnService.EBSTagSpecificationProperty;
+      });
+
+      return {
+        name: spec.name,
+        managedEbsVolume: spec.config && {
+          roleArn: spec.role.roleArn,
+          encrypted: spec.config.encrypted,
+          filesystemType: spec.config.fileSystemType,
+          iops: spec.config.iops,
+          kmsKeyId: spec.config.kmsKeyId?.keyId,
+          throughput: spec.config.throughput,
+          volumeType: spec.config.volumeType,
+          snapshotId: spec.config.snapShotId,
+          sizeInGiB: spec.config.size?.toGibibytes(),
+          tagSpecifications: tagSpecifications,
+        },
+      };
+    }
   }
 
   /**
