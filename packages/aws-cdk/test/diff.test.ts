@@ -56,12 +56,14 @@ describe('non-nested stacks', () => {
     cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((stackArtifact: CloudFormationStackArtifact) => {
       if (stackArtifact.stackName === 'D') {
         return Promise.resolve({
-          deployedTemplate: { resource: 'D' },
+          deployedRootTemplate: { resource: 'D' },
+          nestedStacks: {},
           nestedStackCount: 0,
         });
       }
       return Promise.resolve({
-        deployedTemplate: {},
+        deployedRootTemplate: {},
+        nestedStacks: {},
         nestedStackCount: 0,
       });
     });
@@ -223,48 +225,71 @@ describe('nested stacks', () => {
         stackArtifact.template.Resources = {
           AdditionChild: {
             Type: 'AWS::CloudFormation::Stack',
-            Resources: {
-              SomeResource: {
-                Type: 'AWS::Something',
-                Properties: {
-                  Prop: 'added-value',
-                },
-              },
+            Properties: {
+              TemplateURL: 'addition-child-url-old',
             },
           },
           DeletionChild: {
             Type: 'AWS::CloudFormation::Stack',
-            Resources: {
-              SomeResource: {
-                Type: 'AWS::Something',
-              },
+            Properties: {
+              TemplateURL: 'deletion-child-url-old',
             },
           },
           ChangedChild: {
             Type: 'AWS::CloudFormation::Stack',
-            Resources: {
-              SomeResource: {
-                Type: 'AWS::Something',
-                Properties: {
-                  Prop: 'new-value',
-                },
-              },
+            Properties: {
+              TemplateURL: 'changed-child-url-old',
             },
           },
         };
         return Promise.resolve({
-          deployedTemplate: {
+          deployedRootTemplate: {
             Resources: {
               AdditionChild: {
                 Type: 'AWS::CloudFormation::Stack',
+                Properties: {
+                  TemplateURL: 'addition-child-url-new',
+                },
+              },
+              DeletionChild: {
+                Type: 'AWS::CloudFormation::Stack',
+                Properties: {
+                  TemplateURL: 'deletion-child-url-new',
+                },
+              },
+              ChangedChild: {
+                Type: 'AWS::CloudFormation::Stack',
+                Properties: {
+                  TemplateURL: 'changed-child-url-new',
+                },
+              },
+            },
+          },
+          nestedStackCount: 3,
+          nestedStacks: {
+            AdditionChild: {
+              deployedTemplate: {
                 Resources: {
                   SomeResource: {
                     Type: 'AWS::Something',
                   },
                 },
               },
-              DeletionChild: {
-                Type: 'AWS::CloudFormation::Stack',
+              generatedTemplate: {
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'added-value',
+                    },
+                  },
+                },
+              },
+              nestedStackTemplates: {},
+              physicalName: 'AdditionChild',
+            },
+            DeletionChild: {
+              deployedTemplate: {
                 Resources: {
                   SomeResource: {
                     Type: 'AWS::Something',
@@ -274,8 +299,18 @@ describe('nested stacks', () => {
                   },
                 },
               },
-              ChangedChild: {
-                Type: 'AWS::CloudFormation::Stack',
+              generatedTemplate: {
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                  },
+                },
+              },
+              nestedStackTemplates: {},
+              physicalName: 'DeletionChild',
+            },
+            ChangedChild: {
+              deployedTemplate: {
                 Resources: {
                   SomeResource: {
                     Type: 'AWS::Something',
@@ -285,13 +320,25 @@ describe('nested stacks', () => {
                   },
                 },
               },
+              generatedTemplate: {
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'new-value',
+                    },
+                  },
+                },
+              },
+              nestedStackTemplates: {},
+              physicalName: 'ChangedChild',
             },
           },
-          nestedStackCount: 3,
         });
       }
       return Promise.resolve({
-        deployedTemplate: {},
+        deployedRootTemplate: {},
+        nestedStacks: {},
         nestedStackCount: 0,
       });
     });
@@ -313,20 +360,36 @@ describe('nested stacks', () => {
     expect(plainTextOutput.trim()).toEqual(`Stack Parent
 Resources
 [~] AWS::CloudFormation::Stack AdditionChild
- └─ [~] Resources
-     └─ [~] .SomeResource:
-         └─ [+] Added: .Properties
+ └─ [~] TemplateURL
+     ├─ [-] addition-child-url-new
+     └─ [+] addition-child-url-old
 [~] AWS::CloudFormation::Stack DeletionChild
- └─ [~] Resources
-     └─ [~] .SomeResource:
-         └─ [-] Removed: .Properties
+ └─ [~] TemplateURL
+     ├─ [-] deletion-child-url-new
+     └─ [+] deletion-child-url-old
 [~] AWS::CloudFormation::Stack ChangedChild
- └─ [~] Resources
-     └─ [~] .SomeResource:
-         └─ [~] .Properties:
-             └─ [~] .Prop:
-                 ├─ [-] old-value
-                 └─ [+] new-value
+ └─ [~] TemplateURL
+     ├─ [-] changed-child-url-new
+     └─ [+] changed-child-url-old
+
+Stack AdditionChild
+Resources
+[~] AWS::Something SomeResource
+ └─ [+] Prop
+     └─ added-value
+
+Stack DeletionChild
+Resources
+[~] AWS::Something SomeResource
+ └─ [-] Prop
+     └─ value-to-be-removed
+
+Stack ChangedChild
+Resources
+[~] AWS::Something SomeResource
+ └─ [~] Prop
+     ├─ [-] old-value
+     └─ [+] new-value
 
 
 ✨  Number of stacks with differences: 4`);
@@ -350,23 +413,38 @@ Resources
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
       .replace(/[ \t]+$/mg, '');
     expect(plainTextOutput.trim()).toEqual(`Stack Parent
-Could not create a change set, will base the diff on template differences (run again with -v to see the reason)
 Resources
 [~] AWS::CloudFormation::Stack AdditionChild
- └─ [~] Resources
-     └─ [~] .SomeResource:
-         └─ [+] Added: .Properties
+ └─ [~] TemplateURL
+     ├─ [-] addition-child-url-new
+     └─ [+] addition-child-url-old
 [~] AWS::CloudFormation::Stack DeletionChild
- └─ [~] Resources
-     └─ [~] .SomeResource:
-         └─ [-] Removed: .Properties
+ └─ [~] TemplateURL
+     ├─ [-] deletion-child-url-new
+     └─ [+] deletion-child-url-old
 [~] AWS::CloudFormation::Stack ChangedChild
- └─ [~] Resources
-     └─ [~] .SomeResource:
-         └─ [~] .Properties:
-             └─ [~] .Prop:
-                 ├─ [-] old-value
-                 └─ [+] new-value
+ └─ [~] TemplateURL
+     ├─ [-] changed-child-url-new
+     └─ [+] changed-child-url-old
+
+Stack AdditionChild
+Resources
+[~] AWS::Something SomeResource
+ └─ [+] Prop
+     └─ added-value
+
+Stack DeletionChild
+Resources
+[~] AWS::Something SomeResource
+ └─ [-] Prop
+     └─ value-to-be-removed
+
+Stack ChangedChild
+Resources
+[~] AWS::Something SomeResource
+ └─ [~] Prop
+     ├─ [-] old-value
+     └─ [+] new-value
 
 
 ✨  Number of stacks with differences: 4`);
