@@ -133,6 +133,52 @@ describe('Map State', () => {
     });
   }),
 
+  test('State Machine With Map State and Item Selector', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new stepfunctions.Map(stack, 'Map State', {
+      stateName: 'My-Map-State',
+      maxConcurrency: 1,
+      itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      itemSelector: {
+        foo: 'foo',
+        bar: stepfunctions.JsonPath.stringAt('$.bar'),
+      },
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'My-Map-State',
+      States: {
+        'My-Map-State': {
+          Type: 'Map',
+          End: true,
+          ItemSelector: {
+            'foo': 'foo',
+            'bar.$': '$.bar',
+          },
+          ItemProcessor: {
+            ProcessorConfig: {
+              Mode: 'INLINE',
+            },
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemsPath: '$.inputForMap',
+          MaxConcurrency: 1,
+        },
+      },
+    });
+  }),
+
   test('State Machine With Map State and Item Processor in distributed mode', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -209,6 +255,23 @@ describe('Map State', () => {
     app.synth();
   }),
 
+  test('synth is successful with item selector', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.Map(stack, 'Map State', {
+        maxConcurrency: 1,
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+        itemSelector: {
+          foo: 'foo',
+          bar: stepfunctions.JsonPath.stringAt('$.bar'),
+        },
+      });
+      map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+      return map;
+    });
+
+    app.synth();
+  }),
+
   test('synth is successful with item processor and distributed mode', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.Map(stack, 'Map State', {
@@ -251,6 +314,27 @@ describe('Map State', () => {
     });
 
     expect(() => app.synth()).toThrow(/Map state cannot have both an iterator and an item processor/);
+  }),
+
+  test('fails in synthesis if parameters and item selector are defined', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.Map(stack, 'Map State', {
+        maxConcurrency: 1,
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+        parameters: {
+          foo: 'foo',
+          bar: stepfunctions.JsonPath.stringAt('$.bar'),
+        },
+        itemSelector: {
+          foo: 'foo',
+          bar: stepfunctions.JsonPath.stringAt('$.bar'),
+        },
+      });
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/Map state cannot have both parameters and an item selector/);
   }),
 
   test('fails in synthesis if distributed mode and execution type is not defined', () => {

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "cdk-stepfunctions-map-itemselector-integ/DefaultTest": {
+      "stacks": [
+        "cdk-stepfunctions-map-itemselector-stack"
+      ],
+      "assertionStack": "cdk-stepfunctions-map-itemselector-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkstepfunctionsmapitemselectorintegDefaultTestDeployAssertB0D765C3"
+    }
+  }
+}
