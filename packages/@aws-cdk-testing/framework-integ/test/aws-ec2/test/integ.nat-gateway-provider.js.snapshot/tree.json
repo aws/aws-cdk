@@ -45,8 +45,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "us-east-1a",
-                        "cidrBlock": "10.0.0.0/19",
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.0.0/18",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
                           {
@@ -205,8 +212,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "us-east-1b",
-                        "cidrBlock": "10.0.32.0/19",
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.64.0/18",
                         "mapPublicIpOnLaunch": true,
                         "tags": [
                           {
@@ -307,118 +321,6 @@
                   "version": "0.0.0"
                 }
               },
-              "PublicSubnet3": {
-                "id": "PublicSubnet3",
-                "path": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PublicSubnet3",
-                "children": {
-                  "Subnet": {
-                    "id": "Subnet",
-                    "path": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PublicSubnet3/Subnet",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
-                      "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "us-east-1c",
-                        "cidrBlock": "10.0.64.0/19",
-                        "mapPublicIpOnLaunch": true,
-                        "tags": [
-                          {
-                            "key": "aws-cdk:subnet-name",
-                            "value": "Public"
-                          },
-                          {
-                            "key": "aws-cdk:subnet-type",
-                            "value": "Public"
-                          },
-                          {
-                            "key": "Name",
-                            "value": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PublicSubnet3"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "MyVpcF9F0CA6F"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Acl": {
-                    "id": "Acl",
-                    "path": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PublicSubnet3/Acl",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "RouteTable": {
-                    "id": "RouteTable",
-                    "path": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PublicSubnet3/RouteTable",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
-                      "aws:cdk:cloudformation:props": {
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PublicSubnet3"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "MyVpcF9F0CA6F"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "RouteTableAssociation": {
-                    "id": "RouteTableAssociation",
-                    "path": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PublicSubnet3/RouteTableAssociation",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
-                      "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "MyVpcPublicSubnet3RouteTable15028F08"
-                        },
-                        "subnetId": {
-                          "Ref": "MyVpcPublicSubnet3Subnet57EEE236"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DefaultRoute": {
-                    "id": "DefaultRoute",
-                    "path": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PublicSubnet3/DefaultRoute",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
-                      "aws:cdk:cloudformation:props": {
-                        "destinationCidrBlock": "0.0.0.0/0",
-                        "gatewayId": {
-                          "Ref": "MyVpcIGW5C4A4F63"
-                        },
-                        "routeTableId": {
-                          "Ref": "MyVpcPublicSubnet3RouteTable15028F08"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
-                }
-              },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
                 "path": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PrivateSubnet1",
@@ -429,8 +331,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "us-east-1a",
-                        "cidrBlock": "10.0.96.0/19",
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.128.0/18",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
                           {
@@ -541,8 +450,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "us-east-1b",
-                        "cidrBlock": "10.0.128.0/19",
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.192.0/18",
                         "mapPublicIpOnLaunch": false,
                         "tags": [
                           {
@@ -629,118 +545,6 @@
                         },
                         "routeTableId": {
                           "Ref": "MyVpcPrivateSubnet2RouteTableCEDCEECE"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
-                }
-              },
-              "PrivateSubnet3": {
-                "id": "PrivateSubnet3",
-                "path": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PrivateSubnet3",
-                "children": {
-                  "Subnet": {
-                    "id": "Subnet",
-                    "path": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PrivateSubnet3/Subnet",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
-                      "aws:cdk:cloudformation:props": {
-                        "availabilityZone": "us-east-1c",
-                        "cidrBlock": "10.0.160.0/19",
-                        "mapPublicIpOnLaunch": false,
-                        "tags": [
-                          {
-                            "key": "aws-cdk:subnet-name",
-                            "value": "Private"
-                          },
-                          {
-                            "key": "aws-cdk:subnet-type",
-                            "value": "Private"
-                          },
-                          {
-                            "key": "Name",
-                            "value": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PrivateSubnet3"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "MyVpcF9F0CA6F"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Acl": {
-                    "id": "Acl",
-                    "path": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PrivateSubnet3/Acl",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "RouteTable": {
-                    "id": "RouteTable",
-                    "path": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PrivateSubnet3/RouteTable",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
-                      "aws:cdk:cloudformation:props": {
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PrivateSubnet3"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "MyVpcF9F0CA6F"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "RouteTableAssociation": {
-                    "id": "RouteTableAssociation",
-                    "path": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PrivateSubnet3/RouteTableAssociation",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
-                      "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "MyVpcPrivateSubnet3RouteTableB790927C"
-                        },
-                        "subnetId": {
-                          "Ref": "MyVpcPrivateSubnet3Subnet772D6AD7"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DefaultRoute": {
-                    "id": "DefaultRoute",
-                    "path": "aws-cdk-vpc-nat-gateway-provider/MyVpc/PrivateSubnet3/DefaultRoute",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
-                      "aws:cdk:cloudformation:props": {
-                        "destinationCidrBlock": "0.0.0.0/0",
-                        "natGatewayId": {
-                          "Ref": "MyVpcPublicSubnet1NATGatewayAD3400C1"
-                        },
-                        "routeTableId": {
-                          "Ref": "MyVpcPrivateSubnet3RouteTableB790927C"
                         }
                       }
                     },

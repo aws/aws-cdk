@@ -11,21 +11,21 @@
     },
     "aws-cdk-vpc-nat-gateway-provider": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://675978108783/us-east-1",
+      "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-vpc-nat-gateway-provider.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::675978108783:role/cdk-hnb659fds-deploy-role-675978108783-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::675978108783:role/cdk-hnb659fds-cfn-exec-role-675978108783-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-675978108783-us-east-1/a10e4d5774fd80ddf852731013721de39f93975c5d0dbb2b6c5bac48d88f018b.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9fe8a0a7f07ddba9fe09eaa5d8aa34560b6726b1fbeeb7109bdda7c87403f4fd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "aws-cdk-vpc-nat-gateway-provider.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::675978108783:role/cdk-hnb659fds-lookup-role-675978108783-us-east-1",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -100,30 +100,6 @@
             "data": "MyVpcPublicSubnet2DefaultRoute052936F6"
           }
         ],
-        "/aws-cdk-vpc-nat-gateway-provider/MyVpc/PublicSubnet3/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet3Subnet57EEE236"
-          }
-        ],
-        "/aws-cdk-vpc-nat-gateway-provider/MyVpc/PublicSubnet3/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet3RouteTable15028F08"
-          }
-        ],
-        "/aws-cdk-vpc-nat-gateway-provider/MyVpc/PublicSubnet3/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet3RouteTableAssociation5C27DDA4"
-          }
-        ],
-        "/aws-cdk-vpc-nat-gateway-provider/MyVpc/PublicSubnet3/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet3DefaultRoute3A83AB36"
-          }
-        ],
         "/aws-cdk-vpc-nat-gateway-provider/MyVpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
@@ -170,30 +146,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyVpcPrivateSubnet2DefaultRoute9CE96294"
-          }
-        ],
-        "/aws-cdk-vpc-nat-gateway-provider/MyVpc/PrivateSubnet3/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet3Subnet772D6AD7"
-          }
-        ],
-        "/aws-cdk-vpc-nat-gateway-provider/MyVpc/PrivateSubnet3/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet3RouteTableB790927C"
-          }
-        ],
-        "/aws-cdk-vpc-nat-gateway-provider/MyVpc/PrivateSubnet3/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet3RouteTableAssociationD951741C"
-          }
-        ],
-        "/aws-cdk-vpc-nat-gateway-provider/MyVpc/PrivateSubnet3/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcPrivateSubnet3DefaultRouteEC11C0C5"
           }
         ],
         "/aws-cdk-vpc-nat-gateway-provider/MyVpc/IGW": [
