@@ -25,7 +25,7 @@ export interface OpenSearchActionProps extends CommonActionProps {
 }
 
 /**
- * The action to writes data to an Amazon OpenSearch Service domain.
+ * The action to write data to an Amazon OpenSearch Service domain.
  */
 export class OpenSearchAction implements iot.IAction {
   constructor(private readonly domain: opensearch.Domain, private readonly props: OpenSearchActionProps) {

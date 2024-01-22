@@ -374,7 +374,7 @@ topicRule.addAction(
 
 ## Write Data to Open Search Service
 
-The code snippet below creates an AWS IoT Rule that write data
+The code snippet below creates an AWS IoT Rule that writes data
 to an Open Search Service when it is triggered:
 
 ```ts
