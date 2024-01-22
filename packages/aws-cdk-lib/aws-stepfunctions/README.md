@@ -244,6 +244,7 @@ are supported:
 * [`Succeed`](#succeed)
 * [`Fail`](#fail)
 * [`Map`](#map)
+* [`Distributed Map`](#distributed-map)
 * [`Custom State`](#custom-state)
 
 An arbitrary JSON object (specified at execution start) is passed from state to
@@ -541,6 +542,53 @@ map.itemProcessor(new sfn.Pass(this, 'Pass State'), {
 ```
 
 > Visit [Using Map state in Distributed mode to orchestrate large-scale parallel workloads](https://docs.aws.amazon.com/step-functions/latest/dg/use-dist-map-orchestrate-large-scale-parallel-workloads.html) for more details.
+
+### Distributed Map
+
+Step Functions provides a high-concurrency mode for the Map state known as Distributed mode. In this mode, the Map state can accept input from large-scale Amazon S3 data sources. For example, your input can be a JSON or CSV file stored in an Amazon S3 bucket, or a JSON array passed from a previous step in the workflow. A Map state set to Distributed is known as a Distributed Map state. In this mode, the Map state runs each iteration as a child workflow execution, which enables high concurrency of up to 10,000 parallel child workflow executions. Each child workflow execution has its own, separate execution history from that of the parent workflow.
+
+Use the Map state in Distributed mode when you need to orchestrate large-scale parallel workloads that meet any combination of the following conditions:
+
+* The size of your dataset exceeds 256 KB.
+* The workflow's execution event history exceeds 25,000 entries.
+* You need a concurrency of more than 40 parallel iterations.
+
+A `DistributedMap` state can be used to run a set of steps for each element of an input array with high concurrency.
+A `DistributedMap` state will execute the same steps for multiple entries of an array in the state input or from S3 objects.
+
+```ts
+const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
+  maxConcurrency: 1,
+  itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
+});
+map.itemProcessor(new sfn.Pass(this, 'Pass State'));
+```
+
+Map states in Distributed mode support multiple sources for an array to iterate:
+
+* JSON array from the state input payload
+* objects in an S3 bucket and optional prefix
+* JSON array in a JSON file stored in S3
+* CSV file stored in S3
+* S3 inventory manifest stored in S3
+
+There are multiple classes that implement `IItemReader` that can be used to configure the iterator source.  These can be provided via the optional `itemReader` property.  The default behavior if `itemReader` is omitted is to use the input payload.
+
+Map states in Distributed mode also support writing results of the iterator to an S3 bucket and optional prefix.  Use a `ResultWriter` object provided via the optional `resultWriter` property to configure which S3 location iterator results will be written. The default behavior id `resultWriter` is omitted is to use the state output payload. However, if the iterator results are larger than the 256 kb limit for Step Functions payloads then the State Machine will fail.
+
+```ts
+const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
+  itemReader: new sfn.S3JsonItemReader({
+    bucket: 'my-bucket',
+    key: 'my-key.json',
+  }),
+  resultWriter: new sfn.ResultWriter({
+    bucket: 'my-bucket',
+    prefix: 'my-prefix',
+  })
+});
+distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
+```
 
 ### Custom State
 
