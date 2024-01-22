@@ -41,7 +41,9 @@ declare const myRole: iam.Role;
 const myProvider = new cr.Provider(this, 'MyProvider', {
   onEventHandler: onEvent,
   isCompleteHandler: isComplete,        // optional async "waiter"
-  logRetention: logs.RetentionDays.ONE_DAY,   // default is INFINITE
+  logGroup: new logs.LogGroup(this, 'MyProviderLogs', {
+    retention: logs.RetentionDays.ONE_DAY,
+  }),
   role: myRole, // must be assumable by the `lambda.amazonaws.com` service principal
 });
 
@@ -382,7 +384,9 @@ declare const myRole: iam.Role;
 const myProvider = new cr.Provider(this, 'MyProvider', {
   onEventHandler: onEvent,
   isCompleteHandler: isComplete,
-  logRetention: logs.RetentionDays.ONE_DAY,
+  logGroup: new logs.LogGroup(this, 'MyProviderLogs', {
+    retention: logs.RetentionDays.ONE_DAY,
+  }),
   role: myRole,
   providerFunctionName: 'the-lambda-name',   // Optional
 });
@@ -404,7 +408,9 @@ const key = new kms.Key(this, 'MyKey');
 const myProvider = new cr.Provider(this, 'MyProvider', {
   onEventHandler: onEvent,
   isCompleteHandler: isComplete,
-  logRetention: logs.RetentionDays.ONE_DAY,
+  logGroup: new logs.LogGroup(this, 'MyProviderLogs', {
+    retention: logs.RetentionDays.ONE_DAY,
+  }),
   role: myRole,
   providerFunctionEnvEncryption: key,   // Optional
 });
@@ -536,7 +542,7 @@ In both the cases, you will get a synth time error if you attempt to use it in c
 
 ### Customizing the Lambda function implementing the custom resource
 
-Use the `role`, `timeout`, `logRetention`, `functionName` and `removalPolicy` properties to customize
+Use the `role`, `timeout`, `logGroup`, `functionName` and `removalPolicy` properties to customize
 the Lambda function implementing the custom resource:
 
 ```ts
@@ -544,7 +550,9 @@ declare const myRole: iam.Role;
 new cr.AwsCustomResource(this, 'Customized', {
   role: myRole, // must be assumable by the `lambda.amazonaws.com` service principal
   timeout: Duration.minutes(10), // defaults to 2 minutes
-  logRetention: logs.RetentionDays.ONE_WEEK, // defaults to never delete logs
+  logGroup: new logs.LogGroup(this, 'AwsCustomResourceLogs', {
+    retention: logs.RetentionDays.ONE_DAY,
+  }),
   functionName: 'my-custom-name', // defaults to a CloudFormation generated name
   removalPolicy: RemovalPolicy.RETAIN, // defaults to `RemovalPolicy.DESTROY`
   policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
