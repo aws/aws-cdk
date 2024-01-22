@@ -29,12 +29,7 @@ class NatGatewayStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-const testCase = new NatGatewayStack(app, 'aws-cdk-vpc-nat-gateway-provider', {
-  env: {
-    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
-  },
-});
+const testCase = new NatGatewayStack(app, 'aws-cdk-vpc-nat-gateway-provider');
 
 new IntegTest(app, 'integ-test', {
   testCases: [testCase],
