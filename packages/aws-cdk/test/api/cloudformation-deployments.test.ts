@@ -248,6 +248,7 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
   // WHEN
   const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
   const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedRootTemplate;
+  const nestedStacks = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStacks;
 
   // THEN
   expect(nestedStackCount).toEqual(1);
@@ -257,28 +258,6 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
           TemplateURL: 'https://www.magic-url.com',
-          NestedTemplate: {
-            Resources: {
-              NestedResource: {
-                Type: 'AWS::Something',
-                Properties: {
-                  Property: 'old-value',
-                },
-              },
-            },
-            Outputs: {
-              NestedOutput: {
-                Value: {
-                  Ref: 'NestedResource',
-                },
-              },
-            },
-            Parameters: {
-              NestedParam: {
-                Type: 'String',
-              },
-            },
-          },
         },
         Metadata: {
           'aws:asset:path': 'one-output-one-param-stack.nested.template.json',
@@ -293,33 +272,62 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
           TemplateURL: 'https://www.magic-url.com',
-          NestedTemplate: {
-            Resources: {
-              NestedResource: {
-                Type: 'AWS::Something',
-                Properties: {
-                  Property: 'new-value',
-                },
-              },
-            },
-            Outputs: {
-              NestedOutput: {
-                Value: {
-                  Ref: 'NestedResource',
-                },
-              },
-            },
-            Parameters: {
-              NestedParam: {
-                Type: 'Number',
-              },
-            },
-          },
         },
         Metadata: {
           'aws:asset:path': 'one-output-one-param-stack.nested.template.json',
         },
       },
+    },
+  });
+
+  expect(nestedStacks).toEqual({
+    NestedStack: {
+      deployedTemplate: {
+        Outputs: {
+          NestedOutput: {
+            Value: {
+              Ref: 'NestedResource',
+            },
+          },
+        },
+        Parameters: {
+          NestedParam: {
+            Type: 'String',
+          },
+        },
+        Resources: {
+          NestedResource: {
+            Properties: {
+              Property: 'old-value',
+            },
+            Type: 'AWS::Something',
+          },
+        },
+      },
+      generatedTemplate: {
+        Outputs: {
+          NestedOutput: {
+            Value: {
+              Ref: 'NestedResource',
+            },
+          },
+        },
+        Parameters: {
+          NestedParam: {
+            Type: 'Number',
+          },
+        },
+        Resources: {
+          NestedResource: {
+            Properties: {
+              Property: 'new-value',
+            },
+            Type: 'AWS::Something',
+          },
+        },
+      },
+      nestedStackTemplates: {},
+      physicalName: 'NestedStack',
     },
   });
 });
@@ -455,6 +463,7 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
   // WHEN
   const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
   const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedRootTemplate;
+  const nestedStacks = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStacks;
 
   // THEN
   expect(nestedStackCount).toEqual(3);
@@ -464,54 +473,6 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
           TemplateURL: 'https://www.magic-url.com',
-          NestedTemplate: {
-            Resources: {
-              GrandChildStackA: {
-                Type: 'AWS::CloudFormation::Stack',
-                Properties: {
-                  TemplateURL: 'https://www.magic-url.com',
-                  NestedTemplate: {
-                    Resources: {
-                      SomeResource: {
-                        Type: 'AWS::Something',
-                        Properties: {
-                          Property: 'old-value',
-                        },
-                      },
-                    },
-                  },
-                },
-                Metadata: {
-                  'aws:asset:path': 'one-resource-stack.nested.template.json',
-                },
-              },
-              GrandChildStackB: {
-                Type: 'AWS::CloudFormation::Stack',
-                Properties: {
-                  TemplateURL: 'https://www.magic-url.com',
-                  NestedTemplate: {
-                    Resources: {
-                      SomeResource: {
-                        Type: 'AWS::Something',
-                        Properties: {
-                          Property: 'old-value',
-                        },
-                      },
-                    },
-                  },
-                },
-                Metadata: {
-                  'aws:asset:path': 'one-resource-stack.nested.template.json',
-                },
-              },
-              SomeResource: {
-                Type: 'AWS::Something',
-                Properties: {
-                  Property: 'old-value',
-                },
-              },
-            },
-          },
         },
         Metadata: {
           'aws:asset:path': 'one-resource-two-stacks-stack.nested.template.json',
@@ -526,59 +487,123 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
           TemplateURL: 'https://www.magic-url.com',
-          NestedTemplate: {
-            Resources: {
-              GrandChildStackA: {
-                Type: 'AWS::CloudFormation::Stack',
-                Properties: {
-                  TemplateURL: 'https://www.magic-url.com',
-                  NestedTemplate: {
-                    Resources: {
-                      SomeResource: {
-                        Type: 'AWS::Something',
-                        Properties: {
-                          Property: 'new-value',
-                        },
-                      },
-                    },
-                  },
-                },
-                Metadata: {
-                  'aws:asset:path': 'one-resource-stack.nested.template.json',
-                },
-              },
-              GrandChildStackB: {
-                Type: 'AWS::CloudFormation::Stack',
-                Properties: {
-                  TemplateURL: 'https://www.magic-url.com',
-                  NestedTemplate: {
-                    Resources: {
-                      SomeResource: {
-                        Type: 'AWS::Something',
-                        Properties: {
-                          Property: 'new-value',
-                        },
-                      },
-                    },
-                  },
-                },
-                Metadata: {
-                  'aws:asset:path': 'one-resource-stack.nested.template.json',
-                },
-              },
-              SomeResource: {
-                Type: 'AWS::Something',
-                Properties: {
-                  Property: 'new-value',
-                },
-              },
-            },
-          },
         },
         Metadata: {
           'aws:asset:path': 'one-resource-two-stacks-stack.nested.template.json',
         },
       },
+    },
+  });
+
+  expect(nestedStacks).toEqual({
+    NestedStack: {
+      deployedTemplate: {
+        Resources: {
+          GrandChildStackA: {
+            Metadata: {
+              'aws:asset:path': 'one-resource-stack.nested.template.json',
+            },
+            Properties: {
+              TemplateURL: 'https://www.magic-url.com',
+            },
+            Type: 'AWS::CloudFormation::Stack',
+          },
+          GrandChildStackB: {
+            Metadata: {
+              'aws:asset:path': 'one-resource-stack.nested.template.json',
+            },
+            Properties: {
+              TemplateURL: 'https://www.magic-url.com',
+            },
+            Type: 'AWS::CloudFormation::Stack',
+          },
+          SomeResource: {
+            Properties: {
+              Property: 'old-value',
+            },
+            Type: 'AWS::Something',
+          },
+        },
+      },
+      generatedTemplate: {
+        Resources: {
+          GrandChildStackA: {
+            Metadata: {
+              'aws:asset:path': 'one-resource-stack.nested.template.json',
+            },
+            Properties: {
+              TemplateURL: 'https://www.magic-url.com',
+            },
+            Type: 'AWS::CloudFormation::Stack',
+          },
+          GrandChildStackB: {
+            Metadata: {
+              'aws:asset:path': 'one-resource-stack.nested.template.json',
+            },
+            Properties: {
+              TemplateURL: 'https://www.magic-url.com',
+            },
+            Type: 'AWS::CloudFormation::Stack',
+          },
+          SomeResource: {
+            Properties: {
+              Property: 'new-value',
+            },
+            Type: 'AWS::Something',
+          },
+        },
+      },
+      nestedStackTemplates: {
+        GrandChildStackA: {
+          deployedTemplate: {
+            Resources: {
+              SomeResource: {
+                Properties: {
+                  Property: 'old-value',
+                },
+                Type: 'AWS::Something',
+              },
+            },
+          },
+          generatedTemplate: {
+            Resources: {
+              SomeResource: {
+                Properties: {
+                  Property: 'new-value',
+                },
+                Type: 'AWS::Something',
+              },
+            },
+          },
+          nestedStackTemplates: {},
+          physicalName: 'GrandChildStackA',
+        },
+        GrandChildStackB: {
+          deployedTemplate: {
+            Resources: {
+              SomeResource: {
+                Properties: {
+                  Property: 'old-value',
+                },
+                Type: 'AWS::Something',
+              },
+            },
+          },
+          generatedTemplate: {
+            Resources: {
+              SomeResource: {
+                Properties: {
+                  Property: 'new-value',
+                },
+                Type: 'AWS::Something',
+              },
+            },
+          },
+          nestedStackTemplates: {},
+          physicalName: 'GrandChildStackB',
+        },
+      },
+      physicalName: 'NestedStack',
     },
   });
 });
@@ -812,6 +837,7 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
   // WHEN
   const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
   const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedRootTemplate;
+  const nestedStacks = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStacks;
 
   // THEN
   expect(nestedStackCount).toEqual(1);
@@ -821,16 +847,6 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
           TemplateURL: 'https://www.magic-url.com',
-          NestedTemplate: {
-            Resources: {
-              SomeResource: {
-                Type: 'AWS::Something',
-                Properties: {
-                  Property: 'old-value',
-                },
-              },
-            },
-          },
         },
         Metadata: {
           'aws:asset:path': 'one-resource-stack.nested.template.json',
@@ -858,21 +874,37 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
         Type: 'AWS::CloudFormation::Stack',
         Properties: {
           TemplateURL: 'https://www.magic-url.com',
-          NestedTemplate: {
-            Resources: {
-              SomeResource: {
-                Type: 'AWS::Something',
-                Properties: {
-                  Property: 'new-value',
-                },
-              },
-            },
-          },
         },
         Metadata: {
           'aws:asset:path': 'one-resource-stack.nested.template.json',
         },
       },
+    },
+  });
+  expect(nestedStacks).toEqual({
+    WithMetadata: {
+      deployedTemplate: {
+        Resources: {
+          SomeResource: {
+            Properties: {
+              Property: 'old-value',
+            },
+            Type: 'AWS::Something',
+          },
+        },
+      },
+      generatedTemplate: {
+        Resources: {
+          SomeResource: {
+            Properties: {
+              Property: 'new-value',
+            },
+            Type: 'AWS::Something',
+          },
+        },
+      },
+      physicalName: 'one-resource-stack',
+      nestedStackTemplates: {},
     },
   });
 });
