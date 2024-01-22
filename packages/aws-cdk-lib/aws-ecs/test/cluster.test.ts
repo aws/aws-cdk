@@ -1021,6 +1021,15 @@ describe('cluster', () => {
 
   });
 
+  test('allows returning the correct image for linux 2 for EcsOptimizedImage with Neuron hardware', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    expect(ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.NEURON).getImage(stack).osType).toEqual(
+      ec2.OperatingSystemType.LINUX);
+
+  });
+
   test('allows returning the correct image for linux 2023 for EcsOptimizedImage', () => {
     // GIVEN
     const stack = new cdk.Stack();
