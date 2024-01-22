@@ -526,7 +526,18 @@
      "Version": "2012-10-17"
     },
     "ManagedPolicyArns": [
-     "arn:aws:iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess"
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess"
+       ]
+      ]
+     }
     ]
    }
   },

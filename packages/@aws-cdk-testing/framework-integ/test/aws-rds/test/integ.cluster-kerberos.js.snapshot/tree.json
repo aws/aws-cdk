@@ -703,14 +703,6 @@
               "version": "0.0.0"
             }
           },
-          "RdsRole": {
-            "id": "RdsRole",
-            "path": "cluster-kerberos/RdsRole",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0"
-            }
-          },
           "Role": {
             "id": "Role",
             "path": "cluster-kerberos/Role",
@@ -745,7 +737,18 @@
                       "Version": "2012-10-17"
                     },
                     "managedPolicyArns": [
-                      "arn:aws:iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess"
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess"
+                          ]
+                        ]
+                      }
                     ]
                   }
                 },
