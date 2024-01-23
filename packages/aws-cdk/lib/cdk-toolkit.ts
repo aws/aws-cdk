@@ -17,7 +17,7 @@ import { Deployments } from './api/deployments';
 import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
-import { createDiffChangeSet } from './api/util/cloudformation';
+import { createDiffChangeSet, ResourcesToImport } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, validateSourceOptions } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
@@ -207,6 +207,8 @@ export class CdkToolkit {
       options.cacheCloudAssembly, options.ignoreNoStacks);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
     print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
+
+    await this.tryMigrateResources(stackCollection, options);
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
@@ -542,9 +544,7 @@ export class CdkToolkit {
     // Import the resources according to the given mapping
     print('%s: importing resources into stack...', chalk.bold(stack.displayName));
     const tags = tagsForStack(stack);
-    await resourceImporter.importResources(actualImport, {
-      stack,
-      deployName: stack.stackName,
+    await resourceImporter.importResourcesFromMap(actualImport, {
       roleArn: options.roleArn,
       toolkitStackName: options.toolkitStackName,
       tags,
@@ -881,6 +881,63 @@ export class CdkToolkit {
       toolkitStackName: options.toolkitStackName,
       stackName: assetNode.parentStack.stackName,
     }));
+  }
+
+  /**
+   * Checks to see if a migrate.json file exists. If it does and the source is either `filepath` or
+   * is in the same environment as the stack deployment, a new stack is created and the resources are
+   * migrated to the stack using an IMPORT changeset. The normal deployment will resume after this is complete
+   * to add back in any outputs and the CDKMetadata.
+   */
+  private async tryMigrateResources(stacks: StackCollection, options: DeployOptions): Promise<void> {
+    const stack = stacks.stackArtifacts[0];
+    const migrateDeployment = new ResourceImporter(stack, this.props.deployments);
+    const resourcesToImport = await this.tryGetResources(migrateDeployment);
+
+    if (resourcesToImport) {
+      print('%s: creating stack for resource migration...', chalk.bold(stack.displayName));
+      print('%s: importing resources into stack...', chalk.bold(stack.displayName));
+
+      await this.performResourceMigration(migrateDeployment, resourcesToImport, options);
+
+      fs.rmSync('migrate.json');
+      print('%s: applying CDKMetadata and Outputs to stack (if applicable)...', chalk.bold(stack.displayName));
+    }
+  }
+
+  /**
+   * Creates a new stack with just the resources to be migrated
+   */
+  private async performResourceMigration(migrateDeployment: ResourceImporter, resourcesToImport: ResourcesToImport, options: DeployOptions) {
+    const startDeployTime = new Date().getTime();
+    let elapsedDeployTime = 0;
+
+    // Initial Deployment
+    await migrateDeployment.importResourcesFromMigrate(resourcesToImport, {
+      roleArn: options.roleArn,
+      toolkitStackName: options.toolkitStackName,
+      deploymentMethod: options.deploymentMethod,
+      usePreviousParameters: true,
+      progress: options.progress,
+      rollback: options.rollback,
+    });
+
+    elapsedDeployTime = new Date().getTime() - startDeployTime;
+    print('\n✨  Resource migration time: %ss\n', formatTime(elapsedDeployTime));
+  }
+
+  private async tryGetResources(migrateDeployment: ResourceImporter) {
+    try {
+      const migrateFile = fs.readJsonSync('migrate.json', { encoding: 'utf-8' });
+      const sourceEnv = (migrateFile.Source as string).split(':');
+      const environment = await migrateDeployment.resolveEnvironment();
+      if (sourceEnv[0] === 'localfile' ||
+        (sourceEnv[4] === environment.account && sourceEnv[3] === environment.region)) {
+        return migrateFile.Resources;
+      }
+    } catch (e) {
+      // Nothing to do
+    }
   }
 }
 

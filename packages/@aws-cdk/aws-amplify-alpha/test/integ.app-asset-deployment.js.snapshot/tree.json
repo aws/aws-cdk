@@ -306,7 +306,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "9307ab790c544d7c4d94504a1c950222bbfc119c2c12b44440ad46939e0b6364.zip"
+                          "s3Key": "85f7bb0ac0b4da3571afd49c891d631f4f07c0ef710a02046d3a9abd8d9d4604.zip"
                         },
                         "environment": {
                           "variables": {
@@ -470,7 +470,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "9307ab790c544d7c4d94504a1c950222bbfc119c2c12b44440ad46939e0b6364.zip"
+                          "s3Key": "85f7bb0ac0b4da3571afd49c891d631f4f07c0ef710a02046d3a9abd8d9d4604.zip"
                         },
                         "environment": {
                           "variables": {
@@ -1264,22 +1264,6 @@
                                               ]
                                             }
                                           ]
-                                        },
-                                        {
-                                          "Action": [
-                                            "logs:CreateLogDelivery",
-                                            "logs:CreateLogStream",
-                                            "logs:DeleteLogDelivery",
-                                            "logs:DescribeLogGroups",
-                                            "logs:DescribeResourcePolicies",
-                                            "logs:GetLogDelivery",
-                                            "logs:ListLogDeliveries",
-                                            "logs:PutLogEvents",
-                                            "logs:PutResourcePolicy",
-                                            "logs:UpdateLogDelivery"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": "*"
                                         }
                                       ],
                                       "Version": "2012-10-17"
@@ -1309,91 +1293,18 @@
                           "version": "0.0.0"
                         }
                       },
-                      "LogGroup": {
-                        "id": "LogGroup",
-                        "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/waiter-state-machine/LogGroup",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/waiter-state-machine/LogGroup/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                              "aws:cdk:cloudformation:props": {
-                                "retentionInDays": 731
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-                          "version": "0.0.0"
-                        }
-                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider/waiter-state-machine/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
-                          "aws:cdk:cloudformation:props": {
-                            "definitionString": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":60,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "amplifyassetdeploymenthandlerproviderframeworkisComplete2A696873",
-                                      "Arn"
-                                    ]
-                                  },
-                                  "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "amplifyassetdeploymenthandlerproviderframeworkonTimeoutF14D3B70",
-                                      "Arn"
-                                    ]
-                                  },
-                                  "\"}}}"
-                                ]
-                              ]
-                            },
-                            "loggingConfiguration": {
-                              "destinations": [
-                                {
-                                  "cloudWatchLogsLogGroup": {
-                                    "logGroupArn": {
-                                      "Fn::GetAtt": [
-                                        "amplifyassetdeploymenthandlerproviderwaiterstatemachineLogGroupC4BDAC97",
-                                        "Arn"
-                                      ]
-                                    }
-                                  }
-                                }
-                              ],
-                              "includeExecutionData": false,
-                              "level": "ERROR"
-                            },
-                            "roleArn": {
-                              "Fn::GetAtt": [
-                                "amplifyassetdeploymenthandlerproviderwaiterstatemachineRole014FC0BB",
-                                "Arn"
-                              ]
-                            }
-                          }
-                        },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.custom_resources.WaiterStateMachine",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
@@ -1442,7 +1353,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/682395e9589ad51a85bf6a01b8fe27949ec63b9454a566b53e9f9e49e4e87b3f.json"
+                          "/d43fb7d2905864414e4778c7de7f1a874634c94930fb3c2e0ce4aef8d44fcbbd.json"
                         ]
                       ]
                     }
