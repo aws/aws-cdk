@@ -1,0 +1,62 @@
+import { Construct } from 'constructs';
+import * as iam from '../../../aws-iam';
+import * as sfn from '../../../aws-stepfunctions';
+import { Stack } from '../../../core';
+import { integrationResourceArn } from '../private/task-utils';
+
+/**
+ * Properties for starting an AWS Glue Crawler as a task
+ */
+export interface GlueStartCrawlerRunProps extends sfn.TaskStateBaseProps {
+
+  /**
+   * Glue crawler name
+   */
+  readonly glueCrawlerName: string;
+
+}
+
+export class GlueStartCrawlerRun extends sfn.TaskStateBase {
+
+  protected readonly taskMetrics: sfn.TaskMetricsConfig;
+  protected readonly taskPolicies: iam.PolicyStatement[];
+
+  private readonly integrationPattern: sfn.IntegrationPattern;
+
+  constructor(scope: Construct, id: string, private readonly props: GlueStartCrawlerRunProps) {
+    super(scope, id, props);
+
+    this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
+    this.taskPolicies = [new iam.PolicyStatement({
+      resources: [
+        Stack.of(this).formatArn({
+          service: 'glue',
+          resource: 'crawler',
+          resourceName: this.props.glueCrawlerName,
+        }),
+      ],
+      actions: [
+        'glue:StartCrawler',
+        'glue:GetCrawler',
+      ],
+    })];
+
+    this.taskMetrics = {
+      metricPrefixSingular: 'GlueCrawler',
+      metricPrefixPlural: 'GlueCrawlers',
+      metricDimensions: { GlueCrawlerName: this.props.glueCrawlerName },
+    };
+  }
+
+  /**
+   * @internal
+   */
+  protected _renderTask(): any {
+    return {
+      Resource: integrationResourceArn('glue', 'startCrawler', this.integrationPattern),
+      Parameters: {
+        Name: this.props.glueCrawlerName,
+      },
+    };
+  }
+}
