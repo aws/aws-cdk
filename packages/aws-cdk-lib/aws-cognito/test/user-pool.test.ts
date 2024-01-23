@@ -161,7 +161,7 @@ describe('User Pool', () => {
         emailStyle: VerificationEmailStyle.LINK,
         emailBody: 'invalid email body {####}',
       },
-    })).toThrow(/Verification email body/);
+    })).not.toThrow();
 
     expect(() => new UserPool(stack, 'Pool6', {
       userVerification: {
@@ -352,6 +352,29 @@ describe('User Pool', () => {
       FunctionName: stack.resolve(fn.functionArn),
       Principal: 'cognito-idp.amazonaws.com',
       SourceArn: stack.resolve(pool.userPoolArn),
+    });
+  });
+
+  test("custom email body with non 'Verify Email' placeholder text", () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      userVerification: {
+        emailStyle: VerificationEmailStyle.LINK,
+        emailSubject: 'Please verify your e-mail',
+        emailBody: '<p>Hello world {##Custom Text##}</p>',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      VerificationMessageTemplate: {
+        DefaultEmailOption: 'CONFIRM_WITH_LINK',
+        EmailMessageByLink: '<p>Hello world {##Custom Text##}</p>',
+        EmailSubjectByLink: 'Please verify your e-mail',
+      },
     });
   });
 
