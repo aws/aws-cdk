@@ -404,6 +404,26 @@ describe('datapointsToAlarm', () => {
       });
     }).toThrow(/datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: 15, evaluationPeriods: 10/);
   });
+
+  test('step scaling with datapointsToAlarm without evaluationPeriods throws error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fixture = new ASGFixture(stack, 'Fixture');
+
+    // THEN
+    expect(() => {
+      fixture.asg.scaleOnMetric('Tracking', {
+        metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+        scalingSteps: [
+          { upper: 0, change: -1 },
+          { lower: 100, change: +1 },
+          { lower: 500, change: +5 },
+        ],
+        datapointsToAlarm: 15,
+        metricAggregationType: autoscaling.MetricAggregationType.MAXIMUM,
+      });
+    }).toThrow(/evaluationPeriods must be set if datapointsToAlarm is set/);
+  });
 });
 
 describe('step-scaling-policy scalingSteps length validation checks', () => {
