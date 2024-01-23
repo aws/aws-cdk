@@ -662,9 +662,9 @@ export class DistributedMap extends MapBase implements INextable {
   }
 
   /**
-   * Define item processor in Map.
+   * Define item processor in a Distributed Map.
    *
-   * A Map must either have a non-empty iterator or a non-empty item processor (mutually exclusive  with `iterator`).
+   * A Distributed Map must have a non-empty item processor
    */
   public itemProcessor(processor: IChainable, config: ProcessorConfig = {}): DistributedMap {
     const name = `Map ${this.stateId} Item Processor`;

@@ -561,7 +561,7 @@ const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
   maxConcurrency: 1,
   itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
 });
-map.itemProcessor(new sfn.Pass(this, 'Pass State'));
+distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
 ```
 
 Map states in Distributed mode support multiple sources for an array to iterate:
@@ -577,13 +577,18 @@ There are multiple classes that implement `IItemReader` that can be used to conf
 Map states in Distributed mode also support writing results of the iterator to an S3 bucket and optional prefix.  Use a `ResultWriter` object provided via the optional `resultWriter` property to configure which S3 location iterator results will be written. The default behavior id `resultWriter` is omitted is to use the state output payload. However, if the iterator results are larger than the 256 kb limit for Step Functions payloads then the State Machine will fail.
 
 ```ts
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+// create a bucket
+const bucket = new s3.Bucket(this, 'Bucket');
+
 const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
   itemReader: new sfn.S3JsonItemReader({
-    bucket: 'my-bucket',
+    bucket: bucket,
     key: 'my-key.json',
   }),
   resultWriter: new sfn.ResultWriter({
-    bucket: 'my-bucket',
+    bucket: bucket,
     prefix: 'my-prefix',
   })
 });
