@@ -126,7 +126,10 @@ export class StepScalingPolicy extends Construct {
       if (!Token.isUnresolved(props.datapointsToAlarm) && props.datapointsToAlarm < 1) {
         throw new Error(`datapointsToAlarm cannot be less than 1, got: ${props.datapointsToAlarm}`);
       }
-      if (!Token.isUnresolved(props.evaluationPeriods) && props.evaluationPeriods < props.datapointsToAlarm) {
+      if (!Token.isUnresolved(props.datapointsToAlarm)
+        && !Token.isUnresolved(props.evaluationPeriods)
+        && props.evaluationPeriods < props.datapointsToAlarm
+      ) {
         throw new Error(`datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: ${props.datapointsToAlarm}, evaluationPeriods: ${props.evaluationPeriods}`);
       }
     }
