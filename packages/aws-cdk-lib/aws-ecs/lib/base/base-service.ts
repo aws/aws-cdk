@@ -70,7 +70,14 @@ export interface DeploymentController {
  */
 export interface DeploymentCircuitBreaker {
   /**
+   * Whether to enable the deployment circuit breaker logic
+   * @default true
+   */
+  readonly enable?: boolean;
+
+  /**
    * Whether to enable rollback on deployment failure
+   *
    * @default false
    */
   readonly rollback?: boolean;
@@ -624,7 +631,7 @@ export abstract class BaseService extends Resource
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
         deploymentCircuitBreaker: props.circuitBreaker ? {
-          enable: true,
+          enable: props.circuitBreaker.enable ?? true,
           rollback: props.circuitBreaker.rollback ?? false,
         } : undefined,
         alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
