@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { AliasRecordTargetConfig, IAliasRecordTarget } from './alias-record-target';
 import { GeoLocation } from './geo-location';
 import { IHostedZone } from './hosted-zone-ref';
-import { CfnRecordSet } from './route53.generated';
+import { CfnCidrCollection, CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
 import { CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
@@ -200,6 +200,8 @@ export interface RecordSetOptions {
    */
   readonly weight?: number;
 
+  readonly cidrRoutingConfig?: CidrRoutingConfig;
+
   /**
    * The Amazon EC2 Region where you created the resource that this resource record set refers to.
    * The resource typically is an AWS resource, such as an EC2 instance or an ELB load balancer,
@@ -231,6 +233,18 @@ export interface RecordSetOptions {
    * @default - Auto generated string
    */
   readonly setIdentifier?: string;
+}
+
+export interface Location {
+  // TODO: CIDRのバリデーション。IPv4, IPv6のどちらも許容する。
+  cidrList: string[];
+  locationName?: string;
+}
+
+export interface CidrRoutingConfig {
+  collectionName?: string;
+  locations: Location[];
+  collection?: CfnCidrCollection;
 }
 
 /**
