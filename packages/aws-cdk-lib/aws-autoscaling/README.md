@@ -222,6 +222,8 @@ autoScalingGroup.scaleOnMetric('ScaleToCPU', {
     { lower: 50, change: +1 },
     { lower: 70, change: +3 },
   ],
+  evaluationPeriods: 10,
+  datapointsToAlarm: 5,
 
   // Change this to AdjustmentType.PERCENT_CHANGE_IN_CAPACITY to interpret the
   // 'change' numbers before as percentages instead of capacity counts.

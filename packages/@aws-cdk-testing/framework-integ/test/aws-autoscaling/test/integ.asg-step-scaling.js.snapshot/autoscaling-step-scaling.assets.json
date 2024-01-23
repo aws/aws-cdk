@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "b6351ec1c05eef818c53fedccb18fb96ff55ee77e2049a05d2b5b15903984b19": {
+      "source": {
+        "path": "autoscaling-step-scaling.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b6351ec1c05eef818c53fedccb18fb96ff55ee77e2049a05d2b5b15903984b19.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
