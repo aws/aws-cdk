@@ -215,6 +215,12 @@ export class CdkToolkit {
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
     print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
 
+    if (stackCollection.stackCount === 0) {
+      // eslint-disable-next-line no-console
+      console.error('This app contains no stacks');
+      return;
+    }
+
     await this.tryMigrateResources(stackCollection, options);
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
