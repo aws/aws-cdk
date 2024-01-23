@@ -466,14 +466,20 @@ export class CfnParser {
   }
 
   private parseDeletionPolicy(policy: any): CfnDeletionPolicy | undefined {
+    if (policy === undefined || policy === null) {
+      return undefined;
+    }
+    const isIntrinsic = this.looksLikeCfnIntrinsic(policy) !== undefined;
     switch (policy) {
-      case null: return undefined;
-      case undefined: return undefined;
       case 'Delete': return CfnDeletionPolicy.DELETE;
       case 'Retain': return CfnDeletionPolicy.RETAIN;
       case 'Snapshot': return CfnDeletionPolicy.SNAPSHOT;
       case 'RetainExceptOnCreate': return CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE;
-      default: throw new Error(`Unrecognized DeletionPolicy '${policy}'`);
+      default: if (isIntrinsic) {
+        return policy;
+      } else {
+        throw new Error(`Unrecognized DeletionPolicy '${policy}'`);
+      }
     }
   }
 

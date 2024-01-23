@@ -262,6 +262,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a template with intrinsic functions used in deletion policy', () => {
+    includeTestTemplate(stack, 'intrinsic-deletion-policy.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('intrinsic-deletion-policy.json'),
+    );
+  });
+
   test('can ingest a JSON template with string-form Fn::GetAtt, and output it unchanged', () => {
     includeTestTemplate(stack, 'get-att-string-form.json');
 
