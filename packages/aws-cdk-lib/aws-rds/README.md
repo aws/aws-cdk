@@ -841,7 +841,10 @@ Directory Services.
 ```ts
 declare const vpc: ec2.Vpc;
 const role = new iam.Role(this, 'RDSDirectoryServicesRole', {
-  assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+  assumedBy: new iam.CompositePrincipal(
+    new iam.ServicePrincipal('rds.amazonaws.com'),
+    new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
+  ),
   managedPolicies: [
     iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
   ],

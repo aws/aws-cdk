@@ -836,7 +836,10 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     if (props.domain) {
       this.domainId = props.domain;
       this.domainRole = props.domainRole || new iam.Role(this, 'RDSDirectoryServiceRole', {
-        assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+        assumedBy: new iam.CompositePrincipal(
+          new iam.ServicePrincipal('rds.amazonaws.com'),
+          new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
+        ),
         managedPolicies: [
           iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
         ],
