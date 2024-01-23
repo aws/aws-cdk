@@ -469,7 +469,7 @@ export class CfnParser {
     if (policy === undefined || policy === null) {
       return undefined;
     }
-    const isIntrinsic = this.looksLikeCfnIntrinsic(policy) !== undefined;
+    const isIntrinsic = this.looksLikeCfnIntrinsic(policy);
     switch (policy) {
       case 'Delete': return CfnDeletionPolicy.DELETE;
       case 'Retain': return CfnDeletionPolicy.RETAIN;
