@@ -361,7 +361,7 @@ interface DatabaseClusterBaseProps {
   readonly networkType?: NetworkType;
 
   /**
-   * The Active Directory directory ID, required for setting up Kerberos authentication, to create the DB cluster in.
+   * The directory ID of the Active Directory that the DB cluster will be created in. Required for setting up Kerberos authentication
    *
    * @default - Do not join domain
    */
