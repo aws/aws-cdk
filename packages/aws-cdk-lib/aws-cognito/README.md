@@ -123,9 +123,9 @@ Alternatively, users can use link as a verification method. The following code s
 properties relevant to these verification messages and link verification method.
 
 ```ts
-new UserPool(stack, 'myuserpool', {
+new cognito.UserPool(this, 'myuserpool', {
   userVerification: {
-    emailStyle: VerificationEmailStyle.LINK,
+    emailStyle: cognito.VerificationEmailStyle.LINK,
     emailSubject: 'Invite to join our awesome app!',
     emailBody: 'You have been invited to join our awesome app! {##Verify Your Email##}',
   },
