@@ -498,7 +498,7 @@ execute the same steps for multiple entries of an array in the state input.
 const map = new sfn.Map(this, 'Map State', {
   maxConcurrency: 1,
   itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
-  parameters: {
+  itemSelector: {
     item: sfn.JsonPath.stringAt('$$.Map.Item.Value'),
   },
   resultPath: '$.mapOutput',
@@ -528,7 +528,7 @@ An `executionType` must be specified for the distributed `Map` workflow.
 const map = new sfn.Map(this, 'Map State', {
   maxConcurrency: 1,
   itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
-  parameters: {
+  itemSelector: {
     item: sfn.JsonPath.stringAt('$$.Map.Item.Value'),
   },
   resultPath: '$.mapOutput',
@@ -601,6 +601,13 @@ const custom = new sfn.CustomState(this, 'my custom task', {
 // catch errors with addCatch
 const errorHandler = new sfn.Pass(this, 'handle failure');
 custom.addCatch(errorHandler);
+
+// retry the task if something goes wrong
+custom.addRetry({
+  errors: [sfn.Errors.ALL],
+  interval: Duration.seconds(10),
+  maxAttempts: 5,
+});
 
 const chain = sfn.Chain.start(custom)
   .next(finalStatus);
