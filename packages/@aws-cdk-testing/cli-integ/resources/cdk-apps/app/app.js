@@ -331,11 +331,6 @@ class EcsHotswapStack extends cdk.Stack {
         ? 'nginx:invalidtag'
         : 'nginx:alpine';
 
-    // when testing failure, allow for desired count to be boosted
-    // to invoke circuit breaker threshold of 10 failed tasks as quickly as possible
-    // https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-circuit-breaker.html#failure-threshold
-    const desiredCount = process.env.USE_HIGH_ECS_TASK_COUNT == 'true' ? 10 : 1;
-
     // deploy basic service
     const taskDefinition = new ecs.FargateTaskDefinition(
       this,
@@ -356,7 +351,7 @@ class EcsHotswapStack extends cdk.Stack {
       taskDefinition,
       assignPublicIp: true, // required without NAT to pull image
       circuitBreaker: { rollback: false },
-      desiredCount,
+      desiredCount: 1,
     });
 
     new cdk.CfnOutput(this, 'ClusterName', { value: cluster.clusterName });
