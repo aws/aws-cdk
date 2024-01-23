@@ -283,7 +283,7 @@ export interface QueueAttributes {
 
   /**
    * The URL of the queue.
-   * @see https://docs.aws.amazon.com/sdk-for-net/v2/developer-guide/QueueURL.html
+   * @see https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-queue-message-identifiers.html#sqs-general-identifiers
    *
    * @default - 'https://sqs.<region-endpoint>/<account-ID>/<queue-name>'
    */
