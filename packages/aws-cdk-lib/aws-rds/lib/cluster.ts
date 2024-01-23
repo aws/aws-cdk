@@ -361,10 +361,13 @@ interface DatabaseClusterBaseProps {
   readonly networkType?: NetworkType;
 
   /**
-   * The directory ID of the Active Directory that the DB cluster will be created in. Required for setting up Kerberos authentication
-   *
-   * @default - Do not join domain
-   */
+  * Directory ID for associating the DB cluster with a specific Active Directory.
+  *
+  * Necessary for enabling Kerberos authentication. If specified, the DB cluster joins the given Active Directory, enabling Kerberos authentication.
+  * If not specified, the DB cluster will not be associated with any Active Directory, and Kerberos authentication will not be enabled.
+  *
+  * @default - DB cluster not associated with any Active Directory; Kerberos authentication is not enabled.
+  */
   readonly domain?: string;
 
   /**
