@@ -727,7 +727,7 @@ describe('CDK Include', () => {
     const output = cfnTemplate.getOutput('Output1');
     output.value = 'a mutated value';
     output.description = undefined;
-    output.exportName = 'an export';
+    output.exportName = 'an-export';
     output.condition = new core.CfnCondition(stack, 'MyCondition', {
       expression: core.Fn.conditionIf('AlwaysFalseCond', core.Aws.NO_VALUE, true),
     });
@@ -755,7 +755,7 @@ describe('CDK Include', () => {
         "Output1": {
           "Value": "a mutated value",
           "Export": {
-            "Name": "an export",
+            "Name": "an-export",
           },
           "Condition": "MyCondition",
         },
