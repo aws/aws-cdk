@@ -2911,7 +2911,7 @@ describe('bucket', () => {
     const accessLogBucket = new s3.Bucket(stack, 'AccessLogs');
     new s3.Bucket(stack, 'MyBucket', {
       serverAccessLogsBucket: accessLogBucket,
-      logObjectKeyFormat: s3.LogObjectKeyFormat.simplePrefix(),
+      targetObjectKeyFormat: s3.TargetObjectKeyFormat.simplePrefix(),
     });
 
     // THEN
@@ -2936,11 +2936,11 @@ describe('bucket', () => {
     const accessLogBucket = new s3.Bucket(stack, 'AccessLogs');
     new s3.Bucket(stack, 'MyBucket', {
       serverAccessLogsBucket: accessLogBucket,
-      logObjectKeyFormat: s3.LogObjectKeyFormat.partitionedPrefix(s3.PartitionDateSource.EVENT_TIME),
+      targetObjectKeyFormat: s3.TargetObjectKeyFormat.partitionedPrefix(s3.PartitionDateSource.EVENT_TIME),
     });
     new s3.Bucket(stack, 'MyBucket2', {
       serverAccessLogsBucket: accessLogBucket,
-      logObjectKeyFormat: s3.LogObjectKeyFormat.partitionedPrefix(s3.PartitionDateSource.DELIVERY_TIME),
+      targetObjectKeyFormat: s3.TargetObjectKeyFormat.partitionedPrefix(s3.PartitionDateSource.DELIVERY_TIME),
     });
 
     // THEN

@@ -1354,15 +1354,15 @@ export enum PartitionDateSource {
 /**
  * The key format for the log object.
  */
-export abstract class LogObjectKeyFormat {
+export abstract class TargetObjectKeyFormat {
   /**
    * Use partitioned prefix for log objects.
    *
    * The partitioned prefix format as follow:
    * [DestinationPrefix][SourceAccountId]/​[SourceRegion]/​[SourceBucket]/​[YYYY]/​[MM]/​[DD]/​[YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]
    */
-  public static partitionedPrefix(dateSource?: PartitionDateSource): LogObjectKeyFormat {
-    return new class extends LogObjectKeyFormat {
+  public static partitionedPrefix(dateSource?: PartitionDateSource): TargetObjectKeyFormat {
+    return new class extends TargetObjectKeyFormat {
       public _render(): CfnBucket.LoggingConfigurationProperty['targetObjectKeyFormat'] {
         return {
           partitionedPrefix: {
@@ -1379,8 +1379,8 @@ export abstract class LogObjectKeyFormat {
    * The simple prefix format as follow:
    * [DestinationPrefix][YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]
    */
-  public static simplePrefix(): LogObjectKeyFormat {
-    return new class extends LogObjectKeyFormat {
+  public static simplePrefix(): TargetObjectKeyFormat {
+    return new class extends TargetObjectKeyFormat {
       public _render(): CfnBucket.LoggingConfigurationProperty['targetObjectKeyFormat'] {
         return {
           simplePrefix: {},
@@ -1610,7 +1610,7 @@ export interface BucketProps {
    *
    * @default - the default key format is: [DestinationPrefix][YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]
    */
-  readonly logObjectKeyFormat?: LogObjectKeyFormat;
+  readonly targetObjectKeyFormat?: TargetObjectKeyFormat;
 
   /**
    * The inventory configuration of the bucket.
@@ -2281,7 +2281,7 @@ export class Bucket extends BucketBase {
     return {
       destinationBucketName: props.serverAccessLogsBucket?.bucketName,
       logFilePrefix: props.serverAccessLogsPrefix,
-      targetObjectKeyFormat: props.logObjectKeyFormat?._render(),
+      targetObjectKeyFormat: props.targetObjectKeyFormat?._render(),
     };
   }
 

@@ -415,8 +415,8 @@ const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket');
 const bucket = new s3.Bucket(this, 'MyBucket', {
   serverAccessLogsBucket: accessLogsBucket,
   serverAccessLogsPrefix: 'logs',
-  // You can use a simple prefix with `LogObjectKeyFormat.simplePrefix()`, but it is the same even if you do not specify `logObjectKeyFormat` property.
-  logObjectKeyFormat: s3.LogObjectKeyFormat.simplePrefix(),
+  // You can use a simple prefix with `TargetObjectKeyFormat.simplePrefix()`, but it is the same even if you do not specify `targetObjectKeyFormat` property.
+  targetObjectKeyFormat: s3.TargetObjectKeyFormat.simplePrefix(),
 });
 ```
 
@@ -434,7 +434,7 @@ const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket');
 const bucket = new s3.Bucket(this, 'MyBucket', {
   serverAccessLogsBucket: accessLogsBucket,
   serverAccessLogsPrefix: 'logs',
-  logObjectKeyFormat: s3.LogObjectKeyFormat.partitionedPrefix(s3.PartitionDateSource.EVENT_TIME),
+  targetObjectKeyFormat: s3.TargetObjectKeyFormat.partitionedPrefix(s3.PartitionDateSource.EVENT_TIME),
 });
 ```
 
