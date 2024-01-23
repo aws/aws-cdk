@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "FlowLogs/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-flow-logs"
+      ],
+      "assertionStack": "FlowLogs/DefaultTest/DeployAssert",
+      "assertionStackName": "FlowLogsDefaultTestDeployAssert6AFD1854"
+    }
+  }
+}
