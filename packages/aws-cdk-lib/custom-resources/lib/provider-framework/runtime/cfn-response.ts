@@ -33,11 +33,11 @@ export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudF
     Data: event.Data,
   };
 
-  log('submit response to cloudformation', json);
-
   const responseBody = JSON.stringify(json);
 
   const parsedUrl = url.parse(event.ResponseURL);
+  const loggingSafeUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}/${parsedUrl.pathname}?***`;
+  log('submit response to cloudformation', loggingSafeUrl, json);
 
   const retryOptions = {
     attempts: 5,
