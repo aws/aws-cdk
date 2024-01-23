@@ -875,7 +875,7 @@ new rds.DatabaseCluster(this, 'Database', {
   }),
   vpc,
   domain: 'd-????????', // The ID of the domain for the cluster to join.
-  domainRole: iamRole, // Optional - will be create automatically if not provided.
+  domainRole: iamRole, // Optional - will be created automatically if not provided.
 });
 ```
 
