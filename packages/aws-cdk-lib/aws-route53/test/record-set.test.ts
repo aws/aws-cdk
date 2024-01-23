@@ -1168,9 +1168,9 @@ describe('record set', () => {
 
   test.each([
     { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE) },
-    { weight: 20, region: 'us-east-1' },
-    { geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1' },
-    { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1' },
+    { weight: 20, region: route53.LatencyBasedRoutingRegion.US_EAST_1 },
+    { geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: route53.LatencyBasedRoutingRegion.US_EAST_1 },
+    { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: route53.LatencyBasedRoutingRegion.US_EAST_1 },
   ])('throw error for the simultaneous definition of weight, geoLocation and region', (props) => {
     // GIVEN
     const stack = new Stack();

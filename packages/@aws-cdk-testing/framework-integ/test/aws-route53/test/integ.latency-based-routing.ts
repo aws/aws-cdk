@@ -12,9 +12,9 @@ class TestStack extends Stack {
     });
 
     [
-      { target: '1.2.3.4', region: 'us-east-1' },
-      { target: '2.3.4.5', region: 'ap-northeast-1' },
-      { target: '3.4.5.6', region: 'eu-west-1' },
+      { target: '1.2.3.4', region: route53.LatencyBasedRoutingRegion.US_EAST_1 },
+      { target: '2.3.4.5', region: route53.LatencyBasedRoutingRegion.AP_NORTHEAST_1 },
+      { target: '3.4.5.6', region: route53.LatencyBasedRoutingRegion.EU_WEST_1 },
     ].forEach((data, index) => {
       new route53.ARecord(this, `LatencyBasedRouting${index}`, {
         zone: hostedZone,

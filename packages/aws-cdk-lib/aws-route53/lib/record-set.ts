@@ -129,6 +129,138 @@ export enum RecordType {
 }
 
 /**
+ * Regions available for latency-based routing
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-recordset.html#cfn-route53-recordset-region
+ */
+export enum LatencyBasedRoutingRegion {
+  /**
+   * US East (Virginia)
+   */
+  US_EAST_1 = 'us-east-1',
+  /**
+   * US East (Ohio)
+   */
+  US_EAST_2 = 'us-east-2',
+  /**
+   * US West (N. California)
+   */
+  US_WEST_1 = 'us-west-1',
+  /**
+   * US West (Oregon)
+   */
+  US_WEST_2 = 'us-west-2',
+  /**
+   * Africa (Cape Town)
+   */
+  AF_SOUTH_1 = 'af-south-1',
+  /**
+   * Asia Pacific (Hong Kong)
+   */
+  AP_EAST_1 = 'ap-east-1',
+  /**
+   * Asia Pacific (Singapore)
+   */
+  AP_SOUTHEAST_1 = 'ap-southeast-1',
+  /**
+   * Asia Pacific (Sydney)
+   */
+  AP_SOUTHEAST_2 = 'ap-southeast-2',
+  /**
+   * Asia Pacific (Jakarta)
+   */
+  AP_SOUTHEAST_3 = 'ap-southeast-3',
+  /**
+   * Asia Pacific (Melbourne)
+   */
+  AP_SOUTHEAST_4 = 'ap-southeast-4',
+  /**
+   * Asia Pacific (Tokyo)
+   */
+  AP_NORTHEAST_1 = 'ap-northeast-1',
+  /**
+   * Asia Pacific (Seoul)
+   */
+  AP_NORTHEAST_2 = 'ap-northeast-2',
+  /**
+   * Asia Pacific (Osaka)
+   */
+  AP_NORTHEAST_3 = 'ap-northeast-3',
+  /**
+   * Asia Pacific (Mumbai)
+   */
+  AP_SOUTH_1 = 'ap-south-1',
+  /**
+   * Asia Pacific (Hyderabad)
+   */
+  AP_SOUTH_2 = 'ap-south-2',
+  /**
+   * Europe (Ireland)
+   */
+  EU_WEST_1 = 'eu-west-1',
+  /**
+   * Europe (London)
+   */
+  EU_WEST_2 = 'eu-west-2',
+  /**
+   * Europe (Paris)
+   */
+  EU_WEST_3 = 'eu-west-3',
+  /**
+   * Europe (Frankfurt)
+   */
+  EU_CENTRAL_1 = 'eu-central-1',
+  /**
+   * Europe (Zurich)
+   */
+  EU_CENTRAL_2 = 'eu-central-2',
+  /**
+   * Europe (Stockholm)
+   */
+  EU_NORTH_1 = 'eu-north-1',
+  /**
+   * Europe (Milan)
+   */
+  EU_SOUTH_1 = 'eu-south-1',
+  /**
+   * Europe (Spain)
+   */
+  EU_SOUTH_2 = 'eu-south-2',
+  /**
+   * South America (São Paulo)
+   */
+  SA_EAST_1 = 'sa-east-1',
+  /**
+   * China (Beijing)
+   */
+  CN_NORTH_1 = 'cn-north-1',
+  /**
+   * China (Ningxia)
+   */
+  CN_NORTHWEST_1 = 'cn-northwest-1',
+  /**
+   * Middle East (Bahrain)
+   */
+  ME_SOUTH_1 = 'me-south-1',
+  /**
+   * Middle East (UAE)
+   */
+  ME_CENTRAL_1 = 'me-central-1',
+  /**
+   * Israel (Tel Aviv)
+   */
+  IL_CENTRAL_1 = 'il-central-1',
+  /**
+   * Canada West (Calgary)
+   */
+  CA_WEST_1 = 'ca-west-1',
+  /**
+   * Canada (Central)
+   */
+  CA_CENTRAL_1 = 'ca-central-1',
+}
+
+/**
  * Options for a RecordSet.
  */
 export interface RecordSetOptions {
@@ -213,7 +345,7 @@ export interface RecordSetOptions {
    *
    * @default - Do not set latency based routing
    */
-  readonly region?: string;
+  readonly region?: LatencyBasedRoutingRegion;
 
   /**
    * A string used to distinguish between different records with the same combination of DNS name and type.
