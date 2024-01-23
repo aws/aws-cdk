@@ -506,7 +506,7 @@ const iopsInstance = new rds.DatabaseInstance(this, 'IopsInstance', {
   allocatedStorage: 500,
 });
 
-// Setting allocatedStorage for DatabaseInstance
+// Setting allocatedStorage for DatabaseInstance replica
 // Note: If allocatedStorage isn't set here, the replica instance will inherit the allocatedStorage of the source instance
 declare const sourceInstance: rds.DatabaseInstance;
 new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
