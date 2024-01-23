@@ -1,20 +1,20 @@
 {
   "version": "36.0.0",
   "files": {
-    "df6156f884f46480078633afbd0b768581022c5e444c5f72752980280ae15bd9": {
+    "4984c845346313a408899c8ff361d3b7b97953a9d4202e47694ef2a101f4b5c3": {
       "source": {
-        "path": "asset.df6156f884f46480078633afbd0b768581022c5e444c5f72752980280ae15bd9.bundle",
+        "path": "asset.4984c845346313a408899c8ff361d3b7b97953a9d4202e47694ef2a101f4b5c3.bundle",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "df6156f884f46480078633afbd0b768581022c5e444c5f72752980280ae15bd9.zip",
+          "objectKey": "4984c845346313a408899c8ff361d3b7b97953a9d4202e47694ef2a101f4b5c3.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "dcfd4aec0e1b873079f086fa1be20141fbaafe9b7740bb07e8464cbb89903133": {
+    "9170fe99c7855904fd065b24bf6384170e00965306386ae0b6e3484a94c222dd": {
       "source": {
         "path": "DynamoImportSourceIntegTestDefaultTestDeployAssert540810E4.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "dcfd4aec0e1b873079f086fa1be20141fbaafe9b7740bb07e8464cbb89903133.json",
+          "objectKey": "9170fe99c7855904fd065b24bf6384170e00965306386ae0b6e3484a94c222dd.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

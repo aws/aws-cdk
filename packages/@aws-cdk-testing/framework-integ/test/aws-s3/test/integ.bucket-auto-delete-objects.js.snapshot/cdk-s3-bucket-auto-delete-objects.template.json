@@ -25,8 +25,7 @@
        "Action": [
         "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*",
-        "s3:PutBucketPolicy"
+        "s3:List*"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -113,7 +112,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2ec8ad9e91dcd6e7ad6a5c84ffc6c9c05c408aca3b26ceb2816d81043e6c4dc3.zip"
+     "S3Key": "216218e507a977a1bb3592f29c1a62ab3e0a9eb25569109a395315638e154329.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -199,7 +198,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6d23420d2310e4a35c3db955c75b39d30e0b820532fb20a8ac0e7e2720f0c123.zip"
+     "S3Key": "5f27867cd3c94f1ff2edc275698533710939b2685d5a2991b452bcadf2cd814f.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -210,7 +209,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "CustomS3PutObjectsCustomResourceProviderRole40D98C91"
@@ -257,8 +256,7 @@
        "Action": [
         "s3:DeleteObject*",
         "s3:GetBucket*",
-        "s3:List*",
-        "s3:PutBucketPolicy"
+        "s3:List*"
        ],
        "Effect": "Allow",
        "Principal": {
@@ -344,7 +342,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "DeleteBucketCustomResourcePolicy99AB6B27"
@@ -416,7 +414,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1b474110b3f79050ba8693912584a5d5bac8c7e94d63afa8c73f1d087444e7cc.zip"
+     "S3Key": "5f29389ceebe277aadade8a9e7583fdd274a2a2f2d6adf410243bea23c244b9d.zip"
     },
     "Handler": "index.handler",
     "Role": {

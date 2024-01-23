@@ -948,7 +948,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+                              "s3Key": "5035df1b33be3620261a3a2afe651125fc153ef22d445bee6da24540974e2938.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
                             "environment": {
@@ -1169,7 +1169,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+                              "s3Key": "5035df1b33be3620261a3a2afe651125fc153ef22d445bee6da24540974e2938.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
                             "environment": {
@@ -1387,7 +1387,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+                              "s3Key": "5035df1b33be3620261a3a2afe651125fc153ef22d445bee6da24540974e2938.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
                             "environment": {
@@ -1644,7 +1644,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/691ad79f315c75c071d70876e6f5d46133743719c69836008839c2a30161b602.json"
+                          "/b13b90e73a92f7d7e730082213714dc3a83a89bb9c932f086da3a9490d779122.json"
                         ]
                       ]
                     }
