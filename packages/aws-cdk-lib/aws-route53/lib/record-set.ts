@@ -298,10 +298,7 @@ export class RecordSet extends Resource implements IRecordSet {
       throw new Error('setIdentifier can only be specified for non-simple routing policies');
     }
 
-    let nonSimpleRoutingPolicies = 0;
-    if (props.geoLocation) nonSimpleRoutingPolicies++;
-    if (props.region) nonSimpleRoutingPolicies++;
-    if (props.weight) nonSimpleRoutingPolicies++;
+    let nonSimpleRoutingPolicies = [props.geoLocation, props.region, props.weight].filter((variable) => variable !== undefined).length;
     if (nonSimpleRoutingPolicies > 1) {
       throw new Error('Only one of region, weight, or geoLocation can be defined');
     }
