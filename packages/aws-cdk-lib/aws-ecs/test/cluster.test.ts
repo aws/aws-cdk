@@ -1057,6 +1057,26 @@ describe('cluster', () => {
 
   });
 
+  test('correct SSM parameter is set for amazon linux 2 Neuron AMI', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    cluster.addCapacity('amazonlinux2-neuron-asg', {
+      instanceType: new ec2.InstanceType('inf1.xlarge'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.NEURON),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasParameter('*', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/ecs/optimized-ami/amazon-linux-2/inf/recommended/image_id',
+    });
+  });
+
   test('allows setting cluster ServiceConnectDefaults.Namespace property when useAsServiceConnectDefault is true', () => {
     // GIVEN
     const stack = new cdk.Stack();
