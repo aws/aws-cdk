@@ -476,6 +476,7 @@ export class CfnParser {
       case 'Snapshot': return CfnDeletionPolicy.SNAPSHOT;
       case 'RetainExceptOnCreate': return CfnDeletionPolicy.RETAIN_EXCEPT_ON_CREATE;
       default: if (isIntrinsic) {
+        policy = this.parseValue(policy);
         return policy;
       } else {
         throw new Error(`Unrecognized DeletionPolicy '${policy}'`);
