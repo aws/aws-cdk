@@ -3,6 +3,17 @@ import { isProdFile } from '../private/is-prod-file';
 import * as path from 'path';
 import * as fs from 'fs';
 
+function isPathJoinFuncCall(node: any): boolean {
+  return (
+    node.callee &&
+    node.callee.property &&
+    node.callee.property.name === 'join' &&
+    node.arguments.length > 1 &&
+    node.arguments[0].name &&
+    node.arguments[0].name === '__dirname'
+  )
+}
+
 export function create(context: Rule.RuleContext): Rule.NodeListener {
   return {
     CallExpression(node: any) {
@@ -10,7 +21,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
         return;
       }
 
-      if (node.callee.property.name === 'join' && node.arguments.length > 1 && node.arguments[0].name === '__dirname') {
+      if (isPathJoinFuncCall(node)) {
         // Confirm path does not have unnecessary '..'
         const pathToParentDir = '..';
         const paths: string[] = [];
