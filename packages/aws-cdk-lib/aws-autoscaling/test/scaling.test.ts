@@ -327,6 +327,26 @@ test('step scaling with evaluation period configured', () => {
   });
 });
 
+test('step scaling with invalid evaluation period throws error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const fixture = new ASGFixture(stack, 'Fixture');
+
+  // THEN
+  expect(() => {
+    fixture.asg.scaleOnMetric('Tracking', {
+      metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+      scalingSteps: [
+        { upper: 0, change: -1 },
+        { lower: 100, change: +1 },
+        { lower: 500, change: +5 },
+      ],
+      evaluationPeriods: 0,
+      metricAggregationType: autoscaling.MetricAggregationType.MAXIMUM,
+    });
+  }).toThrow(/evaluationPeriods cannot be less than 1, got: 0/);
+});
+
 describe('datapointsToAlarm', () => {
   test('step scaling with evaluation period and data points to alarm configured', () => {
     // GIVEN

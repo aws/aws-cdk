@@ -119,6 +119,9 @@ export class StepScalingPolicy extends Construct {
       throw new Error(`'scalingSteps' can have at most 40 steps, got ${props.scalingSteps.length}`);
     }
 
+    if (props.evaluationPeriods !== undefined && !Token.isUnresolved(props.evaluationPeriods) && props.evaluationPeriods < 1) {
+      throw new Error(`evaluationPeriods cannot be less than 1, got: ${props.evaluationPeriods}`);
+    }
     if (props.datapointsToAlarm !== undefined) {
       if (props.evaluationPeriods === undefined) {
         throw new Error('evaluationPeriods must be set if datapointsToAlarm is set');
