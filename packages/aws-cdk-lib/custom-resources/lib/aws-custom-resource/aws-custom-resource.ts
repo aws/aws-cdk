@@ -330,8 +330,16 @@ export interface AwsCustomResourceProps {
    * this custom resource are kept in CloudWatch Logs.
    *
    * @default logs.RetentionDays.INFINITE
+   * @deprecated Use logGroup for full control over the custom resource log group
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * The Log Group used for logging of events emitted by the custom resource's lambda function.
+   *
+   * @default - a default log group created by AWS Lambda
+   */
+  readonly logGroup?: logs.ILogGroup;
 
   /**
    * Whether to install the latest AWS SDK v2.
@@ -450,7 +458,10 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       lambdaPurpose: 'AWS',
       timeout: props.timeout || cdk.Duration.minutes(2),
       role: props.role,
-      logRetention: props.logRetention,
+      // props.logRetention is deprecated, make sure we only set it if it is actually provided
+      // otherwise jsii will print warnings even for users that don't use this directly
+      ...(props.logRetention ? { logRetention: props.logRetention } : {}),
+      logGroup: props.logGroup,
       functionName: props.functionName,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
