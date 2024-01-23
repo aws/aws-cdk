@@ -692,7 +692,7 @@ new ecs.ExternalService(this, 'Service', {
 
 ### Deployment circuit breaker and rollback
 
-The Amazon ECS [deployment circuit breaker](https://aws.amazon.com/tw/blogs/containers/announcing-amazon-ecs-deployment-circuit-breaker/)
+Amazon ECS [deployment circuit breaker](https://aws.amazon.com/tw/blogs/containers/announcing-amazon-ecs-deployment-circuit-breaker/)
 automatically rolls back unhealthy service deployments, eliminating the need for manual intervention.
 
 Use `circuitBreaker` to enable the deployment circuit breaker which determines whether a service deployment
