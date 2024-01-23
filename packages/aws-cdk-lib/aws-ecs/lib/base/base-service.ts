@@ -71,14 +71,14 @@ export interface DeploymentController {
 export interface DeploymentCircuitBreaker {
   /**
    * Whether to enable the deployment circuit breaker logic
-   * @default - true
+   * @default true
    */
   readonly enable?: boolean;
 
   /**
    * Whether to enable rollback on deployment failure
    *
-   * @default - false
+   * @default false
    */
   readonly rollback?: boolean;
 }

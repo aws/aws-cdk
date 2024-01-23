@@ -698,7 +698,6 @@ automatically rolls back unhealthy service deployments, eliminating the need for
 Use `circuitBreaker` to enable the deployment circuit breaker which determines whether a service deployment
 will fail if the service can't reach a steady state.
 You can optionally enable `rollback` for automatic rollback.
-You can disable the circuit breaker by omitting the `circuitBreaker` property or setting `enabled` to `false`.
 
 See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html) for more details.
 
