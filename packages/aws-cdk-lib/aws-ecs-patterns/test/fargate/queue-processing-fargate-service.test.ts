@@ -108,6 +108,87 @@ test('test fargate queue worker service construct - with only required props', (
   });
 });
 
+test('test fargate queue worker service construct - with cooldown', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 512,
+    image: ecs.ContainerImage.fromRegistry('test'),
+    cooldown: cdk.Duration.seconds(500),
+  });
+
+  // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
+  Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    StepScalingPolicyConfiguration:
+    Match.objectLike({
+      Cooldown: 500,
+    }),
+  });
+});
+
+test('test fargate queue worker service construct - with no cooldown', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  // WHEN
+  new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+    cluster,
+    memoryLimitMiB: 512,
+    image: ecs.ContainerImage.fromRegistry('test'),
+  });
+
+  // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
+  Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    StepScalingPolicyConfiguration: {
+      Cooldown: Match.absent(),
+    },
+  });
+});
+
+test('test fargate queue worker service construct - with cooldown more than 999999999', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  expect(() => {
+    new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 512,
+      image: ecs.ContainerImage.fromRegistry('test'),
+      cooldown: cdk.Duration.seconds(1000000000),
+    });
+  }).toThrow(new Error('cooldown cannot be more than 999999999, found: 1000000000'));
+});
+
 test('test fargate queue worker service construct - with remove default desiredCount feature flag', () => {
   // GIVEN
   const stack = new cdk.Stack();
