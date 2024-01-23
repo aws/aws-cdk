@@ -277,6 +277,20 @@ cluster.addCapacity('graviton-cluster', {
 });
 ```
 
+### Amazon Linux 2 (Neuron) Instances
+
+To launch Amazon EC2 Inf1, Trn1 or Inf2 instances, you can use the Amazon ECS optimized Amazon Linux 2 (Neuron) AMI. It comes pre-configured with AWS Inferentia and AWS Trainium drivers and the AWS Neuron runtime for Docker which makes running machine learning inference workloads easier on Amazon ECS.
+
+```ts
+declare const cluster: ecs.Cluster;
+
+cluster.addCapacity('neuron-cluster', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('inf1.xlarge'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.NEURON),
+});
+```
+
 ### Spot Instances
 
 To add spot instances into the cluster, you must specify the `spotPrice` in the `ecs.AddCapacityOptions` and optionally enable the `spotInstanceDraining` property.
