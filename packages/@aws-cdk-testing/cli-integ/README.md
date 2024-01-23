@@ -77,7 +77,8 @@ $ ./build.sh
 $ ./pack.sh
 
 # Use publib to upload to CodeArtifact
-$ npm install -g publib-ca
+$ npm install -g publib
+# publib-ca is a CLI tool that comes with publib
 $ publib-ca create
 $ publib-ca publish /path/to/dist
 
