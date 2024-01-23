@@ -374,7 +374,7 @@ interface DatabaseClusterBaseProps {
    * The IAM role to be used when making API calls to the Directory Service. The role needs the AWS-managed policy
    * `AmazonRDSDirectoryServiceAccess` or equivalent.
    *
-   * @default - The role will be created for you if `DatabaseClusterBaseProps#domain` is specified
+   * @default - If `DatabaseClusterBaseProps.domain` is specified, a role with the `AmazonRDSDirectoryServiceAccess` policy is automatically created.
    */
   readonly domainRole?: iam.IRole;
 }
