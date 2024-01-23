@@ -459,7 +459,7 @@ export class StateMachine extends StateMachineBase {
       roleArn: this.role.roleArn,
       loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
       tracingConfiguration: props.tracingEnabled ? this.buildTracingConfiguration() : undefined,
-      ...definitionBody.bind(this, props, graph),
+      ...definitionBody.bind(this, this.role, props, graph),
       definitionSubstitutions: props.definitionSubstitutions,
     });
     resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
@@ -687,7 +687,7 @@ export abstract class DefinitionBody {
     return new ChainDefinitionBody(chainable);
   }
 
-  public abstract bind(scope: Construct, sfnProps: StateMachineProps, graph?: StateGraph): DefinitionConfig;
+  public abstract bind(scope: Construct, sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, graph?: StateGraph): DefinitionConfig;
 }
 
 export class FileDefinitionBody extends DefinitionBody {
@@ -695,7 +695,7 @@ export class FileDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(scope: Construct, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
     const asset = new s3_assets.Asset(scope, 'DefinitionBody', {
       path: this.path,
       ...this.options,
@@ -714,7 +714,7 @@ export class StringDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(_scope: Construct, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
     return {
       definitionString: this.body,
     };
@@ -726,7 +726,7 @@ export class ChainDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(scope: Construct, sfnProps: StateMachineProps, graph?: StateGraph): DefinitionConfig {
+  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, graph?: StateGraph): DefinitionConfig {
     const graphJson = graph!.toGraphJson();
     return {
       definitionString: Stack.of(scope).toJsonString({ ...graphJson, Comment: sfnProps.comment }),

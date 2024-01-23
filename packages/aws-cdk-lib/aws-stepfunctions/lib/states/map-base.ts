@@ -4,8 +4,7 @@ import { renderJsonPath, State } from './state';
 import { Token } from '../../../core';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
-import { StateGraph } from '../state-graph';
-import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
+import { IChainable, INextable, ProcessorMode } from '../types';
 
 /**
  * Properties for defining a Map state
@@ -136,45 +135,11 @@ export abstract class MapBase extends State implements INextable {
   }
 
   /**
-   * Add retry configuration for this state
-   *
-   * This controls if and how the execution will be retried if a particular
-   * error occurs.
-   */
-  public addRetry(props: RetryProps = {}): MapBase {
-    super._addRetry(props);
-    return this;
-  }
-
-  /**
-   * Add a recovery handler for this state
-   *
-   * When a particular error occurs, execution will continue at the error
-   * handler instead of failing the state machine execution.
-   */
-  public addCatch(handler: IChainable, props: CatchProps = {}): MapBase {
-    super._addCatch(handler.startState, props);
-    return this;
-  }
-
-  /**
    * Continue normal execution with the given state
    */
   public next(next: IChainable): Chain {
     super.makeNext(next.startState);
     return Chain.sequence(this, next);
-  }
-
-  /**
-   * Define item processor in Map.
-   *
-   * A Map must either have a non-empty iterator or a non-empty item processor (mutually exclusive  with `iterator`).
-   */
-  public itemProcessor(processor: IChainable, config: ProcessorConfig = {}): MapBase {
-    const name = `Map ${this.stateId} Item Processor`;
-    const stateGraph = new StateGraph(processor.startState, name);
-    super.addItemProcessor(stateGraph, config);
-    return this;
   }
 
   /**

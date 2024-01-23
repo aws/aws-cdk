@@ -6,7 +6,7 @@ import { Aws } from '../../../core';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { StateMachineType } from '../state-machine';
-import { INextable, ProcessorMode } from '../types';
+import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
 
 const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.DistributedMap');
 
@@ -637,6 +637,40 @@ export class DistributedMap extends MapBase implements INextable {
         graph.registerPolicyStatement(policyStatement);
       });
     }
+  }
+
+  /**
+   * Add retry configuration for this state
+   *
+   * This controls if and how the execution will be retried if a particular
+   * error occurs.
+   */
+  public addRetry(props: RetryProps = {}): DistributedMap {
+    super._addRetry(props);
+    return this;
+  }
+
+  /**
+   * Add a recovery handler for this state
+   *
+   * When a particular error occurs, execution will continue at the error
+   * handler instead of failing the state machine execution.
+   */
+  public addCatch(handler: IChainable, props: CatchProps = {}): DistributedMap {
+    super._addCatch(handler.startState, props);
+    return this;
+  }
+
+  /**
+   * Define item processor in Map.
+   *
+   * A Map must either have a non-empty iterator or a non-empty item processor (mutually exclusive  with `iterator`).
+   */
+  public itemProcessor(processor: IChainable, config: ProcessorConfig = {}): DistributedMap {
+    const name = `Map ${this.stateId} Item Processor`;
+    const stateGraph = new StateGraph(processor.startState, name);
+    super.addItemProcessor(stateGraph, config);
+    return this;
   }
 
   /**
