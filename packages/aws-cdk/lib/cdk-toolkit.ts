@@ -152,10 +152,6 @@ export class CdkToolkit {
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
-        if (!quiet) {
-          stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
-        }
-
         const templateWithNames = await this.props.deployments.readCurrentTemplateWithNestedStacks(
           stack, options.compareAgainstProcessedTemplate,
         );

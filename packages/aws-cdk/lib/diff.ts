@@ -1,3 +1,4 @@
+import { format } from 'util';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -49,6 +50,10 @@ export function printStackDiff(
   }
 
   if (!diff.isEmpty) {
+    if (!quiet && stream) {
+      stream.write(format('Stack %s\n', chalk.bold(newTemplate.displayName)));
+    }
+
     cfnDiff.formatDifferences(stream || process.stderr, diff, {
       ...logicalIdMapFromTemplate(oldTemplate),
       ...buildLogicalToPathMap(newTemplate),
