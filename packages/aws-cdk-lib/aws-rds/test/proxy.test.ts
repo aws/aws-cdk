@@ -1,6 +1,7 @@
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import { AccountPrincipal, Role } from '../../aws-iam';
+import { Key } from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
@@ -369,6 +370,51 @@ describe('proxy', () => {
     expect(() => {
       proxy.grantConnect(role);
     }).toThrow(/When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect/);
+  });
+
+  test('new Proxy with kms encrypted Secrets has permissions to kms:Decrypt that secret using its key', () => {
+    // GIVEN
+    const cluster = new rds.DatabaseCluster(stack, 'Database', {
+      engine: rds.DatabaseClusterEngine.AURORA,
+      instanceProps: { vpc },
+    });
+
+    const kmsKey = new Key(stack, 'Key');
+
+    const kmsEncryptedSecret = new secretsmanager.Secret(stack, 'Secret', {encryptionKey: kmsKey});
+
+    // WHEN
+    new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+      vpc,
+      secrets: [kmsEncryptedSecret],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        "Statement": [
+          {
+            "Action": [ "secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret" ],
+            "Effect": "Allow",
+            "Resource": {
+              "Ref": "SecretA720EF05"
+            }
+          },
+          {
+            "Action": "kms:Decrypt",
+            "Effect": "Allow",
+            "Resource": {
+              "Fn::GetAtt": [
+                "Key961B73FD",
+                "Arn"
+              ]
+            }
+          }
+        ]
+      },
+      Roles: [ { "Ref": "ProxyIAMRole2FE8AB0F" } ]
+    });
   });
 
   test('DBProxyTargetGroup should have dependency on the proxy targets', () => {
