@@ -404,6 +404,105 @@ export class ResultWriter {
 }
 
 /**
+ * Interface for ItemBatcher configuration properties
+ */
+export interface ItemBatcherProps {
+  /**
+   * MaxItemsPerBatch
+   *
+   * Specifies the maximum number of items that each child workflow execution processes, as static number
+   *
+   * @default - No maxItemsPerBatch
+   */
+  readonly maxItemsPerBatch?: number
+
+  /**
+   * MaxItemsPerBatchPath
+   *
+   * Specifies the maximum number of items that each child workflow execution processes, as JsonPath
+   *
+   * @default - No maxItemsPerBatchPath
+   */
+  readonly maxItemsPerBatchPath?: string
+
+  /**
+   * MaxInputBytesPerBatch
+   *
+   * Specifies the maximum number of bytes that each child workflow execution processes, as static number
+   *
+   * @default - No maxInputBytesPerBatch
+   */
+  readonly maxInputBytesPerBatch?: number
+
+  /**
+   * MaxInputBytesPerBatchPath
+   *
+   * Specifies the maximum number of bytes that each child workflow execution processes, as JsonPath
+   *
+   * @default - No maxInputBytesPerBatchPath
+   */
+  readonly maxInputBytesPerBatchPath?: string
+
+  /**
+   * BatchInput
+   *
+   * Fixed JSON input to include in each batch passed to each child workflow execution
+   *
+   * @default - No batchInput
+   */
+  readonly batchInput?: object
+}
+
+/**
+ * Configuration for processing a group of items in a single child workflow execution
+ */
+export class ItemBatcher {
+  private props: ItemBatcherProps;
+
+  constructor(props: ItemBatcherProps) {
+    this.props = props;
+  }
+
+  /**
+   * Render ResultWriter in ASL JSON format
+   */
+  public render(): any {
+    if (
+      !this.props.maxItemsPerBatch &&
+      !this.props.maxItemsPerBatchPath &&
+      !this.props.maxInputBytesPerBatch &&
+      !this.props.maxInputBytesPerBatchPath &&
+      !this.props.batchInput) {
+      return undefined;
+    }
+
+    return {
+      ...(this.props.maxItemsPerBatch && { MaxItemsPerBatch: this.props.maxItemsPerBatch }),
+      ...(this.props.maxItemsPerBatchPath && { MaxItemsPerBatchPath: this.props.maxItemsPerBatchPath }),
+      ...(this.props.maxInputBytesPerBatch && { MaxInputBytesPerBatch: this.props.maxInputBytesPerBatch }),
+      ...(this.props.maxInputBytesPerBatchPath && { MaxInputBytesPerBatchPath: this.props.maxInputBytesPerBatchPath }),
+      ...(this.props.batchInput && { BatchInput: this.props.batchInput }),
+    };
+  }
+
+  /**
+   * Validate this item batcher
+   */
+  public validateItemBatcher(): string[] {
+    const errors: string [] = [];
+    if (this.props.maxItemsPerBatch && this.props.maxItemsPerBatchPath) {
+      errors.push('Provide either `maxItemsPerBatch` or `maxItemsPerBatchPath`, but not both');
+    }
+
+    if (this.props.maxInputBytesPerBatch && this.props.maxInputBytesPerBatchPath) {
+      errors.push('Provide either `maxInputBytesPerBatch` or `maxInputBytesPerBatchPath`, but not both');
+    }
+
+    return errors;
+  }
+}
+
+/**
  * Properties for configuring a Distribute Map state
  */
 export interface DistributedMapProps extends BaseMapProps {
@@ -472,56 +571,18 @@ export interface DistributedMapProps extends BaseMapProps {
   readonly label?: string
 
   /**
-   * MaxItemsPerBatch
-   *
-   * Specifies the maximum number of items that each child workflow execution processes, as static number
-   *
-   * @default - No maxItemsPerBatch
-   */
-  readonly maxItemsPerBatch?: number
-
-  /**
-   * MaxItemsPerBatchPath
-   *
-   * Specifies the maximum number of items that each child workflow execution processes, as JsonPath
-   *
-   * @default - No maxItemsPerBatchPath
-   */
-  readonly maxItemsPerBatchPath?: string
-
-  /**
-   * MaxInputBytesPerBatch
-   *
-   * Specifies the maximum number of bytes that each child workflow execution processes, as static number
-   *
-   * @default - No maxInputBytesPerBatch
-   */
-  readonly maxInputBytesPerBatch?: number
-
-  /**
-   * MaxInputBytesPerBatchPath
-   *
-   * Specifies the maximum number of bytes that each child workflow execution processes, as JsonPath
-   *
-   * @default - No maxInputBytesPerBatchPath
-   */
-  readonly maxInputBytesPerBatchPath?: string
-
-  /**
-   * BatchInput
-   *
-   * Fixed JSON input to include in each batch passed to each child workflow execution
-   *
-   * @default - No batchInput
-   */
-  readonly batchInput?: object
-
-  /**
    * Configuration for S3 location in which to save Map Run results
    *
    * @default - No resultWriter
    */
   readonly resultWriter?: ResultWriter
+
+  /**
+   * Specifies to process a group of items in a single child workflow execution
+   *
+   * @default - No itemBatcher
+   */
+  readonly itemBatcher?: ItemBatcher;
 }
 
 /**
@@ -552,12 +613,8 @@ export class DistributedMap extends MapBase implements INextable {
   private readonly toleratedFailureCount?: number;
   private readonly toleratedFailureCountPath?: string;
   private readonly label?: string;
-  private readonly maxItemsPerBatch?: number;
-  private readonly maxItemsPerBatchPath?: string;
-  private readonly maxInputBytesPerBatch?: number;
-  private readonly maxInputBytesPerBatchPath?: string;
-  private readonly batchInput?: object;
   private readonly resultWriter?: ResultWriter;
+  private readonly itemBatcher?: ItemBatcher;
 
   constructor(scope: Construct, id: string, props: DistributedMapProps = {}) {
     super(scope, id, props);
@@ -568,11 +625,7 @@ export class DistributedMap extends MapBase implements INextable {
     this.toleratedFailureCount = props.toleratedFailureCount;
     this.toleratedFailureCountPath = props.toleratedFailureCountPath;
     this.label = props.label;
-    this.maxItemsPerBatch = props.maxItemsPerBatch;
-    this.maxItemsPerBatchPath = props.maxItemsPerBatchPath;
-    this.maxInputBytesPerBatch = props.maxInputBytesPerBatch;
-    this.maxInputBytesPerBatchPath = props.maxInputBytesPerBatchPath;
-    this.batchInput = props.batchInput;
+    this.itemBatcher = props.itemBatcher;
     this.resultWriter = props.resultWriter;
     this.processorMode = ProcessorMode.DISTRIBUTED;
   }
@@ -587,11 +640,11 @@ export class DistributedMap extends MapBase implements INextable {
       errors.push('Processing mode cannot be `INLINE` for a Distributed Map');
     }
 
-    if (this.itemsPath !== undefined && this.itemReader !== undefined) {
+    if (this.itemsPath && this.itemReader) {
       errors.push('Provide either `itemsPath` or `itemReader`, but not both');
     }
 
-    if (this.toleratedFailurePercentage !== undefined && this.toleratedFailurePercentagePath !== undefined) {
+    if (this.toleratedFailurePercentage && this.toleratedFailurePercentagePath) {
       errors.push('Provide either `toleratedFailurePercentage` or `toleratedFailurePercentagePath`, but not both');
     }
 
@@ -599,19 +652,15 @@ export class DistributedMap extends MapBase implements INextable {
       errors.push('toleratedFailurePercentage must be between 0 and 100');
     }
 
-    if (this.toleratedFailureCount !== undefined && this.toleratedFailureCountPath !== undefined) {
+    if (this.toleratedFailureCount && this.toleratedFailureCountPath) {
       errors.push('Provide either `toleratedFailureCount` or `toleratedFailureCountPath`, but not both');
     }
 
-    if (this.maxItemsPerBatch !== undefined && this.maxItemsPerBatchPath !== undefined) {
-      errors.push('Provide either `maxItemsPerBatch` or `maxItemsPerBatchPath`, but not both');
+    if (this.itemBatcher) {
+      errors.push(...this.itemBatcher.validateItemBatcher());
     }
 
-    if (this.maxInputBytesPerBatch !== undefined && this.maxInputBytesPerBatchPath !== undefined) {
-      errors.push('Provide either `maxInputBytesPerBatch` or `maxInputBytesPerBatchPath`, but not both');
-    }
-
-    if (this.label !== undefined) {
+    if (this.label) {
       if (this.label.length > 40) {
         errors.push('label must be 40 characters or less');
       }
@@ -699,7 +748,7 @@ export class DistributedMap extends MapBase implements INextable {
    * Render the ItemReader as JSON object
    */
   private renderItemReader(): any {
-    if (this.itemReader === undefined) { return undefined; }
+    if (!this.itemReader) { return undefined; }
 
     return FieldUtils.renderObject({
       ItemReader: this.itemReader.render(),
@@ -710,7 +759,7 @@ export class DistributedMap extends MapBase implements INextable {
    * Render ResultWriter in ASL JSON format
    */
   private renderResultWriter(): any {
-    if (this.resultWriter === undefined) { return undefined; }
+    if (!this.resultWriter) { return undefined; }
 
     return FieldUtils.renderObject({
       ResultWriter: this.resultWriter.render(),
@@ -721,21 +770,10 @@ export class DistributedMap extends MapBase implements INextable {
    * Render ItemBatcher in ASL JSON format
    */
   private renderItemBatcher(): any {
-    if (
-      this.maxItemsPerBatch === undefined &&
-      this.maxItemsPerBatchPath === undefined &&
-      this.maxInputBytesPerBatch === undefined &&
-      this.maxInputBytesPerBatchPath === undefined &&
-      this.batchInput === undefined) { return undefined; }
+    if (!this.itemBatcher) { return undefined; }
 
     return {
-      ItemBatcher: {
-        ...(this.maxItemsPerBatch && { MaxItemsPerBatch: this.maxItemsPerBatch }),
-        ...(this.maxItemsPerBatchPath && { MaxItemsPerBatchPath: this.maxItemsPerBatchPath }),
-        ...(this.maxInputBytesPerBatch && { MaxInputBytesPerBatch: this.maxInputBytesPerBatch }),
-        ...(this.maxInputBytesPerBatchPath && { MaxInputBytesPerBatchPath: this.maxInputBytesPerBatchPath }),
-        ...(this.batchInput && { BatchInput: this.batchInput }),
-      },
+      ItemBatcher: this.itemBatcher.render(),
     };
   }
 }

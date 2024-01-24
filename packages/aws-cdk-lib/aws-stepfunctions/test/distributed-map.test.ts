@@ -600,8 +600,10 @@ describe('Distributed Map State', () => {
       mapExecutionType: stepfunctions.StateMachineType.EXPRESS,
       toleratedFailurePercentagePath: stepfunctions.JsonPath.stringAt('$.toleratedFailurePercentage'),
       toleratedFailureCountPath: stepfunctions.JsonPath.stringAt('$.toleratedFailureCount'),
-      maxItemsPerBatchPath: stepfunctions.JsonPath.stringAt('$.maxItemsPerBatch'),
-      maxInputBytesPerBatchPath: stepfunctions.JsonPath.stringAt('$.maxInputBytesPerBatch'),
+      itemBatcher: new stepfunctions.ItemBatcher({
+        maxItemsPerBatchPath: stepfunctions.JsonPath.stringAt('$.maxItemsPerBatch'),
+        maxInputBytesPerBatchPath: stepfunctions.JsonPath.stringAt('$.maxInputBytesPerBatch'),
+      }),
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
@@ -648,11 +650,13 @@ describe('Distributed Map State', () => {
       toleratedFailurePercentage: 100,
       toleratedFailureCount: 101,
       label: 'testLabel',
-      maxItemsPerBatch: 10,
-      maxInputBytesPerBatch: 11,
-      batchInput: {
-        Test: 'test',
-      },
+      itemBatcher: new stepfunctions.ItemBatcher({
+        maxItemsPerBatch: 10,
+        maxInputBytesPerBatch: 11,
+        batchInput: {
+          Test: 'test',
+        },
+      }),
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
 
