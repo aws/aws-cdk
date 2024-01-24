@@ -479,6 +479,22 @@ jobDefn.container.addVolume(batch.EcsVolume.efs({
 }));
 ```
 
+### Running a ECS workflow with Fargate container
+
+```ts
+const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
+  container: new batch.EcsFargateContainerDefinition(this, 'myFargateContainer', {
+    image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+    ephemeralStorageSize: Size.gibibytes(100),
+    fargatePlatformVersion: FargatePlatformVersion.LATEST,
+    fargateCpuArchitecture: ecs.CpuArchitecture.ARM64,
+    fargateOperatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+  }),
+});
+```
+
 ### Secrets
 
 You can expose SecretsManager Secret ARNs or SSM Parameters to your container as environment variables.
