@@ -1,0 +1,371 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "redshift-cluster-rotationmultiuser-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "redshift-cluster-rotationmultiuser-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "redshift-cluster-rotationmultiuser-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "redshift-cluster-rotationmultiuser-integ.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f7941457dd684f0dfb8d5a6c2bde86248ed66476687e67db2b67eedb413df334.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "redshift-cluster-rotationmultiuser-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "redshift-cluster-rotationmultiuser-integ.assets"
+      ],
+      "metadata": {
+        "/redshift-cluster-rotationmultiuser-integ/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2EIP4947BC00"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2NATGateway3C070193"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/Cluster/Subnets/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSubnetsDCFA5CB7"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/Cluster/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSecurityGroup0921994B"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/Cluster/SecurityGroup/from redshiftclusterrotationmultiuserintegClusterUserRotationSecurityGroup2865F1AC:{IndirectPort}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSecurityGroupfromredshiftclusterrotationmultiuserintegClusterUserRotationSecurityGroup2865F1ACIndirectPort86779D66"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/Cluster/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSecret6368BD0F"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/Cluster/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSecretAttachment769E6258"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/Cluster/Secret/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterSecretPolicyF55A3D13"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/Cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterEB0386A7"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/Cluster/UserRotation/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterUserRotationSecurityGroup257B007D"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/Cluster/UserRotation/SARMapping": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterUserRotationSARMappingC0EC26F5"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/Cluster/UserRotation/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterUserRotationE9391959"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/User/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserSecretE2C04A69"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/User/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserSecretAttachment02022609"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/User/Secret/RotationSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserSecretRotationScheduleC014ACD6"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/User/Secret/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserSecretPolicyD7F8150A"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/User/Resource/Provider/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserProviderframeworkonEventServiceRole8FBA2FBD"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/User/Resource/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/User/Resource/Provider/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserProviderframeworkonEvent4EC32885"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/User/Resource/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserFDDCDD17"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRole0A90D717"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5fServiceRoleDefaultPolicyDDD1388D"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/Query Redshift Database3de5bea727da479686625efb56431b5f/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueryRedshiftDatabase3de5bea727da479686625efb56431b5f3DF81997"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/redshift-cluster-rotationmultiuser-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "redshift-cluster-rotationmultiuser-integ"
+    },
+    "ClusterMultiUserRotationIntegDefaultTestDeployAssert9A5C1D17.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ClusterMultiUserRotationIntegDefaultTestDeployAssert9A5C1D17.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ClusterMultiUserRotationIntegDefaultTestDeployAssert9A5C1D17": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ClusterMultiUserRotationIntegDefaultTestDeployAssert9A5C1D17.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ClusterMultiUserRotationIntegDefaultTestDeployAssert9A5C1D17.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ClusterMultiUserRotationIntegDefaultTestDeployAssert9A5C1D17.assets"
+      ],
+      "metadata": {
+        "/ClusterMultiUserRotationInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ClusterMultiUserRotationInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ClusterMultiUserRotationInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
