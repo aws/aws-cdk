@@ -7,6 +7,7 @@ import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, Duration, Stack } from '../../core';
+import { error } from '../../../../tools/@aws-cdk/spec2cdk/lib/util/log';
 import {
   CfnDistribution,
   Distribution,
@@ -1284,12 +1285,13 @@ test('with publish additional metrics', () => {
 
 describe('Distribution metrics tests', () => {
   const metrics = [
-    { name: 'OriginLatency', method: 'metricOriginLatency', additionalMetricsRequired: true },
-    { name: 'CacheHitRate', method: 'metricCacheHitRate', additionalMetricsRequired: true },
+    { name: 'OriginLatency', method: 'metricOriginLatency', additionalMetricsRequired: true, errorMetricName: 'Origin latency' },
+    { name: 'CacheHitRate', method: 'metricCacheHitRate', additionalMetricsRequired: true, errorMetricName: 'Cache hit rate' },
     ...['401', '403', '404', '502', '503', '504'].map(errorCode => ({
       name: `${errorCode}ErrorRate`,
       method: `metric${errorCode}ErrorRate`,
       additionalMetricsRequired: true,
+      errorMetricName: `${errorCode} error rate`,
     })),
   ];
 
@@ -1320,6 +1322,6 @@ describe('Distribution metrics tests', () => {
 
     expect(() => {
       dist[metric.method]();
-    }).toThrow(new RegExp(`${metric.name} metric is only available if 'publishAdditionalMetrics' is set 'true'`));
+    }).toThrow(new RegExp(`${metric.errorMetricName} metric is only available if 'publishAdditionalMetrics' is set 'true'`));
   });
 });
