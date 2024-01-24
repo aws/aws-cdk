@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "aws-cdk-rds-read-replica-with-allocated-storage-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-read-replica-with-allocated-storage"
+      ],
+      "assertionStack": "aws-cdk-rds-read-replica-with-allocated-storage-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkrdsreadreplicawithallocatedstoragetestDefaultTestDeployAssertAFB26D39"
+    }
+  }
+}

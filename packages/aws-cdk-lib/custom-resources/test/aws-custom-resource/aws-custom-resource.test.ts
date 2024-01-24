@@ -869,6 +869,31 @@ test('can specify log retention', () => {
   });
 });
 
+test('can specify log group', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    logGroup: new logs.LogGroup(stack, 'LogGroup', {
+      logGroupName: '/test/log/group/name',
+      retention: logs.RetentionDays.ONE_WEEK,
+    }),
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+    LogGroupName: '/test/log/group/name',
+    RetentionInDays: 7,
+  });
+});
+
 test('disable AWS SDK installation', () => {
   // GIVEN
   const stack = new cdk.Stack();

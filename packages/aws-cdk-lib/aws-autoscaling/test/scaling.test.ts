@@ -327,6 +327,125 @@ test('step scaling with evaluation period configured', () => {
   });
 });
 
+test('step scaling with invalid evaluation period throws error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const fixture = new ASGFixture(stack, 'Fixture');
+
+  // THEN
+  expect(() => {
+    fixture.asg.scaleOnMetric('Tracking', {
+      metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+      scalingSteps: [
+        { upper: 0, change: -1 },
+        { lower: 100, change: +1 },
+        { lower: 500, change: +5 },
+      ],
+      evaluationPeriods: 0,
+      metricAggregationType: autoscaling.MetricAggregationType.MAXIMUM,
+    });
+  }).toThrow(/evaluationPeriods cannot be less than 1, got: 0/);
+});
+
+describe('datapointsToAlarm', () => {
+  test('step scaling with evaluation period and data points to alarm configured', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fixture = new ASGFixture(stack, 'Fixture');
+
+    // WHEN
+    fixture.asg.scaleOnMetric('Tracking', {
+      metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+      scalingSteps: [
+        { upper: 0, change: -1 },
+        { lower: 100, change: +1 },
+        { lower: 500, change: +5 },
+      ],
+      evaluationPeriods: 10,
+      datapointsToAlarm: 10,
+      metricAggregationType: autoscaling.MetricAggregationType.MAXIMUM,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
+      PolicyType: 'StepScaling',
+      MetricAggregationType: 'Maximum',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+      EvaluationPeriods: 10,
+      DatapointsToAlarm: 10,
+      ExtendedStatistic: 'p99',
+      MetricName: 'Metric',
+      Namespace: 'Test',
+      Threshold: 100,
+    });
+  });
+
+  test('step scaling with invalid datapointsToAlarm throws error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fixture = new ASGFixture(stack, 'Fixture');
+
+    // THEN
+    expect(() => {
+      fixture.asg.scaleOnMetric('Tracking', {
+        metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+        scalingSteps: [
+          { upper: 0, change: -1 },
+          { lower: 100, change: +1 },
+          { lower: 500, change: +5 },
+        ],
+        evaluationPeriods: 10,
+        datapointsToAlarm: 0,
+        metricAggregationType: autoscaling.MetricAggregationType.MAXIMUM,
+      });
+    }).toThrow(/datapointsToAlarm cannot be less than 1, got: 0/);
+  });
+
+  test('step scaling with datapointsToAlarm is greater than evaluationPeriods throws error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fixture = new ASGFixture(stack, 'Fixture');
+
+    // THEN
+    expect(() => {
+      fixture.asg.scaleOnMetric('Tracking', {
+        metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+        scalingSteps: [
+          { upper: 0, change: -1 },
+          { lower: 100, change: +1 },
+          { lower: 500, change: +5 },
+        ],
+        evaluationPeriods: 10,
+        datapointsToAlarm: 15,
+        metricAggregationType: autoscaling.MetricAggregationType.MAXIMUM,
+      });
+    }).toThrow(/datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: 15, evaluationPeriods: 10/);
+  });
+
+  test('step scaling with datapointsToAlarm without evaluationPeriods throws error', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fixture = new ASGFixture(stack, 'Fixture');
+
+    // THEN
+    expect(() => {
+      fixture.asg.scaleOnMetric('Tracking', {
+        metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+        scalingSteps: [
+          { upper: 0, change: -1 },
+          { lower: 100, change: +1 },
+          { lower: 500, change: +5 },
+        ],
+        datapointsToAlarm: 15,
+        metricAggregationType: autoscaling.MetricAggregationType.MAXIMUM,
+      });
+    }).toThrow(/evaluationPeriods must be set if datapointsToAlarm is set/);
+  });
+});
+
 describe('step-scaling-policy scalingSteps length validation checks', () => {
   test('scalingSteps must have at least 2 steps', () => {
     // GIVEN

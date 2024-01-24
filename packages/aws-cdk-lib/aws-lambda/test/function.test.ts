@@ -2345,7 +2345,9 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Environment: {
           Variables: {
+            AWS_CODEGURU_PROFILER_GROUP_NAME: { Ref: 'MyLambdaProfilingGroupEC6DE32F' },
             AWS_CODEGURU_PROFILER_GROUP_ARN: { 'Fn::GetAtt': ['MyLambdaProfilingGroupEC6DE32F', 'Arn'] },
+            AWS_CODEGURU_PROFILER_TARGET_REGION: { Ref: 'AWS::Region' },
             AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
           },
         },
@@ -2389,16 +2391,58 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Environment: {
           Variables: {
+            AWS_CODEGURU_PROFILER_GROUP_NAME: { Ref: 'ProfilingGroup26979FD7' },
             AWS_CODEGURU_PROFILER_GROUP_ARN: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:', { Ref: 'AWS::Partition' }, ':codeguru-profiler:', { Ref: 'AWS::Region' },
-                  ':', { Ref: 'AWS::AccountId' }, ':profilingGroup/', { Ref: 'ProfilingGroup26979FD7' },
-                ],
+              'Fn::GetAtt': [
+                'ProfilingGroup26979FD7',
+                'Arn',
               ],
             },
+            AWS_CODEGURU_PROFILER_TARGET_REGION: { Ref: 'AWS::Region' },
             AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
+          },
+        },
+      });
+    });
+
+    test('default function with client imported Profiling Group', () => {
+      const stack = new cdk.Stack();
+
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.PYTHON_3_9,
+        profilingGroup: ProfilingGroup.fromProfilingGroupArn(stack, 'ProfilingGroup', 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup'),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'codeguru-profiler:ConfigureAgent',
+                'codeguru-profiler:PostAgentProfile',
+              ],
+              Effect: 'Allow',
+              Resource: 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+        Roles: [
+          {
+            Ref: 'MyLambdaServiceRole4539ECB6',
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        Environment: {
+          Variables: {
+            AWS_CODEGURU_PROFILER_GROUP_NAME: 'MyAwesomeProfilingGroup',
+            AWS_CODEGURU_PROFILER_GROUP_ARN: 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup',
+            AWS_CODEGURU_PROFILER_TARGET_REGION: 'us-east-1',
           },
         },
       });
@@ -2438,31 +2482,115 @@ describe('function', () => {
     test('default function with profiling enabled and client provided env vars', () => {
       const stack = new cdk.Stack();
 
-      expect(() => new lambda.Function(stack, 'MyLambda', {
+      new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.PYTHON_3_9,
         profiling: true,
         environment: {
+          AWS_CODEGURU_PROFILER_GROUP_NAME: 'profiler_group',
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
+          AWS_CODEGURU_PROFILER_TARGET_REGION: 'us-east-1',
           AWS_CODEGURU_PROFILER_ENABLED: 'yes',
         },
-      })).toThrow(/AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled/);
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'codeguru-profiler:ConfigureAgent',
+                'codeguru-profiler:PostAgentProfile',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'MyLambdaProfilingGroupEC6DE32F',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+        Roles: [
+          {
+            Ref: 'MyLambdaServiceRole4539ECB6',
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        Environment: {
+          Variables: {
+            AWS_CODEGURU_PROFILER_GROUP_NAME: 'profiler_group',
+            AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
+            AWS_CODEGURU_PROFILER_TARGET_REGION: 'us-east-1',
+            AWS_CODEGURU_PROFILER_ENABLED: 'yes',
+          },
+        },
+      });
+
+      Annotations.fromStack(stack).hasWarning('/Default/MyLambda', Match.stringLikeRegexp('AWS_CODEGURU_PROFILER_GROUP_NAME, AWS_CODEGURU_PROFILER_GROUP_ARN, AWS_CODEGURU_PROFILER_TARGET_REGION, and AWS_CODEGURU_PROFILER_ENABLED should not be set when profiling options enabled'));
     });
 
     test('default function with client provided Profiling Group and client provided env vars', () => {
       const stack = new cdk.Stack();
 
-      expect(() => new lambda.Function(stack, 'MyLambda', {
+      new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.PYTHON_3_9,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
         environment: {
+          AWS_CODEGURU_PROFILER_GROUP_NAME: 'profiler_group',
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
+          AWS_CODEGURU_PROFILER_TARGET_REGION: 'us-east-1',
           AWS_CODEGURU_PROFILER_ENABLED: 'yes',
         },
-      })).toThrow(/AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled/);
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'codeguru-profiler:ConfigureAgent',
+                'codeguru-profiler:PostAgentProfile',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'ProfilingGroup26979FD7',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+        Roles: [
+          {
+            Ref: 'MyLambdaServiceRole4539ECB6',
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        Environment: {
+          Variables: {
+            AWS_CODEGURU_PROFILER_GROUP_NAME: 'profiler_group',
+            AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
+            AWS_CODEGURU_PROFILER_TARGET_REGION: 'us-east-1',
+            AWS_CODEGURU_PROFILER_ENABLED: 'yes',
+          },
+        },
+      });
+
+      Annotations.fromStack(stack).hasWarning('/Default/MyLambda', Match.stringLikeRegexp('AWS_CODEGURU_PROFILER_GROUP_NAME, AWS_CODEGURU_PROFILER_GROUP_ARN, AWS_CODEGURU_PROFILER_TARGET_REGION, and AWS_CODEGURU_PROFILER_ENABLED should not be set when profiling options enabled'));
     });
 
     test('throws an error when used with an unsupported runtime', () => {

@@ -338,7 +338,7 @@ export interface LaunchTemplateProps {
   readonly keyName?: string;
 
   /**
-   * The SSK keypair to grant access to the instance.
+   * The SSH keypair to grant access to the instance.
    *
    * @default - No SSH access will be possible.
    */

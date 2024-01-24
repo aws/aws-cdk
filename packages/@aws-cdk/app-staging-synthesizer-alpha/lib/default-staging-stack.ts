@@ -242,6 +242,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     super(scope, id, {
       ...props,
       synthesizer: new BootstraplessSynthesizer(),
+      description: `This stack includes resources needed to deploy the AWS CDK app ${props.appId} into this environment`,
       analyticsReporting: false, // removing AWS::CDK::Metadata construct saves ~3KB
     });
     // removing path metadata saves ~2KB

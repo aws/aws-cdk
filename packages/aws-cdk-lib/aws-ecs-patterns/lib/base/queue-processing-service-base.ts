@@ -150,6 +150,19 @@ export interface QueueProcessingServiceBaseProps {
   readonly scalingSteps?: ScalingInterval[];
 
   /**
+   * Grace period after scaling activity in seconds.
+   *
+   * Subsequent scale outs during the cooldown period are squashed so that only
+   * the biggest scale out happens.
+   *
+   * Subsequent scale ins during the cooldown period are ignored.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_StepScalingPolicyConfiguration.html
+   * @default 300 seconds
+   */
+  readonly cooldown?: Duration;
+
+  /**
    * The log driver to use.
    *
    * @default - AwsLogDriver if enableLogging is true
@@ -296,6 +309,12 @@ export abstract class QueueProcessingServiceBase extends Construct {
   public readonly scalingSteps: ScalingInterval[];
 
   /**
+   * Grace period after scaling activity in seconds.
+   * @default 300 seconds
+   */
+  private readonly cooldown?: Duration;
+
+  /**
    * The AwsLogDriver to use for logging if logging is enabled.
    */
   public readonly logDriver?: LogDriver;
@@ -348,6 +367,11 @@ export abstract class QueueProcessingServiceBase extends Construct {
     const defaultScalingSteps = [{ upper: 0, change: -1 }, { lower: 100, change: +1 }, { lower: 500, change: +5 }];
     this.scalingSteps = props.scalingSteps ?? defaultScalingSteps;
 
+    if (props.cooldown && props.cooldown.toSeconds() > 999999999) {
+      throw new Error(`cooldown cannot be more than 999999999, found: ${props.cooldown.toSeconds()}`);
+    }
+    this.cooldown = props.cooldown;
+
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging ?? true;
     this.logDriver = props.logDriver ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
@@ -398,6 +422,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     scalingTarget.scaleOnMetric('QueueMessagesVisibleScaling', {
       metric: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
       scalingSteps: this.scalingSteps,
+      cooldown: this.cooldown,
     });
   }
 

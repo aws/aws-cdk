@@ -315,7 +315,7 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
   for (const resource of Object.values((options.stack.template.Resources ?? {}))) {
     if ((resource as any).Type === 'AWS::CloudFormation::Stack') {
       // eslint-disable-next-line no-console
-      debug('This stack contains one or more nested stacks, falling back to no change set diff...');
+      debug('This stack contains one or more nested stacks, falling back to template-only diff...');
 
       return undefined;
     }
@@ -337,7 +337,7 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
     const cfn = preparedSdk.stackSdk.cloudFormation();
     const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
 
-    options.stream.write('Creating a change set, this may take a while...\n');
+    options.stream.write('Hold on while we create a read-only change set to get a diff with accurate replacement information (use --no-change-set to use a less accurate but faster template-only diff)\n');
     return await createChangeSet({
       cfn,
       changeSetName: 'cdk-diff-change-set',
@@ -349,8 +349,8 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
       parameters: options.parameters,
     });
   } catch (e: any) {
-    // eslint-disable-next-line no-console
-    console.error(`Failed to create change set with error: '${e.message}', falling back to no change-set diff`);
+    debug(e.message);
+    options.stream.write('Could not create a change set, will base the diff on template differences (run again with -v to see the reason)\n');
 
     return undefined;
   }

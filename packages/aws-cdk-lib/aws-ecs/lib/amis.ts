@@ -25,6 +25,11 @@ export enum AmiHardwareType {
    * Use the Amazon ECS-optimized Amazon Linux 2 (arm64) AMI.
    */
   ARM = 'ARM64',
+
+  /**
+   * Use the Amazon ECS-optimized Amazon Linux 2 (Neuron) AMI.
+   */
+  NEURON = 'Neuron',
 }
 
 /**
@@ -143,6 +148,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
       + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
       + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
       + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
+      + (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '')
       + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
 
     this.cachedInContext = props?.cachedInContext ?? false;
@@ -271,6 +277,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
       + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
       + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
+      + (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '')
       + (this.windowsVersion ? 'image_id' : 'recommended/image_id');
 
     this.cachedInContext = props?.cachedInContext ?? false;

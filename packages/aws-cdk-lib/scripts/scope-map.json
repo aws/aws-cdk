@@ -185,6 +185,9 @@
   "aws-datasync": [
     "AWS::DataSync"
   ],
+  "aws-datazone": [
+    "AWS::DataZone"
+  ],
   "aws-dax": [
     "AWS::DAX"
   ],

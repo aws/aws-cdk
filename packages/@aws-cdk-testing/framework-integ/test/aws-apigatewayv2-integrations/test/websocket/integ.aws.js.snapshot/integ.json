@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "apigatewayv2-aws-integration-integ-test/DefaultTest": {
+      "stacks": [
+        "integ-aws-websocket-integration"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "apigatewayv2-aws-integration-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "apigatewayv2awsintegrationintegtestDefaultTestDeployAssert2B785EAB"
+    }
+  }
+}

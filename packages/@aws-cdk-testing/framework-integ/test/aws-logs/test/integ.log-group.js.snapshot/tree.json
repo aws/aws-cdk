@@ -68,6 +68,14 @@
                       "name": "policy-name",
                       "description": "policy description",
                       "version": "2021-06-01",
+                      "configuration": {
+                        "customDataIdentifier": [
+                          {
+                            "name": "EmployeeId",
+                            "regex": "EmployeeId-\\d{9}"
+                          }
+                        ]
+                      },
                       "statement": [
                         {
                           "sid": "audit-statement-cdk",
@@ -95,7 +103,8 @@
                                   ":dataprotection::aws:data-identifier/EmailAddress"
                                 ]
                               ]
-                            }
+                            },
+                            "EmployeeId"
                           ],
                           "operation": {
                             "audit": {
@@ -140,7 +149,8 @@
                                   ":dataprotection::aws:data-identifier/EmailAddress"
                                 ]
                               ]
-                            }
+                            },
+                            "EmployeeId"
                           ],
                           "operation": {
                             "deidentify": {
@@ -199,7 +209,7 @@
                 "path": "LogGroupInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -245,7 +255,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.3.0"
         }
       }
     },
