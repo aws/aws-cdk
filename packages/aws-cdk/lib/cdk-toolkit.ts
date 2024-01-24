@@ -575,6 +575,9 @@ export class CdkToolkit {
     stacks = stacks.reversed();
 
     if (!options.force) {
+      if (stacks.stackArtifacts.length === 0) {
+        return;
+      }
       // eslint-disable-next-line max-len
       const confirmed = await promptly.confirm(`Are you sure you want to delete: ${chalk.blue(stacks.stackArtifacts.map(s => s.hierarchicalId).join(', '))} (y/n)?`);
       if (!confirmed) {
@@ -786,14 +789,43 @@ export class CdkToolkit {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
       defaultBehavior: DefaultSelection.OnlySingle,
     });
+    const selectorWithoutPatterns: StackSelector = {
+      ...selector,
+      allTopLevel: true,
+      patterns: [],
+    };
+    const stacksWithoutPatterns = await assembly.selectStacks(selectorWithoutPatterns, {
+      extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
+      defaultBehavior: DefaultSelection.OnlySingle,
+    });
 
-    const notExistPatterns = selector.patterns.filter(pattern => !stacks.stackArtifacts.find(stack =>
-      minimatch(stack.hierarchicalId, pattern) || (stack.id === pattern && semver.major(versionNumber()) < 2),
-    ));
-    if (notExistPatterns.length > 0) {
-      warning(`${notExistPatterns.join(', ')} ${notExistPatterns.length === 1 ? 'does' : 'do'} not exist.`);
-    }
+    const patterns = selector.patterns.map(pattern => {
+      const notExist = !stacks.stackArtifacts.find(stack =>
+        minimatch(stack.hierarchicalId, pattern) || (stack.id === pattern && semver.major(versionNumber()) < 2),
+      );
 
+      const closelyMatched = notExist ? stacksWithoutPatterns.stackArtifacts.map(stack => {
+        if (minimatch(stack.hierarchicalId.toLowerCase(), pattern.toLowerCase())) {
+          return stack.hierarchicalId;
+        }
+        if (stack.id.toLowerCase() === pattern.toLowerCase() && semver.major(versionNumber()) < 2) {
+          return stack.id;
+        }
+        return;
+      }).filter((stack): stack is string => stack !== undefined) : [];
+      return {
+        pattern,
+        notExist,
+        closelyMatched,
+      };
+    });
+
+    patterns.forEach(pattern => {
+      if (pattern.notExist) {
+        const closelyMatched = pattern.closelyMatched.length > 0 ? ` Do you mean ${pattern.closelyMatched.join(', ')}?` : '';
+        warning(`${pattern.pattern} does not exist.${closelyMatched}`);
+      }
+    });
     return stacks;
   }
 
