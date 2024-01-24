@@ -902,6 +902,7 @@ export class UserPool extends UserPoolBase {
             if (!this.triggers.kmsKeyId) {
               throw new Error('you must specify a KMS key if you are using customSmsSender or customEmailSender.');
             }
+          case 'preTokenGenerationConfig':
             trigger = props.lambdaTriggers[t];
             const version = 'V1_0';
             if (trigger !== undefined) {
