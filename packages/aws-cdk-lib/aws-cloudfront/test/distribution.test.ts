@@ -7,7 +7,6 @@ import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, Duration, Stack } from '../../core';
-import { exec as _exec } from 'child_process';
 import {
   CfnDistribution,
   Distribution,
