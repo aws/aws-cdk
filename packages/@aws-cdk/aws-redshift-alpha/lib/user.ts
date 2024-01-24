@@ -153,6 +153,7 @@ export class User extends UserBase {
     const secret = new DatabaseSecret(this, 'Secret', {
       username,
       encryptionKey: props.encryptionKey,
+      masterSecret: props.adminUser,
     });
     const attachedSecret = secret.attach(props.cluster);
     this.password = attachedSecret.secretValueFromJson('password');

@@ -17,6 +17,13 @@ export interface DatabaseSecretProps {
    * @default default master key
    */
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * The master secret which will be used to rotate this secret.
+   *
+   * @default - no master secret information will be included
+   */
+  readonly masterSecret?: secretsmanager.ISecret;
 }
 
 /**
@@ -30,7 +37,10 @@ export class DatabaseSecret extends secretsmanager.Secret {
       encryptionKey: props.encryptionKey,
       generateSecretString: {
         passwordLength: 30, // Redshift password could be up to 64 characters
-        secretStringTemplate: JSON.stringify({ username: props.username }),
+        secretStringTemplate: JSON.stringify({
+          username: props.username,
+          masterarn: props.masterSecret?.secretArn,
+        }),
         generateStringKey: 'password',
         excludeCharacters: '"@/\\\ \'',
       },
