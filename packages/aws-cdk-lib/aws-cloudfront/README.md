@@ -593,10 +593,20 @@ You can enable [additional CloudFront distribution metrics](https://docs.aws.ama
 - Cache hit rate: View cache hits as a percentage of total cacheable requests, excluding errors.
 
 ```ts
-new cloudfront.Distribution(this, 'myDist', {
+const dist = new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
   publishAdditionalMetrics: true,
 });
+
+// Retrieving additional distribution metrics
+const latencyMetric = dist.metricOriginLatency();
+const cacheHitRateMetric = dist.metricCacheHitRate();
+const http401ErrorRateMetric = dist.metricHttp401ErrorRate();
+const http403ErrorRateMetric = dist.metricHttp403ErrorRate();
+const http404ErrorRateMetric = dist.metricHttp404ErrorRate();
+const http502ErrorRateMetric = dist.metricHttp502ErrorRate();
+const http503ErrorRateMetric = dist.metricHttp503ErrorRate();
+const http504ErrorRateMetric = dist.metricHttp504ErrorRate();
 ```
 
 ### HTTP Versions
