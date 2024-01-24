@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
 import { CfnFunction } from './cloudfront.generated';
-import { IResource, Names, Resource, Stack } from '../../core';
+import { FeatureFlags, IResource, Lazy, Names, Resource, Stack } from '../../core';
+import { CLOUDFRONT_FUNCTION_STABLE_GENERATED_NAME } from '../../cx-api';
 
 /**
  * Represents the function's source code
@@ -115,7 +116,7 @@ export interface FunctionAttributes {
 export interface FunctionProps {
   /**
    * A name to identify the function.
-   * @default - generated from the `id`
+   * @default - an automatically generated name
    */
   readonly functionName?: string;
 
@@ -196,6 +197,12 @@ export class Function extends Resource implements IFunction {
   }
 
   private generateName(): string {
+    if (FeatureFlags.of(this).isEnabled(CLOUDFRONT_FUNCTION_STABLE_GENERATED_NAME)) {
+      return Lazy.string({
+        produce: () => Names.uniqueResourceName(this, { maxLength: 64, allowedSpecialCharacters: '-_' }),
+      });
+    }
+
     const name = Stack.of(this).region + Names.uniqueId(this);
     if (name.length > 64) {
       return name.substring(0, 32) + name.substring(name.length - 32);

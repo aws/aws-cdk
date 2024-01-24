@@ -63,6 +63,7 @@ Flags come in three types:
 | [@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters](#aws-cdkaws-rdsauroraclusterchangescopeofinstanceparametergroupwitheachparameters) | When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change. | 2.97.0 | (fix) |
 | [@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials](#aws-cdkaws-rdspreventrenderingdeprecatedcredentials) | When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials. | 2.98.0 | (fix) |
 | [@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource](#aws-cdkaws-codepipeline-actionsusenewdefaultbranchforcodecommitsource) | When enabled, the CodeCommit source action is using the default branch name 'main'. | 2.103.1 | (fix) |
+| [@aws-cdk/aws-cloudfront:useStableGeneratedFunctionName](#aws-cdkaws-cloudfrontusestablegeneratedfunctionname) | When enabled, the method used to generate CloudFront function names is more consistent across deployments | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -116,7 +117,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": true,
     "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
     "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
-    "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true
+    "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
+    "@aws-cdk/aws-cloudfront:useStableGeneratedFunctionName": true
   }
 }
 ```
@@ -1191,6 +1193,25 @@ However, with the activation of this feature flag, the default branch is updated
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.103.1 | `false` | `true` |
+
+
+### @aws-cdk/aws-cloudfront:useStableGeneratedFunctionName
+
+*When enabled, the method used to generate CloudFront function names is more consistent across deployments* (fix)
+
+The method used to generated CloudFront function names can be unstable (may change from
+one deployment to another) for functions with long IDs or that are deeply nested within
+a stack, especially if the region is not specified at deployment time.
+
+Enable this flag to use a more deterministic means of generating `functionName`s that does
+not include the region. You will need to specify `functionName` prop directly if including
+the region in the function name is necessary for your use case.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

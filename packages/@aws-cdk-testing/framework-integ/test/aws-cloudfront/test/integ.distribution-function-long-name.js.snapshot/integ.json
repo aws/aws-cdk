@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "FunctionNameLong/DefaultTest": {
+      "stacks": [
+        "integ-distribution-function-with-long-name"
+      ],
+      "assertionStack": "FunctionNameLong/DefaultTest/DeployAssert",
+      "assertionStackName": "FunctionNameLongDefaultTestDeployAssert603C06C0"
+    }
+  }
+}

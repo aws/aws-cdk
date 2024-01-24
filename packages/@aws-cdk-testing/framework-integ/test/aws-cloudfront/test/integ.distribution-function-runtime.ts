@@ -2,9 +2,11 @@ import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { TestOrigin } from './test-origin';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-distribution-function', { env: { region: 'eu-west-1' } });
+stack.node.setContext(cxapi.CLOUDFRONT_FUNCTION_STABLE_GENERATED_NAME, false);
 
 const cfFunctionRequest = new cloudfront.Function(stack, 'FunctionRequest', {
   code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),

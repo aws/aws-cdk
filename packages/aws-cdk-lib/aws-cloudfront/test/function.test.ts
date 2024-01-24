@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { Template } from '../../assertions';
 import { App, Stack } from '../../core';
+import { CLOUDFRONT_FUNCTION_STABLE_GENERATED_NAME } from '../../cx-api';
 import { Function, FunctionCode, FunctionRuntime } from '../lib';
 
 describe('CloudFront Function', () => {
@@ -69,6 +70,58 @@ describe('CloudFront Function', () => {
                   ],
                 ],
               },
+              Runtime: 'cloudfront-js-1.0',
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('long stack and resource id in environment agnostic stack with feature flag set', () => {
+    const app = new App();
+    const stack = new Stack(app, 'test-stack-name-longer-than-thirtytwo-characters');
+    stack.node.setContext(CLOUDFRONT_FUNCTION_STABLE_GENERATED_NAME, true);
+    new Function(stack, 'test-resoruce-id-also-longer-but-with-different-end', {
+      code: FunctionCode.fromInline('code'),
+    });
+
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        testresoruceidalsolongerbutwithdifferentendFD0687C9: {
+          Type: 'AWS::CloudFront::Function',
+          Properties: {
+            Name: 'test-stack-name-longer-than-onger-but-with-different-end3C400F7C',
+            AutoPublish: true,
+            FunctionCode: 'code',
+            FunctionConfig: {
+              Comment: 'test-stack-name-longer-than-onger-but-with-different-end3C400F7C',
+              Runtime: 'cloudfront-js-1.0',
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('long stack and resource id with region specified with feature flag set', () => {
+    const app = new App();
+    const stack = new Stack(app, 'test-stack-name-longer-than-thirtytwo-characters', { env: { region: 'test-region-1' } });
+    stack.node.setContext(CLOUDFRONT_FUNCTION_STABLE_GENERATED_NAME, true);
+    new Function(stack, 'test-resoruce-id-also-longer-but-with-different-end', {
+      code: FunctionCode.fromInline('code'),
+    });
+
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        testresoruceidalsolongerbutwithdifferentendFD0687C9: {
+          Type: 'AWS::CloudFront::Function',
+          Properties: {
+            Name: 'test-stack-name-longer-than-onger-but-with-different-end3C400F7C',
+            AutoPublish: true,
+            FunctionCode: 'code',
+            FunctionConfig: {
+              Comment: 'test-stack-name-longer-than-onger-but-with-different-end3C400F7C',
               Runtime: 'cloudfront-js-1.0',
             },
           },
