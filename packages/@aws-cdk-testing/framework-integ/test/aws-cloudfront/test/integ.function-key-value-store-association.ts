@@ -4,7 +4,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'integ-function-key-value-store-assocation');
+const stack = new cdk.Stack(app, 'integ-function-key-value-store-association');
 
 const store = new cloudfront.KeyValueStore(stack, 'TestKeyValueStore', {
   comment: 'A test Key Value Store for CloudFront',
@@ -16,7 +16,7 @@ new cloudfront.Function(stack, 'TestFunction', {
   keyValueStore: store,
 });
 
-new IntegTest(app, 'FunctionKeyValueStoreAssocation', {
+new IntegTest(app, 'FunctionKeyValueStoreAssociation', {
   testCases: [stack],
 });
 

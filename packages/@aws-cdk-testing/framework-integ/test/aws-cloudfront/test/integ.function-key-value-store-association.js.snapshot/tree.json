@@ -4,21 +4,21 @@
     "id": "App",
     "path": "",
     "children": {
-      "integ-function-key-value-store-assocation": {
-        "id": "integ-function-key-value-store-assocation",
-        "path": "integ-function-key-value-store-assocation",
+      "integ-function-key-value-store-association": {
+        "id": "integ-function-key-value-store-association",
+        "path": "integ-function-key-value-store-association",
         "children": {
           "TestKeyValueStore": {
             "id": "TestKeyValueStore",
-            "path": "integ-function-key-value-store-assocation/TestKeyValueStore",
+            "path": "integ-function-key-value-store-association/TestKeyValueStore",
             "children": {
               "ImportSource": {
                 "id": "ImportSource",
-                "path": "integ-function-key-value-store-assocation/TestKeyValueStore/ImportSource",
+                "path": "integ-function-key-value-store-association/TestKeyValueStore/ImportSource",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-function-key-value-store-assocation/TestKeyValueStore/ImportSource/Stage",
+                    "path": "integ-function-key-value-store-association/TestKeyValueStore/ImportSource/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -26,7 +26,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-function-key-value-store-assocation/TestKeyValueStore/ImportSource/AssetBucket",
+                    "path": "integ-function-key-value-store-association/TestKeyValueStore/ImportSource/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -40,7 +40,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "integ-function-key-value-store-assocation/TestKeyValueStore/Resource",
+                "path": "integ-function-key-value-store-association/TestKeyValueStore/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudFront::KeyValueStore",
                   "aws:cdk:cloudformation:props": {
@@ -64,7 +64,7 @@
                         ]
                       }
                     },
-                    "name": "integfunctionkeyvaluestoreassocationTestKeyValueStoreAA209C02"
+                    "name": "integfunctionkeyvaluestoreassociationTestKeyValueStoreA8304A36"
                   }
                 },
                 "constructInfo": {
@@ -80,11 +80,11 @@
           },
           "TestFunction": {
             "id": "TestFunction",
-            "path": "integ-function-key-value-store-assocation/TestFunction",
+            "path": "integ-function-key-value-store-association/TestFunction",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-function-key-value-store-assocation/TestFunction/Resource",
+                "path": "integ-function-key-value-store-association/TestFunction/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CloudFront::Function",
                   "aws:cdk:cloudformation:props": {
@@ -120,7 +120,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "integ-function-key-value-store-assocation/BootstrapVersion",
+            "path": "integ-function-key-value-store-association/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -128,7 +128,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "integ-function-key-value-store-assocation/CheckBootstrapVersion",
+            "path": "integ-function-key-value-store-association/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -140,17 +140,17 @@
           "version": "0.0.0"
         }
       },
-      "FunctionKeyValueStoreAssocation": {
-        "id": "FunctionKeyValueStoreAssocation",
-        "path": "FunctionKeyValueStoreAssocation",
+      "FunctionKeyValueStoreAssociation": {
+        "id": "FunctionKeyValueStoreAssociation",
+        "path": "FunctionKeyValueStoreAssociation",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "FunctionKeyValueStoreAssocation/DefaultTest",
+            "path": "FunctionKeyValueStoreAssociation/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "FunctionKeyValueStoreAssocation/DefaultTest/Default",
+                "path": "FunctionKeyValueStoreAssociation/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -158,11 +158,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "FunctionKeyValueStoreAssocation/DefaultTest/DeployAssert",
+                "path": "FunctionKeyValueStoreAssociation/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "FunctionKeyValueStoreAssocation/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "FunctionKeyValueStoreAssociation/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -170,7 +170,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "FunctionKeyValueStoreAssocation/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "FunctionKeyValueStoreAssociation/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

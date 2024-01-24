@@ -1,12 +1,12 @@
 {
   "version": "36.0.0",
   "testCases": {
-    "FunctionKeyValueStoreAssocation/DefaultTest": {
+    "FunctionKeyValueStoreAssociation/DefaultTest": {
       "stacks": [
-        "integ-function-key-value-store-assocation"
+        "integ-function-key-value-store-association"
       ],
-      "assertionStack": "FunctionKeyValueStoreAssocation/DefaultTest/DeployAssert",
-      "assertionStackName": "FunctionKeyValueStoreAssocationDefaultTestDeployAssert1F41BE04"
+      "assertionStack": "FunctionKeyValueStoreAssociation/DefaultTest/DeployAssert",
+      "assertionStackName": "FunctionKeyValueStoreAssociationDefaultTestDeployAssert986D766D"
     }
   }
 }
