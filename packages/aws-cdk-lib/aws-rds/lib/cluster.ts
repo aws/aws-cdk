@@ -366,7 +366,7 @@ interface DatabaseClusterBaseProps {
   * Necessary for enabling Kerberos authentication. If specified, the DB cluster joins the given Active Directory, enabling Kerberos authentication.
   * If not specified, the DB cluster will not be associated with any Active Directory, and Kerberos authentication will not be enabled.
   *
-  * @default - DB cluster not associated with any Active Directory; Kerberos authentication is not enabled.
+  * @default - DB cluster is not associated with an Active Directory; Kerberos authentication is not enabled.
   */
   readonly domain?: string;
 
