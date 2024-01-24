@@ -1,7 +1,7 @@
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as targets from '../../aws-events-targets';
-import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal } from '../../aws-iam';
+import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal, CompositePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
@@ -1356,7 +1356,12 @@ describe('instance', () => {
     const domain = 'd-90670a8d36';
 
     // WHEN
-    const role = new Role(stack, 'DomainRole', { assumedBy: new ServicePrincipal('rds.amazonaws.com') });
+    const role = new Role(stack, 'DomainRole', {
+      assumedBy: new CompositePrincipal(
+        new ServicePrincipal('rds.amazonaws.com'),
+        new ServicePrincipal('directoryservice.rds.amazonaws.com'),
+      ),
+    });
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
       vpc,
@@ -1395,6 +1400,13 @@ describe('instance', () => {
             Effect: 'Allow',
             Principal: {
               Service: 'rds.amazonaws.com',
+            },
+          },
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'directoryservice.rds.amazonaws.com',
             },
           },
         ],
@@ -1879,6 +1891,32 @@ describe('instance', () => {
         vpc,
       });
     }).toThrow(/Cannot set 'backupRetention', as engine 'postgres-15.2' does not support automatic backups for read replicas/);
+  });
+
+  test('read replica with allocatedStorage', () => {
+    // GIVEN
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 });
+    const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', { engine });
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine,
+      instanceType,
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+      sourceDatabaseInstance: source,
+      parameterGroup,
+      instanceType,
+      vpc,
+      allocatedStorage: 500,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      AllocatedStorage: '500',
+    });
   });
 
   test('can set parameter group on read replica', () => {
