@@ -73,6 +73,85 @@ export interface IApplication extends cdk.IResource {
    * Returns the list of associated environments.
    */
   get environments(): IEnvironment[];
+
+  /**
+   * Adds an extension defined by the action point and event destination
+   * and also creates an extension association to an application.
+   *
+   * @param actionPoint The action point which triggers the event
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  on(actionPoint: ActionPoint, eventDestination: IEventDestination, options?: ExtensionOptions): void;
+
+  /**
+   * Adds a PRE_CREATE_HOSTED_CONFIGURATION_VERSION extension with the
+   * provided event destination and also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  preCreateHostedConfigurationVersion(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+
+  /**
+   * Adds a PRE_START_DEPLOYMENT extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  preStartDeployment(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+  /**
+   * Adds an ON_DEPLOYMENT_START extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  onDeploymentStart(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+
+  /**
+   * Adds an ON_DEPLOYMENT_STEP extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  onDeploymentStep(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+
+  /**
+   * Adds an ON_DEPLOYMENT_BAKING extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  onDeploymentBaking(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+
+  /**
+   * Adds an ON_DEPLOYMENT_COMPLETE extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  onDeploymentComplete(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+
+  /**
+   * Adds an ON_DEPLOYMENT_ROLLED_BACK extension with the provided event destination and
+   * also creates an extension association to an application.
+   *
+   * @param eventDestination The event that occurs during the extension
+   * @param options Options for the extension
+   */
+  onDeploymentRolledBack(eventDestination: IEventDestination, options?: ExtensionOptions): void;
+
+  /**
+   * Adds an extension association to the application.
+   *
+   * @param extension The extension to create an association for
+   */
+  addExtension(extension: IExtension): void;
 }
 
 /**
@@ -84,7 +163,7 @@ export interface ApplicationProps {
    *
    * @default - A name is generated.
    */
-  readonly name?: string;
+  readonly applicationName?: string;
 
   /**
    * The description for the application.
@@ -296,7 +375,7 @@ export class Application extends ApplicationBase {
   /**
    * Adds the AWS AppConfig Agent as a container to the provided ECS task definition.
    *
-   * @param taskDef The ECS task definition
+   * @param taskDef The ECS task definition [disable-awslint:ref-via-interface]
    */
   public static addAgentToEcs(taskDef: ecs.TaskDefinition) {
     taskDef.addContainer('AppConfigAgentContainer', {
@@ -336,7 +415,7 @@ export class Application extends ApplicationBase {
     super(scope, id);
 
     this.description = props.description;
-    this.name = props.name || Names.uniqueResourceName(this, {
+    this.name = props.applicationName || Names.uniqueResourceName(this, {
       maxLength: 64,
       separator: '-',
     });

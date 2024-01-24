@@ -491,6 +491,33 @@ const gp3Instance = new rds.DatabaseInstance(this, 'Gp3Instance', {
 });
 ```
 
+Use the `allocatedStorage` property to specify the amount of storage (in gigabytes) that is initially allocated for the instance 
+to use for the instance:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// Setting allocatedStorage for DatabaseInstance
+const iopsInstance = new rds.DatabaseInstance(this, 'IopsInstance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  vpc,
+  storageType: rds.StorageType.IO1,
+  iops: 5000,
+  allocatedStorage: 500,
+});
+
+// Setting allocatedStorage for DatabaseInstance replica
+// Note: If allocatedStorage isn't set here, the replica instance will inherit the allocatedStorage of the source instance
+declare const sourceInstance: rds.DatabaseInstance;
+new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
+  sourceDatabaseInstance: sourceInstance,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+  vpc,
+  allocatedStorage: 500,
+});
+```
+
+
 Use the `caCertificate` property to specify the [CA certificates](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html)
 to use for the instance:
 
@@ -841,7 +868,10 @@ Directory Services.
 ```ts
 declare const vpc: ec2.Vpc;
 const role = new iam.Role(this, 'RDSDirectoryServicesRole', {
-  assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+  assumedBy: new iam.CompositePrincipal(
+    new iam.ServicePrincipal('rds.amazonaws.com'),
+    new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
+  ),
   managedPolicies: [
     iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
   ],
@@ -959,6 +989,11 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   // ...
 });
 
+// When 'cloudwatchLogsExports' is set, each export value creates its own log group in DB cluster. 
+// Specify an export value to access its log group.
+const errorLogGroup = cluster.cloudwatchLogGroups['error'];
+const auditLogGroup = cluster.cloudwatchLogGroups.audit;
+
 // Exporting logs from an instance
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({
@@ -966,8 +1001,13 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   }),
   vpc,
   cloudwatchLogsExports: ['postgresql'], // Export the PostgreSQL logs
+  cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS, // Optional - default is to never expire logs
   // ...
 });
+
+// When 'cloudwatchLogsExports' is set, each export value creates its own log group in DB instance. 
+// Specify an export value to access its log group.
+const postgresqlLogGroup = instance.cloudwatchLogGroups['postgresql'];
 ```
 
 ## Option Groups
