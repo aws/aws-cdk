@@ -1047,7 +1047,7 @@ export class UserPool extends UserPoolBase {
   private verificationMessageConfiguration(props: UserPoolProps): CfnUserPool.VerificationMessageTemplateProperty {
     const CODE_TEMPLATE = '{####}';
     const VERIFY_EMAIL_TEMPLATE = '{##Verify Email##}';
-    const VERIFY_EMAIL_REGEX = /{##.*?##}/;
+    const VERIFY_EMAIL_REGEX = /\{##[a-zA-Z0-9\s]*##\}/;
 
     const emailStyle = props.userVerification?.emailStyle ?? VerificationEmailStyle.CODE;
     const emailSubject = props.userVerification?.emailSubject ?? 'Verify your new account';
