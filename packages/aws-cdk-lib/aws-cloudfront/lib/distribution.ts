@@ -308,6 +308,7 @@ export class Distribution extends Resource implements IDistribution {
 
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: acm.ICertificate;
+  private readonly publishAdditionalMetrics?: boolean;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -333,6 +334,7 @@ export class Distribution extends Resource implements IDistribution {
 
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
+    this.publishAdditionalMetrics = props.publishAdditionalMetrics;
 
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
@@ -401,6 +403,9 @@ export class Distribution extends Resource implements IDistribution {
    * @default - average over 5 minutes
    */
   public metricOriginLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+    }
     return this.metric('OriginLatency', props);
   }
 
@@ -414,6 +419,9 @@ export class Distribution extends Resource implements IDistribution {
    * @default - average over 5 minutes
    */
   public metricCacheHitRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+    }
     return this.metric('CacheHitRate', props);
   }
 
@@ -425,6 +433,9 @@ export class Distribution extends Resource implements IDistribution {
    * @default - average over 5 minutes
    */
   public metric401ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+    }
     return this.metric('401ErrorRate', props);
   }
 
@@ -436,6 +447,9 @@ export class Distribution extends Resource implements IDistribution {
    * @default - average over 5 minutes
    */
   public metric403ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+    }
     return this.metric('403ErrorRate', props);
   }
 
@@ -447,6 +461,9 @@ export class Distribution extends Resource implements IDistribution {
    * @default - average over 5 minutes
    */
   public metric404ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+    }
     return this.metric('404ErrorRate', props);
   }
 
@@ -458,6 +475,9 @@ export class Distribution extends Resource implements IDistribution {
    * @default - average over 5 minutes
    */
   public metric502ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+    }
     return this.metric('502ErrorRate', props);
   }
 
@@ -469,6 +489,9 @@ export class Distribution extends Resource implements IDistribution {
    * @default - average over 5 minutes
    */
   public metric503ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+    }
     return this.metric('503ErrorRate', props);
   }
 
@@ -480,6 +503,9 @@ export class Distribution extends Resource implements IDistribution {
    * @default - average over 5 minutes
    */
   public metric504ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+    }
     return this.metric('504ErrorRate', props);
   }
 
