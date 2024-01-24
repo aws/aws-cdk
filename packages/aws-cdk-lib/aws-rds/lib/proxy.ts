@@ -457,6 +457,9 @@ export class DatabaseProxy extends DatabaseProxyBase
 
     for (const secret of props.secrets) {
       secret.grantRead(role);
+      if (secret.encryptionKey !== undefined) {
+        secret.encryptionKey.grantDecrypt(role);
+      }
     }
 
     const securityGroups = props.securityGroups ?? [
