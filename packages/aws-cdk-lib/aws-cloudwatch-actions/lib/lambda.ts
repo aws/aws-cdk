@@ -21,12 +21,12 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_PutMetricAlarm.html
    */
-  bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
-    const idPrefix = FeatureFlags.of(_scope).isEnabled(LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION) ? _alarm.node.id : '';
+  bind(scope: Construct, alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
+    const idPrefix = FeatureFlags.of(scope).isEnabled(LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION) ? alarm.node.id : '';
     this.lambdaFunction.addPermission(`${idPrefix}AlarmPermission`, {
-      sourceAccount: Stack.of(_scope).account,
+      sourceAccount: Stack.of(scope).account,
       action: 'lambda:InvokeFunction',
-      sourceArn: _alarm.alarmArn,
+      sourceArn: alarm.alarmArn,
       principal: new iam.ServicePrincipal('lambda.alarms.cloudwatch.amazonaws.com'),
     });
 
