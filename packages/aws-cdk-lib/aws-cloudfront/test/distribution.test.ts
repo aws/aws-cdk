@@ -1,11 +1,13 @@
 import { defaultOrigin, defaultOriginGroup } from './test-origin';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
+import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, Duration, Stack } from '../../core';
+import { exec as _exec } from 'child_process';
 import {
   CfnDistribution,
   Distribution,
@@ -1278,5 +1280,47 @@ test('with publish additional metrics', () => {
         RealtimeMetricsSubscriptionStatus: 'Enabled',
       },
     },
+  });
+});
+
+describe('Distribution metrics tests', () => {
+  const metrics = [
+    { name: 'OriginLatency', method: 'metricOriginLatency', additionalMetricsRequired: true },
+    { name: 'CacheHitRate', method: 'metricCacheHitRate', additionalMetricsRequired: true },
+    ...['401', '403', '404', '502', '503', '504'].map(errorCode => ({
+      name: `${errorCode}ErrorRate`,
+      method: `metric${errorCode}ErrorRate`,
+      additionalMetricsRequired: true,
+    })),
+  ];
+
+  test.each(metrics)('get %s metric', (metric) => {
+    const origin = defaultOrigin();
+    const dist = new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      publishAdditionalMetrics: metric.additionalMetricsRequired,
+    });
+
+    const metricObj = dist[metric.method]();
+
+    expect(metricObj).toEqual(new cloudwatch.Metric({
+      namespace: 'AWS/CloudFront',
+      metricName: metric.name,
+      dimensions: { DistributionId: dist.distributionId },
+      statistic: 'Average',
+      period: Duration.minutes(5),
+    }));
+  });
+
+  test.each(metrics)('throw error when trying to get %s metric without publishing additional metrics', (metric) => {
+    const origin = defaultOrigin();
+    const dist = new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      publishAdditionalMetrics: false,
+    });
+
+    expect(() => {
+      dist[metric.method]();
+    }).toThrow(new RegExp(`${metric.name} metric is only available if 'publishAdditionalMetrics' is set 'true'`));
   });
 });

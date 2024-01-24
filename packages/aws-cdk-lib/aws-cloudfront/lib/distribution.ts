@@ -404,7 +404,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metricOriginLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+      throw new Error('Origin latency metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
     }
     return this.metric('OriginLatency', props);
   }
@@ -420,7 +420,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metricCacheHitRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+      throw new Error('Cache hit rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
     }
     return this.metric('CacheHitRate', props);
   }
@@ -434,7 +434,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric401ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+      throw new Error('401 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
     }
     return this.metric('401ErrorRate', props);
   }
@@ -448,7 +448,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric403ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+      throw new Error('403 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
     }
     return this.metric('403ErrorRate', props);
   }
@@ -462,7 +462,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric404ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+      throw new Error('404 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
     }
     return this.metric('404ErrorRate', props);
   }
@@ -476,7 +476,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric502ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+      throw new Error('502 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
     }
     return this.metric('502ErrorRate', props);
   }
@@ -490,7 +490,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric503ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+      throw new Error('503 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
     }
     return this.metric('503ErrorRate', props);
   }
@@ -504,7 +504,7 @@ export class Distribution extends Resource implements IDistribution {
    */
   public metric504ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     if (this.publishAdditionalMetrics !== true) {
-      throw new Error('To obtain this metric, you need to set \'publishAdditionalMetrics\' to \'true\'');
+      throw new Error('504 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
     }
     return this.metric('504ErrorRate', props);
   }
