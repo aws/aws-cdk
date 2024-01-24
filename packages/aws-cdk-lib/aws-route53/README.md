@@ -171,7 +171,7 @@ declare const myZone: route53.HostedZone;
 new route53.ARecord(this, 'ARecordLatency1', {
   zone: myZone,
   target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
-  region: route53.LatencyBasedRoutingRegion.US_EAST_1,
+  region: 'us-east-1',
 });
 ```
 
