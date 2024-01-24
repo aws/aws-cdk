@@ -1309,6 +1309,12 @@ export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewPro
    * @default - default master key if storageEncrypted is true, no key otherwise
    */
   readonly storageEncryptionKey?: kms.IKey;
+  /**
+   * The allocated storage size, specified in gibibytes (GiB).
+   *
+   * @default - The replica will inherit the allocated storage of the source database instance
+   */
+  readonly allocatedStorage?: number;
 }
 
 /**
@@ -1346,6 +1352,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
       engine: shouldPassEngine ? props.sourceDatabaseInstance.engine?.engineType : undefined,
+      allocatedStorage: props.allocatedStorage?.toString(),
     });
 
     this.instanceType = props.instanceType;
