@@ -491,6 +491,33 @@ const gp3Instance = new rds.DatabaseInstance(this, 'Gp3Instance', {
 });
 ```
 
+Use the `allocatedStorage` property to specify the amount of storage (in gigabytes) that is initially allocated for the instance 
+to use for the instance:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// Setting allocatedStorage for DatabaseInstance
+const iopsInstance = new rds.DatabaseInstance(this, 'IopsInstance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  vpc,
+  storageType: rds.StorageType.IO1,
+  iops: 5000,
+  allocatedStorage: 500,
+});
+
+// Setting allocatedStorage for DatabaseInstance replica
+// Note: If allocatedStorage isn't set here, the replica instance will inherit the allocatedStorage of the source instance
+declare const sourceInstance: rds.DatabaseInstance;
+new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
+  sourceDatabaseInstance: sourceInstance,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+  vpc,
+  allocatedStorage: 500,
+});
+```
+
+
 Use the `caCertificate` property to specify the [CA certificates](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html)
 to use for the instance:
 
