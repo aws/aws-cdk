@@ -197,4 +197,12 @@ export class RegionInfo {
   public paramsAndSecretsLambdaLayerArn(version: string, architecture: string): string | undefined {
     return Fact.find(this.name, FactName.paramsAndSecretsLambdaLayer(version, architecture));
   }
+
+  /**
+   * SAML Sign On URL used by IAM SAML Principals.
+   */
+  public get samlSignOnUrl(): string | undefined {
+    return Fact.find(this.name, FactName.SAML_SIGN_ON_URL);
+  }
+
 }
