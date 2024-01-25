@@ -1287,11 +1287,13 @@ export enum ObjectOwnership {
    */
   BUCKET_OWNER_ENFORCED = 'BucketOwnerEnforced',
   /**
-   * Objects uploaded to the bucket change ownership to the bucket owner .
+   * The bucket owner will own the object if the object is uploaded with 
+   * the bucket-owner-full-control canned ACL. Without this setting and 
+   * canned ACL, the object is uploaded and remains owned by the uploading account.
    */
   BUCKET_OWNER_PREFERRED = 'BucketOwnerPreferred',
   /**
-   * The bucket owner will own the object if the object is uploaded with the bucket-owner-full-control canned ACL. Without this setting and canned ACL, the object is uploaded and remains owned by the uploading account.
+   * The uploading account will own the object.
    */
   OBJECT_WRITER = 'ObjectWriter',
 }
