@@ -1338,6 +1338,68 @@ export interface IntelligentTieringConfiguration {
   readonly deepArchiveAccessTierTime?: Duration;
 }
 
+/**
+ * The date source for the partitioned prefix.
+ */
+export enum PartitionDateSource {
+  /**
+   * The year, month, and day will be based on the timestamp of the S3 event in the file that's been delivered.
+   */
+  EVENT_TIME = 'EventTime',
+
+  /**
+   * The year, month, and day will be based on the time when the log file was delivered to S3.
+   */
+  DELIVERY_TIME = 'DeliveryTime',
+}
+
+/**
+ * The key format for the log object.
+ */
+export abstract class TargetObjectKeyFormat {
+  /**
+   * Use partitioned prefix for log objects.
+   * If you do not specify the dateSource argument, the default is EventTime.
+   *
+   * The partitioned prefix format as follow:
+   * [DestinationPrefix][SourceAccountId]/​[SourceRegion]/​[SourceBucket]/​[YYYY]/​[MM]/​[DD]/​[YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]
+   */
+  public static partitionedPrefix(dateSource?: PartitionDateSource): TargetObjectKeyFormat {
+    return new class extends TargetObjectKeyFormat {
+      public _render(): CfnBucket.LoggingConfigurationProperty['targetObjectKeyFormat'] {
+        return {
+          partitionedPrefix: {
+            partitionDateSource: dateSource,
+          },
+        };
+      }
+    }();
+  }
+
+  /**
+   * Use the simple prefix for log objects.
+   *
+   * The simple prefix format as follow:
+   * [DestinationPrefix][YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]
+   */
+  public static simplePrefix(): TargetObjectKeyFormat {
+    return new class extends TargetObjectKeyFormat {
+      public _render(): CfnBucket.LoggingConfigurationProperty['targetObjectKeyFormat'] {
+        return {
+          simplePrefix: {},
+        };
+      }
+    }();
+  }
+
+  /**
+   * Render the log object key format.
+   *
+   * @internal
+   */
+  public abstract _render(): CfnBucket.LoggingConfigurationProperty['targetObjectKeyFormat'];
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -1545,6 +1607,13 @@ export interface BucketProps {
    * @default - No log file prefix
    */
   readonly serverAccessLogsPrefix?: string;
+
+  /**
+   * Optional key format for log objects.
+   *
+   * @default - the default key format is: [DestinationPrefix][YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]
+   */
+  readonly targetObjectKeyFormat?: TargetObjectKeyFormat;
 
   /**
    * The inventory configuration of the bucket.
@@ -2215,6 +2284,7 @@ export class Bucket extends BucketBase {
     return {
       destinationBucketName: props.serverAccessLogsBucket?.bucketName,
       logFilePrefix: props.serverAccessLogsPrefix,
+      targetObjectKeyFormat: props.targetObjectKeyFormat?._render(),
     };
   }
 
