@@ -7,7 +7,6 @@ import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, Duration, Stack } from '../../core';
-import { error } from '../../../../tools/@aws-cdk/spec2cdk/lib/util/log';
 import {
   CfnDistribution,
   Distribution,
