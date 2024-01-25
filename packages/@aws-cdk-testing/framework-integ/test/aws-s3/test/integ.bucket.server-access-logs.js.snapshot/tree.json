@@ -182,6 +182,42 @@
                                   ]
                                 ]
                               }
+                            },
+                            {
+                              "Action": "s3:PutObject",
+                              "Condition": {
+                                "ArnLike": {
+                                  "aws:SourceArn": {
+                                    "Fn::GetAtt": [
+                                      "MyBucket53983D51A",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                "StringEquals": {
+                                  "aws:SourceAccount": {
+                                    "Ref": "AWS::AccountId"
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "logging.s3.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "MyAccessLogsBucketF7FE6635",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "/example5*"
+                                  ]
+                                ]
+                              }
                             }
                           ],
                           "Version": "2012-10-17"
@@ -319,6 +355,38 @@
                         "partitionedPrefix": {
                           "partitionDateSource": "DeliveryTime"
                         }
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "MyBucket5": {
+            "id": "MyBucket5",
+            "path": "aws-cdk-s3-access-logs/MyBucket5",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-s3-access-logs/MyBucket5/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "loggingConfiguration": {
+                      "destinationBucketName": {
+                        "Ref": "MyAccessLogsBucketF7FE6635"
+                      },
+                      "logFilePrefix": "example5",
+                      "targetObjectKeyFormat": {
+                        "partitionedPrefix": {}
                       }
                     }
                   }

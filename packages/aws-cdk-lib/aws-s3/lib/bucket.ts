@@ -1357,6 +1357,7 @@ export enum PartitionDateSource {
 export abstract class TargetObjectKeyFormat {
   /**
    * Use partitioned prefix for log objects.
+   * If you do not specify the dateSource argument, the default is EventTime.
    *
    * The partitioned prefix format as follow:
    * [DestinationPrefix][SourceAccountId]/​[SourceRegion]/​[SourceBucket]/​[YYYY]/​[MM]/​[DD]/​[YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]

@@ -156,6 +156,42 @@
          ]
         ]
        }
+      },
+      {
+       "Action": "s3:PutObject",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "MyBucket53983D51A",
+           "Arn"
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "logging.s3.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "MyAccessLogsBucketF7FE6635",
+            "Arn"
+           ]
+          },
+          "/example5*"
+         ]
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -221,6 +257,22 @@
       "PartitionedPrefix": {
        "PartitionDateSource": "DeliveryTime"
       }
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyBucket53983D51A": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "LoggingConfiguration": {
+     "DestinationBucketName": {
+      "Ref": "MyAccessLogsBucketF7FE6635"
+     },
+     "LogFilePrefix": "example5",
+     "TargetObjectKeyFormat": {
+      "PartitionedPrefix": {}
      }
     }
    },
