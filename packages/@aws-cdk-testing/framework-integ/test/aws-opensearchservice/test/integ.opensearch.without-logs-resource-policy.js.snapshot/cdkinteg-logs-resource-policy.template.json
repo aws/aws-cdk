@@ -1,0 +1,80 @@
+{
+ "Resources": {
+  "AppLogsGroupC90FBC0A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ResourcePolicyD790E185": {
+   "Type": "AWS::Logs::ResourcePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"Statement\":[{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "AppLogsGroupC90FBC0A",
+         "Arn"
+        ]
+       },
+       "\"}],\"Version\":\"2012-10-17\"}"
+      ]
+     ]
+    },
+    "PolicyName": "cdkinteglogsresourcepolicyResourcePolicyB41E8C17"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttAppLogsGroupC90FBC0AArn7BBE8767": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AppLogsGroupC90FBC0A",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "cdkinteg-logs-resource-policy:ExportsOutputFnGetAttAppLogsGroupC90FBC0AArn7BBE8767"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
