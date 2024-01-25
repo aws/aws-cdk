@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "aws-cdk-s3-access-logs.assets": {
+    "MyTestStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-s3-access-logs.assets.json",
+        "file": "MyTestStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-s3-access-logs": {
+    "MyTestStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-s3-access-logs.template.json",
+        "templateFile": "MyTestStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/680224db1786deb417c994d38f450f115dd410266ba1ffc919b54991e5a73e4a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a25a4f1a41d39c58512c39095bc8123af135549e7725115f685dd0ea3cd1b1c6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-s3-access-logs.assets"
+          "MyTestStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,79 +31,97 @@
         }
       },
       "dependencies": [
-        "aws-cdk-s3-access-logs.assets"
+        "MyTestStack.assets"
       ],
       "metadata": {
-        "/aws-cdk-s3-access-logs/MyAccessLogsBucket/Resource": [
+        "/MyTestStack/Dist/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyAccessLogsBucketF7FE6635"
+            "data": "DistB3B78991"
           }
         ],
-        "/aws-cdk-s3-access-logs/MyAccessLogsBucket/Policy/Resource": [
+        "/MyTestStack/Dist/MonitoringSubscription": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyAccessLogsBucketPolicyEA9AB063"
+            "data": "DistMonitoringSubscriptionDD7607C2"
           }
         ],
-        "/aws-cdk-s3-access-logs/MyBucket/Resource": [
+        "/MyTestStack/Alarm1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyBucketF68F3FF0"
+            "data": "Alarm1F9009D71"
           }
         ],
-        "/aws-cdk-s3-access-logs/MyBucket2/Resource": [
+        "/MyTestStack/Alarm2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyBucket26E0C3623"
+            "data": "Alarm2A7122E13"
           }
         ],
-        "/aws-cdk-s3-access-logs/MyBucket3/Resource": [
+        "/MyTestStack/Alarm3/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyBucket3CC4F8735"
+            "data": "Alarm32341D8D9"
           }
         ],
-        "/aws-cdk-s3-access-logs/MyBucket4/Resource": [
+        "/MyTestStack/Alarm4/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyBucket43E0A113B"
+            "data": "Alarm4671832C8"
           }
         ],
-        "/aws-cdk-s3-access-logs/MyBucket5/Resource": [
+        "/MyTestStack/Alarm5/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyBucket53983D51A"
+            "data": "Alarm548383B2F"
           }
         ],
-        "/aws-cdk-s3-access-logs/BootstrapVersion": [
+        "/MyTestStack/Alarm6/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm65738D89F"
+          }
+        ],
+        "/MyTestStack/Alarm7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm77B1024B6"
+          }
+        ],
+        "/MyTestStack/Alarm8/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Alarm8AEE8034F"
+          }
+        ],
+        "/MyTestStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-s3-access-logs/CheckBootstrapVersion": [
+        "/MyTestStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-s3-access-logs"
+      "displayName": "MyTestStack"
     },
-    "cdkintegs3accesslogsDefaultTestDeployAssert37A16466.assets": {
+    "MyTestDefaultTestDeployAssertB8AA280E.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdkintegs3accesslogsDefaultTestDeployAssert37A16466.assets.json",
+        "file": "MyTestDefaultTestDeployAssertB8AA280E.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdkintegs3accesslogsDefaultTestDeployAssert37A16466": {
+    "MyTestDefaultTestDeployAssertB8AA280E": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdkintegs3accesslogsDefaultTestDeployAssert37A16466.template.json",
+        "templateFile": "MyTestDefaultTestDeployAssertB8AA280E.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -112,7 +130,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdkintegs3accesslogsDefaultTestDeployAssert37A16466.assets"
+          "MyTestDefaultTestDeployAssertB8AA280E.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -121,23 +139,23 @@
         }
       },
       "dependencies": [
-        "cdkintegs3accesslogsDefaultTestDeployAssert37A16466.assets"
+        "MyTestDefaultTestDeployAssertB8AA280E.assets"
       ],
       "metadata": {
-        "/cdk-integ-s3-access-logs/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/MyTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-integ-s3-access-logs/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/MyTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cdk-integ-s3-access-logs/DefaultTest/DeployAssert"
+      "displayName": "MyTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
