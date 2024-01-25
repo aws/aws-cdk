@@ -14,7 +14,7 @@ const userpool = new UserPool(stack, 'pool', {
 
 new UserPoolIdentityProviderOidc(stack, 'cdk', {
   userPool: userpool,
-  name: 'my-provider',
+  name: 'cdk',
   clientId: 'client-id',
   clientSecret: 'client-secret',
   issuerUrl: 'https://www.issuer-url.com',

@@ -86,7 +86,7 @@
      "attributes_url": "https://www.issuer-url.com/userinfo",
      "jwks_uri": "https://www.issuer-url.com/jwks"
     },
-    "ProviderName": "my-provider",
+    "ProviderName": "cdk",
     "ProviderType": "OIDC",
     "UserPoolId": {
      "Ref": "pool056F3F7E"
