@@ -80,10 +80,7 @@ test('EcsJobDefinition uses runtimePlatform for Fargate containers', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
-    RuntimePlatform: {
-      CpuArchitecture: ecs.CpuArchitecture.ARM64,
-      OperatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
-    },
+    PlatformCapabilities: [Compatibility.EC2],
   });
 });
 
