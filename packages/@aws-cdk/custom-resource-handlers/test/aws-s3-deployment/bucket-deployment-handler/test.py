@@ -576,7 +576,7 @@ class TestHandler(unittest.TestCase):
             "DestinationBucketName": "<dest-bucket-name>",
         }, expected_status="FAILED")
 
-        self.assertEqual(update_resp['Reason'], "invalid request: request type is 'Update' but 'PhysicalResourceId' is not defined")
+        self.assertEqual(update_resp['Reason'], "invalid request: request type is '{'Update'}' but 'PhysicalResourceId' is not defined")
 
     def test_fails_when_physical_id_not_present_in_delete(self):
         def mock_make_api_call(self, operation_name, kwarg):
@@ -593,7 +593,7 @@ class TestHandler(unittest.TestCase):
                 "DestinationBucketName": "<dest-bucket-name>",
             }, expected_status="FAILED")
 
-        self.assertEqual(update_resp['Reason'], "invalid request: request type is 'Delete' but 'PhysicalResourceId' is not defined")
+        self.assertEqual(update_resp['Reason'], "invalid request: request type is '{'Delete'}' but 'PhysicalResourceId' is not defined")
 
     def test_physical_id_on_cloud_front_error(self):
         def mock_make_api_call(self, operation_name, kwarg):
