@@ -9,29 +9,29 @@
   "ExistingRecord8E2B2167": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "integ.cdk.dev.",
-    "Type": "A",
     "HostedZoneId": {
      "Ref": "HostedZoneDB99F866"
     },
+    "Name": "integ.cdk.dev.",
     "ResourceRecords": [
      "1.2.3.4"
     ],
-    "TTL": "1800"
+    "TTL": "1800",
+    "Type": "A"
    }
   },
   "NewRecordB9E8EE35": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "integ.cdk.dev.",
-    "Type": "A",
     "HostedZoneId": {
      "Ref": "HostedZoneDB99F866"
     },
+    "Name": "integ.cdk.dev.",
     "ResourceRecords": [
      "5.6.7.8"
     ],
-    "TTL": "7200"
+    "TTL": "7200",
+    "Type": "A"
    },
    "DependsOn": [
     "ExistingRecord8E2B2167",
@@ -151,7 +151,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e1555732b4098df87db06daafa8ad81ce14ace955171fc9a72a644543a57ce7e.zip"
+     "S3Key": "6d61f4b27b7e9bcea81dc331caa3c33c5d840e42237315848854d0ccc415030b.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
