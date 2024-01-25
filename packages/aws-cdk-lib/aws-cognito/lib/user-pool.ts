@@ -1047,6 +1047,11 @@ export class UserPool extends UserPoolBase {
   private verificationMessageConfiguration(props: UserPoolProps): CfnUserPool.VerificationMessageTemplateProperty {
     const CODE_TEMPLATE = '{####}';
     const VERIFY_EMAIL_TEMPLATE = '{##Verify Email##}';
+    /**
+     * Email message placeholder regex
+     * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-verificationmessagetemplate.html#cfn-cognito-userpool-verificationmessagetemplate-emailmessagebylink
+     */
+    const VERIFY_EMAIL_REGEX = /\{##[\p{L}\p{M}\p{S}\p{N}\p{P}\s*]*##\}/u;
 
     const emailStyle = props.userVerification?.emailStyle ?? VerificationEmailStyle.CODE;
     const emailSubject = props.userVerification?.emailSubject ?? 'Verify your new account';
@@ -1069,7 +1074,7 @@ export class UserPool extends UserPoolBase {
     } else {
       const emailMessage = props.userVerification?.emailBody ??
         `Verify your account by clicking on ${VERIFY_EMAIL_TEMPLATE}`;
-      if (!Token.isUnresolved(emailMessage) && emailMessage.indexOf(VERIFY_EMAIL_TEMPLATE) < 0) {
+      if (!Token.isUnresolved(emailMessage) && !VERIFY_EMAIL_REGEX.test(emailMessage)) {
         throw new Error(`Verification email body must contain the template string '${VERIFY_EMAIL_TEMPLATE}'`);
       }
       return {
