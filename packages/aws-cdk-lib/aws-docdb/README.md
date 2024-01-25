@@ -171,3 +171,30 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
   enablePerformanceInsights: true, // Enable Performance Insights in all instances under this cluster
 });
 ```
+
+## Removal Policy
+
+This resource supports the snapshot removal policy.
+To specify it use the `removalPolicy` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new docdb.DatabaseCluster(this, 'Database', {
+  masterUser: {
+    username: 'myuser',
+  },
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.MEMORY5, ec2.InstanceSize.LARGE),
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PUBLIC,
+  },
+  vpc,
+  removalPolicy: cdk.RemovalPolicy.SNAPSHOT,
+});
+```
+
+**Note**: A `RemovalPolicy.DESTROY` removal policy will be applied to the
+cluster's instances and security group as they don't support the snapshot
+removal policy.
+
+> Visit [DeletionPolicy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html) for more details.
