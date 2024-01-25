@@ -56,6 +56,7 @@ describe('cfn resource', () => {
       'AWS::RDS::DBCluster',
       'AWS::RDS::DBInstance',
       'AWS::Redshift::Cluster',
+      'AWS::DocDB::DBCluster',
     ];
 
     test.each(supportedResources) (
