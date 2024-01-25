@@ -1,9 +1,8 @@
-import * as path from 'path';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { App, Stack, Duration } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
+import { ContainerImage } from 'aws-cdk-lib/aws-ecs';
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-patterns-alb-health-check');
@@ -13,11 +12,11 @@ new ApplicationLoadBalancedFargateService(stack, 'HealthCheckALBService', {
   vpc,
   memoryLimitMiB: 512,
   taskImageOptions: {
-    image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
+    image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
   assignPublicIp: true,
   healthCheck: {
-    command: ['CMD-SHELL', 'cat /tmp/health_status | grep -q "1" || exit 1'],
+    command: ['CMD-SHELL', 'curl -f http://localhost/ || exit 1'],
     interval: Duration.seconds(10),
     retries: 10,
   },
