@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
 import { App, CfnParameter, Fn, RemovalPolicy, Stack } from '../../core';
-import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern } from '../lib';
+import { LogGroup, RetentionDays, LogGroupClass, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier, ILogGroup, ILogSubscriptionDestination, FilterPattern } from '../lib';
 
 describe('log group', () => {
   test('set kms key when provided', () => {
@@ -477,6 +477,32 @@ describe('log group', () => {
     });
   });
 
+  test('log groups accept the AnyPrincipal policy', () => {
+    // GIVEN
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    lg.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['logs:PutLogEvents'],
+      principals: [new iam.AnyPrincipal()],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: JSON.stringify({
+        Statement: [{
+          Action: 'logs:PutLogEvents',
+          Effect: 'Allow',
+          Principal: { AWS: '*' },
+          Resource: '*',
+        }],
+        Version: '2012-10-17',
+      }),
+    });
+  });
+
   test('imported values are treated as if they are ARNs and converted to account IDs via CFN pseudo parameters', () => {
     // GIVEN
     const stack = new Stack();
@@ -732,6 +758,146 @@ describe('log group', () => {
           {
             sid: 'redact-statement-cdk',
             dataIdentifier: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/EmailAddress',
+                  ],
+                ],
+              },
+            ],
+            operation: {
+              deidentify: {
+                maskConfig: {},
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('set data protection policy with custom data identifier', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const dataProtectionPolicy = new DataProtectionPolicy({
+      name: 'test-policy-name',
+      description: 'test description',
+      identifiers: [new CustomDataIdentifier('EmployeeId', 'EmployeeId-\\d{9}')],
+    });
+
+    // WHEN
+    const logGroupName = 'test-log-group';
+    new LogGroup(stack, 'LogGroup', {
+      logGroupName: logGroupName,
+      dataProtectionPolicy: dataProtectionPolicy,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: logGroupName,
+      DataProtectionPolicy: {
+        name: 'test-policy-name',
+        description: 'test description',
+        version: '2021-06-01',
+        configuration: {
+          customDataIdentifier: [
+            {
+              name: 'EmployeeId',
+              regex: 'EmployeeId-\\d{9}',
+            },
+          ],
+        },
+        statement: [
+          {
+            sid: 'audit-statement-cdk',
+            dataIdentifier: [
+              'EmployeeId',
+            ],
+            operation: {
+              audit: {
+                findingsDestination: {},
+              },
+            },
+          },
+          {
+            sid: 'redact-statement-cdk',
+            dataIdentifier: [
+              'EmployeeId',
+            ],
+            operation: {
+              deidentify: {
+                maskConfig: {},
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('set data protection policy with mix of managed and custom data identifiers', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const dataProtectionPolicy = new DataProtectionPolicy({
+      name: 'test-policy-name',
+      description: 'test description',
+      identifiers: [new CustomDataIdentifier('EmployeeId', 'EmployeeId-\\d{9}'), DataIdentifier.EMAILADDRESS],
+    });
+
+    // WHEN
+    const logGroupName = 'test-log-group';
+    new LogGroup(stack, 'LogGroup', {
+      logGroupName: logGroupName,
+      dataProtectionPolicy: dataProtectionPolicy,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: logGroupName,
+      DataProtectionPolicy: {
+        name: 'test-policy-name',
+        description: 'test description',
+        version: '2021-06-01',
+        configuration: {
+          customDataIdentifier: [
+            {
+              name: 'EmployeeId',
+              regex: 'EmployeeId-\\d{9}',
+            },
+          ],
+        },
+        statement: [
+          {
+            sid: 'audit-statement-cdk',
+            dataIdentifier: [
+              'EmployeeId',
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':dataprotection::aws:data-identifier/EmailAddress',
+                  ],
+                ],
+              },
+            ],
+            operation: {
+              audit: {
+                findingsDestination: {},
+              },
+            },
+          },
+          {
+            sid: 'redact-statement-cdk',
+            dataIdentifier: [
+              'EmployeeId',
               {
                 'Fn::Join': [
                   '',

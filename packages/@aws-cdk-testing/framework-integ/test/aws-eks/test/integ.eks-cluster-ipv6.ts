@@ -7,7 +7,7 @@ import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { App, CfnOutput, Duration, Token, Fn, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus-24';
+import * as kplus from 'cdk8s-plus-27';
 import * as constructs from 'constructs';
 import * as hello from './hello-k8s';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';

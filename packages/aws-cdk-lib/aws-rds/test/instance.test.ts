@@ -1,7 +1,7 @@
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as targets from '../../aws-events-targets';
-import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal } from '../../aws-iam';
+import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal, CompositePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
@@ -333,6 +333,77 @@ describe('instance', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
       NetworkType: 'IPV4',
     });
+  });
+
+  test('instance with cloudwatchLogsExports', () => {
+    // WHEN
+    const cloudwatchTraceLog = 'trace';
+    const cloudwatchAuditLog = 'audit';
+    const cloudwatchAlertLog = 'alert';
+    const cloudwatchListenerLog = 'listener';
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      cloudwatchLogsExports: [cloudwatchTraceLog, cloudwatchAuditLog, cloudwatchAlertLog, cloudwatchListenerLog],
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnableCloudwatchLogsExports: [cloudwatchTraceLog, cloudwatchAuditLog, cloudwatchAlertLog, cloudwatchListenerLog],
+    });
+
+    expect(Object.keys(instance.cloudwatchLogGroups).length).toEqual(4);
+    expect(instance.cloudwatchLogGroups[cloudwatchTraceLog].logGroupName).toEqual(`/aws/rds/instance/${instance.instanceIdentifier}/${cloudwatchTraceLog}`);
+    expect(instance.cloudwatchLogGroups[cloudwatchAuditLog].logGroupName).toEqual(`/aws/rds/instance/${instance.instanceIdentifier}/${cloudwatchAuditLog}`);
+    expect(instance.cloudwatchLogGroups[cloudwatchAlertLog].logGroupName).toEqual(`/aws/rds/instance/${instance.instanceIdentifier}/${cloudwatchAlertLog}`);
+    expect(instance.cloudwatchLogGroups[cloudwatchListenerLog].logGroupName).toEqual(`/aws/rds/instance/${instance.instanceIdentifier}/${cloudwatchListenerLog}`);
+  });
+
+  test('instance replica with cloudwatchLogsExports', () => {
+    const cloudwatchTraceLog = 'trace';
+    const sourceInstance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+    });
+
+    // WHEN
+    const replicaInstance = new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+      sourceDatabaseInstance: sourceInstance,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      cloudwatchLogsExports: [cloudwatchTraceLog],
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnableCloudwatchLogsExports: [cloudwatchTraceLog],
+    });
+
+    expect(Object.keys(replicaInstance.cloudwatchLogGroups).length).toEqual(1);
+    expect(replicaInstance.cloudwatchLogGroups[cloudwatchTraceLog].logGroupName).toEqual(`/aws/rds/instance/${replicaInstance.instanceIdentifier}/${cloudwatchTraceLog}`);
+  });
+
+  test('instance snapshot with cloudwatchLogsExports', () => {
+    // WHEN
+    const instance = new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+      snapshotIdentifier: 'my-snapshot',
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+      vpc,
+      cloudwatchLogsExports: [],
+      cloudwatchLogsRetention: logs.RetentionDays.ONE_MONTH,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      EnableCloudwatchLogsExports: [],
+    });
+
+    expect(Object.keys(instance.cloudwatchLogGroups).length).toEqual(0);
   });
 
   test('instance with dual-stack network type', () => {
@@ -782,7 +853,7 @@ describe('instance', () => {
         ],
       },
       RotationRules: {
-        AutomaticallyAfterDays: 30,
+        ScheduleExpression: 'rate(30 days)',
       },
     });
   });
@@ -810,7 +881,7 @@ describe('instance', () => {
         ],
       },
       RotationRules: {
-        AutomaticallyAfterDays: 30,
+        ScheduleExpression: 'rate(30 days)',
       },
     });
 
@@ -858,7 +929,7 @@ describe('instance', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       RotationRules: {
-        AutomaticallyAfterDays: 15,
+        ScheduleExpression: 'rate(15 days)',
       },
     });
 
@@ -921,7 +992,7 @@ describe('instance', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       RotationRules: {
-        AutomaticallyAfterDays: 15,
+        ScheduleExpression: 'rate(15 days)',
       },
     });
 
@@ -1285,7 +1356,12 @@ describe('instance', () => {
     const domain = 'd-90670a8d36';
 
     // WHEN
-    const role = new Role(stack, 'DomainRole', { assumedBy: new ServicePrincipal('rds.amazonaws.com') });
+    const role = new Role(stack, 'DomainRole', {
+      assumedBy: new CompositePrincipal(
+        new ServicePrincipal('rds.amazonaws.com'),
+        new ServicePrincipal('directoryservice.rds.amazonaws.com'),
+      ),
+    });
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.sqlServerWeb({ version: rds.SqlServerEngineVersion.VER_14_00_3192_2_V1 }),
       vpc,
@@ -1324,6 +1400,13 @@ describe('instance', () => {
             Effect: 'Allow',
             Principal: {
               Service: 'rds.amazonaws.com',
+            },
+          },
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'directoryservice.rds.amazonaws.com',
             },
           },
         ],
@@ -1808,6 +1891,32 @@ describe('instance', () => {
         vpc,
       });
     }).toThrow(/Cannot set 'backupRetention', as engine 'postgres-15.2' does not support automatic backups for read replicas/);
+  });
+
+  test('read replica with allocatedStorage', () => {
+    // GIVEN
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 });
+    const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', { engine });
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine,
+      instanceType,
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+      sourceDatabaseInstance: source,
+      parameterGroup,
+      instanceType,
+      vpc,
+      allocatedStorage: 500,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      AllocatedStorage: '500',
+    });
   });
 
   test('can set parameter group on read replica', () => {

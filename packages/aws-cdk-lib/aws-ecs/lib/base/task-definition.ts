@@ -525,6 +525,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       return {
         host: spec.host,
         name: spec.name,
+        configuredAtLaunch: spec.configuredAtLaunch,
         dockerVolumeConfiguration: spec.dockerVolumeConfiguration && {
           autoprovision: spec.dockerVolumeConfiguration.autoprovision,
           driver: spec.dockerVolumeConfiguration.driver,
@@ -653,7 +654,19 @@ export class TaskDefinition extends TaskDefinitionBase {
    * Adds a volume to the task definition.
    */
   public addVolume(volume: Volume) {
+    this.validateVolume(volume);
     this.volumes.push(volume);
+  }
+
+  private validateVolume(volume: Volume):void {
+    if (volume.configuredAtLaunch !== true) {
+      return;
+    }
+
+    // Other volume configurations must not be specified.
+    if (volume.host || volume.dockerVolumeConfiguration || volume.efsVolumeConfiguration) {
+      throw new Error(`Volume Configurations must not be specified for '${volume.name}' when 'configuredAtLaunch' is set to true`);
+    }
   }
 
   /**
@@ -764,7 +777,25 @@ export class TaskDefinition extends TaskDefinitionBase {
         }
       }
     });
+    // Validate if multiple volumes configured with configuredAtLaunch.
+    const runtimeVolumes = this.volumes.filter(vol => vol.configuredAtLaunch);
+    if (runtimeVolumes.length > 1) {
+      const volumeNames = runtimeVolumes.map(vol => vol.name).join(',');
+      ret.push(`More than one volume is configured at launch: [${volumeNames}]`);
+    }
 
+    // Validate that volume with configuredAtLaunch set to true is mounted by at least one container.
+    for (const volume of this.volumes) {
+      if (volume.configuredAtLaunch) {
+        const isVolumeMounted = this.containers.some(container => {
+          return container.mountPoints.some(mp => mp.sourceVolume === volume.name);
+        });
+
+        if (!isVolumeMounted) {
+          ret.push(`Volume '${volume.name}' should be mounted by at least one container when 'configuredAtLaunch' is true`);
+        }
+      }
+    }
     return ret;
   }
 
@@ -977,6 +1008,13 @@ export interface Volume {
    * This name is referenced in the sourceVolume parameter of container definition mountPoints.
    */
   readonly name: string;
+
+  /**
+   * Indicates if the volume should be configured at launch.
+   *
+   * @default false
+   */
+  readonly configuredAtLaunch ?: boolean;
 
   /**
    * This property is specified when you are using Docker volumes.
@@ -1233,4 +1271,34 @@ export function isFargateCompatible(compatibility: Compatibility): boolean {
  */
 export function isExternalCompatible(compatibility: Compatibility): boolean {
   return [Compatibility.EXTERNAL].includes(compatibility);
+}
+
+/**
+ * Represents revision of a task definition, either a specific numbered revision or
+ * the `latest` revision
+ */
+export class TaskDefinitionRevision {
+  /**
+   * The most recent revision of a task
+   */
+  public static readonly LATEST = new TaskDefinitionRevision('latest');
+
+  /**
+   * Specific revision of a task
+   */
+  public static of(revision: number) {
+    if (revision < 1) {
+      throw new Error(`A task definition revision must be 'latest' or a positive number, got ${revision}`);
+    }
+    return new TaskDefinitionRevision(revision.toString());
+  }
+
+  /**
+   * The string representation of this revision
+   */
+  public readonly revision: string;
+
+  private constructor(revision: string) {
+    this.revision = revision;
+  }
 }

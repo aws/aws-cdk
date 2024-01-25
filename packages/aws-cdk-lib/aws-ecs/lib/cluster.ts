@@ -451,8 +451,8 @@ export class Cluster extends Resource implements ICluster {
     this.configureAutoScalingGroup(provider.autoScalingGroup, {
       ...options,
       machineImageType: provider.machineImageType,
-      // Don't enable the instance-draining lifecycle hook if managed termination protection is enabled
-      taskDrainTime: provider.enableManagedTerminationProtection ? Duration.seconds(0) : options.taskDrainTime,
+      // Don't enable the instance-draining lifecycle hook if managed termination protection or managed draining is enabled
+      taskDrainTime: (provider.enableManagedTerminationProtection || provider.enableManagedDraining)? Duration.seconds(0) : options.taskDrainTime,
       canContainersAccessInstanceRole: options.canContainersAccessInstanceRole ?? provider.canContainersAccessInstanceRole,
     });
 
@@ -581,6 +581,36 @@ export class Cluster extends Resource implements ICluster {
     if (!this._capacityProviderNames.includes(provider)) {
       this._capacityProviderNames.push(provider);
     }
+  }
+
+  /**
+   * Returns an ARN that represents all tasks within the cluster that match
+   * the task pattern specified. To represent all tasks, specify ``"*"``.
+   *
+   * @param keyPattern Task id pattern
+   */
+  public arnForTasks(keyPattern: string): string {
+    return Stack.of(this).formatArn({
+      service: 'ecs',
+      resource: 'task',
+      resourceName: `${this.clusterName}/${keyPattern}`,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    });
+  }
+
+  /**
+  * Grants an ECS Task Protection API permission to the specified grantee.
+  * This method provides a streamlined way to assign the 'ecs:UpdateTaskProtection'
+  * permission, enabling the grantee to manage task protection in the ECS cluster.
+  *
+  * @param grantee The entity (e.g., IAM role or user) to grant the permissions to.
+  */
+  public grantTaskProtection(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['ecs:UpdateTaskProtection'],
+      resourceArns: [this.arnForTasks('*')],
+    });
   }
 
   private configureWindowsAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
@@ -1168,6 +1198,16 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
   readonly enableManagedTerminationProtection?: boolean;
 
   /**
+   * Managed instance draining facilitates graceful termination of Amazon ECS instances.
+   * This allows your service workloads to stop safely and be rescheduled to non-terminating instances.
+   * Infrastructure maintenance and updates are preformed without disruptions to workloads.
+   * To use managed instance draining, set enableManagedDraining to true.
+   *
+   * @default true
+   */
+  readonly enableManagedDraining?: boolean;
+
+  /**
    * Maximum scaling step size. In most cases this should be left alone.
    *
    * @default 1000
@@ -1229,6 +1269,11 @@ export class AsgCapacityProvider extends Construct {
   readonly enableManagedTerminationProtection?: boolean;
 
   /**
+   * Whether managed draining is enabled.
+   */
+  readonly enableManagedDraining?: boolean;
+
+  /**
    * Specifies whether the containers can access the container instance role.
    *
    * @default false
@@ -1241,6 +1286,12 @@ export class AsgCapacityProvider extends Construct {
     this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
     this.canContainersAccessInstanceRole = props.canContainersAccessInstanceRole;
     this.enableManagedTerminationProtection = props.enableManagedTerminationProtection ?? true;
+    this.enableManagedDraining = props.enableManagedDraining;
+
+    let managedDraining = undefined;
+    if (this.enableManagedDraining != undefined) {
+      managedDraining = this.enableManagedDraining ? 'ENABLED' : 'DISABLED';
+    }
 
     if (this.enableManagedTerminationProtection && props.enableManagedScaling === false) {
       throw new Error('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
@@ -1273,6 +1324,7 @@ export class AsgCapacityProvider extends Construct {
           instanceWarmupPeriod: props.instanceWarmupPeriod,
         },
         managedTerminationProtection: this.enableManagedTerminationProtection ? 'ENABLED' : 'DISABLED',
+        managedDraining: managedDraining,
       },
     });
 

@@ -2,6 +2,9 @@
   "alexa-ask": [
     "Alexa::ASK"
   ],
+  "amzn-sdc": [
+    "AMZN::SDC"
+  ],
   "aws-accessanalyzer": [
     "AWS::AccessAnalyzer"
   ],
@@ -67,6 +70,9 @@
   ],
   "aws-autoscalingplans": [
     "AWS::AutoScalingPlans"
+  ],
+  "aws-b2bi": [
+    "AWS::B2BI"
   ],
   "aws-backup": [
     "AWS::Backup"
@@ -143,6 +149,9 @@
   "aws-codestarnotifications": [
     "AWS::CodeStarNotifications"
   ],
+  "aws-codetest": [
+    "AWS::CodeTest"
+  ],
   "aws-cognito": [
     "AWS::Cognito"
   ],
@@ -175,6 +184,9 @@
   ],
   "aws-datasync": [
     "AWS::DataSync"
+  ],
+  "aws-datazone": [
+    "AWS::DataZone"
   ],
   "aws-dax": [
     "AWS::DAX"
@@ -461,6 +473,9 @@
   ],
   "aws-neptune": [
     "AWS::Neptune"
+  ],
+  "aws-neptunegraph": [
+    "AWS::NeptuneGraph"
   ],
   "aws-networkfirewall": [
     "AWS::NetworkFirewall"

@@ -103,8 +103,12 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
   /**
    * Constructs a new instance of the QueueProcessingEc2Service class.
    */
-  constructor(scope: Construct, id: string, props: QueueProcessingEc2ServiceProps) {
+  constructor(scope: Construct, id: string, props: QueueProcessingEc2ServiceProps = {}) {
     super(scope, id, props);
+
+    if (!props.image) {
+      throw new Error('image must be specified for EC2 queue processing service');
+    }
 
     const containerName = props.containerName ?? 'QueueProcessingContainer';
 

@@ -205,6 +205,25 @@ beforeEach(() => {
         },
       },
     }),
+    '/nocache/cdk.out/assets.json': JSON.stringify({
+      version: Manifest.version(),
+      dockerImages: {
+        theAsset: {
+          source: {
+            directory: 'dockerdir',
+            cacheDisabled: true,
+          },
+          destinations: {
+            theDestination: {
+              region: 'us-north-50',
+              assumeRoleArn: 'arn:aws:role',
+              repositoryName: 'repo',
+              imageTag: 'nopqr',
+            },
+          },
+        },
+      },
+    }),
     '/platform-arm64/cdk.out/dockerdir/Dockerfile': 'FROM scratch',
   });
 
@@ -360,6 +379,30 @@ describe('with a complete manifest', () => {
       { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
       { commandLine: ['docker', 'inspect', 'cdkasset-theasset'], exitCode: 1 },
       { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '--cache-from', 'type=registry,ref=abcdef', '--cache-to', 'type=inline', '.'], cwd: defaultNetworkDockerpath },
+      { commandLine: ['docker', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:nopqr'] },
+      { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:nopqr'] },
+    );
+
+    await pub.publish();
+
+    expectAllSpawns();
+    expect(true).toBeTruthy(); // Expect no exception, satisfy linter
+  });
+
+  test('build with cache disabled', async () => {
+    pub = new AssetPublishing(AssetManifest.fromPath('/nocache/cdk.out'), { aws });
+    const defaultNetworkDockerpath = '/nocache/cdk.out/dockerdir';
+    aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
+    aws.mockEcr.getAuthorizationToken = mockedApiResult({
+      authorizationData: [
+        { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: 'https://proxy.com/' },
+      ],
+    });
+
+    const expectAllSpawns = mockSpawn(
+      { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://proxy.com/'] },
+      { commandLine: ['docker', 'inspect', 'cdkasset-theasset'], exitCode: 1 },
+      { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset', '--no-cache', '.'], cwd: defaultNetworkDockerpath },
       { commandLine: ['docker', 'tag', 'cdkasset-theasset', '12345.amazonaws.com/repo:nopqr'] },
       { commandLine: ['docker', 'push', '12345.amazonaws.com/repo:nopqr'] },
     );

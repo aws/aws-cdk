@@ -2,6 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
+import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
@@ -1020,6 +1021,15 @@ describe('cluster', () => {
 
   });
 
+  test('allows returning the correct image for linux 2 for EcsOptimizedImage with Neuron hardware', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    expect(ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.NEURON).getImage(stack).osType).toEqual(
+      ec2.OperatingSystemType.LINUX);
+
+  });
+
   test('allows returning the correct image for linux 2023 for EcsOptimizedImage', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1045,6 +1055,26 @@ describe('cluster', () => {
     expect(ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019).getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.WINDOWS);
 
+  });
+
+  test('correct SSM parameter is set for amazon linux 2 Neuron AMI', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    cluster.addCapacity('amazonlinux2-neuron-asg', {
+      instanceType: new ec2.InstanceType('inf1.xlarge'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.NEURON),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasParameter('*', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/ecs/optimized-ami/amazon-linux-2/inf/recommended/image_id',
+    });
   });
 
   test('allows setting cluster ServiceConnectDefaults.Namespace property when useAsServiceConnectDefault is true', () => {
@@ -1082,6 +1112,86 @@ describe('cluster', () => {
     });
     expect(cluster.defaultCloudMapNamespace).not.toBe(undefined);
     expect(cluster.defaultCloudMapNamespace!.namespaceName).toBe('foo');
+  });
+
+  test('arnForTasks returns a task arn from key pattern', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskIdPattern = '*';
+
+    // WHEN
+    const policyStatement = new iam.PolicyStatement({
+      resources: [cluster.arnForTasks(taskIdPattern)],
+      actions: ['ecs:RunTask'],
+      principals: [new iam.ServicePrincipal('ecs.amazonaws.com')],
+    });
+
+    // THEN
+    expect(stack.resolve(policyStatement.toStatementJson())).toEqual({
+      Action: 'ecs:RunTask',
+      Effect: 'Allow',
+      Principal: { Service: 'ecs.amazonaws.com' },
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':ecs:',
+            { Ref: 'AWS::Region' },
+            ':',
+            { Ref: 'AWS::AccountId' },
+            ':task/',
+            { Ref: 'EcsCluster97242B84' },
+            `/${taskIdPattern}`,
+          ],
+        ],
+      },
+    });
+  });
+
+  test('grantTaskProtection grants ecs:UpdateTaskProtection permission', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const role = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+    });
+
+    // WHEN
+    cluster.grantTaskProtection(role);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'ecs:UpdateTaskProtection',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':ecs:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':task/',
+                  { Ref: 'EcsCluster97242B84' },
+                  '/*',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
   });
 
   /*
@@ -2111,6 +2221,7 @@ describe('cluster', () => {
       autoScalingGroup,
       enableManagedScaling: false,
       enableManagedTerminationProtection: false,
+      enableManagedDraining: false,
     });
 
     // THEN
@@ -2121,6 +2232,7 @@ describe('cluster', () => {
         },
         ManagedScaling: Match.absent(),
         ManagedTerminationProtection: 'DISABLED',
+        ManagedDraining: 'DISABLED',
       },
     });
   });
@@ -2153,6 +2265,70 @@ describe('cluster', () => {
           TargetCapacity: 100,
         },
         ManagedTerminationProtection: 'DISABLED',
+      },
+    });
+  });
+
+  test('can disable Managed Draining for ASG capacity provider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedDraining: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+      AutoScalingGroupProvider: {
+        AutoScalingGroupArn: {
+          Ref: 'asgASG4D014670',
+        },
+        ManagedDraining: 'DISABLED',
+        ManagedScaling: {
+          Status: 'ENABLED',
+          TargetCapacity: 100,
+        },
+      },
+    });
+  });
+
+  test('can enable Managed Draining for ASG capacity provider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedDraining: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+      AutoScalingGroupProvider: {
+        AutoScalingGroupArn: {
+          Ref: 'asgASG4D014670',
+        },
+        ManagedDraining: 'ENABLED',
+        ManagedScaling: {
+          Status: 'ENABLED',
+          TargetCapacity: 100,
+        },
       },
     });
   });

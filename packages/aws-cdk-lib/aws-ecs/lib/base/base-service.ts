@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { ScalableTaskCount } from './scalable-task-count';
+import { ServiceManagedVolume } from './service-managed-volume';
 import * as appscaling from '../../../aws-applicationautoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
@@ -22,7 +23,12 @@ import {
 import * as cxapi from '../../../cx-api';
 
 import { RegionInfo } from '../../../region-info';
-import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
+import {
+  LoadBalancerTargetOptions,
+  NetworkMode,
+  TaskDefinition,
+  TaskDefinitionRevision,
+} from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging, Cluster } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
@@ -64,7 +70,14 @@ export interface DeploymentController {
  */
 export interface DeploymentCircuitBreaker {
   /**
+   * Whether to enable the deployment circuit breaker logic
+   * @default true
+   */
+  readonly enable?: boolean;
+
+  /**
    * Whether to enable rollback on deployment failure
+   *
    * @default false
    */
   readonly rollback?: boolean;
@@ -345,6 +358,21 @@ export interface BaseServiceOptions {
    * cannot make requests to other services via Service Connect.
    */
   readonly serviceConnectConfiguration?: ServiceConnectProps;
+
+  /**
+   * Revision number for the task definition or `latest` to use the latest active task revision.
+   *
+   * @default - Uses the revision of the passed task definition deployed by CloudFormation
+   */
+  readonly taskDefinitionRevision?: TaskDefinitionRevision;
+
+  /**
+   * Configuration details for a volume used by the service. This allows you to specify
+   * details about the EBS volume that can be attched to ECS tasks.
+   *
+   * @default - undefined
+   */
+  readonly volumeConfigurations?: ServiceManagedVolume[];
 }
 
 /**
@@ -565,6 +593,11 @@ export abstract class BaseService extends Resource
   private scalableTaskCount?: ScalableTaskCount;
 
   /**
+   * All volumes
+   */
+  private readonly volumes: ServiceManagedVolume[] = [];
+
+  /**
    * Constructs a new instance of the BaseService class.
    */
   constructor(
@@ -598,7 +631,7 @@ export abstract class BaseService extends Resource
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
         deploymentCircuitBreaker: props.circuitBreaker ? {
-          enable: true,
+          enable: props.circuitBreaker.enable ?? true,
           rollback: props.circuitBreaker.rollback ?? false,
         } : undefined,
         alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
@@ -614,6 +647,7 @@ export abstract class BaseService extends Resource
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
       serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
       serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
+      volumeConfigurations: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
       ...additionalProps,
     });
 
@@ -635,11 +669,25 @@ export abstract class BaseService extends Resource
       throw new Error('Deployment alarms requires the ECS deployment controller.');
     }
 
+    if (
+      props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY
+      && props.taskDefinitionRevision
+      && props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST
+    ) {
+      throw new Error('CODE_DEPLOY deploymentController can only be used with the `latest` task definition revision');
+    }
+
     if (props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
       // Strip the revision ID from the service's task definition property to
       // prevent new task def revisions in the stack from triggering updates
       // to the stack's ECS service resource
       this.resource.taskDefinition = taskDefinition.family;
+      this.node.addDependency(taskDefinition);
+    } else if (props.taskDefinitionRevision) {
+      this.resource.taskDefinition = taskDefinition.family;
+      if (props.taskDefinitionRevision !== TaskDefinitionRevision.LATEST) {
+        this.resource.taskDefinition += `:${props.taskDefinitionRevision.revision}`;
+      }
       this.node.addDependency(taskDefinition);
     }
 
@@ -658,6 +706,10 @@ export abstract class BaseService extends Resource
 
     if (props.serviceConnectConfiguration) {
       this.enableServiceConnect(props.serviceConnectConfiguration);
+    }
+
+    if (props.volumeConfigurations) {
+      props.volumeConfigurations.forEach(v => this.addVolume(v));
     }
 
     if (props.enableExecuteCommand) {
@@ -693,6 +745,48 @@ export abstract class BaseService extends Resource
     }
 
     this.node.defaultChild = this.resource;
+  }
+
+  /**
+   * Adds a volume to the Service.
+   */
+  public addVolume(volume: ServiceManagedVolume) {
+    this.volumes.push(volume);
+  }
+
+  private renderVolumes(): CfnService.ServiceVolumeConfigurationProperty[] {
+    if (this.volumes.length > 1) {
+      throw new Error(`Only one EBS volume can be specified for 'volumeConfigurations', got: ${this.volumes.length}`);
+    }
+    return this.volumes.map(renderVolume);
+    function renderVolume(spec: ServiceManagedVolume): CfnService.ServiceVolumeConfigurationProperty {
+      const tagSpecifications = spec.config?.tagSpecifications?.map(ebsTagSpec => {
+        return {
+          resourceType: 'volume',
+          propagateTags: ebsTagSpec.propagateTags,
+          tags: ebsTagSpec.tags ? Object.entries(ebsTagSpec.tags).map(([key, value]) => ({
+            key: key,
+            value: value,
+          })) : undefined,
+        } as CfnService.EBSTagSpecificationProperty;
+      });
+
+      return {
+        name: spec.name,
+        managedEbsVolume: spec.config && {
+          roleArn: spec.role.roleArn,
+          encrypted: spec.config.encrypted,
+          filesystemType: spec.config.fileSystemType,
+          iops: spec.config.iops,
+          kmsKeyId: spec.config.kmsKeyId?.keyId,
+          throughput: spec.config.throughput,
+          volumeType: spec.config.volumeType,
+          snapshotId: spec.config.snapShotId,
+          sizeInGiB: spec.config.size?.toGibibytes(),
+          tagSpecifications: tagSpecifications,
+        },
+      };
+    }
   }
 
   /**

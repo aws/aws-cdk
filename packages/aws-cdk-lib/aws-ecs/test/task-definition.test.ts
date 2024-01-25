@@ -1,8 +1,10 @@
 import { Template } from '../../assertions';
+import { EbsDeviceVolumeType } from '../../aws-ec2';
 import * as ecr from '../../aws-ecr';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as ecs from '../lib';
+import { ServiceManagedVolume } from '../lib/base/service-managed-volume';
 
 describe('task definition', () => {
   describe('When creating a new TaskDefinition', () => {
@@ -228,6 +230,146 @@ describe('task definition', () => {
       expect(() => {
         Template.fromStack(stack);
       }).toThrow("Port mapping name 'api' cannot appear in both 'Container2' and 'Container'");
+    });
+
+    test('throws when multiple runtime volumes are set', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition =new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+      const container1 = taskDefinition.addContainer('front', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+      container1.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol1',
+      });
+      taskDefinition.addVolume({
+        name: 'nginx-vol',
+        configuredAtLaunch: true,
+      });
+      taskDefinition.addVolume({
+        name: 'nginx-vol1',
+        configuredAtLaunch: true,
+      });
+
+      // THEN
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow('More than one volume is configured at launch: [nginx-vol,nginx-vol1]');
+    });
+
+    test('throws when none of the container mounts the volume', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition =new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      taskDefinition.addVolume({
+        name: 'nginx-vol',
+        configuredAtLaunch: true,
+      });
+
+      // THEN
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/Volume 'nginx-vol' should be mounted by at least one container when 'configuredAtLaunch' is true/);
+    });
+
+    test('throws when none of the container mount the volume using ServiceManagedVolume', () => {
+    // GIVEN
+      const stack = new cdk.Stack();
+      const ebsRole = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+      });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      taskDefinition.addContainer('db', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+      const serviceManagedVolume = new ServiceManagedVolume(stack, 'EBS Volume', {
+        name: 'nginx-vol',
+        managedEBSVolume: {
+          role: ebsRole,
+          size: cdk.Size.gibibytes(3),
+          volumeType: EbsDeviceVolumeType.GP3,
+          fileSystemType: ecs.FileSystemType.XFS,
+          tagSpecifications: [{
+            tags: {
+              purpose: 'production',
+            },
+            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
+          }],
+        },
+      });
+      taskDefinition.addVolume(serviceManagedVolume);
+
+      // THEN
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/Volume 'nginx-vol' should be mounted by at least one container when 'configuredAtLaunch' is true/);
+    });
+
+    test('throws when multiple runtime volumes are set using ServiceManagedVolume', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const ebsRole = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+      });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      const containerDef = taskDefinition.addContainer('db', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+      const volume1 = new ServiceManagedVolume(stack, 'EBS Volume1', {
+        name: 'nginx-vol',
+        managedEBSVolume: {
+          role: ebsRole,
+          size: cdk.Size.gibibytes(3),
+          volumeType: EbsDeviceVolumeType.GP3,
+          fileSystemType: ecs.FileSystemType.XFS,
+          tagSpecifications: [{
+            tags: {
+              purpose: 'production',
+            },
+            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
+          }],
+        },
+      });
+      volume1.mountIn(containerDef, {
+        readOnly: false,
+        containerPath: 'var/lib',
+      });
+      taskDefinition.addVolume(volume1);
+      const volume2 = new ServiceManagedVolume(stack, 'EBS Volume2', {
+        name: 'nginx-vol1',
+        managedEBSVolume: {
+          role: ebsRole,
+          size: cdk.Size.gibibytes(3),
+          volumeType: EbsDeviceVolumeType.GP3,
+          fileSystemType: ecs.FileSystemType.XFS,
+          tagSpecifications: [{
+            tags: {
+              purpose: 'production',
+            },
+            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
+          }],
+        },
+      });
+      volume2.mountIn(containerDef, {
+        readOnly: false,
+        containerPath: 'var/lib',
+      });
+      taskDefinition.addVolume(volume2);
+
+      // THEN
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow('More than one volume is configured at launch: [nginx-vol,nginx-vol1]');
     });
 
     test('You can specify a container ulimits using the dedicated property in ContainerDefinitionOptions', () => {
@@ -514,6 +656,26 @@ describe('task definition', () => {
           });
         }).toThrow('The sum of all container cpu values cannot be greater than the value of the task cpu');
       });
+    });
+  });
+});
+
+describe('task definition revision', () => {
+  describe('validate revision number', () => {
+    test('should throw if zero', () => {
+      expect(() => {
+        ecs.TaskDefinitionRevision.of(0);
+      }).toThrow(/must be 'latest' or a positive number, got 0/);
+    });
+    test('should throw if negative', () => {
+      expect(() => {
+        ecs.TaskDefinitionRevision.of(-5);
+      }).toThrow(/must be 'latest' or a positive number, got -5/);
+    });
+    test('should succeed if positive', () => {
+      expect(() => {
+        ecs.TaskDefinitionRevision.of(21);
+      }).not.toThrow();
     });
   });
 });

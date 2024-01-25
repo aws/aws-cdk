@@ -127,6 +127,17 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
 })
 ```
 
+You can optionally disable the cache:
+
+```ts
+import { DockerImageAsset, Platform } from 'aws-cdk-lib/aws-ecr-assets';
+
+const asset = new DockerImageAsset(this, 'MyBuildImage', {
+  directory: path.join(__dirname, 'my-image'),
+  cacheDisabled: true,
+})
+```
+
 ## Images from Tarball
 
 Images are loaded from a local tarball, uploaded to ECR by the CDK toolkit and/or your app's CI-CD pipeline, and can be
@@ -151,7 +162,14 @@ through the CDK CLI or through CI/CD workflows. To that end, the ECR repository 
 The mechanics of where these images are published and how are intentionally kept as an implementation detail, and the construct
 does not support customizations such as specifying the ECR repository name or tags.
 
-If you are looking for a way to _publish_ image assets to an ECR repository in your control, you should consider using
+We are testing a new experimental synthesizer, the
+[App Staging Synthesizer](https://docs.aws.amazon.com/cdk/api/v2/docs/app-staging-synthesizer-alpha-readme.html) that
+creates separate support stacks for each CDK application. Unlike the default stack synthesizer, the App Staging
+Synthesizer creates unique ECR repositories for each `DockerImageAsset`, allowing lifecycle policies to only retain the
+last `n` images. This is a great way to keep your ECR repositories clean and reduce cost. You can learn more about
+this feature in [this blog post](https://aws.amazon.com/blogs/devops/enhancing-resource-isolation-in-aws-cdk-with-the-app-staging-synthesizer/).
+
+Alternatively, If you are looking for a way to _publish_ image assets to an ECR repository in your control, you should consider using
 [cdklabs/cdk-ecr-deployment], which is able to replicate an image asset from the CDK-controlled ECR repository to a repository of
 your choice.
 

@@ -5,7 +5,7 @@ import { Token } from '../../../core';
 import { Chain } from '../chain';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
-import { CatchProps, IChainable, INextable, RetryProps } from '../types';
+import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
 
 /**
  * Properties for defining a Map state
@@ -63,11 +63,27 @@ export interface MapProps {
   readonly itemsPath?: string;
 
   /**
-   * The JSON that you want to override your default iteration input
+   * The JSON that you want to override your default iteration input (mutually exclusive  with `itemSelector`).
+   *
+   * @deprecated Step Functions has deprecated the `parameters` field in favor of
+   * the new `itemSelector` field
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-itemselector.html
    *
    * @default $
    */
   readonly parameters?: { [key: string]: any };
+
+  /**
+   * The JSON that you want to override your default iteration input (mutually exclusive  with `parameters`).
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-itemselector.html
+   *
+   * @default $
+   */
+  readonly itemSelector?: { [key: string]: any };
 
   /**
    * The JSON that will replace the state's raw result and become the effective
@@ -122,12 +138,14 @@ export class Map extends State implements INextable {
 
   private readonly maxConcurrency: number | undefined;
   private readonly itemsPath?: string;
+  private readonly itemSelector?: { [key: string]: any };
 
   constructor(scope: Construct, id: string, props: MapProps = {}) {
     super(scope, id, props);
     this.endStates = [this];
     this.maxConcurrency = props.maxConcurrency;
     this.itemsPath = props.itemsPath;
+    this.itemSelector = props.itemSelector;
   }
 
   /**
@@ -161,11 +179,27 @@ export class Map extends State implements INextable {
   }
 
   /**
-   * Define iterator state machine in Map
+   * Define iterator state machine in Map.
+   *
+   * A Map must either have a non-empty iterator or a non-empty item processor (mutually exclusive  with `itemProcessor`).
+   *
+   * @deprecated - use `itemProcessor` instead.
    */
   public iterator(iterator: IChainable): Map {
     const name = `Map ${this.stateId} Iterator`;
     super.addIterator(new StateGraph(iterator.startState, name));
+    return this;
+  }
+
+  /**
+   * Define item processor in Map.
+   *
+   * A Map must either have a non-empty iterator or a non-empty item processor (mutually exclusive  with `iterator`).
+   */
+  public itemProcessor(processor: IChainable, config: ProcessorConfig = {}): Map {
+    const name = `Map ${this.stateId} Item Processor`;
+    const stateGraph = new StateGraph(processor.startState, name);
+    super.addItemProcessor(stateGraph, config);
     return this;
   }
 
@@ -184,6 +218,8 @@ export class Map extends State implements INextable {
       ...this.renderRetryCatch(),
       ...this.renderIterator(),
       ...this.renderItemsPath(),
+      ...this.renderItemSelector(),
+      ...this.renderItemProcessor(),
       MaxConcurrency: this.maxConcurrency,
     };
   }
@@ -194,11 +230,23 @@ export class Map extends State implements INextable {
   protected validateState(): string[] {
     const errors: string[] = [];
 
-    if (this.iteration === undefined) {
-      errors.push('Map state must have a non-empty iterator');
+    if (!this.iteration && !this.processor) {
+      errors.push('Map state must either have a non-empty iterator or a non-empty item processor');
     }
 
-    if (this.maxConcurrency !== undefined && !Token.isUnresolved(this.maxConcurrency) && !isPositiveInteger(this.maxConcurrency)) {
+    if (this.iteration && this.processor) {
+      errors.push('Map state cannot have both an iterator and an item processor');
+    }
+
+    if (this.parameters && this.itemSelector) {
+      errors.push('Map state cannot have both parameters and an item selector');
+    }
+
+    if (this.processorConfig?.mode === ProcessorMode.DISTRIBUTED && !this.processorConfig?.executionType) {
+      errors.push('You must specify an execution type for the distributed Map workflow');
+    }
+
+    if (this.maxConcurrency && !Token.isUnresolved(this.maxConcurrency) && !isPositiveInteger(this.maxConcurrency)) {
       errors.push('maxConcurrency has to be a positive integer');
     }
 
@@ -215,8 +263,23 @@ export class Map extends State implements INextable {
    * Render Parameters in ASL JSON format
    */
   private renderParameters(): any {
+    if (!this.parameters) {
+      return undefined;
+    }
     return FieldUtils.renderObject({
       Parameters: this.parameters,
+    });
+  }
+
+  /**
+   * Render ItemSelector in ASL JSON format
+   */
+  private renderItemSelector(): any {
+    if (!this.itemSelector) {
+      return undefined;
+    }
+    return FieldUtils.renderObject({
+      ItemSelector: this.itemSelector,
     });
   }
 }

@@ -94,7 +94,7 @@ export interface EnvironmentOptions {
    *
    * @default - A name is generated.
    */
-  readonly name?: string;
+  readonly environmentName?: string;
 
   /**
    * The description of the environment.
@@ -236,10 +236,10 @@ export class Environment extends EnvironmentBase {
 
   constructor(scope: Construct, id: string, props: EnvironmentProps) {
     super(scope, id, {
-      physicalName: props.name,
+      physicalName: props.environmentName,
     });
 
-    this.name = props.name || Names.uniqueResourceName(this, {
+    this.name = props.environmentName || Names.uniqueResourceName(this, {
       maxLength: 64,
       separator: '-',
     });
@@ -269,7 +269,7 @@ export class Environment extends EnvironmentBase {
       resource: 'application',
       resourceName: `${this.applicationId}/environment/${this.environmentId}`,
     });
-    this.extensible = new ExtensibleBase(scope, this.environmentArn, this.name);
+    this.extensible = new ExtensibleBase(this, this.environmentArn, this.name);
 
     this.application.addExistingEnvironment(this);
   }

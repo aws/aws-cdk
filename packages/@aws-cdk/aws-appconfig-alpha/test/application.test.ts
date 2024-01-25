@@ -23,7 +23,7 @@ describe('appconfig', () => {
   test('appconfig with name', () => {
     const stack = new cdk.Stack();
     new Application(stack, 'MyAppConfig', {
-      name: 'TestApp',
+      applicationName: 'TestApp',
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Application', {
@@ -64,7 +64,7 @@ describe('appconfig', () => {
     });
   });
 
-  test('pre create hosted configuration version', () => {
+  test('specifying action point for extensible action on', () => {
     const stack = new cdk.Stack();
     const appconfig = new Application(stack, 'MyAppConfig');
     const func = new Function(stack, 'MyFunc', {
@@ -72,29 +72,26 @@ describe('appconfig', () => {
       runtime: Runtime.PYTHON_3_7,
       code: Code.fromInline('# this is my code'),
     });
-    Object.defineProperty(func, 'functionArn', {
-      value: 'arn:lambda:us-east-1:123456789012:function:my-function',
-    });
     appconfig.on(ActionPoint.ON_DEPLOYMENT_STEP, new LambdaDestination(func));
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Extension', {
-      Name: 'Extension28486',
+      Name: 'MyAppConfig-Extension',
       Actions: {
         ON_DEPLOYMENT_STEP: [
           {
-            Name: 'Extension28486',
-            RoleArn: { 'Fn::GetAtt': ['Extension28486RoleFD36712B5D791', 'Arn'] },
-            Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
+            Name: 'MyAppConfig-Extension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyAppConfigExtensionF845ERole0D30970E5A7E5', 'Arn'] },
+            Uri: { 'Fn::GetAtt': ['MyFunc8A243A2C', 'Arn'] },
           },
         ],
       },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ExtensionAssociation', {
       ExtensionIdentifier: {
-        'Fn::GetAtt': ['Extension28486EB468E25', 'Id'],
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'Id'],
       },
       ExtensionVersionNumber: {
-        'Fn::GetAtt': ['Extension28486EB468E25', 'VersionNumber'],
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'VersionNumber'],
       },
       ResourceIdentifier: {
         'Fn::Join': [
@@ -122,12 +119,9 @@ describe('appconfig', () => {
       runtime: Runtime.PYTHON_3_7,
       code: Code.fromInline('# this is my code'),
     });
-    Object.defineProperty(func, 'functionArn', {
-      value: 'arn:lambda:us-east-1:123456789012:function:my-function',
-    });
     appconfig.preCreateHostedConfigurationVersion(new LambdaDestination(func), {
       description: 'This is my description',
-      name: 'MyExtension',
+      extensionName: 'MyExtension',
       latestVersionNumber: 1,
       parameters: [
         Parameter.required('myparam', 'val'),
@@ -141,9 +135,9 @@ describe('appconfig', () => {
       Actions: {
         PRE_CREATE_HOSTED_CONFIGURATION_VERSION: [
           {
-            Name: 'Extension8D9D7',
-            RoleArn: { 'Fn::GetAtt': ['Extension8D9D7RoleFD367F4FA01C5', 'Arn'] },
-            Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
+            Name: 'MyExtension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyAppConfigExtensionE4CCERole467D69791333F', 'Arn'] },
+            Uri: { 'Fn::GetAtt': ['MyFunc8A243A2C', 'Arn'] },
           },
         ],
       },
@@ -153,10 +147,10 @@ describe('appconfig', () => {
     });
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ExtensionAssociation', {
       ExtensionIdentifier: {
-        'Fn::GetAtt': ['Extension8D9D75657615A', 'Id'],
+        'Fn::GetAtt': ['MyAppConfigExtensionE4CCE34485313', 'Id'],
       },
       ExtensionVersionNumber: {
-        'Fn::GetAtt': ['Extension8D9D75657615A', 'VersionNumber'],
+        'Fn::GetAtt': ['MyAppConfigExtensionE4CCE34485313', 'VersionNumber'],
       },
       Parameters: {
         myparam: 'val',
@@ -193,12 +187,12 @@ describe('appconfig', () => {
     appconfig.preStartDeployment(new LambdaDestination(func));
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Extension', {
-      Name: 'Extension6253E',
+      Name: 'MyAppConfig-Extension',
       Actions: {
         PRE_START_DEPLOYMENT: [
           {
-            Name: 'Extension6253E',
-            RoleArn: { 'Fn::GetAtt': ['Extension6253ERoleFD367F586E17D', 'Arn'] },
+            Name: 'MyAppConfig-Extension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyAppConfigExtensionF845ERole0D30970E5A7E5', 'Arn'] },
             Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
           },
         ],
@@ -206,10 +200,10 @@ describe('appconfig', () => {
     });
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ExtensionAssociation', {
       ExtensionIdentifier: {
-        'Fn::GetAtt': ['Extension6253ED4CE66CE', 'Id'],
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'Id'],
       },
       ExtensionVersionNumber: {
-        'Fn::GetAtt': ['Extension6253ED4CE66CE', 'VersionNumber'],
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'VersionNumber'],
       },
       ResourceIdentifier: {
         'Fn::Join': [
@@ -246,12 +240,12 @@ describe('appconfig', () => {
     appconfig.onDeploymentStart(new LambdaDestination(func));
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Extension', {
-      Name: 'ExtensionB65DC',
+      Name: 'MyAppConfig-Extension',
       Actions: {
         ON_DEPLOYMENT_START: [
           {
-            Name: 'ExtensionB65DC',
-            RoleArn: { 'Fn::GetAtt': ['ExtensionB65DCRoleFD3677AFA6FE0', 'Arn'] },
+            Name: 'MyAppConfig-Extension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyAppConfigExtensionF845ERole0D30970E5A7E5', 'Arn'] },
             Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
           },
         ],
@@ -259,10 +253,10 @@ describe('appconfig', () => {
     });
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ExtensionAssociation', {
       ExtensionIdentifier: {
-        'Fn::GetAtt': ['ExtensionB65DC00D22C6E', 'Id'],
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'Id'],
       },
       ExtensionVersionNumber: {
-        'Fn::GetAtt': ['ExtensionB65DC00D22C6E', 'VersionNumber'],
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'VersionNumber'],
       },
       ResourceIdentifier: {
         'Fn::Join': [
@@ -296,12 +290,12 @@ describe('appconfig', () => {
     appconfig.onDeploymentStep(new LambdaDestination(func));
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Extension', {
-      Name: 'Extension28486',
+      Name: 'MyAppConfig-Extension',
       Actions: {
         ON_DEPLOYMENT_STEP: [
           {
-            Name: 'Extension28486',
-            RoleArn: { 'Fn::GetAtt': ['Extension28486RoleFD36712B5D791', 'Arn'] },
+            Name: 'MyAppConfig-Extension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyAppConfigExtensionF845ERole0D30970E5A7E5', 'Arn'] },
             Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
           },
         ],
@@ -309,10 +303,10 @@ describe('appconfig', () => {
     });
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ExtensionAssociation', {
       ExtensionIdentifier: {
-        'Fn::GetAtt': ['Extension28486EB468E25', 'Id'],
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'Id'],
       },
       ExtensionVersionNumber: {
-        'Fn::GetAtt': ['Extension28486EB468E25', 'VersionNumber'],
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'VersionNumber'],
       },
       ResourceIdentifier: {
         'Fn::Join': [
@@ -346,12 +340,12 @@ describe('appconfig', () => {
     appconfig.onDeploymentComplete(new LambdaDestination(func));
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Extension', {
-      Name: 'Extension32166',
+      Name: 'MyAppConfig-Extension',
       Actions: {
         ON_DEPLOYMENT_COMPLETE: [
           {
-            Name: 'Extension32166',
-            RoleArn: { 'Fn::GetAtt': ['Extension32166RoleFD367EE1FF117', 'Arn'] },
+            Name: 'MyAppConfig-Extension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyAppConfigExtensionF845ERole0D30970E5A7E5', 'Arn'] },
             Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
           },
         ],
@@ -359,10 +353,10 @@ describe('appconfig', () => {
     });
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ExtensionAssociation', {
       ExtensionIdentifier: {
-        'Fn::GetAtt': ['Extension32166E58405A0', 'Id'],
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'Id'],
       },
       ExtensionVersionNumber: {
-        'Fn::GetAtt': ['Extension32166E58405A0', 'VersionNumber'],
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'VersionNumber'],
       },
       ResourceIdentifier: {
         'Fn::Join': [
@@ -396,12 +390,12 @@ describe('appconfig', () => {
     appconfig.onDeploymentBaking(new LambdaDestination(func));
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Extension', {
-      Name: 'Extension1CAD4',
+      Name: 'MyAppConfig-Extension',
       Actions: {
         ON_DEPLOYMENT_BAKING: [
           {
-            Name: 'Extension1CAD4',
-            RoleArn: { 'Fn::GetAtt': ['Extension1CAD4RoleFD367FC09E8DE', 'Arn'] },
+            Name: 'MyAppConfig-Extension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyAppConfigExtensionF845ERole0D30970E5A7E5', 'Arn'] },
             Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
           },
         ],
@@ -409,10 +403,10 @@ describe('appconfig', () => {
     });
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ExtensionAssociation', {
       ExtensionIdentifier: {
-        'Fn::GetAtt': ['Extension1CAD47F07C609', 'Id'],
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'Id'],
       },
       ExtensionVersionNumber: {
-        'Fn::GetAtt': ['Extension1CAD47F07C609', 'VersionNumber'],
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'VersionNumber'],
       },
       ResourceIdentifier: {
         'Fn::Join': [
@@ -446,12 +440,12 @@ describe('appconfig', () => {
     appconfig.onDeploymentRolledBack(new LambdaDestination(func));
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Extension', {
-      Name: 'ExtensionC8347',
+      Name: 'MyAppConfig-Extension',
       Actions: {
         ON_DEPLOYMENT_ROLLED_BACK: [
           {
-            Name: 'ExtensionC8347',
-            RoleArn: { 'Fn::GetAtt': ['ExtensionC8347RoleFD36716A1DE61', 'Arn'] },
+            Name: 'MyAppConfig-Extension-0',
+            RoleArn: { 'Fn::GetAtt': ['MyAppConfigExtensionF845ERole0D30970E5A7E5', 'Arn'] },
             Uri: 'arn:lambda:us-east-1:123456789012:function:my-function',
           },
         ],
@@ -459,10 +453,10 @@ describe('appconfig', () => {
     });
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ExtensionAssociation', {
       ExtensionIdentifier: {
-        'Fn::GetAtt': ['ExtensionC83470CE85F6C', 'Id'],
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'Id'],
       },
       ExtensionVersionNumber: {
-        'Fn::GetAtt': ['ExtensionC83470CE85F6C', 'VersionNumber'],
+        'Fn::GetAtt': ['MyAppConfigExtensionF845EC11D4079', 'VersionNumber'],
       },
       ResourceIdentifier: {
         'Fn::Join': [

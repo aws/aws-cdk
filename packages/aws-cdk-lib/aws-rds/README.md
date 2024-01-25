@@ -491,6 +491,33 @@ const gp3Instance = new rds.DatabaseInstance(this, 'Gp3Instance', {
 });
 ```
 
+Use the `allocatedStorage` property to specify the amount of storage (in gigabytes) that is initially allocated for the instance 
+to use for the instance:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// Setting allocatedStorage for DatabaseInstance
+const iopsInstance = new rds.DatabaseInstance(this, 'IopsInstance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  vpc,
+  storageType: rds.StorageType.IO1,
+  iops: 5000,
+  allocatedStorage: 500,
+});
+
+// Setting allocatedStorage for DatabaseInstance replica
+// Note: If allocatedStorage isn't set here, the replica instance will inherit the allocatedStorage of the source instance
+declare const sourceInstance: rds.DatabaseInstance;
+new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
+  sourceDatabaseInstance: sourceInstance,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+  vpc,
+  allocatedStorage: 500,
+});
+```
+
+
 Use the `caCertificate` property to specify the [CA certificates](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html)
 to use for the instance:
 
@@ -518,11 +545,13 @@ new rds.DatabaseInstance(this, 'Instance', {
 
 ## Setting Public Accessibility
 
-You can set public accessibility for the database instance or cluster using the `publiclyAccessible` property.
+You can set public accessibility for the `DatabaseInstance` or the `ClusterInstance` using the `publiclyAccessible` property.
 If you specify `true`, it creates an instance with a publicly resolvable DNS name, which resolves to a public IP address.
 If you specify `false`, it creates an internal instance with a DNS name that resolves to a private IP address.
-The default value depends on `vpcSubnets`.
-It will be `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise.
+
+The default value will be `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise. In the case of a
+cluster, the default value will be determined on the vpc placement of the `DatabaseCluster` otherwise it will be determined
+based on the vpc placement of standalone `DatabaseInstance`.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -538,17 +567,17 @@ new rds.DatabaseInstance(this, 'Instance', {
   publiclyAccessible: true,
 });
 
-// Setting public accessibility for DB cluster
+// Setting public accessibility for DB cluster instance
 new rds.DatabaseCluster(this, 'DatabaseCluster', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
     version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
   }),
-  instanceProps: {
-    vpc,
-    vpcSubnets: {
-      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-    },
+  writer: rds.ClusterInstance.serverlessV2('Writer', {
     publiclyAccessible: true,
+  }),
+  vpc,
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
   },
 });
 ```
@@ -786,6 +815,27 @@ proxy.grantConnect(role, 'admin'); // Grant the role connection access to the DB
 **Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html> for setup instructions.
 
+To specify the details of authentication used by a proxy to log in as a specific database
+user use the `clientPasswordAuthType` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
+  writer: rds.ClusterInstance.provisioned('writer'),
+  vpc,
+});
+
+const proxy = new rds.DatabaseProxy(this, 'Proxy', {
+  proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+  secrets: [cluster.secret!],
+  vpc,
+  clientPasswordAuthType: rds.ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD,
+});
+```
+
 ### Cluster
 
 The following example shows granting connection access for an IAM role to an Aurora Cluster.
@@ -818,7 +868,10 @@ Directory Services.
 ```ts
 declare const vpc: ec2.Vpc;
 const role = new iam.Role(this, 'RDSDirectoryServicesRole', {
-  assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+  assumedBy: new iam.CompositePrincipal(
+    new iam.ServicePrincipal('rds.amazonaws.com'),
+    new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
+  ),
   managedPolicies: [
     iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
   ],
@@ -831,7 +884,32 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
 });
 ```
 
-**Note**: In addition to the setup above, you need to make sure that the database instance has network connectivity
+You can also use the Kerberos authentication for an Aurora database cluster.
+
+```ts
+declare const vpc: ec2.Vpc;
+const iamRole = new iam.Role(this, 'Role', {
+  assumedBy: new iam.CompositePrincipal(
+    new iam.ServicePrincipal('rds.amazonaws.com'),
+    new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
+  ),
+  managedPolicies: [
+    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
+  ],
+});
+
+new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_05_1 }),
+  writer: rds.ClusterInstance.provisioned('Instance', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+  }),
+  vpc,
+  domain: 'd-????????', // The ID of the domain for the cluster to join.
+  domainRole: iamRole, // Optional - will be created automatically if not provided.
+});
+```
+
+**Note**: In addition to the setup above, you need to make sure that the database instance or cluster has network connectivity
 to the domain controllers. This includes enabling cross-VPC traffic if in a different VPC and setting up the
 appropriate security groups/network ACL to allow traffic between the database instance and domain controllers.
 Once configured, see <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html> for details
@@ -936,6 +1014,11 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   // ...
 });
 
+// When 'cloudwatchLogsExports' is set, each export value creates its own log group in DB cluster. 
+// Specify an export value to access its log group.
+const errorLogGroup = cluster.cloudwatchLogGroups['error'];
+const auditLogGroup = cluster.cloudwatchLogGroups.audit;
+
 // Exporting logs from an instance
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({
@@ -943,8 +1026,13 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   }),
   vpc,
   cloudwatchLogsExports: ['postgresql'], // Export the PostgreSQL logs
+  cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS, // Optional - default is to never expire logs
   // ...
 });
+
+// When 'cloudwatchLogsExports' is set, each export value creates its own log group in DB instance. 
+// Specify an export value to access its log group.
+const postgresqlLogGroup = instance.cloudwatchLogGroups['postgresql'];
 ```
 
 ## Option Groups
@@ -1040,6 +1128,8 @@ const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
     autoPause: Duration.minutes(10), // default is to pause after 5 minutes of idle time
     minCapacity: rds.AuroraCapacityUnit.ACU_8, // default is 2 Aurora capacity units (ACUs)
     maxCapacity: rds.AuroraCapacityUnit.ACU_32, // default is 16 Aurora capacity units (ACUs)
+    timeout: Duration.seconds(100), // default is 5 minutes
+    timeoutAction: rds.TimeoutAction.FORCE_APPLY_CAPACITY_CHANGE // default is ROLLBACK_CAPACITY_CHANGE
   }
 });
 ```

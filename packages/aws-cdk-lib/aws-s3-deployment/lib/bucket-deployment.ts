@@ -1,6 +1,5 @@
 
 import * as fs from 'fs';
-import * as path from 'path';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
 import { ISource, SourceConfig, Source } from './source';
@@ -12,6 +11,7 @@ import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
+import { BucketDeploymentSingletonFunction } from '../../custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
 // tag key has a limit of 128 characters
@@ -112,8 +112,16 @@ export interface BucketDeploymentProps {
    * The number of days that the lambda function's log events are kept in CloudWatch Logs.
    *
    * @default logs.RetentionDays.INFINITE
+   * @deprecated Use logGroup for full control over the custom resource log group
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * The Log Group used for logging of events emitted by the custom resource's lambda function.
+   *
+   * @default - a default log group created by AWS Lambda
+   */
+  readonly logGroup?: logs.ILogGroup;
 
   /**
    * The amount of memory (in MiB) to allocate to the AWS Lambda function which
@@ -316,18 +324,15 @@ export class BucketDeployment extends Construct {
     }
 
     const mountPath = `/mnt${accessPointPath}`;
-    const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
+    const handler = new BucketDeploymentSingletonFunction(this, 'CustomResourceHandler', {
       uuid: this.renderSingletonUuid(props.memoryLimit, props.ephemeralStorageSize, props.vpc),
-      code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-s3-deployment', 'bucket-deployment-handler')),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
-      runtime: lambda.Runtime.PYTHON_3_9,
       environment: {
         ...props.useEfs ? { MOUNT_PATH: mountPath } : undefined,
         // Override the built-in CA bundle from the AWS CLI with the Lambda-curated one
         // This is necessary to make the CLI work in ADC regions.
         AWS_CA_BUNDLE: '/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem',
       },
-      handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
@@ -339,7 +344,10 @@ export class BucketDeployment extends Construct {
         accessPoint,
         mountPath,
       ) : undefined,
-      logRetention: props.logRetention,
+      // props.logRetention is deprecated, make sure we only set it if it is actually provided
+      // otherwise jsii will print warnings even for users that don't use this directly
+      ...(props.logRetention ? { logRetention: props.logRetention } : {}),
+      logGroup: props.logGroup,
     });
 
     const handlerRole = handler.role;

@@ -200,6 +200,68 @@ describe('For alarm-based rollbacks', () => {
   });
 });
 
+describe('When specifying a task definition revision', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+  });
+
+  test('specifies the revision if set to something other than latest', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    });
+
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.ECS,
+      },
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200,
+      taskDefinitionRevision: ecs.TaskDefinitionRevision.of(1),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      TaskDefinition: 'FargateTaskDef:1',
+    });
+  });
+
+  test('omits the revision if set to latest', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    });
+
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.ECS,
+      },
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200,
+      taskDefinitionRevision: ecs.TaskDefinitionRevision.LATEST,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      TaskDefinition: 'FargateTaskDef',
+    });
+  });
+});
+
 test.each([
   /* breaker, flag => controller in template */
   /* Flag off => value present if circuitbreaker */
@@ -234,5 +296,42 @@ test.each([
   const template = Template.fromStack(stack);
   template.hasResourceProperties('AWS::ECS::Service', {
     DeploymentController: controllerInTemplate ? { Type: 'ECS' } : Match.absent(),
+  });
+});
+
+test.each([
+  [true, true],
+  [false, false],
+  [undefined, undefined],
+])('circuitBreaker.enable is %p and circuitBreaker.rollback is %p', (enable, rollback) => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+  taskDefinition.addContainer('web', {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  });
+
+  // WHEN
+  new ecs.FargateService(stack, 'FargateService', {
+    cluster,
+    taskDefinition,
+    circuitBreaker: {
+      enable,
+      rollback,
+    },
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::ECS::Service', {
+    DeploymentConfiguration: {
+      DeploymentCircuitBreaker: {
+        Enable: enable ?? true,
+        Rollback: rollback ?? false,
+      },
+    },
   });
 });
