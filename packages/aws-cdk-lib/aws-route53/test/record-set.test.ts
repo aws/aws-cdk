@@ -1284,15 +1284,46 @@ describe('record set', () => {
     })).toThrow('setIdentifier must be between 1 and 128 characters long, got: 129');
   });
 
-  test.each([
-    { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE) },
-    { weight: 20, region: 'us-east-1' },
-    { geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1' },
-    { multiValueAnswer: true, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE) },
-    { multiValueAnswer: true, region: 'us-east-1' },
-    { multiValueAnswer: true, weight: 20 },
-    { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1', multiValueAnswer: true },
-  ])('throw error for the simultaneous definition of weight, geoLocation and region', (props) => {
+  interface TestRecordSetProps {
+    weight?: number;
+    geoLocation?: route53.GeoLocation;
+    region?: string;
+    multiValueAnswer?: boolean;
+    cidrRoutingConfig?: route53.CidrRoutingConfig;
+  }
+
+  const generateTestCases = (): TestRecordSetProps[] => {
+    const baseProps = [
+      { name: 'weight', value: 20 },
+      { name: 'geoLocation', value: route53.GeoLocation.continent(route53.Continent.EUROPE) },
+      { name: 'region', value: 'us-east-1' },
+      { name: 'multiValueAnswer', value: true },
+      { name: 'cidrRoutingConfig', value: { locationName: '*' } },
+    ];
+
+    const testCases: TestRecordSetProps[] = [];
+
+    for (let i = 0; i < baseProps.length; i++) {
+      for (let j = i + 1; j < baseProps.length; j++) {
+        const testCase = {};
+        testCase[baseProps[i].name] = baseProps[i].value;
+        testCase[baseProps[j].name] = baseProps[j].value;
+        testCases.push(testCase);
+      }
+    }
+
+    testCases.push({
+      weight: 20,
+      geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE),
+      region: 'us-east-1',
+      cidrRoutingConfig: { locationName: '*' },
+      multiValueAnswer: true,
+    });
+
+    return testCases;
+  };
+
+  test.each(generateTestCases())('throw error for the simultaneous definition of weight, geoLocation, cidrRoutingConfig and region', (props) => {
     // GIVEN
     const stack = new Stack();
 
@@ -1306,7 +1337,7 @@ describe('record set', () => {
       target: route53.RecordTarget.fromValues('zzz'),
       setIdentifier: 'uniqueId',
       ...props,
-    })).toThrow('Only one of region, weight, multiValueAnswer or geoLocation can be defined');
+    })).toThrow('Only one of region, weight, multiValueAnswer, cidrRoutingConfig or geoLocation can be defined');
   });
 
   test('throw error for the definition of setIdentifier without weight, geoLocation or region', () => {
@@ -1375,6 +1406,288 @@ describe('record set', () => {
       target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
       multiValueAnswer: true,
     })).toThrow('multiValueAnswer cannot be specified for alias record');
+  });
+
+  describe('IP-based routing', () => {
+    test('default location', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+      // WHEN
+      new route53.RecordSet(stack, 'RecordSet', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.A,
+        target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+        cidrRoutingConfig: {
+          locationName: '*',
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+        Name: 'www.myzone.',
+        Type: 'A',
+        HostedZoneId: {
+          Ref: 'HostedZoneDB99F866',
+        },
+        ResourceRecords: [
+          '1.2.3.4',
+        ],
+        TTL: '1800',
+        SetIdentifier: {
+          'Fn::Join': [
+            '',
+            [
+              'IP_',
+              {
+                Ref: 'RecordSetCidrCollection75663C98',
+              },
+              '_*_ID_RecordSet',
+            ],
+          ],
+        },
+        CidrRoutingConfig: {
+          CollectionId: {
+            Ref: 'RecordSetCidrCollection75663C98',
+          },
+          LocationName: '*',
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::CidrCollection', {
+        Name: 'RecordSet',
+      });
+    });
+
+    test('specify cidrList', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+      // WHEN
+      new route53.RecordSet(stack, 'RecordSet', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.A,
+        target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+        cidrRoutingConfig: {
+          locationName: 'myLocation',
+          cidrList: ['1.100.1.0/24', '1.101.1.0/24'],
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+        Name: 'www.myzone.',
+        Type: 'A',
+        HostedZoneId: {
+          Ref: 'HostedZoneDB99F866',
+        },
+        ResourceRecords: [
+          '1.2.3.4',
+        ],
+        TTL: '1800',
+        SetIdentifier: {
+          'Fn::Join': [
+            '',
+            [
+              'IP_',
+              {
+                Ref: 'RecordSetCidrCollection75663C98',
+              },
+              '_myLocation_ID_RecordSet',
+            ],
+          ],
+        },
+        CidrRoutingConfig: {
+          CollectionId: {
+            Ref: 'RecordSetCidrCollection75663C98',
+          },
+          LocationName: 'myLocation',
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::CidrCollection', {
+        Name: 'RecordSet',
+        Locations: [
+          {
+            CidrList: [
+              '1.100.1.0/24',
+              '1.101.1.0/24',
+            ],
+            LocationName: 'myLocation',
+          },
+        ],
+      });
+    });
+
+    test('specify collectionName', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+      // WHEN
+      new route53.RecordSet(stack, 'RecordSet', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.A,
+        target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+        cidrRoutingConfig: {
+          locationName: '*',
+          collectionName: 'myCollection',
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+        Name: 'www.myzone.',
+        Type: 'A',
+        HostedZoneId: {
+          Ref: 'HostedZoneDB99F866',
+        },
+        ResourceRecords: [
+          '1.2.3.4',
+        ],
+        TTL: '1800',
+        SetIdentifier: {
+          'Fn::Join': [
+            '',
+            [
+              'IP_',
+              {
+                Ref: 'RecordSetCidrCollection75663C98',
+              },
+              '_*_ID_RecordSet',
+            ],
+          ],
+        },
+        CidrRoutingConfig: {
+          CollectionId: {
+            Ref: 'RecordSetCidrCollection75663C98',
+          },
+          LocationName: '*',
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::CidrCollection', {
+        Name: 'myCollection',
+      });
+    });
+
+    test('throw error for the locationName length > 16', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+      // THEN
+      expect(() => new route53.RecordSet(stack, 'RecordSet', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.A,
+        target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+        cidrRoutingConfig: {
+          locationName: 'a'.repeat(17),
+          cidrList: ['192.168.1.0/24'],
+        },
+      })).toThrow('locationName must be between 1 and 16 characters long, got: 17');
+    });
+
+    test('throw error for the definition of cidrList for default location', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+      // THEN
+      expect(() => new route53.RecordSet(stack, 'RecordSet', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.A,
+        target: route53.RecordTarget.fromIpAddresses('192.168.1.0/24'),
+        cidrRoutingConfig: {
+          locationName: '*',
+          cidrList: ['192.168.1.0/24'],
+        },
+      })).toThrow('cidrList can only be specified for non-default locations');
+    });
+
+    test.each(['test#', '*123'])('throw error for the definition of invalid locationName %s', (locationName: string) => {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+      // THEN
+      expect(() => new route53.RecordSet(stack, 'RecordSet', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.A,
+        target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+        cidrRoutingConfig: {
+          locationName,
+          cidrList: ['192.168.1.0/24'],
+        },
+      })).toThrow(`locationName must only contain alphanumeric characters, underscores, and hyphens, or only '*', got: ${locationName}`);
+    });
+
+    test.each([0, 1001])('throw error for the invalid cidrList length %s', (length: number) => {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+      // THEN
+      expect(() => new route53.RecordSet(stack, 'RecordSet', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.A,
+        target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+        cidrRoutingConfig: {
+          locationName: 'myLocation',
+          cidrList: Array(length).fill('192.168.1.0/24'),
+        },
+      })).toThrow(`cidrList must contain between 1 and 1000 elements, got: ${length}`);
+    });
+
+    test('throw error for the invalid collectionName length > 64', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+      // THEN
+      expect(() => new route53.RecordSet(stack, 'RecordSet', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.A,
+        target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+        cidrRoutingConfig: {
+          locationName: 'myLocation',
+          collectionName: 'a'.repeat(65),
+        },
+      })).toThrow('collectionName must be between 1 and 64 characters long, got: 65');
+    });
+
+    test('throw error for the invalid collectionName', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+      // THEN
+      expect(() => new route53.RecordSet(stack, 'RecordSet', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.A,
+        target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+        cidrRoutingConfig: {
+          locationName: 'myLocation',
+          collectionName: 'test#',
+        },
+      })).toThrow('collectionName must only contain alphanumeric characters, underscores, and hyphens, got: test#');
+    });
   });
 });
 
