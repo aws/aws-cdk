@@ -601,12 +601,12 @@ const dist = new cloudfront.Distribution(this, 'myDist', {
 // Retrieving additional distribution metrics
 const latencyMetric = dist.metricOriginLatency();
 const cacheHitRateMetric = dist.metricCacheHitRate();
-const http401ErrorRateMetric = dist.metricHttp401ErrorRate();
-const http403ErrorRateMetric = dist.metricHttp403ErrorRate();
-const http404ErrorRateMetric = dist.metricHttp404ErrorRate();
-const http502ErrorRateMetric = dist.metricHttp502ErrorRate();
-const http503ErrorRateMetric = dist.metricHttp503ErrorRate();
-const http504ErrorRateMetric = dist.metricHttp504ErrorRate();
+const http401ErrorRateMetric = dist.metric401ErrorRate();
+const http403ErrorRateMetric = dist.metric403ErrorRate();
+const http404ErrorRateMetric = dist.metric404ErrorRate();
+const http502ErrorRateMetric = dist.metric502ErrorRate();
+const http503ErrorRateMetric = dist.metric503ErrorRate();
+const http504ErrorRateMetric = dist.metric504ErrorRate();
 ```
 
 ### HTTP Versions
