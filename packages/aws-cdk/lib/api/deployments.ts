@@ -199,6 +199,13 @@ export interface DeployStackOptions {
    * @default true To remain backward compatible.
    */
   readonly assetParallelism?: boolean;
+
+  /**
+   * Whether to deploy if the app contains no stacks.
+   *
+   * @default false
+   */
+  ignoreNoStacks?: boolean;
 }
 
 interface AssetOptions {
@@ -308,6 +315,13 @@ export class Deployments {
   constructor(private readonly props: DeploymentsProps) {
     this.sdkProvider = props.sdkProvider;
     this.environmentResources = new EnvironmentResourcesRegistry(props.toolkitStackName);
+  }
+
+  /**
+   * Resolves the environment for a stack.
+   */
+  public async resolveEnvironment(stack: cxapi.CloudFormationStackArtifact): Promise<cxapi.Environment> {
+    return this.sdkProvider.resolveEnvironment(stack.environment);
   }
 
   public async readCurrentTemplateWithNestedStacks(
@@ -463,7 +477,7 @@ export class Deployments {
       throw new Error(`The stack ${stack.displayName} does not have an environment`);
     }
 
-    const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment);
+    const resolvedEnvironment = await this.resolveEnvironment(stack);
 
     // Substitute any placeholders with information about the current environment
     const arns = await replaceEnvPlaceholders({

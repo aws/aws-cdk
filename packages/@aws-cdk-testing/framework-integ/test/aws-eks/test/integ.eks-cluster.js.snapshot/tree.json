@@ -5541,7 +5541,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "s3Key": "61942cf3327d6ed09088c3ef6dc3323ede4f78254d605dda7068fd1de5dd704f.zip"
+                          "s3Key": "1b5aaa158e02216aa983cbf998d740faf1176f70b3769f77295e9bd20f543edf.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -5673,7 +5673,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "s3Key": "61942cf3327d6ed09088c3ef6dc3323ede4f78254d605dda7068fd1de5dd704f.zip"
+                          "s3Key": "1b5aaa158e02216aa983cbf998d740faf1176f70b3769f77295e9bd20f543edf.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -5896,7 +5896,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                               },
-                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+                              "s3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -6117,7 +6117,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                               },
-                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+                              "s3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -6335,7 +6335,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                               },
-                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+                              "s3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -6474,22 +6474,6 @@
                                               ]
                                             }
                                           ]
-                                        },
-                                        {
-                                          "Action": [
-                                            "logs:CreateLogDelivery",
-                                            "logs:CreateLogStream",
-                                            "logs:DeleteLogDelivery",
-                                            "logs:DescribeLogGroups",
-                                            "logs:DescribeResourcePolicies",
-                                            "logs:GetLogDelivery",
-                                            "logs:ListLogDeliveries",
-                                            "logs:PutLogEvents",
-                                            "logs:PutResourcePolicy",
-                                            "logs:UpdateLogDelivery"
-                                          ],
-                                          "Effect": "Allow",
-                                          "Resource": "*"
                                         }
                                       ],
                                       "Version": "2012-10-17"
@@ -6519,91 +6503,18 @@
                           "version": "0.0.0"
                         }
                       },
-                      "LogGroup": {
-                        "id": "LogGroup",
-                        "path": "aws-cdk-eks-cluster/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/LogGroup",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-cdk-eks-cluster/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/LogGroup/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                              "aws:cdk:cloudformation:props": {
-                                "retentionInDays": 731
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-                          "version": "0.0.0"
-                        }
-                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-cdk-eks-cluster/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
-                          "aws:cdk:cloudformation:props": {
-                            "definitionString": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":60,\"MaxAttempts\":60,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "ProviderframeworkisComplete26D7B0CB",
-                                      "Arn"
-                                    ]
-                                  },
-                                  "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
-                                  {
-                                    "Fn::GetAtt": [
-                                      "ProviderframeworkonTimeout0B47CA38",
-                                      "Arn"
-                                    ]
-                                  },
-                                  "\"}}}"
-                                ]
-                              ]
-                            },
-                            "loggingConfiguration": {
-                              "destinations": [
-                                {
-                                  "cloudWatchLogsLogGroup": {
-                                    "logGroupArn": {
-                                      "Fn::GetAtt": [
-                                        "ProviderwaiterstatemachineLogGroupDD693A98",
-                                        "Arn"
-                                      ]
-                                    }
-                                  }
-                                }
-                              ],
-                              "includeExecutionData": false,
-                              "level": "ERROR"
-                            },
-                            "roleArn": {
-                              "Fn::GetAtt": [
-                                "ProviderwaiterstatemachineRole0C7159F9",
-                                "Arn"
-                              ]
-                            }
-                          }
-                        },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.custom_resources.WaiterStateMachine",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
@@ -6664,7 +6575,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "/d8d38c6ab7d0dcc00a8db154e2ccd9ea30e8be0410e6b0a8a1ca8c8cbca9a636.json"
+                          "/c8a7b417e8c7a99a49ab10844fbaf839d1238901e86bc4cb16cf5259e5899308.json"
                         ]
                       ]
                     }
@@ -7016,7 +6927,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                               },
-                              "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+                              "s3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster/@aws-cdk--aws-eks.KubectlProvider/Provider)",
                             "environment": {
@@ -7171,7 +7082,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "/146ddc9b63ed73b366bbc659fcf2c5c0be0a93a7fa78a6530184c76989a923d5.json"
+                          "/ba7f3aa462d0d202f75798f2f3c2bb04ae16d49faed5979d5e11061df6fb1519.json"
                         ]
                       ]
                     }
@@ -7368,7 +7279,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
               "version": "0.0.0"
             }
           },
@@ -7402,7 +7313,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
               "version": "0.0.0"
             }
           },

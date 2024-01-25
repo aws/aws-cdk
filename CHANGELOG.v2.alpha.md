@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.123.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.122.0-alpha.0...v2.123.0-alpha.0) (2024-01-24)
+
+
+### Features
+
+* **iot-actions-alpha:** open search action in IoT topic rule ([#28748](https://github.com/aws/aws-cdk/issues/28748)) ([84b23cb](https://github.com/aws/aws-cdk/commit/84b23cb07d421ec004e412bf48e837ae0d87f7fe))
+
+
+### Bug Fixes
+
+* **amplify:** addBranch fails synth with "cannot find entry file..." ([#28772](https://github.com/aws/aws-cdk/issues/28772)) ([cb522bb](https://github.com/aws/aws-cdk/commit/cb522bb65b03e9b0cdcbd01b4f71798e628424f4)), closes [#28658](https://github.com/aws/aws-cdk/issues/28658) [#28764](https://github.com/aws/aws-cdk/issues/28764)
+* **redshift:** enableRebootForParameterChanges fails synth with "cannot find entry file…" ([#28760](https://github.com/aws/aws-cdk/issues/28760)) ([4952f36](https://github.com/aws/aws-cdk/commit/4952f36ff70c25c7a56676fedf47ab6571c19cea))
+
+## [2.122.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.121.1-alpha.0...v2.122.0-alpha.0) (2024-01-18)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **appconfig:** `deploymentStrategyId` prop in `fromDeploymentStrategyId` now takes a `DeploymentStrategyId` rather than a `string`. To import a predefined deployment strategy id, use `DeploymentStrategyId.CANARY_10_PERCENT_20_MINUTES`. Otherwise, use `DeploymentStrategyId.fromString('abc123')`.
+* **appconfig:** `ApplicationProps.name` renamed to `ApplicationProps.applicationName`
+  - **appconfig**: `EnvironmentProps.name` renamed to `EnvironmentProps.environmentName`
+  - **appconfig**: `DeploymentStrategyProps.name` renamed to `DeploymentStrategyProps.deploymentStrategyName`
+  - **appconfig**: `ExtensionProps.name` renamed to `ExtensionProps.extensionName`
+
+### Bug Fixes
+
+* **amplify:** addBranch fails synth with "cannot find entry file..." ([#28658](https://github.com/aws/aws-cdk/issues/28658)) ([0f2b8f8](https://github.com/aws/aws-cdk/commit/0f2b8f8e329480cd35db1dc9792bff6d2f0a990a)), closes [#27955](https://github.com/aws/aws-cdk/issues/27955) [#28633](https://github.com/aws/aws-cdk/issues/28633) [#28089](https://github.com/aws/aws-cdk/issues/28089)
+* **appconfig:** fromDeploymentStrategyId takes an enum-like class rather than a string ([#28743](https://github.com/aws/aws-cdk/issues/28743)) ([2b59ed1](https://github.com/aws/aws-cdk/commit/2b59ed1b54b5b83f22020ed5f2c4b77c6a1292f8)), closes [#28671](https://github.com/aws/aws-cdk/issues/28671)
+* **appconfig:** prefix names with resource name ([#28742](https://github.com/aws/aws-cdk/issues/28742)) ([3960720](https://github.com/aws/aws-cdk/commit/396072025ea1282dd28e14158afe339c393bf0d5)), closes [#28671](https://github.com/aws/aws-cdk/issues/28671)
+
+## [2.121.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.121.0-alpha.0...v2.121.1-alpha.0) (2024-01-13)
+
+## [2.121.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.120.0-alpha.0...v2.121.0-alpha.0) (2024-01-12)
+
+## [2.120.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.119.0-alpha.0...v2.120.0-alpha.0) (2024-01-12)
+
+## [2.119.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.118.0-alpha.0...v2.119.0-alpha.0) (2024-01-11)
+
+
+### Features
+
+* **neptune-alpha:** engineVersion v1.3 ([#28647](https://github.com/aws/aws-cdk/issues/28647)) ([957598b](https://github.com/aws/aws-cdk/commit/957598b5fe08298a9ab52a1d0b2069d6a73d59c0)), closes [#28648](https://github.com/aws/aws-cdk/issues/28648)
+
 ## [2.118.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.117.0-alpha.0...v2.118.0-alpha.0) (2024-01-03)
 
 

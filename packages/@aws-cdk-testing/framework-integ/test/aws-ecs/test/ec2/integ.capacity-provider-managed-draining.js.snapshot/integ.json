@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "CapacityProviders/DefaultTest": {
+      "stacks": [
+        "integ-ec2-capacity-provider-managed-draining"
+      ],
+      "assertionStack": "CapacityProviders/DefaultTest/DeployAssert",
+      "assertionStackName": "CapacityProvidersDefaultTestDeployAssert30F9785A"
+    }
+  }
+}
