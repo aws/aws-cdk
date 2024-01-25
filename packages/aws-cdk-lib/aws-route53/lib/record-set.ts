@@ -243,7 +243,7 @@ export interface Location {
 
 export interface CidrRoutingConfig {
   collectionName?: string;
-  locations: Location[];
+  location: Location;
   collection?: CfnCidrCollection;
 }
 
@@ -306,6 +306,10 @@ export class RecordSet extends Resource implements IRecordSet {
   private readonly weight?: number;
   private readonly region?: string;
   private readonly multiValueAnswer?: boolean;
+  private readonly cidrRoutingConfig?: {
+    collectionId: string;
+    locationName: string;
+  };
 
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
@@ -342,6 +346,31 @@ export class RecordSet extends Resource implements IRecordSet {
 
     const recordName = determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone);
 
+    if (props.cidrRoutingConfig) {
+      const locationName = props.cidrRoutingConfig.location.locationName ?? '';
+      if (props.cidrRoutingConfig.collection) {
+        // 与えられたcollectionにlocationを追加する
+        const collection = props.cidrRoutingConfig.collection.node.defaultChild as CfnCidrCollection;
+        collection.addOverride('Properties.Locations', [{
+          cidrList: props.cidrRoutingConfig.location.cidrList,
+          locationName,
+        }]);
+      } else {
+        const collection = props.cidrRoutingConfig.collection ?? new CfnCidrCollection(this, 'CidrCollection', {
+          name: props.cidrRoutingConfig.collectionName ?? Names.uniqueId(this),
+          locations: [{
+            cidrList: props.cidrRoutingConfig.location.cidrList,
+            locationName,
+          }],
+        });
+
+        this.cidrRoutingConfig = {
+          collectionId: collection.ref,
+          locationName,
+        };
+      }
+    }
+
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
       name: recordName,
@@ -359,6 +388,7 @@ export class RecordSet extends Resource implements IRecordSet {
       setIdentifier: props.setIdentifier ?? this.configureSetIdentifier(),
       weight: props.weight,
       region: props.region,
+      cidrRoutingConfig: this.cidrRoutingConfig,
     });
 
     this.domainName = recordSet.ref;
