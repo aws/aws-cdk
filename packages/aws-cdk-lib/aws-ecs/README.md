@@ -277,6 +277,20 @@ cluster.addCapacity('graviton-cluster', {
 });
 ```
 
+### Amazon Linux 2 (Neuron) Instances
+
+To launch Amazon EC2 Inf1, Trn1 or Inf2 instances, you can use the Amazon ECS optimized Amazon Linux 2 (Neuron) AMI. It comes pre-configured with AWS Inferentia and AWS Trainium drivers and the AWS Neuron runtime for Docker which makes running machine learning inference workloads easier on Amazon ECS.
+
+```ts
+declare const cluster: ecs.Cluster;
+
+cluster.addCapacity('neuron-cluster', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('inf1.xlarge'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.NEURON),
+});
+```
+
 ### Spot Instances
 
 To add spot instances into the cluster, you must specify the `spotPrice` in the `ecs.AddCapacityOptions` and optionally enable the `spotInstanceDraining` property.
@@ -693,9 +707,13 @@ new ecs.ExternalService(this, 'Service', {
 ### Deployment circuit breaker and rollback
 
 Amazon ECS [deployment circuit breaker](https://aws.amazon.com/tw/blogs/containers/announcing-amazon-ecs-deployment-circuit-breaker/)
-automatically rolls back unhealthy service deployments without the need for manual intervention. Use `circuitBreaker` to enable
-deployment circuit breaker and optionally enable `rollback` for automatic rollback. See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html)
-for more details.
+automatically rolls back unhealthy service deployments, eliminating the need for manual intervention.
+
+Use `circuitBreaker` to enable the deployment circuit breaker which determines whether a service deployment
+will fail if the service can't reach a steady state.
+You can optionally enable `rollback` for automatic rollback.
+
+See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html) for more details.
 
 ```ts
 declare const cluster: ecs.Cluster;
@@ -703,7 +721,10 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
-  circuitBreaker: { rollback: true },
+  circuitBreaker: {
+    enable: true,
+    rollback: true
+  },
 });
 ```
 
@@ -1629,6 +1650,89 @@ const customService = new ecs.FargateService(this, 'CustomizedService', {
     ],
   },
 });
+```
+
+## ServiceManagedVolume
+
+Amazon ECS now supports the attachment of Amazon Elastic Block Store (EBS) volumes to ECS tasks,
+allowing you to utilize persistent, high-performance block storage with your ECS services. 
+This feature supports various use cases, such as using EBS volumes as extended ephemeral storage or 
+loading data from EBS snapshots. 
+You can also specify `encrypted: true` so that ECS will manage the KMS key. If you want to use your own KMS key, you may do so by providing both `encrypted: true` and `kmsKeyId`.
+
+You can only attach a single volume for each task in the ECS Service.
+
+To add an empty EBS Volume to an ECS Service, call service.addVolume().
+
+```ts
+declare const cluster: ecs.Cluster;
+const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
+
+const container = taskDefinition.addContainer('web', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  portMappings: [{
+    containerPort: 80,
+    protocol: ecs.Protocol.TCP,
+  }],
+});
+
+const volume = new ecs.ServiceManagedVolume(this, 'EBSVolume', {
+  name: 'ebs1',
+  managedEBSVolume: {
+    size: Size.gibibytes(15),
+    volumeType: ec2.EbsDeviceVolumeType.GP3,
+    fileSystemType: ecs.FileSystemType.XFS,
+    tagSpecifications: [{
+      tags: {
+        purpose: 'production',
+      },
+      propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
+    }],
+  },
+});
+
+volume.mountIn(container, {
+  containerPath: '/var/lib',
+  readOnly: false,
+});
+
+taskDefinition.addVolume(volume);
+
+const service = new ecs.FargateService(this, 'FargateService', {
+  cluster,
+  taskDefinition,
+});
+
+service.addVolume(volume);
+```
+
+To create an EBS volume from an existing snapshot by specifying the `snapShotId` while adding a volume to the service.
+
+```ts
+declare const container: ecs.ContainerDefinition;
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const volumeFromSnapshot = new ecs.ServiceManagedVolume(this, 'EBSVolume', {
+  name: 'nginx-vol',
+  managedEBSVolume: {
+    snapShotId: 'snap-066877671789bd71b',
+    volumeType: ec2.EbsDeviceVolumeType.GP3,
+    fileSystemType: ecs.FileSystemType.XFS,
+  },
+});
+
+volumeFromSnapshot.mountIn(container, {
+  containerPath: '/var/lib',
+  readOnly: false,
+});
+taskDefinition.addVolume(volumeFromSnapshot);
+const service = new ecs.FargateService(this, 'FargateService', {
+  cluster,
+  taskDefinition,
+});
+
+service.addVolume(volumeFromSnapshot);
 ```
 
 ## Enable pseudo-terminal (TTY) allocation

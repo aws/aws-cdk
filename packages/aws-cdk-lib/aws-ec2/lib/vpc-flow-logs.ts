@@ -99,6 +99,26 @@ export abstract class FlowLogResourceType {
   }
 
   /**
+   * The Transit Gateway to attach the Flow Log to
+   */
+  public static fromTransitGatewayId(id: string): FlowLogResourceType {
+    return {
+      resourceType: 'TransitGateway',
+      resourceId: id,
+    };
+  };
+
+  /**
+   * The Transit Gateway Attachment to attach the Flow Log to
+   */
+  public static fromTransitGatewayAttachmentId(id: string): FlowLogResourceType {
+    return {
+      resourceType: 'TransitGatewayAttachment',
+      resourceId: id,
+    };
+  };
+
+  /**
    * The type of resource to attach a flow log to.
    */
   public abstract resourceType: string;
@@ -659,6 +679,9 @@ export class LogFormat {
 export interface FlowLogOptions {
   /**
    * The type of traffic to log. You can log traffic that the resource accepts or rejects, or all traffic.
+   * When the target is either `TransitGateway` or `TransitGatewayAttachment`, setting the traffic type is not possible.
+   *
+   * @see https://docs.aws.amazon.com/vpc/latest/tgw/working-with-flow-logs.html
    *
    * @default ALL
    */
@@ -688,7 +711,12 @@ export interface FlowLogOptions {
    * The maximum interval of time during which a flow of packets is captured
    * and aggregated into a flow log record.
    *
-   * @default FlowLogMaxAggregationInterval.TEN_MINUTES
+   * When creating flow logs for a Transit Gateway or Transit Gateway Attachment,
+   * this property must be ONE_MINUTES.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-flowlog.html#cfn-ec2-flowlog-maxaggregationinterval
+   *
+   * @default - FlowLogMaxAggregationInterval.ONE_MINUTES if creating flow logs for Transit Gateway, otherwise FlowLogMaxAggregationInterval.TEN_MINUTES.
    */
   readonly maxAggregationInterval?: FlowLogMaxAggregationInterval;
 }
@@ -800,6 +828,17 @@ export class FlowLog extends FlowLogBase {
       }).join(' ');
     }
 
+    let trafficType: FlowLogTrafficType | undefined = props.trafficType ?? FlowLogTrafficType.ALL;
+    if (props.resourceType.resourceType === 'TransitGateway' || props.resourceType.resourceType === 'TransitGatewayAttachment') {
+      if (props.trafficType) {
+        throw new Error('trafficType is not supported for Transit Gateway and Transit Gateway Attachment');
+      }
+      if (props.maxAggregationInterval && props.maxAggregationInterval !== FlowLogMaxAggregationInterval.ONE_MINUTE) {
+        throw new Error('maxAggregationInterval must be set to ONE_MINUTE for Transit Gateway and Transit Gateway Attachment');
+      }
+      trafficType = undefined;
+    }
+
     const flowLog = new CfnFlowLog(this, 'FlowLog', {
       destinationOptions: destinationConfig.destinationOptions,
       deliverLogsPermissionArn: this.iamRole ? this.iamRole.roleArn : undefined,
@@ -808,9 +847,7 @@ export class FlowLog extends FlowLogBase {
       maxAggregationInterval: props.maxAggregationInterval,
       resourceId: props.resourceType.resourceId,
       resourceType: props.resourceType.resourceType,
-      trafficType: props.trafficType
-        ? props.trafficType
-        : FlowLogTrafficType.ALL,
+      trafficType,
       logFormat: customLogFormat,
       logDestination,
     });
