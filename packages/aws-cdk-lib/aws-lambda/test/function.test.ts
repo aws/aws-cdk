@@ -3832,6 +3832,58 @@ describe('VPC configuration', () => {
       allowAllOutbound: false,
     })).not.toThrow();
   });
+
+  test('with ipv6AllowedForDualStack and no VPC', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      ipv6AllowedForDualStack: true,
+    })).toThrow(/Cannot configure 'ipv6AllowedForDualStack' without configuring a VPC/);
+  });
+
+  test('set ipv6AllowedForDualStack with VPC', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: true,
+      allowAllIpv6Outbound: true,
+    });
+    new lambda.Function(stack, 'MyLambda', {
+      vpc: vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      ipv6AllowedForDualStack: true,
+      securityGroups: [securityGroup],
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties:
+      {
+        Code: { ZipFile: 'foo' },
+        Handler: 'index.handler',
+        Runtime: 'python3.9',
+        Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
+        VpcConfig: {
+          Ipv6AllowedForDualStack: true,
+          SecurityGroupIds: [
+            { 'Fn::GetAtt': ['LambdaSG9DBFCFB7', 'GroupId'] },
+          ],
+          SubnetIds: [
+            { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+            { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+          ],
+        },
+      },
+    });
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {
