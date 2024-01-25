@@ -225,6 +225,19 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @default - the Vpc default strategy if not specified
    */
+  readonly ipv6AllowedForDualStack?: boolean;
+
+  /**
+   * Where to place the network interfaces within the VPC.
+   *
+   * This requires `vpc` to be specified in order for interfaces to actually be
+   * placed in the subnets. If `vpc` is not specify, this will raise an error.
+   *
+   * Note: Internet access for Lambda Functions requires a NAT Gateway, so picking
+   * public subnets is not allowed (unless `allowPublicSubnet` is set to `true`).
+   *
+   * @default - the Vpc default strategy if not specified
+   */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
@@ -1405,6 +1418,9 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       if (props.vpcSubnets) {
         throw new Error('Cannot configure \'vpcSubnets\' without configuring a VPC');
       }
+      if (props.ipv6AllowedForDualStack) {
+        throw new Error('Cannot configure \'ipv6AllowedForDualStack\' without configuring a VPC');
+      }
       return undefined;
     }
 
@@ -1441,6 +1457,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       }
     }
 
+    const ipv6AllowedForDualStack = props.ipv6AllowedForDualStack ?? false;
     const allowPublicSubnet = props.allowPublicSubnet ?? false;
     const selectedSubnets = props.vpc.selectSubnets(props.vpcSubnets);
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
@@ -1457,6 +1474,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     // making VpcNetwork do the selection again.
 
     return {
+      ipv6AllowedForDualStack: ipv6AllowedForDualStack,
       subnetIds: selectedSubnets.subnetIds,
       securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
     };
