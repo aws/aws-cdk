@@ -200,6 +200,9 @@ export interface RecordSetOptions {
    */
   readonly weight?: number;
 
+  /**
+   * 
+   */
   readonly cidrRoutingConfig?: CidrRoutingConfig;
 
   /**
@@ -242,8 +245,8 @@ export interface Location {
 }
 
 export interface CidrRoutingConfig {
-  collectionName?: string;
   location: Location;
+  collectionName?: string;
   collection?: CfnCidrCollection;
 }
 
@@ -348,27 +351,31 @@ export class RecordSet extends Resource implements IRecordSet {
 
     if (props.cidrRoutingConfig) {
       const locationName = props.cidrRoutingConfig.location.locationName ?? '';
+      let collection: CfnCidrCollection | undefined;
+
       if (props.cidrRoutingConfig.collection) {
         // 与えられたcollectionにlocationを追加する
-        const collection = props.cidrRoutingConfig.collection.node.defaultChild as CfnCidrCollection;
-        collection.addOverride('Properties.Locations', [{
+        collection = props.cidrRoutingConfig.collection.node.defaultChild as CfnCidrCollection;
+        const existedLocations = collection.locations ?? [];
+        const locationsArray = Array.isArray(existedLocations) ? existedLocations : [existedLocations];
+        collection.addPropertyOverride('Locations', [...locationsArray, {
           cidrList: props.cidrRoutingConfig.location.cidrList,
           locationName,
         }]);
       } else {
-        const collection = props.cidrRoutingConfig.collection ?? new CfnCidrCollection(this, 'CidrCollection', {
+        collection = new CfnCidrCollection(this, 'CidrCollection', {
           name: props.cidrRoutingConfig.collectionName ?? Names.uniqueId(this),
           locations: [{
             cidrList: props.cidrRoutingConfig.location.cidrList,
             locationName,
           }],
         });
-
-        this.cidrRoutingConfig = {
-          collectionId: collection.ref,
-          locationName,
-        };
       }
+
+      this.cidrRoutingConfig = {
+        collectionId: collection.ref,
+        locationName,
+      };
     }
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
