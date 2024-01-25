@@ -159,14 +159,14 @@ describe('User Pool', () => {
     expect(() => new UserPool(stack, 'Pool5', {
       userVerification: {
         emailStyle: VerificationEmailStyle.LINK,
-        emailBody: 'invalid email body {####}',
+        emailBody: 'valid email body {####}',
       },
     })).not.toThrow();
 
     expect(() => new UserPool(stack, 'Pool6', {
       userVerification: {
         emailStyle: VerificationEmailStyle.LINK,
-        emailBody: 'invalid email body {##Verify Email##}',
+        emailBody: 'valid email body {##Verify Email##}',
       },
     })).not.toThrow();
 
@@ -187,7 +187,7 @@ describe('User Pool', () => {
     expect(() => new UserPool(stack, 'Pool9', {
       userVerification: {
         emailStyle: VerificationEmailStyle.LINK,
-        emailBody: 'invalid email body {##Click here to verify##}',
+        emailBody: 'valid email body {##Click here to verify##}',
       },
     })).not.toThrow();
   });
