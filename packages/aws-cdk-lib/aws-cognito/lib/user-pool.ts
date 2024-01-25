@@ -1047,7 +1047,11 @@ export class UserPool extends UserPoolBase {
   private verificationMessageConfiguration(props: UserPoolProps): CfnUserPool.VerificationMessageTemplateProperty {
     const CODE_TEMPLATE = '{####}';
     const VERIFY_EMAIL_TEMPLATE = '{##Verify Email##}';
-    const VERIFY_EMAIL_REGEX = /\{##[a-zA-Z0-9\s]*##\}/;
+    /**
+     * Email message placeholder regex
+     * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-verificationmessagetemplate.html#cfn-cognito-userpool-verificationmessagetemplate-emailmessagebylink
+     */
+    const VERIFY_EMAIL_REGEX = /\{##[\p{L}\p{M}\p{S}\p{N}\p{P}\s*]*##\}/u;
 
     const emailStyle = props.userVerification?.emailStyle ?? VerificationEmailStyle.CODE;
     const emailSubject = props.userVerification?.emailSubject ?? 'Verify your new account';

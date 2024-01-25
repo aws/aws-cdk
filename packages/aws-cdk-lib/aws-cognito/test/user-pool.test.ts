@@ -180,9 +180,9 @@ describe('User Pool', () => {
     expect(() => new UserPool(stack, 'Pool8', {
       userVerification: {
         emailStyle: VerificationEmailStyle.LINK,
-        emailBody: 'invalid email body {##Verify !! Email##}',
+        emailBody: 'valid email body {##Verify !! Email##}',
       },
-    })).toThrow(/Verification email body/);
+    })).not.toThrow();
 
     expect(() => new UserPool(stack, 'Pool9', {
       userVerification: {
