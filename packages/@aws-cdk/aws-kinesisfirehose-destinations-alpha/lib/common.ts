@@ -83,7 +83,7 @@ interface DestinationLoggingProps {
  *
  * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_kinesisfirehose.CfnDeliveryStream.DynamicPartitioningConfigurationProperty.html
  */
-interface DynamicPartitioningConfiguration {
+export interface IDynamicPartitioningConfiguration {
   /**
    * Specifies whether dynamic partitioning is enabled for this Kinesis Data Firehose delivery stream.
    *
@@ -172,8 +172,10 @@ export interface CommonDestinationS3Props {
    * The configuration of the dynamic partitioning mechanism that creates targeted data sets from the streaming data by partitioning it based on partition keys.
    *
    * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html
+   *
+   * @default - dynamic partitioning is disabled.
    */
-  readonly dynamicPartitioningConfiguration?: DynamicPartitioningConfiguration;
+  readonly dynamicPartitioningConfiguration?: IDynamicPartitioningConfiguration;
 }
 
 /**
