@@ -35,6 +35,13 @@ export interface StringConditions {
    * @default - None
    */
   readonly matchPrefixes?: string[];
+
+  /**
+   * Matches values that end with the specified suffixes.
+   *
+   * @default - None
+   */
+  readonly matchSuffixes?: string[];
 }
 
 /**
@@ -142,6 +149,10 @@ export class SubscriptionFilter {
 
     if (stringConditions.matchPrefixes) {
       conditions.push(...stringConditions.matchPrefixes.map(p => ({ prefix: p })));
+    }
+
+    if (stringConditions.matchSuffixes) {
+      conditions.push(...stringConditions.matchSuffixes.map(s => ({ suffix: s })));
     }
 
     return new SubscriptionFilter(conditions);

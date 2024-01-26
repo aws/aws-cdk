@@ -63,6 +63,7 @@ Flags come in three types:
 | [@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters](#aws-cdkaws-rdsauroraclusterchangescopeofinstanceparametergroupwitheachparameters) | When enabled, a scope of InstanceParameterGroup for AuroraClusterInstance with each parameters will change. | 2.97.0 | (fix) |
 | [@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials](#aws-cdkaws-rdspreventrenderingdeprecatedcredentials) | When enabled, creating an RDS database cluster from a snapshot will only render credentials for snapshot credentials. | 2.98.0 | (fix) |
 | [@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource](#aws-cdkaws-codepipeline-actionsusenewdefaultbranchforcodecommitsource) | When enabled, the CodeCommit source action is using the default branch name 'main'. | 2.103.1 | (fix) |
+| [@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction](#aws-cdkaws-cloudwatch-actionschangelambdapermissionlogicalidforlambdaaction) | When enabled, the logical ID of a Lambda permission for a Lambda action includes an alarm ID. | 2.124.0 | (fix) |
 
 <!-- END table -->
 
@@ -116,7 +117,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": true,
     "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
     "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
-    "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true
+    "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
+    "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true
   }
 }
 ```
@@ -1191,6 +1193,24 @@ However, with the activation of this feature flag, the default branch is updated
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.103.1 | `false` | `true` |
+
+
+### @aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction
+
+*When enabled, the logical ID of a Lambda permission for a Lambda action includes an alarm ID.* (fix)
+
+When this feature flag is enabled, a logical ID of `LambdaPermission` for a
+`LambdaAction` will include an alarm ID. Therefore multiple alarms for the same Lambda
+can be created with `LambdaAction`.
+
+If the flag is set to false then it can only make one alarm for the Lambda with
+`LambdaAction`.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.124.0 | `false` | `true` |
 
 
 <!-- END details -->

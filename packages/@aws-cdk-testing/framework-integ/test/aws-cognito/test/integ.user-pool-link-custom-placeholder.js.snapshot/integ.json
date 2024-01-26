@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "user-pool-link-custom-placeholder-integ-test/DefaultTest": {
+      "stacks": [
+        "integ-user-pool-link-custom-placeholder"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "user-pool-link-custom-placeholder-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "userpoollinkcustomplaceholderintegtestDefaultTestDeployAssert5C199314"
+    }
+  }
+}

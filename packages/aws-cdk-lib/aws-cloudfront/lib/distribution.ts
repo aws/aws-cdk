@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
-import { CfnDistribution } from './cloudfront.generated';
+import { CfnDistribution, CfnMonitoringSubscription } from './cloudfront.generated';
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
@@ -11,6 +11,7 @@ import { formatDistributionArn } from './private/utils';
 import { IRealtimeLogConfig } from './realtime-log-config';
 import { IResponseHeadersPolicy } from './response-headers-policy';
 import * as acm from '../../aws-certificatemanager';
+import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
@@ -255,6 +256,15 @@ export interface DistributionProps {
     * @default SSLMethod.SNI
     */
   readonly sslSupportMethod?: SSLMethod;
+
+  /**
+   * Whether to enable additional CloudWatch metrics.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/viewing-cloudfront-metrics.html
+   *
+   * @default false
+   */
+  readonly publishAdditionalMetrics?: boolean;
 }
 
 /**
@@ -298,6 +308,7 @@ export class Distribution extends Resource implements IDistribution {
 
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: acm.ICertificate;
+  private readonly publishAdditionalMetrics?: boolean;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -323,6 +334,7 @@ export class Distribution extends Resource implements IDistribution {
 
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
+    this.publishAdditionalMetrics = props.publishAdditionalMetrics;
 
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
@@ -355,6 +367,146 @@ export class Distribution extends Resource implements IDistribution {
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
+
+    if (props.publishAdditionalMetrics) {
+      new CfnMonitoringSubscription(this, 'MonitoringSubscription', {
+        distributionId: this.distributionId,
+        monitoringSubscription: {
+          realtimeMetricsSubscriptionConfig: {
+            realtimeMetricsSubscriptionStatus: 'Enabled',
+          },
+        },
+      });
+    }
+  }
+
+  /**
+   * Return the given named metric for this Distribution
+   */
+  public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      namespace: 'AWS/CloudFront',
+      metricName,
+      dimensionsMap: { DistributionId: this.distributionId },
+      ...props,
+    });
+  }
+
+  /**
+   * Metric for the total time spent from when CloudFront receives a request to when it starts providing a response to the network (not the viewer),
+   * for requests that are served from the origin, not the CloudFront cache.
+   *
+   * This is also known as first byte latency, or time-to-first-byte.
+   *
+   * To obtain this metric, you need to set `publishAdditionalMetrics` to `true`.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricOriginLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('Origin latency metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+    }
+    return this.metric('OriginLatency', props);
+  }
+
+  /**
+   * Metric for the percentage of all cacheable requests for which CloudFront served the content from its cache.
+   *
+   * HTTP POST and PUT requests, and errors, are not considered cacheable requests.
+   *
+   * To obtain this metric, you need to set `publishAdditionalMetrics` to `true`.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricCacheHitRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('Cache hit rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+    }
+    return this.metric('CacheHitRate', props);
+  }
+
+  /**
+   * Metric for the percentage of all viewer requests for which the response's HTTP status code is 401.
+   *
+   * To obtain this metric, you need to set `publishAdditionalMetrics` to `true`.
+   *
+   * @default - average over 5 minutes
+   */
+  public metric401ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('401 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+    }
+    return this.metric('401ErrorRate', props);
+  }
+
+  /**
+   * Metric for the percentage of all viewer requests for which the response's HTTP status code is 403.
+   *
+   * To obtain this metric, you need to set `publishAdditionalMetrics` to `true`.
+   *
+   * @default - average over 5 minutes
+   */
+  public metric403ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('403 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+    }
+    return this.metric('403ErrorRate', props);
+  }
+
+  /**
+   * Metric for the percentage of all viewer requests for which the response's HTTP status code is 404.
+   *
+   * To obtain this metric, you need to set `publishAdditionalMetrics` to `true`.
+   *
+   * @default - average over 5 minutes
+   */
+  public metric404ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('404 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+    }
+    return this.metric('404ErrorRate', props);
+  }
+
+  /**
+   * Metric for the percentage of all viewer requests for which the response's HTTP status code is 502.
+   *
+   * To obtain this metric, you need to set `publishAdditionalMetrics` to `true`.
+   *
+   * @default - average over 5 minutes
+   */
+  public metric502ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('502 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+    }
+    return this.metric('502ErrorRate', props);
+  }
+
+  /**
+   * Metric for the percentage of all viewer requests for which the response's HTTP status code is 503.
+   *
+   * To obtain this metric, you need to set `publishAdditionalMetrics` to `true`.
+   *
+   * @default - average over 5 minutes
+   */
+  public metric503ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('503 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+    }
+    return this.metric('503ErrorRate', props);
+  }
+
+  /**
+   * Metric for the percentage of all viewer requests for which the response's HTTP status code is 504.
+   *
+   * To obtain this metric, you need to set `publishAdditionalMetrics` to `true`.
+   *
+   * @default - average over 5 minutes
+   */
+  public metric504ErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    if (this.publishAdditionalMetrics !== true) {
+      throw new Error('504 error rate metric is only available if \'publishAdditionalMetrics\' is set \'true\'');
+    }
+    return this.metric('504ErrorRate', props);
   }
 
   /**

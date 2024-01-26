@@ -2,9 +2,6 @@
   "alexa-ask": [
     "Alexa::ASK"
   ],
-  "amzn-sdc": [
-    "AMZN::SDC"
-  ],
   "aws-accessanalyzer": [
     "AWS::AccessAnalyzer"
   ],
@@ -148,9 +145,6 @@
   ],
   "aws-codestarnotifications": [
     "AWS::CodeStarNotifications"
-  ],
-  "aws-codetest": [
-    "AWS::CodeTest"
   ],
   "aws-cognito": [
     "AWS::Cognito"
@@ -647,6 +641,9 @@
   ],
   "aws-ssmcontacts": [
     "AWS::SSMContacts"
+  ],
+  "aws-ssmguiconnect": [
+    "AWS::SSMGuiConnect"
   ],
   "aws-ssmincidents": [
     "AWS::SSMIncidents"

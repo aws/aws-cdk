@@ -97,6 +97,7 @@ export const RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS = '@aws-cdk/aws-rds:pr
 export const AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS = '@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters';
 export const APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION = '@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier';
 export const CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME = '@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource';
+export const LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION = '@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -974,6 +975,22 @@ export const FLAGS: Record<string, FlagInfo> = {
       However, with the activation of this feature flag, the default branch is updated to \'main\'.
     `,
     introducedIn: { v2: '2.103.1' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the logical ID of a Lambda permission for a Lambda action includes an alarm ID.',
+    detailsMd: `
+      When this feature flag is enabled, a logical ID of \`LambdaPermission\` for a
+      \`LambdaAction\` will include an alarm ID. Therefore multiple alarms for the same Lambda
+      can be created with \`LambdaAction\`.
+      
+      If the flag is set to false then it can only make one alarm for the Lambda with
+      \`LambdaAction\`.
+    `,
+    introducedIn: { v2: '2.124.0' },
     recommendedValue: true,
   },
 };

@@ -1,0 +1,86 @@
+{
+ "Resources": {
+  "TestKeyValueStore8D0C09A2": {
+   "Type": "AWS::CloudFront::KeyValueStore",
+   "Properties": {
+    "Comment": "A test Key Value Store for CloudFront",
+    "ImportSource": {
+     "SourceArn": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":s3:::",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/9c0f502203ec9d802046021b8a20affe8fd26234f67dcf2e93db5142bc2991a1.json"
+       ]
+      ]
+     },
+     "SourceType": "S3"
+    },
+    "Name": "integfunctionkeyvaluestoreassociationTestKeyValueStoreA8304A36"
+   }
+  },
+  "TestFunction22AD90FC": {
+   "Type": "AWS::CloudFront::Function",
+   "Properties": {
+    "AutoPublish": true,
+    "FunctionCode": "code",
+    "FunctionConfig": {
+     "Comment": "TestKvFunction",
+     "KeyValueStoreAssociations": [
+      {
+       "KeyValueStoreARN": {
+        "Fn::GetAtt": [
+         "TestKeyValueStore8D0C09A2",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Runtime": "cloudfront-js-2.0"
+    },
+    "Name": "TestKvFunction"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

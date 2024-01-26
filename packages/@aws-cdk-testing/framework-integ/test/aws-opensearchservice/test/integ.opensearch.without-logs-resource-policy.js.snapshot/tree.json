@@ -1,0 +1,262 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdkinteg-logs-resource-policy": {
+        "id": "cdkinteg-logs-resource-policy",
+        "path": "cdkinteg-logs-resource-policy",
+        "children": {
+          "AppLogsGroup": {
+            "id": "AppLogsGroup",
+            "path": "cdkinteg-logs-resource-policy/AppLogsGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdkinteg-logs-resource-policy/AppLogsGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "0.0.0"
+            }
+          },
+          "ResourcePolicy": {
+            "id": "ResourcePolicy",
+            "path": "cdkinteg-logs-resource-policy/ResourcePolicy",
+            "children": {
+              "ResourcePolicy": {
+                "id": "ResourcePolicy",
+                "path": "cdkinteg-logs-resource-policy/ResourcePolicy/ResourcePolicy",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::ResourcePolicy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyDocument": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"Statement\":[{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Resource\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "AppLogsGroupC90FBC0A",
+                              "Arn"
+                            ]
+                          },
+                          "\"}],\"Version\":\"2012-10-17\"}"
+                        ]
+                      ]
+                    },
+                    "policyName": "cdkinteglogsresourcepolicyResourcePolicyB41E8C17"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnResourcePolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.ResourcePolicy",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "cdkinteg-logs-resource-policy/Exports",
+            "children": {
+              "Output{\"Fn::GetAtt\":[\"AppLogsGroupC90FBC0A\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"AppLogsGroupC90FBC0A\",\"Arn\"]}",
+                "path": "cdkinteg-logs-resource-policy/Exports/Output{\"Fn::GetAtt\":[\"AppLogsGroupC90FBC0A\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdkinteg-logs-resource-policy/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdkinteg-logs-resource-policy/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "cdkinteg-opensearch-without-logs-resource-policy": {
+        "id": "cdkinteg-opensearch-without-logs-resource-policy",
+        "path": "cdkinteg-opensearch-without-logs-resource-policy",
+        "children": {
+          "Domain": {
+            "id": "Domain",
+            "path": "cdkinteg-opensearch-without-logs-resource-policy/Domain",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdkinteg-opensearch-without-logs-resource-policy/Domain/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::OpenSearchService::Domain",
+                  "aws:cdk:cloudformation:props": {
+                    "clusterConfig": {
+                      "dedicatedMasterEnabled": false,
+                      "instanceCount": 1,
+                      "instanceType": "r5.large.search",
+                      "multiAzWithStandbyEnabled": false,
+                      "zoneAwarenessEnabled": false
+                    },
+                    "domainEndpointOptions": {
+                      "enforceHttps": false,
+                      "tlsSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+                    },
+                    "ebsOptions": {
+                      "ebsEnabled": true,
+                      "volumeSize": 10,
+                      "volumeType": "gp2"
+                    },
+                    "encryptionAtRestOptions": {
+                      "enabled": false
+                    },
+                    "engineVersion": "OpenSearch_2.11",
+                    "logPublishingOptions": {
+                      "ES_APPLICATION_LOGS": {
+                        "enabled": true,
+                        "cloudWatchLogsLogGroupArn": {
+                          "Fn::ImportValue": "cdkinteg-logs-resource-policy:ExportsOutputFnGetAttAppLogsGroupC90FBC0AArn7BBE8767"
+                        }
+                      }
+                    },
+                    "nodeToNodeEncryptionOptions": {
+                      "enabled": false
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_opensearchservice.CfnDomain",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_opensearchservice.Domain",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdkinteg-opensearch-without-logs-resource-policy/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdkinteg-opensearch-without-logs-resource-policy/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Integ": {
+        "id": "Integ",
+        "path": "Integ",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "Integ/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "Integ/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "Integ/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "Integ/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "Integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

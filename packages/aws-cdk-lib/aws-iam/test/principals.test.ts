@@ -144,9 +144,16 @@ test('use OpenID Connect principal from provider', () => {
   expect(stack.resolve(principal.federated)).toStrictEqual({ Ref: 'MyProvider730BA1C8' });
 });
 
-test('SAML principal', () => {
+test.each([
+  { name: 'SAML principal', region: 'us-east-1', expectedAud: 'https://signin.aws.amazon.com/saml' },
+  { name: 'SAML principal CN', region: 'cn-northwest-1', expectedAud: 'https://signin.amazonaws.cn/saml' },
+  { name: 'SAML principal UsGov', region: 'us-gov-east-1', expectedAud: 'https://signin.amazonaws-us-gov.com/saml' },
+  { name: 'SAML principal UsIso', region: 'us-iso-east-1', expectedAud: 'https://signin.c2shome.ic.gov/saml' },
+  { name: 'SAML principal UsIsoB', region: 'us-isob-east-1', expectedAud: 'https://signin.sc2shome.sgov.gov/saml' },
+])('$name', ({ region, expectedAud }) => {
   // GIVEN
-  const stack = new Stack();
+  const app = new App();
+  const stack = new Stack(app, 'TestStack', { env: { region } });
   const provider = new iam.SamlProvider(stack, 'MyProvider', {
     metadataDocument: iam.SamlMetadataDocument.fromXml('document'),
   });
@@ -166,7 +173,7 @@ test('SAML principal', () => {
           Action: 'sts:AssumeRoleWithSAML',
           Condition: {
             StringEquals: {
-              'SAML:aud': 'https://signin.aws.amazon.com/saml',
+              'SAML:aud': expectedAud,
             },
           },
           Effect: 'Allow',

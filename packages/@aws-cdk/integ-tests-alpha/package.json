@@ -50,7 +50,7 @@
     "awslint": "cdk-awslint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
-    "integ": "integ-runner",
+    "integ": "integ-runner --language javascript",
     "watch": "cdk-watch",
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
