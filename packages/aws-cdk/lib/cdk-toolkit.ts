@@ -17,7 +17,7 @@ import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { createDiffChangeSet, ResourcesToImport } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
-import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, validateSourceOptions } from './commands/migrate';
+import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, parseSourceOptions, generateTemplate, FromScan, TemplateSourceOptions, GenerateTemplateOutput, CfnTemplateGeneratorProvider, writeMigrateJsonFile, buildGenertedTemplateOutput, buildCfnClient } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
 import { data, debug, error, highlight, print, success, warning, withCorkedLogging } from './logging';
@@ -721,17 +721,58 @@ export class CdkToolkit {
     const language = options.language?.toLowerCase() ?? 'typescript';
 
     try {
-      validateSourceOptions(options.fromPath, options.fromStack);
-      const template = readFromPath(options.fromPath) ||
-        await readFromStack(options.stackName, this.props.sdkProvider, setEnvironment(options.account, options.region));
-      const stack = generateStack(template!, options.stackName, language);
+      const environment = setEnvironment(options.account, options.region);
+      let generateTemplateOutput: GenerateTemplateOutput | undefined;
+      // if neither fromPath nor fromStack is provided, generate a template using cloudformation
+      const scanType = parseSourceOptions(options.fromPath, options.fromStack, options.stackName).source;
+      if (scanType == TemplateSourceOptions.SCAN) {
+        generateTemplateOutput = await generateTemplate({
+          stackName: options.stackName,
+          filters: options.filter,
+          fromScan: options.fromScan,
+          sdkProvider: this.props.sdkProvider,
+          environment: environment,
+        });
+      } else if (scanType == TemplateSourceOptions.PATH) {
+        const templateBody = readFromPath(options.fromPath!);
+
+        const parsedTemplate = deserializeStructure(templateBody);
+        const templateId = parsedTemplate.Metadata?.TemplateId?.toString();
+        if (templateId) {
+          // if we have a template id, we can call describe generated template to get the resource identifiers
+          // resource metadata, and template source to generate the template
+          const cfn = new CfnTemplateGeneratorProvider(await buildCfnClient(this.props.sdkProvider, environment));
+          const generatedTemplateSummary = await cfn.describeGeneratedTemplate(templateId);
+          generateTemplateOutput = buildGenertedTemplateOutput(generatedTemplateSummary, templateBody, generatedTemplateSummary.GeneratedTemplateId!);
+        } else {
+          generateTemplateOutput = {
+            templateBody: templateBody,
+            source: 'localfile',
+          };
+        }
+      } else if (scanType == TemplateSourceOptions.STACK) {
+        const template = await readFromStack(options.stackName, this.props.sdkProvider, environment);
+        if (!template) {
+          throw new Error(`No template found for stack-name: ${options.stackName}`);
+        }
+        generateTemplateOutput = {
+          templateBody: template,
+          source: options.stackName,
+        };
+      } else {
+        // We shouldn't ever get here, but just in case.
+        throw new Error(`Invalid source option provided: ${scanType}`);
+      }
+      const stack = generateStack(generateTemplateOutput!.templateBody, options.stackName, language);
       success(' ⏳  Generating CDK app for %s...', chalk.blue(options.stackName));
       await generateCdkApp(options.stackName, stack!, language, options.outputPath, options.compress);
+      if (generateTemplateOutput) {
+        writeMigrateJsonFile(options.outputPath, options.stackName, generateTemplateOutput);
+      }
     } catch (e) {
-      error(' ❌  Migrate failed for `%s`: %s', chalk.blue(options.stackName), (e as Error).message);
+      error(' ❌  Migrate failed for `%s`: %s', options.stackName, (e as Error).message);
       throw e;
     }
-
   }
 
   private async selectStacksForList(patterns: string[]) {
@@ -1335,6 +1376,20 @@ export interface MigrateOptions {
    * @default - Uses the default region for the credentials in use by the user.
    */
   readonly region?: string;
+
+  /**
+   * Filtering criteria used to select the resources to be included in the generated CDK app.
+   *
+   * @default - Include all resources
+   */
+  readonly filter?: string[];
+
+  /**
+   * Whether to initiate a new account scan for generating the CDK app.
+   *
+   * @default false
+   */
+  readonly fromScan?: FromScan;
 
   /**
    * Whether to zip the generated cdk app folder.

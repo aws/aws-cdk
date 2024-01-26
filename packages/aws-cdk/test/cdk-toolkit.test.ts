@@ -867,12 +867,6 @@ describe('synth', () => {
     const autoscalingTemplatePath = path.join(...templatePath, 'autoscaling-template.yml');
     const s3TemplatePath = path.join(...templatePath, 's3-template.json');
 
-    test('migrate fails when neither --from-path or --from-stack are provided', async () => {
-      const toolkit = defaultToolkitSetup();
-      await expect(() => toolkit.migrate({ stackName: 'no-source' })).rejects.toThrow('Either `--from-path` or `--from-stack` must be used to provide the source of the CloudFormation template.');
-      expect(stderrMock.mock.calls[1][0]).toContain(' ❌  Migrate failed for `no-source`: Either `--from-path` or `--from-stack` must be used to provide the source of the CloudFormation template.');
-    });
-
     test('migrate fails when both --from-path and --from-stack are provided', async () => {
       const toolkit = defaultToolkitSetup();
       await expect(() => toolkit.migrate({
@@ -925,7 +919,7 @@ describe('synth', () => {
         fromPath: path.join(__dirname, 'commands', 'test-resources', 'templates', 'sqs-template.json'),
         language: 'rust',
       })).rejects.toThrowError('stack generation failed due to error \'unreachable\'');
-      expect(stderrMock.mock.calls[1][0]).toContain(' ❌  Migrate failed for `cannot-generate-template`: stack generation failed due to error \'unreachable\'');
+      expect(stderrMock.mock.calls[1][0].trim()).toContain(' ❌  Migrate failed for `cannot-generate-template`: stack generation failed due to error \'unreachable\'');
     });
 
     cliTest('migrate succeeds for valid template from local path when no lanugage is provided', async (workDir) => {
