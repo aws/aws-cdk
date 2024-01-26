@@ -1,5 +1,4 @@
 export * as alexa_ask from './alexa-ask';
-export * as amzn_sdc from './amzn-sdc';
 export * as assertions from './assertions';
 export * as assets from './assets';
 export * as aws_accessanalyzer from './aws-accessanalyzer';
@@ -58,7 +57,6 @@ export * as aws_codepipeline_actions from './aws-codepipeline-actions';
 export * as aws_codestar from './aws-codestar';
 export * as aws_codestarconnections from './aws-codestarconnections';
 export * as aws_codestarnotifications from './aws-codestarnotifications';
-export * as aws_codetest from './aws-codetest';
 export * as aws_cognito from './aws-cognito';
 export * as aws_comprehend from './aws-comprehend';
 export * as aws_config from './aws-config';
