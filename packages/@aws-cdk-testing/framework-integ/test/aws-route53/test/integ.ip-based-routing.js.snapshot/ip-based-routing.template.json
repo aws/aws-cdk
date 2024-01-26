@@ -1,0 +1,168 @@
+{
+ "Resources": {
+  "HostedZoneDB99F866": {
+   "Type": "AWS::Route53::HostedZone",
+   "Properties": {
+    "Name": "cdk.dev."
+   }
+  },
+  "ARecordIpBased1CidrCollection1872F36E": {
+   "Type": "AWS::Route53::CidrCollection",
+   "Properties": {
+    "Locations": [
+     {
+      "CidrList": [
+       "192.168.1.0/24",
+       "192.168.16.0/20"
+      ],
+      "LocationName": "TokyoServer"
+     },
+     {
+      "CidrList": [
+       "192.168.2.0/24",
+       "192.168.48.0/20"
+      ],
+      "LocationName": "LondonServer"
+     }
+    ],
+    "Name": "myCollection"
+   }
+  },
+  "ARecordIpBased1DBB921C5": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "CidrRoutingConfig": {
+     "CollectionId": {
+      "Ref": "ARecordIpBased1CidrCollection1872F36E"
+     },
+     "LocationName": "TokyoServer"
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "1.2.3.4"
+    ],
+    "SetIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "IP_",
+       {
+        "Ref": "ARecordIpBased1CidrCollection1872F36E"
+       },
+       "_TokyoServer_ID_ipbasedrodIpBased11B1FE39C"
+      ]
+     ]
+    },
+    "TTL": "1800",
+    "Type": "A"
+   }
+  },
+  "ARecordIpBased2B59E746B": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "CidrRoutingConfig": {
+     "CollectionId": {
+      "Ref": "ARecordIpBased1CidrCollection1872F36E"
+     },
+     "LocationName": "LondonServer"
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "www.cdk.dev.",
+    "ResourceRecords": [
+     "2.3.4.5"
+    ],
+    "SetIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "IP_",
+       {
+        "Ref": "ARecordIpBased1CidrCollection1872F36E"
+       },
+       "_LondonServer_ID_ipbasedrodIpBased2A1D4F6AF"
+      ]
+     ]
+    },
+    "TTL": "1800",
+    "Type": "A"
+   }
+  },
+  "ARecordIpBased3CidrCollection1CF5F3AD": {
+   "Type": "AWS::Route53::CidrCollection",
+   "Properties": {
+    "Name": "ipbasedroutingARecordIpBased380A2B7CF"
+   }
+  },
+  "ARecordIpBased33840012D": {
+   "Type": "AWS::Route53::RecordSet",
+   "Properties": {
+    "CidrRoutingConfig": {
+     "CollectionId": {
+      "Ref": "ARecordIpBased3CidrCollection1CF5F3AD"
+     },
+     "LocationName": "*"
+    },
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
+    "Name": "xxx.cdk.dev.",
+    "ResourceRecords": [
+     "3.4.5.6"
+    ],
+    "SetIdentifier": {
+     "Fn::Join": [
+      "",
+      [
+       "IP_",
+       {
+        "Ref": "ARecordIpBased3CidrCollection1CF5F3AD"
+       },
+       "_*_ID_ipbasedroutingARecordIpBased380A2B7CF"
+      ]
+     ]
+    },
+    "TTL": "1800",
+    "Type": "A"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

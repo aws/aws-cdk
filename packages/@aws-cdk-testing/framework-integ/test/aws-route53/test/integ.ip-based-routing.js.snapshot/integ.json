@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "Route53IpBasedRoutingInteg/DefaultTest": {
+      "stacks": [
+        "ip-based-routing"
+      ],
+      "assertionStack": "Route53IpBasedRoutingInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "Route53IpBasedRoutingIntegDefaultTestDeployAssertD6A8E3E2"
+    }
+  }
+}

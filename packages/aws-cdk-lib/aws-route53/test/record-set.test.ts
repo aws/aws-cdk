@@ -1781,16 +1781,16 @@ describe('record set', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Route53::CidrCollection', {
         Locations: [
           {
-            cidrList: [
+            CidrList: [
               '192.168.1.0/24',
             ],
-            locationName: 'myLocation',
+            LocationName: 'myLocation',
           },
           {
-            cidrList: [
+            CidrList: [
               '10.0.1.0/24',
             ],
-            locationName: 'myLocation2',
+            LocationName: 'myLocation2',
           },
         ],
         Name: 'myCollection',

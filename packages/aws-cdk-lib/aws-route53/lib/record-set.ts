@@ -390,25 +390,25 @@ export class RecordSet extends Resource implements IRecordSet {
 
     if (props.cidrRoutingConfig) {
       const { locationName, cidrList, collectionName, collection } = props.cidrRoutingConfig;
-      if (locationName && (locationName.length < 1 || locationName.length > 16)) {
+      if (!Token.isUnresolved(locationName) && locationName && (locationName.length < 1 || locationName.length > 16)) {
         throw new Error(`locationName must be between 1 and 16 characters long, got: ${locationName.length}`);
       }
-      if (locationName === '*' && cidrList) {
+      if (!Token.isUnresolved(locationName) && locationName === '*' && cidrList) {
         throw new Error('cidrList can only be specified for non-default locations');
       }
-      if (locationName === '*' && collection) {
+      if (!Token.isUnresolved(locationName) && locationName === '*' && collection) {
         throw new Error('Default location cannot be specified when using an existing CIDR collection');
       }
-      if (locationName && !/^[0-9A-Za-z_\-]+$/.test(locationName) && locationName !== '*') {
+      if (!Token.isUnresolved(locationName) && locationName && !/^[0-9A-Za-z_\-]+$/.test(locationName) && locationName !== '*') {
         throw new Error(`locationName must only contain alphanumeric characters, underscores, and hyphens, or only '*', got: ${locationName}`);
       }
       if (cidrList && (cidrList.length < 1 || cidrList.length > 1000)) {
         throw new Error(`cidrList must contain between 1 and 1000 elements, got: ${cidrList.length}`);
       }
-      if (collectionName &&(collectionName.length < 1 || collectionName.length > 64)) {
+      if (!Token.isUnresolved(collectionName) && collectionName &&(collectionName.length < 1 || collectionName.length > 64)) {
         throw new Error(`collectionName must be between 1 and 64 characters long, got: ${collectionName.length}`);
       }
-      if (collectionName && !/^[0-9A-Za-z_\-]+$/.test(collectionName)) {
+      if (!Token.isUnresolved(collectionName) && collectionName && !/^[0-9A-Za-z_\-]+$/.test(collectionName)) {
         throw new Error(`collectionName must only contain alphanumeric characters, underscores, and hyphens, got: ${collectionName}`);
       }
       this.configureIpBasedRouting(props.cidrRoutingConfig);
@@ -493,9 +493,19 @@ export class RecordSet extends Resource implements IRecordSet {
       this._cidrCollection = cidrRoutingConfig.collection;
       const currentLocations = this._cidrCollection.locations ?? [];
       const locationsAsArray = Array.isArray(currentLocations) ? currentLocations : [currentLocations];
-      this._cidrCollection.addPropertyOverride('Locations', [...locationsAsArray, {
-        cidrList,
-        locationName,
+      this._cidrCollection.addPropertyOverride('Locations', [...locationsAsArray.map((location) => {
+        // Since the location is either CfnCidrCollection.LocationProperty or IResolvable,
+        // use a type guard function to ascertain its exact type.
+        if ('cidrList' in location && 'locationName' in location) {
+          return {
+            CidrList: location.cidrList,
+            LocationName: location.locationName,
+          };
+        }
+        return location;
+      }), {
+        CidrList: cidrList,
+        LocationName: locationName,
       }]);
     } else {
       this._cidrCollection = new CfnCidrCollection(this, 'CidrCollection', {
