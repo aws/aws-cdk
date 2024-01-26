@@ -72,7 +72,7 @@ export interface BasicStepScalingPolicyProps {
    *
    * Only has meaning if `evaluationPeriods != 1`.
    *
-   * @default `evaluationPeriods`
+   * @default - Same as `evaluationPeriods`
    */
   readonly datapointsToAlarm?: number;
 
@@ -117,8 +117,22 @@ export class StepScalingPolicy extends Construct {
       throw new Error(`'scalingSteps' can have at most 40 steps, got ${props.scalingSteps.length}`);
     }
 
-    if (props.datapointsToAlarm !== undefined && props.datapointsToAlarm < 1) {
-      throw new RangeError(`datapointsToAlarm cannot be less than 1, got: ${props.datapointsToAlarm}`);
+    if (props.evaluationPeriods !== undefined && !cdk.Token.isUnresolved(props.evaluationPeriods) && props.evaluationPeriods < 1) {
+      throw new RangeError(`evaluationPeriods cannot be less than 1, got: ${props.evaluationPeriods}`);
+    }
+    if (props.datapointsToAlarm !== undefined) {
+      if (props.evaluationPeriods === undefined) {
+        throw new RangeError('evaluationPeriods must be set if datapointsToAlarm is set');
+      }
+      if (!cdk.Token.isUnresolved(props.datapointsToAlarm) && props.datapointsToAlarm < 1) {
+        throw new RangeError(`datapointsToAlarm cannot be less than 1, got: ${props.datapointsToAlarm}`);
+      }
+      if (!cdk.Token.isUnresolved(props.datapointsToAlarm)
+        && !cdk.Token.isUnresolved(props.evaluationPeriods)
+        && props.evaluationPeriods < props.datapointsToAlarm
+      ) {
+        throw new RangeError(`datapointsToAlarm must be less than or equal to evaluationPeriods, got datapointsToAlarm: ${props.datapointsToAlarm}, evaluationPeriods: ${props.evaluationPeriods}`);
+      }
     }
 
     const adjustmentType = props.adjustmentType || AdjustmentType.CHANGE_IN_CAPACITY;
