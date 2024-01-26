@@ -232,7 +232,6 @@ export interface ServiceConnectService {
    * The amount of time in seconds a connection for Service Connect will stay active while idle.
    *
    * A value of 0 can be set to disable `idleTimeout`.
-   * Can only be set if Service Connect appProtocol is TCP.
    *
    * If `idleTimeout` is set to a time that is less than `perRequestTimeout`, the connection will close
    * when the `idleTimeout` is reached and not the `perRequestTimeout`.
