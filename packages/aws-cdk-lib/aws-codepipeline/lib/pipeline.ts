@@ -173,8 +173,10 @@ export class Variable {
 
   /**
    * Render to CloudFormation property.
+   *
+   * @internal
    */
-  public render(): CfnPipeline.VariableDeclarationProperty {
+  public _render(): CfnPipeline.VariableDeclarationProperty {
     return {
       defaultValue: this.defaultValue,
       description: this.description,
@@ -1314,7 +1316,7 @@ export class Pipeline extends PipelineBase {
   }
 
   private renderVariables(): CfnPipeline.VariableDeclarationProperty[] {
-    return this.variables.map(variable => variable.render());
+    return this.variables.map(variable => variable._render());
   }
 
   private renderTriggers(triggers?: Trigger[]): CfnPipeline.PipelineTriggerDeclarationProperty[] | undefined {
