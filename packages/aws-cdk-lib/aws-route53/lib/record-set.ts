@@ -338,6 +338,7 @@ export interface RecordSetProps extends RecordSetOptions {
  */
 export class RecordSet extends Resource implements IRecordSet {
   public readonly domainName: string;
+  public _cidrCollection: CfnCidrCollection | undefined;
   private readonly geoLocation?: GeoLocation;
   private readonly weight?: number;
   private readonly region?: string;
@@ -388,12 +389,15 @@ export class RecordSet extends Resource implements IRecordSet {
     const recordName = determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone);
 
     if (props.cidrRoutingConfig) {
-      const { locationName, cidrList, collectionName } = props.cidrRoutingConfig;
+      const { locationName, cidrList, collectionName, collection } = props.cidrRoutingConfig;
       if (locationName && (locationName.length < 1 || locationName.length > 16)) {
         throw new Error(`locationName must be between 1 and 16 characters long, got: ${locationName.length}`);
       }
       if (locationName === '*' && cidrList) {
         throw new Error('cidrList can only be specified for non-default locations');
+      }
+      if (locationName === '*' && collection) {
+        throw new Error('Default location cannot be specified when using an existing CIDR collection');
       }
       if (locationName && !/^[0-9A-Za-z_\-]+$/.test(locationName) && locationName !== '*') {
         throw new Error(`locationName must only contain alphanumeric characters, underscores, and hyphens, or only '*', got: ${locationName}`);
@@ -407,7 +411,7 @@ export class RecordSet extends Resource implements IRecordSet {
       if (collectionName && !/^[0-9A-Za-z_\-]+$/.test(collectionName)) {
         throw new Error(`collectionName must only contain alphanumeric characters, underscores, and hyphens, got: ${collectionName}`);
       }
-      this.updateCidrLocation(props.cidrRoutingConfig);
+      this.configureIpBasedRouting(props.cidrRoutingConfig);
     }
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
@@ -473,25 +477,27 @@ export class RecordSet extends Resource implements IRecordSet {
     }
   }
 
-  private updateCidrLocation(cidrRoutingConfig: CidrRoutingConfig): void {
+  public get cidrCollection(): CfnCidrCollection | undefined {
+    return this._cidrCollection;
+  }
+
+  private configureIpBasedRouting(cidrRoutingConfig: CidrRoutingConfig): void {
     const locationName = cidrRoutingConfig.locationName ?? Names.uniqueResourceName(this, { maxLength: 8 }).substring(0, 16);
     const cidrList = cidrRoutingConfig.cidrList;
     const isDefaultLocation = locationName === '*';
 
-    let collection: CfnCidrCollection | undefined;
-
     if (cidrRoutingConfig.collection) {
-      collection = cidrRoutingConfig.collection;
-      const currentLocations = collection.locations ?? [];
+      this._cidrCollection = cidrRoutingConfig.collection;
+      const currentLocations = this._cidrCollection.locations ?? [];
       const locationsAsArray = Array.isArray(currentLocations) ? currentLocations : [currentLocations];
-      collection.addPropertyOverride('Locations', [...locationsAsArray, {
+      this._cidrCollection.addPropertyOverride('Locations', [...locationsAsArray, {
         cidrList,
         locationName,
       }]);
     } else {
-      collection = new CfnCidrCollection(this, 'CidrCollection', {
+      this._cidrCollection = new CfnCidrCollection(this, 'CidrCollection', {
         name: cidrRoutingConfig.collectionName ?? Names.uniqueResourceName(this, { maxLength: 64 }),
-        // When 'locationName' is '*', create a CidrCollection without specifying 'locations', 
+        // When 'locationName' is '*', create a CidrCollection without specifying 'locations',
         // thus having only the default location.
         locations: isDefaultLocation ? undefined : [{
           // For locations other than the defaultLocation, specifying the cidrList is mandatory,
@@ -503,8 +509,8 @@ export class RecordSet extends Resource implements IRecordSet {
     }
 
     this.cidrLocation = {
-      collectionId: collection.ref,
-      locationName: isDefaultLocation ? '*' : locationName,
+      collectionId: this._cidrCollection.ref,
+      locationName,
     };
   }
 

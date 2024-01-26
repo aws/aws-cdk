@@ -1523,6 +1523,37 @@ describe('record set', () => {
       });
     });
 
+    test('get cidrCollection', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+      const record = new route53.RecordSet(stack, 'RecordSet', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.A,
+        target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+        cidrRoutingConfig: {
+          locationName: 'myLocation',
+          cidrList: ['1.100.1.0/24', '1.101.1.0/24'],
+          collectionName: 'myCollection',
+        },
+      });
+
+      // WHEN
+      const cidrCollection = record.cidrCollection;
+
+      // THEN
+      expect(cidrCollection).toBeDefined();
+      expect(cidrCollection?.name).toEqual('myCollection');
+      expect(cidrCollection?.locations).toEqual(expect.arrayContaining([
+        expect.objectContaining({
+          locationName: 'myLocation',
+          cidrList: ['1.100.1.0/24', '1.101.1.0/24'],
+        }),
+      ]));
+    });
+
     test('specify collectionName', () => {
       // GIVEN
       const stack = new Stack();
@@ -1764,6 +1795,34 @@ describe('record set', () => {
         ],
         Name: 'myCollection',
       });
+    });
+
+    test('throw error for the definition of collection for the default location', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+      const collection = new route53.CfnCidrCollection(stack, 'Collection', {
+        locations: [
+          {
+            cidrList: ['192.168.1.0/24'],
+            locationName: 'myLocation',
+          },
+        ],
+        name: 'myCollection',
+      });
+
+      // THEN
+      expect(() => new route53.RecordSet(stack, 'RecordSet', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.A,
+        target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+        cidrRoutingConfig: {
+          collection,
+          locationName: '*',
+        },
+      })).toThrow('Default location cannot be specified when using an existing CIDR collection');
     });
   });
 });
