@@ -24,6 +24,7 @@ describe('logging Config', () => {
       },
     });
   });
+
   test('Logging Config with LogGroup', () => {
     // GIVEN
     const app = new cdk.App();
@@ -46,6 +47,7 @@ describe('logging Config', () => {
       },
     });
   });
+
   test('Logging Config TEXT logFormat', () => {
     // GIVEN
     const app = new cdk.App();
@@ -63,6 +65,7 @@ describe('logging Config', () => {
       },
     });
   });
+
   test('Logging Config JSON logFormat', () => {
     // GIVEN
     const app = new cdk.App();
@@ -80,6 +83,43 @@ describe('logging Config', () => {
       },
     });
   });
+
+  test('Logging Config TEXT loggingFormat', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    new lambda.Function(stack, 'Lambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      loggingFormat: lambda.LoggingFormat.TEXT,
+    });
+    // WHEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogFormat: 'Text',
+      },
+    });
+  });
+
+  test('Logging Config JSON loggingFormat', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    new lambda.Function(stack, 'Lambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      loggingFormat: lambda.LoggingFormat.JSON,
+    });
+    // WHEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogFormat: 'JSON',
+      },
+    });
+  });
+
   test('Logging Config with LogLevel set', () => {
     // GIVEN
     const app = new cdk.App();
@@ -164,6 +204,20 @@ describe('logging Config', () => {
     }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'Text'./);
   });
 
+  test('Throws when applicationLogLevel is specified with TEXT loggingFormat', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    expect(() => {
+      new lambda.Function(stack, 'Lambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        loggingFormat: lambda.LoggingFormat.TEXT,
+        applicationLogLevel: lambda.ApplicationLogLevel.INFO,
+      });
+    }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LoggingFormat to 'JSON', got 'Text'./);
+  });
+
   test('Throws when applicationLogLevel is specified if logFormat is undefined', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'stack');
@@ -189,4 +243,18 @@ describe('logging Config', () => {
       });
     }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'undefined'./);
   });
+});
+
+test('Throws when loggingFormat and LogFormat are both specified', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'stack');
+  expect(() => {
+    new lambda.Function(stack, 'Lambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      loggingFormat: lambda.LoggingFormat.JSON,
+      logFormat: lambda.LogFormat.TEXT,
+    });
+  }).toThrow(/Only define LogFormat or LoggingFormat, not both./);
 });
