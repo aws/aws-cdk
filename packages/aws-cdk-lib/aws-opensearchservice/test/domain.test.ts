@@ -434,6 +434,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         SEARCH_SLOW_LOGS: {
@@ -460,6 +461,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         INDEX_SLOW_LOGS: {
@@ -486,6 +488,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         ES_APPLICATION_LOGS: {
@@ -520,6 +523,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       enforceHttps: true,
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         AUDIT_LOGS: {
@@ -555,6 +559,8 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
         slowIndexLogEnabled: true,
       },
     });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 2);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         ES_APPLICATION_LOGS: {
@@ -693,6 +699,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         SEARCH_SLOW_LOGS: {
@@ -722,6 +729,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         INDEX_SLOW_LOGS: {
@@ -751,6 +759,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         ES_APPLICATION_LOGS: {
@@ -788,6 +797,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         AUDIT_LOGS: {
@@ -806,6 +816,36 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
     });
   });
 
+  test('can suppress creation of a CloudWatch Logs resource policy', () => {
+    new Domain(stack, 'Domain1', {
+      version: engineVersion,
+      logging: {
+        appLogEnabled: true,
+        appLogGroup: new logs.LogGroup(stack, 'AppLogs', {
+          retention: logs.RetentionDays.THREE_MONTHS,
+        }),
+      },
+      suppressLogsResourcePolicy: true,
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'AppLogsC5DF83A6',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+        AUDIT_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: Match.absent(),
+      },
+    });
+  });
 });
 
 each(testedOpenSearchVersions).describe('grants', (engineVersion) => {
