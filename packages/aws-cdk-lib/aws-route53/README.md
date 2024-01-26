@@ -217,7 +217,7 @@ const record1 = new route53.ARecord(this, 'ARecordIpBased1', {
   },
 });
 
-// You can also add a new Location to an existing CidrCollection
+// You can also add a new Location to an existing CidrCollection.
 // Ensure all locations for the same record set name and type are part of the same CIDR collection to guarantee consistent routing.
 const record2 = new route53.ARecord(this, 'ARecordIpBased2', {
   zone: myZone,
@@ -227,6 +227,16 @@ const record2 = new route53.ARecord(this, 'ARecordIpBased2', {
     cidrList: ['192.168.2.0/24', '192.168.48.0/20'],
     locationName: 'LondonServer',
     collection: record1.cidrCollection,
+  },
+});
+
+// To define a zero bit CIDR block (0.0.0.0/0 or ::/0), use the default ("*") location.
+const record3 = new route53.ARecord(this, 'ARecordIpBased3', {
+  zone: myZone,
+  recordName: 'default',
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+  cidrRoutingConfig: {
+    locationName: '*',
   },
 });
 ```
