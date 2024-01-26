@@ -242,6 +242,23 @@ _cdk.json_
 }
 ```
 
+* `@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction`
+
+Enable this feature flag to change the logical ID of the `LambdaPermission` for the `LambdaAction` to include an alarm ID.
+
+Previously, only one alarm with the `LambdaAction` could be created per Lambda.
+This flag allows multiple alarms with the `LambdaAction` for the same Lambda to be created.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true
+  }
+}
+```
+
 * `@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse`
 
 Enables Pipeline to set the default value for `crossAccountKeys` to false.

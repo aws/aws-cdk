@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "test-efs-integ-test/DefaultTest": {
+      "stacks": [
+        "test-efs-transition-integ"
+      ],
+      "assertionStack": "test-efs-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "testefsintegtestDefaultTestDeployAssert7E1529D5"
+    }
+  }
+}

@@ -2,6 +2,9 @@
   "alexa-ask": [
     "Alexa::ASK"
   ],
+  "amzn-sdc": [
+    "AMZN::SDC"
+  ],
   "aws-accessanalyzer": [
     "AWS::AccessAnalyzer"
   ],
@@ -146,6 +149,9 @@
   "aws-codestarnotifications": [
     "AWS::CodeStarNotifications"
   ],
+  "aws-codetest": [
+    "AWS::CodeTest"
+  ],
   "aws-cognito": [
     "AWS::Cognito"
   ],
@@ -178,6 +184,9 @@
   ],
   "aws-datasync": [
     "AWS::DataSync"
+  ],
+  "aws-datazone": [
+    "AWS::DataZone"
   ],
   "aws-dax": [
     "AWS::DAX"
