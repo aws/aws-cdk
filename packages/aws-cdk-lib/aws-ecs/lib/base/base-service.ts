@@ -215,7 +215,7 @@ export interface ServiceConnectService {
   readonly dnsName?: string;
 
   /**
-   The port for clients to use to communicate with this service via Service Connect.
+   * The port for clients to use to communicate with this service via Service Connect.
    *
    * @default the container port specified by the port mapping in portMappingName.
    */
@@ -227,6 +227,33 @@ export interface ServiceConnectService {
    * @default - none
    */
   readonly ingressPortOverride?: number;
+
+  /**
+   * The amount of time in seconds a connection for Service Connect will stay active while idle.
+   *
+   * A value of 0 can be set to disable `idleTimeout`.
+   * Can only be set if Service Connect appProtocol is TCP.
+   *
+   * If `idleTimeout` is set to a time that is less than `perRequestTimeout`, the connection will close
+   * when the `idleTimeout` is reached and not the `perRequestTimeout`.
+   *
+   * @default - Duration.minutes(5) for HTTP/HTTP2/GRPC, Duration.hours(1) for TCP.
+   */
+  readonly idleTimeout?: Duration;
+
+  /**
+   * The amount of time waiting for the upstream to respond with a complete response per request for
+   * Service Connect.
+   *
+   * A value of 0 can be set to disable `perRequestTimeout`.
+   * Can only be set if Service Connect appProtocol isn't TCP.
+   *
+   * If `idleTimeout` is set to a time that is less than `perRequestTimeout`, the connection will close
+   * when the `idleTimeout` is reached and not the `perRequestTimeout`.
+   *
+   * @default Duration.seconds(15)
+   */
+  readonly perRequestTimeout?: Duration;
 }
 
 /**
@@ -881,12 +908,17 @@ export abstract class BaseService extends Resource
         port: svc.port || containerPort,
         dnsName: svc.dnsName,
       };
+      const timeout = (svc.idleTimeout || svc.perRequestTimeout) ? {
+        idleTimeoutSeconds: svc.idleTimeout?.toSeconds(),
+        perRequestTimeoutSeconds: svc.perRequestTimeout?.toSeconds(),
+      } : undefined;
 
       return {
         portName: svc.portMappingName,
         discoveryName: svc.discoveryName,
         ingressPortOverride: svc.ingressPortOverride,
         clientAliases: [alias],
+        timeout,
       } as CfnService.ServiceConnectServiceProperty;
     });
 

@@ -1353,6 +1353,8 @@ describe('fargate service', () => {
               ingressPortOverride: 1000,
               port: 80,
               dnsName: 'api',
+              idleTimeout: cdk.Duration.seconds(10),
+              perRequestTimeout: cdk.Duration.seconds(10),
             },
           ],
           namespace: 'cool',
@@ -1376,6 +1378,10 @@ describe('fargate service', () => {
                     DnsName: 'api',
                   },
                 ],
+                Timeout: {
+                  IdleTimeoutSeconds: 10,
+                  PerRequestTimeoutSeconds: 10,
+                },
               },
             ],
             LogConfiguration: {
@@ -1384,6 +1390,70 @@ describe('fargate service', () => {
                 'awslogs-stream-prefix': 'sc',
               },
             },
+          },
+        });
+      });
+
+      test('can set idleTimeout without perRequestTimeout', () => {
+        // WHEN
+        new cloudmap.HttpNamespace(stack, 'httpnamespace', {
+          name: 'cool',
+        });
+        service.enableServiceConnect({
+          services: [
+            {
+              portMappingName: 'api',
+              idleTimeout: cdk.Duration.seconds(10),
+            },
+          ],
+          namespace: 'cool',
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+            Services: [
+              {
+                PortName: 'api',
+                Timeout: {
+                  IdleTimeoutSeconds: 10,
+                  PerRequestTimeoutSeconds: Match.absent(),
+                },
+              },
+            ],
+          },
+        });
+      });
+
+      test('can set perRequestTimeout without idleTimeout', () => {
+        // WHEN
+        new cloudmap.HttpNamespace(stack, 'httpnamespace', {
+          name: 'cool',
+        });
+        service.enableServiceConnect({
+          services: [
+            {
+              portMappingName: 'api',
+              perRequestTimeout: cdk.Duration.seconds(10),
+            },
+          ],
+          namespace: 'cool',
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+            Services: [
+              {
+                PortName: 'api',
+                Timeout: {
+                  IdleTimeoutSeconds: Match.absent(),
+                  PerRequestTimeoutSeconds: 10,
+                },
+              },
+            ],
           },
         });
       });
