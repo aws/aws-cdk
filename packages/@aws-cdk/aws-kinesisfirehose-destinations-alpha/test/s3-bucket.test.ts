@@ -7,6 +7,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as firehosedestinations from '../lib';
+import { data } from '../../../aws-cdk-lib/aws-quicksight/lib/quicksight.generated';
 
 describe('S3 destination', () => {
   let stack: cdk.Stack;
@@ -607,45 +608,46 @@ describe('S3 destination', () => {
 
   describe('dynamic partitioning configuration', () => {
     test('create destination with dynamic partitioning configuration ', () => {
-        new firehose.DeliveryStream(stack, 'DeliveryStream', {
-          destinations: [new firehosedestinations.S3Bucket(bucket, { 
-            role: destinationRole,
-            dynamicPartitioningConfiguration: {
-              enabled: true,
-              retryDuration: cdk.Duration.minutes(1),
-            }
-          })],
-        });
-
-        Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
-          ExtendedS3DestinationConfiguration: {
-            BucketARN: stack.resolve(bucket.bucketArn),
-            CloudWatchLoggingOptions: {
-              Enabled: true,
-            },
-            RoleARN: stack.resolve(destinationRole.roleArn),
-            DynamicPartitioningConfigurationProperty: {
-              Enabled: true,
-              RetryOptions: {
-                DurationInSeconds: 60,
-              }
-            }
+      new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
+          role: destinationRole,
+          dataOutputPrefix: '!{partitionKeyFromQuery:partitionKey}',
+          dynamicPartitioningConfiguration: {
+            enabled: true,
+            retryDuration: cdk.Duration.minutes(1),
           },
-        });
-        Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
-        Template.fromStack(stack).resourceCountIs('AWS::Logs::LogStream', 1);
+        })],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        ExtendedS3DestinationConfiguration: {
+          BucketARN: stack.resolve(bucket.bucketArn),
+          CloudWatchLoggingOptions: {
+            Enabled: true,
+          },
+          Prefix: '!{partitionKeyFromQuery:partitionKey}',
+          RoleARN: stack.resolve(destinationRole.roleArn),
+          DynamicPartitioningConfiguration: {
+            RetryOptions: {
+              DurationInSeconds: 60,
+            },
+          },
+        },
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogStream', 1);
     });
 
     test('throw error if retry duration is greater than 7200 seconds', () => {
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, { 
+        destinations: [new firehosedestinations.S3Bucket(bucket, {
           role: destinationRole,
           dynamicPartitioningConfiguration: {
             enabled: true,
-            retryDuration: cdk.Duration.minutes(7201),
-          }
+            retryDuration: cdk.Duration.seconds(7201),
+          },
         })],
-      })).toThrowError('Retry duration must be less than or equal to 7200 seconds, got 7201');
+      })).toThrow('Retry duration must be less than or equal to 7200 seconds, got 7201');
     });
   });
 });

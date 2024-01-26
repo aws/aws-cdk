@@ -7,6 +7,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as destinations from '../lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -74,7 +75,27 @@ new firehose.DeliveryStream(stack, 'ZeroBufferingDeliveryStream', {
     dataOutputPrefix: 'regularPrefix',
     errorOutputPrefix: 'errorPrefix',
     bufferingInterval: cdk.Duration.seconds(0),
+    dynamicPartitioningConfiguration: {
+      enabled: true,
+      retryDuration: cdk.Duration.seconds(60),
+    },
   })],
+});
+
+new firehose.DeliveryStream(stack, 'DynamicPartitioningDeliveryStream', {
+  destinations: [new destinations.S3Bucket(bucket, {
+    compression: destinations.Compression.GZIP,
+    dataOutputPrefix: '!{partitionKeyFromQuery:partitionKey}',
+    errorOutputPrefix: 'errorPrefix',
+    dynamicPartitioningConfiguration: {
+      enabled: true,
+      retryDuration: cdk.Duration.seconds(60),
+    },
+  })],
+});
+
+new integ.IntegTest(app, 'ClusterTest', {
+  testCases: [stack],
 });
 
 app.synth();
