@@ -49,6 +49,12 @@ export class S3Bucket implements firehose.IDestination {
         encryptionConfiguration: createEncryptionConfig(role, this.props.encryptionKey),
         errorOutputPrefix: this.props.errorOutputPrefix,
         prefix: this.props.dataOutputPrefix,
+        dynamicPartitioningConfiguration: {
+          enabled: this.props.dynamicPartitioningConfiguration?.enabled,
+          retryOptions: {
+            durationInSeconds: this.props.dynamicPartitioningConfiguration?.retryDuration?.toSeconds(),
+          },
+        }
       },
       dependables: [bucketGrant, ...(loggingDependables ?? []), ...(backupDependables ?? [])],
     };

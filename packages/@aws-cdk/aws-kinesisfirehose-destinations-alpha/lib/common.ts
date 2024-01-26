@@ -79,6 +79,31 @@ interface DestinationLoggingProps {
 }
 
 /**
+ * The configuration of the dynamic partitioning mechanism.
+ *
+ * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_kinesisfirehose.CfnDeliveryStream.DynamicPartitioningConfigurationProperty.html
+ */
+interface DynamicPartitioningConfiguration {
+  /**
+   * Specifies whether dynamic partitioning is enabled for this Kinesis Data Firehose delivery stream.
+   *
+   * @default false
+   */
+  enabled?: boolean;
+  /**
+   * The total amount of time that Kinesis Data Firehose spends on retries.
+   *
+   * This duration starts after the initial attempt to send data to the custom destination via HTTPS endpoint fails.
+   * It doesn't include the periods during which Kinesis Data Firehose waits for acknowledgment from the specified destination after each attempt.
+   *
+   * The maximum value is 7200 seconds.
+   *
+   * @default Duration.seconds(300)
+   */
+  retryDuration?: cdk.Duration;
+}
+
+/**
  * Common properties for defining a backup, intermediary, or final S3 destination for a Kinesis Data Firehose delivery stream.
  */
 export interface CommonDestinationS3Props {
@@ -142,6 +167,13 @@ export interface CommonDestinationS3Props {
    * @default "YYYY/MM/DD/HH"
    */
   readonly dataOutputPrefix?: string;
+
+  /**
+   * The configuration of the dynamic partitioning mechanism that creates targeted data sets from the streaming data by partitioning it based on partition keys.
+   *
+   * @see https://docs.aws.amazon.com/firehose/latest/dev/dynamic-partitioning.html
+   */
+  readonly dynamicPartitioningConfiguration?: DynamicPartitioningConfiguration;
 }
 
 /**
