@@ -8,8 +8,6 @@ import * as iam from '../../aws-iam';
 import { CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
-import { create } from '../../../../tools/@aws-cdk/eslint-plugin/lib/rules/no-literal-partition';
-import { findResources } from '../../assertions/lib/private/resources';
 
 const CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE = 'Custom::CrossAccountZoneDelegation';
 const DELETE_EXISTING_RECORD_SET_RESOURCE_TYPE = 'Custom::DeleteExistingRecordSet';
@@ -210,7 +208,7 @@ export interface RecordSetOptions {
    *
    * @default - Do not set IP based routing
    */
-  readonly cidrRoutingConfig?: CidrRoutingConfig;
+  readonly cidrRoutingConfig?: ICidrRoutingConfig;
 
   /**
    * The Amazon EC2 Region where you created the resource that this resource record set refers to.
@@ -248,7 +246,7 @@ export interface RecordSetOptions {
 /**
  * Configuration for IP-based routing.
  */
-export interface CidrRoutingConfig {
+export interface ICidrRoutingConfig {
   /**
    * List of CIDR blocks.
    *
@@ -340,12 +338,12 @@ export interface RecordSetProps extends RecordSetOptions {
  */
 export class RecordSet extends Resource implements IRecordSet {
   public readonly domainName: string;
-  public _cidrCollection: CfnCidrCollection | undefined;
   private readonly geoLocation?: GeoLocation;
   private readonly weight?: number;
   private readonly region?: string;
   private readonly multiValueAnswer?: boolean;
   private cidrLocation?: CfnRecordSet.CidrRoutingConfigProperty;
+  private _cidrCollection: CfnCidrCollection | undefined;
 
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
@@ -479,11 +477,14 @@ export class RecordSet extends Resource implements IRecordSet {
     }
   }
 
+  /**
+   * The Cidr Collection associated with this record.
+   */
   public get cidrCollection(): CfnCidrCollection | undefined {
     return this._cidrCollection;
   }
 
-  private configureIpBasedRouting(cidrRoutingConfig: CidrRoutingConfig): void {
+  private configureIpBasedRouting(cidrRoutingConfig: ICidrRoutingConfig): void {
     const locationName = cidrRoutingConfig.locationName ?? Names.uniqueResourceName(this, { maxLength: 8 }).substring(0, 16);
     const cidrList = cidrRoutingConfig.cidrList;
     const isDefaultLocation = locationName === '*';
