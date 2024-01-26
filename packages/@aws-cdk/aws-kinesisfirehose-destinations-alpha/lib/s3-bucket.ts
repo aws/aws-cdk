@@ -4,6 +4,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { BackupMode, CommonDestinationProps, CommonDestinationS3Props } from './common';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';
+import { Duration } from 'aws-cdk-lib';
 
 /**
  * Props for defining an S3 destination of a Kinesis Data Firehose delivery stream.
@@ -22,6 +23,10 @@ export class S3Bucket implements firehose.IDestination {
   }
 
   bind(scope: Construct, _options: firehose.DestinationBindOptions): firehose.DestinationConfig {
+    if (this.props.dynamicPartitioningConfiguration?.retryDuration && this.props.dynamicPartitioningConfiguration?.retryDuration > Duration.seconds(7200)) {
+      throw new Error(`Retry duration must be less than or equal to 7200 seconds, got ${this.props.dynamicPartitioningConfiguration?.retryDuration.toSeconds()}`);
+    }
+
     const role = this.props.role ?? new iam.Role(scope, 'S3 Destination Role', {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });

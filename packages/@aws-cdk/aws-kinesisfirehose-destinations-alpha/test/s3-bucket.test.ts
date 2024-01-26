@@ -604,4 +604,48 @@ describe('S3 destination', () => {
       });
     });
   });
+
+  describe('dynamic partitioning configuration', () => {
+    test('create destination with dynamic partitioning configuration ', () => {
+        new firehose.DeliveryStream(stack, 'DeliveryStream', {
+          destinations: [new firehosedestinations.S3Bucket(bucket, { 
+            role: destinationRole,
+            dynamicPartitioningConfiguration: {
+              enabled: true,
+              retryDuration: cdk.Duration.minutes(1),
+            }
+          })],
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+          ExtendedS3DestinationConfiguration: {
+            BucketARN: stack.resolve(bucket.bucketArn),
+            CloudWatchLoggingOptions: {
+              Enabled: true,
+            },
+            RoleARN: stack.resolve(destinationRole.roleArn),
+            DynamicPartitioningConfigurationProperty: {
+              Enabled: true,
+              RetryOptions: {
+                DurationInSeconds: 60,
+              }
+            }
+          },
+        });
+        Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
+        Template.fromStack(stack).resourceCountIs('AWS::Logs::LogStream', 1);
+    });
+
+    test('throw error if retry duration is greater than 7200 seconds', () => {
+      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
+        destinations: [new firehosedestinations.S3Bucket(bucket, { 
+          role: destinationRole,
+          dynamicPartitioningConfiguration: {
+            enabled: true,
+            retryDuration: cdk.Duration.minutes(7201),
+          }
+        })],
+      })).toThrowError('Retry duration must be less than or equal to 7200 seconds, got 7201');
+    });
+  });
 });
