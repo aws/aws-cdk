@@ -42,6 +42,9 @@ webSocketApi.addRoute('$connect', {
     integrationUri: `arn:aws:apigateway:${stack.region}:dynamodb:action/PutItem`,
     integrationMethod: HttpMethod.POST,
     credentialsRole: apiRole,
+    requestParameters: {
+      'integration.request.header.Content-Type': 'application/json'
+    },
     requestTemplates: {
       'application/json': JSON.stringify({
         TableName: table.tableName,
