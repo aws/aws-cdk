@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/680224db1786deb417c994d38f450f115dd410266ba1ffc919b54991e5a73e4a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f58a2b25314952a1a5a6b42c6b9092caf2710430af09ba4f5d807e60f2fd3542.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -52,30 +52,6 @@
             "data": "MyBucketF68F3FF0"
           }
         ],
-        "/aws-cdk-s3-access-logs/MyBucket2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyBucket26E0C3623"
-          }
-        ],
-        "/aws-cdk-s3-access-logs/MyBucket3/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyBucket3CC4F8735"
-          }
-        ],
-        "/aws-cdk-s3-access-logs/MyBucket4/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyBucket43E0A113B"
-          }
-        ],
-        "/aws-cdk-s3-access-logs/MyBucket5/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyBucket53983D51A"
-          }
-        ],
         "/aws-cdk-s3-access-logs/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -86,6 +62,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyBucket26E0C3623": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucket26E0C3623",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyBucket3CC4F8735": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucket3CC4F8735",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyBucket43E0A113B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucket43E0A113B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyBucket53983D51A": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyBucket53983D51A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

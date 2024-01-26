@@ -651,132 +651,6 @@
               "version": "0.0.0"
             }
           },
-          "SecretEncryptionKey": {
-            "id": "SecretEncryptionKey",
-            "path": "aws-cdk-rds-proxy/SecretEncryptionKey",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-rds-proxy/SecretEncryptionKey/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
-                  "aws:cdk:cloudformation:props": {
-                    "keyPolicy": {
-                      "Statement": [
-                        {
-                          "Action": "kms:*",
-                          "Effect": "Allow",
-                          "Principal": {
-                            "AWS": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "arn:",
-                                  {
-                                    "Ref": "AWS::Partition"
-                                  },
-                                  ":iam::",
-                                  {
-                                    "Ref": "AWS::AccountId"
-                                  },
-                                  ":root"
-                                ]
-                              ]
-                            }
-                          },
-                          "Resource": "*"
-                        },
-                        {
-                          "Action": [
-                            "kms:CreateGrant",
-                            "kms:Decrypt",
-                            "kms:DescribeKey",
-                            "kms:Encrypt",
-                            "kms:GenerateDataKey*",
-                            "kms:ReEncrypt*"
-                          ],
-                          "Condition": {
-                            "StringEquals": {
-                              "kms:ViaService": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "secretsmanager.",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    ".amazonaws.com"
-                                  ]
-                                ]
-                              }
-                            }
-                          },
-                          "Effect": "Allow",
-                          "Principal": {
-                            "AWS": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "arn:",
-                                  {
-                                    "Ref": "AWS::Partition"
-                                  },
-                                  ":iam::",
-                                  {
-                                    "Ref": "AWS::AccountId"
-                                  },
-                                  ":root"
-                                ]
-                              ]
-                            }
-                          },
-                          "Resource": "*"
-                        },
-                        {
-                          "Action": "kms:Decrypt",
-                          "Condition": {
-                            "StringEquals": {
-                              "kms:ViaService": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "secretsmanager.",
-                                    {
-                                      "Ref": "AWS::Region"
-                                    },
-                                    ".amazonaws.com"
-                                  ]
-                                ]
-                              }
-                            }
-                          },
-                          "Effect": "Allow",
-                          "Principal": {
-                            "AWS": {
-                              "Fn::GetAtt": [
-                                "dbProxyIAMRole662F3AB8",
-                                "Arn"
-                              ]
-                            }
-                          },
-                          "Resource": "*"
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_kms.Key",
-              "version": "0.0.0"
-            }
-          },
           "dbInstance": {
             "id": "dbInstance",
             "path": "aws-cdk-rds-proxy/dbInstance",
@@ -912,12 +786,6 @@
                           "secretStringTemplate": "{\"username\":\"master\"}",
                           "generateStringKey": "password",
                           "excludeCharacters": "\"@/\\"
-                        },
-                        "kmsKeyId": {
-                          "Fn::GetAtt": [
-                            "SecretEncryptionKey40C82244",
-                            "Arn"
-                          ]
                         }
                       }
                     },
@@ -1083,16 +951,6 @@
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Ref": "dbInstanceSecretAttachment88CFBDAE"
-                                  }
-                                },
-                                {
-                                  "Action": "kms:Decrypt",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "SecretEncryptionKey40C82244",
-                                      "Arn"
-                                    ]
                                   }
                                 }
                               ],

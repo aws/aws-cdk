@@ -391,116 +391,6 @@
     }
    }
   },
-  "SecretEncryptionKey40C82244": {
-   "Type": "AWS::KMS::Key",
-   "Properties": {
-    "KeyPolicy": {
-     "Statement": [
-      {
-       "Action": "kms:*",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       },
-       "Resource": "*"
-      },
-      {
-       "Action": [
-        "kms:CreateGrant",
-        "kms:Decrypt",
-        "kms:DescribeKey",
-        "kms:Encrypt",
-        "kms:GenerateDataKey*",
-        "kms:ReEncrypt*"
-       ],
-       "Condition": {
-        "StringEquals": {
-         "kms:ViaService": {
-          "Fn::Join": [
-           "",
-           [
-            "secretsmanager.",
-            {
-             "Ref": "AWS::Region"
-            },
-            ".amazonaws.com"
-           ]
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       },
-       "Resource": "*"
-      },
-      {
-       "Action": "kms:Decrypt",
-       "Condition": {
-        "StringEquals": {
-         "kms:ViaService": {
-          "Fn::Join": [
-           "",
-           [
-            "secretsmanager.",
-            {
-             "Ref": "AWS::Region"
-            },
-            ".amazonaws.com"
-           ]
-          ]
-         }
-        }
-       },
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "dbProxyIAMRole662F3AB8",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  },
   "dbInstanceSubnetGroupD062EC9E": {
    "Type": "AWS::RDS::DBSubnetGroup",
    "Properties": {
@@ -581,12 +471,6 @@
      "GenerateStringKey": "password",
      "PasswordLength": 30,
      "SecretStringTemplate": "{\"username\":\"master\"}"
-    },
-    "KmsKeyId": {
-     "Fn::GetAtt": [
-      "SecretEncryptionKey40C82244",
-      "Arn"
-     ]
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -682,16 +566,6 @@
        "Effect": "Allow",
        "Resource": {
         "Ref": "dbInstanceSecretAttachment88CFBDAE"
-       }
-      },
-      {
-       "Action": "kms:Decrypt",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "SecretEncryptionKey40C82244",
-         "Arn"
-        ]
        }
       }
      ],

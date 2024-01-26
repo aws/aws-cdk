@@ -1,9 +1,10 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "testCases": {
     "Route53CrossAccountInteg/DefaultTest": {
       "stacks": [
-        "aws-cdk-route53-cross-account-integ"
+        "child-stack",
+        "child-opt-in-stack"
       ],
       "diffAssets": true,
       "assertionStack": "Route53CrossAccountInteg/DefaultTest/DeployAssert",

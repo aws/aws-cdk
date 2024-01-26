@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/994f5c55a476da40df81f2f7a742118ee54549be6e75cfa22d25171f36360de6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d240a28ecb4029250871454d9ebc37ac24e47d0feb61b0d105ecc70916f04f5a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -170,12 +170,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "vpcVPCGW7984C166"
-          }
-        ],
-        "/aws-cdk-rds-proxy/SecretEncryptionKey/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SecretEncryptionKey40C82244"
           }
         ],
         "/aws-cdk-rds-proxy/dbInstance/SubnetGroup/Default": [
@@ -368,6 +362,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "SecretEncryptionKey40C82244": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretEncryptionKey40C82244",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
