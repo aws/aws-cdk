@@ -388,7 +388,8 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * @deprecated instead create a fully customizable log group with `logs.LogGroup` and use the `logGroup` property to instruct the Lambda function to send logs to it.
    * Migrating from `logRetention` to `logGroup` will cause the name of the log group to change.
-   * Users and code and referencing the name verbatim will have to adjust.\
+   * Users and code and referencing the name verbatim will have to adjust.
+   *
    * In AWS CDK code, you can access the log group name directly from the LogGroup construct:
    * ```ts
    * declare const myLogGroup: logs.LogGroup;
@@ -476,7 +477,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * The log group the function sends logs to.
    *
-   * By default, Lambda functions send logs to an automatically created default log group named /aws/lambda/<function name>.
+   * By default, Lambda functions send logs to an automatically created default log group named /aws/lambda/\<function name\>.
    * However you cannot change the properties of this auto-created log group using the AWS CDK, e.g. you cannot set a different log retention.
    *
    * Use the `logGroup` property to create a fully customizable LogGroup ahead of time, and instruct the Lambda function to send logs to it.
@@ -874,11 +875,9 @@ export class Function extends FunctionBase {
       this.validateProfiling(props);
       props.profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
-        AWS_CODEGURU_PROFILER_GROUP_ARN: Stack.of(scope).formatArn({
-          service: 'codeguru-profiler',
-          resource: 'profilingGroup',
-          resourceName: props.profilingGroup.profilingGroupName,
-        }),
+        AWS_CODEGURU_PROFILER_GROUP_NAME: props.profilingGroup.profilingGroupName,
+        AWS_CODEGURU_PROFILER_TARGET_REGION: props.profilingGroup.env.region,
+        AWS_CODEGURU_PROFILER_GROUP_ARN: props.profilingGroup.profilingGroupArn,
         AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
       };
     } else if (props.profiling) {
@@ -888,6 +887,8 @@ export class Function extends FunctionBase {
       });
       profilingGroup.grantPublish(this.role);
       profilingGroupEnvironmentVariables = {
+        AWS_CODEGURU_PROFILER_GROUP_NAME: profilingGroup.profilingGroupName,
+        AWS_CODEGURU_PROFILER_TARGET_REGION: profilingGroup.env.region,
         AWS_CODEGURU_PROFILER_GROUP_ARN: profilingGroup.profilingGroupArn,
         AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
       };
@@ -1557,8 +1558,11 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     if (!props.runtime.supportsCodeGuruProfiling) {
       throw new Error(`CodeGuru profiling is not supported by runtime ${props.runtime.name}`);
     }
-    if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
-      throw new Error('AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled');
+    if (props.environment && (props.environment.AWS_CODEGURU_PROFILER_GROUP_NAME
+      || props.environment.AWS_CODEGURU_PROFILER_GROUP_ARN
+      || props.environment.AWS_CODEGURU_PROFILER_TARGET_REGION
+      || props.environment.AWS_CODEGURU_PROFILER_ENABLED)) {
+      Annotations.of(this).addWarning('AWS_CODEGURU_PROFILER_GROUP_NAME, AWS_CODEGURU_PROFILER_GROUP_ARN, AWS_CODEGURU_PROFILER_TARGET_REGION, and AWS_CODEGURU_PROFILER_ENABLED should not be set when profiling options enabled');
     }
   }
 }
