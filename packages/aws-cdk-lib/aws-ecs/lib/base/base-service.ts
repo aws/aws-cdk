@@ -245,7 +245,7 @@ export interface ServiceConnectService {
    * Service Connect.
    *
    * A value of 0 can be set to disable `perRequestTimeout`.
-   * Can only be set if Service Connect appProtocol isn't TCP.
+   * Can only be set when the appProtocol for application container is HTTP/HTTP2/GRPC.
    *
    * If `idleTimeout` is set to a time that is less than `perRequestTimeout`, the connection will close
    * when the `idleTimeout` is reached and not the `perRequestTimeout`.
