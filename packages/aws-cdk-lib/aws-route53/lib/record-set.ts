@@ -244,34 +244,22 @@ export interface RecordSetOptions {
 }
 
 /**
- * Specifies the list of CIDR blocks.
- */
-// export interface Location {
-//   // TODO: CIDRのバリデーション。IPv4, IPv6のどちらも許容する。
-//   /**
-//    * List of CIDR blocks.
-//    * default locationの場合は指定できないが、それ以外では必須。
-//    */
-//   cidrList?: string[];
-//   /**
-//    * The name of the location.
-//    * *を指定するとデフォルトのlocationとして扱われる。このとき、cidrListは指定できない。
-//    */
-//   locationName: string;
-// }
-
-/**
  * Configuration for IP-based routing.
  */
 export interface CidrRoutingConfig {
   /**
    * List of CIDR blocks.
-   * default locationの場合は指定できないが、それ以外では必須。
+   *
+   * When specifying the default location (locationName is '*'), it cannot be set, but for all other cases, it is mandatory.
+   *
+   * @default - zero bit CIDR block (0.0.0.0/0 or ::/0) for the default location
    */
   cidrList?: string[];
   /**
    * The name of the location.
-   * *を指定するとデフォルトのlocationとして扱われる。このとき、cidrListは指定できない。
+   *
+   * When '*' is specified, it is treated as the default location.
+   * In this case, the cidrList cannot be specified.
    */
   locationName: string;
   /**
@@ -493,7 +481,7 @@ export class RecordSet extends Resource implements IRecordSet {
     let collection: CfnCidrCollection | undefined;
 
     if (cidrRoutingConfig.collection) {
-      collection = cidrRoutingConfig.collection.node.defaultChild as CfnCidrCollection;
+      collection = cidrRoutingConfig.collection;
       const currentLocations = collection.locations ?? [];
       const locationsAsArray = Array.isArray(currentLocations) ? currentLocations : [currentLocations];
       collection.addPropertyOverride('Locations', [...locationsAsArray, {
@@ -503,9 +491,11 @@ export class RecordSet extends Resource implements IRecordSet {
     } else {
       collection = new CfnCidrCollection(this, 'CidrCollection', {
         name: cidrRoutingConfig.collectionName ?? Names.uniqueResourceName(this, { maxLength: 64 }),
-        // cidrListの指定がない場合、CIDR Collectionを作成するだけで、CIDR Locationは作成しない。
-        // (すなわち、作成されたcollectionにはdefault locationのみが存在する)
+        // When 'locationName' is '*', create a CidrCollection without specifying 'locations', 
+        // thus having only the default location.
         locations: isDefaultLocation ? undefined : [{
+          // For locations other than the defaultLocation, specifying the cidrList is mandatory,
+          // so in practice, cidrList will never be undefined.
           cidrList: cidrList ?? [],
           locationName,
         }],

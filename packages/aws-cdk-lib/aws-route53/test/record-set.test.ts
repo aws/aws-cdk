@@ -1688,6 +1688,83 @@ describe('record set', () => {
         },
       })).toThrow('collectionName must only contain alphanumeric characters, underscores, and hyphens, got: test#');
     });
+
+    test('specify collection', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+      const collection = new route53.CfnCidrCollection(stack, 'Collection', {
+        locations: [
+          {
+            cidrList: ['192.168.1.0/24'],
+            locationName: 'myLocation',
+          },
+        ],
+        name: 'myCollection',
+      });
+
+      // WHEN
+      new route53.RecordSet(stack, 'RecordSet', {
+        zone,
+        recordName: 'www',
+        recordType: route53.RecordType.A,
+        target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+        cidrRoutingConfig: {
+          collection,
+          locationName: 'myLocation2',
+          cidrList: ['10.0.1.0/24'],
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+        CidrRoutingConfig: {
+          CollectionId: {
+            Ref: 'Collection',
+          },
+          LocationName: 'myLocation2',
+        },
+        HostedZoneId: {
+          Ref: 'HostedZoneDB99F866',
+        },
+        Name: 'www.myzone.',
+        ResourceRecords: [
+          '1.2.3.4',
+        ],
+        SetIdentifier: {
+          'Fn::Join': [
+            '',
+            [
+              'IP_',
+              {
+                Ref: 'Collection',
+              },
+              '_myLocation2_ID_RecordSet',
+            ],
+          ],
+        },
+        TTL: '1800',
+        Type: 'A',
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Route53::CidrCollection', {
+        Locations: [
+          {
+            cidrList: [
+              '192.168.1.0/24',
+            ],
+            locationName: 'myLocation',
+          },
+          {
+            cidrList: [
+              '10.0.1.0/24',
+            ],
+            locationName: 'myLocation2',
+          },
+        ],
+        Name: 'myCollection',
+      });
+    });
   });
 });
 
