@@ -648,6 +648,9 @@
   "aws-ssmcontacts": [
     "AWS::SSMContacts"
   ],
+  "aws-ssmguiconnect": [
+    "AWS::SSMGuiConnect"
+  ],
   "aws-ssmincidents": [
     "AWS::SSMIncidents"
   ],
