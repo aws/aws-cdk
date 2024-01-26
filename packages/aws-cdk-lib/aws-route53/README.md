@@ -206,8 +206,9 @@ To enable [IP-based routing](https://docs.aws.amazon.com/Route53/latest/Develope
 ```ts
 declare const myZone: route53.HostedZone;
 
-new route53.ARecord(this, 'ARecordIpBased1', {
+const record1 = new route53.ARecord(this, 'ARecordIpBased1', {
   zone: myZone,
+  recordName: 'test',
   target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
   cidrRoutingConfig: {
     cidrList: ['192.168.1.0/24', '192.168.16.0/20'],
@@ -217,8 +218,17 @@ new route53.ARecord(this, 'ARecordIpBased1', {
 });
 
 // You can also add a new Location to an existing CidrCollection
-
-
+// Ensure all locations for the same record set name and type are part of the same CIDR collection to guarantee consistent routing.
+const record2 = new route53.ARecord(this, 'ARecordIpBased2', {
+  zone: myZone,
+  recordName: 'test',
+  target: route53.RecordTarget.fromIpAddresses('2.3.4.5'),
+  cidrRoutingConfig: {
+    cidrList: ['192.168.2.0/24', '192.168.48.0/20'],
+    locationName: 'LondonServer',
+    collection: record1.cidrCollection,
+  },
+});
 ```
 
 To specify a unique identifier to differentiate among multiple resource record sets that have the same combination of name and type, use the `setIdentifier` parameter:

@@ -208,7 +208,7 @@ export interface RecordSetOptions {
    *
    * @default - Do not set IP based routing
    */
-  readonly cidrRoutingConfig?: CidrRoutingConfig;
+  readonly cidrRoutingConfig?: ICidrRoutingConfig;
 
   /**
    * The Amazon EC2 Region where you created the resource that this resource record set refers to.
@@ -246,7 +246,7 @@ export interface RecordSetOptions {
 /**
  * Configuration for IP-based routing.
  */
-export interface CidrRoutingConfig {
+export interface ICidrRoutingConfig {
   /**
    * List of CIDR blocks.
    *
@@ -338,12 +338,12 @@ export interface RecordSetProps extends RecordSetOptions {
  */
 export class RecordSet extends Resource implements IRecordSet {
   public readonly domainName: string;
-  public _cidrCollection: CfnCidrCollection | undefined;
   private readonly geoLocation?: GeoLocation;
   private readonly weight?: number;
   private readonly region?: string;
   private readonly multiValueAnswer?: boolean;
   private cidrLocation?: CfnRecordSet.CidrRoutingConfigProperty;
+  private _cidrCollection: CfnCidrCollection | undefined;
 
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
@@ -477,11 +477,14 @@ export class RecordSet extends Resource implements IRecordSet {
     }
   }
 
+  /**
+   * The Cidr Collection associated with this record.
+   */
   public get cidrCollection(): CfnCidrCollection | undefined {
     return this._cidrCollection;
   }
 
-  private configureIpBasedRouting(cidrRoutingConfig: CidrRoutingConfig): void {
+  private configureIpBasedRouting(cidrRoutingConfig: ICidrRoutingConfig): void {
     const locationName = cidrRoutingConfig.locationName ?? Names.uniqueResourceName(this, { maxLength: 8 }).substring(0, 16);
     const cidrList = cidrRoutingConfig.cidrList;
     const isDefaultLocation = locationName === '*';
