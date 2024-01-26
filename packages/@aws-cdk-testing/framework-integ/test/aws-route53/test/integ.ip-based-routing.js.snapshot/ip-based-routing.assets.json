@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "51c5f2181597e9f0056b0a6a59cf6d1a778902c2eb90d53c18f2a0667d4d549c": {
+      "source": {
+        "path": "ip-based-routing.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "51c5f2181597e9f0056b0a6a59cf6d1a778902c2eb90d53c18f2a0667d4d549c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

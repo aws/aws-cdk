@@ -1,0 +1,143 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "ip-based-routing.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "ip-based-routing.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "ip-based-routing": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "ip-based-routing.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/51c5f2181597e9f0056b0a6a59cf6d1a778902c2eb90d53c18f2a0667d4d549c.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "ip-based-routing.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "ip-based-routing.assets"
+      ],
+      "metadata": {
+        "/ip-based-routing/HostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedZoneDB99F866"
+          }
+        ],
+        "/ip-based-routing/ARecordIpBased1/CidrCollection": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordIpBased1CidrCollection1872F36E"
+          }
+        ],
+        "/ip-based-routing/ARecordIpBased1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordIpBased1DBB921C5"
+          }
+        ],
+        "/ip-based-routing/ARecordIpBased2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordIpBased2B59E746B"
+          }
+        ],
+        "/ip-based-routing/ARecordIpBased3/CidrCollection": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordIpBased3CidrCollection1CF5F3AD"
+          }
+        ],
+        "/ip-based-routing/ARecordIpBased3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ARecordIpBased33840012D"
+          }
+        ],
+        "/ip-based-routing/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/ip-based-routing/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "ip-based-routing"
+    },
+    "Route53IpBasedRoutingIntegDefaultTestDeployAssertD6A8E3E2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "Route53IpBasedRoutingIntegDefaultTestDeployAssertD6A8E3E2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "Route53IpBasedRoutingIntegDefaultTestDeployAssertD6A8E3E2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "Route53IpBasedRoutingIntegDefaultTestDeployAssertD6A8E3E2.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "Route53IpBasedRoutingIntegDefaultTestDeployAssertD6A8E3E2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "Route53IpBasedRoutingIntegDefaultTestDeployAssertD6A8E3E2.assets"
+      ],
+      "metadata": {
+        "/Route53IpBasedRoutingInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/Route53IpBasedRoutingInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "Route53IpBasedRoutingInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
