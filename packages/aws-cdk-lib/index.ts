@@ -1,5 +1,4 @@
 export * as alexa_ask from './alexa-ask';
-export * as amzn_sdc from './amzn-sdc';
 export * as assertions from './assertions';
 export * as assets from './assets';
 export * as aws_accessanalyzer from './aws-accessanalyzer';
