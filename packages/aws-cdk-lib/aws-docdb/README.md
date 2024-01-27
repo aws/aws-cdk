@@ -189,7 +189,7 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
     subnetType: ec2.SubnetType.PUBLIC,
   },
   vpc,
-  removalPolicy: cdk.RemovalPolicy.SNAPSHOT,
+  removalPolicy: RemovalPolicy.SNAPSHOT,
 });
 ```
 
