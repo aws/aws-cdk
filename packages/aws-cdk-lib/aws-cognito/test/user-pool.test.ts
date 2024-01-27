@@ -5,7 +5,7 @@ import { Role, ServicePrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '../../core';
-import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode } from '../lib';
+import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -506,6 +506,54 @@ describe('User Pool', () => {
         SourceArn: stack.resolve(pool.userPoolArn),
       });
     });
+  });
+
+  test('add preTokenGeneration trigger v2', () => {
+    // GIVEN
+    const stack = new Stack();
+    const kmsKey = fooKey(stack, 'TestKMSKey');
+
+    const preTokenGeneration = fooFunction(stack, 'preTokenGeneration');
+
+    // WHEN
+    const pool = new UserPool(stack, 'Pool', {
+      customSenderKmsKey: kmsKey,
+    });
+    pool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, preTokenGeneration, LambdaVersion.V2_0);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      LambdaConfig: {
+        PreTokenGenerationConfig: {
+          LambdaArn: stack.resolve(preTokenGeneration.functionArn),
+          LambdaVersion: 'V2_0',
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: stack.resolve(preTokenGeneration.functionArn),
+      Principal: 'cognito-idp.amazonaws.com',
+      SourceArn: stack.resolve(pool.userPoolArn),
+    });
+  });
+
+  test('throw when specify lambda trigger version v2 for invalid operation', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const preTokenGeneration = fooFunction(stack, 'preTokenGeneration');
+
+    // WHEN
+    const pool = new UserPool(stack, 'Pool');
+    expect(() => {
+      pool.addTrigger(
+        UserPoolOperation.PRE_TOKEN_GENERATION,
+        preTokenGeneration,
+        LambdaVersion.V2_0,
+      );
+    }).toThrow(/Only the `preTokenGenerationConfig` operation supports V2_0 lambda version./);
   });
 
   test('can use same lambda as trigger for multiple user pools', () => {

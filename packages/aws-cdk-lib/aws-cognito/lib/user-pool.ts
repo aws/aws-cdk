@@ -230,9 +230,19 @@ export class UserPoolOperation {
 
   /**
    * Add or remove attributes in Id tokens
+   *
+   * Set this parameter for legacy purposes.
+   * If you also set an ARN in PreTokenGenerationConfig, its value must be identical to PreTokenGeneration.
+   * For new instances of pre token generation triggers, set the LambdaArn of PreTokenGenerationConfig.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
    */
   public static readonly PRE_TOKEN_GENERATION = new UserPoolOperation('preTokenGeneration');
+
+  /**
+   * Add or remove attributes in Id tokens
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
+   */
+  public static readonly PRE_TOKEN_GENERATION_CONFIG = new UserPoolOperation('preTokenGenerationConfig');
 
   /**
    * Migrate a user from an existing user directory to user pools
@@ -1014,8 +1024,8 @@ export class UserPool extends UserPoolBase {
     if (operation.operationName in this.triggers) {
       throw new Error(`A trigger for the operation ${operation.operationName} already exists.`);
     }
-    if (operation !== UserPoolOperation.PRE_TOKEN_GENERATION && lambdaVersion === LambdaVersion.V2_0) {
-      throw new Error('Only the pre-token-generation trigger supports V2_0 lambda version.');
+    if (operation !== UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG && lambdaVersion === LambdaVersion.V2_0) {
+      throw new Error('Only the `preTokenGenerationConfig` operation supports V2_0 lambda version.');
     }
 
     this.addLambdaPermission(fn, operation.operationName);
@@ -1030,7 +1040,7 @@ export class UserPool extends UserPoolBase {
           lambdaVersion: LambdaVersion.V1_0,
         };
         break;
-      case 'preTokenGeneration':
+      case 'preTokenGenerationConfig':
         (this.triggers as any)[operation.operationName] = {
           lambdaArn: fn.functionArn,
           lambdaVersion: lambdaVersion ?? LambdaVersion.V1_0,
