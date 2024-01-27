@@ -1283,7 +1283,7 @@ test('with publish additional metrics', () => {
 });
 
 describe('Distribution metrics tests', () => {
-  const metrics = [
+  const additionalMetrics = [
     { name: 'OriginLatency', method: 'metricOriginLatency', additionalMetricsRequired: true, errorMetricName: 'Origin latency' },
     { name: 'CacheHitRate', method: 'metricCacheHitRate', additionalMetricsRequired: true, errorMetricName: 'Cache hit rate' },
     ...['401', '403', '404', '502', '503', '504'].map(errorCode => ({
@@ -1294,7 +1294,16 @@ describe('Distribution metrics tests', () => {
     })),
   ];
 
-  test.each(metrics)('get %s metric', (metric) => {
+  const defaultMetrics = [
+    { name: 'Requests', method: 'metricRequests', additionalMetricsRequired: false, errorMetricName: '' },
+    { name: 'BytesDownloaded', method: 'metricBytesDownloaded', additionalMetricsRequired: false, errorMetricName: '' },
+    { name: 'BytesUploaded', method: 'metricBytesUploaded', additionalMetricsRequired: false, errorMetricName: '' },
+    { name: 'TotalErrorRate', method: 'metricTotalErrorRate', additionalMetricsRequired: false, errorMetricName: '' },
+    { name: '4xxErrorRate', method: 'metric4xxErrorRate', additionalMetricsRequired: false, errorMetricName: '' },
+    { name: '5xxErrorRate', method: 'metric5xxErrorRate', additionalMetricsRequired: false, errorMetricName: '' },
+  ];
+
+  test.each(additionalMetrics.concat(defaultMetrics))('get %s metric', (metric) => {
     const origin = defaultOrigin();
     const dist = new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
@@ -1312,7 +1321,7 @@ describe('Distribution metrics tests', () => {
     }));
   });
 
-  test.each(metrics)('throw error when trying to get %s metric without publishing additional metrics', (metric) => {
+  test.each(additionalMetrics)('throw error when trying to get %s metric without publishing additional metrics', (metric) => {
     const origin = defaultOrigin();
     const dist = new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },

@@ -433,7 +433,7 @@ export class Distribution extends Resource implements IDistribution {
    *
    * @default - average over 5 minutes
    */
-  public metricTotal4xxErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metric4xxErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('4xxErrorRate', props);
   }
 
@@ -442,7 +442,7 @@ export class Distribution extends Resource implements IDistribution {
    *
    * @default - average over 5 minutes
    */
-  public metricTotal5xxErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+  public metric5xxErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('5xxErrorRate', props);
   }
 
