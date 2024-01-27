@@ -181,9 +181,9 @@ export interface QueueProps {
 
   /**
    * The string that includes the parameters for the permissions for the dead-letter queue
-   * redrive permission and which source queues can specify dead-letter queues as a JSON object.
+   * redrive permission and which source queues can specify dead-letter queues.
    *
-   * @default - no dead-letter queue redrive permissions.
+   * @default - All source queues can designate this queue as their dead-letter queue.
    */
   readonly redriveAllowPolicy?: RedriveAllowPolicy;
 }
@@ -406,8 +406,11 @@ export class Queue extends QueueBase {
       }
       : undefined;
 
+    // When `redriveAllowPolicy` is provided, `redrivePermission` defaults to allow all queues (`ALLOW_ALL`);
     const redriveAllowPolicy = props.redriveAllowPolicy ? {
       redrivePermission: props.redriveAllowPolicy.redrivePermission
+      // When `sourceQueues` is provided in `redriveAllowPolicy`, `redrivePermission` defaults to allow specified queues (`BY_QUEUE`);
+      // otherwise, it defaults to allow all queues (`ALLOW_ALL`).
         ?? props.redriveAllowPolicy.sourceQueues ? RedrivePermission.BY_QUEUE : RedrivePermission.ALLOW_ALL,
       sourceQueueArns: props.redriveAllowPolicy.sourceQueues?.map(q => q.queueArn),
     } : undefined;
