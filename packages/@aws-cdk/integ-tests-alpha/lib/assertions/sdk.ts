@@ -97,7 +97,10 @@ export class AwsApiCall extends ApiCallBase {
         outputPaths: Lazy.list({ produce: () => this.outputPaths }),
         salt: Date.now().toString(),
       },
-      resourceType: `${SDK_RESOURCE_TYPE_PREFIX}${this.name}`.substring(0, 60),
+      // Remove the slash from the resource type because when using the v3 package name as the service name,
+      // the `service` includes the slash, but the resource type name cannot contain the slash
+      // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-customresource.html#aws-resource-cloudformation-customresource--remarks
+      resourceType: `${SDK_RESOURCE_TYPE_PREFIX}${this.name}`.substring(0, 60).replace(/[\/]/g, ''),
     });
     // Needed so that all the policies set up by the provider should be available before the custom resource is provisioned.
     this.apiCallResource.node.addDependency(this.provider);
@@ -112,7 +115,10 @@ export class AwsApiCall extends ApiCallBase {
 
             new CfnOutput(node, 'AssertionResults', {
               value: result,
-            }).overrideLogicalId(`AssertionResults${id}`);
+              // Remove the at sign, slash, and hyphen because when using the v3 package name or client name as the service name,
+              // the `service` includes them, but they are not allowed in the `CfnOutput` logical id
+              // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html#outputs-section-syntax
+            }).overrideLogicalId(`AssertionResults${id}`.replace(/[\@\/\-]/g, ''));
           }
         }
       },
