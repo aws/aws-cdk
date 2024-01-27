@@ -6,6 +6,7 @@ import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '../../core';
 import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion } from '../lib';
+import { User } from '../../aws-iam/lib/user';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -518,6 +519,7 @@ describe('User Pool', () => {
     // WHEN
     const pool = new UserPool(stack, 'Pool', {
       customSenderKmsKey: kmsKey,
+      advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
     });
     pool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, preTokenGeneration, LambdaVersion.V2_0);
 
@@ -528,6 +530,9 @@ describe('User Pool', () => {
           LambdaArn: stack.resolve(preTokenGeneration.functionArn),
           LambdaVersion: 'V2_0',
         },
+      },
+      UserPoolAddOns: {
+        AdvancedSecurityMode: 'ENFORCED',
       },
     });
 
@@ -546,7 +551,9 @@ describe('User Pool', () => {
     const preTokenGeneration = fooFunction(stack, 'preTokenGeneration');
 
     // WHEN
-    const pool = new UserPool(stack, 'Pool');
+    const pool = new UserPool(stack, 'Pool', {
+      advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+    });
     expect(() => {
       pool.addTrigger(
         UserPoolOperation.PRE_TOKEN_GENERATION,
