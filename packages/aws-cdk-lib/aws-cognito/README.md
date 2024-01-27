@@ -79,6 +79,11 @@ Users can either be signed up by the app's administrators or can sign themselves
 account needs to be confirmed. Cognito provides several ways to sign users up and confirm their accounts. Learn more
 about [user sign up here](https://docs.aws.amazon.com/cognito/latest/developerguide/signing-up-users-in-your-app.html).
 
+To verify the email address of a user in your user pool with Amazon Cognito, you can send the user an email message 
+with a link that they can select, or you can send them a code that they can enter.
+
+#### Code Verification
+
 When a user signs up, email and SMS messages are used to verify their account and contact methods. The following code
 snippet configures a user pool with properties relevant to these verification messages -
 
@@ -109,6 +114,20 @@ new cognito.UserPool(this, 'myuserpool', {
     emailSubject: 'Invite to join our awesome app!',
     emailBody: 'Hello {username}, you have been invited to join our awesome app! Your temporary password is {####}',
     smsMessage: 'Hello {username}, your temporary password for our awesome app is {####}',
+  },
+});
+```
+
+#### Link Verification
+Alternatively, users can use link as a verification method. The following code snippet configures a user pool with 
+properties relevant to these verification messages and link verification method.
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  userVerification: {
+    emailStyle: cognito.VerificationEmailStyle.LINK,
+    emailSubject: 'Invite to join our awesome app!',
+    emailBody: 'You have been invited to join our awesome app! {##Verify Your Email##}',
   },
 });
 ```
