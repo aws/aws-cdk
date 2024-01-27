@@ -37,8 +37,8 @@ jobs:
         closed-for-staleness-label: closed-for-staleness
 
         # Issue timing
-        days-before-stale: 2
-        days-before-close: 5
+        days-before-stale: 10
+        days-before-close: 4
         days-before-ancient: 36500
 
         # If you don't want to mark a issue as being ancient based on a
