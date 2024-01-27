@@ -26,6 +26,12 @@ export class S3Bucket implements firehose.IDestination {
     if (retryDuration && retryDuration.toSeconds() > 7200) {
       throw new Error(`Retry duration must be less than or equal to 7200 seconds, got ${retryDuration.toSeconds()}`);
     }
+    const dynamicPartitioningConfiguration = this.props.dynamicPartitioningConfiguration?.enabled !== undefined ? {
+      enabled: true,
+      retryOptions: {
+        durationInSeconds: retryDuration?.toSeconds(),
+      },
+    } : undefined;
 
     const role = this.props.role ?? new iam.Role(scope, 'S3 Destination Role', {
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
@@ -54,12 +60,7 @@ export class S3Bucket implements firehose.IDestination {
         encryptionConfiguration: createEncryptionConfig(role, this.props.encryptionKey),
         errorOutputPrefix: this.props.errorOutputPrefix,
         prefix: this.props.dataOutputPrefix,
-        dynamicPartitioningConfiguration: {
-          enabled: this.props.dynamicPartitioningConfiguration?.enabled,
-          retryOptions: {
-            durationInSeconds: this.props.dynamicPartitioningConfiguration?.retryDuration?.toSeconds(),
-          },
-        },
+        dynamicPartitioningConfiguration,
       },
       dependables: [bucketGrant, ...(loggingDependables ?? []), ...(backupDependables ?? [])],
     };

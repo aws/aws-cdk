@@ -31,7 +31,7 @@ const dataProcessorFunction = new lambdanodejs.NodejsFunction(stack, 'DataProces
   timeout: cdk.Duration.minutes(1),
 });
 
-const processor = new firehose.LambdaFunctionProcessor(dataProcessorFunction, {
+const dataProcessor = new firehose.LambdaFunctionProcessor(dataProcessorFunction, {
   bufferInterval: cdk.Duration.seconds(60),
   bufferSize: cdk.Size.mebibytes(1),
   retries: 1,
@@ -49,7 +49,7 @@ new firehose.DeliveryStream(stack, 'Delivery Stream', {
   destinations: [new destinations.S3Bucket(bucket, {
     logging: true,
     logGroup: logGroup,
-    processor: processor,
+    processor: dataProcessor,
     compression: destinations.Compression.GZIP,
     dataOutputPrefix: 'regularPrefix',
     errorOutputPrefix: 'errorPrefix',
@@ -75,22 +75,18 @@ new firehose.DeliveryStream(stack, 'ZeroBufferingDeliveryStream', {
     dataOutputPrefix: 'regularPrefix',
     errorOutputPrefix: 'errorPrefix',
     bufferingInterval: cdk.Duration.seconds(0),
-    dynamicPartitioningConfiguration: {
-      enabled: true,
-      retryDuration: cdk.Duration.seconds(60),
-    },
   })],
 });
 
 new firehose.DeliveryStream(stack, 'DynamicPartitioningDeliveryStream', {
   destinations: [new destinations.S3Bucket(bucket, {
-    compression: destinations.Compression.GZIP,
     dataOutputPrefix: '!{partitionKeyFromQuery:partitionKey}',
     errorOutputPrefix: 'errorPrefix',
     dynamicPartitioningConfiguration: {
       enabled: true,
       retryDuration: cdk.Duration.seconds(60),
     },
+    processor: dataProcessor,
   })],
 });
 
