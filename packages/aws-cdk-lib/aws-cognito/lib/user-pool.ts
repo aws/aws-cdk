@@ -283,6 +283,22 @@ export enum VerificationEmailStyle {
 }
 
 /**
+ * The user pool trigger version of the request that Amazon Cognito sends to your Lambda function.
+ */
+export enum LambdaVersion {
+  /**
+   * V1_0 trigger
+   */
+  V1_0 = 'V1_0',
+  /**
+   * V2_0 trigger
+   *
+   * This is supported only for PRE_TOKEN_GENERATION trigger.
+   */
+  V2_0 = 'V2_0',
+}
+
+/**
  * User pool configuration for user self sign up.
  */
 export interface UserVerificationConfig {
@@ -902,7 +918,6 @@ export class UserPool extends UserPoolBase {
             if (!this.triggers.kmsKeyId) {
               throw new Error('you must specify a KMS key if you are using customSmsSender or customEmailSender.');
             }
-          case 'preTokenGenerationConfig':
             trigger = props.lambdaTriggers[t];
             const version = 'V1_0';
             if (trigger !== undefined) {
@@ -995,9 +1010,12 @@ export class UserPool extends UserPoolBase {
    * Add a lambda trigger to a user pool operation
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html
    */
-  public addTrigger(operation: UserPoolOperation, fn: lambda.IFunction): void {
+  public addTrigger(operation: UserPoolOperation, fn: lambda.IFunction, lambdaVersion?: LambdaVersion): void {
     if (operation.operationName in this.triggers) {
       throw new Error(`A trigger for the operation ${operation.operationName} already exists.`);
+    }
+    if (operation !== UserPoolOperation.PRE_TOKEN_GENERATION && lambdaVersion === LambdaVersion.V2_0) {
+      throw new Error('Only the pre-token-generation trigger supports V2_0 lambda version.');
     }
 
     this.addLambdaPermission(fn, operation.operationName);
@@ -1009,7 +1027,13 @@ export class UserPool extends UserPoolBase {
         }
         (this.triggers as any)[operation.operationName] = {
           lambdaArn: fn.functionArn,
-          lambdaVersion: 'V1_0',
+          lambdaVersion: LambdaVersion.V1_0,
+        };
+        break;
+      case 'preTokenGeneration':
+        (this.triggers as any)[operation.operationName] = {
+          lambdaArn: fn.functionArn,
+          lambdaVersion: lambdaVersion ?? LambdaVersion.V1_0,
         };
         break;
       default:
