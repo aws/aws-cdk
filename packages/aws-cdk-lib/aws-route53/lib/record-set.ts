@@ -343,7 +343,7 @@ export class RecordSet extends Resource implements IRecordSet {
   private readonly region?: string;
   private readonly multiValueAnswer?: boolean;
   private cidrLocation?: CfnRecordSet.CidrRoutingConfigProperty;
-  private _cidrCollection: CfnCidrCollection | undefined;
+  private _cidrCollection?: CfnCidrCollection;
 
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
