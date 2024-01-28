@@ -560,36 +560,6 @@ describe(AppStagingSynthesizer, () => {
     expect(getStagingResourceStack(asm, prefix).template).toBeDefined();
   });
 
-  // test('staging bucket with SSE-S3 encryption', () => {
-  //   // GIVEN
-  //   new CfnResource(stack, 'Resource', {
-  //     type: 'Some::Resource',
-  //   });
-
-  //   app = new App({
-  //     defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
-  //       appId: APP_ID,
-  //       stagingBucketEncryption: BucketEncryption.S3_MANAGED,
-  //     }),
-  //   });
-
-  //   // WHEN
-  //   const asm = app.synth();
-
-  //   // THEN
-  //   Template.fromJSON(getStagingResourceStack(asm).template).hasResourceProperties('AWS::S3::Bucket', {
-  //     BucketEncryption: {
-  //       ServerSideEncryptionConfiguration: [
-  //         {
-  //           ServerSideEncryptionByDefault: {
-  //             SSEAlgorithm: 'AES256',
-  //           },
-  //         },
-  //       ],
-  //     },
-  //   });
-  // });
-
   describe('environment specifics', () => {
     test('throws if App includes env-agnostic and specific env stacks', () => {
       // GIVEN - App with Stack with specific environment
