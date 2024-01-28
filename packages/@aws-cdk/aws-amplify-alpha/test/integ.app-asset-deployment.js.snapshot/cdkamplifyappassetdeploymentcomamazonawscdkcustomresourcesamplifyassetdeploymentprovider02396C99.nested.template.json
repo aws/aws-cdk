@@ -64,7 +64,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f1cd1efb56dda0c089bb165da8d17672c95bee7815d051d25ee7d1934cc99640.zip"
+     "S3Key": "85f7bb0ac0b4da3571afd49c891d631f4f07c0ef710a02046d3a9abd8d9d4604.zip"
     },
     "Environment": {
      "Variables": {
@@ -144,7 +144,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f1cd1efb56dda0c089bb165da8d17672c95bee7815d051d25ee7d1934cc99640.zip"
+     "S3Key": "85f7bb0ac0b4da3571afd49c891d631f4f07c0ef710a02046d3a9abd8d9d4604.zip"
     },
     "Environment": {
      "Variables": {
@@ -272,7 +272,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider)",
     "Environment": {
@@ -409,7 +409,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider)",
     "Environment": {
@@ -543,7 +543,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider)",
     "Environment": {
@@ -644,22 +644,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": [
-        "logs:CreateLogDelivery",
-        "logs:CreateLogStream",
-        "logs:DeleteLogDelivery",
-        "logs:DescribeLogGroups",
-        "logs:DescribeResourcePolicies",
-        "logs:GetLogDelivery",
-        "logs:ListLogDeliveries",
-        "logs:PutLogEvents",
-        "logs:PutResourcePolicy",
-        "logs:UpdateLogDelivery"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -671,14 +655,6 @@
      }
     ]
    }
-  },
-  "amplifyassetdeploymenthandlerproviderwaiterstatemachineLogGroupC4BDAC97": {
-   "Type": "AWS::Logs::LogGroup",
-   "Properties": {
-    "RetentionInDays": 731
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
   },
   "amplifyassetdeploymenthandlerproviderwaiterstatemachineB3C2FCBE": {
    "Type": "AWS::StepFunctions::StateMachine",
@@ -704,22 +680,6 @@
        "\"}}}"
       ]
      ]
-    },
-    "LoggingConfiguration": {
-     "Destinations": [
-      {
-       "CloudWatchLogsLogGroup": {
-        "LogGroupArn": {
-         "Fn::GetAtt": [
-          "amplifyassetdeploymenthandlerproviderwaiterstatemachineLogGroupC4BDAC97",
-          "Arn"
-         ]
-        }
-       }
-      }
-     ],
-     "IncludeExecutionData": false,
-     "Level": "ERROR"
     },
     "RoleArn": {
      "Fn::GetAtt": [

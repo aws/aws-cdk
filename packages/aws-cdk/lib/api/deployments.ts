@@ -4,13 +4,14 @@ import { AssetManifest, IManifestEntry } from 'cdk-assets';
 import { Mode } from './aws-auth/credentials';
 import { ISDK } from './aws-auth/sdk';
 import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
-import { deployStack, DeployStackResult, destroyStack, makeBodyParameterAndUpload, DeploymentMethod } from './deploy-stack';
+import { deployStack, DeployStackResult, destroyStack, DeploymentMethod } from './deploy-stack';
 import { EnvironmentResources, EnvironmentResourcesRegistry } from './environment-resources';
 import { HotswapMode } from './hotswap/common';
 import { loadCurrentTemplateWithNestedStacks, loadCurrentTemplate, flattenNestedStackNames, TemplateWithNestedStackCount } from './nested-stack-helpers';
 import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { replaceEnvPlaceholders } from './util/placeholders';
+import { makeBodyParameterAndUpload } from './util/template-body-parameter';
 import { Tag } from '../cdk-toolkit';
 import { debug, warning } from '../logging';
 import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions, PublishingAws, EVENT_TO_LOGGER } from '../util/asset-publishing';
@@ -198,6 +199,13 @@ export interface DeployStackOptions {
    * @default true To remain backward compatible.
    */
   readonly assetParallelism?: boolean;
+
+  /**
+   * Whether to deploy if the app contains no stacks.
+   *
+   * @default false
+   */
+  ignoreNoStacks?: boolean;
 }
 
 interface AssetOptions {
@@ -307,6 +315,13 @@ export class Deployments {
   constructor(private readonly props: DeploymentsProps) {
     this.sdkProvider = props.sdkProvider;
     this.environmentResources = new EnvironmentResourcesRegistry(props.toolkitStackName);
+  }
+
+  /**
+   * Resolves the environment for a stack.
+   */
+  public async resolveEnvironment(stack: cxapi.CloudFormationStackArtifact): Promise<cxapi.Environment> {
+    return this.sdkProvider.resolveEnvironment(stack.environment);
   }
 
   public async readCurrentTemplateWithNestedStacks(
@@ -424,6 +439,10 @@ export class Deployments {
     return stack.exists;
   }
 
+  public async prepareSdkWithDeployRole(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<PreparedSdkForEnvironment> {
+    return this.prepareSdkFor(stackArtifact, undefined, Mode.ForWriting);
+  }
+
   private async prepareSdkWithLookupOrDeployRole(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<PreparedSdkForEnvironment> {
     // try to assume the lookup role
     try {
@@ -458,7 +477,7 @@ export class Deployments {
       throw new Error(`The stack ${stack.displayName} does not have an environment`);
     }
 
-    const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment);
+    const resolvedEnvironment = await this.resolveEnvironment(stack);
 
     // Substitute any placeholders with information about the current environment
     const arns = await replaceEnvPlaceholders({

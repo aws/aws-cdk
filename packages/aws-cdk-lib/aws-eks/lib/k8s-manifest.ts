@@ -116,7 +116,7 @@ export interface KubernetesManifestProps extends KubernetesManifestOptions {
  */
 export class KubernetesManifest extends Construct {
   /**
-   * The CloudFormation resource type.
+   * The CloudFormation reosurce type.
    */
   public static readonly RESOURCE_TYPE = 'Custom::AWSCDK-EKS-KubernetesResource';
 
