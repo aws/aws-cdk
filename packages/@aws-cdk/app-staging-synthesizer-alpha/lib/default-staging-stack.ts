@@ -270,9 +270,6 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     this.stagingBucketEncryption = props.stagingBucketEncryption;
     const specializer = new StringSpecializer(this, props.qualifier);
 
-    // eslint-disable-next-line no-console
-    console.log(`BLAH: ${props.stagingBucketEncryption}`);
-
     this.providedFileRole = props.fileAssetPublishingRole?._specialize(specializer);
     this.providedImageRole = props.imageAssetPublishingRole?._specialize(specializer);
     this.stagingRepos = {};
@@ -371,9 +368,6 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
 
     this.ensureFileRole();
 
-    // eslint-disable-next-line no-console
-    console.log(`HERE: ${this.stagingBucketEncryption}`);
-
     let key = undefined;
     if (this.stagingBucketEncryption === s3.BucketEncryption.KMS || this.stagingBucketEncryption === undefined) {
       if (this.stagingBucketEncryption === undefined) {
@@ -382,11 +376,6 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
       }
       key = this.createBucketKey();
     }
-
-    // eslint-disable-next-line no-console
-    console.log(`FINALLY: ${this.stagingBucketEncryption}`);
-    // eslint-disable-next-line no-console
-    console.log(`KEY: ${key}`);
 
     // Create the bucket once the dependencies have been created
     const bucket = new s3.Bucket(this, bucketId, {
