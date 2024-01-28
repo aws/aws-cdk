@@ -3,6 +3,7 @@ import * as path from 'path';
 import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy, Duration } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { CloudAssembly } from 'aws-cdk-lib/cx-api';
 import { evaluateCFN } from './evaluate-cfn';
@@ -257,7 +258,7 @@ describe(AppStagingSynthesizer, () => {
       stack = new Stack(app, 'Stack', {
         env: {
           account: '000000000000',
-          region: 'us-west-2',
+          region: 'us-east-1',
         },
       });
       new CfnResource(stack, 'Resource', {
@@ -268,15 +269,59 @@ describe(AppStagingSynthesizer, () => {
       const asm = app.synth();
 
       // THEN
-      const stagingStackArtifact = asm.getStackArtifact(`StagingStack-${APP_ID}-000000000000-us-west-2`);
-
-      Template.fromJSON(stagingStackArtifact.template).hasResourceProperties('AWS::S3::Bucket', {
+      Template.fromJSON(getStagingResourceStack(asm).template).hasResourceProperties('AWS::S3::Bucket', {
         LifecycleConfiguration: {
           Rules: Match.arrayWith([{
             ExpirationInDays: 1,
             Prefix: DEPLOY_TIME_PREFIX,
             Status: 'Enabled',
           }]),
+        },
+        // When stagingBucketEncryption is not specified, it should be KMS for backwards compatibility
+        BucketEncryption: {
+          ServerSideEncryptionConfiguration: [
+            {
+              ServerSideEncryptionByDefault: {
+                SSEAlgorithm: 'aws:kms',
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('staging bucket with SSE-S3 encryption', () => {
+      // GIVEN
+      app = new App({
+        defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+          appId: APP_ID,
+          deployTimeFileAssetLifetime: Duration.days(1),
+          stagingBucketEncryption: BucketEncryption.S3_MANAGED,
+        }),
+      });
+      stack = new Stack(app, 'Stack', {
+        env: {
+          account: '000000000000',
+          region: 'us-east-1',
+        },
+      });
+      new CfnResource(stack, 'Resource', {
+        type: 'Some::Resource',
+      });
+
+      // WHEN
+      const asm = app.synth();
+
+      // THEN
+      Template.fromJSON(getStagingResourceStack(asm).template).hasResourceProperties('AWS::S3::Bucket', {
+        BucketEncryption: {
+          ServerSideEncryptionConfiguration: [
+            {
+              ServerSideEncryptionByDefault: {
+                SSEAlgorithm: 'AES256',
+              },
+            },
+          ],
         },
       });
     });
@@ -514,6 +559,36 @@ describe(AppStagingSynthesizer, () => {
     // THEN
     expect(getStagingResourceStack(asm, prefix).template).toBeDefined();
   });
+
+  // test('staging bucket with SSE-S3 encryption', () => {
+  //   // GIVEN
+  //   new CfnResource(stack, 'Resource', {
+  //     type: 'Some::Resource',
+  //   });
+
+  //   app = new App({
+  //     defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+  //       appId: APP_ID,
+  //       stagingBucketEncryption: BucketEncryption.S3_MANAGED,
+  //     }),
+  //   });
+
+  //   // WHEN
+  //   const asm = app.synth();
+
+  //   // THEN
+  //   Template.fromJSON(getStagingResourceStack(asm).template).hasResourceProperties('AWS::S3::Bucket', {
+  //     BucketEncryption: {
+  //       ServerSideEncryptionConfiguration: [
+  //         {
+  //           ServerSideEncryptionByDefault: {
+  //             SSEAlgorithm: 'AES256',
+  //           },
+  //         },
+  //       ],
+  //     },
+  //   });
+  // });
 
   describe('environment specifics', () => {
     test('throws if App includes env-agnostic and specific env stacks', () => {

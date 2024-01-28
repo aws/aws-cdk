@@ -62,6 +62,13 @@ export interface DefaultStagingStackOptions {
   readonly stagingBucketName?: string;
 
   /**
+   * Encryption type for staging bucket
+   *
+   * @default - s3.BucketEncryption.KMS
+   */
+  readonly stagingBucketEncryption?: s3.BucketEncryption;
+
+  /**
    * Pass in an existing role to be used as the file publishing role.
    *
    * @default - a new role will be created
@@ -219,6 +226,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
 
   private readonly appId: string;
   private readonly stagingBucketName?: string;
+  private stagingBucketEncryption?: s3.BucketEncryption;
 
   /**
    * File publish role ARN in asset manifest format
@@ -259,7 +267,11 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
 
     this.deployRoleArn = props.deployRoleArn;
     this.stagingBucketName = props.stagingBucketName;
+    this.stagingBucketEncryption = props.stagingBucketEncryption;
     const specializer = new StringSpecializer(this, props.qualifier);
+
+    // eslint-disable-next-line no-console
+    console.log(`BLAH: ${props.stagingBucketEncryption}`);
 
     this.providedFileRole = props.fileAssetPublishingRole?._specialize(specializer);
     this.providedImageRole = props.imageAssetPublishingRole?._specialize(specializer);
@@ -358,7 +370,23 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     }
 
     this.ensureFileRole();
-    const key = this.createBucketKey();
+
+    // eslint-disable-next-line no-console
+    console.log(`HERE: ${this.stagingBucketEncryption}`);
+
+    let key = undefined;
+    if (this.stagingBucketEncryption === s3.BucketEncryption.KMS || this.stagingBucketEncryption === undefined) {
+      if (this.stagingBucketEncryption === undefined) {
+        // default is KMS for backwards compatibility
+        this.stagingBucketEncryption = s3.BucketEncryption.KMS;
+      }
+      key = this.createBucketKey();
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(`FINALLY: ${this.stagingBucketEncryption}`);
+    // eslint-disable-next-line no-console
+    console.log(`KEY: ${key}`);
 
     // Create the bucket once the dependencies have been created
     const bucket = new s3.Bucket(this, bucketId, {
@@ -369,7 +397,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
       } : {
         removalPolicy: RemovalPolicy.RETAIN,
       }),
-      encryption: s3.BucketEncryption.KMS,
+      encryption: this.stagingBucketEncryption,
       encryptionKey: key,
 
       // Many AWS account safety checkers will complain when buckets aren't versioned
