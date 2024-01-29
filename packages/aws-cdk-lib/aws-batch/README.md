@@ -479,7 +479,7 @@ jobDefn.container.addVolume(batch.EcsVolume.efs({
 }));
 ```
 
-### Running a ECS workflow with Fargate container
+### Running an ECS workflow with Fargate container
 
 ```ts
 const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
