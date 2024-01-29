@@ -597,6 +597,31 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
+### Additional CloudFront distribution metrics
+
+You can enable [additional CloudFront distribution metrics](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/viewing-cloudfront-metrics.html#monitoring-console.distributions-additional), which include the following metrics:
+
+- 4xx and 5xx error rates: View 4xx and 5xx error rates by the specific HTTP status code, as a percentage of total requests.
+- Origin latency: See the total time spent from when CloudFront receives a request to when it provides a response to the network (not the viewer), for responses that are served from the origin, not the CloudFront cache.
+- Cache hit rate: View cache hits as a percentage of total cacheable requests, excluding errors.
+
+```ts
+const dist = new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
+  publishAdditionalMetrics: true,
+});
+
+// Retrieving additional distribution metrics
+const latencyMetric = dist.metricOriginLatency();
+const cacheHitRateMetric = dist.metricCacheHitRate();
+const http401ErrorRateMetric = dist.metric401ErrorRate();
+const http403ErrorRateMetric = dist.metric403ErrorRate();
+const http404ErrorRateMetric = dist.metric404ErrorRate();
+const http502ErrorRateMetric = dist.metric502ErrorRate();
+const http503ErrorRateMetric = dist.metric503ErrorRate();
+const http504ErrorRateMetric = dist.metric504ErrorRate();
+```
+
 ### HTTP Versions
 
 You can configure CloudFront to use a particular version of the HTTP protocol. By default,
