@@ -1,0 +1,149 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "integ-aws-websocket-sqs-integration.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-aws-websocket-sqs-integration.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-aws-websocket-sqs-integration": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-aws-websocket-sqs-integration.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9ec659c1e74caa0cf64df08f5e7cc0de2262f0bf71b26230ffd831642b1b2a4d.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-aws-websocket-sqs-integration.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-aws-websocket-sqs-integration.assets"
+      ],
+      "metadata": {
+        "/integ-aws-websocket-sqs-integration/MessageSQSQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MessageSQSQueueF7E656B7"
+          }
+        ],
+        "/integ-aws-websocket-sqs-integration/webSocketApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "webSocketApi5AB89700"
+          }
+        ],
+        "/integ-aws-websocket-sqs-integration/webSocketApi/$default-Route/SQSSendMessage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "webSocketApidefaultRouteSQSSendMessageFC4F9133"
+          }
+        ],
+        "/integ-aws-websocket-sqs-integration/webSocketApi/$default-Route/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "webSocketApidefaultRoute749519EC"
+          }
+        ],
+        "/integ-aws-websocket-sqs-integration/DevStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DevStage520A913F"
+          }
+        ],
+        "/integ-aws-websocket-sqs-integration/webSocketApiRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "webSocketApiRoleE85311F3"
+          }
+        ],
+        "/integ-aws-websocket-sqs-integration/webSocketApiRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "webSocketApiRoleDefaultPolicyF067C420"
+          }
+        ],
+        "/integ-aws-websocket-sqs-integration/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-aws-websocket-sqs-integration/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-aws-websocket-sqs-integration"
+    },
+    "apigatewayv2awsintegrationsqsintegtestDefaultTestDeployAssert51A62E2E.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "apigatewayv2awsintegrationsqsintegtestDefaultTestDeployAssert51A62E2E.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "apigatewayv2awsintegrationsqsintegtestDefaultTestDeployAssert51A62E2E": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "apigatewayv2awsintegrationsqsintegtestDefaultTestDeployAssert51A62E2E.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "apigatewayv2awsintegrationsqsintegtestDefaultTestDeployAssert51A62E2E.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "apigatewayv2awsintegrationsqsintegtestDefaultTestDeployAssert51A62E2E.assets"
+      ],
+      "metadata": {
+        "/apigatewayv2-aws-integration-sqs-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/apigatewayv2-aws-integration-sqs-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "apigatewayv2-aws-integration-sqs-integ-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
