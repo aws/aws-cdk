@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.123.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.122.0-alpha.0...v2.123.0-alpha.0) (2024-01-24)
+
+
+### Features
+
+* **iot-actions-alpha:** open search action in IoT topic rule ([#28748](https://github.com/aws/aws-cdk/issues/28748)) ([84b23cb](https://github.com/aws/aws-cdk/commit/84b23cb07d421ec004e412bf48e837ae0d87f7fe))
+
+
+### Bug Fixes
+
+* **amplify:** addBranch fails synth with "cannot find entry file..." ([#28772](https://github.com/aws/aws-cdk/issues/28772)) ([cb522bb](https://github.com/aws/aws-cdk/commit/cb522bb65b03e9b0cdcbd01b4f71798e628424f4)), closes [#28658](https://github.com/aws/aws-cdk/issues/28658) [#28764](https://github.com/aws/aws-cdk/issues/28764)
+* **redshift:** enableRebootForParameterChanges fails synth with "cannot find entry file…" ([#28760](https://github.com/aws/aws-cdk/issues/28760)) ([4952f36](https://github.com/aws/aws-cdk/commit/4952f36ff70c25c7a56676fedf47ab6571c19cea))
+
 ## [2.122.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.121.1-alpha.0...v2.122.0-alpha.0) (2024-01-18)
 
 
