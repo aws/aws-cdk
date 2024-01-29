@@ -92,6 +92,13 @@ export interface WebSocketIntegrationProps {
    * @default - No template selection expression required.
    */
   readonly templateSelectionExpression?: string;
+
+  /**
+   * Specifies integration passthrough behaviors.
+   *
+   * @default - No integration passthrough behavior required.
+   */
+  readonly passthroughBehavior?: string;
 }
 
 /**
@@ -112,6 +119,7 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
       credentialsArn: props.credentialsRole?.roleArn,
       requestParameters: props.requestParameters,
       requestTemplates: props.requestTemplates,
+      passthroughBehavior: props.passthroughBehavior,
       templateSelectionExpression: props.templateSelectionExpression,
     });
     this.integrationId = integ.ref;
@@ -168,6 +176,7 @@ export abstract class WebSocketRouteIntegration {
         credentialsRole: config.credentialsRole,
         requestTemplates: config.requestTemplates,
         requestParameters: config.requestParameters,
+        passthroughBehavior: config.passthroughBehavior,
         templateSelectionExpression: config.templateSelectionExpression,
       });
     }
@@ -229,4 +238,11 @@ export interface WebSocketRouteIntegrationConfig {
    * @default - No template selection expression.
    */
   readonly templateSelectionExpression?: string;
+
+  /**
+   * Integration passthrough behaviors.
+   *
+   * @default - No pass through bahavior.
+   */
+  readonly passthroughBehavior?: string;
 }

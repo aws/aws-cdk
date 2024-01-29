@@ -54,6 +54,13 @@ export interface WebSocketAwsIntegrationProps {
    * @default - No template selection expression provided.
    */
   readonly templateSelectionExpression?: string;
+
+  /**
+   * Specifies integration passthrough behaviors.
+   *
+   * @default - WHEN_NO_MATCH.
+   */
+  readonly passthroughBehavior?: string;
 }
 
 /**
@@ -73,7 +80,9 @@ export class WebSocketAwsIntegration extends WebSocketRouteIntegration {
       uri: this.props.integrationUri,
       method: this.props.integrationMethod,
       credentialsRole: this.props.credentialsRole,
+      requestParameters: this.props.requestParameters,
       requestTemplates: this.props.requestTemplates,
+      passthroughBehavior: this.props.passthroughBehavior,
       templateSelectionExpression: this.props.templateSelectionExpression,
     };
   }
