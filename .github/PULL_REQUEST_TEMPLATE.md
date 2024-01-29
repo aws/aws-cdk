@@ -1,13 +1,17 @@
-> REPLACE THIS TEXT BLOCK
->
-> Describe the reason for this change, what the solution is, and any
-> important design decisions you made. 
->
-> Remember to follow the [CONTRIBUTING GUIDE] and [DESIGN GUIDELINES] for any
-> code you submit.
->
-> [CONTRIBUTING GUIDE]: https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md
-> [DESIGN GUIDELINES]: https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md
+### Reason for this change
+
+<!--What is the bug or use case behind this change?-->
+
+### Description of changes
+
+<!--What code changes did you make? Have you made any important design decisions?-->
+
+### Description of how you validated changes
+
+<!--Have you added any unit tests and/or integration tests?-->
+
+
+- [ ] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
 
 Closes #<issue number here>.
 
