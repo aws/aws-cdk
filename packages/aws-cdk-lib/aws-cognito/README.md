@@ -499,7 +499,7 @@ Additionally, only the pre token generation Lambda trigger supports the trigger 
 declare const userpool: cognito.UserPool;
 declare const preTokenGenerationFn: lambda.Function;
 
-userpool.addTrigger(cognito.UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, preTokenGenerationFn, LambdaVersion.V2_0);
+userpool.addTrigger(cognito.UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, preTokenGenerationFn, cognito.LambdaVersion.V2_0);
 ```
 
 The following table lists the set of triggers available, and their corresponding method to add it to the user pool.
