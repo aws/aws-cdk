@@ -3,6 +3,7 @@ import {
   WebSocketIntegrationType,
   WebSocketRouteIntegrationConfig,
   WebSocketRouteIntegrationBindOptions,
+  PassthroughBehavior,
 } from '../../../aws-apigatewayv2';
 import { IRole } from '../../../aws-iam';
 
@@ -56,11 +57,15 @@ export interface WebSocketAwsIntegrationProps {
   readonly templateSelectionExpression?: string;
 
   /**
-   * Specifies integration passthrough behaviors.
+   * Specifies the pass-through behavior for incoming requests based on the
+   * Content-Type header in the request, and the available mapping templates
+   * specified as the requestTemplates property on the Integration resource.
+   * There are three valid values: WHEN_NO_MATCH, WHEN_NO_TEMPLATES, and
+   * NEVER.
    *
-   * @default - WHEN_NO_MATCH.
+   * @default - No passthrough behavior required.
    */
-  readonly passthroughBehavior?: string;
+  readonly passthroughBehavior?: PassthroughBehavior
 }
 
 /**

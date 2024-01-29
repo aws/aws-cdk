@@ -33,6 +33,30 @@ export enum WebSocketIntegrationType {
 }
 
 /**
+ * Integration Passthrough Behavior
+ */
+export enum PassthroughBehavior {
+  /**
+   * Passes the request body for unmapped content types through to the
+   * integration back end without transformation.
+   */
+  WHEN_NO_MATCH = 'WHEN_NO_MATCH',
+
+  /**
+   * Rejects unmapped content types with an HTTP 415 'Unsupported Media Type'
+   * response
+   */
+  NEVER = 'NEVER',
+
+  /**
+   * Allows pass-through when the integration has NO content types mapped to
+   * templates. However if there is at least one content type defined,
+   * unmapped content types will be rejected with the same 415 response.
+   */
+  WHEN_NO_TEMPLATES = 'WHEN_NO_TEMPLATES'
+}
+
+/**
  * The integration properties
  */
 export interface WebSocketIntegrationProps {
@@ -94,11 +118,15 @@ export interface WebSocketIntegrationProps {
   readonly templateSelectionExpression?: string;
 
   /**
-   * Specifies integration passthrough behaviors.
+   * Specifies the pass-through behavior for incoming requests based on the
+   * Content-Type header in the request, and the available mapping templates
+   * specified as the requestTemplates property on the Integration resource.
+   * There are three valid values: WHEN_NO_MATCH, WHEN_NO_TEMPLATES, and
+   * NEVER.
    *
-   * @default - No integration passthrough behavior required.
+   * @default - No passthrough behavior required.
    */
-  readonly passthroughBehavior?: string;
+  readonly passthroughBehavior?: PassthroughBehavior
 }
 
 /**
@@ -244,5 +272,5 @@ export interface WebSocketRouteIntegrationConfig {
    *
    * @default - No pass through bahavior.
    */
-  readonly passthroughBehavior?: string;
+  readonly passthroughBehavior?: PassthroughBehavior;
 }

@@ -1,4 +1,4 @@
-import { HttpMethod, WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
+import { HttpMethod, PassthroughBehavior, WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { App, Stack, Aws } from 'aws-cdk-lib';
@@ -49,7 +49,7 @@ webSocketApi.addRoute('$default', {
     integrationUri: `arn:aws:apigateway:${Aws.REGION}:sqs:path/${Aws.ACCOUNT_ID}/${sqsMessageQueue.queueName}`,
     integrationMethod: HttpMethod.POST,
     credentialsRole: webSocketApiRole,
-    passthroughBehavior: 'NEVER',
+    passthroughBehavior: PassthroughBehavior.NEVER,
     templateSelectionExpression: '\\$default',
     requestTemplates: {
       $default: 'Action=SendMessage&MessageGroupId=$input.path(\'$.MessageGroupId\')&MessageDeduplicationId=$context.requestId&MessageAttribute.1.Name=connectionId&MessageAttribute.1.Value.StringValue=$context.connectionId&MessageAttribute.1.Value.DataType=String&MessageAttribute.2.Name=requestId&MessageAttribute.2.Value.StringValue=$context.requestId&MessageAttribute.2.Value.DataType=String&MessageBody=$input.json(\'$\')',
