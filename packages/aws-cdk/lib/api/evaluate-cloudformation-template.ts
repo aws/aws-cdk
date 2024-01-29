@@ -114,7 +114,7 @@ export class EvaluateCloudFormationTemplate {
   private readonly partition: string;
   private readonly urlSuffix: (region: string) => string;
   private readonly sdk: ISDK;
-  private readonly nestedStackNames: { [nestedStackLogicalId: string]: NestedStackTemplates };
+  private readonly nestedStacks: { [nestedStackLogicalId: string]: NestedStackTemplates };
   private readonly stackResources: ListStackResources;
   private readonly lookupExport: LookupExport;
 
@@ -136,7 +136,7 @@ export class EvaluateCloudFormationTemplate {
     this.sdk = props.sdk;
 
     // We need names of nested stack so we can evaluate cross stack references
-    this.nestedStackNames = props.nestedStackNames ?? {};
+    this.nestedStacks = props.nestedStackNames ?? {};
 
     // The current resources of the Stack.
     // We need them to figure out the physical name of a resource in case it wasn't specified by the user.
@@ -163,7 +163,7 @@ export class EvaluateCloudFormationTemplate {
       partition: this.partition,
       urlSuffix: this.urlSuffix,
       sdk: this.sdk,
-      nestedStackNames: this.nestedStackNames,
+      nestedStackNames: this.nestedStacks,
     });
   }
 
@@ -387,7 +387,7 @@ export class EvaluateCloudFormationTemplate {
 
     if (foundResource.ResourceType == 'AWS::CloudFormation::Stack' && attribute?.startsWith('Outputs.')) {
       // need to resolve attributes from another stack's Output section
-      const dependantStackName = this.findNestedStack(logicalId, this.nestedStackNames);
+      const dependantStackName = this.findNestedStack(logicalId, this.nestedStacks);
       if (!dependantStackName) {
         //this is a newly created nested stack and cannot be hotswapped
         return undefined;
@@ -395,7 +395,7 @@ export class EvaluateCloudFormationTemplate {
       const dependantStackTemplate = this.template.Resources[logicalId];
       const evaluateCfnTemplate = await this.createNestedEvaluateCloudFormationTemplate(
         dependantStackName,
-        dependantStackTemplate?.Properties?.NestedTemplate,
+        this.nestedStacks[logicalId].generatedTemplate,
         dependantStackTemplate.newValue?.Properties?.Parameters);
 
       // Split Outputs.<refName> into 'Outputs' and '<refName>' and recursively call evaluate

@@ -67,7 +67,7 @@ export function printStackDiff(
     if (!quiet) {
       stream.write(format('Stack %s\n', chalk.bold(nestedStack.physicalName)));
     }
-    // lol
+
     (newTemplate as any)._template = nestedStack.generatedTemplate;
     printStackDiff(
       nestedStack.deployedTemplate,

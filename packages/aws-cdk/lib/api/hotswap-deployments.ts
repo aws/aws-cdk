@@ -225,12 +225,12 @@ function filterDict<T>(dict: { [key: string]: T }, func: (t: T) => boolean): { [
 async function findNestedHotswappableChanges(
   logicalId: string,
   change: cfn_diff.ResourceDifference,
-  nestedStackNames: { [nestedStackName: string]: NestedStackTemplates },
+  nestedStackTemplates: { [nestedStackName: string]: NestedStackTemplates },
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   sdk: ISDK,
 ): Promise<ClassifiedResourceChanges> {
-  const nestedStackName = nestedStackNames[logicalId].physicalName;
-  if (!nestedStackName) {
+  const nestedStack = nestedStackTemplates[logicalId];
+  if (!nestedStack.physicalName) {
     return {
       hotswappableChanges: [],
       nonHotswappableChanges: [{
@@ -244,14 +244,14 @@ async function findNestedHotswappableChanges(
   }
 
   const evaluateNestedCfnTemplate = await evaluateCfnTemplate.createNestedEvaluateCloudFormationTemplate(
-    nestedStackName, change.newValue?.Properties?.NestedTemplate, change.newValue?.Properties?.Parameters,
+    nestedStack.physicalName, nestedStack.generatedTemplate, change.newValue?.Properties?.Parameters,
   );
 
   const nestedDiff = cfn_diff.fullDiff(
-    change.oldValue?.Properties?.NestedTemplate, change.newValue?.Properties?.NestedTemplate,
+    nestedStackTemplates[logicalId].deployedTemplate, nestedStackTemplates[logicalId].generatedTemplate,
   );
 
-  return classifyResourceChanges(nestedDiff, evaluateNestedCfnTemplate, sdk, nestedStackNames[logicalId].nestedStackTemplates);
+  return classifyResourceChanges(nestedDiff, evaluateNestedCfnTemplate, sdk, nestedStackTemplates[logicalId].nestedStackTemplates);
 }
 
 /** Returns 'true' if a pair of changes is for the same resource. */

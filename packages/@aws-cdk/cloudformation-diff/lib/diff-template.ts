@@ -56,8 +56,6 @@ export function fullDiff(
     filterFalsePositivies(theDiff, changeSet);
   }
 
-  //removeNestedTemplates(theDiff);
-
   return theDiff;
 }
 

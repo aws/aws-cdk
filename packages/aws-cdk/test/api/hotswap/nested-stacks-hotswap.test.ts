@@ -18,14 +18,14 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       updateFunctionCode: mockUpdateLambdaCode,
     });
 
-    const rootStack = testStack({
+    const oldRootStack = testStack({
       stackName: 'LambdaRoot',
       template: {
         Resources: {
           NestedStack: {
             Type: 'AWS::CloudFormation::Stack',
             Properties: {
-              TemplateURL: 'https://www.magic-url.com',
+              TemplateURL: 'https://www.amazoff.com',
             },
             Metadata: {
               'aws:asset:path': 'one-lambda-stack.nested.template.json',
@@ -35,7 +35,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     });
 
-    setup.addTemplateToCloudFormationLookupMock(rootStack);
+    setup.addTemplateToCloudFormationLookupMock(oldRootStack);
     setup.addTemplateToCloudFormationLookupMock(testStack({
       stackName: 'NestedStack',
       template: {
@@ -63,10 +63,10 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       ),
     );
 
-    const cdkStackArtifact = testStack({ stackName: 'LambdaRoot', template: rootStack.template });
-
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+    oldRootStack.template.Resources.NestedStack.Properties.TemplateURL = 'https://www.amazon.com';
+    const newRootStack = testStack({ stackName: 'LambdaRoot', template: oldRootStack.template });
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -85,14 +85,14 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       updateFunctionCode: mockUpdateLambdaCode,
     });
 
-    const rootStack = testStack({
+    const oldRootStack = testStack({
       stackName: 'TwoLevelLambdaRoot',
       template: {
         Resources: {
           ChildStack: {
             Type: 'AWS::CloudFormation::Stack',
             Properties: {
-              TemplateURL: 'https://www.magic-url.com',
+              TemplateURL: 'https://www.amazoff.com',
             },
             Metadata: {
               'aws:asset:path': 'one-lambda-one-stack-stack.nested.template.json',
@@ -102,8 +102,9 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     });
 
-    setup.addTemplateToCloudFormationLookupMock(rootStack);
-    setup.addTemplateToCloudFormationLookupMock(testStack({
+    setup.addTemplateToCloudFormationLookupMock(oldRootStack);
+
+    const oldChildStack = testStack({
       stackName: 'ChildStack',
       template: {
         Resources: {
@@ -123,7 +124,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
           GrandChildStack: {
             Type: 'AWS::CloudFormation::Stack',
             Properties: {
-              TemplateURL: 'https://www.magic-url.com',
+              TemplateURL: 'https://www.amazoff.com',
             },
             Metadata: {
               'aws:asset:path': 'one-lambda-stack.nested.template.json',
@@ -131,7 +132,9 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
           },
         },
       },
-    }));
+    });
+    setup.addTemplateToCloudFormationLookupMock(oldChildStack);
+
     setup.addTemplateToCloudFormationLookupMock(testStack({
       stackName: 'GrandChildStack',
       template: {
@@ -164,10 +167,15 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       ),
     );
 
-    const cdkStackArtifact = testStack({ stackName: 'TwoLevelLambdaRoot', template: rootStack.template });
-
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+    oldRootStack.template.Resources.NestedStack.Properties.TemplateURL = 'https://www.amazon.com';
+    oldChildStack.template.Resources.GrandChildStack.Properties.TemplateURL = 'https://www.amazon.com';
+
+    // write the new templates to disk
+    const newRootStack = testStack({ stackName: 'LambdaRoot', template: oldRootStack.template });
+    testStack({ stackName: 'ChildStack', template: oldChildStack.template });
+
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -191,7 +199,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       updateFunctionCode: mockUpdateLambdaCode,
     });
 
-    const rootStack = testStack({
+    const oldRootStack = testStack({
       stackName: 'SiblingLambdaRoot',
       template: {
         Resources: {
@@ -221,7 +229,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     });
 
-    setup.addTemplateToCloudFormationLookupMock(rootStack);
+    setup.addTemplateToCloudFormationLookupMock(oldRootStack);
     setup.addTemplateToCloudFormationLookupMock(testStack({
       stackName: 'NestedStack',
       template: {
@@ -249,11 +257,12 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       ),
     );
 
-    rootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
-    const cdkStackArtifact = testStack({ stackName: 'SiblingLambdaRoot', template: rootStack.template });
-
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+    oldRootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
+    oldRootStack.template.Resources.NestedStack.Properties.TemplateURL = 'https://www.amazon.com';
+    // write the updated templates to disk
+    const newRootStack = testStack({ stackName: oldRootStack.stackName, template: oldRootStack.template });
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -279,7 +288,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       updateFunctionCode: mockUpdateLambdaCode,
     });
 
-    const rootStack = testStack({
+    const oldRootStack = testStack({
       stackName: 'NonHotswappableRoot',
       template: {
         Resources: {
@@ -309,7 +318,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     });
 
-    setup.addTemplateToCloudFormationLookupMock(rootStack);
+    setup.addTemplateToCloudFormationLookupMock(oldRootStack);
     setup.addTemplateToCloudFormationLookupMock(testStack({
       stackName: 'NestedStack',
       template: {
@@ -338,12 +347,13 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       ),
     );
 
-    rootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
-    const cdkStackArtifact = testStack({ stackName: 'NonHotswappableRoot', template: rootStack.template });
+    oldRootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
+    oldRootStack.template.Resources.NestedStack.Properties.TemplateURL = 'https://www.amazon.com';
+    const newRootStack = testStack({ stackName: oldRootStack.stackName, template: oldRootStack.template });
 
     if (hotswapMode === HotswapMode.FALL_BACK) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
@@ -351,7 +361,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
 
     } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -373,7 +383,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       updateFunctionCode: mockUpdateLambdaCode,
     });
 
-    const rootStack = testStack({
+    const oldRootStack = testStack({
       stackName: 'NestedStackDeletionRoot',
       template: {
         Resources: {
@@ -403,7 +413,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     });
 
-    setup.addTemplateToCloudFormationLookupMock(rootStack);
+    setup.addTemplateToCloudFormationLookupMock(oldRootStack);
     setup.addTemplateToCloudFormationLookupMock(testStack({
       stackName: 'NestedStack',
       template: {
@@ -431,20 +441,20 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       ),
     );
 
-    rootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
-    delete rootStack.template.Resources.NestedStack;
-    const cdkStackArtifact = testStack({ stackName: 'NestedStackDeletionRoot', template: rootStack.template });
+    oldRootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
+    delete oldRootStack.template.Resources.NestedStack;
+    const newRootStack = testStack({ stackName: oldRootStack.stackName, template: oldRootStack.template });
 
     if (hotswapMode === HotswapMode.FALL_BACK) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
       expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
     } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -466,7 +476,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       updateFunctionCode: mockUpdateLambdaCode,
     });
 
-    const rootStack = testStack({
+    const oldRootStack = testStack({
       stackName: 'NestedStackCreationRoot',
       template: {
         Resources: {
@@ -487,23 +497,24 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     });
 
-    setup.addTemplateToCloudFormationLookupMock(rootStack);
+    setup.addTemplateToCloudFormationLookupMock(oldRootStack);
 
-    rootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
-    rootStack.template.Resources.NestedStack = {
+    oldRootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
+    oldRootStack.template.Resources.NestedStack = {
       Type: 'AWS::CloudFormation::Stack',
       Properties: {
-        TemplateURL: 'https://www.magic-url.com',
+        TemplateURL: 'https://www.amazon.com',
       },
       Metadata: {
         'aws:asset:path': 'one-lambda-stack.nested.template.json',
       },
     };
-    const cdkStackArtifact = testStack({ stackName: 'NestedStackCreationRoot', template: rootStack.template });
+    // we need this because testStack() immediately writes the template to disk, so changing the template afterwards is not going to update the file.
+    const newRootStack = testStack({ stackName: oldRootStack.stackName, template: oldRootStack.template });
 
     if (hotswapMode === HotswapMode.FALL_BACK) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
@@ -511,7 +522,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
 
     } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -533,7 +544,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       updateFunctionCode: mockUpdateLambdaCode,
     });
 
-    const rootStack = testStack({
+    const oldRootStack = testStack({
       stackName: 'NestedStackTypeChangeRoot',
       template: {
         Resources: {
@@ -567,23 +578,24 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     });
 
-    setup.addTemplateToCloudFormationLookupMock(rootStack);
+    setup.addTemplateToCloudFormationLookupMock(oldRootStack);
 
-    rootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
-    rootStack.template.Resources.FutureNestedStack = {
+    oldRootStack.template.Resources.Func.Properties.Code.S3Bucket = 'new-bucket';
+    oldRootStack.template.Resources.FutureNestedStack = {
       Type: 'AWS::CloudFormation::Stack',
       Properties: {
-        TemplateURL: 'https://www.magic-url.com',
+        TemplateURL: 'https://www.amazon.com',
       },
       Metadata: {
         'aws:asset:path': 'one-lambda-stack.nested.template.json',
       },
     };
-    const cdkStackArtifact = testStack({ stackName: 'NestedStackTypeChangeRoot', template: rootStack.template });
+    // write the updated template to disk
+    const newRootStack = testStack({ stackName: oldRootStack.stackName, template: oldRootStack.template });
 
     if (hotswapMode === HotswapMode.FALL_BACK) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack);
 
       // THEN
       expect(deployStackResult).toBeUndefined();
@@ -591,7 +603,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
 
     } else if (hotswapMode === HotswapMode.HOTSWAP_ONLY) {
       // WHEN
-      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+      const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack);
 
       // THEN
       expect(deployStackResult).not.toBeUndefined();
@@ -624,7 +636,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     };
 
-    const rootStack = testStack({
+    const oldRootStack = testStack({
       stackName: 'MultiLayerRoot',
       template: {
         Resources: {
@@ -642,8 +654,9 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     });
 
-    setup.addTemplateToCloudFormationLookupMock(rootStack);
-    setup.addTemplateToCloudFormationLookupMock(testStack({
+    setup.addTemplateToCloudFormationLookupMock(oldRootStack);
+
+    const oldChildStack = testStack({
       stackName: 'ChildStack',
       template: {
         Resources: {
@@ -668,7 +681,9 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
           Func: lambdaFunctionResource,
         },
       },
-    }));
+    });
+    setup.addTemplateToCloudFormationLookupMock(oldChildStack);
+
     setup.addTemplateToCloudFormationLookupMock(testStack({
       stackName: 'GrandChildStackA',
       template: {
@@ -708,11 +723,16 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'grandchild-B-function'),
     );
 
-    rootStack.template.Resources.Func.Properties.Code.S3Key = 'new-key';
-    const cdkStackArtifact = testStack({ stackName: 'MultiLayerRoot', template: rootStack.template });
-
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+    oldRootStack.template.Resources.Func.Properties.Code.S3Key = 'new-key';
+    oldRootStack.template.Resources.ChildStack.Properties.TemplateURL = 'https://www.amazon.com';
+    oldChildStack.template.Resources.GrandChildStackA.Properties.TemplateURL = 'https://www.amazon.com';
+    oldChildStack.template.Resources.GrandChildStackB.Properties.TemplateURL = 'https://www.amazon.com';
+
+    const newRootStack = testStack({ stackName: oldRootStack.stackName, template: oldRootStack.template });
+    testStack({ stackName: oldChildStack.stackName, template: oldChildStack.template });
+
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -809,10 +829,10 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       ),
     );
 
-    const cdkStackArtifact = testStack({ stackName: 'LambdaRoot', template: rootStack.template });
+    rootStack.template.Resources.NestedStack.Properties.TemplateURL = 'https://www.amazon.com';
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact, {
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, rootStack, {
       S3BucketParam: 'bucket-param-value',
       S3KeyParam: 'key-param-value',
     });
@@ -826,7 +846,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     });
   });
 
-  test('can hotswap a lambda function in a 2-level nested stack with dependency on a output of 2nd level sibling stack', async () => {
+  test('can hotswap a lambda function in a 2-level nested stack with dependency on an output of 2nd level sibling stack', async () => {
     // GIVEN: RootStack has one child stack `FirstLevelRootStack` which further has two child stacks
     // `NestedLambdaStack` and `NestedSiblingStack`. `NestedLambdaStack` takes two parameters s3Key
     // and s3Bucket and use them for a Lambda function.
@@ -965,11 +985,12 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'nested-lambda-function'),
     );
     setup.pushNestedStackResourceSummaries('NestedSiblingStack');
-
-    const cdkStackArtifact = testStack({ stackName: 'RootStack', template: rootStack.template });
+    rootStack.template.Resources.FirstLevelRootStack.Properties.TemplateURL = 'https://www.amazon.com';
+    firstLevelRootStack.template.Resources.NestedLambdaStack.Properties.TemplateURL = 'https://www.amazon.com';
+    firstLevelRootStack.template.Resources.NestedSiblingStack.Properties.TemplateURL = 'https://www.amazon.com';
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact, {
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, rootStack, {
       S3BucketParam: 'new-bucket',
     });
 
@@ -1059,10 +1080,10 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       ),
     );
 
-    const cdkStackArtifact = testStack({ stackName: 'LambdaRoot', template: rootStack.template });
+    rootStack.template.Resources.NestedStack.Properties.TemplateURL = 'https://www.amazon.com';
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, rootStack);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -1129,9 +1150,9 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
         },
       },
     });
-
     setup.addTemplateToCloudFormationLookupMock(rootStack);
-    setup.addTemplateToCloudFormationLookupMock(testStack({
+
+    const childStack = testStack({
       stackName: 'ChildStack',
       template: {
         Resources: {
@@ -1159,7 +1180,9 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
           },
         },
       },
-    }));
+    });
+    setup.addTemplateToCloudFormationLookupMock(childStack);
+
     setup.addTemplateToCloudFormationLookupMock(testStack({
       stackName: 'GrandChildStack',
       template: {
@@ -1192,10 +1215,12 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
         'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/GrandChildStack/abcd',
       ),
     );
-    const cdkStackArtifact = testStack({ stackName: 'LambdaRoot', template: rootStack.template });
+
+    rootStack.template.Resources.ChildStack.Properties.TemplateURL = 'https://www.amazon.com';
+    childStack.template.Resources.GrandChildStack.Properties.TemplateURL = 'https://www.amazon.com';
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact, {
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, rootStack, {
       GrandChildS3BucketParam: 'child-bucket-param-value',
       GrandChildS3KeyParam: 'child-key-param-value',
       ChildS3BucketParam: 'bucket-param-value',
@@ -1232,7 +1257,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
           NestedStack: {
             Type: 'AWS::CloudFormation::Stack',
             Properties: {
-              TemplateURL: 'https://www.magic-url.com',
+              TemplateURL: 'https://www.amazoff.com',
             },
             Metadata: {
               'aws:asset:path': 'one-lambda-version-stack.nested.template.json',
@@ -1273,10 +1298,9 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       ),
     );
 
-    const cdkStackArtifact = testStack({ stackName: 'LambdaRoot', template: rootStack.template });
-
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, cdkStackArtifact);
+    rootStack.template.Resources.NestedStack.Properties.TemplateURL = 'https://www.amazon.com';
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, rootStack);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
