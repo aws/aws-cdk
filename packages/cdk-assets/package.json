@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "cdk-build",
-    "integ": "integ-runner --language javascript",
+    "integ": "integ-runner",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
