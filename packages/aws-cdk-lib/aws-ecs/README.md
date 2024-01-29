@@ -1653,7 +1653,8 @@ const customService = new ecs.FargateService(this, 'CustomizedService', {
 ```
 
 To set a timeout for service connect, use `idleTimeout` and `perRequestTimeout`.
-If `idleTimeout` is set to a time that is less than `perRequestTimeout`, the connection will close when
+
+**Note**: If `idleTimeout` is set to a time that is less than `perRequestTimeout`, the connection will close when
 the `idleTimeout` is reached and not the `perRequestTimeout`.
 
 ```ts
@@ -1674,6 +1675,8 @@ const service = new ecs.FargateService(this, 'Service', {
   },
 });
 ```
+
+> Visit [Amazon ECS support for configurable timeout for services running with Service Connect](https://aws.amazon.com/about-aws/whats-new/2024/01/amazon-ecs-configurable-timeout-service-connect/) for more details.
 
 ## ServiceManagedVolume
 

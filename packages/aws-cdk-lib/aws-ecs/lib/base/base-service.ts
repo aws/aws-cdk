@@ -245,12 +245,12 @@ export interface ServiceConnectService {
    * Service Connect.
    *
    * A value of 0 can be set to disable `perRequestTimeout`.
-   * Can only be set when the appProtocol for application container is HTTP/HTTP2/GRPC.
+   * Can only be set when the `appProtocol` for the application container is HTTP/HTTP2/GRPC.
    *
    * If `idleTimeout` is set to a time that is less than `perRequestTimeout`, the connection will close
    * when the `idleTimeout` is reached and not the `perRequestTimeout`.
    *
-   * @default Duration.seconds(15)
+   * @default - Duration.seconds(15)
    */
   readonly perRequestTimeout?: Duration;
 }
@@ -907,17 +907,13 @@ export abstract class BaseService extends Resource
         port: svc.port || containerPort,
         dnsName: svc.dnsName,
       };
-      const timeout = (svc.idleTimeout || svc.perRequestTimeout) ? {
-        idleTimeoutSeconds: svc.idleTimeout?.toSeconds(),
-        perRequestTimeoutSeconds: svc.perRequestTimeout?.toSeconds(),
-      } : undefined;
 
       return {
         portName: svc.portMappingName,
         discoveryName: svc.discoveryName,
         ingressPortOverride: svc.ingressPortOverride,
         clientAliases: [alias],
-        timeout,
+        timeout: this.renderTimeout(svc.idleTimeout, svc.perRequestTimeout),
       } as CfnService.ServiceConnectServiceProperty;
     });
 
@@ -1498,6 +1494,20 @@ export abstract class BaseService extends Resource
       return !unsupportedPartitions.includes(currentRegion.partition);
     }
     return true;
+  }
+
+  private renderTimeout(idleTimeout?: Duration, perRequestTimeout?: Duration): CfnService.TimeoutConfigurationProperty | undefined {
+    if (!idleTimeout && !perRequestTimeout) return undefined;
+    if (idleTimeout && idleTimeout.toMilliseconds() > 0 && idleTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
+      throw new Error(`idleTimeout must be at least 1 second or 0 to disable it, got ${idleTimeout.toMilliseconds()}ms.`);
+    }
+    if (perRequestTimeout && perRequestTimeout.toMilliseconds() > 0 && perRequestTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
+      throw new Error(`perRequestTimeout must be at least 1 second or 0 to disable it, got ${perRequestTimeout.toMilliseconds()}ms.`);
+    }
+    return {
+      idleTimeoutSeconds: idleTimeout?.toSeconds(),
+      perRequestTimeoutSeconds: perRequestTimeout?.toSeconds(),
+    };
   }
 }
 
