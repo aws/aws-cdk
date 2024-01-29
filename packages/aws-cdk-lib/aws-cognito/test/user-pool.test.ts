@@ -6,7 +6,6 @@ import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '../../core';
 import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail, AdvancedSecurityMode, LambdaVersion } from '../lib';
-import { User } from '../../aws-iam/lib/user';
 
 describe('User Pool', () => {
   test('default setup', () => {
