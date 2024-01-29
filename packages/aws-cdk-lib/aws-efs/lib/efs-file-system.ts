@@ -299,7 +299,10 @@ export interface FileSystemProps {
   readonly oneZone?: boolean;
 
   /**
+   * Whether to enable the filesystem's replication overwrite protection or not.
+   * Set false if you want to create a read-only filesystem for use as a replication destination.
    *
+   * @see https://docs.aws.amazon.com/efs/latest/ug/replication-use-cases.html#replicate-existing-destination
    *
    * @default true
    */

@@ -28,6 +28,7 @@ const fileSystem = new efs.FileSystem(this, 'MyEfsFileSystem', {
   performanceMode: efs.PerformanceMode.GENERAL_PURPOSE, // default
   outOfInfrequentAccessPolicy: efs.OutOfInfrequentAccessPolicy.AFTER_1_ACCESS, // files are not transitioned back from (infrequent access) IA to primary storage by default
   transitionToArchivePolicy: efs.LifecyclePolicy.AFTER_14_DAYS, // files are not transitioned to Archive by default
+  replicationOverwriteProtection: true, // Set to false if you want to create a read-only file system for use as a replication destination
 });
 ```
 
