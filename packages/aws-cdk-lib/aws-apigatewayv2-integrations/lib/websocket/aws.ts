@@ -73,6 +73,7 @@ export class WebSocketAwsIntegration extends WebSocketRouteIntegration {
       uri: this.props.integrationUri,
       method: this.props.integrationMethod,
       credentialsRole: this.props.credentialsRole,
+      requestParameters: this.props.requestParameters,
       requestTemplates: this.props.requestTemplates,
       templateSelectionExpression: this.props.templateSelectionExpression,
     };
