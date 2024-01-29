@@ -203,6 +203,7 @@ export class CdkToolkit {
         const templateWithNames = await this.props.deployments.readCurrentTemplateWithNestedStacks(
           stack, options.compareAgainstProcessedTemplate,
         );
+
         const currentTemplate = templateWithNames.deployedTemplate;
         const nestedStackCount = templateWithNames.nestedStackCount;
 

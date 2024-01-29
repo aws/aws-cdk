@@ -10,14 +10,6 @@ export * from './diff/types';
 type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any) => void;
 type HandlerRegistry = { [section: string]: DiffHandler };
 
-export type NestedChangeSet = CloudFormation.DescribeChangeSetOutput & {
-  Changes?: CloudFormation.Changes & {
-    ResourceChange?: {
-      NestedChanges?: CloudFormation.DescribeChangeSetOutput | NestedChangeSet,
-    },
-  }[],
-};
-
 const DIFF_HANDLERS: HandlerRegistry = {
   AWSTemplateFormatVersion: (diff, oldValue, newValue) =>
     diff.awsTemplateFormatVersion = impl.diffAttribute(oldValue, newValue),
@@ -216,7 +208,7 @@ function deepCopy(x: any): any {
   return x;
 }
 
-function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput | NestedChangeSet) {
+function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
   const replacements = findResourceReplacements(changeSet);
   diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
     change.forEachDifference((type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {
@@ -253,13 +245,10 @@ function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormati
   });
 }
 
-function findResourceReplacements(changeSet: NestedChangeSet, replacements: types.ResourceReplacements = {}): types.ResourceReplacements {
+function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOutput): types.ResourceReplacements {
+  const replacements: types.ResourceReplacements = {};
   for (const resourceChange of changeSet.Changes ?? []) {
     const propertiesReplaced: { [propName: string]: types.ChangeSetReplacement } = {};
-    if (resourceChange.ResourceChange?.NestedChanges) {
-      // eslint-disable-next-line max-len
-      findResourceReplacements(resourceChange.ResourceChange.NestedChanges, replacements[resourceChange.ResourceChange!.LogicalResourceId!] as types.ResourceReplacements);
-    }
     for (const propertyChange of resourceChange.ResourceChange?.Details ?? []) {
       if (propertyChange.Target?.Attribute === 'Properties') {
         const requiresReplacement = propertyChange.Target.RequiresRecreation === 'Always';
