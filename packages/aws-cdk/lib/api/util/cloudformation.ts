@@ -317,7 +317,7 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
       // eslint-disable-next-line no-console
       debug('This stack contains one or more nested stacks, falling back to template-only diff...');
 
-      //return undefined;
+      return undefined;
     }
   }
 
@@ -333,8 +333,6 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
       preparedSdk.envResources,
       options.sdkProvider,
       preparedSdk.stackSdk,
-      undefined,
-      true,
     );
     const cfn = preparedSdk.stackSdk.cloudFormation();
     const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
@@ -375,7 +373,6 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<CloudFo
     TemplateURL: options.bodyParameter.TemplateURL,
     TemplateBody: options.bodyParameter.TemplateBody,
     Parameters: stackParams.apiParameters,
-    IncludeNestedStacks: true,
     Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
   }).promise();
 
