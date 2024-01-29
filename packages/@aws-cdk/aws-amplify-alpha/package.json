@@ -50,7 +50,7 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
     "build": "cdk-build",
-    "integ": "integ-runner",
+    "integ": "integ-runner --language javascript",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -67,7 +67,10 @@
   "cdk-build": {
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    }
+    },
+    "pre": [
+      "./scripts/airlift-custom-resource-handlers.sh"
+    ]
   },
   "keywords": [
     "aws",

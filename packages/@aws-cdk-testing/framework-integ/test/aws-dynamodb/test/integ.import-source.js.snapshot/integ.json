@@ -1,0 +1,14 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "DynamoImportSourceIntegTest/DefaultTest": {
+      "stacks": [
+        "S3Stack",
+        "DynamoStack"
+      ],
+      "diffAssets": true,
+      "assertionStack": "DynamoImportSourceIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "DynamoImportSourceIntegTestDefaultTestDeployAssert540810E4"
+    }
+  }
+}
