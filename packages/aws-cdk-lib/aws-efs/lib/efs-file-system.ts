@@ -297,6 +297,13 @@ export interface FileSystemProps {
    * @link https://docs.aws.amazon.com/efs/latest/ug/availability-durability.html#file-system-type
    */
   readonly oneZone?: boolean;
+
+  /**
+   *
+   *
+   * @default true
+   */
+  readonly replicationOverwriteProtection?: boolean;
 }
 
 /**
@@ -548,6 +555,10 @@ export class FileSystem extends FileSystemBase {
 
     const oneZoneAzName = props.vpc.availabilityZones[0];
 
+    const fileSystemProtection = props.replicationOverwriteProtection !== undefined ? {
+      replicationOverwriteProtection: props.replicationOverwriteProtection ? 'ENABLED' : 'DISABLED',
+    } : undefined;
+
     this._resource = new CfnFileSystem(this, 'Resource', {
       encrypted: encrypted,
       kmsKeyId: props.kmsKey?.keyArn,
@@ -578,6 +589,7 @@ export class FileSystem extends FileSystemBase {
           return this._fileSystemPolicy;
         },
       }),
+      fileSystemProtection,
       availabilityZoneName: props.oneZone ? oneZoneAzName : undefined,
     });
     this._resource.applyRemovalPolicy(props.removalPolicy);

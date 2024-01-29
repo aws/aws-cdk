@@ -941,3 +941,21 @@ test('one zone file system with vpcSubnets is not supported', () => {
     });
   }).toThrow(/vpcSubnets cannot be specified when oneZone is enabled./);
 });
+
+test.each([
+  { replicationOverwriteProtection: true, protection: 'ENABLED' },
+  { replicationOverwriteProtection: false, protection: 'DISABLED' },
+])('create read-only file system for replication destination', ({ replicationOverwriteProtection, protection }) => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    replicationOverwriteProtection,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    FileSystemProtection: {
+      ReplicationOverwriteProtection: protection,
+    },
+  });
+});
