@@ -661,14 +661,17 @@ describe('tests', () => {
     const sg2 = new ec2.SecurityGroup(stack, 'SG2', { vpc });
 
     // WHEN
-    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+    const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
       vpc,
       internetFacing: true,
-      securityGroups: [sg1, sg2],
+      securityGroups: [sg1],
     });
+    nlb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
+    nlb.addSecurityGroup(sg2);
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
       Subnets: [
         { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
@@ -690,6 +693,17 @@ describe('tests', () => {
       ],
       Type: 'network',
     });
+    template.resourcePropertiesCountIs('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          Description: 'from 0.0.0.0/0:80',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+      ],
+    }, 2);
   });
 
   test('Trivial construction: no security groups', () => {
@@ -698,13 +712,15 @@ describe('tests', () => {
     const vpc = new ec2.Vpc(stack, 'Stack');
 
     // WHEN
-    new elbv2.NetworkLoadBalancer(stack, 'LB', {
+    const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
       vpc,
       internetFacing: true,
     });
+    nlb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Scheme: 'internet-facing',
       Subnets: [
         { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
@@ -712,6 +728,88 @@ describe('tests', () => {
       ],
       SecurityGroups: Match.absent(),
     });
+    template.resourceCountIs('AWS::EC2::SecurityGroup', 0);
+    expect(nlb.securityGroups).toBeUndefined();
+  });
+
+  test('Trivial construction: empty security groups', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+      securityGroups: [],
+    });
+    nlb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Subnets: [
+        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
+        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
+      ],
+      SecurityGroups: [],
+    });
+    template.resourceCountIs('AWS::EC2::SecurityGroup', 0);
+    expect(nlb.securityGroups).toStrictEqual([]);
+  });
+
+  test('Can add a security groups from no security groups', () =>{
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const sg1 = new ec2.SecurityGroup(stack, 'SG1', { vpc });
+    const sg2 = new ec2.SecurityGroup(stack, 'SG2', { vpc });
+
+    // WHEN
+    const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+      vpc,
+      internetFacing: true,
+    });
+    nlb.addSecurityGroup(sg1);
+    nlb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
+    nlb.addSecurityGroup(sg2);
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Scheme: 'internet-facing',
+      Subnets: [
+        { Ref: 'StackPublicSubnet1Subnet0AD81D22' },
+        { Ref: 'StackPublicSubnet2Subnet3C7D2288' },
+      ],
+      SecurityGroups: [
+        {
+          'Fn::GetAtt': [
+            stack.getLogicalId(sg1.node.findChild('Resource') as cdk.CfnElement),
+            'GroupId',
+          ],
+        },
+        {
+          'Fn::GetAtt': [
+            stack.getLogicalId(sg2.node.findChild('Resource') as cdk.CfnElement),
+            'GroupId',
+          ],
+        },
+      ],
+      Type: 'network',
+    });
+    template.resourcePropertiesCountIs('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          Description: 'from 0.0.0.0/0:80',
+          FromPort: 80,
+          IpProtocol: 'tcp',
+          ToPort: 80,
+        },
+      ],
+    }, 2);
   });
 
   describe('lookup', () => {
@@ -800,34 +898,34 @@ describe('tests', () => {
 
     test('can look up security groups', () => {
       // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'Stack');
-      const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
-
-      // WHEN
-      const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
-        vpc,
-        internetFacing: true,
-        securityGroups: [sg],
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-west-2',
+        },
       });
 
-      // THEN
-      expect(nlb.securityGroups).toEqual([`${sg.securityGroupId}`]);
-    });
-
-    test('can look up with no security groups', () => {
-      // GIVEN
-      const stack = new cdk.Stack();
-      const vpc = new ec2.Vpc(stack, 'Stack');
-
       // WHEN
-      const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
-        vpc,
-        internetFacing: true,
+      const nlb = elbv2.NetworkLoadBalancer.fromLookup(stack, 'LB', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
       });
+      nlb.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
 
       // THEN
-      expect(nlb.securityGroups).toBeUndefined();
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+        CidrIp: '0.0.0.0/0',
+        Description: 'from 0.0.0.0/0:80',
+        FromPort: 80,
+        // ID of looked-up security group is dummy value (defined by ec2.SecurityGroup.fromLookupAttributes)
+        GroupId: 'sg-12345678',
+        IpProtocol: 'tcp',
+        ToPort: 80,
+      });
+      // IDs of looked-up nlb security groups are dummy values (defined by elbv2.BaseLoadBalancer._queryContextProvider)
+      expect(nlb.securityGroups).toEqual(['sg-1234']);
     });
   });
 

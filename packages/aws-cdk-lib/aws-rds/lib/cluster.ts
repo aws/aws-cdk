@@ -359,6 +359,24 @@ interface DatabaseClusterBaseProps {
    * @default - IPV4
    */
   readonly networkType?: NetworkType;
+
+  /**
+  * Directory ID for associating the DB cluster with a specific Active Directory.
+  *
+  * Necessary for enabling Kerberos authentication. If specified, the DB cluster joins the given Active Directory, enabling Kerberos authentication.
+  * If not specified, the DB cluster will not be associated with any Active Directory, and Kerberos authentication will not be enabled.
+  *
+  * @default - DB cluster is not associated with an Active Directory; Kerberos authentication is not enabled.
+  */
+  readonly domain?: string;
+
+  /**
+   * The IAM role to be used when making API calls to the Directory Service. The role needs the AWS-managed policy
+   * `AmazonRDSDirectoryServiceAccess` or equivalent.
+   *
+   * @default - If `DatabaseClusterBaseProps.domain` is specified, a role with the `AmazonRDSDirectoryServiceAccess` policy is automatically created.
+   */
+  readonly domainRole?: iam.IRole;
 }
 
 /**
@@ -487,6 +505,9 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   protected readonly securityGroups: ec2.ISecurityGroup[];
   protected readonly subnetGroup: ISubnetGroup;
 
+  private readonly domainId?: string;
+  private readonly domainRole?: iam.IRole;
+
   /**
    * Secret in SecretsManager to store the database cluster user credentials.
    */
@@ -501,6 +522,13 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    * The cluster's subnets.
    */
   public readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * The log group is created when `cloudwatchLogsExports` is set.
+   *
+   * Each export value will create a separate log group.
+   */
+  public readonly cloudwatchLogGroups: {[engine: string]: logs.ILogGroup};
 
   /**
    * Application for single user rotation of the master password to this cluster.
@@ -530,6 +558,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     }
     this.vpc = props.instanceProps?.vpc ?? props.vpc!;
     this.vpcSubnets = props.instanceProps?.vpcSubnets ?? props.vpcSubnets;
+
+    this.cloudwatchLogGroups = {};
 
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
@@ -600,6 +630,19 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       ? props.clusterIdentifier?.toLowerCase()
       : props.clusterIdentifier;
 
+    if (props.domain) {
+      this.domainId = props.domain;
+      this.domainRole = props.domainRole ?? new iam.Role(this, 'RDSClusterDirectoryServiceRole', {
+        assumedBy: new iam.CompositePrincipal(
+          new iam.ServicePrincipal('rds.amazonaws.com'),
+          new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
+        ),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
+        ],
+      });
+    }
+
     this.newCfnProps = {
       // Basic
       engine: props.engine.engineType,
@@ -637,6 +680,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
       // Tags
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
+      domain: this.domainId,
+      domainIamRoleName: this.domainRole?.roleName,
     };
   }
 
@@ -1223,11 +1268,13 @@ function setLogRetention(cluster: DatabaseClusterNew, props: DatabaseClusterBase
 
     if (props.cloudwatchLogsRetention) {
       for (const log of props.cloudwatchLogsExports) {
+        const logGroupName = `/aws/rds/cluster/${cluster.clusterIdentifier}/${log}`;
         new logs.LogRetention(cluster, `LogRetention${log}`, {
-          logGroupName: `/aws/rds/cluster/${cluster.clusterIdentifier}/${log}`,
+          logGroupName,
           retention: props.cloudwatchLogsRetention,
           role: props.cloudwatchLogsRetentionRole,
         });
+        cluster.cloudwatchLogGroups[log] = logs.LogGroup.fromLogGroupName(cluster, `LogGroup${cluster.clusterIdentifier}${log}`, logGroupName);
       }
     }
   }

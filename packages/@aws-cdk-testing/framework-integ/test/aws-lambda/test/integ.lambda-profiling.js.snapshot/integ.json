@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "LambdaTest/DefaultTest": {
+      "stacks": [
+        "Stack1"
+      ],
+      "assertionStack": "LambdaTest/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaTestDefaultTestDeployAssert1AF2B360"
+    }
+  }
+}

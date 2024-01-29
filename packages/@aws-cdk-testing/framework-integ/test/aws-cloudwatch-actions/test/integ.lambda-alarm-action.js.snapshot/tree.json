@@ -1,0 +1,628 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "LambdaAlarmActionIntegrationTestStackWithFeatureFlag": {
+        "id": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag",
+        "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag",
+        "children": {
+          "inAlarmLambdaFeature": {
+            "id": "inAlarmLambdaFeature",
+            "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/inAlarmLambdaFeature",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/inAlarmLambdaFeature/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/inAlarmLambdaFeature/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/inAlarmLambdaFeature/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/inAlarmLambdaFeature/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = function handler(event, _context, callback) {\n    console.log(JSON.stringify(event, undefined, 2));\n    return callback();\n}"
+                    },
+                    "functionName": "inAlarmLambdaFeature",
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "inAlarmLambdaFeatureServiceRoleA2CD21D1",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "Alarm": {
+            "id": "Alarm",
+            "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/Alarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/Alarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "actionsEnabled": true,
+                    "alarmActions": [
+                      {
+                        "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+                      },
+                      {
+                        "Ref": "alarmLambdaFeatureAliasaliasName16F91D34"
+                      },
+                      {
+                        "Fn::GetAtt": [
+                          "alarmLambdaFeatureD560800F",
+                          "Arn"
+                        ]
+                      }
+                    ],
+                    "comparisonOperator": "GreaterThanThreshold",
+                    "dimensions": [
+                      {
+                        "name": "FunctionName",
+                        "value": {
+                          "Ref": "inAlarmLambdaFeature6C78D351"
+                        }
+                      }
+                    ],
+                    "evaluationPeriods": 1,
+                    "metricName": "Errors",
+                    "namespace": "AWS/Lambda",
+                    "period": 60,
+                    "statistic": "Sum",
+                    "threshold": 1,
+                    "treatMissingData": "notBreaching"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "alarmLambdaFeature": {
+            "id": "alarmLambdaFeature",
+            "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = function handler(event, _context, callback) {\n    console.log(JSON.stringify(event, undefined, 2));\n    return callback();\n}"
+                    },
+                    "functionName": "alarmLambdaFeature",
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "alarmLambdaFeatureServiceRole853A864D",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "CurrentVersion": {
+                "id": "CurrentVersion",
+                "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/CurrentVersion",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/CurrentVersion/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Version",
+                      "aws:cdk:cloudformation:props": {
+                        "functionName": {
+                          "Ref": "alarmLambdaFeatureD560800F"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "AlarmAlarmPermission": {
+                    "id": "AlarmAlarmPermission",
+                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/CurrentVersion/AlarmAlarmPermission",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+                        },
+                        "principal": "lambda.alarms.cloudwatch.amazonaws.com",
+                        "sourceAccount": {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "sourceArn": {
+                          "Fn::GetAtt": [
+                            "Alarm7103F465",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "AlarmFeatureAlarmPermission": {
+                    "id": "AlarmFeatureAlarmPermission",
+                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/CurrentVersion/AlarmFeatureAlarmPermission",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+                        },
+                        "principal": "lambda.alarms.cloudwatch.amazonaws.com",
+                        "sourceAccount": {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "sourceArn": {
+                          "Fn::GetAtt": [
+                            "AlarmFeature9DD74C42",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "AliasaliasName": {
+                "id": "AliasaliasName",
+                "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Alias",
+                      "aws:cdk:cloudformation:props": {
+                        "functionName": {
+                          "Ref": "alarmLambdaFeatureD560800F"
+                        },
+                        "functionVersion": {
+                          "Fn::GetAtt": [
+                            "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b",
+                            "Version"
+                          ]
+                        },
+                        "name": "aliasName"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "ScalingRole": {
+                    "id": "ScalingRole",
+                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/ScalingRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "AlarmAlarmPermission": {
+                    "id": "AlarmAlarmPermission",
+                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/AlarmAlarmPermission",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Ref": "alarmLambdaFeatureAliasaliasName16F91D34"
+                        },
+                        "principal": "lambda.alarms.cloudwatch.amazonaws.com",
+                        "sourceAccount": {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "sourceArn": {
+                          "Fn::GetAtt": [
+                            "Alarm7103F465",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "AlarmFeatureAlarmPermission": {
+                    "id": "AlarmFeatureAlarmPermission",
+                    "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AliasaliasName/AlarmFeatureAlarmPermission",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Ref": "alarmLambdaFeatureAliasaliasName16F91D34"
+                        },
+                        "principal": "lambda.alarms.cloudwatch.amazonaws.com",
+                        "sourceAccount": {
+                          "Ref": "AWS::AccountId"
+                        },
+                        "sourceArn": {
+                          "Fn::GetAtt": [
+                            "AlarmFeature9DD74C42",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "AlarmAlarmPermission": {
+                "id": "AlarmAlarmPermission",
+                "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AlarmAlarmPermission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "alarmLambdaFeatureD560800F",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "lambda.alarms.cloudwatch.amazonaws.com",
+                    "sourceAccount": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "Alarm7103F465",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "AlarmFeatureAlarmPermission": {
+                "id": "AlarmFeatureAlarmPermission",
+                "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/alarmLambdaFeature/AlarmFeatureAlarmPermission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "alarmLambdaFeatureD560800F",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "lambda.alarms.cloudwatch.amazonaws.com",
+                    "sourceAccount": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "AlarmFeature9DD74C42",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "AlarmFeature": {
+            "id": "AlarmFeature",
+            "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/AlarmFeature",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/AlarmFeature/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "actionsEnabled": true,
+                    "alarmActions": [
+                      {
+                        "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+                      },
+                      {
+                        "Ref": "alarmLambdaFeatureAliasaliasName16F91D34"
+                      },
+                      {
+                        "Fn::GetAtt": [
+                          "alarmLambdaFeatureD560800F",
+                          "Arn"
+                        ]
+                      }
+                    ],
+                    "comparisonOperator": "GreaterThanThreshold",
+                    "dimensions": [
+                      {
+                        "name": "FunctionName",
+                        "value": {
+                          "Ref": "inAlarmLambdaFeature6C78D351"
+                        }
+                      }
+                    ],
+                    "evaluationPeriods": 1,
+                    "metricName": "Errors",
+                    "namespace": "AWS/Lambda",
+                    "period": 60,
+                    "statistic": "Sum",
+                    "threshold": 1,
+                    "treatMissingData": "notBreaching"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "LambdaAlarmActionIntegrationTestStackWithFeatureFlag/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      },
+      "LambdaAlarmActionIntegrationTestWithFeatureFlag": {
+        "id": "LambdaAlarmActionIntegrationTestWithFeatureFlag",
+        "path": "LambdaAlarmActionIntegrationTestWithFeatureFlag",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "LambdaAlarmActionIntegrationTestWithFeatureFlag/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "LambdaAlarmActionIntegrationTestWithFeatureFlag/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "LambdaAlarmActionIntegrationTestWithFeatureFlag/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "LambdaAlarmActionIntegrationTestWithFeatureFlag/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "LambdaAlarmActionIntegrationTestWithFeatureFlag/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
+    }
+  }
+}
