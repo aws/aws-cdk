@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
-import { CloudFormation } from 'aws-sdk';
 import * as fs from 'fs-extra';
 import { ISDK } from './aws-auth';
 import { LazyListStackResources, ListStackResources } from './evaluate-cloudformation-template';
@@ -20,14 +19,6 @@ export interface TemplateWithNestedStackCount {
   readonly deployedTemplate: Template;
   readonly nestedStackCount: number;
 }
-
-export type NestedChangeSet = CloudFormation.DescribeChangeSetOutput & {
-  Changes?: CloudFormation.Changes & {
-    ResourceChange?: {
-      NestedChanges?: CloudFormation.DescribeChangeSetOutput | NestedChangeSet,
-    },
-  }[],
-};
 
 /**
  * Reads the currently deployed template from CloudFormation and adds a
@@ -75,27 +66,6 @@ export async function loadCurrentTemplate(
   retrieveProcessedTemplate: boolean = false,
 ): Promise<Template> {
   return loadCurrentStackTemplate(stackArtifact.stackName, sdk, retrieveProcessedTemplate);
-}
-
-/**
- * inlines changesets of all nested stacks in rootChangeSet into rootChangeSet
- */
-export async function populateNestedChangeSet(rootChangeSet: NestedChangeSet, cfn: CloudFormation) {
-  const changes = rootChangeSet.Changes;
-  if (changes) {
-    for (const change of changes) {
-      if (change.Type === 'Resource' && change.ResourceChange) {
-        if (change.ResourceChange && change.ResourceChange.ResourceType === 'AWS::CloudFormation::Stack') {
-          const nestedChangeSetId = change.ResourceChange.ChangeSetId;
-          const nestedChangeSet = await cfn.describeChangeSet({
-            ChangeSetName: nestedChangeSetId!,
-          }).promise();
-          await populateNestedChangeSet(nestedChangeSet, cfn);
-          change.ResourceChange.NestedChanges = nestedChangeSet;
-        }
-      }
-    }
-  }
 }
 
 async function loadCurrentStackTemplate(
