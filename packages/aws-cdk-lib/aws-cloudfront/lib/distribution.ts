@@ -395,7 +395,7 @@ export class Distribution extends Resource implements IDistribution {
   /**
    * Metric for the total number of viewer requests received by CloudFront, for all HTTP methods and for both HTTP and HTTPS requests.
    *
-   * @default - sum over 5 minutes
+   * @default - average over 5 minutes
    */
   public metricRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('Requests', props);
@@ -404,7 +404,7 @@ export class Distribution extends Resource implements IDistribution {
   /**
    * Metric for the total number of bytes that viewers uploaded to your origin with CloudFront, using POST and PUT requests.
    *
-   * @default - sum over 5 minutes
+   * @default - average over 5 minutes
    */
   public metricBytesUploaded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('BytesUploaded', props);
@@ -413,7 +413,7 @@ export class Distribution extends Resource implements IDistribution {
   /**
    * Metric for the total number of bytes downloaded by viewers for GET, HEAD, and OPTIONS requests.
    *
-   * @default - sum over 5 minutes
+   * @default - average over 5 minutes
    */
   public metricBytesDownloaded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.metric('BytesDownloaded', props);
