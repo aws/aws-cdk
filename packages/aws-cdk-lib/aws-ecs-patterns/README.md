@@ -582,6 +582,22 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
 });
 ```
 
+### Set cooldown for QueueProcessingFargateService
+
+The cooldown period is the amount of time to wait for a previous scaling activity to take effect.
+To specify something other than the default cooldown period of 300 seconds, use the `cooldown` parameter: 
+
+```ts
+declare const vpc: ec2.Vpc;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+  vpc,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  assignPublicIp: true,
+  cooldown: Duration.seconds(500),
+});
+```
+
 ### Set capacityProviderStrategies for QueueProcessingFargateService
 
 ```ts

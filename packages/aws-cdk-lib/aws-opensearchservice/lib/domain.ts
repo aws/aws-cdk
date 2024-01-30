@@ -281,7 +281,9 @@ export enum TLSSecurityPolicy {
   /** Cipher suite TLS 1.0 */
   TLS_1_0 = 'Policy-Min-TLS-1-0-2019-07',
   /** Cipher suite TLS 1.2 */
-  TLS_1_2 = 'Policy-Min-TLS-1-2-2019-07'
+  TLS_1_2 = 'Policy-Min-TLS-1-2-2019-07',
+  /** Cipher suite TLS 1.2 to 1.3 with perfect forward secrecy (PFS) */
+  TLS_1_2_PFS = 'Policy-Min-TLS-1-2-PFS-2023-10',
 }
 
 /**
@@ -666,6 +668,22 @@ export interface DomainProps {
    * @default - IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
+
+  /**
+   * Specify whether to create a CloudWatch Logs resource policy or not.
+   *
+   * When logging is enabled for the domain, a CloudWatch Logs resource policy is created by default.
+   * However, CloudWatch Logs supports only 10 resource policies per region.
+   * If you enable logging for several domains, it may hit the quota and cause an error.
+   * By setting this property to true, creating a resource policy is suppressed, allowing you to avoid this problem.
+   *
+   * If you set this option to true, you must create a resource policy before deployment.
+   *
+   * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createdomain-configure-slow-logs.html
+   *
+   * @default - false
+   */
+  readonly suppressLogsResourcePolicy?: boolean;
 }
 
 /**
@@ -1728,7 +1746,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     };
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
-    if (logGroups.length > 0) {
+    if (logGroups.length > 0 && !props.suppressLogsResourcePolicy) {
       const logPolicyStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
