@@ -483,9 +483,14 @@ export namespace EmrCreateCluster {
 
   /**
    * EBS Volume Types
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_VolumeSpecification.html#EMR-Type-VolumeSpecification-VolumeType
    *
    */
   export enum EbsBlockDeviceVolumeType {
+    /**
+     * gp3 Volume Type
+     */
+    GP3 = 'gp3',
     /**
      * gp2 Volume Type
      */
@@ -494,6 +499,14 @@ export namespace EmrCreateCluster {
      * io1 Volume Type
      */
     IO1 = 'io1',
+    /**
+     * st1 Volume Type
+     */
+    ST1 = 'st1',
+    /**
+     * sc1 Volume Type
+     */
+    SC1 = 'sc1',
     /**
      * Standard Volume Type
      */
