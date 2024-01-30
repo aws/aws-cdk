@@ -750,6 +750,9 @@
   "networkmanager": {
     "iamPrefix": "networkmanager"
   },
+  "networkmonitor": {
+    "iamPrefix": "networkmonitor"
+  },
   "nimble": {
     "iamPrefix": "nimble"
   },
@@ -1044,6 +1047,9 @@
   },
   "sts": {
     "iamPrefix": "sts"
+  },
+  "supplychain": {
+    "iamPrefix": "scn"
   },
   "support-app": {
     "iamPrefix": "supportapp"
