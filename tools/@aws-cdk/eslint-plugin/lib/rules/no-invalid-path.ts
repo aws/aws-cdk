@@ -7,7 +7,7 @@ function isPathJoinFuncCall(node: any): boolean {
   return node.callee?.property?.name === 'join';
 }
 
-function allArgumentsExpected(node: any): boolean {
+function noArgumentVariables(node: any): boolean {
   // Outside of the first argument, all arguments should be strings
   const components = node.arguments.slice(1);
   return components.every((a: any) => a.value !== undefined);
@@ -45,9 +45,9 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
           return;
         }
 
-        if (!allArgumentsExpected(node)) {
-          // ERROR: unexpected non-string in the argument list
-          context.report({ node, message: 'Part of the arguments to \'path.join()\' is not a string. Only the first argument can be \'__dirname\'.'})
+        if (!noArgumentVariables(node)) {
+          // WARNING: unexpected non-string in the argument list. This happens if part of the argument list is a variable, i.e. `path.join(__dirname, myPath)`.
+          // We may be able to do something about this, but we currently are just going to let it pass.
           return;
         }
 
@@ -68,7 +68,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
 
         // Confirm path does not have any unnecessary '..' paths
         // This allows us to validate subsequent checks
-        if (args.some((p, i) => p === '..' && i > firstDownDir)) {
+        if (firstDownDir > 0 && args.some((p, i) => p === '..' && i > firstDownDir)) {
           // ERROR: This path oscillates between up and down commands
           context.report({ node, message: `${recreatePath(args)} is not a valid path. It goes backwards and forwards and backwards again, and can be simplified.`});
           return;

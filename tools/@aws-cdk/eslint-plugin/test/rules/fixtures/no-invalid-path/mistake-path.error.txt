@@ -1,1 +1,0 @@
-Part of the arguments to 'path.join()' is not a string. Only the first argument can be '__dirname'.
