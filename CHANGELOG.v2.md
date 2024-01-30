@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.124.0](https://github.com/aws/aws-cdk/compare/v2.123.0...v2.124.0) (2024-01-26)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#28878](https://github.com/aws/aws-cdk/issues/28878)) ([98cea43](https://github.com/aws/aws-cdk/commit/98cea434e275f855274acbfd9bc24e9d6c9dfe83)), closes [/docs.aws.amazon.com/datasync/latest/userguide/create-s3-location.html#create-s3](https://github.com/aws//docs.aws.amazon.com/datasync/latest/userguide/create-s3-location.html/issues/create-s3)
+* update L1 CloudFormation resource definitions ([#28886](https://github.com/aws/aws-cdk/issues/28886)) ([6a7a24a](https://github.com/aws/aws-cdk/commit/6a7a24afcc1ebebf71c267b890732a455e865cc8))
+* **cloudfront:** additional cloudfront distribution metrics ([#28777](https://github.com/aws/aws-cdk/issues/28777)) ([95d187e](https://github.com/aws/aws-cdk/commit/95d187e4aabf69b7210ffdf53e53eda077b46d6e)), closes [#22922](https://github.com/aws/aws-cdk/issues/22922)
+* **cloudfront:** associate key value stores to functions ([#28571](https://github.com/aws/aws-cdk/issues/28571)) ([5ede456](https://github.com/aws/aws-cdk/commit/5ede4564ce77478a5e1340862f7fa9a686ff10dd)), closes [#28377](https://github.com/aws/aws-cdk/issues/28377)
+* **route53:** latency based routing ([#28723](https://github.com/aws/aws-cdk/issues/28723)) ([169fd91](https://github.com/aws/aws-cdk/commit/169fd91e135556b8efb59d631acaf9a3426eaa53)), closes [#28722](https://github.com/aws/aws-cdk/issues/28722)
+* **s3:** date-based partitioning for log objects ([#28790](https://github.com/aws/aws-cdk/issues/28790)) ([2952408](https://github.com/aws/aws-cdk/commit/29524089854d6f65805aca8ec78181ff39c5723f)), closes [/docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-loggingconfiguration.html#cfn-s3](https://github.com/aws//docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-loggingconfiguration.html/issues/cfn-s3) [#28141](https://github.com/aws/aws-cdk/issues/28141)
+* **sns:** suffix matching to sub filter ([#28795](https://github.com/aws/aws-cdk/issues/28795)) ([2bf6d82](https://github.com/aws/aws-cdk/commit/2bf6d82b37779e3ab8700253323060925bfd7efb)), closes [#28765](https://github.com/aws/aws-cdk/issues/28765)
+
+
+### Bug Fixes
+
+* **cloudwatch-actions:** multiple alarms with LambdaAction for the same Lambda fail (under feature flag) ([#28712](https://github.com/aws/aws-cdk/issues/28712)) ([b1e3dfd](https://github.com/aws/aws-cdk/commit/b1e3dfd9d69770d59d711fc133eefd2ce99eaf31))
+* **cognito:** allow custom email msg placeholder ([#28832](https://github.com/aws/aws-cdk/issues/28832)) ([1dbfa14](https://github.com/aws/aws-cdk/commit/1dbfa14b650e08a0b91ab2c367e37e54d81298c1))
+* **eks:** helm uninstall in custom resource handler does not respect `Wait` ([#28830](https://github.com/aws/aws-cdk/issues/28830)) ([7a30f5d](https://github.com/aws/aws-cdk/commit/7a30f5db9f84f9bf8a62b35dd54ae987806eeb7e)), closes [#28831](https://github.com/aws/aws-cdk/issues/28831)
+* **iam:** allow intrinsic functions in deletion policy ([#28834](https://github.com/aws/aws-cdk/issues/28834)) ([2801355](https://github.com/aws/aws-cdk/commit/280135567956b78fedd6a528cff0adda6171ec33))
+* **iam:** SamlConsolePrincipal returns incorrect url in GovCloud and ISO regions ([#28704](https://github.com/aws/aws-cdk/issues/28704)) ([c1f2abb](https://github.com/aws/aws-cdk/commit/c1f2abb153789f0496e5194e65cfeacfafc65a32)), closes [#25723](https://github.com/aws/aws-cdk/issues/25723)
+* **opensearch:** always create CloudWatch Logs resource policy when logging is enabled ([#28707](https://github.com/aws/aws-cdk/issues/28707)) ([a5a8855](https://github.com/aws/aws-cdk/commit/a5a8855e116dd0da9ebd35a3f40659df1ac562c3)), closes [#23637](https://github.com/aws/aws-cdk/issues/23637)
+* **rds:** proxy target is missing KMS permissions ([#28858](https://github.com/aws/aws-cdk/issues/28858)) ([c17dbde](https://github.com/aws/aws-cdk/commit/c17dbdef15bf145b96366ceb6ae8c96343304af5)), closes [#28850](https://github.com/aws/aws-cdk/issues/28850)
+
 ## [2.123.0](https://github.com/aws/aws-cdk/compare/v2.122.0...v2.123.0) (2024-01-24)
 
 
