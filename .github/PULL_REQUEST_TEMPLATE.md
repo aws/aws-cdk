@@ -1,3 +1,7 @@
+### Issue # (if applicable)
+
+Closes #<issue number here>.
+
 ### Reason for this change
 
 <!--What is the bug or use case behind this change?-->
@@ -10,10 +14,8 @@
 
 <!--Have you added any unit tests and/or integration tests?-->
 
-
+### Checklist
 - [ ] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
-
-Closes #<issue number here>.
 
 ----
 
