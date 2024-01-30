@@ -713,7 +713,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Neptune::DBClusterParameterGroup",
                   "aws:cdk:cloudformation:props": {
                     "description": "A nice parameter group",
-                    "family": "neptune1",
+                    "family": "neptune1.2",
                     "parameters": {
                       "neptune_enable_audit_log": "1",
                       "neptune_query_timeout": "100000"
@@ -850,6 +850,7 @@
                     "enableCloudwatchLogsExports": [
                       "audit"
                     ],
+                    "engineVersion": "1.2.1.0",
                     "kmsKeyId": {
                       "Fn::GetAtt": [
                         "DbSecurity381C2C15",
@@ -872,13 +873,13 @@
                   "version": "0.0.0"
                 }
               },
-              "[object Object]LogRetention": {
-                "id": "[object Object]LogRetention",
-                "path": "aws-cdk-neptune-integ/Database/[object Object]LogRetention",
+              "auditLogRetention": {
+                "id": "auditLogRetention",
+                "path": "aws-cdk-neptune-integ/Database/auditLogRetention",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-neptune-integ/Database/[object Object]LogRetention/Resource",
+                    "path": "aws-cdk-neptune-integ/Database/auditLogRetention/Resource",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -1054,7 +1055,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "Alarm": {
@@ -1130,7 +1131,7 @@
                 "path": "ClusterTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1176,7 +1177,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },
