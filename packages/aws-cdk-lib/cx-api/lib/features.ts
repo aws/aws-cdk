@@ -647,7 +647,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     compatibilityWithOldBehaviorMd: 'Set installLatestAwsSdk: true on all resources that need it.',
     introducedIn: { v2: '2.60.0' },
     recommendedValue: false,
-    defaults: { v2: true }
+    defaults: { v2: true },
   },
 
   //////////////////////////////////////////////////////////////////////
