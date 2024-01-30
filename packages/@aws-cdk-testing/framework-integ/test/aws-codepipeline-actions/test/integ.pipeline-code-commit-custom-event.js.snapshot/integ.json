@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "IntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codepipeline-codecommit-custom-event"
+      ],
+      "assertionStack": "IntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestDefaultTestDeployAssertE3E7D2A4"
+    }
+  }
+}

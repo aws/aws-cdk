@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-rds-proxy.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/938b3109faa6eac41e1d4a7b5d76197a74908e45302636596d841968426d6321.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/994f5c55a476da40df81f2f7a742118ee54549be6e75cfa22d25171f36360de6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -170,6 +170,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "vpcVPCGW7984C166"
+          }
+        ],
+        "/aws-cdk-rds-proxy/SecretEncryptionKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecretEncryptionKey40C82244"
           }
         ],
         "/aws-cdk-rds-proxy/dbInstance/SubnetGroup/Default": [

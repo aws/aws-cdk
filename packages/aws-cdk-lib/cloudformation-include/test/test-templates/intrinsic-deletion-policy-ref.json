@@ -1,0 +1,46 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Transform": "AWS::LanguageExtensions",
+    "Parameters": {
+        "DeletionPolicyParam": {
+            "Type": "String",
+            "AllowedValues": [
+                "Delete",
+                "Retain",
+                "Snapshot"
+            ],
+            "Default": "Delete"
+        },
+        "UpdateReplacePolicyParam": {
+            "Type": "String",
+            "AllowedValues": [
+                "Delete",
+                "Retain",
+                "Snapshot"
+            ],
+            "Default": "Delete"
+        }
+    },
+    "Resources": {
+        "Table": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "KeySchema": [
+                    {
+                        "AttributeName": "primaryKey",
+                        "KeyType": "HASH"
+                }],
+                "AttributeDefinitions": [{
+                    "AttributeName": "primaryKey",
+                    "AttributeType": "S"
+                }]
+            },
+            "DeletionPolicy": {
+                "Ref": "DeletionPolicyParam"
+            },
+            "UpdateReplacePolicy": {
+                "Ref": "UpdateReplacePolicyParam"
+            }
+        }
+    }
+}
