@@ -617,6 +617,11 @@ export enum InstanceClass {
   TRN1 = 'trn1',
 
   /**
+   * High performance computing powered by AWS Trainium
+   */
+  TRN1N = 'trn1n',
+
+  /**
    * Storage/compute balanced instances, 1st generation
    */
   H1 = 'h1',
@@ -1401,6 +1406,7 @@ export class InstanceType {
       [InstanceClass.STORAGE3_ENHANCED_NETWORK]: 'd3en',
       [InstanceClass.D3EN]: 'd3en',
       [InstanceClass.TRN1]: 'trn1',
+      [InstanceClass.TRN1N]: 'trn1n',
       [InstanceClass.STORAGE_COMPUTE_1]: 'h1',
       [InstanceClass.H1]: 'h1',
       [InstanceClass.IO3]: 'i3',
