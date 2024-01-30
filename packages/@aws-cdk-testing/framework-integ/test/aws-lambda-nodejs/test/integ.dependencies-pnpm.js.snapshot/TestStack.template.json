@@ -38,13 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "955124673880e20bd4e41d523bef58eb74503a0f574604d9ef9a6bd2c84336d6.zip"
-    },
-    "Role": {
-     "Fn::GetAtt": [
-      "FunctionServiceRole675BB04A",
-      "Arn"
-     ]
+     "S3Key": "53093a90d386b80cc977aa027f0483feec6037916d5cf9a90fffc30fb157f9cf.zip"
     },
     "Environment": {
      "Variables": {
@@ -52,6 +46,12 @@
      }
     },
     "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "FunctionServiceRole675BB04A",
+      "Arn"
+     ]
+    },
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [
