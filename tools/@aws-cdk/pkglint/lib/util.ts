@@ -5,15 +5,30 @@ import { PackageJson, PKGLINT_IGNORES } from './packagejson';
 /**
  * Expect a particular JSON key to be a given value
  */
-export function expectJSON(ruleName: string, pkg: PackageJson, jsonPath: string, expected: any, ignore?: RegExp, caseInsensitive: boolean = false) {
+export function expectJSON(
+  ruleName: string,
+  pkg: PackageJson,
+  jsonPath: string,
+  expected: any,
+  ignore?: RegExp,
+  caseInsensitive: boolean = false,
+  regexMatch: boolean = false,
+) {
   const parts = jsonPath.split('.');
   const actual = deepGet(pkg.json, parts);
-  if (applyCaseInsensitive(applyIgnore(actual)) !== applyCaseInsensitive(applyIgnore(expected))) {
+  if (checkEquality()) {
     pkg.report({
       ruleName,
       message: `${jsonPath} should be ${JSON.stringify(expected)}${ignore ? ` (ignoring ${ignore})` : ''}, is ${JSON.stringify(actual)}`,
       fix: () => { deepSet(pkg.json, parts, expected); },
     });
+  }
+
+  function checkEquality(): boolean {
+    if (regexMatch) {
+      return !expected.test(applyCaseInsensitive(applyIgnore(actual)));
+    }
+    return applyCaseInsensitive(applyIgnore(actual)) !== applyCaseInsensitive(applyIgnore(expected));
   }
 
   function applyIgnore(val: any): string {
