@@ -20,7 +20,7 @@ type HotswapDetector = (
 ) => Promise<ChangeHotswapResult>;
 
 const RESOURCE_DETECTORS: { [key: string]: HotswapDetector } = {
-  // Lambda - I added a fake comment!
+  // Lambda - I changed a fake comment!
   'AWS::Lambda::Function': isHotswappableLambdaFunctionChange,
   'AWS::Lambda::Version': isHotswappableLambdaFunctionChange,
   'AWS::Lambda::Alias': isHotswappableLambdaFunctionChange,
