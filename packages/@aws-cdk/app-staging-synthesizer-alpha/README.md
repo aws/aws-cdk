@@ -271,6 +271,8 @@ By default, the staging resources will be stored in an S3 Bucket with KMS encryp
 SSE-S3, set `stagingBucketEncryption` to `BucketEncryption.S3_MANAGED`.
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
