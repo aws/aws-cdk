@@ -604,12 +604,12 @@ test('logging in twice for two repository domains (containing account id & regio
   });
 
   const expectAllSpawns = mockSpawn(
-    { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', '12345.proxy.com/'] },
+    { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', '12345.proxy.com'] },
     { commandLine: ['docker', 'inspect', 'cdkasset-theasset1'], exitCode: 1 },
     { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset1', '.'], cwd: '/multi/cdk.out/dockerdir' },
     { commandLine: ['docker', 'tag', 'cdkasset-theasset1', '12345.amazonaws.com/aws-cdk/assets:theAsset1'] },
     { commandLine: ['docker', 'push', '12345.amazonaws.com/aws-cdk/assets:theAsset1'] },
-    { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', '12346.proxy.com/'] },
+    { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', '12346.proxy.com'] },
     { commandLine: ['docker', 'inspect', 'cdkasset-theasset2'], exitCode: 1 },
     { commandLine: ['docker', 'build', '--tag', 'cdkasset-theasset2', '.'], cwd: '/multi/cdk.out/dockerdir' },
     { commandLine: ['docker', 'tag', 'cdkasset-theasset2', '12346.amazonaws.com/aws-cdk/assets:theAsset2'] },
