@@ -371,7 +371,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     let key = undefined;
     if (this.stagingBucketEncryption === s3.BucketEncryption.KMS || this.stagingBucketEncryption === undefined) {
       if (this.stagingBucketEncryption === undefined) {
-        // default is KMS for backwards compatibility
+        // default is KMS as an AWS best practice, and for backwards compatibility
         this.stagingBucketEncryption = s3.BucketEncryption.KMS;
       }
       key = this.createBucketKey();
