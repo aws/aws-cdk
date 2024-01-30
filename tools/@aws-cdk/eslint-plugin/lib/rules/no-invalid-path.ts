@@ -1,5 +1,4 @@
 import { Rule } from 'eslint';
-import { isProdFile } from '../private/is-prod-file';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -34,10 +33,6 @@ function recreatePath(args: string[]): string {
 export function create(context: Rule.RuleContext): Rule.NodeListener {
   return {
     CallExpression(node: any) {
-      if (!isProdFile(context.getFilename())) {
-        return;
-      }
-
       if (isPathJoinFuncCall(node)) {
         if (node.arguments.length === 0) {
           // ERROR: this is 'path.join()'
