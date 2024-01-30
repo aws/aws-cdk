@@ -1312,8 +1312,6 @@ describe('Distribution metrics tests', () => {
 
     const metricObj = dist[metric.method]();
 
-    console.log(metricObj.toMetricConfig());
-
     expect(metricObj).toEqual(new cloudwatch.Metric({
       namespace: 'AWS/CloudFront',
       metricName: metric.name,
