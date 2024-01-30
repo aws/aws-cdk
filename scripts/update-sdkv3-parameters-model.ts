@@ -224,7 +224,7 @@ async function renderStateMachineToTypeScript(sm: TypeCoercionStateMachine, file
     `// This file was generated from the aws-sdk-js-v3 at ${new Date()}`,
     '/* eslint-disable quote-props,comma-dangle,quotes */',
     'import * as zlib from \'zlib\';',
-    'export type TypeCoercionStateMachine = Array<Record<string, number | \'b\' | \'n\'>>',
+    'export type TypeCoercionStateMachine = Array<Record<string, number | \'b\' | \'n\' | \'d\'>>',
     'export let typeCoercionStateMachine = (): TypeCoercionStateMachine => {',
     `  const encoded = ${JSON.stringify(compressed.toString('base64'))};`,
     '  const decoded = JSON.parse(zlib.brotliDecompressSync(Buffer.from(encoded, \'base64\')).toString());',
