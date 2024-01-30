@@ -60,6 +60,8 @@ new batch.EcsJobDefinition(stack, 'ECSFargateJobDefn', {
     memory: Size.mebibytes(32768),
     ephemeralStorageSize: Size.gibibytes(100),
     fargatePlatformVersion: FargatePlatformVersion.LATEST,
+    fargateCpuArchitecture: ecs.CpuArchitecture.ARM64,
+    fargateOperatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
   }),
   jobDefinitionName: 'foofoo',
   parameters: {
