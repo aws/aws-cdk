@@ -74,13 +74,11 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
           return;
         }
 
-        // Note the - 1 to exclude the last directory from the check
         // Exclude the case where there are no '..' at all in the path -- those are never invalid
         const currentFile = context.getFilename();
         if (firstDownDir > 0) {
-          for (let i = 0; i < firstDownDir - 1; i++) {
-            // Note i + 1 here to include the current '..' in the path, since Array.slice excludes the end index.
-            const pjFile = path.join(...[path.dirname(currentFile), ...args.slice(0, i + 1), 'package.json']);
+          for (let i = 0; i < firstDownDir; i++) {
+            const pjFile = path.join(...[path.dirname(currentFile), ...args.slice(0, i), 'package.json']);
             if (fs.existsSync(pjFile)) {
               // ERROR: this path will end up going out of the package.json directory
               context.report({ node, message: `${recreatePath(args)} is not a valid path. It goes beyond the parent library's package.json file so the file it points to will not be available after the library is packaged.`});
