@@ -51,3 +51,7 @@ RELEASE_NOTES.md
 
 # Produced by integ tests
 read*lock
+
+# VSCode jest plugin
+.test-output
+
