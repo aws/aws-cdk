@@ -41,6 +41,7 @@ export interface SageMakerStartPipelineExecutionProps extends ScheduleTargetBase
  */
 export class SageMakerStartPipelineExecution extends ScheduleTargetBase implements IScheduleTarget {
   private readonly pipelineArn: string;
+
   constructor(
     private readonly pipeline: CfnPipeline,
     private readonly props: SageMakerStartPipelineExecutionProps = {},
