@@ -23,7 +23,6 @@ describe(AppStagingSynthesizer, () => {
         region: 'us-east-1',
       },
     });
-    stack.node.setContext()
   });
 
   test('stack template is in asset manifest', () => {
