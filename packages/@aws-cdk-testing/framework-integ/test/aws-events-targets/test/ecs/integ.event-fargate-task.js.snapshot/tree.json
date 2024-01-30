@@ -817,6 +817,22 @@
                                   }
                                 },
                                 {
+                                  "Action": "ecs:TagResource",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:aws:ecs:*:*:task/",
+                                        {
+                                          "Ref": "EcsCluster97242B84"
+                                        },
+                                        "/*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
                                   "Action": "iam:PassRole",
                                   "Effect": "Allow",
                                   "Resource": [
