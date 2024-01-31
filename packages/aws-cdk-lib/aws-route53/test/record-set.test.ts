@@ -1,13 +1,11 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
-import * as iam from '../../aws-iam';
-import { Duration, RemovalPolicy, Stack } from '../../core';
-import * as route53 from '../lib';
-import * as targets from '../../aws-route53-targets';
 import * as cloudfront from '../../aws-cloudfront';
 import * as origins from '../../aws-cloudfront-origins';
-import { Resource } from '../../../@aws-cdk/cloudformation-diff/lib/diff/types';
-import { Type } from '../../assertions/lib/private/type';
+import * as iam from '../../aws-iam';
+import * as targets from '../../aws-route53-targets';
+import { Duration, RemovalPolicy, Stack } from '../../core';
+import * as route53 from '../lib';
 
 describe('record set', () => {
   test('with default ttl', () => {
