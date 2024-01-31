@@ -598,10 +598,9 @@ This feature currently has the following limitations:
 
 CDK Migrate is currently experimental and may have breaking changes in the future. 
 
-CDK Migrate Generates a CDK application using an existing CloudFormation template in JSON or YAML format. 
-Templates can be provided from either from a local file using `--from-path` or directly from a
-deployed CloudFormation stack with `--from-stack`. The generated CDK application will 
-synthesize a CloudFormation template with identical resource configurations to the provided template. 
+CDK Migrate Generates a CDK application from either a deployed CloudFormation stack in your account using `--from-stack`, 
+a local YAML or JSON Cloudformation template using `--from-path`, or unmanaged resources scanned from your account using `--from-scan`. 
+The generated CDK application will synthesize into a CloudFormation template with identical resource configurations to the provided resources. 
 The generated application will be initialized in the current working directory with a single stack where 
 the stack, app, and directory will all be named using the provided `--stack-name`. It will also
 be within a generated subdirectory in your current working directory unless `--output-path` is specified.
@@ -646,6 +645,44 @@ $ cdk migrate --stack-name MyDeployedStack --language python --from-stack
 
 This will generate a Python CDK application which will synthesize the same configuration of resources as the deployed stack.
 
+#### Generate a typescript application from unmanaged resources in your account
+
+If you have resources you have provisioned outside of Cloudformation and would like to manage them with CDK, you can use the 
+`--from-scan` option to generate the application. This tool is tightly integrated with Cloudformation's Template Generator feature to scan and
+discover resources in your account. As a result CDK migrate will only generate a CDK application for resources that are supported by CloudFormation's
+Template Generator. This means that some resources may not be supported, and some resources may not be supported in all regions. This also means
+both CDK migrate and CloudFormation's Template Generator are subject to the same limitations, namely that cdk Migrate cannot generate a template with
+more than 500 resources. If the scan returns far more than 500 resources you can filter the resources using the `--filter` option to limit the number
+of resources discoverd to only resources specified by the `--filter` and any resources they depend on, or resources that depend on them (i.e. A DynamoDB table,
+and the alarms that monitor it). OR filtering can be specified by passing multiple `--filter` options, and AND filtering can be specified by passing a single
+`--filter` option with multiple comma separated key/value pairs as seen below. 
+
+```
+# Filtering options
+identifier|id|resource-identifer={<resource-specific-id-key>:<resource-specific-id-value>}
+type|resource-type-prefix=<resource-type-prefix>
+tag-key=<tag-key>
+tag-value=<tag-value>
+```
+
+
+Some examples of using these filtering options below:
+
+```console
+$ # Generate a typescript application from all unmanaged resources in your account
+$ cdk migrate --stack-name MyAwesomeApplication --language typescript --from-scan
+
+$ # Generate a typescript application from all unmanaged resources in your account with the tag key "Environment" and the tag value "Production"
+$ cdk migrate --stack-name MyAwesomeApplication --language typescript --from-scan --filter tag-key=Environment,tag-value=Production
+
+$ # Generate a python application from any dynamoDB resources with the tag-key "dev" and the tag-value "true" or any SQS::Queue
+$ cdk migrate --stack-name MyAwesomeApplication --language python --from-scan --filter type=AWS::DynamoDb::,tag-key=dev,tag-value=true --filter type=SQS::Queue
+
+$ # Generate a typescript application from a specific lambda function by providing it's specific resource identifier
+$ cdk migrate --stack-name MyAwesomeApplication --language typescript --from-scan --filter identifier={"FunctionName":"myAwesomeLambdaFunction"}
+```
+
+
 #### **CDK Migrate Limitations**
 
 - CDK Migrate does not currently support nested stacks, custom resources, or the `Fn::ForEach` intrinsic function.
@@ -672,6 +709,7 @@ In practice this is how CDK Migrate generated applications will operate in the f
 | Provided template has no overlap with resources already in the account/region                     | The CDK application will deploy a new stack successfully                      |
 | Provided template has overlap with Cloudformation managed resources already in the account/region | The CDK application will not be deployable unless those resources are removed |
 | Provided template has overlap with unmanaged resources already in the account/region              | The CDK application will not be deployable until those resources are adopted with [`cdk import`](#cdk-import) |
+| No template has been provided and resources exist in the region the scan is done | The CDK application will be immediatly deployable and will import those resources into a new cloudformation stack upon deploy |
 
 
 ##### **The provided template is already deployed to CloudFormation in the account/region**
