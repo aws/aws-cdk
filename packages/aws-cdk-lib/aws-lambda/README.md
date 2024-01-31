@@ -1011,8 +1011,8 @@ new lambda.Function(this, 'Lambda', {
 });
 ```
 
-Providing a custom, user controlled log group this way is not yet supported in all regions, namely GovCloud and CN.
-Please check regional availability.
+Providing a user-controlled log group was rolled out to commercial regions on 2023-11-16.
+If you are deploying to another type of region, please check regional availability first.
 
 ### Legacy Log Retention
 

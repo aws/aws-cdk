@@ -488,7 +488,8 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * Use the `logGroup` property to create a fully customizable LogGroup ahead of time, and instruct the Lambda function to send logs to it.
    *
-   * Not yet supported in GovCloud and CN regions. Please check regional availability.
+   * Providing a user-controlled log group was rolled out to commercial regions on 2023-11-16.
+   * If you are deploying to another type of region, please check regional availability first.
    *
    * @default `/aws/lambda/${this.functionName}` - default log group created by Lambda
    */

@@ -121,7 +121,8 @@ export interface BucketDeploymentProps {
   /**
    * The Log Group used for logging of events emitted by the custom resource's lambda function.
    *
-   * Not yet supported in GovCloud and CN regions. Please check regional availability.
+   * Providing a user-controlled log group was rolled out to commercial regions on 2023-11-16.
+   * If you are deploying to another type of region, please check regional availability first.
    *
    * @default - a default log group created by AWS Lambda
    */
