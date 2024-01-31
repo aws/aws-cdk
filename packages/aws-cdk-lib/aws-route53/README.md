@@ -175,6 +175,20 @@ new route53.ARecord(this, 'ARecordLatency1', {
 });
 ```
 
+To enable [multivalue answer routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-multivalue.html), use the `multivalueAnswer` parameter:
+
+```ts
+declare const myZone: route53.HostedZone;
+
+new route53.ARecord(this, 'ARecordMultiValue1', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+  multivalueAnswer: true,
+});
+```
+
+```ts
+
 To specify a unique identifier to differentiate among multiple resource record sets that have the same combination of name and type, use the `setIdentifier` parameter:
 
 ```ts
