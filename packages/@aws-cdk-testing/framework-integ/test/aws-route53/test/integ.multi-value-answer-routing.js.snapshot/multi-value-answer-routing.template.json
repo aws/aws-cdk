@@ -12,11 +12,12 @@
     "HostedZoneId": {
      "Ref": "HostedZoneDB99F866"
     },
+    "MultiValueAnswer": true,
     "Name": "www.cdk.dev.",
     "ResourceRecords": [
-     "1.2.3.4",
-     "2.3.4.5"
+     "1.2.3.4"
     ],
+    "SetIdentifier": "MVA_ID_multivalueanswerroutingMultiValueAnswerRoutingD94947BD",
     "TTL": "1800",
     "Type": "A"
    }
