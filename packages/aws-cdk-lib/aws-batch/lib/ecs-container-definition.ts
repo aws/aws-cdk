@@ -979,6 +979,20 @@ export interface IEcsFargateContainerDefinition extends IEcsContainerDefinition 
    * @default - 20 GiB
    */
   readonly ephemeralStorageSize?: Size;
+
+  /**
+   * The vCPU architecture of Fargate Runtime.
+   *
+   * @default - X86_64
+   */
+  readonly fargateCpuArchitecture?: ecs.CpuArchitecture;
+
+  /**
+   * The operating system for the compute environment.
+   *
+   * @default - LINUX
+   */
+  readonly fargateOperatingSystemFamily?: ecs.OperatingSystemFamily;
 }
 
 /**
@@ -1009,6 +1023,20 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
    * @default - 20 GiB
    */
   readonly ephemeralStorageSize?: Size;
+
+  /**
+   * The vCPU architecture of Fargate Runtime.
+   *
+   * @default - X86_64
+   */
+  readonly fargateCpuArchitecture?: ecs.CpuArchitecture;
+
+  /**
+   * The operating system for the compute environment.
+   *
+   * @default - LINUX
+   */
+  readonly fargateOperatingSystemFamily?: ecs.OperatingSystemFamily;
 }
 
 /**
@@ -1018,12 +1046,16 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
   public readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
   public readonly assignPublicIp?: boolean;
   public readonly ephemeralStorageSize?: Size;
+  public readonly fargateCpuArchitecture?: ecs.CpuArchitecture;
+  public readonly fargateOperatingSystemFamily?: ecs.OperatingSystemFamily;
 
   constructor(scope: Construct, id: string, props: EcsFargateContainerDefinitionProps) {
     super(scope, id, props);
     this.assignPublicIp = props.assignPublicIp;
     this.fargatePlatformVersion = props.fargatePlatformVersion;
     this.ephemeralStorageSize = props.ephemeralStorageSize;
+    this.fargateCpuArchitecture = props.fargateCpuArchitecture;
+    this.fargateOperatingSystemFamily = props.fargateOperatingSystemFamily;
 
     // validates ephemeralStorageSize is within limits
     if (props.ephemeralStorageSize) {
@@ -1049,6 +1081,10 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
       },
       networkConfiguration: {
         assignPublicIp: this.assignPublicIp ? 'ENABLED' : 'DISABLED',
+      },
+      runtimePlatform: {
+        cpuArchitecture: this.fargateCpuArchitecture?._cpuArchitecture,
+        operatingSystemFamily: this.fargateOperatingSystemFamily?._operatingSystemFamily,
       },
     };
   };

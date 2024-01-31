@@ -1231,7 +1231,7 @@ export class MustHaveIntegCommand extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!hasIntegTests(pkg)) { return; }
 
-    expectJSON(this.name, pkg, 'scripts.integ', 'integ-runner --language javascript');
+    expectJSON(this.name, pkg, 'scripts.integ', /integ-runner/, undefined, false, true);
 
     // We can't ACTUALLY require cdk-build-tools/package.json here,
     // because WE don't depend on cdk-build-tools and we don't know if

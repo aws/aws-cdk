@@ -828,7 +828,11 @@
        "Type": "VCPU",
        "Value": "16"
       }
-     ]
+     ],
+     "RuntimePlatform": {
+      "CpuArchitecture": "ARM64",
+      "OperatingSystemFamily": "LINUX"
+     }
     },
     "JobDefinitionName": "foofoo",
     "Parameters": {

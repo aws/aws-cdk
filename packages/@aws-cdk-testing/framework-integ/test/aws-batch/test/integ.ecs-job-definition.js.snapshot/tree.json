@@ -1033,7 +1033,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
+              "fqn": "aws-cdk-lib.aws_batch.EcsEc2ContainerDefinition",
               "version": "0.0.0"
             }
           },
@@ -1173,7 +1173,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
+              "fqn": "aws-cdk-lib.aws_batch.EcsJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -1295,7 +1295,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsFargateContainerDefinition",
+              "fqn": "aws-cdk-lib.aws_batch.EcsFargateContainerDefinition",
               "version": "0.0.0"
             }
           },
@@ -1337,6 +1337,10 @@
                       },
                       "networkConfiguration": {
                         "assignPublicIp": "DISABLED"
+                      },
+                      "runtimePlatform": {
+                        "cpuArchitecture": "ARM64",
+                        "operatingSystemFamily": "LINUX"
                       }
                     },
                     "jobDefinitionName": "foofoo",
@@ -1380,7 +1384,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
+              "fqn": "aws-cdk-lib.aws_batch.EcsJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -1564,7 +1568,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
+              "fqn": "aws-cdk-lib.aws_batch.EcsEc2ContainerDefinition",
               "version": "0.0.0"
             }
           },
@@ -1616,7 +1620,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
+              "fqn": "aws-cdk-lib.aws_batch.EcsJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -1655,7 +1659,7 @@
                 "path": "BatchEcsJobDefinitionTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1701,7 +1705,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.3.0"
         }
       }
     },

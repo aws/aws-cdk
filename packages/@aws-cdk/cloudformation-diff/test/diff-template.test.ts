@@ -1117,4 +1117,69 @@ describe('changeset', () => {
     });
     expect(differences.resources.differenceCount).toBe(1);
   });
+
+  test('imports are respected for new stacks', async () => {
+    // GIVEN
+    const currentTemplate = {};
+
+    // WHEN
+    const newTemplate = {
+      Resources: {
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+        },
+      },
+    };
+
+    let differences = fullDiff(currentTemplate, newTemplate, {
+      Changes: [
+        {
+          Type: 'Resource',
+          ResourceChange: {
+            Action: 'Import',
+            LogicalResourceId: 'BucketResource',
+          },
+        },
+      ],
+    });
+    expect(differences.resources.differenceCount).toBe(1);
+    expect(differences.resources.get('BucketResource').changeImpact === ResourceImpact.WILL_IMPORT);
+  });
+
+  test('imports are respected for existing stacks', async () => {
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        OldResource: {
+          Type: 'AWS::Something::Resource',
+        },
+      },
+    };
+
+    // WHEN
+    const newTemplate = {
+      Resources: {
+        OldResource: {
+          Type: 'AWS::Something::Resource',
+        },
+        BucketResource: {
+          Type: 'AWS::S3::Bucket',
+        },
+      },
+    };
+
+    let differences = fullDiff(currentTemplate, newTemplate, {
+      Changes: [
+        {
+          Type: 'Resource',
+          ResourceChange: {
+            Action: 'Import',
+            LogicalResourceId: 'BucketResource',
+          },
+        },
+      ],
+    });
+    expect(differences.resources.differenceCount).toBe(1);
+    expect(differences.resources.get('BucketResource').changeImpact === ResourceImpact.WILL_IMPORT);
+  });
 });

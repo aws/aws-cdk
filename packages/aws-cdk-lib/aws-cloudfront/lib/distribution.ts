@@ -393,6 +393,60 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   /**
+   * Metric for the total number of viewer requests received by CloudFront, for all HTTP methods and for both HTTP and HTTPS requests.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('Requests', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the total number of bytes that viewers uploaded to your origin with CloudFront, using POST and PUT requests.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricBytesUploaded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('BytesUploaded', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the total number of bytes downloaded by viewers for GET, HEAD, and OPTIONS requests.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricBytesDownloaded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('BytesDownloaded', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the percentage of all viewer requests for which the response's HTTP status code is 4xx or 5xx.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricTotalErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('TotalErrorRate', props);
+  }
+
+  /**
+   * Metric for the percentage of all viewer requests for which the response's HTTP status code is 4xx.
+   *
+   * @default - average over 5 minutes
+   */
+  public metric4xxErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('4xxErrorRate', props);
+  }
+
+  /**
+   * Metric for the percentage of all viewer requests for which the response's HTTP status code is 5xx.
+   *
+   * @default - average over 5 minutes
+   */
+  public metric5xxErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('5xxErrorRate', props);
+  }
+
+  /**
    * Metric for the total time spent from when CloudFront receives a request to when it starts providing a response to the network (not the viewer),
    * for requests that are served from the origin, not the CloudFront cache.
    *

@@ -430,7 +430,7 @@
    "Type": "AWS::Neptune::DBClusterParameterGroup",
    "Properties": {
     "Description": "A nice parameter group",
-    "Family": "neptune1",
+    "Family": "neptune1.2",
     "Parameters": {
      "neptune_enable_audit_log": "1",
      "neptune_query_timeout": "100000"
@@ -505,6 +505,7 @@
     "EnableCloudwatchLogsExports": [
      "audit"
     ],
+    "EngineVersion": "1.2.1.0",
     "KmsKeyId": {
      "Fn::GetAtt": [
       "DbSecurity381C2C15",
@@ -524,7 +525,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DatabaseobjectObjectLogRetentionA247AF0C": {
+  "DatabaseauditLogRetention8A29F5CC": {
    "Type": "Custom::LogRetention",
    "Properties": {
     "ServiceToken": {
@@ -631,7 +632,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a8515c042d9c942705087943220417be929ac44f968d8fcef2681681b400c0c0.zip"
+     "S3Key": "e4afb15788ec44ed9ff3377e1d131ba2768d7b2e2931bc000d1f2005879b3035.zip"
     },
     "Role": {
      "Fn::GetAtt": [
