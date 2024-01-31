@@ -20,7 +20,7 @@ Closes #<issue number here>.
 <!--Does this PR includes breaking changes? If it does, list them here in the following format (notice how multiple breaking changes should be formatted):
 
   ```
-  BREAKING CHANGE: Description of what broke and how to achieve this behavior now
+  BREAKING CHANGE: Description of the breaking change, the previous behaviour, and the new behaviour. 
   * **module-name:** Another breaking change
   * **module-name:** Yet another breaking change
   ```
