@@ -730,6 +730,128 @@ test('fails if queue policy has no IAM principals', () => {
   expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
 });
 
+describe('redriveAllowPolicy', () => {
+  test('Default settings for the dead letter source queue permission', () => {
+    const stack = new Stack();
+    new sqs.Queue(stack, 'Queue', {
+      redriveAllowPolicy: {},
+    });
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'RedriveAllowPolicy': {
+              'redrivePermission': 'allowAll',
+            },
+          },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+      },
+    });
+  });
+
+  test('explicit specification of dead letter source queues', () => {
+    const stack = new Stack();
+    const sourceQueue1 = new sqs.Queue(stack, 'SourceQueue1');
+    const sourceQueue2 = new sqs.Queue(stack, 'SourceQueue2');
+    new sqs.Queue(stack, 'Queue', { redriveAllowPolicy: { sourceQueues: [sourceQueue1, sourceQueue2] } });
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'SourceQueue1F4BBA4BB': {
+          'Type': 'AWS::SQS::Queue',
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+        'SourceQueue22481CB5A': {
+          'Type': 'AWS::SQS::Queue',
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'RedriveAllowPolicy': {
+              'redrivePermission': 'byQueue',
+              'sourceQueueArns': [
+                {
+                  'Fn::GetAtt': [
+                    'SourceQueue1F4BBA4BB',
+                    'Arn',
+                  ],
+                },
+                {
+                  'Fn::GetAtt': [
+                    'SourceQueue22481CB5A',
+                    'Arn',
+                  ],
+                },
+              ],
+            },
+          },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+      },
+    });
+  });
+
+  test('throw if sourceQueues is not specified when redrivePermission is byQueue', () => {
+    const stack = new Stack();
+    expect(() => {
+      new sqs.Queue(stack, 'Queue', {
+        redriveAllowPolicy: {
+          redrivePermission: sqs.RedrivePermission.BY_QUEUE,
+        },
+      });
+    }).toThrow(/At least one source queue must be specified when RedrivePermission is set to 'byQueue'/);
+  });
+
+  test('throw if dead letter source queues are specified with allowAll permission', () => {
+    const stack = new Stack();
+    const sourceQueue1 = new sqs.Queue(stack, 'SourceQueue1');
+    expect(() => {
+      new sqs.Queue(stack, 'Queue', {
+        redriveAllowPolicy: {
+          sourceQueues: [sourceQueue1],
+          redrivePermission: sqs.RedrivePermission.ALLOW_ALL,
+        },
+      });
+    }).toThrow(/sourceQueues cannot be configured when RedrivePermission is set to 'allowAll' or 'denyAll'/);
+  });
+
+  test('throw if souceQueues length is greater than 10', () => {
+    const stack = new Stack();
+    const sourceQueues: sqs.IQueue[] = [];
+    for (let i = 0; i < 11; i++) {
+      sourceQueues.push(new sqs.Queue(stack, `SourceQueue${i}`));
+    }
+    expect(() => {
+      new sqs.Queue(stack, 'Queue', {
+        redriveAllowPolicy: {
+          sourceQueues,
+          redrivePermission: sqs.RedrivePermission.BY_QUEUE,
+        },
+      });
+    }).toThrow(/Up to 10 sourceQueues can be specified. Set RedrivePermission to 'allowAll' to specify more/);
+  });
+
+  test('throw if sourceQueues is blank array when redrivePermission is byQueue', () => {
+    const stack = new Stack();
+    expect(() => {
+      new sqs.Queue(stack, 'Queue', {
+        redriveAllowPolicy: {
+          sourceQueues: [],
+          redrivePermission: sqs.RedrivePermission.BY_QUEUE,
+        },
+      });
+    }).toThrow(/At least one source queue must be specified when RedrivePermission is set to 'byQueue'/);
+  });
+});
+
 function testGrant(action: (q: sqs.Queue, principal: iam.IPrincipal) => void, ...expectedActions: string[]) {
   const stack = new Stack();
   const queue = new sqs.Queue(stack, 'MyQueue');

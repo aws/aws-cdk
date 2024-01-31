@@ -498,7 +498,7 @@ execute the same steps for multiple entries of an array in the state input.
 const map = new sfn.Map(this, 'Map State', {
   maxConcurrency: 1,
   itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
-  parameters: {
+  itemSelector: {
     item: sfn.JsonPath.stringAt('$$.Map.Item.Value'),
   },
   resultPath: '$.mapOutput',
@@ -528,7 +528,7 @@ An `executionType` must be specified for the distributed `Map` workflow.
 const map = new sfn.Map(this, 'Map State', {
   maxConcurrency: 1,
   itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
-  parameters: {
+  itemSelector: {
     item: sfn.JsonPath.stringAt('$$.Map.Item.Value'),
   },
   resultPath: '$.mapOutput',

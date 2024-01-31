@@ -70,6 +70,7 @@ myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
     color: sns.SubscriptionFilter.stringFilter({
       allowlist: ['red', 'orange'],
       matchPrefixes: ['bl'],
+      matchSuffixes: ['ue'],
     }),
     size: sns.SubscriptionFilter.stringFilter({
       denylist: ['small', 'medium'],
