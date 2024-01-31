@@ -4,9 +4,8 @@ import { S3EventSourceV2 } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { TestFunction } from './test-function';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
-import { randomUUID } from 'node:crypto';
 
-const bucketName = randomUUID();
+const bucketName = 'cdk-test-bucket-event-source';
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);

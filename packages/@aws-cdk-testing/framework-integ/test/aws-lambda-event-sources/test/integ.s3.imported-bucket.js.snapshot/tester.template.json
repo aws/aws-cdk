@@ -9,7 +9,7 @@
       "Arn"
      ]
     },
-    "BucketName": "9da7fe4f-48a2-434d-bc90-40cf5bf0104a",
+    "BucketName": "cdk-test-bucket-event-source",
     "NotificationConfiguration": {
      "LambdaFunctionConfigurations": [
       {
@@ -53,7 +53,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":s3:::9da7fe4f-48a2-434d-bc90-40cf5bf0104a"
+       ":s3:::cdk-test-bucket-event-source"
       ]
      ]
     }

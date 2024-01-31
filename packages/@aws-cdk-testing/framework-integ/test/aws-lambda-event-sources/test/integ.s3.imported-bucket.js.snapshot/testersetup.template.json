@@ -3,7 +3,7 @@
   "bucket43879C71": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
-    "BucketName": "9da7fe4f-48a2-434d-bc90-40cf5bf0104a"
+    "BucketName": "cdk-test-bucket-event-source"
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"

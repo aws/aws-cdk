@@ -55,7 +55,7 @@
                           {
                             "Ref": "AWS::Partition"
                           },
-                          ":s3:::9da7fe4f-48a2-434d-bc90-40cf5bf0104a"
+                          ":s3:::cdk-test-bucket-event-source"
                         ]
                       ]
                     }
@@ -316,7 +316,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
-                    "bucketName": "9da7fe4f-48a2-434d-bc90-40cf5bf0104a"
+                    "bucketName": "cdk-test-bucket-event-source"
                   }
                 },
                 "constructInfo": {
