@@ -71,8 +71,16 @@ export interface ProviderProps {
    * To remove the retention policy, set the value to `INFINITE`.
    *
    * @default logs.RetentionDays.INFINITE
+   * @deprecated Use logGroup for full control over the custom resource log group
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * The Log Group used for logging of events emitted by the custom resource's lambda function.
+   *
+   * @default - a default log group created by AWS Lambda
+   */
+  readonly logGroup?: logs.ILogGroup;
 
   /**
    * The vpc to provision the lambda functions in.
@@ -167,6 +175,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
 
   private readonly entrypoint: lambda.Function;
   private readonly logRetention?: logs.RetentionDays;
+  private readonly logGroup?: logs.ILogGroup;
   private readonly vpc?: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
   private readonly securityGroups?: ec2.ISecurityGroup[];
@@ -193,6 +202,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
     this.isCompleteHandler = props.isCompleteHandler;
 
     this.logRetention = props.logRetention;
+    this.logGroup = props.logGroup;
     this.vpc = props.vpc;
     this.vpcSubnets = props.vpcSubnets;
     this.securityGroups = props.securityGroups;
@@ -244,7 +254,10 @@ export class Provider extends Construct implements ICustomResourceProvider {
       runtime: lambda.Runtime.NODEJS_18_X,
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
-      logRetention: this.logRetention,
+      // props.logRetention is deprecated, make sure we only set it if it is actually provided
+      // otherwise jsii will print warnings even for users that don't use this directly
+      ...(this.logRetention ? { logRetention: this.logRetention } : {}),
+      logGroup: this.logGroup,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       securityGroups: this.securityGroups,

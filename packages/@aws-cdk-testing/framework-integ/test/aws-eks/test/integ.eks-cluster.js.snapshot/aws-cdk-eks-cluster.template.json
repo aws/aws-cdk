@@ -3485,7 +3485,7 @@
     "InstanceTypes": [
      "c5.large",
      "c5a.large",
-     "c5d.large"
+     "m7i-flex.large"
     ],
     "NodeRole": {
      "Fn::GetAtt": [
@@ -4184,7 +4184,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/00420af58cb34bf2e227760d5e02cd5f4ad53a6829202536e3fe3278b7aa046f.json"
+       "/b5cbe4d6c447664cb7945e7e3d2b0d01aeb8c348dacc25cb86a5dd3673800a2f.json"
       ]
      ]
     }

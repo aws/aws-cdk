@@ -617,6 +617,11 @@ export enum InstanceClass {
   TRN1 = 'trn1',
 
   /**
+   * High performance computing powered by AWS Trainium
+   */
+  TRN1N = 'trn1n',
+
+  /**
    * Storage/compute balanced instances, 1st generation
    */
   H1 = 'h1',
@@ -1401,6 +1406,7 @@ export class InstanceType {
       [InstanceClass.STORAGE3_ENHANCED_NETWORK]: 'd3en',
       [InstanceClass.D3EN]: 'd3en',
       [InstanceClass.TRN1]: 'trn1',
+      [InstanceClass.TRN1N]: 'trn1n',
       [InstanceClass.STORAGE_COMPUTE_1]: 'h1',
       [InstanceClass.H1]: 'h1',
       [InstanceClass.IO3]: 'i3',
@@ -1522,7 +1528,7 @@ export class InstanceType {
    */
   public get architecture(): InstanceArchitecture {
     // capture the family, generation, capabilities, and size portions of the instance type id
-    const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z]*)\.([a-z0-9]+)$/);
+    const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z\-]*)\.([a-z0-9\-]+)$/);
     if (instanceTypeComponents == null) {
       throw new Error('Malformed instance type identifier');
     }
@@ -1540,7 +1546,7 @@ export class InstanceType {
   }
 
   public sameInstanceClassAs(other: InstanceType): boolean {
-    const instanceClass: RegExp = /^([a-z]+\d{1,2}[a-z]*)\.([a-z0-9]+)$/;
+    const instanceClass: RegExp = /^([a-z]+\d{1,2}[a-z\-]*)\.([a-z0-9\-]+)$/;
     const instanceClassId = this.instanceTypeIdentifier.match(instanceClass);
     const otherInstanceClassId = other.instanceTypeIdentifier.match(instanceClass);
     if (instanceClassId == null || otherInstanceClassId == null) {

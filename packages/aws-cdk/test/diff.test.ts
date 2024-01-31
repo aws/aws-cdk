@@ -350,7 +350,6 @@ Resources
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
       .replace(/[ \t]+$/mg, '');
     expect(plainTextOutput.trim()).toEqual(`Stack Parent
-Could not create a change set, will base the diff on template differences (run again with -v to see the reason)
 Resources
 [~] AWS::CloudFormation::Stack AdditionChild
  └─ [~] Resources
