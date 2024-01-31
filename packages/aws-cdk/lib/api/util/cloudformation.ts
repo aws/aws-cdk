@@ -320,7 +320,7 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
       // eslint-disable-next-line no-console
       debug('This stack contains one or more nested stacks, falling back to template-only diff...');
 
-      //return undefined;
+      return undefined;
     }
   }
 
