@@ -329,13 +329,17 @@ export interface AwsCustomResourceProps {
    * The number of days log events of the singleton Lambda function implementing
    * this custom resource are kept in CloudWatch Logs.
    *
+   * This is a legacy API and we strongly recommend you migrate to `logGroup` if you can.
+   * `logGroup` allows you to create a fully customizable log group and instruct the Lambda function to send logs to it.
+   *
    * @default logs.RetentionDays.INFINITE
-   * @deprecated Use logGroup for full control over the custom resource log group
    */
   readonly logRetention?: logs.RetentionDays;
 
   /**
    * The Log Group used for logging of events emitted by the custom resource's lambda function.
+   *
+   * Not yet supported in GovCloud and CN regions. Please check regional availability.
    *
    * @default - a default log group created by AWS Lambda
    */

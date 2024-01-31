@@ -70,13 +70,17 @@ export interface ProviderProps {
    * updating this property, unsetting it doesn't remove the log retention policy.
    * To remove the retention policy, set the value to `INFINITE`.
    *
+   * This is a legacy API and we strongly recommend you migrate to `logGroup` if you can.
+   * `logGroup` allows you to create a fully customizable log group and instruct the Lambda function to send logs to it.
+   *
    * @default logs.RetentionDays.INFINITE
-   * @deprecated Use logGroup for full control over the custom resource log group
    */
   readonly logRetention?: logs.RetentionDays;
 
   /**
    * The Log Group used for logging of events emitted by the custom resource's lambda function.
+   *
+   * Not yet supported in GovCloud and CN regions. Please check regional availability.
    *
    * @default - a default log group created by AWS Lambda
    */
