@@ -1079,10 +1079,13 @@ const connection = new events.Connection(this, 'Connection', {
 });
 
 new tasks.HttpInvoke(this, 'Invoke HTTP API', {
-  apiEndpoint: 'https://example.com/api',
+  apiEndpoint: 'https://api.example.com',
   body: JSON.stringify({ foo: 'bar' }),
   connection,
+  headers: { 'Content-Type': 'application/json' },
   method: 'POST',
+  queryStringParameters: { id: '123' },
+  urlEncodeBody: true,
 });
 ```
 

@@ -1,8 +1,8 @@
+import * as cdk from '../../../core';
 import * as events from '../../../aws-events';
-import { SecretValue, Stack } from '../../../core';
 import * as lib from '../../lib';
 
-let stack: Stack;
+let stack: cdk.Stack;
 let connection: events.IConnection;
 
 const expectTaskWithParameters = (task: lib.HttpInvoke, parameters: any) => {
@@ -27,9 +27,9 @@ const expectTaskWithParameters = (task: lib.HttpInvoke, parameters: any) => {
 
 describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
   beforeEach(() => {
-    stack = new Stack();
+    stack = new cdk.Stack();
     connection = new events.Connection(stack, 'Connection', {
-      authorization: events.Authorization.basic('username', SecretValue.unsafePlainText('password')),
+      authorization: events.Authorization.basic('username', cdk.SecretValue.unsafePlainText('password')),
       connectionName: 'testConnection',
     });
   });
