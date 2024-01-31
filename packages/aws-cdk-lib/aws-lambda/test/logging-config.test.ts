@@ -245,7 +245,7 @@ describe('logging Config', () => {
   });
 });
 
-test('Throws when loggingFormat and LogFormat are both specified', () => {
+test('Throws when loggingFormat and logFormat are both specified', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'stack');
   expect(() => {
