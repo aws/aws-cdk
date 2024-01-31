@@ -53,6 +53,7 @@ export function fullDiff(
   const theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
     filterFalsePositivies(theDiff, changeSet);
+    addImportInformation(theDiff, changeSet);
   }
 
   return theDiff;
@@ -208,6 +209,15 @@ function deepCopy(x: any): any {
   return x;
 }
 
+function addImportInformation(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
+  const imports = findResourceImports(changeSet);
+  diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
+    if (imports.includes(logicalId)) {
+      change.isImport = true;
+    }
+  });
+}
+
 function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
   const replacements = findResourceReplacements(changeSet);
   diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
@@ -243,6 +253,17 @@ function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormati
       }
     });
   });
+}
+
+function findResourceImports(changeSet: CloudFormation.DescribeChangeSetOutput): string[] {
+  const importedResourceLogicalIds = [];
+  for (const resourceChange of changeSet.Changes ?? []) {
+    if (resourceChange.ResourceChange?.Action === 'Import') {
+      importedResourceLogicalIds.push(resourceChange.ResourceChange.LogicalResourceId!);
+    }
+  }
+
+  return importedResourceLogicalIds;
 }
 
 function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOutput): types.ResourceReplacements {
