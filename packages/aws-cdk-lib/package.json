@@ -163,7 +163,7 @@
     "@types/lodash": "^4.14.202",
     "@types/punycode": "^2.1.3",
     "@aws-cdk/lazify": "0.0.0",
-    "aws-sdk": "^2.1547.0",
+    "aws-sdk": "^2.1548.0",
     "aws-sdk-client-mock": "^3.0.1",
     "aws-sdk-client-mock-jest": "^3.0.1",
     "aws-sdk-mock": "5.8.0",
