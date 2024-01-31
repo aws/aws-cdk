@@ -17,7 +17,7 @@ import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { createDiffChangeSet, ResourcesToImport } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
-import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, parseSourceOptions, generateTemplate, FromScan, TemplateSourceOptions, GenerateTemplateOutput, CfnTemplateGeneratorProvider, writeMigrateJsonFile, buildGenertedTemplateOutput, buildCfnClient } from './commands/migrate';
+import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, parseSourceOptions, generateTemplate, FromScan, TemplateSourceOptions, GenerateTemplateOutput, CfnTemplateGeneratorProvider, writeMigrateJsonFile, buildGenertedTemplateOutput, buildCfnClient, appendWarningsToReadme, isThereAWarning } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter } from './import';
 import { data, debug, error, highlight, print, success, warning, withCorkedLogging } from './logging';
@@ -746,8 +746,10 @@ export class CdkToolkit {
           generateTemplateOutput = buildGenertedTemplateOutput(generatedTemplateSummary, templateBody, generatedTemplateSummary.GeneratedTemplateId!);
         } else {
           generateTemplateOutput = {
-            templateBody: templateBody,
-            source: 'localfile',
+            migrateJson: {
+              templateBody: templateBody,
+              source: 'localfile',
+            },
           };
         }
       } else if (scanType == TemplateSourceOptions.STACK) {
@@ -756,18 +758,24 @@ export class CdkToolkit {
           throw new Error(`No template found for stack-name: ${options.stackName}`);
         }
         generateTemplateOutput = {
-          templateBody: template,
-          source: options.stackName,
+          migrateJson: {
+            templateBody: template,
+            source: options.stackName,
+          },
         };
       } else {
         // We shouldn't ever get here, but just in case.
         throw new Error(`Invalid source option provided: ${scanType}`);
       }
-      const stack = generateStack(generateTemplateOutput!.templateBody, options.stackName, language);
+      const stack = generateStack(generateTemplateOutput.migrateJson.templateBody, options.stackName, language);
       success(' ⏳  Generating CDK app for %s...', chalk.blue(options.stackName));
       await generateCdkApp(options.stackName, stack!, language, options.outputPath, options.compress);
       if (generateTemplateOutput) {
-        writeMigrateJsonFile(options.outputPath, options.stackName, generateTemplateOutput);
+        writeMigrateJsonFile(options.outputPath, options.stackName, generateTemplateOutput.migrateJson);
+      }
+      if (isThereAWarning(generateTemplateOutput)) {
+        warning(' ⚠️  Some resources could not be migrated completely. Please review the README.md file for more information.');
+        appendWarningsToReadme(`${path.join(options.outputPath ?? process.cwd(), options.stackName)}/README.md`, generateTemplateOutput.resources!);
       }
     } catch (e) {
       error(' ❌  Migrate failed for `%s`: %s', options.stackName, (e as Error).message);

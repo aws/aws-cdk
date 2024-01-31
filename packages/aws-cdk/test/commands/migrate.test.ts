@@ -276,6 +276,42 @@ describe('generateTemplate', () => {
   const stackName = 'my-stack';
   const environment = setEnvironment('123456789012', 'us-east-1');
   const scanId = 'fake-scan-id';
+  const defaultExpectedResult = {
+    migrateJson: {
+      resources: [
+        {
+          LogicalResourceId: 'my-bucket',
+          ResourceIdentifier: { 'my-key': 'my-bucket' },
+          ResourceType: 'AWS::S3::Bucket',
+        },
+        {
+          LogicalResourceId: 'my-ec2-instance',
+          ResourceIdentifier: { instanceId: 'i-1234567890abcdef0' },
+          ResourceType: 'AWS::EC2::Instance',
+        },
+      ],
+      source: 'template-arn',
+      templateBody: 'template-body',
+    },
+    resources: [
+      {
+        LogicalResourceId: 'my-bucket',
+        ManagedByStack: true,
+        ResourceIdentifier: {
+          'my-key': 'my-bucket',
+        },
+        ResourceType: 'AWS::S3::Bucket',
+      },
+      {
+        LogicalResourceId: 'my-ec2-instance',
+        ManagedByStack: true,
+        ResourceIdentifier: {
+          instanceId: 'i-1234567890abcdef0',
+        },
+        ResourceType: 'AWS::EC2::Instance',
+      },
+    ],
+  };
 
   beforeEach(() => {
     sdkProvider = new MockSdkProvider();
@@ -321,24 +357,9 @@ describe('generateTemplate', () => {
       sdkProvider: sdkProvider,
       environment: environment,
     };
-    const expectedResult = {
-      resources: [
-        {
-          logicalResourceId: 'my-bucket',
-          resourceIdentifier: { 'my-key': 'my-bucket' },
-          resourceType: 'AWS::S3::Bucket',
-        },
-        {
-          logicalResourceId: 'my-ec2-instance',
-          resourceIdentifier: { instanceId: 'i-1234567890abcdef0' },
-          resourceType: 'AWS::EC2::Instance',
-        },
-      ],
-      source: 'template-arn',
-      templateBody: 'template-body',
-    };
+
     const template = await generateTemplate(opts);
-    expect(template).toEqual(expectedResult);
+    expect(template).toEqual(defaultExpectedResult);
   });
 
   test('generateTemplate successfully defaults to latest scan instead of starting a new one', async () => {
@@ -363,23 +384,7 @@ describe('generateTemplate', () => {
       environment: environment,
     };
     const template = await generateTemplate(opts);
-    const expectedResult = {
-      resources: [
-        {
-          logicalResourceId: 'my-bucket',
-          resourceIdentifier: { 'my-key': 'my-bucket' },
-          resourceType: 'AWS::S3::Bucket',
-        },
-        {
-          logicalResourceId: 'my-ec2-instance',
-          resourceIdentifier: { instanceId: 'i-1234567890abcdef0' },
-          resourceType: 'AWS::EC2::Instance',
-        },
-      ],
-      source: 'template-arn',
-      templateBody: 'template-body',
-    };
-    expect(template).toEqual(expectedResult);
+    expect(template).toEqual(defaultExpectedResult);
   });
 
   test('generateTemplate throws an error when from-scan most-recent is passed but no scans are found.', async () => {
@@ -440,23 +445,7 @@ describe('generateTemplate', () => {
       environment: environment,
     };
     const template = await generateTemplate(opts);
-    const expectedResult = {
-      resources: [
-        {
-          logicalResourceId: 'my-bucket',
-          resourceIdentifier: { 'my-key': 'my-bucket' },
-          resourceType: 'AWS::S3::Bucket',
-        },
-        {
-          logicalResourceId: 'my-ec2-instance',
-          resourceIdentifier: { instanceId: 'i-1234567890abcdef0' },
-          resourceType: 'AWS::EC2::Instance',
-        },
-      ],
-      source: 'template-arn',
-      templateBody: 'template-body',
-    };
-    expect(template).toEqual(expectedResult);
+    expect(template).toEqual(defaultExpectedResult);
     expect(cloudFormationMocks.startResourceScan).toHaveBeenCalled();
   });
 
@@ -479,23 +468,7 @@ describe('generateTemplate', () => {
       environment: environment,
     };
     const template = await generateTemplate(opts);
-    const expectedResult = {
-      resources: [
-        {
-          logicalResourceId: 'my-bucket',
-          resourceIdentifier: { 'my-key': 'my-bucket' },
-          resourceType: 'AWS::S3::Bucket',
-        },
-        {
-          logicalResourceId: 'my-ec2-instance',
-          resourceIdentifier: { instanceId: 'i-1234567890abcdef0' },
-          resourceType: 'AWS::EC2::Instance',
-        },
-      ],
-      source: 'template-arn',
-      templateBody: 'template-body',
-    };
-    expect(template).toEqual(expectedResult);
+    expect(template).toEqual(defaultExpectedResult);
   });
 
 });

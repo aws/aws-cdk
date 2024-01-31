@@ -100,6 +100,21 @@ class MigrateStack extends cdk.Stack {
       });
       cdk.Tags.of(myQueue).add('tag3', 'value3');
     }
+    if (process.env.LAMBDA_RESOURCES) {
+      const myFunction = new lambda.Function(this, 'migratefunction1', {
+        code: lambda.Code.fromInline('console.log("hello world")'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+      });
+      cdk.Tags.of(myFunction).add('lambda-tag', 'lambda-value');
+
+      const myFunction2 = new lambda.Function(this, 'migratefunction2', {
+        code: lambda.Code.fromInline('console.log("hello world2")'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+      });
+      cdk.Tags.of(myFunction2).add('lambda-tag', 'lambda-value');
+    }
   }
 }
 
