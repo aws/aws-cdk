@@ -597,7 +597,36 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
-### Additional CloudFront distribution metrics
+### CloudFront Distribution Metrics
+
+You can view operational metrics about your CloudFront distributions.
+
+#### Default CloudFront Distribution Metrics
+
+The [following metrics are available by default](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/viewing-cloudfront-metrics.html#monitoring-console.distributions) for all CloudFront distributions:
+
+- Total requests: The total number of viewer requests received by CloudFront for all HTTP methods and for both HTTP and HTTPS requests.
+- Total bytes uploaded: The total number of bytes that viewers uploaded to your origin with CloudFront, using POST and PUT requests.
+- Total bytes downloaded: The total number of bytes downloaded by viewers for GET, HEAD, and OPTIONS requests.
+- Total error rate: The percentage of all viewer requests for which the response's HTTP status code was 4xx or 5xx.
+- 4xx error rate: The percentage of all viewer requests for which the response's HTTP status code was 4xx.
+- 5xx error rate: The percentage of all viewer requests for which the response's HTTP status code was 5xx.
+
+```ts
+const dist = new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
+});
+
+// Retrieving default distribution metrics
+const requestsMetric = dist.metricRequests();
+const bytesUploadedMetric = dist.metricBytesUploaded();
+const bytesDownloadedMetric = dist.metricBytesDownloaded();
+const totalErrorRateMetric = dist.metricTotalErrorRate();
+const http4xxErrorRateMetric = dist.metric4xxErrorRate();
+const http5xxErrorRateMetric = dist.metric5xxErrorRate();
+```
+
+#### Additional CloudFront Distribution Metrics
 
 You can enable [additional CloudFront distribution metrics](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/viewing-cloudfront-metrics.html#monitoring-console.distributions-additional), which include the following metrics:
 
