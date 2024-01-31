@@ -392,6 +392,8 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * In AWS CDK code, you can access the log group name directly from the LogGroup construct:
    * ```ts
+   * import * as logs from 'aws-cdk-lib/aws-logs';
+   *
    * declare const myLogGroup: logs.LogGroup;
    * myLogGroup.logGroupName;
    * ```
