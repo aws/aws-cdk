@@ -41,7 +41,7 @@
     "MetricName": "Requests",
     "Namespace": "AWS/CloudFront",
     "Period": 300,
-    "Statistic": "Average",
+    "Statistic": "Sum",
     "Threshold": 1
    }
   },
@@ -61,7 +61,7 @@
     "MetricName": "BytesUploaded",
     "Namespace": "AWS/CloudFront",
     "Period": 300,
-    "Statistic": "Average",
+    "Statistic": "Sum",
     "Threshold": 1
    }
   },
@@ -81,7 +81,7 @@
     "MetricName": "BytesDownloaded",
     "Namespace": "AWS/CloudFront",
     "Period": 300,
-    "Statistic": "Average",
+    "Statistic": "Sum",
     "Threshold": 1
    }
   },

@@ -83,7 +83,7 @@
                     "metricName": "Requests",
                     "namespace": "AWS/CloudFront",
                     "period": 300,
-                    "statistic": "Average",
+                    "statistic": "Sum",
                     "threshold": 1
                   }
                 },
@@ -121,7 +121,7 @@
                     "metricName": "BytesUploaded",
                     "namespace": "AWS/CloudFront",
                     "period": 300,
-                    "statistic": "Average",
+                    "statistic": "Sum",
                     "threshold": 1
                   }
                 },
@@ -159,7 +159,7 @@
                     "metricName": "BytesDownloaded",
                     "namespace": "AWS/CloudFront",
                     "period": 300,
-                    "statistic": "Average",
+                    "statistic": "Sum",
                     "threshold": 1
                   }
                 },
