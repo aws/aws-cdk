@@ -477,7 +477,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * The log group the function sends logs to.
    *
-   * By default, Lambda functions send logs to an automatically created default log group named /aws/lambda/<function name>.
+   * By default, Lambda functions send logs to an automatically created default log group named /aws/lambda/\<function name\>.
    * However you cannot change the properties of this auto-created log group using the AWS CDK, e.g. you cannot set a different log retention.
    *
    * Use the `logGroup` property to create a fully customizable LogGroup ahead of time, and instruct the Lambda function to send logs to it.
