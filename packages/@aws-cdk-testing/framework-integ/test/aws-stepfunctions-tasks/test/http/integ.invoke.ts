@@ -41,7 +41,7 @@ const start = testCase.assertions.awsApiCall('StepFunctions', 'startExecution', 
   stateMachineArn: sm.stateMachineArn,
 });
 
-// describe the results of the execution  
+// describe the results of the execution
 const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecution', {
   executionArn: start.getAttString('executionArn'),
 });
