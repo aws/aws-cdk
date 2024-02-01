@@ -7,7 +7,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool-pre-token-generation-v2');
 
-const trrigerLambda = new lambda.Function(stack, 'preTokenGenerationLambda', {
+const triggerLambda = new lambda.Function(stack, 'preTokenGenerationLambda', {
   runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { console.log("Mocked pre token generation");return cb(null, "success"); }'),
@@ -17,7 +17,7 @@ const userpool = new UserPool(stack, 'pool', {
   removalPolicy: RemovalPolicy.DESTROY,
   advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
 });
-userpool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, trrigerLambda, LambdaVersion.V2_0);
+userpool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, triggerLambda, LambdaVersion.V2_0);
 
 userpool.addClient('client', {
   authFlows: {

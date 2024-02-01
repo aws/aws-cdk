@@ -559,7 +559,7 @@ describe('User Pool', () => {
         preTokenGeneration,
         LambdaVersion.V2_0,
       );
-    }).toThrow(/Only the `preTokenGenerationConfig` operation supports V2_0 lambda version./);
+    }).toThrow(/Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 lambda version./);
   });
 
   test('can use same lambda as trigger for multiple user pools', () => {
