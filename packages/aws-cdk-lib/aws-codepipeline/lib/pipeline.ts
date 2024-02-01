@@ -108,7 +108,7 @@ export enum PipelineType {
 }
 
 /**
- * Properties of pipeline-Level variable.
+ * Properties of pipeline-level variable.
  */
 export interface VariableProps {
   /**
@@ -369,7 +369,7 @@ export interface PipelineProps {
    *
    * @default - No variables
    */
-  readonly variables?: Variable[]
+  readonly variables?: Variable[];
 
   /**
    * The trigger configuration specifying a type of event, such as Git tags, that
@@ -382,7 +382,7 @@ export interface PipelineProps {
    *
    * @default - No triggers
    */
-  readonly triggers?: Trigger[]
+  readonly triggers?: Trigger[];
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
