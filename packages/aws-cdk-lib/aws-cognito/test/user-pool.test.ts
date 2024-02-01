@@ -543,7 +543,7 @@ describe('User Pool', () => {
     });
   });
 
-  test('throw when specify lambda trigger version v2 for invalid operation', () => {
+  test('throw error when lambda trigger version v2 is specified for an invalid operation', () => {
     // GIVEN
     const stack = new Stack();
 
