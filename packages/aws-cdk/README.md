@@ -647,39 +647,50 @@ This will generate a Python CDK application which will synthesize the same confi
 
 #### Generate a typescript application from unmanaged resources in your account
 
-If you have resources you have provisioned outside of Cloudformation and would like to manage them with CDK, you can use the 
-`--from-scan` option to generate the application. This tool is tightly integrated with Cloudformation's Template Generator feature to scan and
-discover resources in your account. As a result CDK migrate will only generate a CDK application for resources that are supported by CloudFormation's
-Template Generator. This means that some resources may not be supported, and some resources may not be supported in all regions. This also means
-both CDK migrate and CloudFormation's Template Generator are subject to the same limitations, namely that cdk Migrate cannot generate a template with
-more than 500 resources. If the scan returns far more than 500 resources you can filter the resources using the `--filter` option to limit the number
-of resources discoverd to only resources specified by the `--filter` and any resources they depend on, or resources that depend on them (i.e. A DynamoDB table,
-and the alarms that monitor it). OR filtering can be specified by passing multiple `--filter` options, and AND filtering can be specified by passing a single
-`--filter` option with multiple comma separated key/value pairs as seen below. 
+See the CDK Migrate [documentation](https://docs.aws.amazon.com/cdk/v2/guide/migrate.html) for more information.
+
+
+If you have resources in your account that you have provisioned outside AWS IAC tools and would like to manage with the CDK, you can use the 
+`--from-scan` option to generate the application. This tool is integrates with Cloudformation's Template Generator feature to discover un-managed resources in your account,
+and use those discovered resources to generate a new CDK application which represents them. As a result CDK Migrate will only generate a CDK application for resources that 
+are supported by CloudFormation's Template Generator. This means that some resources may not be supported, and some resources may not be supported in all regions, for more
+information on supported resources see [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-supported-resources.html). 
+
+
+This means both CDK Migrate and CloudFormation's Template Generator are subject to the same limitations, namely that CDK Migrate cannot generate a template with
+more than 500 resources. If the scan returns more than 500 resources you can filter the resources using the `--filter` option to limit the number
+of resources discoverd to only resources specified by the `--filter` and any resources they depend on, or resources that depend on them (for example A filter which specifies a single Lambda Function, will find that specific table and any alarms that may monitor it). The `--filter` argument offers both AND as well as OR filtering.
+
+
+OR filtering can be specified by passing multiple `--filter` options, and AND filtering can be specified by passing a single `--filter` option with multiple comma separated key/value pairs as seen below (see below for examples). It is recommended to use the `--filter` option to limit the number of resources returned as some resource types provide sample resources by default in all accounts which can add to the resource limits.
+
+
+`--from-scan` takes 3 potential arguments: `--new`, `most-recent`, and undefined. If `--new` is passed, CDK Migrate will initiate a new scan of the account and use that new scan to discover resources. If `--most-recent` is passed, CDK Migrate will use the most recent scan of the account to discover resources. If neither `--new` nor `--most-recent` are passed, CDK Migrate will take the most recent scan of the account to discover resources, unless there is no recent scan, in which case it will initiate a new scan. For more information see the CDK Migrate [command reference](https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cdk-migrate.html)
+
 
 ```
 # Filtering options
-identifier|id|resource-identifer={<resource-specific-id-key>:<resource-specific-id-value>}
+identifier|id|resource-identifier=<resource-specific-resource-identifier-value>
 type|resource-type-prefix=<resource-type-prefix>
 tag-key=<tag-key>
 tag-value=<tag-value>
 ```
 
 
-Some examples of using these filtering options below:
+Some examples of `--from-scan` CDK Migrate commands below:
 
 ```console
-$ # Generate a typescript application from all unmanaged resources in your account
+$ # Generate a typescript application from all un-managed resources in your account
 $ cdk migrate --stack-name MyAwesomeApplication --language typescript --from-scan
 
-$ # Generate a typescript application from all unmanaged resources in your account with the tag key "Environment" and the tag value "Production"
+$ # Generate a typescript application from all un-managed resources in your account with the tag key "Environment" AND the tag value "Production"
 $ cdk migrate --stack-name MyAwesomeApplication --language typescript --from-scan --filter tag-key=Environment,tag-value=Production
 
-$ # Generate a python application from any dynamoDB resources with the tag-key "dev" and the tag-value "true" or any SQS::Queue
+$ # Generate a python application from any dynamoDB resources with the tag-key "dev" AND the tag-value "true" OR any SQS::Queue
 $ cdk migrate --stack-name MyAwesomeApplication --language python --from-scan --filter type=AWS::DynamoDb::,tag-key=dev,tag-value=true --filter type=SQS::Queue
 
 $ # Generate a typescript application from a specific lambda function by providing it's specific resource identifier
-$ cdk migrate --stack-name MyAwesomeApplication --language typescript --from-scan --filter identifier={"FunctionName":"myAwesomeLambdaFunction"}
+$ cdk migrate --stack-name MyAwesomeApplication --language typescript --from-scan --filter identifier=myAwesomeLambdaFunction
 ```
 
 
@@ -708,7 +719,7 @@ In practice this is how CDK Migrate generated applications will operate in the f
 | Provided template + stack-name is from a deployed stack in the account/region                     | The CDK application will deploy as a changeset to the existing stack          |
 | Provided template has no overlap with resources already in the account/region                     | The CDK application will deploy a new stack successfully                      |
 | Provided template has overlap with Cloudformation managed resources already in the account/region | The CDK application will not be deployable unless those resources are removed |
-| Provided template has overlap with unmanaged resources already in the account/region              | The CDK application will not be deployable until those resources are adopted with [`cdk import`](#cdk-import) |
+| Provided template has overlap with un-managed resources already in the account/region              | The CDK application will not be deployable until those resources are adopted with [`cdk import`](#cdk-import) |
 | No template has been provided and resources exist in the region the scan is done | The CDK application will be immediatly deployable and will import those resources into a new cloudformation stack upon deploy |
 
 
