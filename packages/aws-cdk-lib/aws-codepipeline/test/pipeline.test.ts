@@ -496,7 +496,7 @@ describe('', () => {
         });
       });
 
-      test('crossAccountKeys as default value is set to false when feature flag is set', () => {
+      test('crossAccountKeys as default value is set to false when feature flag is enabled', () => {
         const app = new cdk.App();
         app.node.setContext(cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE, true);
 
