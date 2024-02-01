@@ -19,7 +19,7 @@ import { createDiffChangeSet, ResourcesToImport } from './api/util/cloudformatio
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, parseSourceOptions, generateTemplate, FromScan, TemplateSourceOptions, GenerateTemplateOutput, CfnTemplateGeneratorProvider, writeMigrateJsonFile, buildGenertedTemplateOutput, buildCfnClient, appendWarningsToReadme, isThereAWarning } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
-import { ResourceImporter } from './import';
+import { ResourceImporter, removeNonImportResources } from './import';
 import { data, debug, error, highlight, print, success, warning, withCorkedLogging } from './logging';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
@@ -162,6 +162,11 @@ export class CdkToolkit {
         const currentTemplate = templateWithNames.deployedTemplate;
         const nestedStackCount = templateWithNames.nestedStackCount;
 
+        const resourcesToImport = await this.tryGetResources(await this.props.deployments.resolveEnvironment(stack));
+        if (resourcesToImport) {
+          removeNonImportResources(stack);
+        }
+
         const changeSet = options.changeSet ? await createDiffChangeSet({
           stack,
           uuid: uuid.v4(),
@@ -169,8 +174,13 @@ export class CdkToolkit {
           willExecute: false,
           sdkProvider: this.props.sdkProvider,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
+          resourcesToImport,
           stream,
         }) : undefined;
+
+        if (resourcesToImport) {
+          stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
+        }
 
         const stackCount =
         options.securityOnly
@@ -204,6 +214,12 @@ export class CdkToolkit {
       options.cacheCloudAssembly, options.ignoreNoStacks);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
     print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
+
+    if (stackCollection.stackCount === 0) {
+      // eslint-disable-next-line no-console
+      console.error('This app contains no stacks');
+      return;
+    }
 
     await this.tryMigrateResources(stackCollection, options);
 
@@ -945,7 +961,7 @@ export class CdkToolkit {
   private async tryMigrateResources(stacks: StackCollection, options: DeployOptions): Promise<void> {
     const stack = stacks.stackArtifacts[0];
     const migrateDeployment = new ResourceImporter(stack, this.props.deployments);
-    const resourcesToImport = await this.tryGetResources(migrateDeployment);
+    const resourcesToImport = await this.tryGetResources(await migrateDeployment.resolveEnvironment());
 
     if (resourcesToImport) {
       print('%s: creating stack for resource migration...', chalk.bold(stack.displayName));
@@ -979,11 +995,10 @@ export class CdkToolkit {
     print('\n✨  Resource migration time: %ss\n', formatTime(elapsedDeployTime));
   }
 
-  private async tryGetResources(migrateDeployment: ResourceImporter) {
+  private async tryGetResources(environment: cxapi.Environment): Promise<ResourcesToImport | undefined> {
     try {
       const migrateFile = fs.readJsonSync('migrate.json', { encoding: 'utf-8' });
       const sourceEnv = (migrateFile.Source as string).split(':');
-      const environment = await migrateDeployment.resolveEnvironment();
       if (sourceEnv[0] === 'localfile' ||
         (sourceEnv[4] === environment.account && sourceEnv[3] === environment.region)) {
         return migrateFile.Resources;
@@ -991,6 +1006,8 @@ export class CdkToolkit {
     } catch (e) {
       // Nothing to do
     }
+
+    return undefined;
   }
 }
 
