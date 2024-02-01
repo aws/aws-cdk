@@ -387,6 +387,7 @@ export class Pipeline extends PipelineBase {
       throw new Error('Only one of artifactBucket and crossRegionReplicationBuckets can be specified!');
     }
 
+    // The feature flag is set to true by default for new projects, otherwise false.
     this.crossAccountKeys = props.crossAccountKeys
       ?? (FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE) ? false : true);
     this.enableKeyRotation = props.enableKeyRotation;
