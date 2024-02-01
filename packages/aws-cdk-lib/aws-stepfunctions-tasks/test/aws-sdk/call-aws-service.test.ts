@@ -290,6 +290,34 @@ test('IAM policy for cloudwatchlogs', () => {
   });
 });
 
+test('IAM policy for mediapackagevod', () => {
+  // WHEN
+  const task = new tasks.CallAwsService(stack, 'ListMediaPackageVoDPackagingGroups', {
+    service: 'mediapackagevod',
+    action: 'listPackagingGroups',
+    resultPath: sfn.JsonPath.DISCARD,
+    iamResources: ['*'],
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'mediapackage-vod:listPackagingGroups',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
 test('IAM policy for mwaa', () => {
   // WHEN
   const task = new tasks.CallAwsService(stack, 'ListMWAAEnvironments', {
