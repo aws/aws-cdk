@@ -11,22 +11,22 @@
 
 The AWS CDK Toolkit provides the `cdk` command-line interface that can be used to work with AWS CDK applications.
 
-| Command                               | Description                                                                |
-| ------------------------------------- | -------------------------------------------------------------------------- |
-| [`cdk docs`](#cdk-docs)               | Access the online documentation                                            |
-| [`cdk init`](#cdk-init)               | Start a new CDK project (app or library)                                   |
-| [`cdk list`](#cdk-list)               | List stacks in an application                                              |
-| [`cdk synth`](#cdk-synthesize)        | Synthesize a CDK app to CloudFormation template(s)                         |
-| [`cdk diff`](#cdk-diff)               | Diff stacks against current state                                          |
-| [`cdk deploy`](#cdk-deploy)           | Deploy a stack into an AWS account                                         |
-| [`cdk import`](#cdk-import)           | Import existing AWS resources into a CDK stack                             |
-| [`cdk migrate`](#cdk-migrate)         | Convert an existing CFN template into a CDK Application                    |
-| [`cdk watch`](#cdk-watch)             | Watches a CDK app for deployable and hotswappable changes                  |
-| [`cdk destroy`](#cdk-destroy)         | Deletes a stack from an AWS account                                        |
-| [`cdk bootstrap`](#cdk-bootstrap)     | Deploy a toolkit stack to support deploying large stacks & artifacts       |
-| [`cdk doctor`](#cdk-doctor)           | Inspect the environment and produce information useful for troubleshooting |
-| [`cdk acknowledge`](#cdk-acknowledge) | Acknowledge (and hide) a notice by issue number                            |
-| [`cdk notices`](#cdk-notices)         | List all relevant notices for the application                              |
+| Command                               | Description                                                                        |
+| ------------------------------------- | ---------------------------------------------------------------------------------- |
+| [`cdk docs`](#cdk-docs)               | Access the online documentation                                                    |
+| [`cdk init`](#cdk-init)               | Start a new CDK project (app or library)                                           |
+| [`cdk list`](#cdk-list)               | List stacks in an application                                                      |
+| [`cdk synth`](#cdk-synthesize)        | Synthesize a CDK app to CloudFormation template(s)                                 |
+| [`cdk diff`](#cdk-diff)               | Diff stacks against current state                                                  |
+| [`cdk deploy`](#cdk-deploy)           | Deploy a stack into an AWS account                                                 |
+| [`cdk import`](#cdk-import)           | Import existing AWS resources into a CDK stack                                     |
+| [`cdk migrate`](#cdk-migrate)         | Migrate AWS resources, CloudFormation stacks, and CloudFormation templates to CDK  |
+| [`cdk watch`](#cdk-watch)             | Watches a CDK app for deployable and hotswappable changes                          |
+| [`cdk destroy`](#cdk-destroy)         | Deletes a stack from an AWS account                                                |
+| [`cdk bootstrap`](#cdk-bootstrap)     | Deploy a toolkit stack to support deploying large stacks & artifacts               |
+| [`cdk doctor`](#cdk-doctor)           | Inspect the environment and produce information useful for troubleshooting         |
+| [`cdk acknowledge`](#cdk-acknowledge) | Acknowledge (and hide) a notice by issue number                                    |
+| [`cdk notices`](#cdk-notices)         | List all relevant notices for the application                                      |
 
 - [Bundling](#bundling)
 - [MFA Support](#mfa-support)
@@ -594,29 +594,59 @@ This feature currently has the following limitations:
 
 ### `cdk migrate`
 
-⚠️**CAUTION**⚠️ 
+⚠️**CAUTION**⚠️: CDK Migrate is currently experimental and may have breaking changes in the future. 
 
-CDK Migrate is currently experimental and may have breaking changes in the future. 
+CDK Migrate generates a CDK app from deployed AWS resources using `--from-scan`, deployed AWS CloudFormation stacks using `--from-stack`, and local AWS CloudFormation templates using `--from-path`. 
 
-CDK Migrate Generates a CDK application from either a deployed CloudFormation stack in your account using `--from-stack`, 
-a local YAML or JSON Cloudformation template using `--from-path`, or unmanaged resources scanned from your account using `--from-scan`. 
-The generated CDK application will synthesize into a CloudFormation template with identical resource configurations to the provided resources. 
-The generated application will be initialized in the current working directory with a single stack where 
-the stack, app, and directory will all be named using the provided `--stack-name`. It will also
-be within a generated subdirectory in your current working directory unless `--output-path` is specified.
-If a directory already exists with the same name as `--stack-name`, it will be replaced with the new application.
-All CDK supported languages are supported, language choice can be specified with `--language`.
+To learn more about the CDK Migrate feature, see [Migrate to AWS CDK](https://docs.aws.amazon.com/cdk/v2/guide/migrate.html). For more information on `cdk migrate` command options, see [cdk migrate command reference](https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cdk-migrate.html).
 
-#### Generate a typescript application from a local template.json file
+The new CDK app will be initialized in the current working directory and will include a single stack that is named with the value you provide using `--stack-name`. The new stack, app, and directory will all use this name. To specify a different output directory, use `--output-path`. You can create the new CDK app in any CDK supported programming language using `--language`.
+
+#### Migrate from an AWS CloudFormation stack
+
+Migrate from a deployed AWS CloudFormation stack in a specific AWS account and AWS Region using `--from-stack`. Provide `--stack-name` to identify the name of your stack. Account and Region information are retrieved from default CDK CLI sources. Use `--account` and `--region` options to provide other values. The following is an example that migrates **myCloudFormationStack** to a new CDK app using TypeScript:
+
+```console
+$ cdk migrate --language typescript --from-stack --stack-name 'myCloudFormationStack'
+```
+
+#### Migrate from a local AWS CloudFormation template
+
+Migrate from a local `YAML` or `JSON` AWS CloudFormation template using `--from-path`. Provide a name for the stack that will be created in your new CDK app using `--stack-name`. Account and Region information are retrieved from default CDK CLI sources. Use `--account` and `--region` options to provide other values. The following is an example that creates a new CDK app using TypeScript that includes a **myCloudFormationStack** stack from a local `template.json` file:
+
+```console
+$ cdk migrate --language typescript --from-path "./template.json" --stack-name "myCloudFormationStack"
+```
+
+#### Migrate from deployed AWS resources
+
+Migrate from deployed AWS resources in a specific AWS account and Region that are not associated with an AWS CloudFormation stack using `--from-scan`. These would be resources that were provisioned outside of an IaC tool. CDK Migrate utilizes the IaC generator service to scan for resources and generate a template. Then, the CDK CLI references the template to create a new CDK app. To learn more about IaC generator, see [Generating templates for existing resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/generate-IaC.html).
+
+Account and Region information are retrieved from default CDK CLI sources. Use `--account` and `--region` options to provide other values. The following is an example that creates a new CDK app using TypeScript that includes a new **myCloudFormationStack** stack from deployed resources:
+
+```console
+$ cdk migrate --language typescript --from-scan --stack-name "myCloudFormationStack"
+```
+
+Since CDK Migrate relies on the IaC generator service, any limitations of IaC generator will apply to CDK Migrate. For general limitations, see [Considerations](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/generate-IaC.html#generate-template-considerations). 
+
+IaC generator limitations with discovering resource and property values will also apply here. As a result, CDK Migrate will only migrate resources supported by IaC generator. Some of your resources may not be supported and some property values may not be accessible. For more information, see [Iac generator and write-only properties](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/generate-IaC-write-only-properties.html) and [Supported resource types](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/generate-IaC-supported-resources.html).
+
+You can specify filters using `--filter` to specify which resources to migrate. This is a good option to use if you are over the IaC generator total resource limit.
+
+After migration, you must resolve any write-only properties that were detected by IaC generator from your deployed resources. To learn more, see [Resolve write-only properties](https://docs.aws.amazon.com/cdk/v2/guide/migrate.html#migrate-resources-writeonly).
+
+#### Examples
+
+##### Generate a TypeScript CDK app from a local AWS CloudFormation template.json file
 
 ```console
 $ # template.json is a valid cloudformation template in the local directory
 $ cdk migrate --stack-name MyAwesomeApplication --language typescript --from-path MyTemplate.json
 ```
 
-This command will generate a new directory named `MyAwesomeApplication` within your current working directory, and  
-then initialize a new CDK application within that directory which has the same resource configuration
-as the provided template.json
+This command generates a new directory named `MyAwesomeApplication` within your current working directory, and  
+then initializes a new CDK application within that directory. The CDK app contains a `MyAwesomeApplication` stack with resources configured to match those in your local CloudFormation template. 
 
 This results in a CDK application with the following structure, where the lib directory contains a stack definition
 with the same resource configuration as the provided template.json.
@@ -633,40 +663,26 @@ with the same resource configuration as the provided template.json.
 ├── tsconfig.json
 ```
 
-#### Generate a python application from a deployed stack
+##### Generate a Python CDK app from a deployed stack
 
-If you already have a CloudFormation stack deployed in your account and would like to manage it with CDK, you can use the 
-`--from-stack` option to generate the application. In this case the `--stack-name` must match the name of the deployed stack.
+If you already have a CloudFormation stack deployed in your account and would like to manage it with CDK, you can migrate the deployed stack to a new CDK app. The value provided with `--stack-name` must match the name of the deployed stack.
 
 ```console
-$ # generate a python application from MyDeployedStack in your account
+$ # generate a Python application from MyDeployedStack in your account
 $ cdk migrate --stack-name MyDeployedStack --language python --from-stack
 ```
 
-This will generate a Python CDK application which will synthesize the same configuration of resources as the deployed stack.
+This will generate a Python CDK app which will synthesize the same configuration of resources as the deployed stack.
 
-#### Generate a typescript application from unmanaged resources in your account
+##### Generate a TypeScript CDK app from deployed AWS resources that are not associated with a stack
 
-See the CDK Migrate [documentation](https://docs.aws.amazon.com/cdk/v2/guide/migrate.html) for more information.
+If you have resources in your account that were provisioned outside AWS IaC tools and would like to manage them with the CDK, you can use the `--from-scan` option to generate the application. 
 
-
-If you have resources in your account that you have provisioned outside AWS IAC tools and would like to manage with the CDK, you can use the 
-`--from-scan` option to generate the application. This tool is integrates with Cloudformation's Template Generator feature to discover un-managed resources in your account,
-and use those discovered resources to generate a new CDK application which represents them. As a result CDK Migrate will only generate a CDK application for resources that 
-are supported by CloudFormation's Template Generator. This means that some resources may not be supported, and some resources may not be supported in all regions, for more
-information on supported resources see [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resource-import-supported-resources.html). 
-
-
-This means both CDK Migrate and CloudFormation's Template Generator are subject to the same limitations, namely that CDK Migrate cannot generate a template with
-more than 500 resources. If the scan returns more than 500 resources you can filter the resources using the `--filter` option to limit the number
-of resources discoverd to only resources specified by the `--filter` and any resources they depend on, or resources that depend on them (for example A filter which specifies a single Lambda Function, will find that specific table and any alarms that may monitor it). The `--filter` argument offers both AND as well as OR filtering.
-
+In this example, we use the `--filter` option to specify which resources to migrate.  You can filter resources to limit the number of resources migrated to only those specified by the `--filter` option, including any resources they depend on, or resources that depend on them (for example A filter which specifies a single Lambda Function, will find that specific table and any alarms that may monitor it). The `--filter` argument offers both AND as well as OR filtering.
 
 OR filtering can be specified by passing multiple `--filter` options, and AND filtering can be specified by passing a single `--filter` option with multiple comma separated key/value pairs as seen below (see below for examples). It is recommended to use the `--filter` option to limit the number of resources returned as some resource types provide sample resources by default in all accounts which can add to the resource limits.
 
-
-`--from-scan` takes 3 potential arguments: `--new`, `most-recent`, and undefined. If `--new` is passed, CDK Migrate will initiate a new scan of the account and use that new scan to discover resources. If `--most-recent` is passed, CDK Migrate will use the most recent scan of the account to discover resources. If neither `--new` nor `--most-recent` are passed, CDK Migrate will take the most recent scan of the account to discover resources, unless there is no recent scan, in which case it will initiate a new scan. For more information see the CDK Migrate [command reference](https://docs.aws.amazon.com/cdk/v2/guide/ref-cli-cdk-migrate.html)
-
+`--from-scan` takes 3 potential arguments: `--new`, `most-recent`, and undefined. If `--new` is passed, CDK Migrate will initiate a new scan of the account and use that new scan to discover resources. If `--most-recent` is passed, CDK Migrate will use the most recent scan of the account to discover resources. If neither `--new` nor `--most-recent` are passed, CDK Migrate will take the most recent scan of the account to discover resources, unless there is no recent scan, in which case it will initiate a new scan. 
 
 ```
 # Filtering options
@@ -676,8 +692,7 @@ tag-key=<tag-key>
 tag-value=<tag-value>
 ```
 
-
-Some examples of `--from-scan` CDK Migrate commands below:
+##### Additional examples of migrating from deployed resources
 
 ```console
 $ # Generate a typescript application from all un-managed resources in your account
@@ -692,7 +707,6 @@ $ cdk migrate --stack-name MyAwesomeApplication --language python --from-scan --
 $ # Generate a typescript application from a specific lambda function by providing it's specific resource identifier
 $ cdk migrate --stack-name MyAwesomeApplication --language typescript --from-scan --filter identifier=myAwesomeLambdaFunction
 ```
-
 
 #### **CDK Migrate Limitations**
 
@@ -721,7 +735,6 @@ In practice this is how CDK Migrate generated applications will operate in the f
 | Provided template has overlap with Cloudformation managed resources already in the account/region | The CDK application will not be deployable unless those resources are removed |
 | Provided template has overlap with un-managed resources already in the account/region              | The CDK application will not be deployable until those resources are adopted with [`cdk import`](#cdk-import) |
 | No template has been provided and resources exist in the region the scan is done | The CDK application will be immediatly deployable and will import those resources into a new cloudformation stack upon deploy |
-
 
 ##### **The provided template is already deployed to CloudFormation in the account/region**
 
