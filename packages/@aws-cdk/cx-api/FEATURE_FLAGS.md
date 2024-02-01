@@ -120,7 +120,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
     "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
-    "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true
+    "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true,
   }
 }
 ```
@@ -1219,8 +1219,8 @@ If the flag is set to false then it can only make one alarm for the Lambda with
 
 *Enables Pipeline to set the default value for crossAccountKeys to false.* (default)
 
-If this is set, and a `crossAccountKeys` prop in a `Pipeline` construct is not passed to,
-the construct will set the default value of the prop to false.
+When this feature flag is enabled, and the `crossAccountKeys` property is not provided in a `Pipeline`
+construct, the construct automatically defaults the value of this property to false.
 
 
 | Since | Default | Recommended |

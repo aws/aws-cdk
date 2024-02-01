@@ -263,8 +263,8 @@ _cdk.json_
 
 Enables Pipeline to set the default value for `crossAccountKeys` to false.
 
-If this is set, and a `crossAccountKeys` prop in a `Pipeline` construct is not passed to,
-the construct will set the default value of the prop to false.
+When this feature flag is enabled, and the `crossAccountKeys` property is not provided in a `Pipeline`
+construct, the construct automatically defaults the value of this property to false.
 
 _cdk.json_
 
