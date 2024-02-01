@@ -23,23 +23,18 @@ describe('', () => {
         role,
       });
 
-      // Adding 2 stages with actions so pipeline validation will pass
       const sourceArtifact = new codepipeline.Artifact();
-      pipeline.addStage({
-        stageName: 'Source',
-        actions: [new FakeSourceAction({
+      testPipelineSetup(
+        pipeline,
+        [new FakeSourceAction({
           actionName: 'FakeSource',
           output: sourceArtifact,
         })],
-      });
-
-      pipeline.addStage({
-        stageName: 'Build',
-        actions: [new FakeBuildAction({
+        [new FakeBuildAction({
           actionName: 'FakeBuild',
           input: sourceArtifact,
         })],
-      });
+      );
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'RoleArn': {
@@ -507,493 +502,230 @@ describe('', () => {
         pipelineType: type,
       });
 
-      // Adding 2 stages with actions so pipeline validation will pass
       const sourceArtifact = new codepipeline.Artifact();
-      pipeline.addStage({
-        stageName: 'Source',
-        actions: [new FakeSourceAction({
-          actionName: 'FakeSource',
-          output: sourceArtifact,
-        })],
-      });
-
-      pipeline.addStage({
-        stageName: 'Build',
-        actions: [new FakeBuildAction({
-          actionName: 'FakeBuild',
-          input: sourceArtifact,
-        })],
-      });
+      const sourceActions = [new FakeSourceAction({
+        actionName: 'FakeSource',
+        output: sourceArtifact,
+      })];
+      const buildActions = [new FakeBuildAction({
+        actionName: 'FakeBuild',
+        input: sourceArtifact,
+      })];
+      testPipelineSetup(pipeline, sourceActions, buildActions);
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         PipelineType: expected,
       });
     });
 
-    test('can specify pipeline-level variables', () => {
-      const stack = new cdk.Stack();
-      const variable = new codepipeline.Variable({
-        variableName: 'var-name',
-        description: 'description',
-        defaultValue: 'default-value',
-      });
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
-        pipelineType: codepipeline.PipelineType.V2,
-        variables: [variable],
-      });
+    describe('pipeline-level variables', () => {
+      let stack: cdk.Stack;
+      let sourceArtifact: codepipeline.Artifact;
+      let sourceActions: codepipeline.Action[];
+      let buildActions: codepipeline.Action[];
+      let variable1: codepipeline.Variable;
+      let variable2: codepipeline.Variable;
 
-      // Adding 2 stages with actions so pipeline validation will pass
-      const sourceArtifact = new codepipeline.Artifact();
-      pipeline.addStage({
-        stageName: 'Source',
-        actions: [new FakeSourceAction({
+      beforeEach(() => {
+        stack = new cdk.Stack();
+        sourceArtifact = new codepipeline.Artifact();
+        sourceActions = [new FakeSourceAction({
           actionName: 'FakeSource',
           output: sourceArtifact,
-        })],
-      });
-
-      pipeline.addStage({
-        stageName: 'Build',
-        actions: [new FakeBuildAction({
+        })];
+        buildActions = [new FakeBuildAction({
           actionName: 'FakeBuild',
           input: sourceArtifact,
-        })],
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        PipelineType: 'V2',
-        Variables: [{
-          Name: 'var-name',
-          Description: 'description',
-          DefaultValue: 'default-value',
-        }],
-      });
-    });
-
-    test('can specify pipeline-level variables by addVariable method', () => {
-      const stack = new cdk.Stack();
-      const variable = new codepipeline.Variable({
-        variableName: 'var-name',
-        description: 'description',
-        defaultValue: 'default-value',
-      });
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
-        pipelineType: codepipeline.PipelineType.V2,
-      });
-      pipeline.addVariable(variable);
-
-      // Adding 2 stages with actions so pipeline validation will pass
-      const sourceArtifact = new codepipeline.Artifact();
-      pipeline.addStage({
-        stageName: 'Source',
-        actions: [new FakeSourceAction({
-          actionName: 'FakeSource',
-          output: sourceArtifact,
-        })],
-      });
-
-      pipeline.addStage({
-        stageName: 'Build',
-        actions: [new FakeBuildAction({
-          actionName: 'FakeBuild',
-          input: sourceArtifact,
-        })],
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        PipelineType: 'V2',
-        Variables: [{
-          Name: 'var-name',
-          Description: 'description',
-          DefaultValue: 'default-value',
-        }],
-      });
-    });
-
-    test('can reference in a format `#{variables.${this.variableName}}`', () => {
-      const variable = new codepipeline.Variable({
-        variableName: 'var-name',
-        description: 'description',
-        defaultValue: 'default-value',
-      });
-
-      expect(variable.reference()).toEqual('#{variables.var-name}');
-    });
-
-    test('validate if pipeline-level variables are specified when pipelineType is not set to V2', () => {
-      const stack = new cdk.Stack();
-      const variable = new codepipeline.Variable({
-        variableName: 'var-name',
-        description: 'description',
-        defaultValue: 'default-value',
-      });
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
-        variables: [variable],
-      });
-
-      // Adding 2 stages with actions so pipeline validation will pass
-      const sourceArtifact = new codepipeline.Artifact();
-      pipeline.addStage({
-        stageName: 'Source',
-        actions: [new FakeSourceAction({
-          actionName: 'FakeSource',
-          output: sourceArtifact,
-        })],
-      });
-
-      pipeline.addStage({
-        stageName: 'Build',
-        actions: [new FakeBuildAction({
-          actionName: 'FakeBuild',
-          input: sourceArtifact,
-        })],
-      });
-
-      const errors = validate(stack);
-
-      expect(errors.length).toEqual(1);
-      const error = errors[0];
-      expect(error).toMatch(/Pipeline variables can only be used with V2 pipelines/);
-    });
-
-    test('validate if pipeline-level variables are specified when pipelineType is not set to V2 and addVariable method is used', () => {
-      const stack = new cdk.Stack();
-      const variable = new codepipeline.Variable({
-        variableName: 'var-name',
-        description: 'description',
-        defaultValue: 'default-value',
-      });
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {});
-      pipeline.addVariable(variable);
-
-      // Adding 2 stages with actions so pipeline validation will pass
-      const sourceArtifact = new codepipeline.Artifact();
-      pipeline.addStage({
-        stageName: 'Source',
-        actions: [new FakeSourceAction({
-          actionName: 'FakeSource',
-          output: sourceArtifact,
-        })],
-      });
-
-      pipeline.addStage({
-        stageName: 'Build',
-        actions: [new FakeBuildAction({
-          actionName: 'FakeBuild',
-          input: sourceArtifact,
-        })],
-      });
-
-      const errors = validate(stack);
-
-      expect(errors.length).toEqual(1);
-      const error = errors[0];
-      expect(error).toMatch(/Pipeline variables can only be used with V2 pipelines/);
-    });
-
-    test('throw if name for pipeline-level variable uses invalid character', () => {
-      const stack = new cdk.Stack();
-      expect(() => {
-        new codepipeline.Variable({
-          variableName: 'var name',
+        })];
+        variable1 = new codepipeline.Variable({
+          variableName: 'var-name-1',
           description: 'description',
           defaultValue: 'default-value',
         });
-      }).toThrow('Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got \'var name\'');
-    });
-
-    test('throw if length of name for pipeline-level variable is less than 1', () => {
-      const stack = new cdk.Stack();
-      expect(() => {
-        new codepipeline.Variable({
-          variableName: '',
+        variable2 = new codepipeline.Variable({
+          variableName: 'var-name-2',
           description: 'description',
           defaultValue: 'default-value',
         });
-      }).toThrow('Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got \'\'');
-    });
-
-    test('throw if length of name for pipeline-level variable is greater than 128', () => {
-      const stack = new cdk.Stack();
-      expect(() => {
-        new codepipeline.Variable({
-          variableName: 'a'.repeat(129),
-          description: 'description',
-          defaultValue: 'default-value',
-        });
-      }).toThrow(`Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got '${'a'.repeat(129)}'`);
-    });
-
-    test('throw if length of default value for pipeline-level variable is less than 1', () => {
-      const stack = new cdk.Stack();
-      expect(() => {
-        new codepipeline.Variable({
-          variableName: 'var-name',
-          description: 'description',
-          defaultValue: '',
-        });
-      }).toThrow(/Default value for variable 'var-name' must be between 1 and 1000 characters long, got 0/);
-    });
-
-    test('throw if length of default value for pipeline-level variable is greater than 1000', () => {
-      const stack = new cdk.Stack();
-      expect(() => {
-        new codepipeline.Variable({
-          variableName: 'var-name',
-          description: 'description',
-          defaultValue: 'a'.repeat(1001),
-        });
-      }).toThrow(/Default value for variable 'var-name' must be between 1 and 1000 characters long, got 1001/);
-    });
-
-    test('throw if length of description for pipeline-level variable is greater than 200', () => {
-      const stack = new cdk.Stack();
-      expect(() => {
-        new codepipeline.Variable({
-          variableName: 'var-name',
-          description: 'a'.repeat(201),
-          defaultValue: 'default',
-        });
-      }).toThrow(/Description for variable 'var-name' must not be greater than 200 characters long, got 201/);
-    });
-
-    test('can specify triggers', () => {
-      const stack = new cdk.Stack();
-
-      const sourceArtifact = new codepipeline.Artifact();
-      const sourceAction = new CodeStarConnectionsSourceAction({
-        actionName: 'CodeStarConnectionsSourceAction',
-        output: sourceArtifact,
-        connectionArn: 'connection',
-        owner: 'owner',
-        repo: 'repo',
       });
 
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
-        pipelineType: codepipeline.PipelineType.V2,
-        triggers: [{
-          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-          gitConfiguration: {
-            sourceAction,
-            pushFilter: [{
-              excludedTags: ['exclude1', 'exclude2'],
-              includedTags: ['include1', 'include2'],
-            }],
-          },
-        }],
-      });
-
-      // Adding 2 stages with actions so pipeline validation will pass
-      pipeline.addStage({
-        stageName: 'Source',
-        actions: [sourceAction],
-      });
-
-      pipeline.addStage({
-        stageName: 'Build',
-        actions: [new FakeBuildAction({
-          actionName: 'FakeBuild',
-          input: sourceArtifact,
-        })],
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        PipelineType: 'V2',
-        Triggers: [{
-          GitConfiguration: {
-            SourceActionName: 'CodeStarConnectionsSourceAction',
-            Push: [{
-              Tags: {
-                Excludes: ['exclude1', 'exclude2'],
-                Includes: ['include1', 'include2'],
-              },
-            }],
-          },
-          ProviderType: 'CodeStarSourceConnection',
-        }],
-      });
-    });
-
-    test('empty excludedTags for trigger is set to undefined', () => {
-      const stack = new cdk.Stack();
-
-      const sourceArtifact = new codepipeline.Artifact();
-      const sourceAction = new CodeStarConnectionsSourceAction({
-        actionName: 'CodeStarConnectionsSourceAction',
-        output: sourceArtifact,
-        connectionArn: 'connection',
-        owner: 'owner',
-        repo: 'repo',
-      });
-
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
-        pipelineType: codepipeline.PipelineType.V2,
-        triggers: [{
-          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-          gitConfiguration: {
-            sourceAction,
-            pushFilter: [{
-              excludedTags: [],
-              includedTags: ['include1', 'include2'],
-            }],
-          },
-        }],
-      });
-
-      // Adding 2 stages with actions so pipeline validation will pass
-      pipeline.addStage({
-        stageName: 'Source',
-        actions: [sourceAction],
-      });
-
-      pipeline.addStage({
-        stageName: 'Build',
-        actions: [new FakeBuildAction({
-          actionName: 'FakeBuild',
-          input: sourceArtifact,
-        })],
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        PipelineType: 'V2',
-        Triggers: [{
-          GitConfiguration: {
-            SourceActionName: 'CodeStarConnectionsSourceAction',
-            Push: [{
-              Tags: {
-                Excludes: Match.absent(),
-                Includes: ['include1', 'include2'],
-              },
-            }],
-          },
-          ProviderType: 'CodeStarSourceConnection',
-        }],
-      });
-    });
-
-    test('empty includedTags for trigger is set to undefined', () => {
-      const stack = new cdk.Stack();
-
-      const sourceArtifact = new codepipeline.Artifact();
-      const sourceAction = new CodeStarConnectionsSourceAction({
-        actionName: 'CodeStarConnectionsSourceAction',
-        output: sourceArtifact,
-        connectionArn: 'connection',
-        owner: 'owner',
-        repo: 'repo',
-      });
-
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
-        pipelineType: codepipeline.PipelineType.V2,
-        triggers: [{
-          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-          gitConfiguration: {
-            sourceAction,
-            pushFilter: [{
-              excludedTags: ['excluded1', 'excluded2'],
-              includedTags: [],
-            }],
-          },
-        }],
-      });
-
-      // Adding 2 stages with actions so pipeline validation will pass
-      pipeline.addStage({
-        stageName: 'Source',
-        actions: [sourceAction],
-      });
-
-      pipeline.addStage({
-        stageName: 'Build',
-        actions: [new FakeBuildAction({
-          actionName: 'FakeBuild',
-          input: sourceArtifact,
-        })],
-      });
-
-      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        PipelineType: 'V2',
-        Triggers: [{
-          GitConfiguration: {
-            SourceActionName: 'CodeStarConnectionsSourceAction',
-            Push: [{
-              Tags: {
-                Excludes: ['excluded1', 'excluded2'],
-                Includes: Match.absent(),
-              },
-            }],
-          },
-          ProviderType: 'CodeStarSourceConnection',
-        }],
-      });
-    });
-
-    test('throw if length of excludes is greater than 8', () => {
-      const stack = new cdk.Stack();
-      const sourceArtifact = new codepipeline.Artifact();
-      const sourceAction = new CodeStarConnectionsSourceAction({
-        actionName: 'CodeStarConnectionsSourceAction',
-        output: sourceArtifact,
-        connectionArn: 'connection',
-        owner: 'owner',
-        repo: 'repo',
-      });
-
-      expect(() => {
-        new codepipeline.Pipeline(stack, 'Pipeline', {
+      test('can specify pipeline-level variables', () => {
+        const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
           pipelineType: codepipeline.PipelineType.V2,
-          triggers: [{
-            providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-            gitConfiguration: {
-              sourceAction,
-              pushFilter: [{
-                excludedTags: ['exclude1', 'exclude2', 'exclude3', 'exclude4', 'exclude5', 'exclude6', 'exclude7', 'exclude8', 'exclude9'],
-                includedTags: ['include1', 'include2'],
-              }],
-            },
+          variables: [variable1],
+        });
+
+        testPipelineSetup(pipeline, sourceActions, buildActions);
+
+        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+          PipelineType: 'V2',
+          Variables: [{
+            Name: 'var-name-1',
+            Description: 'description',
+            DefaultValue: 'default-value',
           }],
         });
-      }).toThrow(/maximum length of excludedTags is 8, got 9 at triggers\[0\].gitConfiguration.pushFilter\[0\]/);
-    });
-
-    test('throw if length of excludes is greater than 8', () => {
-      const stack = new cdk.Stack();
-      const sourceArtifact = new codepipeline.Artifact();
-      const sourceAction = new CodeStarConnectionsSourceAction({
-        actionName: 'CodeStarConnectionsSourceAction',
-        output: sourceArtifact,
-        connectionArn: 'connection',
-        owner: 'owner',
-        repo: 'repo',
       });
 
-      expect(() => {
-        new codepipeline.Pipeline(stack, 'Pipeline', {
+      test('can specify pipeline-level multiple variables', () => {
+        const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
           pipelineType: codepipeline.PipelineType.V2,
-          triggers: [{
-            providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-            gitConfiguration: {
-              sourceAction,
-              pushFilter: [{
-                excludedTags: ['exclude1', 'exclude2'],
-                includedTags: ['include1', 'include2', 'include3', 'include4', 'include5', 'include6', 'include7', 'include8', 'include9'],
-              }],
+          variables: [variable1, variable2],
+        });
+
+        testPipelineSetup(pipeline, sourceActions, buildActions);
+
+        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+          PipelineType: 'V2',
+          Variables: [
+            {
+              Name: 'var-name-1',
+              Description: 'description',
+              DefaultValue: 'default-value',
             },
+            {
+              Name: 'var-name-2',
+              Description: 'description',
+              DefaultValue: 'default-value',
+            },
+          ],
+        });
+      });
+
+      test('can specify pipeline-level variables by addVariable method', () => {
+        const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+          pipelineType: codepipeline.PipelineType.V2,
+        });
+        pipeline.addVariable(variable1);
+
+        testPipelineSetup(pipeline, sourceActions, buildActions);
+
+        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+          PipelineType: 'V2',
+          Variables: [{
+            Name: 'var-name-1',
+            Description: 'description',
+            DefaultValue: 'default-value',
           }],
         });
-      }).toThrow(/maximum length of includedTags is 8, got 9 at triggers\[0\].gitConfiguration.pushFilter\[0\]/);
-    });
-
-    test('throw if provider of sourceAction is not \'CodeStarSourceConnection\'', () => {
-      const stack = new cdk.Stack();
-      const sourceArtifact = new codepipeline.Artifact();
-      const sourceAction = new FakeSourceAction({
-        actionName: 'FakeSource',
-        output: sourceArtifact,
       });
 
-      expect(() => {
-        new codepipeline.Pipeline(stack, 'Pipeline', {
+      test('can reference in a format `#{variables.${this.variableName}}`', () => {
+        expect(variable1.reference()).toEqual('#{variables.var-name-1}');
+      });
+
+      test('validate if pipeline-level variables are specified when pipelineType is not set to V2', () => {
+        const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+          variables: [variable1],
+        });
+
+        testPipelineSetup(pipeline, sourceActions, buildActions);
+
+        const errors = validate(stack);
+
+        expect(errors.length).toEqual(1);
+        const error = errors[0];
+        expect(error).toMatch(/Pipeline variables can only be used with V2 pipelines/);
+      });
+
+      test('validate if pipeline-level variables are specified when pipelineType is not set to V2 and addVariable method is used', () => {
+        const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {});
+        pipeline.addVariable(variable1);
+
+        testPipelineSetup(pipeline, sourceActions, buildActions);
+
+        const errors = validate(stack);
+
+        expect(errors.length).toEqual(1);
+        const error = errors[0];
+        expect(error).toMatch(/Pipeline variables can only be used with V2 pipelines/);
+      });
+
+      test('throw if name for pipeline-level variable uses invalid character', () => {
+        expect(() => {
+          new codepipeline.Variable({
+            variableName: 'var name',
+            description: 'description',
+            defaultValue: 'default-value',
+          });
+        }).toThrow('Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got \'var name\'');
+      });
+
+      test('throw if length of name for pipeline-level variable is less than 1', () => {
+        expect(() => {
+          new codepipeline.Variable({
+            variableName: '',
+            description: 'description',
+            defaultValue: 'default-value',
+          });
+        }).toThrow('Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got \'\'');
+      });
+
+      test('throw if length of name for pipeline-level variable is greater than 128', () => {
+        expect(() => {
+          new codepipeline.Variable({
+            variableName: 'a'.repeat(129),
+            description: 'description',
+            defaultValue: 'default-value',
+          });
+        }).toThrow(`Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got '${'a'.repeat(129)}'`);
+      });
+
+      test('throw if length of default value for pipeline-level variable is less than 1', () => {
+        expect(() => {
+          new codepipeline.Variable({
+            variableName: 'var-name-1',
+            description: 'description',
+            defaultValue: '',
+          });
+        }).toThrow(/Default value for variable 'var-name-1' must be between 1 and 1000 characters long, got 0/);
+      });
+
+      test('throw if length of default value for pipeline-level variable is greater than 1000', () => {
+        expect(() => {
+          new codepipeline.Variable({
+            variableName: 'var-name-1',
+            description: 'description',
+            defaultValue: 'a'.repeat(1001),
+          });
+        }).toThrow(/Default value for variable 'var-name-1' must be between 1 and 1000 characters long, got 1001/);
+      });
+
+      test('throw if length of description for pipeline-level variable is greater than 200', () => {
+        expect(() => {
+          new codepipeline.Variable({
+            variableName: 'var-name-1',
+            description: 'a'.repeat(201),
+            defaultValue: 'default',
+          });
+        }).toThrow(/Description for variable 'var-name-1' must not be greater than 200 characters long, got 201/);
+      });
+    });
+
+    describe('triggers', () => {
+      let stack: cdk.Stack;
+      let sourceArtifact: codepipeline.Artifact;
+      let sourceAction: codepipeline.Action;
+      let buildAction: codepipeline.Action;
+
+      beforeEach(() => {
+        stack = new cdk.Stack();
+        sourceArtifact = new codepipeline.Artifact();
+        sourceAction = new CodeStarConnectionsSourceAction({
+          actionName: 'CodeStarConnectionsSourceAction',
+          output: sourceArtifact,
+          connectionArn: 'connection',
+          owner: 'owner',
+          repo: 'repo',
+        });
+        buildAction = new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        });
+      });
+
+      test('can specify triggers', () => {
+        const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
           pipelineType: codepipeline.PipelineType.V2,
           triggers: [{
             providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
@@ -1006,35 +738,170 @@ describe('', () => {
             },
           }],
         });
-      }).toThrow(/provider for actionProperties in sourceAction must be 'CodeStarSourceConnection', got 'Fake' at triggers\[0\]/);
-    });
 
-    test('throw if triggers are specified when pipelineType is not set to V2', () => {
-      const stack = new cdk.Stack();
-      const sourceArtifact = new codepipeline.Artifact();
-      const sourceAction = new CodeStarConnectionsSourceAction({
-        actionName: 'CodeStarConnectionsSourceAction',
-        output: sourceArtifact,
-        connectionArn: 'connection',
-        owner: 'owner',
-        repo: 'repo',
+        testPipelineSetup(pipeline, [sourceAction], [buildAction]);
+
+        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+          PipelineType: 'V2',
+          Triggers: [{
+            GitConfiguration: {
+              SourceActionName: 'CodeStarConnectionsSourceAction',
+              Push: [{
+                Tags: {
+                  Excludes: ['exclude1', 'exclude2'],
+                  Includes: ['include1', 'include2'],
+                },
+              }],
+            },
+            ProviderType: 'CodeStarSourceConnection',
+          }],
+        });
       });
 
-      expect(() => {
-        new codepipeline.Pipeline(stack, 'Pipeline', {
-          pipelineType: codepipeline.PipelineType.V1,
+      test('empty excludedTags for trigger is set to undefined', () => {
+        const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+          pipelineType: codepipeline.PipelineType.V2,
           triggers: [{
             providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
             gitConfiguration: {
               sourceAction,
               pushFilter: [{
-                excludedTags: ['exclude1', 'exclude2'],
+                excludedTags: [],
                 includedTags: ['include1', 'include2'],
               }],
             },
           }],
         });
-      }).toThrow(/triggers can only be used with V2 pipelines/);
+
+        testPipelineSetup(pipeline, [sourceAction], [buildAction]);
+
+        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+          PipelineType: 'V2',
+          Triggers: [{
+            GitConfiguration: {
+              SourceActionName: 'CodeStarConnectionsSourceAction',
+              Push: [{
+                Tags: {
+                  Excludes: Match.absent(),
+                  Includes: ['include1', 'include2'],
+                },
+              }],
+            },
+            ProviderType: 'CodeStarSourceConnection',
+          }],
+        });
+      });
+
+      test('empty includedTags for trigger is set to undefined', () => {
+        const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+          pipelineType: codepipeline.PipelineType.V2,
+          triggers: [{
+            providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+            gitConfiguration: {
+              sourceAction,
+              pushFilter: [{
+                excludedTags: ['excluded1', 'excluded2'],
+                includedTags: [],
+              }],
+            },
+          }],
+        });
+
+        testPipelineSetup(pipeline, [sourceAction], [buildAction]);
+
+        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+          PipelineType: 'V2',
+          Triggers: [{
+            GitConfiguration: {
+              SourceActionName: 'CodeStarConnectionsSourceAction',
+              Push: [{
+                Tags: {
+                  Excludes: ['excluded1', 'excluded2'],
+                  Includes: Match.absent(),
+                },
+              }],
+            },
+            ProviderType: 'CodeStarSourceConnection',
+          }],
+        });
+      });
+
+      test('throw if length of excludes is greater than 8', () => {
+        expect(() => {
+          new codepipeline.Pipeline(stack, 'Pipeline', {
+            pipelineType: codepipeline.PipelineType.V2,
+            triggers: [{
+              providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+              gitConfiguration: {
+                sourceAction,
+                pushFilter: [{
+                  excludedTags: ['exclude1', 'exclude2', 'exclude3', 'exclude4', 'exclude5', 'exclude6', 'exclude7', 'exclude8', 'exclude9'],
+                  includedTags: ['include1', 'include2'],
+                }],
+              },
+            }],
+          });
+        }).toThrow(/maximum length of excludedTags is 8, got 9 at triggers\[0\].gitConfiguration.pushFilter\[0\]/);
+      });
+
+      test('throw if length of excludes is greater than 8', () => {
+        expect(() => {
+          new codepipeline.Pipeline(stack, 'Pipeline', {
+            pipelineType: codepipeline.PipelineType.V2,
+            triggers: [{
+              providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+              gitConfiguration: {
+                sourceAction,
+                pushFilter: [{
+                  excludedTags: ['exclude1', 'exclude2'],
+                  includedTags: ['include1', 'include2', 'include3', 'include4', 'include5', 'include6', 'include7', 'include8', 'include9'],
+                }],
+              },
+            }],
+          });
+        }).toThrow(/maximum length of includedTags is 8, got 9 at triggers\[0\].gitConfiguration.pushFilter\[0\]/);
+      });
+
+      test('throw if provider of sourceAction is not \'CodeStarSourceConnection\'', () => {
+        const fakeAction = new FakeSourceAction({
+          actionName: 'FakeSource',
+          output: sourceArtifact,
+        });
+
+        expect(() => {
+          new codepipeline.Pipeline(stack, 'Pipeline', {
+            pipelineType: codepipeline.PipelineType.V2,
+            triggers: [{
+              providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+              gitConfiguration: {
+                sourceAction: fakeAction,
+                pushFilter: [{
+                  excludedTags: ['exclude1', 'exclude2'],
+                  includedTags: ['include1', 'include2'],
+                }],
+              },
+            }],
+          });
+        }).toThrow(/provider for actionProperties in sourceAction must be 'CodeStarSourceConnection', got 'Fake' at triggers\[0\]/);
+      });
+
+      test('throw if triggers are specified when pipelineType is not set to V2', () => {
+        expect(() => {
+          new codepipeline.Pipeline(stack, 'Pipeline', {
+            pipelineType: codepipeline.PipelineType.V1,
+            triggers: [{
+              providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+              gitConfiguration: {
+                sourceAction,
+                pushFilter: [{
+                  excludedTags: ['exclude1', 'exclude2'],
+                  includedTags: ['include1', 'include2'],
+                }],
+              },
+            }],
+          });
+        }).toThrow(/triggers can only be used with V2 pipelines/);
+      });
     });
   });
 
@@ -1463,4 +1330,17 @@ function validate(construct: IConstruct): string[] {
     }
     return err.message.split('\n').slice(1);
   }
+}
+
+// Adding 2 stages with actions so pipeline validation will pass
+function testPipelineSetup(pipeline: codepipeline.Pipeline, sourceActions?: codepipeline.IAction[], buildActions?: codepipeline.IAction[]) {
+  pipeline.addStage({
+    stageName: 'Source',
+    actions: sourceActions,
+  });
+
+  pipeline.addStage({
+    stageName: 'Build',
+    actions: buildActions,
+  });
 }
