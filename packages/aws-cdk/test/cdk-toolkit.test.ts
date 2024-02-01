@@ -919,7 +919,7 @@ describe('synth', () => {
         fromPath: path.join(__dirname, 'commands', 'test-resources', 'templates', 'sqs-template.json'),
         language: 'rust',
       })).rejects.toThrowError('stack generation failed due to error \'unreachable\'');
-      expect(stderrMock.mock.calls[1][0].trim()).toContain(' ❌  Migrate failed for `cannot-generate-template`: stack generation failed due to error \'unreachable\'');
+      expect(stderrMock.mock.calls[1][0]).toContain(' ❌  Migrate failed for `cannot-generate-template`: stack generation failed due to error \'unreachable\'');
     });
 
     cliTest('migrate succeeds for valid template from local path when no lanugage is provided', async (workDir) => {
