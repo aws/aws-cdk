@@ -99,7 +99,6 @@ export interface BaseMapProps {
  * Returns true if the value passed is a positive integer
  * @param value the value to validate
  */
-
 export const isPositiveInteger = (value: number) => {
   const isFloat = Math.floor(value) !== value;
 

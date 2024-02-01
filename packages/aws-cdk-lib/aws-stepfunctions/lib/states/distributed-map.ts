@@ -14,67 +14,62 @@ const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.Distribute
  * Base interface for Item Reader configurations
  */
 export interface IItemReader {
-
   /**
    * S3 Bucket containing objects to iterate over or a file with a list to iterate over
    */
-  readonly bucket: IBucket
+  readonly bucket: IBucket;
 
   /**
    * Limits the number of items passed to the Distributed Map state
    *
    * @default - Distribute Map state will iterate over all items provided by the ItemReader
    */
-  readonly maxItems?: number
+  readonly maxItems?: number;
 
   /**
    * Render the ItemReader as JSON object
    */
-  render(): any
+  render(): any;
 
   /**
    * Compile policy statements to provide relevent permissions to the state machine
    */
-  providePolicyStatements(): iam.PolicyStatement[]
+  providePolicyStatements(): iam.PolicyStatement[];
 }
 
 /**
  * Base interface for Item Reader configuration properties
  */
 interface ItemReaderProps {
-
   /**
    * S3 Bucket containing objects to iterate over or a file with a list to iterate over
    */
-  readonly bucket: IBucket
+  readonly bucket: IBucket;
 
   /**
    * Limits the number of items passed to the Distributed Map state
    *
    * @default - Distribute Map state will iterate over all items provided by the ItemReader
    */
-  readonly maxItems?: number
+  readonly maxItems?: number;
 }
 
 /**
  * Properties for configuring an Item Reader that iterates over objects in an S3 bucket
  */
 export interface S3ObjectsItemReaderProps extends ItemReaderProps {
-
   /**
    * S3 prefix used to limit objects to iterate over
    *
    * @default - No prefix
    */
-  readonly prefix?: string
-
+  readonly prefix?: string;
 }
 
 /**
  * Item Reader configuration for iterating over objects in an S3 bucket
  */
 export class S3ObjectsItemReader implements IItemReader {
-
   /**
    * S3 Bucket containing objects to iterate over
    */
@@ -85,7 +80,7 @@ export class S3ObjectsItemReader implements IItemReader {
    *
    * @default - No prefix
    */
-  readonly prefix?: string
+  readonly prefix?: string;
 
   /**
    * Limits the number of items passed to the Distributed Map state
@@ -98,14 +93,12 @@ export class S3ObjectsItemReader implements IItemReader {
    * ARN for the `listObjectsV2` method of the S3 API
    * This API method is used to iterate all objects in the S3 bucket/prefix
    */
-  private readonly resource: string = `arn:${Aws.PARTITION}:states:::s3:listObjectsV2`
+  private readonly resource: string = `arn:${Aws.PARTITION}:states:::s3:listObjectsV2`;
 
   constructor(props: S3ObjectsItemReaderProps) {
-
     this.bucket = props.bucket;
     this.prefix = props.prefix;
     this.maxItems = props.maxItems;
-
   }
 
   /**
@@ -145,7 +138,7 @@ export interface S3ItemReaderProps extends ItemReaderProps {
   /**
    * Key of file stored in S3 bucket containing an array to iterate over
    */
-  readonly key: string
+  readonly key: string;
 }
 
 /**
@@ -160,7 +153,7 @@ abstract class S3ItemReader implements IItemReader {
   /**
    * S3 key of a file with a list to iterate over
    */
-  readonly key: string
+  readonly key: string;
 
   /**
    * Limits the number of items passed to the Distributed Map state
@@ -200,7 +193,6 @@ abstract class S3ItemReader implements IItemReader {
    * Compile policy statements to provide relevent permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
-
     const resource = `arn:${Aws.PARTITION}:s3:::${this.bucket.bucketName}/*`;
 
     return [
@@ -212,16 +204,13 @@ abstract class S3ItemReader implements IItemReader {
       }),
     ];
   }
-
 }
 
 /**
  * Item Reader configuration for iterating over items in a JSON array stored in a S3 file
  */
 export class S3JsonItemReader extends S3ItemReader {
-
   protected readonly inputType: string = 'JSON';
-
 }
 
 /**
@@ -232,17 +221,17 @@ export enum CsvHeaderLocation {
    * Headers will be read from first row of CSV file
    */
   FIRST_ROW = 'FIRST_ROW',
+
   /**
    * Headers are provided in CSVHeaders property
    */
-  GIVEN = 'GIVEN'
+  GIVEN = 'GIVEN',
 }
 
 /**
  * Configuration for CSV header options for a CSV Item Reader
  */
 export class CsvHeaders {
-
   /**
    * Configures S3CsvItemReader to read headers from the first row of the CSV file
    * @returns - CsvHeaders
@@ -285,14 +274,13 @@ export interface S3CsvItemReaderProps extends S3ItemReaderProps {
    *
    * @default - CsvHeaders with CsvHeadersLocation.FIRST_ROW
    */
-  readonly csvHeaders?: CsvHeaders
+  readonly csvHeaders?: CsvHeaders;
 }
 
 /**
  * Item Reader configuration for iterating over items in a CSV file stored in S3
  */
 export class S3CsvItemReader extends S3ItemReader {
-
   /**
    * CSV headers configuration
    */
@@ -305,7 +293,6 @@ export class S3CsvItemReader extends S3ItemReader {
   }
 
   public render(): any {
-
     let rendered = super.render();
 
     rendered.ReaderConfig = FieldUtils.renderObject({
@@ -317,7 +304,6 @@ export class S3CsvItemReader extends S3ItemReader {
     });
 
     return rendered;
-
   }
 }
 
@@ -325,9 +311,7 @@ export class S3CsvItemReader extends S3ItemReader {
  * Item Reader configuration for iterating over items in a S3 inventory manifest file stored in S3
  */
 export class S3ManifestItemReader extends S3ItemReader {
-
   protected readonly inputType: string = 'MANIFEST';
-
 }
 
 /**
@@ -337,32 +321,31 @@ export interface ResultWriterProps {
   /**
    * S3 Bucket in which to save Map Run results
    */
-  readonly bucket: IBucket
+  readonly bucket: IBucket;
 
   /**
    * S3 prefix in which to save Map Run results
    *
    * @default - No prefix
    */
-  readonly prefix?: string
+  readonly prefix?: string;
 }
 
 /**
  * Configuration for writing Distributed Map state results to S3
  */
 export class ResultWriter {
-
   /**
    * S3 Bucket in which to save Map Run results
    */
-  readonly bucket: IBucket
+  readonly bucket: IBucket;
 
   /**
    * S3 prefix in which to save Map Run results
    *
    * @default - No prefix
    */
-  readonly prefix?: string
+  readonly prefix?: string;
 
   constructor(props: ResultWriterProps) {
     this.bucket = props.bucket;
@@ -414,7 +397,7 @@ export interface ItemBatcherProps {
    *
    * @default - No maxItemsPerBatch
    */
-  readonly maxItemsPerBatch?: number
+  readonly maxItemsPerBatch?: number;
 
   /**
    * MaxItemsPerBatchPath
@@ -423,7 +406,7 @@ export interface ItemBatcherProps {
    *
    * @default - No maxItemsPerBatchPath
    */
-  readonly maxItemsPerBatchPath?: string
+  readonly maxItemsPerBatchPath?: string;
 
   /**
    * MaxInputBytesPerBatch
@@ -432,7 +415,7 @@ export interface ItemBatcherProps {
    *
    * @default - No maxInputBytesPerBatch
    */
-  readonly maxInputBytesPerBatch?: number
+  readonly maxInputBytesPerBatch?: number;
 
   /**
    * MaxInputBytesPerBatchPath
@@ -441,7 +424,7 @@ export interface ItemBatcherProps {
    *
    * @default - No maxInputBytesPerBatchPath
    */
-  readonly maxInputBytesPerBatchPath?: string
+  readonly maxInputBytesPerBatchPath?: string;
 
   /**
    * BatchInput
@@ -450,7 +433,7 @@ export interface ItemBatcherProps {
    *
    * @default - No batchInput
    */
-  readonly batchInput?: object
+  readonly batchInput?: object;
 }
 
 /**
@@ -506,7 +489,6 @@ export class ItemBatcher {
  * Properties for configuring a Distribute Map state
  */
 export interface DistributedMapProps extends BaseMapProps {
-
   /**
      * MapExecutionType
      *
@@ -514,7 +496,7 @@ export interface DistributedMapProps extends BaseMapProps {
      *
      * @default StateMachineType.STANDARD
      */
-  readonly mapExecutionType?: StateMachineType
+  readonly mapExecutionType?: StateMachineType;
 
   /**
      * ItemReader
@@ -523,7 +505,7 @@ export interface DistributedMapProps extends BaseMapProps {
      *
      * @default - No itemReader
      */
-  readonly itemReader?: IItemReader
+  readonly itemReader?: IItemReader;
 
   /**
      * ToleratedFailurePercentage
@@ -532,7 +514,7 @@ export interface DistributedMapProps extends BaseMapProps {
      *
      * @default - No toleratedFailurePercentage
      */
-  readonly toleratedFailurePercentage?: number
+  readonly toleratedFailurePercentage?: number;
 
   /**
      * ToleratedFailurePercentagePath
@@ -541,7 +523,7 @@ export interface DistributedMapProps extends BaseMapProps {
      *
      * @default - No toleratedFailurePercentagePath
      */
-  readonly toleratedFailurePercentagePath?: string
+  readonly toleratedFailurePercentagePath?: string;
 
   /**
      * ToleratedFailureCount
@@ -550,7 +532,7 @@ export interface DistributedMapProps extends BaseMapProps {
      *
      * @default - No toleratedFailureCount
      */
-  readonly toleratedFailureCount?: number
+  readonly toleratedFailureCount?: number;
 
   /**
      * ToleratedFailureCountPath
@@ -559,7 +541,7 @@ export interface DistributedMapProps extends BaseMapProps {
      *
      * @default - No toleratedFailureCountPath
      */
-  readonly toleratedFailureCountPath?: string
+  readonly toleratedFailureCountPath?: string;
 
   /**
      * Label
@@ -568,14 +550,14 @@ export interface DistributedMapProps extends BaseMapProps {
      *
      * @default - No label
      */
-  readonly label?: string
+  readonly label?: string;
 
   /**
    * Configuration for S3 location in which to save Map Run results
    *
    * @default - No resultWriter
    */
-  readonly resultWriter?: ResultWriter
+  readonly resultWriter?: ResultWriter;
 
   /**
    * Specifies to process a group of items in a single child workflow execution

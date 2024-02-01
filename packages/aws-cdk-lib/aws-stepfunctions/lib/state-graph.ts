@@ -165,10 +165,8 @@ export class StateGraph {
    * Binds this StateGraph to the StateMachine it defines and updates state machine permissions
    */
   public bind(stateMachine: StateMachine) {
-
     for (const state of this.allStates) {
       if (DistributedMap.isDistributedMap(state)) {
-
         stateMachine.role.attachInlinePolicy(new iam.Policy(stateMachine, 'DistributedMapPolicy', {
           document: new iam.PolicyDocument({
             statements: [

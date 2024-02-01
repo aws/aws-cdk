@@ -25,7 +25,7 @@ export enum StateMachineType {
   /**
    * Standard Workflows are ideal for long-running, durable, and auditable workflows.
    */
-  STANDARD = 'STANDARD'
+  STANDARD = 'STANDARD',
 }
 
 /**
@@ -51,7 +51,7 @@ export enum LogLevel {
   /**
    * Log fatal errors
    */
-  FATAL = 'FATAL'
+  FATAL = 'FATAL',
 }
 
 /**
@@ -159,7 +159,6 @@ export interface StateMachineProps {
  * A new or imported state machine.
  */
 abstract class StateMachineBase extends Resource implements IStateMachine {
-
   /**
    * Import a state machine
    */
@@ -444,7 +443,7 @@ export class StateMachine extends StateMachineBase {
 
     this.stateMachineType = props.stateMachineType ?? StateMachineType.STANDARD;
 
-    let graph;
+    let graph: StateGraph | undefined = undefined;
     if (definitionBody instanceof ChainDefinitionBody) {
       graph = new StateGraph(definitionBody.chainable.startState, 'State Machine definition');
       graph.timeout = props.timeout;
