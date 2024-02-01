@@ -719,7 +719,8 @@ It simply generates a CDK application which will synthesize a template that has 
 to the provided template. 
 
   - CDK Migrate does not interact with the CloudFormation service to verify the template 
-provided can deploy on its own. This means CDK Migrate will not verify that any resources in the provided 
+provided can deploy on its own. Although by default any CDK app generated using the `--from-scan` option exclude 
+CloudFormation managed resources, CDK Migrate will not verify prior to deployment that any resources scanned, or in the provided 
 template are already managed in other CloudFormation templates, nor will it verify that the resources in the provided
 template are available in the desired regions, which may impact ADC or Opt-In regions. 
 
