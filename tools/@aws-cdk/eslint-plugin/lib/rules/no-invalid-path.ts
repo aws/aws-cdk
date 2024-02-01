@@ -3,7 +3,11 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 function isPathJoinFuncCall(node: any): boolean {
-  return node.callee?.property?.name === 'join';
+  return (
+    node.callee?.property?.name === 'join' &&
+    (node.parent?.expression?.callee?.object?.name === 'path' ||
+    node.parent?.arguments?.some((a: any) => a.callee?.object?.name === 'path'))
+  );
 }
 
 function noArgumentVariables(node: any): boolean {

@@ -102,7 +102,7 @@ test('throws with the wrong runtime family', () => {
 test('resolves entry to an absolute path', () => {
   // WHEN
   new GoFunction(stack, 'fn', {
-    entry: path.join(__dirname, 'lambda-handler-vendor/cmd/api/main.go'),
+    entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api', 'main.go'),
   });
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
