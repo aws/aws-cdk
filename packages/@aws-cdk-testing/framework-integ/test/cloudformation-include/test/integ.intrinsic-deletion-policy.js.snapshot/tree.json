@@ -66,9 +66,9 @@
                   "version": "10.3.0"
                 }
               },
-              "$Ouputs": {
-                "id": "$Ouputs",
-                "path": "Stack/Stack/$Ouputs",
+              "$Outputs": {
+                "id": "$Outputs",
+                "path": "Stack/Stack/$Outputs",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
