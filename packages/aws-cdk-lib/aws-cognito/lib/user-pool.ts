@@ -1025,7 +1025,7 @@ export class UserPool extends UserPoolBase {
       throw new Error(`A trigger for the operation ${operation.operationName} already exists.`);
     }
     if (operation !== UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG && lambdaVersion === LambdaVersion.V2_0) {
-      throw new Error('Only the `preTokenGenerationConfig` operation supports V2_0 lambda version.');
+      throw new Error('Only the `PRE_TOKEN_GENERATION_CONFIG` operation supports V2_0 lambda version.');
     }
 
     this.addLambdaPermission(fn, operation.operationName);
