@@ -539,9 +539,11 @@ export function buildGenertedTemplateOutput(generatedTemplateSummary: CloudForma
       ResourceIdentifier: r.ResourceIdentifier!,
     })),
   };
+  const templateId = generatedTemplateSummary.GeneratedTemplateId!;
   return {
     migrateJson: migrateJson,
     resources: resources,
+    templateId: templateId,
   };
 }
 
@@ -589,6 +591,27 @@ export function appendWarningsToReadme(filepath: string, resources: CloudFormati
   lines.splice(index, 0, ...linesToAdd);
   fs.writeFileSync(filepath, lines.join('\n'));
 }
+
+/**
+ * takes a list of resources and returns a list of unique resources based on the resource type and logical resource id.
+ *
+ * @param resources A list of resources to deduplicate
+ * @returns A list of unique resources
+ */
+function deduplicateResources(resources: CloudFormation.ResourceDetails) {
+  let uniqueResources: {[key: string]: CloudFormation.ResourceDetail} = {};
+
+  for (const resource of resources) {
+    const key = Object.keys(resource.ResourceIdentifier!)[0];
+
+    // Creating our unique identifier using the resource type, the key, and the value of the resource identifier
+    // The resource identifier is a combination of a key value pair defined by a resource's schema, and the resource type of the resource.
+    const uniqueIdentifer = `${resource.ResourceType}:${key}:${resource.ResourceIdentifier![key]}`;
+    uniqueResources[uniqueIdentifer] = resource;
+  }
+
+  return Object.values(uniqueResources);
+};
 
 /**
  * Class for making CloudFormation template generator calls
@@ -647,23 +670,7 @@ export class CfnTemplateGeneratorProvider {
       }
     }
 
-    let uniqueResources: {[key: string]: CloudFormation.ScannedResource} = {};
-
-    // de-duplicating the list of related resources based on the resource identifier value
-    // The resource identifier key is not known at compile time so we need to get it using Object.keys. There will only
-    // ever be a single key so [0] retrives the first and only key
-    for (const resource of relatedResourceList) {
-      if (!resource.ResourceIdentifier) continue;
-      const key = Object.keys(resource.ResourceIdentifier!)[0];
-
-      // Creating our unique identifier using the resource type, the key, and the value of the resource identifier
-      // The resource identifier is a combination of a key value pair defined by a resource's schema, and the resource type of the resource.
-      const uniqueIdentifer = `${resource.ResourceType}:${key}:${resource.ResourceIdentifier![key]}`;
-      uniqueResources[uniqueIdentifer] = resource;
-    }
-
-    // convert the dictionary back into a list
-    relatedResourceList = Object.values(uniqueResources);
+    relatedResourceList = deduplicateResources(relatedResourceList);
 
     // prune the managedbystack flag off of them again.
     return process.env.MIGRATE_INTEG_TEST ? resourceIdentifiers(relatedResourceList) : resourceIdentifiers(excludeManaged(relatedResourceList)) ;
@@ -750,6 +757,7 @@ export class CfnTemplateGeneratorProvider {
     if (resourceList.length === 0) {
       throw new Error(`No resources found with filters ${filters.join(' ')}. Please try again with different filters.`);
     }
+    resourceList = deduplicateResources(resourceList);
 
     return process.env.MIGRATE_INTEG_TEST ? resourceIdentifiers(resourceList) : resourceIdentifiers(excludeManaged(resourceList));
   }
@@ -822,6 +830,18 @@ export class CfnTemplateGeneratorProvider {
     }
     return createTemplateOutput;
   }
+
+  /**
+   * Deletes a generated template from the template generator.
+   *
+   * @param templateArn The arn of the template to delete
+   * @returns A promise that resolves when the template has been deleted
+   */
+  async deleteGeneratedTemplate(templateArn: string): Promise<void> {
+    await this.cfn.deleteGeneratedTemplate({
+      GeneratedTemplateName: templateArn,
+    }).promise();
+  }
 }
 
 /**
@@ -870,6 +890,7 @@ export interface GenerateTemplateOptions {
 export interface GenerateTemplateOutput {
   migrateJson: MigrateJsonFormat;
   resources?: CloudFormation.ResourceDetails;
+  templateId?: string;
 }
 
 /**

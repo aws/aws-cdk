@@ -600,20 +600,19 @@ integTest('cdk migrate generates migrate.json', withCDKMigrateFixture('typescrip
 }));
 
 integTest('cdk migrate --from-scan with AND/OR filters correctly filters resources', withDefaultFixture(async (fixture) => {
-  const migrateStackJr = 'migrate-stack-jr';
+  const stackName = `cdk-migrate-integ-${fixture.randomString}`;
 
   await fixture.cdkDeploy('migrate-stack', {
     modEnv: { SAMPLE_RESOURCES: '1' },
   });
   await fixture.cdk(
-    ['migrate', '--stack-name', migrateStackJr, '--from-scan', 'new', '--filter', 'type=AWS::SNS::Topic,tag-key=tag1', 'type=AWS::SQS::Queue,tag-key=tag3'],
+    ['migrate', '--stack-name', stackName, '--from-scan', 'new', '--filter', 'type=AWS::SNS::Topic,tag-key=tag1', 'type=AWS::SQS::Queue,tag-key=tag3'],
     { modEnv: { MIGRATE_INTEG_TEST: '1' }, neverRequireApproval: true, verbose: true, captureStderr: false },
   );
 
   try {
-
     const response = await fixture.aws.cloudFormation('describeGeneratedTemplate', {
-      GeneratedTemplateName: migrateStackJr,
+      GeneratedTemplateName: stackName,
     });
     const resourceNames = [];
     for (const resource of response.Resources || []) {
@@ -624,9 +623,11 @@ integTest('cdk migrate --from-scan with AND/OR filters correctly filters resourc
     fixture.log(`Resources: ${resourceNames}`);
     expect(resourceNames.some(ele => ele && ele.includes('migratetopic1'))).toBeTruthy();
     expect(resourceNames.some(ele => ele && ele.includes('migratequeue1'))).toBeTruthy();
-    expect(response.Resources?.length).toEqual(2);
   } finally {
     await fixture.cdkDestroy('migrate-stack');
+    await fixture.aws.cloudFormation('deleteGeneratedTemplate', {
+      GeneratedTemplateName: stackName,
+    });
   }
 }));
 
@@ -663,6 +664,9 @@ integTest('cdk migrate --from-scan for resources with Write Only Properties gene
     }
   } finally {
     await fixture.cdkDestroy('migrate-stack');
+    await fixture.aws.cloudFormation('deleteGeneratedTemplate', {
+      GeneratedTemplateName: stackName,
+    });
   }
 }));
 

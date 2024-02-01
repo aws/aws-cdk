@@ -719,10 +719,12 @@ export class CdkToolkit {
   public async migrate(options: MigrateOptions): Promise<void> {
     warning('This is an experimental feature and development on it is still in progress. We make no guarantees about the outcome or stability of the functionality.');
     const language = options.language?.toLowerCase() ?? 'typescript';
+    const environment = setEnvironment(options.account, options.region);
+    let generateTemplateOutput: GenerateTemplateOutput | undefined;
+    let cfn: CfnTemplateGeneratorProvider | undefined;
+    let templateToDelete: string | undefined;
 
     try {
-      const environment = setEnvironment(options.account, options.region);
-      let generateTemplateOutput: GenerateTemplateOutput | undefined;
       // if neither fromPath nor fromStack is provided, generate a template using cloudformation
       const scanType = parseSourceOptions(options.fromPath, options.fromStack, options.stackName).source;
       if (scanType == TemplateSourceOptions.SCAN) {
@@ -733,6 +735,7 @@ export class CdkToolkit {
           sdkProvider: this.props.sdkProvider,
           environment: environment,
         });
+        templateToDelete = generateTemplateOutput.templateId;
       } else if (scanType == TemplateSourceOptions.PATH) {
         const templateBody = readFromPath(options.fromPath!);
 
@@ -741,7 +744,7 @@ export class CdkToolkit {
         if (templateId) {
           // if we have a template id, we can call describe generated template to get the resource identifiers
           // resource metadata, and template source to generate the template
-          const cfn = new CfnTemplateGeneratorProvider(await buildCfnClient(this.props.sdkProvider, environment));
+          cfn = new CfnTemplateGeneratorProvider(await buildCfnClient(this.props.sdkProvider, environment));
           const generatedTemplateSummary = await cfn.describeGeneratedTemplate(templateId);
           generateTemplateOutput = buildGenertedTemplateOutput(generatedTemplateSummary, templateBody, generatedTemplateSummary.GeneratedTemplateId!);
         } else {
@@ -780,6 +783,15 @@ export class CdkToolkit {
     } catch (e) {
       error(' ❌  Migrate failed for `%s`: %s', options.stackName, (e as Error).message);
       throw e;
+    } finally {
+      if (templateToDelete) {
+        if (!cfn) {
+          cfn = new CfnTemplateGeneratorProvider(await buildCfnClient(this.props.sdkProvider, environment));
+        }
+        if (!process.env.MIGRATE_INTEG_TEST) {
+          await cfn.deleteGeneratedTemplate(templateToDelete);
+        }
+      }
     }
   }
 
