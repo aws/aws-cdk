@@ -493,7 +493,7 @@ userpool.addTrigger(cognito.UserPoolOperation.USER_MIGRATION, new lambda.Functio
 }));
 ```
 
-Additionally, only the pre token generation Lambda trigger supports the trigger event V2.0:
+Additionally, only the pre token generation Lambda trigger supports trigger events with lambda version V2.0:
 
 ```ts
 declare const userpool: cognito.UserPool;
