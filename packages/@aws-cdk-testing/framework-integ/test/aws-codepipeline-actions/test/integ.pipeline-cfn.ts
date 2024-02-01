@@ -8,9 +8,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation');
 
-const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
-  crossAccountKeys: true,
-});
+const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
 
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,

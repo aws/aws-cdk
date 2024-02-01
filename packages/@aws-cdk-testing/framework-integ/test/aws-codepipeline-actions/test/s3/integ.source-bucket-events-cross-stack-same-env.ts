@@ -16,7 +16,6 @@ const bucket = new s3.Bucket(bucketStack, 'Bucket', {
 const pipelineStack = new Stack(app, 'PipelineStack');
 const sourceOutput = new codepipeline.Artifact();
 new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
-  crossAccountKeys: true,
   stages: [
     {
       stageName: 'Source',

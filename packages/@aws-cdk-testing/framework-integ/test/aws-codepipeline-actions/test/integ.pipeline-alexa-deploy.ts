@@ -39,7 +39,6 @@ const deployStage = {
 };
 
 new codepipeline.Pipeline(stack, 'Pipeline', {
-  crossAccountKeys: true,
   stages: [
     sourceStage,
     deployStage,

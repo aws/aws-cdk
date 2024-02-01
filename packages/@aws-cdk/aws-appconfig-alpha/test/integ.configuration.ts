@@ -199,7 +199,6 @@ const deployAction = new S3DeployAction({
   extract: true,
 });
 const pipeline = new Pipeline(stack, 'MyPipeline', {
-  crossAccountKeys: true,
   stages: [
     {
       stageName: 'beta',

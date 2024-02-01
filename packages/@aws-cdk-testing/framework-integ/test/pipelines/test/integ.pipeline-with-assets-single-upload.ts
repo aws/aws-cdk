@@ -47,7 +47,6 @@ class CdkpipelinesDemoPipelineStack extends Stack {
       autoDeleteObjects: true,
     });
     const pipeline = new cdkp.CdkPipeline(this, 'Pipeline', {
-      crossAccountKeys: true,
       cloudAssemblyArtifact,
       singlePublisherPerType: true,
 

@@ -16,7 +16,6 @@ const repo = new codecommit.Repository(stack, 'MyRepo', {
 });
 
 new codepipeline.Pipeline(stack, 'Pipeline', {
-  crossAccountKeys: true,
   stages: [
     {
       stageName: 'source',

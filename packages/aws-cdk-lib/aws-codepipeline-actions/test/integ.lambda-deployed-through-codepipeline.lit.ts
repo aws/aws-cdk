@@ -19,9 +19,7 @@ new lambda.Function(lambdaStack, 'Lambda', {
 // other resources that your Lambda needs, added to the lambdaStack...
 
 const pipelineStack = new cdk.Stack(app, 'PipelineStack');
-const pipeline = new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
-  crossAccountKeys: true,
-});
+const pipeline = new codepipeline.Pipeline(pipelineStack, 'Pipeline');
 
 // add the source code repository containing this code to your Pipeline,
 // and the source code of the Lambda Function, if they're separate

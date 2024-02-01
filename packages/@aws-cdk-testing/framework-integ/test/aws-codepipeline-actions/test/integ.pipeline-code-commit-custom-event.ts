@@ -32,7 +32,6 @@ const eventPattern
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   pipelineName: 'IntegCustomEventPipeline',
-  crossAccountKeys: true,
   stages: [
     {
       stageName: 'source',
