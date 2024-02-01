@@ -625,7 +625,7 @@ describe('', () => {
 
         expect(errors.length).toEqual(1);
         const error = errors[0];
-        expect(error).toMatch(/Pipeline variables can only be used with V2 pipelines/);
+        expect(error).toMatch(/Pipeline variables can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`/);
       });
 
       test('validate if pipeline-level variables are specified when pipelineType is not set to V2 and addVariable method is used', () => {
@@ -638,7 +638,7 @@ describe('', () => {
 
         expect(errors.length).toEqual(1);
         const error = errors[0];
-        expect(error).toMatch(/Pipeline variables can only be used with V2 pipelines/);
+        expect(error).toMatch(/Pipeline variables can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`/);
       });
 
       test('throw if name for pipeline-level variable uses invalid character', () => {
@@ -900,7 +900,7 @@ describe('', () => {
               },
             }],
           });
-        }).toThrow(/triggers can only be used with V2 pipelines/);
+        }).toThrow(/triggers can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`/);
       });
     });
   });

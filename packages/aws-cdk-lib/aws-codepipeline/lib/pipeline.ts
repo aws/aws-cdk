@@ -1250,7 +1250,7 @@ export class Pipeline extends PipelineBase {
 
   private validateVariables(): string[] {
     if (this.variables.length && this.pipelineType !== PipelineType.V2) {
-      return ['Pipeline variables can only be used with V2 pipelines'];
+      return ['Pipeline variables can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`'];
     }
     return [];
   }
@@ -1325,7 +1325,7 @@ export class Pipeline extends PipelineBase {
     }
 
     if (this.pipelineType !== PipelineType.V2) {
-      throw new Error('triggers can only be used with V2 pipelines');
+      throw new Error('triggers can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`');
     }
 
     return triggers.map((trigger, triggerIdx) => {
