@@ -544,7 +544,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "HostedConfigurationDeploymentawsappconfigextensionMyApplicationMyEnv0FA5092F8D4EFA96": {
+  "HostedConfigurationDeployment9D5FCC2741866": {
    "Type": "AWS::AppConfig::Deployment",
    "Properties": {
     "ApplicationId": {

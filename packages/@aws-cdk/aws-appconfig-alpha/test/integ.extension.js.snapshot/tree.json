@@ -935,9 +935,9 @@
                   "version": "0.0.0"
                 }
               },
-              "Deploymentawsappconfigextension-MyApplication-MyEnv-0FA5092F": {
-                "id": "Deploymentawsappconfigextension-MyApplication-MyEnv-0FA5092F",
-                "path": "aws-appconfig-extension/HostedConfiguration/Deploymentawsappconfigextension-MyApplication-MyEnv-0FA5092F",
+              "Deployment9D5FC": {
+                "id": "Deployment9D5FC",
+                "path": "aws-appconfig-extension/HostedConfiguration/Deployment9D5FC",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
                   "aws:cdk:cloudformation:props": {

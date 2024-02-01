@@ -15,6 +15,7 @@ import { IApplication } from './application';
 import { DeploymentStrategy, IDeploymentStrategy, RolloutStrategy } from './deployment-strategy';
 import { IEnvironment } from './environment';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
+import { getHash } from './private/hash';
 
 /**
  * Options for the Configuration construct
@@ -306,7 +307,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    * @param environment The environment to deploy the configuration to
    */
   public deploy(environment: IEnvironment) {
-    new CfnDeployment(this, `Deployment${environment.name!}`, {
+    new CfnDeployment(this, `Deployment${getHash(environment.name!)}`, {
       applicationId: this.application.applicationId,
       configurationProfileId: this.configurationProfileId,
       deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
