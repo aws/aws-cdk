@@ -223,7 +223,7 @@ class EksClusterStack extends Stack {
       instanceTypes: [
         new ec2.InstanceType('c5.large'),
         new ec2.InstanceType('c5a.large'),
-        new ec2.InstanceType('c5d.large'),
+        new ec2.InstanceType('m7i-flex.large'),
       ],
       minSize: 3,
       // reusing the default capacity nodegroup instance role when available
