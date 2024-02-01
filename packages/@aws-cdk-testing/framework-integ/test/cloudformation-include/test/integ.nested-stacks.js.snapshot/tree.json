@@ -116,9 +116,9 @@
                           "version": "10.1.85"
                         }
                       },
-                      "$Ouputs": {
-                        "id": "$Ouputs",
-                        "path": "ParentStack/ParentStack/ChildStack/ChildStack/$Ouputs",
+                      "$Outputs": {
+                        "id": "$Outputs",
+                        "path": "ParentStack/ParentStack/ChildStack/ChildStack/$Outputs",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.1.85"
@@ -190,9 +190,9 @@
                   "version": "10.1.85"
                 }
               },
-              "$Ouputs": {
-                "id": "$Ouputs",
-                "path": "ParentStack/ParentStack/$Ouputs",
+              "$Outputs": {
+                "id": "$Outputs",
+                "path": "ParentStack/ParentStack/$Outputs",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.1.85"
