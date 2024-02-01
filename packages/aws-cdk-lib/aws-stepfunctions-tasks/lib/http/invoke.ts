@@ -1,10 +1,14 @@
 import { Construct } from 'constructs';
-import { IConnection } from '../../../aws-events';
+import * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { integrationResourceArn } from '../private/task-utils';
 
-export enum URLEncodingArrayFormat {
+/**
+ * The style used when applying URL encoding to array values.
+ *
+ */
+export enum ArrayEncodingFormat {
   /**
    * Encode arrays using brackets. For example, {"array": ["a","b","c"]} encodes to "array[]=a&array[]=b&array[]=c"
    */
@@ -42,7 +46,7 @@ export interface HttpInvokeProps extends sfn.TaskStateBaseProps {
    * The EventBridge Connection to use for authentication.
    *
    */
-  readonly connection: IConnection;
+  readonly connection: events.IConnection;
 
   /**
    * The body to send to the HTTP endpoint.
@@ -78,9 +82,13 @@ export interface HttpInvokeProps extends sfn.TaskStateBaseProps {
    *
    * @default - ArrayEncodingFormat.INDICES
    */
-  readonly arrayEncodingFormat?: URLEncodingArrayFormat;
+  readonly arrayEncodingFormat?: ArrayEncodingFormat;
 }
 
+/**
+ * A Step Functions Task to call a public third-party API.
+ *
+ */
 export class HttpInvoke extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
@@ -138,7 +146,7 @@ export class HttpInvoke extends sfn.TaskStateBase {
               RequestEncodingOptions: {
                 ArrayFormat:
                   this.props.arrayEncodingFormat ??
-                  URLEncodingArrayFormat.INDICES,
+                  ArrayEncodingFormat.INDICES,
               },
             }
             : undefined,

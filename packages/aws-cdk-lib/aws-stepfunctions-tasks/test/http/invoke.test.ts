@@ -44,7 +44,7 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     expectTaskWithParameters(task, {
       ApiEndpoint: 'https://api.example.com',
       Authentication: {
-        connection,
+        ConnectionArn: stack.resolve(connection.connectionArn),
       },
       Method: 'POST',
     });
@@ -61,7 +61,7 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     expectTaskWithParameters(task, {
       ApiEndpoint: 'https://api.example.com',
       Authentication: {
-        connection,
+        ConnectionArn: stack.resolve(connection.connectionArn),
       },
       Method: 'POST',
       RequestBody: JSON.stringify({ foo: 'bar' }),
@@ -81,7 +81,7 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     expectTaskWithParameters(task, {
       ApiEndpoint: 'https://api.example.com',
       Authentication: {
-        connection,
+        ConnectionArn: stack.resolve(connection.connectionArn),
       },
       Method: 'POST',
       Headers: {
@@ -103,7 +103,7 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     expectTaskWithParameters(task, {
       ApiEndpoint: 'https://api.example.com',
       Authentication: {
-        connection,
+        ConnectionArn: stack.resolve(connection.connectionArn),
       },
       Method: 'POST',
       QueryParameters: {
@@ -123,13 +123,13 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     expectTaskWithParameters(task, {
       ApiEndpoint: 'https://api.example.com',
       Authentication: {
-        connection,
+        ConnectionArn: stack.resolve(connection.connectionArn),
       },
       Method: 'POST',
       Transform: {
         RequestBodyEncoding: 'URL_ENCODED',
         RequestEncodingOptions: {
-          ArrayFormat: lib.URLEncodingArrayFormat.INDICES,
+          ArrayFormat: lib.ArrayEncodingFormat.INDICES,
         },
       },
     });
@@ -138,7 +138,7 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
   test('invoke with request body encoding and arrayEncodingFormat', () => {
     const task = new lib.HttpInvoke(stack, 'Task', {
       apiEndpoint: 'https://api.example.com',
-      arrayEncodingFormat: lib.URLEncodingArrayFormat.BRACKETS,
+      arrayEncodingFormat: lib.ArrayEncodingFormat.BRACKETS,
       connection,
       method: 'POST',
       urlEncodeBody: true,
@@ -147,13 +147,13 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     expectTaskWithParameters(task, {
       ApiEndpoint: 'https://api.example.com',
       Authentication: {
-        connection,
+        ConnectionArn: stack.resolve(connection.connectionArn),
       },
       Method: 'POST',
       Transform: {
         RequestBodyEncoding: 'URL_ENCODED',
         RequestEncodingOptions: {
-          ArrayFormat: lib.URLEncodingArrayFormat.BRACKETS,
+          ArrayFormat: lib.ArrayEncodingFormat.BRACKETS,
         },
       },
     });
