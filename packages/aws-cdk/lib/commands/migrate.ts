@@ -38,6 +38,7 @@ export async function generateCdkApp(stackName: string, stack: string, language:
       generateOnly,
       workDir: resolvedOutputPath,
       stackName,
+      migrate: true,
     });
 
     let stackFileName: string;
