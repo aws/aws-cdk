@@ -21,6 +21,7 @@ export interface CliInitOptions {
   readonly generateOnly?: boolean;
   readonly workDir?: string;
   readonly stackName?: string;
+  readonly migrate?: boolean;
 }
 
 /**
@@ -51,7 +52,7 @@ export async function cliInit(options: CliInitOptions) {
     throw new Error('No language was selected');
   }
 
-  await initializeProject(template, options.language, canUseNetwork, generateOnly, workDir, options.stackName);
+  await initializeProject(template, options.language, canUseNetwork, generateOnly, workDir, options.stackName, options.migrate);
 }
 
 /**
@@ -203,6 +204,21 @@ export class InitTemplate {
 
     await fs.writeJson(cdkJson, config, { spaces: 2 });
   }
+
+  public async addMigrateContext(projectDir: string) {
+    const cdkJson = path.join(projectDir, 'cdk.json');
+    if (!await fs.pathExists(cdkJson)) {
+      return;
+    }
+
+    const config = await fs.readJson(cdkJson);
+    config.context = {
+      ...config.context,
+      'cdk-migrate': true,
+    };
+
+    await fs.writeJson(cdkJson, config, { spaces: 2 });
+  }
 }
 
 interface ProjectInfo {
@@ -271,10 +287,14 @@ async function initializeProject(
   generateOnly: boolean,
   workDir: string,
   stackName?: string,
+  migrate?: boolean,
 ) {
   await assertIsEmptyDirectory(workDir);
   print(`Applying project template ${chalk.green(template.name)} for ${chalk.blue(language)}`);
   await template.install(language, workDir, stackName);
+  if (migrate) {
+    await template.addMigrateContext(workDir);
+  }
   if (await fs.pathExists('README.md')) {
     print(chalk.green(await fs.readFile('README.md', { encoding: 'utf-8' })));
   }

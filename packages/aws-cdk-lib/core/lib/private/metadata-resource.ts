@@ -16,7 +16,6 @@ import { Token } from '../token';
 export class MetadataResource extends Construct {
   constructor(scope: Stack, id: string) {
     super(scope, id);
-
     const metadataServiceExists = Token.isUnresolved(scope.region) || RegionInfo.get(scope.region).cdkMetadataResourceAvailable;
     if (metadataServiceExists) {
       const resource = new CfnResource(this, 'Default', {
@@ -51,21 +50,29 @@ function makeCdkMetadataAvailableCondition() {
 class Trie extends Map<string, Trie> { }
 
 /**
- * Formats a list of construct fully-qualified names (FQNs) and versions into a (possibly compressed) prefix-encoded string.
+ * Formats the analytics string which has 3 or 4 sections separated by colons (:)
  *
- * The list of ConstructInfos is logically formatted into:
- * ${version}!${fqn} (e.g., "1.90.0!aws-cdk-lib.Stack")
- * and then all of the construct-versions are grouped with common prefixes together, grouping common parts in '{}' and separating items with ','.
+ * version:encoding:constructinfo OR version:encoding:constructinfo:appinfo
+ *
+ * The constructinfo section is a list of construct fully-qualified names (FQNs)
+ * and versions into a (possibly compressed) prefix-encoded string.
+ *
+ * The list of ConstructInfos is logically formatted into: ${version}!${fqn}
+ * (e.g., "1.90.0!aws-cdk-lib.Stack") and then all of the construct-versions are
+ * grouped with common prefixes together, grouping common parts in '{}' and
+ * separating items with ','.
  *
  * Example:
  * [1.90.0!aws-cdk-lib.Stack, 1.90.0!aws-cdk-lib.Construct, 1.90.0!aws-cdk-lib.service.Resource, 0.42.1!aws-cdk-lib-experiments.NewStuff]
  * Becomes:
  * 1.90.0!aws-cdk-lib.{Stack,Construct,service.Resource},0.42.1!aws-cdk-lib-experiments.NewStuff
  *
- * The whole thing is then either included directly as plaintext as:
- * v2:plaintext:{prefixEncodedList}
- * Or is compressed and base64-encoded, and then formatted as:
+ * The whole thing is then compressed and base64-encoded, and then formatted as:
  * v2:deflate64:{prefixEncodedListCompressedAndEncoded}
+ *
+ * The appinfo section is optional, and currently only added if the app was generated using `cdk migrate`
+ * It is also compressed and base64-encoded. In this case, the string will be formatted as:
+ * v2:deflate64:{prefixEncodedListCompressedAndEncoded}:{'cdk-migrate'CompressedAndEncoded}
  *
  * Exported/visible for ease of testing.
  */
@@ -81,7 +88,15 @@ export function formatAnalytics(infos: ConstructInfo[]) {
   setGzipOperatingSystemToUnknown(compressedConstructsBuffer);
 
   const compressedConstructs = compressedConstructsBuffer.toString('base64');
-  return `v2:deflate64:${compressedConstructs}`;
+  const analyticsString = `v2:deflate64:${compressedConstructs}`;
+
+  if (process.env.CDK_CONTEXT_JSON && JSON.parse(process.env.CDK_CONTEXT_JSON)['cdk-migrate']) {
+    const compressedAppInfoBuffer = zlib.gzipSync(Buffer.from('cdk-migrate'));
+    const compressedAppInfo = compressedAppInfoBuffer.toString('base64');
+    analyticsString.concat(':', compressedAppInfo);
+  }
+
+  return analyticsString;
 }
 
 /**
