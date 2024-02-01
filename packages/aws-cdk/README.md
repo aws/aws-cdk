@@ -684,7 +684,7 @@ OR filtering can be specified by passing multiple `--filter` options, and AND fi
 
 `--from-scan` takes 3 potential arguments: `--new`, `most-recent`, and undefined. If `--new` is passed, CDK Migrate will initiate a new scan of the account and use that new scan to discover resources. If `--most-recent` is passed, CDK Migrate will use the most recent scan of the account to discover resources. If neither `--new` nor `--most-recent` are passed, CDK Migrate will take the most recent scan of the account to discover resources, unless there is no recent scan, in which case it will initiate a new scan. 
 
-```
+```console
 # Filtering options
 identifier|id|resource-identifier=<resource-specific-resource-identifier-value>
 type|resource-type-prefix=<resource-type-prefix>
