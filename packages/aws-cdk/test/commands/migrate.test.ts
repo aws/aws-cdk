@@ -152,6 +152,18 @@ describe('Migrate Function Tests', () => {
     expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 's3-stack.ts'), 'utf8'));
   });
 
+  cliTest('generateCdkApp adds cdk-migrate key in context', async (workDir) => {
+    const stack = generateStack(validTemplate, 'GoodTypeScript', 'typescript');
+    await generateCdkApp('GoodTypeScript', stack, 'typescript', workDir);
+
+    // cdk.json exist in the correct spot
+    expect(fs.pathExistsSync(path.join(workDir, 'GoodTypeScript', 'cdk.json'))).toBeTruthy();
+
+    // cdk.json has "cdk-migrate" : true in context
+    const cdkJson = fs.readJsonSync(path.join(workDir, 'GoodTypeScript', 'cdk.json'), 'utf8');
+    expect(cdkJson.context['cdk-migrate']).toBeTruthy();
+  });
+
   cliTest('generateCdkApp generates the expected cdk app when called for python', async (workDir) => {
     const stack = generateStack(validTemplate, 'GoodPython', 'python');
     await generateCdkApp('GoodPython', stack, 'python', workDir);
