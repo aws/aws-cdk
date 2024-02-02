@@ -6,7 +6,7 @@ import { Schedule } from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
-import { Duration, Resource, Stack } from '../../core';
+import { Aws, Duration, Resource, Stack } from '../../core';
 
 /**
  * The default set of characters we exclude from generated passwords for database users.
@@ -104,7 +104,14 @@ export class RotationSchedule extends Resource {
         );
       }
 
-      const grant = props.rotationLambda.grantInvoke(new iam.ServicePrincipal('secretsmanager.amazonaws.com'));
+      // This is where the issue is
+
+      // const grant = props.rotationLambda.grantInvoke(new iam.ServicePrincipal('secretsmanager.amazonaws.com'));
+      const grantee = new iam.ServicePrincipal('secretsmanager.amazonaws.com', {
+        conditions: {
+          SourceAccount: Aws.ACCOUNT_ID,
+        }
+      })
       grant.applyBefore(this);
 
       props.rotationLambda.addToRolePolicy(
