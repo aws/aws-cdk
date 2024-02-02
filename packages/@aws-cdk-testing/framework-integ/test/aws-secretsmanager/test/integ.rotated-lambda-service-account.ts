@@ -12,10 +12,14 @@ export class TestStack extends cdk.Stack {
       runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline('NOOP'),
-      });
+    });
     secret.addRotationSchedule('Schedule', {
       rotationLambda: fn,
       automaticallyAfter: cdk.Duration.hours(4),
     });
   }
 }
+const app = new cdk.App();
+new integ.IntegTest(app, 'cdk-integ-secret-rotated-service-account', {
+  testCases: [new TestStack(app, 'cdk-integ-secret-rotated-service-account-stack', {})],
+});

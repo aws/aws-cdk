@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "cdk-integ-secret-rotated-service-account/DefaultTest": {
+      "stacks": [
+        "cdk-integ-secret-rotated-service-account-stack"
+      ],
+      "assertionStack": "cdk-integ-secret-rotated-service-account/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegsecretrotatedserviceaccountDefaultTestDeployAssert9C70DA56"
+    }
+  }
+}
