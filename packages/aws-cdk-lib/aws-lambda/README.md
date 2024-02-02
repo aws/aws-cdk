@@ -166,14 +166,14 @@ new lambda.Function(this, 'Lambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_18_X,
-  logFormat: lambda.LogFormat.JSON,
+  loggingFormat: lambda.LoggingFormat.JSON,
   systemLogLevel: lambda.SystemLogLevel.INFO,
   applicationLogLevel: lambda.ApplicationLogLevel.INFO,
   logGroup: logGroup,
 });
 ```
 
-To use `applicationLogLevel` and/or `systemLogLevel` you must set `logFormat` to `LogFormat.JSON`.
+To use `applicationLogLevel` and/or `systemLogLevel` you must set `loggingFormat` to `LoggingFormat.JSON`.
 
 ## Resource-based Policies
 

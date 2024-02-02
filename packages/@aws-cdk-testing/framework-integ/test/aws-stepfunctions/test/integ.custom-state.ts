@@ -23,6 +23,11 @@ const stateJson = {
     },
   },
   ResultPath: null,
+  Retry: [{
+    ErrorEquals: [sfn.Errors.PERMISSIONS],
+    IntervalSeconds: 20,
+    MaxAttempts: 2,
+  }],
 };
 
 const failure = new sfn.Fail(stack, 'failed', {
@@ -36,7 +41,7 @@ const custom = new sfn.CustomState(stack, 'my custom task', {
 
 custom.addCatch(failure);
 custom.addRetry({
-  errors: [sfn.Errors.ALL],
+  errors: [sfn.Errors.TIMEOUT],
   interval: cdk.Duration.seconds(10),
   maxAttempts: 5,
 });
