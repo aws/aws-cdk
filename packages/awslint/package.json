@@ -29,7 +29,7 @@
     "@aws-cdk/eslint-plugin": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.12",
     "@types/yargs": "^15.0.19",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
     "@typescript-eslint/parser": "^6.20.0",
