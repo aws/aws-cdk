@@ -1,7 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { AwsClients, TestFixture, integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture } from '../../lib';
+import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -687,22 +687,15 @@ integTest('cdk migrate --from-scan for resources with Write Only Properties gene
         ['migrate', '--stack-name', migrateStackName, '--from-stack'],
         { modEnv: { MIGRATE_INTEG_TEST: '1' }, neverRequireApproval: true, verbose: true, captureStderr: false },
       );
-      const awsClients = await AwsClients.default(fixture.output);
-      const fixtureJr = new TestFixture(
-        path.join(fixture.integTestDir, migrateStackName),
-        fixture.stackNamePrefix,
-        fixture.output,
-        awsClients,
-        '',
-      );
-      await fixtureJr.cdkDeploy('migrate-stack', { neverRequireApproval: true, verbose: true, captureStderr: false });
+      await fixture.shell(['cd', path.join(fixture.integTestDir, migrateStackName)]);
+      await fixture.cdk(['deploy', migrateStackName], { neverRequireApproval: true, verbose: true, captureStderr: false });
       const response = await fixture.aws.cloudFormation('describeStacks', {
         StackName: migrateStackName,
       });
 
       expect(response.Stacks?.[0].StackStatus).toEqual('UPDATE_COMPLETE');
     } finally {
-      await fixture.cdkDestroy(migrateStackName);
+      await fixture.cdkDestroy('migrate-stack');
     }
   }));
 });
