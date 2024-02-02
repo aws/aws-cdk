@@ -215,7 +215,7 @@ export interface ServiceConnectService {
   readonly dnsName?: string;
 
   /**
-   The port for clients to use to communicate with this service via Service Connect.
+   * The port for clients to use to communicate with this service via Service Connect.
    *
    * @default the container port specified by the port mapping in portMappingName.
    */
@@ -227,6 +227,32 @@ export interface ServiceConnectService {
    * @default - none
    */
   readonly ingressPortOverride?: number;
+
+  /**
+   * The amount of time in seconds a connection for Service Connect will stay active while idle.
+   *
+   * A value of 0 can be set to disable `idleTimeout`.
+   *
+   * If `idleTimeout` is set to a time that is less than `perRequestTimeout`, the connection will close
+   * when the `idleTimeout` is reached and not the `perRequestTimeout`.
+   *
+   * @default - Duration.minutes(5) for HTTP/HTTP2/GRPC, Duration.hours(1) for TCP.
+   */
+  readonly idleTimeout?: Duration;
+
+  /**
+   * The amount of time waiting for the upstream to respond with a complete response per request for
+   * Service Connect.
+   *
+   * A value of 0 can be set to disable `perRequestTimeout`.
+   * Can only be set when the `appProtocol` for the application container is HTTP/HTTP2/GRPC.
+   *
+   * If `idleTimeout` is set to a time that is less than `perRequestTimeout`, the connection will close
+   * when the `idleTimeout` is reached and not the `perRequestTimeout`.
+   *
+   * @default - Duration.seconds(15)
+   */
+  readonly perRequestTimeout?: Duration;
 }
 
 /**
@@ -887,6 +913,7 @@ export abstract class BaseService extends Resource
         discoveryName: svc.discoveryName,
         ingressPortOverride: svc.ingressPortOverride,
         clientAliases: [alias],
+        timeout: this.renderTimeout(svc.idleTimeout, svc.perRequestTimeout),
       } as CfnService.ServiceConnectServiceProperty;
     });
 
@@ -1467,6 +1494,20 @@ export abstract class BaseService extends Resource
       return !unsupportedPartitions.includes(currentRegion.partition);
     }
     return true;
+  }
+
+  private renderTimeout(idleTimeout?: Duration, perRequestTimeout?: Duration): CfnService.TimeoutConfigurationProperty | undefined {
+    if (!idleTimeout && !perRequestTimeout) return undefined;
+    if (idleTimeout && idleTimeout.toMilliseconds() > 0 && idleTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
+      throw new Error(`idleTimeout must be at least 1 second or 0 to disable it, got ${idleTimeout.toMilliseconds()}ms.`);
+    }
+    if (perRequestTimeout && perRequestTimeout.toMilliseconds() > 0 && perRequestTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
+      throw new Error(`perRequestTimeout must be at least 1 second or 0 to disable it, got ${perRequestTimeout.toMilliseconds()}ms.`);
+    }
+    return {
+      idleTimeoutSeconds: idleTimeout?.toSeconds(),
+      perRequestTimeoutSeconds: perRequestTimeout?.toSeconds(),
+    };
   }
 }
 
