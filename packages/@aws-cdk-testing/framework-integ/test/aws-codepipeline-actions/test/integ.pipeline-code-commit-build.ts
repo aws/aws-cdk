@@ -47,6 +47,7 @@ const testAction = new cpactions.CodeBuildAction({
 });
 
 new codepipeline.Pipeline(stack, 'Pipeline', {
+  crossAccountKeys: true,
   stages: [
     {
       stageName: 'source',

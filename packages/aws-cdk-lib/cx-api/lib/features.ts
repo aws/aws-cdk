@@ -98,6 +98,7 @@ export const AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_P
 export const APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION = '@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier';
 export const CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME = '@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource';
 export const LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION = '@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction';
+export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE = '@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -992,6 +993,19 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: '2.124.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE]: {
+    type: FlagType.ApiDefault,
+    summary: 'Enables Pipeline to set the default value for crossAccountKeys to false.',
+    detailsMd: `
+      When this feature flag is enabled, and the \`crossAccountKeys\` property is not provided in a \`Pipeline\`
+      construct, the construct automatically defaults the value of this property to false.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Pass `crossAccountKeys: true` to `Pipeline` construct to restore the previous behavior.',
   },
 };
 
