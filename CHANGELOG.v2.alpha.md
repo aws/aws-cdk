@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.126.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.125.0-alpha.0...v2.126.0-alpha.0) (2024-02-02)
+
+## [2.125.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.124.0-alpha.0...v2.125.0-alpha.0) (2024-01-31)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **integ-runner:** Parsing of the cli input caused arguments passed after the first instance `--language <language>` to be interpreted as a language as well. This prevented passing a test name after providing cli options. To overcome this limitation, `integ-runner` now requires an explicit `--language` option for each language you want to include: `integ-runner --language javascript --language python`. This was already documented that way and always the intended way to use this feature.
+* **neptune-alpha:** Corrected LogRetention IDs for DatabaseCluster. Previously, regardless of the log type, the string ‘objectObject’ was always included, but after the correction, the log type is now included.
+
+### Features
+
+* **app-staging-synthesizer-alpha:** encryption type for staging bucket ([#28903](https://github.com/aws/aws-cdk/issues/28903)) ([69f4b8d](https://github.com/aws/aws-cdk/commit/69f4b8d6560a293059b9e527be1fac6d1c70c971)), closes [#28815](https://github.com/aws/aws-cdk/issues/28815)
+* **pipes:** EventBridge Pipes alpha module ([#28388](https://github.com/aws/aws-cdk/issues/28388)) ([2d9106b](https://github.com/aws/aws-cdk/commit/2d9106b7bd764a5bca33b7b5e3f3faffde726757)), closes [#23495](https://github.com/aws/aws-cdk/issues/23495)
+
+
+### Bug Fixes
+
+* **integ-runner:** cannot pass test name after `--language` ([#28922](https://github.com/aws/aws-cdk/issues/28922)) ([f9fbbb4](https://github.com/aws/aws-cdk/commit/f9fbbb4bd3a3ff74c3a2b34ffa333ac4fa57de2b))
+* **neptune-alpha:** multiple `cloudwatchLogsExports` cannot be set when configuring log retention ([#28643](https://github.com/aws/aws-cdk/issues/28643)) ([56794fc](https://github.com/aws/aws-cdk/commit/56794fc8a0f1f5d3c1ab29e3ee0a46b138895d32)), closes [#26295](https://github.com/aws/aws-cdk/issues/26295)
+
 ## [2.124.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.123.0-alpha.0...v2.124.0-alpha.0) (2024-01-26)
 
 ## [2.123.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.122.0-alpha.0...v2.123.0-alpha.0) (2024-01-24)

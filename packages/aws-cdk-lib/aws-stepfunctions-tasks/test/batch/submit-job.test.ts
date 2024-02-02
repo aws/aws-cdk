@@ -17,7 +17,7 @@ beforeEach(() => {
   batchJobDefinition = new batch.EcsJobDefinition(stack, 'JobDefinition', {
     container: new batch.EcsEc2ContainerDefinition(stack, 'Container', {
       image: ecs.ContainerImage.fromAsset(
-        path.join(__dirname, './batchjob-image'),
+        path.join(__dirname, 'batchjob-image'),
       ),
       cpu: 256,
       memory: cdk.Size.mebibytes(2048),
