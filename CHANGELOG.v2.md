@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.126.0](https://github.com/aws/aws-cdk/compare/v2.125.0...v2.126.0) (2024-02-02)
+
+
+### Features
+
+* **migrate:** Add CDK Migrate `--from-scan` functionality ([#28962](https://github.com/aws/aws-cdk/issues/28962)) ([bbc14b3](https://github.com/aws/aws-cdk/commit/bbc14b32801f103bc465fd910d507ffa0d06b7fe))
+
 ## [2.125.0](https://github.com/aws/aws-cdk/compare/v2.124.0...v2.125.0) (2024-01-31)
 
 
