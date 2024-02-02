@@ -2,6 +2,7 @@ import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as cdk from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation');
@@ -59,4 +60,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
 });
 /// !hide
 
+new integ.IntegTest(app, 'integ-aws-cdk-codepipeline-cloudformation', {
+  testCases: [stack],
+});
 app.synth();
