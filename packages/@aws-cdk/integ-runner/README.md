@@ -47,6 +47,7 @@ All snapshot files (i.e. `*.snapshot/**`) must be checked-in to version control.
 If not, changes cannot be compared across systems.
 
 ### Options
+
 - `--update-on-failed` (default=`false`)
   Rerun integration tests if snapshot fails
 - `--clean` (default=`true`)
