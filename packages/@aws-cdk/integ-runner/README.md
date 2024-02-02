@@ -97,6 +97,12 @@ If not, changes cannot be compared across systems.
   - `go`:
     - File RegExp: `^integ_.*\.go$`
     - App run command: `go run {filePath}`
+- `--list` (default=`false`)
+  List tests instead of running them.
+- `--inspect-failures` (default=`false`)
+  Keep generated snapshots when differences exist in snapshot comparisons.
+- `--max-workers` (default=`16`)
+  The max number of workerpool workers to use when running integration tests concurrently.
 
 Example:
 
