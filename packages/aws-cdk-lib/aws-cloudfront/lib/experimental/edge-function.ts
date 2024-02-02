@@ -25,6 +25,13 @@ export interface EdgeFunctionProps extends lambda.FunctionProps {
    * @default - `edge-lambda-stack-${region}`
    */
   readonly stackId?: string;
+
+  /**
+   * The prefix of the SSM Parameter that stores the ARN of the Lambda@Edge function.
+   *
+   * @default - `cdk/EdgeFunctionArn`
+   */
+  readonly parameterNamePrefix?: string;
 }
 
 /**
@@ -161,7 +168,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
 
   /** Create a support stack and function in us-east-1, and a SSM reader in-region */
   private createCrossRegionFunction(id: string, props: EdgeFunctionProps): FunctionConfig {
-    const parameterNamePrefix = 'cdk/EdgeFunctionArn';
+    const parameterNamePrefix = props.parameterNamePrefix ?? 'cdk/EdgeFunctionArn';
     if (Token.isUnresolved(this.env.region)) {
       throw new Error('stacks which use EdgeFunctions must have an explicitly set region');
     }
