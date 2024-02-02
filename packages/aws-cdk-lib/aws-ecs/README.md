@@ -1678,6 +1678,8 @@ const service = new ecs.FargateService(this, 'Service', {
 
 > Visit [Amazon ECS support for configurable timeout for services running with Service Connect](https://aws.amazon.com/about-aws/whats-new/2024/01/amazon-ecs-configurable-timeout-service-connect/) for more details.
 
+> Visit [Amazon ECS support for configurable timeout for services running with Service Connect](https://aws.amazon.com/about-aws/whats-new/2024/01/amazon-ecs-configurable-timeout-service-connect/) for more details.
+
 ## ServiceManagedVolume
 
 Amazon ECS now supports the attachment of Amazon Elastic Block Store (EBS) volumes to ECS tasks,
