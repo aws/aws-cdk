@@ -615,6 +615,10 @@ Custom states can be chained together with any of the other states to create you
 definition. You will also need to provide any permissions that are required to the `role` that
 the State Machine uses.
 
+The Retry and Catch fields are available for error handling.
+You can configure the Retry field by defining it in the JSON object or by adding it using the `addRetry` method.
+However, the Catch field cannot be configured by defining it in the JSON object, so it must be added using the `addCatch` method.
+
 The following example uses the `DynamoDB` service integration to insert data into a DynamoDB table.
 
 ```ts
