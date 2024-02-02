@@ -80,7 +80,7 @@
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.12",
     "@types/mime-types": "^2.1.4",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",

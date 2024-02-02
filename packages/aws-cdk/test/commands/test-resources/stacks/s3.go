@@ -32,7 +32,7 @@ func NewGoodGoStack(scope constructs.Construct, id string, props *GoodGoStackPro
 		jsii.String("S3Bucket"),
 		&s3.CfnBucketProps{
 			AccessControl: jsii.String("PublicRead"),
-			WebsiteConfiguration: &WebsiteConfiguration/* FIXME */{
+			WebsiteConfiguration: &WebsiteConfigurationProperty{
 				IndexDocument: jsii.String("index.html"),
 				ErrorDocument: jsii.String("error.html"),
 			},
