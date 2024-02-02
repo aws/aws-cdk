@@ -1,0 +1,469 @@
+{
+ "Resources": {
+  "AuthorizerHandlerServiceRole5F40A014": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "AuthorizerHandler0112B303": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "635014de0189cac8a2849b0c53d352f1cc9c7079c6e59d2de204a40e3b86ecae.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "AuthorizerHandlerServiceRole5F40A014",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x"
+   },
+   "DependsOn": [
+    "AuthorizerHandlerServiceRole5F40A014"
+   ]
+  },
+  "AuthorizerHandlerawsstepfunctionstaskshttpinvokeintegAuthorizerECFD3F1CPermissions7F5D78AD": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "AuthorizerHandler0112B303",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:",
+       {
+        "Ref": "AWS::Region"
+       },
+       ":",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":",
+       {
+        "Ref": "IntegRestApiF8B59B0D"
+       },
+       "/authorizers/",
+       {
+        "Ref": "AuthorizerBD825682"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "AuthorizerBD825682": {
+   "Type": "AWS::ApiGateway::Authorizer",
+   "Properties": {
+    "AuthorizerResultTtlInSeconds": 0,
+    "AuthorizerUri": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Fn::Select": [
+         1,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "AuthorizerHandler0112B303",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":apigateway:",
+       {
+        "Fn::Select": [
+         3,
+         {
+          "Fn::Split": [
+           ":",
+           {
+            "Fn::GetAtt": [
+             "AuthorizerHandler0112B303",
+             "Arn"
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       ":lambda:path/2015-03-31/functions/",
+       {
+        "Fn::GetAtt": [
+         "AuthorizerHandler0112B303",
+         "Arn"
+        ]
+       },
+       "/invocations"
+      ]
+     ]
+    },
+    "IdentitySource": "method.request.header.Authorization",
+    "Name": "awsstepfunctionstaskshttpinvokeintegAuthorizerECFD3F1C",
+    "RestApiId": {
+     "Ref": "IntegRestApiF8B59B0D"
+    },
+    "Type": "TOKEN"
+   }
+  },
+  "IntegRestApiF8B59B0D": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Name": "IntegRestApi"
+   }
+  },
+  "IntegRestApiDeploymentD67E59EC852098a1c127ca9d7d16d22086273910": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Automatically created by the RestApi construct",
+    "RestApiId": {
+     "Ref": "IntegRestApiF8B59B0D"
+    }
+   },
+   "DependsOn": [
+    "AuthorizerBD825682",
+    "IntegRestApitestGET52631013",
+    "IntegRestApitest58FEA9C5"
+   ]
+  },
+  "IntegRestApiDeploymentStageprod29E2686A": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "IntegRestApiDeploymentD67E59EC852098a1c127ca9d7d16d22086273910"
+    },
+    "RestApiId": {
+     "Ref": "IntegRestApiF8B59B0D"
+    },
+    "StageName": "prod"
+   }
+  },
+  "IntegRestApitest58FEA9C5": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "IntegRestApiF8B59B0D",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "test",
+    "RestApiId": {
+     "Ref": "IntegRestApiF8B59B0D"
+    }
+   }
+  },
+  "IntegRestApitestGET52631013": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "CUSTOM",
+    "AuthorizerId": {
+     "Ref": "AuthorizerBD825682"
+    },
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseTemplates": {
+        "application/json": "{\"message\":\"Hello, tester!\"}"
+       },
+       "StatusCode": "200"
+      }
+     ],
+     "PassthroughBehavior": "NEVER",
+     "RequestTemplates": {
+      "application/json": "{ \"statusCode\": 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "StatusCode": "200"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "IntegRestApitest58FEA9C5"
+    },
+    "RestApiId": {
+     "Ref": "IntegRestApiF8B59B0D"
+    }
+   }
+  },
+  "Connection07624BCD": {
+   "Type": "AWS::Events::Connection",
+   "Properties": {
+    "AuthParameters": {
+     "BasicAuthParameters": {
+      "Password": "integ-password",
+      "Username": "integ-username"
+     }
+    },
+    "AuthorizationType": "BASIC"
+   }
+  },
+  "StateMachineRoleB840431D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StateMachineRoleDefaultPolicyDF1E6607": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "events:RetrieveConnectionCredentials",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Connection07624BCD",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Connection07624BCD",
+         "SecretArn"
+        ]
+       }
+      },
+      {
+       "Action": "states:InvokeHTTPEndpoint",
+       "Condition": {
+        "StringLike": {
+         "states:HTTPEndpoint": {
+          "Fn::Join": [
+           "",
+           [
+            "https://",
+            {
+             "Ref": "IntegRestApiF8B59B0D"
+            },
+            ".execute-api.",
+            {
+             "Ref": "AWS::Region"
+            },
+            ".",
+            {
+             "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+             "Ref": "IntegRestApiDeploymentStageprod29E2686A"
+            },
+            "/test"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StateMachineRoleDefaultPolicyDF1E6607",
+    "Roles": [
+     {
+      "Ref": "StateMachineRoleB840431D"
+     }
+    ]
+   }
+  },
+  "StateMachine2E01A3A5": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"Invoke HTTP Endpoint\",\"States\":{\"Invoke HTTP Endpoint\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::http:invoke\",\"Parameters\":{\"Method\":\"GET\",\"ApiEndpoint\":\"https://",
+       {
+        "Ref": "IntegRestApiF8B59B0D"
+       },
+       ".execute-api.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Ref": "IntegRestApiDeploymentStageprod29E2686A"
+       },
+       "/test\",\"Authentication\":{\"ConnectionArn\":\"",
+       {
+        "Fn::GetAtt": [
+         "Connection07624BCD",
+         "Arn"
+        ]
+       },
+       "\"}}}},\"TimeoutSeconds\":30}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "StateMachineRoleDefaultPolicyDF1E6607",
+    "StateMachineRoleB840431D"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "IntegRestApiEndpoint7BEB0C53": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "IntegRestApiF8B59B0D"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "IntegRestApiDeploymentStageprod29E2686A"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "ExportsOutputRefStateMachine2E01A3A5BA46F753": {
+   "Value": {
+    "Ref": "StateMachine2E01A3A5"
+   },
+   "Export": {
+    "Name": "aws-stepfunctions-tasks-http-invoke-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
