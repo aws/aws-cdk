@@ -121,7 +121,7 @@ export const isPositiveInteger = (value: number) => {
 export abstract class MapBase extends State implements INextable {
   public readonly endStates: INextable[];
 
-  private readonly maxConcurrency: number | undefined;
+  private readonly maxConcurrency?: number;
   protected readonly itemsPath?: string;
   protected readonly itemSelector?: { [key: string]: any };
 

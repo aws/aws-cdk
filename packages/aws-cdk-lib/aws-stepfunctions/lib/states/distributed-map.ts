@@ -22,7 +22,7 @@ export interface IItemReader {
   /**
    * Limits the number of items passed to the Distributed Map state
    *
-   * @default - Distribute Map state will iterate over all items provided by the ItemReader
+   * @default - Distributed Map state will iterate over all items provided by the ItemReader
    */
   readonly maxItems?: number;
 
@@ -49,7 +49,7 @@ interface ItemReaderProps {
   /**
    * Limits the number of items passed to the Distributed Map state
    *
-   * @default - Distribute Map state will iterate over all items provided by the ItemReader
+   * @default - Distributed Map state will iterate over all items provided by the ItemReader
    */
   readonly maxItems?: number;
 }
