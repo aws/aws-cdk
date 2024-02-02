@@ -306,6 +306,19 @@ test('SSM parameter name is sanitized to remove disallowed characters', () => {
   });
 });
 
+test('SSM parameter prefix can be changed', () => {
+  new cloudfront.experimental.EdgeFunction(stack, 'MyFn', {
+    ...defaultEdgeFunctionProps(),
+    parameterNamePrefix: '/some/OTHER/prefix'
+  });
+
+  const fnStack = getFnStack();
+
+  Template.fromStack(fnStack).hasResourceProperties('AWS::SSM::Parameter', {
+    Name: '/some/OTHER/prefix/testregion/Stack/My_Bad_Fn_Name-With.Bonus',
+  });
+});
+
 function defaultEdgeFunctionProps(stackId?: string) {
   return {
     code: lambda.Code.fromInline('foo'),
