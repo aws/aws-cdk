@@ -101,11 +101,6 @@ If not, changes cannot be compared across systems.
   List tests instead of running them.
 - `--inspect-failures` (default=`false`)
   Keep generated snapshots when differences exist in snapshot comparisons.
-- `--dry-run` (default=`false`)
-  Just update snapshots without actually deploying the stack.
-
-  This option is not recommended.
-  Use only if you want to update snapshots quickly.
 - `--max-workers` (default=`16`)
   The max number of workerpool workers to use when running integration tests concurrently.
 
