@@ -1,7 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { AwsClients, TestFixture, integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture } from '../../lib';
+import { AwsClients, TestFixture, integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -599,7 +599,7 @@ integTest('cdk migrate generates migrate.json', withCDKMigrateFixture('typescrip
   await fixture.cdkDestroy(fixture.stackNamePrefix);
 }));
 
-integTest('cdk migrate --from-scan with AND/OR filters correctly filters resources', withDefaultFixture(async (fixture) => {
+integTest('cdk migrate --from-scan with AND/OR filters correctly filters resources', withExtendedTimeoutFixture(async (fixture) => {
   const stackName = `cdk-migrate-integ-${fixture.randomString}`;
 
   await fixture.cdkDeploy('migrate-stack', {
@@ -631,7 +631,7 @@ integTest('cdk migrate --from-scan with AND/OR filters correctly filters resourc
   }
 }));
 
-integTest('cdk migrate --from-scan for resources with Write Only Properties generates warnings', withDefaultFixture(async (fixture) => {
+integTest('cdk migrate --from-scan for resources with Write Only Properties generates warnings', withExtendedTimeoutFixture(async (fixture) => {
   const stackName = `cdk-migrate-integ-${fixture.randomString}`;
 
   await fixture.cdkDeploy('migrate-stack', {
@@ -671,7 +671,7 @@ integTest('cdk migrate --from-scan for resources with Write Only Properties gene
 }));
 
 ['typescript', 'python', 'csharp', 'java'].forEach(language => {
-  integTest(`cdk migrate --from-stack creates deployable ${language} app`, withDefaultFixture(async (fixture) => {
+  integTest(`cdk migrate --from-stack creates deployable ${language} app`, withExtendedTimeoutFixture(async (fixture) => {
     const migrateStackName = fixture.fullStackName('migrate-stack');
     await fixture.aws.cloudFormation('createStack', {
       StackName: migrateStackName,
