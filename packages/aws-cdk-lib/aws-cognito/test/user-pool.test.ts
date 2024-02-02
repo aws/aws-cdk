@@ -508,6 +508,41 @@ describe('User Pool', () => {
     });
   });
 
+  test('add preTokenGeneration default trigger', () => {
+    // GIVEN
+    const stack = new Stack();
+    const kmsKey = fooKey(stack, 'TestKMSKey');
+
+    const preTokenGeneration = fooFunction(stack, 'preTokenGeneration');
+
+    // WHEN
+    const pool = new UserPool(stack, 'Pool', {
+      customSenderKmsKey: kmsKey,
+      advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+    });
+    pool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION_CONFIG, preTokenGeneration);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      LambdaConfig: {
+        PreTokenGenerationConfig: {
+          LambdaArn: stack.resolve(preTokenGeneration.functionArn),
+          LambdaVersion: 'V1_0',
+        },
+      },
+      UserPoolAddOns: {
+        AdvancedSecurityMode: 'ENFORCED',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: stack.resolve(preTokenGeneration.functionArn),
+      Principal: 'cognito-idp.amazonaws.com',
+      SourceArn: stack.resolve(pool.userPoolArn),
+    });
+  });
+
   test('add preTokenGeneration trigger v2', () => {
     // GIVEN
     const stack = new Stack();
