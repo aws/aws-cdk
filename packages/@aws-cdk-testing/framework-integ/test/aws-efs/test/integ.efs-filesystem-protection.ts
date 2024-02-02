@@ -1,6 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
-import { FileSystem } from 'aws-cdk-lib/aws-efs';
+import { FileSystem, ReplicationOverwriteProtection } from 'aws-cdk-lib/aws-efs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
@@ -13,7 +13,7 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
 new FileSystem(stack, 'FileSystem', {
   vpc,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
-  replicationOverwriteProtection: false,
+  replicationOverwriteProtection: ReplicationOverwriteProtection.DISABLED,
 });
 
 new integ.IntegTest(app, 'test-efs-protection-integ-test', {
