@@ -521,7 +521,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
 
   /**
    * Sets the loggingFormat for the function.
-   * @default "Text"
+   * @default LoggingFormat.TEXT
    */
   readonly loggingFormat?: LoggingFormat;
 
