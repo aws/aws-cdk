@@ -154,7 +154,7 @@ export class Bundling implements cdk.BundlingOptions {
 
     // Docker bundling
     const shouldBuildImage = props.forceDockerBundling || !Bundling.esbuildInstallation;
-    this.image = shouldBuildImage ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '../lib'),
+    this.image = shouldBuildImage ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '..', 'lib'),
       {
         buildArgs: {
           ...props.buildArgs ?? {},

@@ -20,7 +20,7 @@ describe('Lambda Data Source configuration', () => {
   let func: lambda.Function;
   beforeEach(() => {
     func = new lambda.Function(stack, 'func', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'verify/iam-query')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'verify', 'iam-query')),
       handler: 'iam-query.handler',
       runtime: lambda.Runtime.NODEJS_LATEST,
     });
@@ -76,7 +76,7 @@ describe('Lambda Data Source configuration', () => {
         schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       });
       const dummyFunction = new lambda.Function(newStack, 'func', {
-        code: lambda.Code.fromAsset(path.join(__dirname, 'verify/iam-query')),
+        code: lambda.Code.fromAsset(path.join(__dirname, 'verify', 'iam-query')),
         handler: 'iam-query.handler',
         runtime: lambda.Runtime.NODEJS_LATEST,
       });
@@ -130,7 +130,7 @@ describe('adding lambda data source from imported api', () => {
   let func: lambda.Function;
   beforeEach(() => {
     func = new lambda.Function(stack, 'func', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'verify/iam-query')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'verify', 'iam-query')),
       handler: 'iam-query.handler',
       runtime: lambda.Runtime.NODEJS_LATEST,
     });

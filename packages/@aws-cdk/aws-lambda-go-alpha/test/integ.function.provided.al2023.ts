@@ -15,7 +15,7 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     new lambda.GoFunction(this, 'go-handler-docker', {
-      entry: path.join(__dirname, 'lambda-handler-vendor/cmd/api'),
+      entry: path.join(__dirname, 'lambda-handler-vendor', 'cmd', 'api'),
       runtime: Runtime.PROVIDED_AL2023,
       bundling: {
         forcedDockerBundling: true,

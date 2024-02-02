@@ -1,0 +1,1 @@
+path.join(__dirname, './asdf') is not a valid path. It has '/' in the arguments which is not allowed. Each directory should be its own separate argument.

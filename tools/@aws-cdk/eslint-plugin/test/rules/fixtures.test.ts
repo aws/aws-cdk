@@ -20,7 +20,7 @@ fs.readdirSync(fixturesRoot).filter(f => fs.lstatSync(path.join(fixturesRoot, f)
         },
         overrideConfigFile: path.join(fixturesDir, 'eslintrc.js'),
         rulePaths: [
-          path.join(__dirname, '../../lib/rules'),
+          path.join(__dirname, '..', '..', 'lib', 'rules'),
         ],
         fix: true,
       });

@@ -30,7 +30,7 @@ beforeEach(() => {
 });
 
 test('Bundling a layer from files', () => {
-  const entry = path.join(__dirname, 'test/lambda-handler-project');
+  const entry = path.join(__dirname, 'test', 'lambda-handler-project');
   new PythonLayerVersion(stack, 'layer', {
     entry,
   });

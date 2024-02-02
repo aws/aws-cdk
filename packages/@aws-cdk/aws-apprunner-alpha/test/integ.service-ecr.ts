@@ -9,7 +9,7 @@ const stack = new cdk.Stack(app, 'integ-apprunner');
 
 // Scenario 3: Create the service from local code assets
 const imageAsset = new assets.DockerImageAsset(stack, 'ImageAssets', {
-  directory: path.join(__dirname, './docker.assets'),
+  directory: path.join(__dirname, 'docker.assets'),
 });
 const service3 = new Service(stack, 'Service3', {
   source: Source.fromAsset({

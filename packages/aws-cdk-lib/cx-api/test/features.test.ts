@@ -70,7 +70,8 @@ test.each([
   expect(compareVersions(b, a)).toBeCloseTo(-expected, 10); // Gets around expect(-0).toEqual(0) failing... :x
 });
 
-const currentv2: string = JSON.parse(fs.readFileSync(path.join(__dirname, '../../../../version.v2.json'), { encoding: 'utf-8' })).version;
+// eslint-disable-next-line @aws-cdk/no-invalid-path
+const currentv2: string = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', '..', 'version.v2.json'), { encoding: 'utf-8' })).version;
 
 describe(`introducedIn.v2 is either <= ${currentv2} or magic value "${MAGIC_V2NEXT}"`, () => {
   test.each(Object.keys(feats.FLAGS))('for flag %p', flag => {
