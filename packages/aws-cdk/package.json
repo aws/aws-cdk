@@ -70,7 +70,7 @@
     "@types/archiver": "^5.3.4",
     "@types/fs-extra": "^9.0.13",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.12",
     "@types/mockery": "^1.4.33",
     "@types/promptly": "^3.0.5",
     "@types/semver": "^7.5.6",

@@ -99,7 +99,7 @@ export class Bundling implements CdkBundlingOptions {
       assetExcludes,
     });
 
-    this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '../lib'), {
+    this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
       buildArgs: {
         ...props.buildArgs,
         IMAGE: runtime.bundlingImage.image,
