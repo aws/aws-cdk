@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { MapBase, BaseMapProps } from './map-base';
+import { MapBase, MapBaseProps } from './map-base';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
@@ -7,7 +7,7 @@ import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, Retr
 /**
  * Properties for defining a Map state
  */
-export interface MapProps extends BaseMapProps {
+export interface MapProps extends MapBaseProps {
   /**
    * The JSON that you want to override your default iteration input (mutually exclusive  with `itemSelector`).
    *

@@ -20,6 +20,9 @@ export * from './states/task';
 export * from './states/wait';
 export * from './states/map';
 export * from './states/distributed-map';
+export * from './states/distributed-map/item-batcher';
+export * from './states/distributed-map/item-reader';
+export * from './states/distributed-map/result-writer';
 export * from './states/custom-state';
 
 export * from './states/map-base';

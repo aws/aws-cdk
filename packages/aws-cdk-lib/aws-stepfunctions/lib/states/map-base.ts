@@ -9,7 +9,7 @@ import { IChainable, INextable, ProcessorMode } from '../types';
 /**
  * Properties for defining a Map state
  */
-export interface BaseMapProps {
+export interface MapBaseProps {
   /**
    * Optional name for this state
    *
@@ -125,7 +125,7 @@ export abstract class MapBase extends State implements INextable {
   protected readonly itemsPath?: string;
   protected readonly itemSelector?: { [key: string]: any };
 
-  constructor(scope: Construct, id: string, props: BaseMapProps = {}) {
+  constructor(scope: Construct, id: string, props: MapBaseProps = {}) {
     super(scope, id, props);
     this.endStates = [this];
     this.maxConcurrency = props.maxConcurrency;

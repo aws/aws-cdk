@@ -1,7 +1,7 @@
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import * as stepfunctions from '../lib';
-import { CsvHeaders, DistributedMap } from '../lib';
+import { CsvHeaders } from '../lib/states/distributed-map/item-reader';
 
 describe('Distributed Map State', () => {
   test('DistributedMap isDistributedMap', () => {
@@ -20,7 +20,7 @@ describe('Distributed Map State', () => {
 
     // THEN
     expect(() => {
-      DistributedMap.isDistributedMap(map);
+      stepfunctions.DistributedMap.isDistributedMap(map);
     }).toBeTruthy();
   }),
 
