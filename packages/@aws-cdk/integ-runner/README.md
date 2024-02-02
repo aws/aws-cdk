@@ -44,7 +44,7 @@ By default, executing `integ-runner` will do the following for each file (app):
    For new tests this will always fail.
 
 To accept a snapshot update, the integreation test has to be deployed and assertions have to pass.\
-Exectue the runner again, this time with `integ-runner --update-on-fail` and the fowlling will happen for each file:
+Execute the runner again, this time with `integ-runner --update-on-fail` and the following will happen for each file:
 
 1. Deploy the previous snapshot
 2. Deploy the new version as a Stack update and run assertions
