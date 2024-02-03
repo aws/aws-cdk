@@ -14,28 +14,15 @@
         }
       }
     },
-    "5ebd9f9364eb30f85504de10c76efc8130bce55a23bc8e9aa3b169938de90d6b": {
+    "dd049549e6524fca40f044c7d48d21971fed44b33f06dadf5f56e71608076f3f": {
       "source": {
-        "path": "asset.5ebd9f9364eb30f85504de10c76efc8130bce55a23bc8e9aa3b169938de90d6b.assets",
-        "packaging": "zip"
-      },
-      "destinations": {
-        "current_account-current_region": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5ebd9f9364eb30f85504de10c76efc8130bce55a23bc8e9aa3b169938de90d6b.zip",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
-        }
-      }
-    },
-    "66c9676c2424b7bfa196fdedc4cbdf397268d2f224758f20043587ef93b00877": {
-      "source": {
-        "path": "vpc-dual-stack-ec2.template.json",
+        "path": "Ipv6Vpc.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "66c9676c2424b7bfa196fdedc4cbdf397268d2f224758f20043587ef93b00877.json",
+          "objectKey": "dd049549e6524fca40f044c7d48d21971fed44b33f06dadf5f56e71608076f3f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
