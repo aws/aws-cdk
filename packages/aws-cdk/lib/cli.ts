@@ -22,7 +22,7 @@ import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
 import { realHandler as context } from '../lib/commands/context';
 import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
-import { MIGRATE_SUPPORTED_LANGUAGES } from '../lib/commands/migrate';
+import { MIGRATE_SUPPORTED_LANGUAGES, getMigrateScanType } from '../lib/commands/migrate';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
@@ -282,6 +282,21 @@ async function parseCommandLineArguments(args: string[]) {
       .option('from-path', { type: 'string', desc: 'The path to the CloudFormation template to migrate. Use this for locally stored templates' })
       .option('from-stack', { type: 'boolean', desc: 'Use this flag to retrieve the template for an existing CloudFormation stack' })
       .option('output-path', { type: 'string', desc: 'The output path for the migrated CDK app' })
+      .option('from-scan', {
+        type: 'string',
+        desc: 'Determines if a new scan should be created, or the last successful existing scan should be used ' +
+          '\n options are "new" or "most-recent"',
+      })
+      .option('filter', {
+        type: 'array',
+        desc: 'Filters the resource scan based on the provided criteria in the following format: "key1=value1,key2=value2"' +
+          '\n This field can be passed multiple times for OR style filtering: ' +
+          '\n filtering options: ' +
+          '\n resource-identifier: A key-value pair that identifies the target resource. i.e. {"ClusterName", "myCluster"}' +
+          '\n resource-type-prefix: A string that represents a type-name prefix. i.e. "AWS::DynamoDB::"' +
+          '\n tag-key: a string that matches resources with at least one tag with the provided key. i.e. "myTagKey"' +
+          '\n tag-value: a string that matches resources with at least one tag with the provided value. i.e. "myTagValue"',
+      })
       .option('compress', { type: 'boolean', desc: 'Use this flag to zip the generated CDK app' }),
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
@@ -683,6 +698,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           fromStack: args['from-stack'],
           language: args.language,
           outputPath: args['output-path'],
+          fromScan: getMigrateScanType(args['from-scan']),
+          filter: args.filter,
           account: args.account,
           region: args.region,
           compress: args.compress,

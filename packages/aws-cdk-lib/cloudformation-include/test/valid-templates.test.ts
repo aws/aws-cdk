@@ -262,6 +262,22 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a template with fn:: intrinsic function used in deletion policy', () => {
+    includeTestTemplate(stack, 'intrinsic-deletion-policy.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('intrinsic-deletion-policy.json'),
+    );
+  });
+
+  test('can ingest a template with ref intrinsic functions used in deletion policy', () => {
+    includeTestTemplate(stack, 'intrinsic-deletion-policy-ref.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('intrinsic-deletion-policy-ref.json'),
+    );
+  });
+
   test('can ingest a JSON template with string-form Fn::GetAtt, and output it unchanged', () => {
     includeTestTemplate(stack, 'get-att-string-form.json');
 
@@ -727,7 +743,7 @@ describe('CDK Include', () => {
     const output = cfnTemplate.getOutput('Output1');
     output.value = 'a mutated value';
     output.description = undefined;
-    output.exportName = 'an export';
+    output.exportName = 'an-export';
     output.condition = new core.CfnCondition(stack, 'MyCondition', {
       expression: core.Fn.conditionIf('AlwaysFalseCond', core.Aws.NO_VALUE, true),
     });
@@ -755,7 +771,7 @@ describe('CDK Include', () => {
         "Output1": {
           "Value": "a mutated value",
           "Export": {
-            "Name": "an export",
+            "Name": "an-export",
           },
           "Condition": "MyCondition",
         },
