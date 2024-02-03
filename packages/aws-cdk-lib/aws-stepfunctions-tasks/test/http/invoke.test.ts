@@ -1,5 +1,5 @@
-import * as cdk from '../../../core';
 import * as events from '../../../aws-events';
+import * as cdk from '../../../core';
 import * as lib from '../../lib';
 
 let stack: cdk.Stack;

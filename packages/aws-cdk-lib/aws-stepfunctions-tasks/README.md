@@ -1074,12 +1074,12 @@ The following snippet creates a new API destination Connection, and uses it to m
 
 ```ts
 const connection = new events.Connection(this, 'Connection', {
-  connectionName: 'my-connection',
-  authorization: events.Authorization.basic('username', 'password'),
+  authorization: events.Authorization.basic('username', cdk.SecretValue.unsafePlainText('password')),
 });
 
-new tasks.HttpInvoke(this, 'Invoke HTTP API', {
+new HttpInvoke(this, 'Invoke HTTP API', {
   apiEndpoint: 'https://api.example.com',
+  arrayEncodingFormat: ArrayEncodingFormat.BRACKETS,
   body: JSON.stringify({ foo: 'bar' }),
   connection,
   headers: { 'Content-Type': 'application/json' },
