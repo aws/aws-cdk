@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "Ipv6Testing/DefaultTest": {
+      "stacks": [
+        "Ipv6Vpc"
+      ],
+      "assertionStack": "Ipv6Testing/DefaultTest/DeployAssert",
+      "assertionStackName": "Ipv6TestingDefaultTestDeployAssertE9056115"
+    }
+  }
+}
