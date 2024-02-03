@@ -317,7 +317,10 @@
     "VpcId": {
      "Ref": "Ip6VpcDualStack350CEE6D"
     }
-   }
+   },
+   "DependsOn": [
+    "Ip6VpcDualStackipv6cidr40BE830A"
+   ]
   },
   "Ip6VpcDualStackPrivateSubnet1RouteTable5326D239": {
    "Type": "AWS::EC2::RouteTable",
@@ -331,7 +334,10 @@
     "VpcId": {
      "Ref": "Ip6VpcDualStack350CEE6D"
     }
-   }
+   },
+   "DependsOn": [
+    "Ip6VpcDualStackipv6cidr40BE830A"
+   ]
   },
   "Ip6VpcDualStackPrivateSubnet1RouteTableAssociationF1C10B6A": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -342,7 +348,10 @@
     "SubnetId": {
      "Ref": "Ip6VpcDualStackPrivateSubnet1Subnet842B7F4C"
     }
-   }
+   },
+   "DependsOn": [
+    "Ip6VpcDualStackipv6cidr40BE830A"
+   ]
   },
   "Ip6VpcDualStackPrivateSubnet2SubnetEB493489": {
    "Type": "AWS::EC2::Subnet",
@@ -397,7 +406,10 @@
     "VpcId": {
      "Ref": "Ip6VpcDualStack350CEE6D"
     }
-   }
+   },
+   "DependsOn": [
+    "Ip6VpcDualStackipv6cidr40BE830A"
+   ]
   },
   "Ip6VpcDualStackPrivateSubnet2RouteTable56BF517C": {
    "Type": "AWS::EC2::RouteTable",
@@ -411,7 +423,10 @@
     "VpcId": {
      "Ref": "Ip6VpcDualStack350CEE6D"
     }
-   }
+   },
+   "DependsOn": [
+    "Ip6VpcDualStackipv6cidr40BE830A"
+   ]
   },
   "Ip6VpcDualStackPrivateSubnet2RouteTableAssociationD37A3D3D": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
@@ -422,7 +437,10 @@
     "SubnetId": {
      "Ref": "Ip6VpcDualStackPrivateSubnet2SubnetEB493489"
     }
-   }
+   },
+   "DependsOn": [
+    "Ip6VpcDualStackipv6cidr40BE830A"
+   ]
   },
   "Ip6VpcDualStackIGW9B3D3D07": {
    "Type": "AWS::EC2::InternetGateway",
