@@ -105,9 +105,7 @@ export class RotationSchedule extends Resource {
       }
       const grantee = new iam.ServicePrincipal('secretsmanager.amazonaws.com', {
         conditions: {
-          StringEquals: {
-            SourceAccount: Aws.ACCOUNT_ID,
-          },
+          StringEquals: { 'aws:SourceAccount': Aws.ACCOUNT_ID },
         },
       });
       const grant = props.rotationLambda.grantInvoke(grantee);

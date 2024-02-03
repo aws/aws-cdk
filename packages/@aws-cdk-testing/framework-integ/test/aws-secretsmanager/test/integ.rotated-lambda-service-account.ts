@@ -15,7 +15,6 @@ export class TestStack extends cdk.Stack {
     });
     secret.addRotationSchedule('Schedule', {
       rotationLambda: fn,
-      automaticallyAfter: cdk.Duration.hours(4),
     });
   }
 }
