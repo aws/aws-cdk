@@ -79,6 +79,7 @@ const ADDITION = chalk.green('[+]');
 const CONTEXT = chalk.grey('[ ]');
 const UPDATE = chalk.yellow('[~]');
 const REMOVAL = chalk.red('[-]');
+const IMPORT = chalk.blue('[←]');
 
 class Formatter {
   constructor(
@@ -159,7 +160,7 @@ class Formatter {
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
     // eslint-disable-next-line max-len
-    this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
+    this.print(`${this.formatResourcePrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
 
     if (diff.isUpdate) {
       const differenceCount = diff.differenceCount;
@@ -169,6 +170,12 @@ class Formatter {
         this.formatTreeDiff(name, values, processedCount === differenceCount);
       });
     }
+  }
+
+  public formatResourcePrefix(diff: ResourceDifference) {
+    if (diff.isImport) { return IMPORT; }
+
+    return this.formatPrefix(diff);
   }
 
   public formatPrefix<T>(diff: Difference<T>) {
@@ -204,6 +211,8 @@ class Formatter {
         return chalk.italic(chalk.bold(chalk.red('destroy')));
       case ResourceImpact.WILL_ORPHAN:
         return chalk.italic(chalk.yellow('orphan'));
+      case ResourceImpact.WILL_IMPORT:
+        return chalk.italic(chalk.blue('import'));
       case ResourceImpact.WILL_UPDATE:
       case ResourceImpact.WILL_CREATE:
       case ResourceImpact.NO_CHANGE:

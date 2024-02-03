@@ -60,7 +60,7 @@ new glue.Job(this, 'PythonSparkStreamingJob', {
   executable: glue.JobExecutable.pythonStreaming({
     glueVersion: glue.GlueVersion.V4_0,
     pythonVersion: glue.PythonVersion.THREE,
-    script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
+    script: glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py')),
   }),
   description: 'an example Python Streaming job',
 });
@@ -97,7 +97,7 @@ new glue.Job(this, 'RayJob', {
     glueVersion: glue.GlueVersion.V4_0,
     pythonVersion: glue.PythonVersion.THREE_NINE,
     runtime: glue.Runtime.RAY_TWO_FOUR,
-    script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
+    script: glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py')),
   }),
   workerType: glue.WorkerType.Z_2X,
   workerCount: 2,
@@ -118,7 +118,7 @@ new glue.Job(this, 'EnableSparkUI', {
   executable: glue.JobExecutable.pythonEtl({
     glueVersion: glue.GlueVersion.V3_0,
     pythonVersion: glue.PythonVersion.THREE,
-    script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
+    script: glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py')),
   }),
 });
 ```
