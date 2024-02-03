@@ -1801,6 +1801,11 @@ export class Vpc extends VpcBase {
           privateSubnet.node.addDependency(this.ipv6CidrBlock);
         }
       });
+      (this.isolatedSubnets as PrivateSubnet[]).forEach((isolatedSubnet) => {
+        if (this.ipv6CidrBlock !== undefined) {
+          isolatedSubnet.node.addDependency(this.ipv6CidrBlock);
+        }
+      });
     }
   }
 
