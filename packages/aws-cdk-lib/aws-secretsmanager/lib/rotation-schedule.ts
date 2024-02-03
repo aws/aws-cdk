@@ -103,10 +103,6 @@ export class RotationSchedule extends Resource {
           ),
         );
       }
-
-      // This is where the issue is
-
-      // const grant = props.rotationLambda.grantInvoke(new iam.ServicePrincipal('secretsmanager.amazonaws.com'));
       const grantee = new iam.ServicePrincipal('secretsmanager.amazonaws.com', {
         conditions: {
           StringEquals: {
