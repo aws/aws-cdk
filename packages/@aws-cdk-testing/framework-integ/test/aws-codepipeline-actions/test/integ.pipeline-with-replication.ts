@@ -31,6 +31,7 @@ const bucket = new Bucket(stack1, 'ReplicationBucket', {
 
 const artifact = new Artifact();
 const pipeline = new Pipeline(stack2, 'Pipeline', {
+  crossAccountKeys: true,
   crossRegionReplicationBuckets: {
     'us-east-1': bucket,
   },

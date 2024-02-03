@@ -74,7 +74,7 @@ You can specify whether to enable continuous integration from the source reposit
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 
 const imageAsset = new assets.DockerImageAsset(this, 'ImageAssets', {
-  directory: path.join(__dirname, './docker.assets'),
+  directory: path.join(__dirname, 'docker.assets'),
 });
 new apprunner.Service(this, 'Service', {
   source: apprunner.Source.fromAsset({
