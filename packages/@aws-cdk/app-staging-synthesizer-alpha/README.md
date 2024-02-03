@@ -213,7 +213,7 @@ import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 declare const stack: Stack;
 const asset = new Asset(stack, 'deploy-time-asset', {
   deployTime: true,
-  path: path.join(__dirname, './deploy-time-asset'),
+  path: path.join(__dirname, 'deploy-time-asset'),
 });
 ```
 
@@ -261,6 +261,22 @@ const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
     autoDeleteStagingAssets: false,
+  }),
+});
+```
+
+### Staging Bucket Encryption
+
+By default, the staging resources will be stored in an S3 Bucket with KMS encryption. To use
+SSE-S3, set `stagingBucketEncryption` to `BucketEncryption.S3_MANAGED`.
+
+```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
+const app = new App({
+  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+    appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
   }),
 });
 ```

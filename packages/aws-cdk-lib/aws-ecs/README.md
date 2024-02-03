@@ -1652,6 +1652,32 @@ const customService = new ecs.FargateService(this, 'CustomizedService', {
 });
 ```
 
+To set a timeout for service connect, use `idleTimeout` and `perRequestTimeout`.
+
+**Note**: If `idleTimeout` is set to a time that is less than `perRequestTimeout`, the connection will close when
+the `idleTimeout` is reached and not the `perRequestTimeout`.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    services: [
+      {
+        portMappingName: 'api',
+        idleTimeout: Duration.minutes(5),
+        perRequestTimeout: Duration.minutes(5),
+      },
+    ],
+  },
+});
+```
+
+> Visit [Amazon ECS support for configurable timeout for services running with Service Connect](https://aws.amazon.com/about-aws/whats-new/2024/01/amazon-ecs-configurable-timeout-service-connect/) for more details.
+
 ## ServiceManagedVolume
 
 Amazon ECS now supports the attachment of Amazon Elastic Block Store (EBS) volumes to ECS tasks,
