@@ -179,6 +179,9 @@
   "aws-datasync": [
     "AWS::DataSync"
   ],
+  "aws-datazone": [
+    "AWS::DataZone"
+  ],
   "aws-dax": [
     "AWS::DAX"
   ],
@@ -638,6 +641,9 @@
   ],
   "aws-ssmcontacts": [
     "AWS::SSMContacts"
+  ],
+  "aws-ssmguiconnect": [
+    "AWS::SSMGuiConnect"
   ],
   "aws-ssmincidents": [
     "AWS::SSMIncidents"

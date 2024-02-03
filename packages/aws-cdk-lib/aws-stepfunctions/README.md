@@ -498,7 +498,7 @@ execute the same steps for multiple entries of an array in the state input.
 const map = new sfn.Map(this, 'Map State', {
   maxConcurrency: 1,
   itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
-  parameters: {
+  itemSelector: {
     item: sfn.JsonPath.stringAt('$$.Map.Item.Value'),
   },
   resultPath: '$.mapOutput',
@@ -528,7 +528,7 @@ An `executionType` must be specified for the distributed `Map` workflow.
 const map = new sfn.Map(this, 'Map State', {
   maxConcurrency: 1,
   itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
-  parameters: {
+  itemSelector: {
     item: sfn.JsonPath.stringAt('$$.Map.Item.Value'),
   },
   resultPath: '$.mapOutput',
@@ -561,6 +561,10 @@ JSON-based object as the state definition.
 Custom states can be chained together with any of the other states to create your state machine
 definition. You will also need to provide any permissions that are required to the `role` that
 the State Machine uses.
+
+The Retry and Catch fields are available for error handling.
+You can configure the Retry field by defining it in the JSON object or by adding it using the `addRetry` method.
+However, the Catch field cannot be configured by defining it in the JSON object, so it must be added using the `addCatch` method.
 
 The following example uses the `DynamoDB` service integration to insert data into a DynamoDB table.
 
@@ -601,6 +605,13 @@ const custom = new sfn.CustomState(this, 'my custom task', {
 // catch errors with addCatch
 const errorHandler = new sfn.Pass(this, 'handle failure');
 custom.addCatch(errorHandler);
+
+// retry the task if something goes wrong
+custom.addRetry({
+  errors: [sfn.Errors.ALL],
+  interval: Duration.seconds(10),
+  maxAttempts: 5,
+});
 
 const chain = sfn.Chain.start(custom)
   .next(finalStatus);

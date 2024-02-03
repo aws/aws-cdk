@@ -123,7 +123,7 @@ describe('instance', () => {
   });
   test('instance architecture is correctly discerned for x86-64 instance', () => {
     // GIVEN
-    const sampleInstanceClasses = ['c5', 'm5ad', 'r5n', 'm6', 't3a', 'r6i', 'r6a', 'p4de', 'p5']; // A sample of x86-64 instance classes
+    const sampleInstanceClasses = ['c5', 'm5ad', 'r5n', 'm6', 't3a', 'r6i', 'r6a', 'p4de', 'p5', 'm7i-flex']; // A sample of x86-64 instance classes
 
     for (const instanceClass of sampleInstanceClasses) {
       // WHEN
@@ -133,6 +133,24 @@ describe('instance', () => {
       expect(instanceType.architecture).toBe(InstanceArchitecture.X86_64);
     }
 
+  });
+
+  test('sameInstanceClassAs compares InstanceTypes contains dashes', () => {
+    // GIVEN
+    const comparitor = InstanceType.of(InstanceClass.M7I_FLEX, InstanceSize.LARGE);
+    //WHEN
+    const largerInstanceType = InstanceType.of(InstanceClass.M7I_FLEX, InstanceSize.XLARGE);
+    //THEN
+    expect(largerInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
+  });
+
+  test('sameInstanceClassAs compares InstanceSize contains dashes', () => {
+    // GIVEN
+    const comparitor = new InstanceType('c7a.metal-48xl');
+    //WHEN
+    const largerInstanceType = new InstanceType('c7a.xlarge');
+    //THEN
+    expect(largerInstanceType.sameInstanceClassAs(comparitor)).toBeTruthy();
   });
 
   test('instances with local NVME drive are correctly named', () => {
@@ -518,6 +536,26 @@ describe('instance', () => {
       keyName: 'test-key-pair',
       keyPair,
     })).toThrow('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+  });
+
+  it('correctly associates a key pair', () => {
+    // GIVEN
+    const keyPair = new KeyPair(stack, 'KeyPair', {
+      keyPairName: 'test-key-pair',
+    });
+
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      instanceType: new InstanceType('t2.micro'),
+      machineImage: new AmazonLinuxImage(),
+      keyPair,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      KeyName: stack.resolve(keyPair.keyPairName),
+    });
   });
 
   describe('Detailed Monitoring', () => {
