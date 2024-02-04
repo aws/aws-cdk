@@ -21,6 +21,7 @@ const sourceAction = new cpactions.CodeStarConnectionsSourceAction({
 
 new codepipeline.Pipeline(stack, 'Pipeline', {
   pipelineType: codepipeline.PipelineType.V2,
+  crossAccountKeys: true,
   stages: [
     {
       stageName: 'Source',
