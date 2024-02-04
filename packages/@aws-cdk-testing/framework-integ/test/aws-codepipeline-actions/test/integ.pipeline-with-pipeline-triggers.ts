@@ -8,9 +8,13 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-with-pipeline-triggers');
 
-const sourceOutput = new codepipeline.Artifact();
 // Make sure you specify a valid connection ARN.
 const connectionArn = process.env.CONNECTION_ARN || 'MOCK';
+if (connectionArn === 'MOCK') {
+  cdk.Annotations.of(stack).addWarningV2('integ:connection-arn', 'You must specify a valid connection ARN in the CONNECTION_ARN environment variable');
+}
+
+const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new cpactions.CodeStarConnectionsSourceAction({
   actionName: 'CodeStarConnectionsSourceAction',
   output: sourceOutput,
