@@ -415,6 +415,35 @@ new OtherAction({
 });
 ```
 
+The following is an actual code example.
+
+```ts
+declare const sourceAction: codepipeline_actions.S3SourceAction;
+declare const sourceOutput: codepipeline.Artifact;
+declare const deployBucket: s3.Bucket;
+
+new codepipeline.Pipeline(this, 'Pipeline', {
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Deploy',
+      actions: [
+        new codepipeline_actions.S3DeployAction({
+          actionName: 'DeployAction',
+          // can reference the variables
+          objectKey: `${sourceAction.variables.versionId}.txt`,
+          input: sourceOutput,
+          bucket: deployBucket,
+        }),
+      ],
+    },
+  ],
+});
+```
+
 Check the documentation of the `aws-cdk-lib/aws-codepipeline-actions`
 for details on how to use the variables for each action class.
 
