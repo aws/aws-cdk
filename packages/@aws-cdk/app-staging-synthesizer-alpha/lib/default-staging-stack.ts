@@ -355,6 +355,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     return new kms.Key(this, 'BucketKey', {
       alias: `alias/cdk-${this.appId}-staging`,
       admins: [new iam.AccountPrincipal(this.account)],
+      removalPolicy: RemovalPolicy.DESTROY,
     });
   }
 

@@ -183,8 +183,8 @@
      "Version": "2012-10-17"
     }
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "BucketKeyAlias69A0886F": {
    "Type": "AWS::KMS::Alias",
