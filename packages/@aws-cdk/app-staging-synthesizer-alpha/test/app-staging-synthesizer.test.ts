@@ -277,12 +277,12 @@ describe(AppStagingSynthesizer, () => {
             Status: 'Enabled',
           }]),
         },
-        // When stagingBucketEncryption is not specified, it should be KMS for backwards compatibility
+        // When stagingBucketEncryption is not specified, it should be S3_MANAGED
         BucketEncryption: {
           ServerSideEncryptionConfiguration: [
             {
               ServerSideEncryptionByDefault: {
-                SSEAlgorithm: 'aws:kms',
+                SSEAlgorithm: 'AES256',
               },
             },
           ],
@@ -290,13 +290,13 @@ describe(AppStagingSynthesizer, () => {
       });
     });
 
-    test('staging bucket with SSE-S3 encryption', () => {
+    test('staging bucket with SSE-KMS encryption', () => {
       // GIVEN
       app = new App({
         defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
           appId: APP_ID,
           deployTimeFileAssetLifetime: Duration.days(1),
-          stagingBucketEncryption: BucketEncryption.S3_MANAGED,
+          stagingBucketEncryption: BucketEncryption.KMS,
         }),
       });
       stack = new Stack(app, 'Stack', {
@@ -318,7 +318,7 @@ describe(AppStagingSynthesizer, () => {
           ServerSideEncryptionConfiguration: [
             {
               ServerSideEncryptionByDefault: {
-                SSEAlgorithm: 'AES256',
+                SSEAlgorithm: 'aws:kms',
               },
             },
           ],

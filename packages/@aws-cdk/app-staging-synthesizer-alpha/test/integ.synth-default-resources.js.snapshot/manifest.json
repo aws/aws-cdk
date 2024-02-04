@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "synthesize-default-resources.assets": {
       "type": "cdk:asset-manifest",
@@ -95,18 +95,6 @@
             "data": "CdkFileRoleDefaultPolicy621C7E5B"
           }
         ],
-        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketKey7092080A"
-          }
-        ],
-        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Alias/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketKeyAlias69A0886F"
-          }
-        ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -161,37 +149,19 @@
             "data": "defaultresourcesmaxecrasset2904B88A7"
           }
         ],
-        "defaultresourcesmaxecrasset1AutoDeleteImagesCustomResource0FD7F0F5": [
+        "BucketKey7092080A": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "defaultresourcesmaxecrasset1AutoDeleteImagesCustomResource0FD7F0F5",
+            "data": "BucketKey7092080A",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773": [
+        "BucketKeyAlias69A0886F": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomECRAutoDeleteImagesCustomResourceProviderHandler8D89C030",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "defaultresourcesmaxecrasset2AutoDeleteImagesCustomResource708714C1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "defaultresourcesmaxecrasset2AutoDeleteImagesCustomResource708714C1",
+            "data": "BucketKeyAlias69A0886F",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

@@ -10,10 +10,10 @@ const app = new App({
   },
 });
 
-const stackDefaultEncryption = new Stack(app, 'synthesize-default-encryption', {
+const stackKmsEncryption = new Stack(app, 'synthesize-default-encryption', {
   synthesizer: AppStagingSynthesizer.defaultResources({
     appId: APP_ID_MAX, // this has implications on the overall template size
-    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
+    stagingBucketEncryption: BucketEncryption.KMS,
   }),
 });
 
@@ -23,7 +23,7 @@ if (!defaultStagingStack) {
 }
 
 new integ.IntegTest(app, 'integ-tests', {
-  testCases: [defaultStagingStack, stackDefaultEncryption],
+  testCases: [defaultStagingStack, stackKmsEncryption],
 });
 
 app.synth();
