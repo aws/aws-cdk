@@ -107,7 +107,7 @@ export async function main(args: string[]) {
     return;
   }
 
-  const pool = workerpool.pool(path.join(__dirname, '../lib/workers/extract/index.js'), {
+  const pool = workerpool.pool(path.join(__dirname, '..', 'lib', 'workers', 'extract', 'index.js'), {
     maxWorkers: options.watch ? 1 : options.maxWorkers,
   });
 
