@@ -537,7 +537,6 @@ the `includedTags`.
 The triggers can only be used with pipeline type V2.
 
 ```ts
-declare const sourceOutput: codepipeline.Artifact;
 declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
 declare const buildAction: codepipeline_actions.CodeBuildAction;
 
@@ -565,3 +564,17 @@ new codepipeline.Pipeline(this, 'Pipeline', {
   }],
 });
 ```
+
+## Migrating a pipeline type from V1 to V2
+
+To migrate your pipeline type from V1 to V2, you just need to update the `pipelineType` property to `PipelineType.V2`.
+This migration does not cause replacement of your pipeline.
+
+```ts
+new codepipeline.Pipeline(this, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2, // here
+});
+```
+
+See the [CodePipeline documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/pipeline-types-planning.html)
+for more details on the differences between each type.
