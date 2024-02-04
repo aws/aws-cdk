@@ -1,8 +1,8 @@
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as cdk from 'aws-cdk-lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 
@@ -20,6 +20,7 @@ const sourceAction = new cpactions.CodeStarConnectionsSourceAction({
 });
 
 new codepipeline.Pipeline(stack, 'Pipeline', {
+  pipelineName: 'my-pipeline',
   pipelineType: codepipeline.PipelineType.V2,
   crossAccountKeys: true,
   stages: [
@@ -54,9 +55,12 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
   }],
 });
 
-new IntegTest(app, 'codepipeline-with-pipeline-triggers-test', {
+const integrationTest = new IntegTest(app, 'codepipeline-with-pipeline-triggers-test', {
   testCases: [stack],
   diffAssets: true,
 });
+
+const awsApiCall = integrationTest.assertions.awsApiCall('CodePipeline', 'getPipeline', { name: 'my-pipeline' });
+awsApiCall.assertAtPath('pipeline.name', ExpectedResult.stringLikeRegexp('my-pipeline'));
 
 app.synth();

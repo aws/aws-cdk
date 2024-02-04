@@ -456,6 +456,7 @@
                     },
                     "Type": "S3"
                 },
+                "Name": "my-pipeline",
                 "PipelineType": "V2",
                 "RoleArn": {
                     "Fn::GetAtt": [
