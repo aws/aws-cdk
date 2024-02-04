@@ -365,6 +365,13 @@ const replicationBucket = new s3.Bucket(replicationStack, 'ReplicationBucket', {
 
 ## Variables
 
+Variables are key-value pairs that can be used to dynamically configure actions in your pipeline.
+
+There are two types of variables, Action-level variables and Pipeline-level variables. Action-level
+variables are produced when an action is executed. Pipeline-level variables are defined when the
+pipeline is created and resolved at pipeline run time. You specify the Pipeline-level variables
+when the pipeline is created, and you can provide values at the time of the pipeline execution.
+
 ### Action-level variables
 
 The library supports action-level variables.
