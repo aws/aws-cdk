@@ -367,7 +367,7 @@ const replicationBucket = new s3.Bucket(replicationStack, 'ReplicationBucket', {
 
 ### Action-level variables
 
-The library supports the CodePipeline Variables feature.
+The library supports action-level variables.
 Each action class that emits variables has a separate variables interface,
 accessed as a property of the action instance called `variables`.
 You instantiate the action class and assign it to a local variable;
