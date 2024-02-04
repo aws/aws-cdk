@@ -486,6 +486,7 @@ export class Pipeline extends PipelineBase {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
     });
 
+    // TODO: Change the default value of `pipelineType` to V2 under a feature flag.
     if (props.pipelineType === undefined) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-codepipeline:unspecifiedPipelineType', 'V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`.');
     }
