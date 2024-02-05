@@ -8,6 +8,7 @@ import { attributePropertyName, cloudFormationDocLink, propertyNameFromCloudForm
 import { splitDocumentation } from '../util';
 
 // Depends on https://github.com/aws/aws-cdk/pull/25610
+// Eanbling this feature since PR 25610 was merged.
 export const HAS_25610 = true;
 
 // This convenience typewriter builder is used all over the place
