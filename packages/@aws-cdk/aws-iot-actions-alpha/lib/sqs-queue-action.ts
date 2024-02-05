@@ -13,7 +13,7 @@ export interface SqsQueueActionProps extends CommonActionProps {
    *
    * @default false
    */
-  readonly useBase64?: boolean
+  readonly useBase64?: boolean;
 }
 
 /**

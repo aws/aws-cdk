@@ -141,7 +141,7 @@ export interface RoleMappingRule {
    * How to match with the Claim value
    * @default RoleMappingMatchType.EQUALS
   */
-  readonly matchType?: RoleMappingMatchType
+  readonly matchType?: RoleMappingMatchType;
 }
 
 /**

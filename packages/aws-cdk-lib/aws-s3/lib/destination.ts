@@ -33,7 +33,7 @@ export interface BucketNotificationDestinationConfig {
    * Any additional dependencies that should be resolved before the bucket notification
    * can be configured (for example, the SNS Topic Policy resource).
    */
-  readonly dependencies?: IDependable[]
+  readonly dependencies?: IDependable[];
 }
 
 /**

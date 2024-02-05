@@ -3,11 +3,11 @@
 export interface PositionalArg {
   name: string;
   description?: string;
-  required?: boolean
+  required?: boolean;
 }
 
 export interface Option {
-  type: 'string' | 'boolean',
+  type: 'string' | 'boolean';
   short?: string;
   default?: string | boolean;
   multiple?: boolean;
@@ -17,7 +17,7 @@ export interface Option {
 const TAB = ' '.repeat(4);
 
 export function showHelp(command: string, args: PositionalArg[] = [], options: {
-  [longOption: string]: Option
+  [longOption: string]: Option;
 } = {}, text?: string) {
   console.log('Usage:');
   console.log(`${TAB}${command} ${renderArgsList(args)} [--option=value]`);

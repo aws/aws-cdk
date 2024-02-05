@@ -55,7 +55,7 @@ export interface MessageAttribute {
    * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html#SNSMessageAttributes.DataTypes
    * @default determined by type inspection if possible, fallback is String
    */
-  readonly dataType?: MessageAttributeDataType
+  readonly dataType?: MessageAttributeDataType;
 }
 
 /**

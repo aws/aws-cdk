@@ -72,7 +72,7 @@ export interface ConfigurationSetProps {
    *
    * @default - use the default awstrack.me domain
    */
-  readonly customTrackingRedirectDomain?: string,
+  readonly customTrackingRedirectDomain?: string;
 }
 
 /**

@@ -13,7 +13,7 @@ export interface SqsSendMessageProps extends sfn.TaskStateBaseProps {
   /**
    * The SQS queue that messages will be sent to
    */
-  readonly queue: sqs.IQueue
+  readonly queue: sqs.IQueue;
 
   /**
    * The text message to send to the queue.

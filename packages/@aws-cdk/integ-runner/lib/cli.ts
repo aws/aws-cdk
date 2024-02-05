@@ -203,15 +203,15 @@ export async function main(args: string[]) {
 }
 
 function validateWatchArgs(args: {
-  tests: IntegTest[],
-  testRegions?: string[],
-  profiles?: string[],
-  maxWorkers: number,
-  force: boolean,
-  dryRun: boolean,
-  disableUpdateWorkflow: boolean,
-  runUpdateOnFailed: boolean,
-  watch: boolean,
+  tests: IntegTest[];
+  testRegions?: string[];
+  profiles?: string[];
+  maxWorkers: number;
+  force: boolean;
+  dryRun: boolean;
+  disableUpdateWorkflow: boolean;
+  runUpdateOnFailed: boolean;
+  watch: boolean;
 }) {
   if (args.watch) {
     if (

@@ -2514,13 +2514,13 @@ function getTestStack(): Stack {
   return new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
 }
 
-function toCfnTags(tags: any): Array<{Key: string, Value: string}> {
+function toCfnTags(tags: any): Array<{Key: string; Value: string}> {
   return Object.keys(tags).map( key => {
     return { Key: key, Value: tags[key] };
   });
 }
 
-function hasTags(expectedTags: Array<{Key: string, Value: string}>) {
+function hasTags(expectedTags: Array<{Key: string; Value: string}>) {
   return {
     Properties: {
       Tags: Match.arrayWith(expectedTags),

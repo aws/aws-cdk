@@ -42,7 +42,7 @@ export interface BundlingProps extends BundlingOptions {
   /**
    * Run compilation using `tsc` before bundling
    */
-  readonly preCompilation?: boolean
+  readonly preCompilation?: boolean;
 
   /**
    * Which option to use to copy the source files to the docker container and output files back

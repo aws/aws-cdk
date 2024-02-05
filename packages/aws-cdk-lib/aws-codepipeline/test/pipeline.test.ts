@@ -938,12 +938,12 @@ function createPipelineWithSourceAndBuildStages(scope: Construct, pipelineName?:
 };
 
 interface CreatePipelineStackOptions {
-  readonly withFeatureFlag?: boolean,
-  readonly suffix: string,
-  readonly stackId?: string,
-  readonly pipelineId?: string,
-  readonly undefinedStackName?: boolean,
-  readonly nestedStackId?: string,
+  readonly withFeatureFlag?: boolean;
+  readonly suffix: string;
+  readonly stackId?: string;
+  readonly pipelineId?: string;
+  readonly undefinedStackName?: boolean;
+  readonly nestedStackId?: string;
 }
 
 function createPipelineStack(options: CreatePipelineStackOptions): PipelineStack {

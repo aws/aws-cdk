@@ -60,7 +60,7 @@ export interface TopicRuleProps {
    *
    * @default true
    */
-  readonly enabled?: boolean
+  readonly enabled?: boolean;
 
   /**
    * A simplified SQL syntax to filter messages received on an MQTT topic and push the data elsewhere.

@@ -906,7 +906,7 @@ class StandardDockerImage extends DockerImage {
   private readonly imageUri: string;
   private readonly repository?: ecr.IRepository;
 
-  constructor(opts: { allowAnyEcrImagePull?: boolean, imageUri: string, repository?: ecr.IRepository }) {
+  constructor(opts: { allowAnyEcrImagePull?: boolean; imageUri: string; repository?: ecr.IRepository }) {
     super();
 
     this.allowAnyEcrImagePull = !!opts.allowAnyEcrImagePull;
@@ -939,7 +939,7 @@ class StandardS3Location extends S3Location {
   private readonly keyGlob: string;
   private readonly uri: string;
 
-  constructor(opts: { bucket?: s3.IBucket, keyPrefix?: string, uri: string }) {
+  constructor(opts: { bucket?: s3.IBucket; keyPrefix?: string; uri: string }) {
     super();
     this.bucket = opts.bucket;
     this.keyGlob = `${opts.keyPrefix || ''}*`;

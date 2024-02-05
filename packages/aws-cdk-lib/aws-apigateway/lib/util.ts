@@ -11,7 +11,7 @@ export function validateHttpMethod(method: string, messagePrefix: string = '') {
   }
 }
 
-export function parseMethodOptionsPath(originalPath: string): { resourcePath: string, httpMethod: string } {
+export function parseMethodOptionsPath(originalPath: string): { resourcePath: string; httpMethod: string } {
   if (!originalPath.startsWith('/')) {
     throw new Error(`Method options path must start with '/': ${originalPath}`);
   }
@@ -42,7 +42,7 @@ export function parseMethodOptionsPath(originalPath: string): { resourcePath: st
   };
 }
 
-export function parseAwsApiCall(path?: string, action?: string, actionParams?: { [key: string]: string }): { apiType: string, apiValue: string } {
+export function parseAwsApiCall(path?: string, action?: string, actionParams?: { [key: string]: string }): { apiType: string; apiValue: string } {
   if (actionParams && !action) {
     throw new Error('"actionParams" requires that "action" will be set');
   }

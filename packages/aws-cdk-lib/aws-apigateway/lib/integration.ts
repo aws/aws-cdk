@@ -48,7 +48,7 @@ export interface IntegrationOptions {
    * There are three valid values: WHEN_NO_MATCH, WHEN_NO_TEMPLATES, and
    * NEVER.
    */
-  readonly passthroughBehavior?: PassthroughBehavior
+  readonly passthroughBehavior?: PassthroughBehavior;
 
   /**
    * The request parameters that API Gateway sends with the backend request.

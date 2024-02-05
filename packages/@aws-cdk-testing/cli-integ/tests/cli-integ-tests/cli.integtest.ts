@@ -746,7 +746,7 @@ integTest('enableDiffNoFail', withDefaultFixture(async (fixture) => {
     await fs.writeFile(path.join(fixture.integTestDir, 'cdk.json'), JSON.stringify(cdkJson));
   }
 
-  type DiffParameters = { fail?: boolean, enableDiffNoFail: boolean };
+  type DiffParameters = { fail?: boolean; enableDiffNoFail: boolean };
 }));
 
 integTest('cdk diff --fail on multiple stacks exits with error if any of the stacks contains a diff', withDefaultFixture(async (fixture) => {

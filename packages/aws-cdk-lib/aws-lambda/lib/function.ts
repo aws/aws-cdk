@@ -1620,7 +1620,7 @@ export interface EnvironmentOptions {
    *
    * @default false - using the function in Lambda@Edge will throw
    */
-  readonly removeInEdge?: boolean
+  readonly removeInEdge?: boolean;
 }
 
 /**

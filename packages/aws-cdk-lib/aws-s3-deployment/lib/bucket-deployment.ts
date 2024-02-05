@@ -58,7 +58,7 @@ export interface BucketDeploymentProps {
    * @default - No exclude filters are used
    * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
    */
-  readonly exclude?: string[]
+  readonly exclude?: string[];
 
   /**
    * If this is set, matching files or objects will be included with the deployment's sync
@@ -68,7 +68,7 @@ export interface BucketDeploymentProps {
    * @default - No include filters are used and all files are included with the sync command
    * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
    */
-  readonly include?: string[]
+  readonly include?: string[];
 
   /**
    * If this is set to false, files in the destination bucket that
@@ -78,7 +78,7 @@ export interface BucketDeploymentProps {
    *
    * @default true
    */
-  readonly prune?: boolean
+  readonly prune?: boolean;
 
   /**
    * If this is set to "false", the destination files will be deleted when the
@@ -152,7 +152,7 @@ export interface BucketDeploymentProps {
    *
    * @default - No EFS. Lambda has access only to 512MB of disk space.
    */
-  readonly useEfs?: boolean
+  readonly useEfs?: boolean;
 
   /**
    * Execution role associated with this function

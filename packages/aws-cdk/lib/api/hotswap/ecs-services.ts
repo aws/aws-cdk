@@ -84,12 +84,12 @@ export async function isHotswappableEcsServiceChange(
         const taskDefRevArn = registerTaskDefResponse.taskDefinition?.taskDefinitionArn;
 
         // Step 2 - update the services using that TaskDefinition to point to the new TaskDefinition Revision
-        const servicePerClusterUpdates: { [cluster: string]: Array<{ promise: Promise<any>, ecsService: EcsService }> } = {};
+        const servicePerClusterUpdates: { [cluster: string]: Array<{ promise: Promise<any>; ecsService: EcsService }> } = {};
         for (const ecsService of ecsServicesReferencingTaskDef) {
           const clusterName = ecsService.serviceArn.split('/')[1];
 
           const existingClusterPromises = servicePerClusterUpdates[clusterName];
-          let clusterPromises: Array<{ promise: Promise<any>, ecsService: EcsService }>;
+          let clusterPromises: Array<{ promise: Promise<any>; ecsService: EcsService }>;
           if (existingClusterPromises) {
             clusterPromises = existingClusterPromises;
           } else {

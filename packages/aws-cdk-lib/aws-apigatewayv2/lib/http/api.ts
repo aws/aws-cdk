@@ -80,7 +80,7 @@ export interface IHttpApi extends IApi {
   /**
    * Add a new VpcLink
    */
-  addVpcLink(options: VpcLinkProps): VpcLink
+  addVpcLink(options: VpcLinkProps): VpcLink;
 
   /**
    * Get the "execute-api" ARN.

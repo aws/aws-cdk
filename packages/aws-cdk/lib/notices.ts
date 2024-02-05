@@ -70,10 +70,10 @@ function finalMessage(individualMessages: string[], exampleNumber: number): stri
 }
 
 export interface FilterNoticeOptions {
-  outdir?: string,
-  cliVersion?: string,
-  frameworkVersion?: string,
-  acknowledgedIssueNumbers?: Set<number>,
+  outdir?: string;
+  cliVersion?: string;
+  frameworkVersion?: string;
+  acknowledgedIssueNumbers?: Set<number>;
 }
 
 export function filterNotices(data: Notice[], options: FilterNoticeOptions): Notice[] {
@@ -103,7 +103,7 @@ export interface Notice {
 }
 
 export interface NoticeDataSource {
-  fetch(): Promise<Notice[]>,
+  fetch(): Promise<Notice[]>;
 }
 
 export class WebsiteNoticeDataSource implements NoticeDataSource {
@@ -157,8 +157,8 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
 }
 
 interface CachedNotices {
-  expiration: number,
-  notices: Notice[],
+  expiration: number;
+  notices: Notice[];
 }
 
 const TIME_TO_LIVE_SUCCESS = 60 * 60 * 1000; // 1 hour
@@ -227,9 +227,9 @@ export class CachedDataSource implements NoticeDataSource {
 }
 
 export interface NoticeFilterProps {
-  cliVersion: string,
-  acknowledgedIssueNumbers: Set<number>,
-  tree: ConstructTreeNode,
+  cliVersion: string;
+  acknowledgedIssueNumbers: Set<number>;
+  tree: ConstructTreeNode;
 }
 
 export class NoticeFilter {

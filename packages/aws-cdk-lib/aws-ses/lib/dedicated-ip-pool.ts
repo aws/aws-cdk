@@ -28,7 +28,7 @@ export interface IDedicatedIpPool extends IResource {
    *
    * @attribute
    */
-  readonly dedicatedIpPoolName: string
+  readonly dedicatedIpPoolName: string;
 }
 
 /**

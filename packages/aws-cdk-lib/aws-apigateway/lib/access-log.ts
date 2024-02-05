@@ -9,7 +9,7 @@ export interface IAccessLogDestination {
   /**
    * Binds this destination to the RestApi Stage.
    */
-  bind(stage: IStage): AccessLogDestinationConfig
+  bind(stage: IStage): AccessLogDestinationConfig;
 }
 
 /**
@@ -654,39 +654,39 @@ export interface JsonWithStandardFieldProps {
   /**
    * If this flag is enabled, the source IP of request will be output to the log
    */
-  readonly ip: boolean,
+  readonly ip: boolean;
   /**
    * If this flag is enabled, the principal identifier of the caller will be output to the log
    */
-  readonly caller: boolean,
+  readonly caller: boolean;
   /**
    * If this flag is enabled, the principal identifier of the user will be output to the log
    */
-  readonly user: boolean,
+  readonly user: boolean;
   /**
    * If this flag is enabled, the CLF-formatted request time((dd/MMM/yyyy:HH:mm:ss +-hhmm) will be output to the log
    */
-  readonly requestTime: boolean,
+  readonly requestTime: boolean;
   /**
    * If this flag is enabled, the http method will be output to the log
    */
-  readonly httpMethod: boolean,
+  readonly httpMethod: boolean;
   /**
    * If this flag is enabled, the path to your resource will be output to the log
    */
-  readonly resourcePath: boolean,
+  readonly resourcePath: boolean;
   /**
    * If this flag is enabled, the method response status will be output to the log
    */
-  readonly status: boolean,
+  readonly status: boolean;
   /**
    * If this flag is enabled, the request protocol will be output to the log
    */
-  readonly protocol: boolean,
+  readonly protocol: boolean;
   /**
    * If this flag is enabled, the response payload length will be output to the log
    */
-  readonly responseLength: boolean
+  readonly responseLength: boolean;
 }
 
 /**

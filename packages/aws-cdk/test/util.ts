@@ -13,7 +13,7 @@ export const DEFAULT_FAKE_TEMPLATE = { No: 'Resources' };
 export interface TestStackArtifact {
   stackName: string;
   template?: any;
-  env?: string,
+  env?: string;
   depends?: string[];
   metadata?: cxapi.StackMetadata;
 

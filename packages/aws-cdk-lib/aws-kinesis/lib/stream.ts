@@ -804,8 +804,8 @@ export class Stream extends StreamBase {
    * user's configuration.
    */
   private parseEncryption(props: StreamProps): {
-    streamEncryption?: CfnStream.StreamEncryptionProperty | IResolvable
-    encryptionKey?: kms.IKey
+    streamEncryption?: CfnStream.StreamEncryptionProperty | IResolvable;
+    encryptionKey?: kms.IKey;
   } {
 
     // if encryption properties are not set, default to KMS in regions where KMS is available

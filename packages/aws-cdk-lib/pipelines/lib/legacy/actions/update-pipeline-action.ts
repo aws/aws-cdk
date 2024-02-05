@@ -52,7 +52,7 @@ export interface UpdatePipelineActionProps {
    *
    * @default - false
    */
-  readonly privileged?: boolean
+  readonly privileged?: boolean;
 
   /**
    * Docker registries and associated credentials necessary during the pipeline

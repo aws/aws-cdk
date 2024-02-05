@@ -739,7 +739,7 @@ export interface EmptyDirVolumeOptions extends EksVolumeOptions {
    *
    * @default - no size limit
    */
-  readonly sizeLimit?: Size
+  readonly sizeLimit?: Size;
 }
 
 /**

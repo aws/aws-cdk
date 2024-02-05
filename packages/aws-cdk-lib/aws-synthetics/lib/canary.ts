@@ -46,12 +46,12 @@ export interface CustomTestOptions {
   /**
    * The code of the canary script
    */
-  readonly code: Code,
+  readonly code: Code;
 
   /**
    * The handler for the code. Must end with `.handler`.
    */
-  readonly handler: string,
+  readonly handler: string;
 }
 
 /**

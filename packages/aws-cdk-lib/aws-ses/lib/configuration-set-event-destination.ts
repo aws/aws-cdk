@@ -45,7 +45,7 @@ export interface ConfigurationSetEventDestinationOptions {
    *
    * @default - send all event types
    */
-  readonly events?: EmailSendingEvent[]
+  readonly events?: EmailSendingEvent[];
 }
 
 /**

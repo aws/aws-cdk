@@ -1113,8 +1113,8 @@ describe('stack', () => {
       },
     });
 
-    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
-    expect(assembly.getStackArtifact(child2.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(child2.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual(['ParentChild18FAEF419']);
   });
 
   test('_addAssemblyDependency adds to _stackDependencies', () => {
@@ -1139,8 +1139,8 @@ describe('stack', () => {
 
     const assembly = app.synth();
 
-    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
-    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual(['ParentChild18FAEF419']);
   });
 
   test('_addAssemblyDependency adds one StackDependencyReason with defaults', () => {
@@ -1161,8 +1161,8 @@ describe('stack', () => {
 
     const assembly = app.synth();
 
-    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
-    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual(['ParentChild18FAEF419']);
   });
 
   test('_addAssemblyDependency raises error on cycle', () => {
@@ -1233,8 +1233,8 @@ describe('stack', () => {
 
     const assembly = app.synth();
 
-    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
-    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual(['ParentChild18FAEF419']);
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual(['ParentChild18FAEF419']);
   });
 
   test('_removeAssemblyDependency removes a StackDependency from _stackDependencies with the last reason', () => {
@@ -1260,8 +1260,8 @@ describe('stack', () => {
 
     const assembly = app.synth();
 
-    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
-    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
   });
 
   test('_removeAssemblyDependency removes a StackDependency with default reason', () => {
@@ -1282,8 +1282,8 @@ describe('stack', () => {
 
     const assembly = app.synth();
 
-    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
-    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any; }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(child1.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
+    expect(assembly.getStackArtifact(childA.artifactId).dependencies.map((x: { id: any }) => x.id)).toEqual([]);
   });
 
   test('_removeAssemblyDependency raises an error for nested stacks', () => {

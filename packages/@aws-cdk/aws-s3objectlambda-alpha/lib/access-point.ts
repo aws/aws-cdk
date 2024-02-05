@@ -135,7 +135,7 @@ export interface AccessPointAttributes {
   /**
    * The ARN of the access point.
    */
-  readonly accessPointArn: string
+  readonly accessPointArn: string;
 
   /**
    * The creation data of the access point.

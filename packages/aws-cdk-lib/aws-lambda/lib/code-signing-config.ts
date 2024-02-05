@@ -44,7 +44,7 @@ export interface CodeSigningConfigProps {
    * List of signing profiles that defines a
    * trusted user who can sign a code package.
    */
-  readonly signingProfiles: ISigningProfile[],
+  readonly signingProfiles: ISigningProfile[];
 
   /**
    * Code signing configuration policy for deployment validation failure.
@@ -55,14 +55,14 @@ export interface CodeSigningConfigProps {
    *
    * @default UntrustedArtifactOnDeployment.WARN
    */
-  readonly untrustedArtifactOnDeployment?: UntrustedArtifactOnDeployment,
+  readonly untrustedArtifactOnDeployment?: UntrustedArtifactOnDeployment;
 
   /**
    * Code signing configuration description.
    *
    * @default - No description.
    */
-  readonly description?: string,
+  readonly description?: string;
 }
 
 /**

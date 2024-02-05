@@ -49,7 +49,7 @@ export interface WebSocketApiProps {
    * An API key selection expression. Providing this option will require an API Key be provided to access the API.
    * @default - Key is not required to access these APIs
    */
-  readonly apiKeySelectionExpression?: WebSocketApiKeySelectionExpression
+  readonly apiKeySelectionExpression?: WebSocketApiKeySelectionExpression;
 
   /**
    * The description of the API.

@@ -188,7 +188,7 @@ test('select behavior with no stacks and default ignore stacks options (false)',
     .rejects.toThrow('This app contains no stacks');
 });
 
-async function testCloudAssembly({ env }: { env?: string, versionReporting?: boolean } = {}) {
+async function testCloudAssembly({ env }: { env?: string; versionReporting?: boolean } = {}) {
   const cloudExec = new MockCloudExecutable({
     stacks: [{
       stackName: 'withouterrors',
@@ -222,7 +222,7 @@ async function testCloudAssemblyNoStacks() {
   return cloudExec.synthesize();
 }
 
-async function testNestedCloudAssembly({ env }: { env?: string, versionReporting?: boolean } = {}) {
+async function testNestedCloudAssembly({ env }: { env?: string; versionReporting?: boolean } = {}) {
   const cloudExec = new MockCloudExecutable({
     stacks: [{
       stackName: 'withouterrors',

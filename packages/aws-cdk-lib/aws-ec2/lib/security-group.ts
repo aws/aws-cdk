@@ -842,5 +842,5 @@ interface SecurityGroupLookupOptions {
    *
    * @default Don't filter on VPC
    */
-  readonly vpc?: IVpc,
+  readonly vpc?: IVpc;
 }

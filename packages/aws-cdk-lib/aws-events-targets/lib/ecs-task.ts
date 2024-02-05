@@ -109,14 +109,14 @@ export interface EcsTaskProps extends TargetBaseProps {
     *
     * @default - Tags will not be propagated
     */
-  readonly propagateTags?: ecs.PropagatedTagSource
+  readonly propagateTags?: ecs.PropagatedTagSource;
 
   /**
      * The metadata that you apply to the task to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define.
      *
      * @default - No additional tags are applied to the task
      */
-  readonly tags?: Tag[]
+  readonly tags?: Tag[];
 
   /**
     * Whether or not to enable the execute command functionality for the containers in this task.

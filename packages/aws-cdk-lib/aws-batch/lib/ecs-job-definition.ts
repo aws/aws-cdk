@@ -13,7 +13,7 @@ interface IEcsJobDefinition extends IJobDefinition {
   /**
    * The container that this job will run
    */
-  readonly container: IEcsContainerDefinition
+  readonly container: IEcsContainerDefinition;
 
   /**
    * Whether to propogate tags from the JobDefinition
@@ -39,7 +39,7 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
   /**
    * The container that this job will run
    */
-  readonly container: IEcsContainerDefinition
+  readonly container: IEcsContainerDefinition;
 
   /**
    * Whether to propogate tags from the JobDefinition
