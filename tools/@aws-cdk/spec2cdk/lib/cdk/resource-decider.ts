@@ -8,7 +8,7 @@ import { attributePropertyName, cloudFormationDocLink, propertyNameFromCloudForm
 import { splitDocumentation } from '../util';
 
 // Depends on https://github.com/aws/aws-cdk/pull/25610
-export const HAS_25610 = false;
+export const HAS_25610 = true;
 
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
@@ -184,7 +184,7 @@ export class ResourceDecider {
 
   private handleTagPropertyModern(cfnName: string, prop: Property, variant: TagVariant) {
     const originalName = propertyNameFromCloudFormation(cfnName);
-    const originalType = this.converter.makeTypeResolvable(this.converter.typeFromProperty(prop));
+    const originalType = this.converter.typeFromProperty(prop);
 
     this.propsProperties.push({
       propertySpec: {
@@ -221,7 +221,7 @@ export class ResourceDecider {
             expr.object({ tagPropertyName: expr.lit(originalName) }),
           ),
         cfnValueToRender: {
-          [originalName]: $this.tags.renderTags(...(HAS_25610 ? [$this[originalName]] : [])),
+          [originalName]: $this.cdkTagManager.renderTags(),
         },
       },
       {
