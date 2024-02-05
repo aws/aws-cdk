@@ -736,4 +736,20 @@ describe('schedule target', () => {
         target: pipelineTarget,
       })).toThrow(/Number of retry attempts should be less or equal than 185/);
   });
+
+  test('throws when pipelineParameterList length is greater than 200', () => {
+    const dummyObject = {
+      name: 'MyParameterName',
+      value: 'MyParameterValue',
+    };
+    const dummyPipelineParameterList: SageMakerPipelineParameter[] = [];
+    for (let i = 0; i < 201; i++) {
+      dummyPipelineParameterList.push(dummyObject);
+    }
+
+    expect(() =>
+      new SageMakerStartPipelineExecution(pipeline, {
+        pipelineParameterList: dummyPipelineParameterList,
+      })).toThrow(/pipelineParameterList length must be between 0 and 200, got 201/);
+  });
 });
