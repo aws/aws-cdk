@@ -12,7 +12,7 @@ class GraphQLApiLambdaAuthStack extends cdk.Stack {
 
     const func = new lambda.Function(this, 'func', {
       code: lambda.Code.fromAsset(
-        path.join(__dirname, 'verify/lambda-tutorial'),
+        path.join(__dirname, 'verify', 'lambda-tutorial'),
       ),
       handler: 'lambda-tutorial.handler',
       runtime: STANDARD_NODEJS_RUNTIME,

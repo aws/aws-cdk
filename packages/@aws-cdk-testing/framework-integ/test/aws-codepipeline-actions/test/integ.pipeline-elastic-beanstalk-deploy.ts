@@ -32,7 +32,7 @@ const bucket = new s3.Bucket(stack, 'PipelineBucket', {
 });
 
 const artifact = new deploy.BucketDeployment(stack, 'DeployApp', {
-  sources: [deploy.Source.asset(path.join(__dirname, 'assets/nodejs.zip'))],
+  sources: [deploy.Source.asset(path.join(__dirname, 'assets', 'nodejs.zip'))],
   destinationBucket: bucket,
   extract: false,
 });

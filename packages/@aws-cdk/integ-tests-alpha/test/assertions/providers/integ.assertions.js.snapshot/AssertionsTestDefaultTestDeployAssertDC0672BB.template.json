@@ -28,7 +28,7 @@
      "WithDecryption": "true"
     },
     "flattenResponse": "false",
-    "salt": "1696292331033"
+    "salt": "1706364262631"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -76,6 +76,24 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "ssm:GetParameter"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ssm:GetParameter"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -91,7 +109,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "725b0df96c2f47516947f7471b1187d8db70a7b45e4ae44c5e9430cdf9e75767.zip"
+     "S3Key": "3f0f15596be1e3fbbf4a0571522aa1e5312d44abff27360f8d043c1b0704bcf4.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -131,10 +149,82 @@
      "WithDecryption": "true"
     },
     "flattenResponse": "false",
-    "salt": "1696292331034"
+    "salt": "1706364262632"
    },
    "DependsOn": [
     "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclientssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-ssmGetParameterC",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "@aws-sdk/client-ssm",
+    "api": "GetParameterCommand",
+    "expected": "{\"$ObjectLike\":{\"Parameter\":{\"Type\":\"String\",\"Value\":\"ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ!\\\"#¤%&/()=?`´^*+~_-.,:;<>|\"}}}",
+    "parameters": {
+     "Name": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "Assertions:ExportsOutputRefUtf8Parameter528A4835"
+        },
+        "\""
+       ]
+      ]
+     },
+     "WithDecryption": "true"
+    },
+    "flattenResponse": "false",
+    "salt": "1706364262633"
+   },
+   "DependsOn": [
+    "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f21"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2": {
+   "Type": "Custom::DeployAssert@SdkCallssmGetParameterCommand",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "ssm",
+    "api": "GetParameterCommand",
+    "expected": "{\"$ObjectLike\":{\"Parameter\":{\"Type\":\"String\",\"Value\":\"ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ!\\\"#¤%&/()=?`´^*+~_-.,:;<>|\"}}}",
+    "parameters": {
+     "Name": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "Assertions:ExportsOutputRefUtf8Parameter528A4835"
+        },
+        "\""
+       ]
+      ]
+     },
+     "WithDecryption": "true"
+    },
+    "flattenResponse": "false",
+    "salt": "1706364262633"
+   },
+   "DependsOn": [
+    "AwsApiCallawssdkclientssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -153,6 +243,22 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f21",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallawssdkclientssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallawssdkclientssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2",
      "assertion"
     ]
    }
