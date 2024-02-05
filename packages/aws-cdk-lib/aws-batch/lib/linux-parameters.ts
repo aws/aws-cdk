@@ -247,7 +247,7 @@ export enum TmpfsMountOption {
   GID = 'gid',
   NR_INODES = 'nr_inodes',
   NR_BLOCKS = 'nr_blocks',
-  MPOL = 'mpol'
+  MPOL = 'mpol',
 }
 
 function renderTmpfs(tmpfs: Tmpfs): CfnJobDefinition.TmpfsProperty {

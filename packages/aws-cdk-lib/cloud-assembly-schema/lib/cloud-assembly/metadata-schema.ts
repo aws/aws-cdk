@@ -297,7 +297,7 @@ export enum ArtifactMetadataEntryType {
   /**
    * Represents tags of a stack.
    */
-  STACK_TAGS = 'aws:cdk:stack-tags'
+  STACK_TAGS = 'aws:cdk:stack-tags',
 }
 
 /**

@@ -89,7 +89,7 @@ export enum MachineImageType {
   /**
    * Bottlerocket AMI
    */
-  BOTTLEROCKET
+  BOTTLEROCKET,
 }
 
 /**

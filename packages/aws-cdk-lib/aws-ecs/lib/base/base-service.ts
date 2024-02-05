@@ -1631,7 +1631,7 @@ export enum LaunchType {
   /**
    * The service will be launched using the EXTERNAL launch type
    */
-  EXTERNAL = 'EXTERNAL'
+  EXTERNAL = 'EXTERNAL',
 }
 
 /**
@@ -1652,7 +1652,7 @@ export enum DeploymentControllerType {
   /**
    * The external (EXTERNAL) deployment type enables you to use any third-party deployment controller
    */
-  EXTERNAL = 'EXTERNAL'
+  EXTERNAL = 'EXTERNAL',
 }
 
 /**
@@ -1672,7 +1672,7 @@ export enum PropagatedTagSource {
   /**
    * Do not propagate
    */
-  NONE = 'NONE'
+  NONE = 'NONE',
 }
 
 /**

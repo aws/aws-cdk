@@ -922,7 +922,7 @@ export enum NetworkMode {
    * This is the only supported network mode for Windows containers. For more information, see
    * [Task Definition Parameters](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#network_mode).
    */
-  NAT = 'nat'
+  NAT = 'nat',
 }
 
 /**
@@ -1206,7 +1206,7 @@ export enum Scope {
   /**
    * Docker volumes that are scoped as shared persist after the task stops.
    */
-  SHARED = 'shared'
+  SHARED = 'shared',
 }
 
 /**
@@ -1231,7 +1231,7 @@ export enum Compatibility {
   /**
    * The task should specify the External launch type.
    */
-  EXTERNAL
+  EXTERNAL,
 }
 
 /**
