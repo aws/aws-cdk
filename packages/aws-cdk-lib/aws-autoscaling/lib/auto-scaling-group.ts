@@ -2009,7 +2009,7 @@ export enum ScalingEvent {
   /**
    * Send a test notification to the topic
    */
-  TEST_NOTIFICATION = 'autoscaling:TEST_NOTIFICATION'
+  TEST_NOTIFICATION = 'autoscaling:TEST_NOTIFICATION',
 }
 
 /**
@@ -2134,7 +2134,7 @@ export enum ScalingProcess {
   AZ_REBALANCE = 'AZRebalance',
   ALARM_NOTIFICATION = 'AlarmNotification',
   SCHEDULED_ACTIONS = 'ScheduledActions',
-  ADD_TO_LOAD_BALANCER = 'AddToLoadBalancer'
+  ADD_TO_LOAD_BALANCER = 'AddToLoadBalancer',
 }
 
 // Recommended list of processes to suspend from here:

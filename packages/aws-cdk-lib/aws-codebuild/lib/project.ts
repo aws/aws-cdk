@@ -1593,7 +1593,7 @@ export enum ImagePullPrincipalType {
    * SERVICE_ROLE specifies that AWS CodeBuild uses the project's role when pulling the image.
    * The role will be granted pull permissions on the ECR repository hosting the image.
    */
-  SERVICE_ROLE = 'SERVICE_ROLE'
+  SERVICE_ROLE = 'SERVICE_ROLE',
 }
 
 export interface BuildEnvironment {

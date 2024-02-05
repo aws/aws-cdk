@@ -750,7 +750,7 @@ export enum HttpVersion {
   /** HTTP 2 and HTTP 3 */
   HTTP2_AND_3 = 'http2and3',
   /** HTTP 3 */
-  HTTP3 = 'http3'
+  HTTP3 = 'http3',
 }
 
 /**
@@ -763,7 +763,7 @@ export enum PriceClass {
   /** PRICE_CLASS_100 + South Africa, Kenya, Middle East, Japan, Singapore, South Korea, Taiwan, Hong Kong, & Philippines */
   PRICE_CLASS_200 = 'PriceClass_200',
   /** All locations */
-  PRICE_CLASS_ALL = 'PriceClass_All'
+  PRICE_CLASS_ALL = 'PriceClass_All',
 }
 
 /**
@@ -775,7 +775,7 @@ export enum ViewerProtocolPolicy {
   /** Will redirect HTTP requests to HTTPS */
   REDIRECT_TO_HTTPS = 'redirect-to-https',
   /** Both HTTP and HTTPS supported */
-  ALLOW_ALL = 'allow-all'
+  ALLOW_ALL = 'allow-all',
 }
 
 /**
@@ -808,7 +808,7 @@ export enum OriginProtocolPolicy {
  */
 export enum SSLMethod {
   SNI = 'sni-only',
-  VIP = 'vip'
+  VIP = 'vip',
 }
 
 /**
@@ -822,7 +822,7 @@ export enum SecurityPolicyProtocol {
   TLS_V1_1_2016 = 'TLSv1.1_2016',
   TLS_V1_2_2018 = 'TLSv1.2_2018',
   TLS_V1_2_2019 = 'TLSv1.2_2019',
-  TLS_V1_2_2021 = 'TLSv1.2_2021'
+  TLS_V1_2_2021 = 'TLSv1.2_2021',
 }
 
 /**

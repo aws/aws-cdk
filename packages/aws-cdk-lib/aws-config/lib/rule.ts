@@ -181,7 +181,7 @@ export enum MaximumExecutionFrequency {
   /**
    * 24 hours.
    */
-  TWENTY_FOUR_HOURS = 'TwentyFour_Hours'
+  TWENTY_FOUR_HOURS = 'TwentyFour_Hours',
 }
 
 /**

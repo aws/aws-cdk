@@ -260,7 +260,7 @@ export enum ContentHandling {
   /**
    * Converts a request payload from a binary blob to a base64-encoded string.
    */
-  CONVERT_TO_TEXT = 'CONVERT_TO_TEXT'
+  CONVERT_TO_TEXT = 'CONVERT_TO_TEXT',
 }
 
 export enum IntegrationType {
@@ -298,7 +298,7 @@ export enum IntegrationType {
    * For integrating the API method request with API Gateway as a "loop-back"
    * endpoint without invoking any backend.
    */
-  MOCK = 'MOCK'
+  MOCK = 'MOCK',
 }
 
 export enum PassthroughBehavior {
@@ -319,7 +319,7 @@ export enum PassthroughBehavior {
    * templates. However if there is at least one content type defined,
    * unmapped content types will be rejected with the same 415 response.
    */
-  WHEN_NO_TEMPLATES = 'WHEN_NO_TEMPLATES'
+  WHEN_NO_TEMPLATES = 'WHEN_NO_TEMPLATES',
 }
 
 export enum ConnectionType {
@@ -331,7 +331,7 @@ export enum ConnectionType {
   /**
    * For private connections between API Gateway and a network load balancer in a VPC
    */
-  VPC_LINK = 'VPC_LINK'
+  VPC_LINK = 'VPC_LINK',
 }
 
 export interface IntegrationResponse {

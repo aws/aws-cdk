@@ -29,7 +29,7 @@ export enum Weekday {
   /**
    * Sunday
    */
-  SUNDAY = '7'
+  SUNDAY = '7',
 }
 
 /**

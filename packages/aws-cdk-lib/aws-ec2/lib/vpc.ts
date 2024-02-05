@@ -278,7 +278,7 @@ export enum SubnetType {
    *
    * Public subnets route outbound traffic via an Internet Gateway.
    */
-  PUBLIC = 'Public'
+  PUBLIC = 'Public',
 }
 
 /**
@@ -1151,7 +1151,7 @@ export enum DefaultInstanceTenancy {
   /**
    * Any instance launched into the VPC automatically has dedicated tenancy, unless you launch it with the default tenancy.
    */
-  DEDICATED = 'dedicated'
+  DEDICATED = 'dedicated',
 }
 
 /**

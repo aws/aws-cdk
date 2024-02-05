@@ -25,7 +25,7 @@ export enum StateMachineType {
   /**
    * Standard Workflows are ideal for long-running, durable, and auditable workflows.
    */
-  STANDARD = 'STANDARD'
+  STANDARD = 'STANDARD',
 }
 
 /**
@@ -51,7 +51,7 @@ export enum LogLevel {
   /**
    * Log fatal errors
    */
-  FATAL = 'FATAL'
+  FATAL = 'FATAL',
 }
 
 /**

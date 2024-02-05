@@ -8,7 +8,7 @@ export const PATH_METADATA_KEY = 'aws:cdk:path';
 export enum SynthesisMessageLevel {
   INFO = 'info',
   WARNING = 'warning',
-  ERROR = 'error'
+  ERROR = 'error',
 }
 
 export interface MetadataEntryResult extends cxschema.MetadataEntry {

@@ -39,7 +39,7 @@ export enum RuntimeFamily {
   DOTNET_CORE,
   GO,
   RUBY,
-  OTHER
+  OTHER,
 }
 
 /**

@@ -309,7 +309,7 @@ export enum FileAssetPackaging {
    * The asset source path points to a single file, which should be uploaded
    * to Amazon S3.
    */
-  FILE = 'file'
+  FILE = 'file',
 }
 
 /**

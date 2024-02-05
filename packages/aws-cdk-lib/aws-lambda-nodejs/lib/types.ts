@@ -324,7 +324,7 @@ export enum OutputFormat {
    *
    * Requires a running environment that supports `import` and `export` syntax.
    */
-  ESM = 'esm'
+  ESM = 'esm',
 }
 
 /**
@@ -409,7 +409,7 @@ export enum SourceMapMode {
   /**
    * Both sourceMap mode - If you want to have the effect of both inline and external simultaneously
    */
-  BOTH = 'both'
+  BOTH = 'both',
 }
 
 /**
@@ -428,5 +428,5 @@ export enum Charset {
    *
    * Keep original characters without using escape sequences
    */
-  UTF8 = 'utf8'
+  UTF8 = 'utf8',
 }

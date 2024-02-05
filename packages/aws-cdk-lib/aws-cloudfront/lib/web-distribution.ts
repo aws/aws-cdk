@@ -339,7 +339,7 @@ export interface S3OriginConfig {
 export enum CloudFrontAllowedMethods {
   GET_HEAD = 'GH',
   GET_HEAD_OPTIONS = 'GHO',
-  ALL = 'ALL'
+  ALL = 'ALL',
 }
 
 /**

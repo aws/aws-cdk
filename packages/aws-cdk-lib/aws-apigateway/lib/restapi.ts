@@ -956,7 +956,7 @@ export enum EndpointType {
   /**
    * For a private API and its custom domain name.
    */
-  PRIVATE = 'PRIVATE'
+  PRIVATE = 'PRIVATE',
 }
 
 class RootResource extends ResourceBase {

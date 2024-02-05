@@ -792,7 +792,7 @@ export enum ServerSideEncryption {
   /**
    * 'aws:kms'
    */
-  AWS_KMS = 'aws:kms'
+  AWS_KMS = 'aws:kms',
 }
 
 /**
@@ -834,7 +834,7 @@ export enum StorageClass {
   /**
    * 'DEEP_ARCHIVE'
    */
-  DEEP_ARCHIVE = 'DEEP_ARCHIVE'
+  DEEP_ARCHIVE = 'DEEP_ARCHIVE',
 }
 
 /**

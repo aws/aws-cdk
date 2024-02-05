@@ -269,7 +269,7 @@ export enum LicenseModel {
   /**
    * General public license.
    */
-  GENERAL_PUBLIC_LICENSE = 'general-public-license'
+  GENERAL_PUBLIC_LICENSE = 'general-public-license',
 }
 
 /**
@@ -330,7 +330,7 @@ export enum StorageType {
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#USER_PIOPS
    */
-  IO1 = 'io1'
+  IO1 = 'io1',
 }
 
 /**
@@ -345,7 +345,7 @@ export enum NetworkType {
   /**
    * Dual-stack network type.
    */
-  DUAL = 'DUAL'
+  DUAL = 'DUAL',
 }
 
 /**

@@ -308,7 +308,7 @@ export enum EncryptionOption {
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
    */
-  CLIENT_SIDE_KMS = 'CSE_KMS'
+  CLIENT_SIDE_KMS = 'CSE_KMS',
 }
 
 /**

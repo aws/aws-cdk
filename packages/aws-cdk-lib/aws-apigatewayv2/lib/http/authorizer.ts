@@ -29,7 +29,7 @@ export enum AuthorizerPayloadVersion {
   VERSION_1_0 = '1.0',
 
   /** Version 2.0 */
-  VERSION_2_0 = '2.0'
+  VERSION_2_0 = '2.0',
 }
 
 /**

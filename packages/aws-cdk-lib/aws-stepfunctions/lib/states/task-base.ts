@@ -407,7 +407,7 @@ export enum IntegrationPattern {
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token
    */
-  WAIT_FOR_TASK_TOKEN = 'WAIT_FOR_TASK_TOKEN'
+  WAIT_FOR_TASK_TOKEN = 'WAIT_FOR_TASK_TOKEN',
 }
 
 /**

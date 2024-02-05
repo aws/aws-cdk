@@ -272,7 +272,7 @@ export enum Visibility {
   /**
    * Only accessible through a VPC
    */
-  PRIVATE = 'PRIVATE'
+  PRIVATE = 'PRIVATE',
 }
 
 /**

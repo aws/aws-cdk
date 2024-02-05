@@ -277,7 +277,7 @@ export enum Capability {
   SYS_TIME = 'SYS_TIME',
   SYS_TTY_CONFIG = 'SYS_TTY_CONFIG',
   SYSLOG = 'SYSLOG',
-  WAKE_ALARM = 'WAKE_ALARM'
+  WAKE_ALARM = 'WAKE_ALARM',
 }
 
 /**
@@ -342,5 +342,5 @@ export enum TmpfsMountOption {
   GID = 'gid',
   NR_INODES = 'nr_inodes',
   NR_BLOCKS = 'nr_blocks',
-  MPOL = 'mpol'
+  MPOL = 'mpol',
 }

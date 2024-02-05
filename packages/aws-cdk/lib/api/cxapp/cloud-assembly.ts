@@ -67,7 +67,7 @@ export enum ExtendedStackSelection {
   /**
    * Include stacks that depend on this stack
    */
-  Downstream
+  Downstream,
 }
 
 /**
