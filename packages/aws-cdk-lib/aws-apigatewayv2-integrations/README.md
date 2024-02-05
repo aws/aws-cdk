@@ -67,9 +67,54 @@ httpApi.addRoutes({
 
 ### StepFunctions Integration
 
-StepFunctions integrations enable integrating an HTTP API route with an AWS StepFunctions state machine.
+Step Functions integrations enable integrating an HTTP API route with AWS Step Functions.
+This allows the HTTP API to start state machine executions synchronously or asynchronously, or to stop executions.
 
+When a client invokes the route configured with a Step Functions integration, the API Gateway service interacts with the specified state machine according to the integration subtype (e.g., starts a new execution, synchronously starts an execution, or stops an execution) and returns the response to the client.
 
+The following code configures a Step Functions integrations:
+
+```ts
+import { HttpStepFunctionsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+declare const stateMachine: stepfunctions.StateMachine;
+declare const httpApi: apigwv2.HttpApi;
+
+httpApi.addRoutes({
+  path: '/start',
+  methods: [ apigwv2.HttpMethod.POST ],
+  integration: new HttpStepFunctionsIntegration('StartExecutionIntegration', {
+    stateMachine,
+    subtype: apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_START_EXECUTION,
+  });,
+});
+
+httpApi.addRoutes({
+  path: '/start-sync',
+  methods: [ apigwv2.HttpMethod.POST ],
+  integration: new HttpStepFunctionsIntegration('StartSyncExecutionIntegration', {
+    stateMachine,
+    subtype: apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_START_SYNC_EXECUTION,
+  });,
+});
+
+httpApi.addRoutes({
+  path: '/stop',
+  methods: [ apigwv2.HttpMethod.POST ],
+  integration: new HttpStepFunctionsIntegration('StopExecutionIntegration', {
+    stateMachine,
+    actionType: apigwv2.HttpIntegrationSubtype.STOP_EXECUTION,
+    // For the `STOP_EXECUTION` subtype, it is necessary to specify the `executionArn`.
+    parameterMapping: new apigwv2.ParameterMapping()
+      .custom('ExecutionArn', '$request.querystring.executionArn'),
+  });,
+});
+```
+
+**Note**:
+
+- The `executionArn` parameter is required for the `STOP_EXECUTION` subtype. It is necessary to specify the `executionArn` in the `parameterMapping` property of the `HttpStepFunctionsIntegration` object.
+- `START_SYNC_EXECUTION` subtype is only supported for EXPRESS type state machine.
 
 ### Private Integration
 
