@@ -119,6 +119,7 @@ describe('StepFunctionsIntegration', () => {
     const api = new HttpApi(stack, 'HttpApi');
     const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
       definition: new sfn.Pass(stack, 'Pass'),
+      stateMachineType: sfn.StateMachineType.EXPRESS,
     });
 
     new HttpRoute(stack, 'StepFunctionsRoute', {
@@ -155,7 +156,7 @@ describe('StepFunctionsIntegration', () => {
                   },
                   ':execution:',
                   { 'Fn::GetAtt': [stack.resolve(stateMachine.stateMachineArn).Ref, 'Name'] },
-                  '/*',
+                  ':*',
                 ],
               ],
             } : stack.resolve(stateMachine.stateMachineArn),
@@ -181,6 +182,47 @@ describe('StepFunctionsIntegration', () => {
         ),
       },
     });
+  });
+
+  test('throw error when subtype does not start with STEPFUNCTIONS_', () => {
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const api = new HttpApi(stack, 'HttpApi');
+    const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
+      definition: new sfn.Pass(stack, 'Pass'),
+    });
+
+    expect(() => {
+      new HttpRoute(stack, 'StepFunctionsRoute', {
+        httpApi: api,
+        integration: new HttpStepFunctionsIntegration('Integration', {
+          stateMachine,
+          subtype: HttpIntegrationSubtype.SQS_DELETE_MESSAGE,
+        }),
+        routeKey: HttpRouteKey.with('/tests'),
+      });
+    }).toThrow(/Subtype must start with `STEPFUNCTIONS_`/);
+  });
+
+  test('throw error when subtype is STEPFUNCTIONS_START_SYNC_EXECUTION with standard state machine', () => {
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const api = new HttpApi(stack, 'HttpApi');
+    const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
+      definition: new sfn.Pass(stack, 'Pass'),
+      stateMachineType: sfn.StateMachineType.STANDARD,
+    });
+
+    expect(() => {
+      new HttpRoute(stack, 'StepFunctionsRoute', {
+        httpApi: api,
+        integration: new HttpStepFunctionsIntegration('Integration', {
+          stateMachine,
+          subtype: HttpIntegrationSubtype.STEPFUNCTIONS_START_SYNC_EXECUTION,
+        }),
+        routeKey: HttpRouteKey.with('/tests'),
+      });
+    }).toThrow(/Cannot use subtype `STEPFUNCTIONS_START_SYNC_EXECUTION` with a standard type state machine/);
   });
 });
 

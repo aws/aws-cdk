@@ -51,7 +51,13 @@ export class HttpStepFunctionsIntegration extends apigwv2.HttpRouteIntegration {
 
   public bind(options: apigwv2.HttpRouteIntegrationBindOptions): apigwv2.HttpRouteIntegrationConfig {
     if (this.props.subtype && !this.props.subtype.startsWith('StepFunctions-')) {
-      throw new Error('Subtype must start with STEPFUNCTIONS_');
+      throw new Error('Subtype must start with `STEPFUNCTIONS_`');
+    }
+    if (
+      this.props.subtype === apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_START_SYNC_EXECUTION
+      && this.props.stateMachine.stateMachineType === sfn.StateMachineType.STANDARD
+    ) {
+      throw new Error('Cannot use subtype `STEPFUNCTIONS_START_SYNC_EXECUTION` with a standard type state machine');
     }
 
     const invokeRole = new iam.Role(options.scope, 'InvokeRole', {
@@ -94,8 +100,7 @@ export class HttpStepFunctionsIntegration extends apigwv2.HttpRouteIntegration {
       case apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_STOP_EXECUTION:
         return options.route.stack.formatArn({
           service: 'states',
-          resource: `execution:${this.props.stateMachine.stateMachineName}`,
-          resourceName: '*',
+          resource: `execution:${this.props.stateMachine.stateMachineName}:*`,
         });
       // Both START_EXECUTION and START_SYNC_EXECUTION return the state machine arn
       default:
