@@ -136,17 +136,17 @@
                   "version": "0.0.0"
                 }
               },
-              "POST--test": {
-                "id": "POST--test",
-                "path": "stepfunctions-integration/Api/POST--test",
+              "POST--default": {
+                "id": "POST--default",
+                "path": "stepfunctions-integration/Api/POST--default",
                 "children": {
                   "InvokeRole": {
                     "id": "InvokeRole",
-                    "path": "stepfunctions-integration/Api/POST--test/InvokeRole",
+                    "path": "stepfunctions-integration/Api/POST--default/InvokeRole",
                     "children": {
                       "ImportInvokeRole": {
                         "id": "ImportInvokeRole",
-                        "path": "stepfunctions-integration/Api/POST--test/InvokeRole/ImportInvokeRole",
+                        "path": "stepfunctions-integration/Api/POST--default/InvokeRole/ImportInvokeRole",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
@@ -154,7 +154,7 @@
                       },
                       "Resource": {
                         "id": "Resource",
-                        "path": "stepfunctions-integration/Api/POST--test/InvokeRole/Resource",
+                        "path": "stepfunctions-integration/Api/POST--default/InvokeRole/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                           "aws:cdk:cloudformation:props": {
@@ -179,11 +179,11 @@
                       },
                       "DefaultPolicy": {
                         "id": "DefaultPolicy",
-                        "path": "stepfunctions-integration/Api/POST--test/InvokeRole/DefaultPolicy",
+                        "path": "stepfunctions-integration/Api/POST--default/InvokeRole/DefaultPolicy",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "stepfunctions-integration/Api/POST--test/InvokeRole/DefaultPolicy/Resource",
+                            "path": "stepfunctions-integration/Api/POST--default/InvokeRole/DefaultPolicy/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                               "aws:cdk:cloudformation:props": {
@@ -200,10 +200,10 @@
                                   ],
                                   "Version": "2012-10-17"
                                 },
-                                "policyName": "ApiPOSTtestInvokeRoleDefaultPolicy1F815224",
+                                "policyName": "ApiPOSTdefaultInvokeRoleDefaultPolicy603C0AF3",
                                 "roles": [
                                   {
-                                    "Ref": "ApiPOSTtestInvokeRole3550EFBA"
+                                    "Ref": "ApiPOSTdefaultInvokeRole9137E4F5"
                                   }
                                 ]
                               }
@@ -227,11 +227,11 @@
                   },
                   "Integration": {
                     "id": "Integration",
-                    "path": "stepfunctions-integration/Api/POST--test/Integration",
+                    "path": "stepfunctions-integration/Api/POST--default/Integration",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "stepfunctions-integration/Api/POST--test/Integration/Resource",
+                        "path": "stepfunctions-integration/Api/POST--default/Integration/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
                           "aws:cdk:cloudformation:props": {
@@ -241,7 +241,7 @@
                             "connectionType": "INTERNET",
                             "credentialsArn": {
                               "Fn::GetAtt": [
-                                "ApiPOSTtestInvokeRole3550EFBA",
+                                "ApiPOSTdefaultInvokeRole9137E4F5",
                                 "Arn"
                               ]
                             },
@@ -268,7 +268,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "stepfunctions-integration/Api/POST--test/Resource",
+                    "path": "stepfunctions-integration/Api/POST--default/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -276,14 +276,531 @@
                           "Ref": "ApiF70053CD"
                         },
                         "authorizationType": "NONE",
-                        "routeKey": "POST /test",
+                        "routeKey": "POST /default",
                         "target": {
                           "Fn::Join": [
                             "",
                             [
                               "integrations/",
                               {
-                                "Ref": "ApiPOSTtestIntegration9C6ACC5D"
+                                "Ref": "ApiPOSTdefaultIntegration15333EAA"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "POST--start": {
+                "id": "POST--start",
+                "path": "stepfunctions-integration/Api/POST--start",
+                "children": {
+                  "InvokeRole": {
+                    "id": "InvokeRole",
+                    "path": "stepfunctions-integration/Api/POST--start/InvokeRole",
+                    "children": {
+                      "ImportInvokeRole": {
+                        "id": "ImportInvokeRole",
+                        "path": "stepfunctions-integration/Api/POST--start/InvokeRole/ImportInvokeRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stepfunctions-integration/Api/POST--start/InvokeRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "apigateway.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "stepfunctions-integration/Api/POST--start/InvokeRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "stepfunctions-integration/Api/POST--start/InvokeRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "states:StartExecution",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Ref": "RouteStateMachineC11CAF3B"
+                                      },
+                                      "Sid": "AllowStepFunctionsExecution"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ApiPOSTstartInvokeRoleDefaultPolicy495BCE0C",
+                                "roles": [
+                                  {
+                                    "Ref": "ApiPOSTstartInvokeRoleA9D6BD6A"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Integration": {
+                    "id": "Integration",
+                    "path": "stepfunctions-integration/Api/POST--start/Integration",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stepfunctions-integration/Api/POST--start/Integration/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "ApiF70053CD"
+                            },
+                            "connectionType": "INTERNET",
+                            "credentialsArn": {
+                              "Fn::GetAtt": [
+                                "ApiPOSTstartInvokeRoleA9D6BD6A",
+                                "Arn"
+                              ]
+                            },
+                            "integrationSubtype": "StepFunctions-StartExecution",
+                            "integrationType": "AWS_PROXY",
+                            "payloadFormatVersion": "1.0",
+                            "requestParameters": {
+                              "StateMachineArn": {
+                                "Ref": "RouteStateMachineC11CAF3B"
+                              }
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "stepfunctions-integration/Api/POST--start/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "ApiF70053CD"
+                        },
+                        "authorizationType": "NONE",
+                        "routeKey": "POST /start",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "ApiPOSTstartIntegration373B2B85"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "POST--start-sync": {
+                "id": "POST--start-sync",
+                "path": "stepfunctions-integration/Api/POST--start-sync",
+                "children": {
+                  "InvokeRole": {
+                    "id": "InvokeRole",
+                    "path": "stepfunctions-integration/Api/POST--start-sync/InvokeRole",
+                    "children": {
+                      "ImportInvokeRole": {
+                        "id": "ImportInvokeRole",
+                        "path": "stepfunctions-integration/Api/POST--start-sync/InvokeRole/ImportInvokeRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stepfunctions-integration/Api/POST--start-sync/InvokeRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "apigateway.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "stepfunctions-integration/Api/POST--start-sync/InvokeRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "stepfunctions-integration/Api/POST--start-sync/InvokeRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "states:StartSyncExecution",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Ref": "RouteStateMachineC11CAF3B"
+                                      },
+                                      "Sid": "AllowStepFunctionsExecution"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ApiPOSTstartsyncInvokeRoleDefaultPolicy244CA8B0",
+                                "roles": [
+                                  {
+                                    "Ref": "ApiPOSTstartsyncInvokeRoleC429A7AB"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Integration": {
+                    "id": "Integration",
+                    "path": "stepfunctions-integration/Api/POST--start-sync/Integration",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stepfunctions-integration/Api/POST--start-sync/Integration/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "ApiF70053CD"
+                            },
+                            "connectionType": "INTERNET",
+                            "credentialsArn": {
+                              "Fn::GetAtt": [
+                                "ApiPOSTstartsyncInvokeRoleC429A7AB",
+                                "Arn"
+                              ]
+                            },
+                            "integrationSubtype": "StepFunctions-StartSyncExecution",
+                            "integrationType": "AWS_PROXY",
+                            "payloadFormatVersion": "1.0",
+                            "requestParameters": {
+                              "StateMachineArn": {
+                                "Ref": "RouteStateMachineC11CAF3B"
+                              }
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "stepfunctions-integration/Api/POST--start-sync/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "ApiF70053CD"
+                        },
+                        "authorizationType": "NONE",
+                        "routeKey": "POST /start-sync",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "ApiPOSTstartsyncIntegrationB86BBC38"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "POST--stop": {
+                "id": "POST--stop",
+                "path": "stepfunctions-integration/Api/POST--stop",
+                "children": {
+                  "InvokeRole": {
+                    "id": "InvokeRole",
+                    "path": "stepfunctions-integration/Api/POST--stop/InvokeRole",
+                    "children": {
+                      "ImportInvokeRole": {
+                        "id": "ImportInvokeRole",
+                        "path": "stepfunctions-integration/Api/POST--stop/InvokeRole/ImportInvokeRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stepfunctions-integration/Api/POST--stop/InvokeRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "apigateway.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "stepfunctions-integration/Api/POST--stop/InvokeRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "stepfunctions-integration/Api/POST--stop/InvokeRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "states:StopExecution",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":states:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            ":execution:",
+                                            {
+                                              "Fn::GetAtt": [
+                                                "RouteStateMachineC11CAF3B",
+                                                "Name"
+                                              ]
+                                            },
+                                            "/*"
+                                          ]
+                                        ]
+                                      },
+                                      "Sid": "AllowStepFunctionsExecution"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ApiPOSTstopInvokeRoleDefaultPolicy4B17C921",
+                                "roles": [
+                                  {
+                                    "Ref": "ApiPOSTstopInvokeRoleB9DFDAA9"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Integration": {
+                    "id": "Integration",
+                    "path": "stepfunctions-integration/Api/POST--stop/Integration",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stepfunctions-integration/Api/POST--stop/Integration/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "ApiF70053CD"
+                            },
+                            "connectionType": "INTERNET",
+                            "credentialsArn": {
+                              "Fn::GetAtt": [
+                                "ApiPOSTstopInvokeRoleB9DFDAA9",
+                                "Arn"
+                              ]
+                            },
+                            "integrationSubtype": "StepFunctions-StopExecution",
+                            "integrationType": "AWS_PROXY",
+                            "payloadFormatVersion": "1.0",
+                            "requestParameters": {
+                              "ExecutionArn": "$request.querystring.executionArn"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "stepfunctions-integration/Api/POST--stop/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "ApiF70053CD"
+                        },
+                        "authorizationType": "NONE",
+                        "routeKey": "POST /stop",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "ApiPOSTstopIntegrationDA24B606"
                               }
                             ]
                           ]

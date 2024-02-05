@@ -65,6 +65,12 @@ httpApi.addRoutes({
 });
 ```
 
+### StepFunctions Integration
+
+StepFunctions integrations enable integrating an HTTP API route with an AWS StepFunctions state machine.
+
+
+
 ### Private Integration
 
 Private integrations enable integrating an HTTP API route with private resources in a VPC, such as Application Load Balancers or

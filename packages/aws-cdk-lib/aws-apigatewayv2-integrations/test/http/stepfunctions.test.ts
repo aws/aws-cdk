@@ -1,5 +1,5 @@
 import { Match, Template } from '../../../assertions';
-import { HttpApi, HttpRoute, HttpRouteKey, ParameterMapping } from '../../../aws-apigatewayv2';
+import { HttpApi, HttpIntegrationSubtype, HttpRoute, HttpRouteKey, ParameterMapping } from '../../../aws-apigatewayv2';
 import * as sfn from '../../../aws-stepfunctions';
 import { App, Stack } from '../../../core';
 import { HttpStepFunctionsIntegration } from '../../lib/http/stepfunctions';
@@ -101,6 +101,84 @@ describe('StepFunctionsIntegration', () => {
       RequestParameters: {
         Input: '$request.body',
         StateMachineArn: stack.resolve(targetStateMachine.stateMachineArn),
+      },
+    });
+  });
+
+  test.each([
+    [HttpIntegrationSubtype.STEPFUNCTIONS_START_EXECUTION, 'states:StartExecution', undefined],
+    [HttpIntegrationSubtype.STEPFUNCTIONS_START_SYNC_EXECUTION, 'states:StartSyncExecution', undefined],
+    [
+      HttpIntegrationSubtype.STEPFUNCTIONS_STOP_EXECUTION,
+      'states:StopExecution',
+      new ParameterMapping().custom('ExecutionArn', '$request.querystring.executionArn'),
+    ],
+  ])('with subtype %s', (subtype, action, parameterMapping) => {
+    const app = new App();
+    const stack = new Stack(app, 'stack');
+    const api = new HttpApi(stack, 'HttpApi');
+    const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
+      definition: new sfn.Pass(stack, 'Pass'),
+    });
+
+    new HttpRoute(stack, 'StepFunctionsRoute', {
+      httpApi: api,
+      integration: new HttpStepFunctionsIntegration('Integration', {
+        stateMachine,
+        subtype,
+        parameterMapping,
+      }),
+      routeKey: HttpRouteKey.with('/tests'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: action,
+            Effect: 'Allow',
+            Resource: subtype === HttpIntegrationSubtype.STEPFUNCTIONS_STOP_EXECUTION ? {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':states:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':execution:',
+                  { 'Fn::GetAtt': [stack.resolve(stateMachine.stateMachineArn).Ref, 'Name'] },
+                  '/*',
+                ],
+              ],
+            } : stack.resolve(stateMachine.stateMachineArn),
+          },
+        ],
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      ConnectionType: 'INTERNET',
+      CredentialsArn: {
+        'Fn::GetAtt': [
+          'StepFunctionsRouteInvokeRole5E3B5519',
+          'Arn',
+        ],
+      },
+      IntegrationType: 'AWS_PROXY',
+      IntegrationSubtype: subtype,
+      PayloadFormatVersion: '1.0',
+      RequestParameters: {
+        ...(parameterMapping ?
+          parameterMapping.mappings :
+          { StateMachineArn: stack.resolve(stateMachine.stateMachineArn) }
+        ),
       },
     });
   });

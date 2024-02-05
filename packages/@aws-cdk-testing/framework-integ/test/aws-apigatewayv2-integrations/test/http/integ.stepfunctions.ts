@@ -1,4 +1,4 @@
-import { HttpApi, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
+import { HttpApi, HttpIntegrationSubtype, HttpMethod, ParameterMapping } from 'aws-cdk-lib/aws-apigatewayv2';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import { App, Stack } from 'aws-cdk-lib';
 import { HttpStepFunctionsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
@@ -13,10 +13,36 @@ const stateMachine = new sfn.StateMachine(stack, 'RouteStateMachine', {
 
 const httpApi = new HttpApi(stack, 'Api');
 httpApi.addRoutes({
-  path: '/test',
+  path: '/default',
   methods: [HttpMethod.POST],
   integration: new HttpStepFunctionsIntegration('Integration', {
     stateMachine: stateMachine,
+  }),
+});
+httpApi.addRoutes({
+  path: '/start',
+  methods: [HttpMethod.POST],
+  integration: new HttpStepFunctionsIntegration('Integration', {
+    stateMachine: stateMachine,
+    subtype: HttpIntegrationSubtype.STEPFUNCTIONS_START_EXECUTION,
+  }),
+});
+httpApi.addRoutes({
+  path: '/start-sync',
+  methods: [HttpMethod.POST],
+  integration: new HttpStepFunctionsIntegration('Integration', {
+    stateMachine: stateMachine,
+    subtype: HttpIntegrationSubtype.STEPFUNCTIONS_START_SYNC_EXECUTION,
+  }),
+});
+httpApi.addRoutes({
+  path: '/stop',
+  methods: [HttpMethod.POST],
+  integration: new HttpStepFunctionsIntegration('Integration', {
+    stateMachine: stateMachine,
+    subtype: HttpIntegrationSubtype.STEPFUNCTIONS_STOP_EXECUTION,
+    parameterMapping: new ParameterMapping()
+      .custom('ExecutionArn', '$request.querystring.executionArn'),
   }),
 });
 

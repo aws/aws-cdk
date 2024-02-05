@@ -51,7 +51,7 @@
     "StageName": "$default"
    }
   },
-  "ApiPOSTtestInvokeRole3550EFBA": {
+  "ApiPOSTdefaultInvokeRole9137E4F5": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -68,7 +68,7 @@
     }
    }
   },
-  "ApiPOSTtestInvokeRoleDefaultPolicy1F815224": {
+  "ApiPOSTdefaultInvokeRoleDefaultPolicy603C0AF3": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -84,15 +84,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ApiPOSTtestInvokeRoleDefaultPolicy1F815224",
+    "PolicyName": "ApiPOSTdefaultInvokeRoleDefaultPolicy603C0AF3",
     "Roles": [
      {
-      "Ref": "ApiPOSTtestInvokeRole3550EFBA"
+      "Ref": "ApiPOSTdefaultInvokeRole9137E4F5"
      }
     ]
    }
   },
-  "ApiPOSTtestIntegration9C6ACC5D": {
+  "ApiPOSTdefaultIntegration15333EAA": {
    "Type": "AWS::ApiGatewayV2::Integration",
    "Properties": {
     "ApiId": {
@@ -101,7 +101,7 @@
     "ConnectionType": "INTERNET",
     "CredentialsArn": {
      "Fn::GetAtt": [
-      "ApiPOSTtestInvokeRole3550EFBA",
+      "ApiPOSTdefaultInvokeRole9137E4F5",
       "Arn"
      ]
     },
@@ -115,21 +115,298 @@
     }
    }
   },
-  "ApiPOSTtest0A52F061": {
+  "ApiPOSTdefault1EEA0D1D": {
    "Type": "AWS::ApiGatewayV2::Route",
    "Properties": {
     "ApiId": {
      "Ref": "ApiF70053CD"
     },
     "AuthorizationType": "NONE",
-    "RouteKey": "POST /test",
+    "RouteKey": "POST /default",
     "Target": {
      "Fn::Join": [
       "",
       [
        "integrations/",
        {
-        "Ref": "ApiPOSTtestIntegration9C6ACC5D"
+        "Ref": "ApiPOSTdefaultIntegration15333EAA"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "ApiPOSTstartInvokeRoleA9D6BD6A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ApiPOSTstartInvokeRoleDefaultPolicy495BCE0C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "states:StartExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "RouteStateMachineC11CAF3B"
+       },
+       "Sid": "AllowStepFunctionsExecution"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApiPOSTstartInvokeRoleDefaultPolicy495BCE0C",
+    "Roles": [
+     {
+      "Ref": "ApiPOSTstartInvokeRoleA9D6BD6A"
+     }
+    ]
+   }
+  },
+  "ApiPOSTstartIntegration373B2B85": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "ConnectionType": "INTERNET",
+    "CredentialsArn": {
+     "Fn::GetAtt": [
+      "ApiPOSTstartInvokeRoleA9D6BD6A",
+      "Arn"
+     ]
+    },
+    "IntegrationSubtype": "StepFunctions-StartExecution",
+    "IntegrationType": "AWS_PROXY",
+    "PayloadFormatVersion": "1.0",
+    "RequestParameters": {
+     "StateMachineArn": {
+      "Ref": "RouteStateMachineC11CAF3B"
+     }
+    }
+   }
+  },
+  "ApiPOSTstartB39FD25E": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /start",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPOSTstartIntegration373B2B85"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "ApiPOSTstartsyncInvokeRoleC429A7AB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ApiPOSTstartsyncInvokeRoleDefaultPolicy244CA8B0": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "states:StartSyncExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "RouteStateMachineC11CAF3B"
+       },
+       "Sid": "AllowStepFunctionsExecution"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApiPOSTstartsyncInvokeRoleDefaultPolicy244CA8B0",
+    "Roles": [
+     {
+      "Ref": "ApiPOSTstartsyncInvokeRoleC429A7AB"
+     }
+    ]
+   }
+  },
+  "ApiPOSTstartsyncIntegrationB86BBC38": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "ConnectionType": "INTERNET",
+    "CredentialsArn": {
+     "Fn::GetAtt": [
+      "ApiPOSTstartsyncInvokeRoleC429A7AB",
+      "Arn"
+     ]
+    },
+    "IntegrationSubtype": "StepFunctions-StartSyncExecution",
+    "IntegrationType": "AWS_PROXY",
+    "PayloadFormatVersion": "1.0",
+    "RequestParameters": {
+     "StateMachineArn": {
+      "Ref": "RouteStateMachineC11CAF3B"
+     }
+    }
+   }
+  },
+  "ApiPOSTstartsync3659F9A0": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /start-sync",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPOSTstartsyncIntegrationB86BBC38"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "ApiPOSTstopInvokeRoleB9DFDAA9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ApiPOSTstopInvokeRoleDefaultPolicy4B17C921": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "states:StopExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":states:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":execution:",
+          {
+           "Fn::GetAtt": [
+            "RouteStateMachineC11CAF3B",
+            "Name"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       },
+       "Sid": "AllowStepFunctionsExecution"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ApiPOSTstopInvokeRoleDefaultPolicy4B17C921",
+    "Roles": [
+     {
+      "Ref": "ApiPOSTstopInvokeRoleB9DFDAA9"
+     }
+    ]
+   }
+  },
+  "ApiPOSTstopIntegrationDA24B606": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "ConnectionType": "INTERNET",
+    "CredentialsArn": {
+     "Fn::GetAtt": [
+      "ApiPOSTstopInvokeRoleB9DFDAA9",
+      "Arn"
+     ]
+    },
+    "IntegrationSubtype": "StepFunctions-StopExecution",
+    "IntegrationType": "AWS_PROXY",
+    "PayloadFormatVersion": "1.0",
+    "RequestParameters": {
+     "ExecutionArn": "$request.querystring.executionArn"
+    }
+   }
+  },
+  "ApiPOSTstopBDBE4015": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "ApiF70053CD"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "POST /stop",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "ApiPOSTstopIntegrationDA24B606"
        }
       ]
      ]
