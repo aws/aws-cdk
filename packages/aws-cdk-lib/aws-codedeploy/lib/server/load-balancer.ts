@@ -13,7 +13,7 @@ export enum LoadBalancerGeneration {
   /**
    * The second generation (ALB and NLB).
    */
-  SECOND = 1
+  SECOND = 1,
 }
 
 /**

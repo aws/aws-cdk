@@ -416,7 +416,7 @@ export enum S3DataType {
   /**
    * Augmented Manifest File Data Type
    */
-  AUGMENTED_MANIFEST_FILE = 'AugmentedManifestFile'
+  AUGMENTED_MANIFEST_FILE = 'AugmentedManifestFile',
 }
 
 /**
@@ -432,7 +432,7 @@ export enum S3DataDistributionType {
   /**
    * Sharded By S3 Key Data Distribution Type
    */
-  SHARDED_BY_S3_KEY = 'ShardedByS3Key'
+  SHARDED_BY_S3_KEY = 'ShardedByS3Key',
 }
 
 /**
@@ -448,7 +448,7 @@ export enum RecordWrapperType {
   /**
    * RecordIO record wrapper type
    */
-  RECORD_IO = 'RecordIO'
+  RECORD_IO = 'RecordIO',
 }
 
 /**
@@ -469,7 +469,7 @@ export enum InputMode {
   /**
    * FastFile mode.
    */
-  FAST_FILE = 'FastFile'
+  FAST_FILE = 'FastFile',
 }
 
 /**
@@ -485,7 +485,7 @@ export enum CompressionType {
   /**
    * Gzip compression type
    */
-  GZIP = 'Gzip'
+  GZIP = 'Gzip',
 }
 
 //
@@ -853,7 +853,7 @@ export enum BatchStrategy {
   /**
    * Use a single record when making an invocation request.
    */
-  SINGLE_RECORD = 'SingleRecord'
+  SINGLE_RECORD = 'SingleRecord',
 }
 
 /**
@@ -880,7 +880,7 @@ export enum SplitType {
   /**
    * Split using TensorFlow TFRecord format.
    */
-  TF_RECORD = 'TFRecord'
+  TF_RECORD = 'TFRecord',
 }
 
 /**
@@ -897,7 +897,7 @@ export enum AssembleWith {
   /**
    * Add a newline character at the end of every transformed record.
    */
-  LINE = 'Line'
+  LINE = 'Line',
 
 }
 

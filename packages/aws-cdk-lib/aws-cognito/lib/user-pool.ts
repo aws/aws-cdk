@@ -536,7 +536,7 @@ export enum AdvancedSecurityMode {
   /** gather metrics on detected risks without taking action. Metrics are published to Amazon CloudWatch */
   AUDIT = 'AUDIT',
   /** Advanced security mode is disabled */
-  OFF = 'OFF'
+  OFF = 'OFF',
 }
 
 /**

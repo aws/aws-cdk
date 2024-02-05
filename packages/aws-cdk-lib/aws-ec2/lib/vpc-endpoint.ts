@@ -73,7 +73,7 @@ export enum VpcEndpointType {
    * A gateway endpoint is a gateway that is a target for a specified route in
    * your route table, used for traffic destined to a supported AWS service.
    */
-  GATEWAY = 'Gateway'
+  GATEWAY = 'Gateway',
 }
 
 /**
