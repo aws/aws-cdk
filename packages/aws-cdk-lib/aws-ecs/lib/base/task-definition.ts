@@ -1067,7 +1067,7 @@ export interface LoadBalancerTarget {
   /**
    * The port mapping of the target.
    */
-  readonly portMapping: PortMapping
+  readonly portMapping: PortMapping;
 }
 
 /**
@@ -1120,7 +1120,7 @@ export interface DockerVolumeConfiguration {
    *
    * @default No labels
    */
-  readonly labels?: { [key: string]: string; }
+  readonly labels?: { [key: string]: string };
   /**
    * The scope for the Docker volume that determines its lifecycle.
    */

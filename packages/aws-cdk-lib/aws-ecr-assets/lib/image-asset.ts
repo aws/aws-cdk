@@ -228,7 +228,7 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    *   'MY_SECRET': DockerBuildSecret.fromSrc('file.txt')
    * };
    */
-  readonly buildSecrets?: { [key: string]: string }
+  readonly buildSecrets?: { [key: string]: string };
 
   /**
    * SSH agent socket or keys to pass to the `docker build` command.

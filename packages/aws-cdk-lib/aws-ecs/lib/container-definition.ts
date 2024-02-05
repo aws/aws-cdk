@@ -988,17 +988,17 @@ export interface Ulimit {
    *
    * For more information, see [UlimitName](https://docs.aws.amazon.com/cdk/api/latest/typescript/api/aws-ecs/ulimitname.html#aws_ecs_UlimitName).
    */
-  readonly name: UlimitName,
+  readonly name: UlimitName;
 
   /**
    * The soft limit for the ulimit type.
    */
-  readonly softLimit: number,
+  readonly softLimit: number;
 
   /**
    * The hard limit for the ulimit type.
    */
-  readonly hardLimit: number,
+  readonly hardLimit: number;
 }
 
 /**
@@ -1348,19 +1348,19 @@ export interface ScratchSpace {
   /**
    * The path on the container to mount the scratch volume at.
    */
-  readonly containerPath: string,
+  readonly containerPath: string;
   /**
    * Specifies whether to give the container read-only access to the scratch volume.
    *
    * If this value is true, the container has read-only access to the scratch volume.
    * If this value is false, then the container can write to the scratch volume.
    */
-  readonly readOnly: boolean,
-  readonly sourcePath: string,
+  readonly readOnly: boolean;
+  readonly sourcePath: string;
   /**
    * The name of the scratch volume to mount. Must be a volume name referenced in the name parameter of task definition volume.
    */
-  readonly name: string,
+  readonly name: string;
 }
 
 /**
@@ -1370,14 +1370,14 @@ export interface BaseMountPoint {
   /**
    * The path on the container to mount the host volume at.
    */
-  readonly containerPath: string,
+  readonly containerPath: string;
   /**
    * Specifies whether to give the container read-only access to the volume.
    *
    * If this value is true, the container has read-only access to the volume.
    * If this value is false, then the container can write to the volume.
    */
-  readonly readOnly: boolean,
+  readonly readOnly: boolean;
 }
 
 /**
@@ -1389,7 +1389,7 @@ export interface MountPoint extends BaseMountPoint {
    *
    * Must be a volume name referenced in the name parameter of task definition volume.
    */
-  readonly sourceVolume: string,
+  readonly sourceVolume: string;
 }
 
 function renderMountPoint(mp: MountPoint): CfnTaskDefinition.MountPointProperty {
@@ -1407,7 +1407,7 @@ export interface VolumeFrom {
   /**
    * The name of another container within the same task definition from which to mount volumes.
    */
-  readonly sourceContainer: string,
+  readonly sourceContainer: string;
 
   /**
    * Specifies whether the container has read-only access to the volume.
@@ -1415,7 +1415,7 @@ export interface VolumeFrom {
    * If this value is true, the container has read-only access to the volume.
    * If this value is false, then the container can write to the volume.
    */
-  readonly readOnly: boolean,
+  readonly readOnly: boolean;
 }
 
 function renderVolumeFrom(vf: VolumeFrom): CfnTaskDefinition.VolumeFromProperty {

@@ -171,7 +171,7 @@ export interface INetworkAclEntry extends IResource {
   /**
    * The network ACL.
    */
-  readonly networkAcl: INetworkAcl
+  readonly networkAcl: INetworkAcl;
 
 }
 

@@ -204,7 +204,7 @@ export interface SdkCallsPolicyOptions {
    *
    * Note that will apply to ALL SDK calls.
    */
-  readonly resources: string[]
+  readonly resources: string[];
 
 }
 
@@ -323,7 +323,7 @@ export interface AwsCustomResourceProps {
    *
    * @default Duration.minutes(2)
    */
-  readonly timeout?: cdk.Duration
+  readonly timeout?: cdk.Duration;
 
   /**
    * The number of days log events of the singleton Lambda function implementing
