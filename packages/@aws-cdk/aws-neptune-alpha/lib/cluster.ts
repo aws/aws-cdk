@@ -76,6 +76,10 @@ export class EngineVersion {
    * Neptune engine version 1.2.1.0
    */
   public static readonly V1_2_1_0 = new EngineVersion('1.2.1.0');
+  /**
+   * Neptune engine version 1.3.0.0
+   */
+  public static readonly V1_3_0_0 = new EngineVersion('1.3.0.0');
 
   /**
    * Constructor for specifying a custom engine version
@@ -629,7 +633,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     const retention = props.cloudwatchLogsRetention;
     if (retention) {
       props.cloudwatchLogsExports?.forEach(logType => {
-        new logs.LogRetention(this, `${logType}LogRetention`, {
+        new logs.LogRetention(this, `${logType.value}LogRetention`, {
           logGroupName: `/aws/neptune/${this.clusterIdentifier}/${logType.value}`,
           role: props.cloudwatchLogsRetentionRole,
           retention,

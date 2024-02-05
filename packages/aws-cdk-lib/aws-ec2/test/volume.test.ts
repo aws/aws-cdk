@@ -1279,7 +1279,7 @@ describe('volume', () => {
     for (const testData of [
       [EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3, 3000, 16000],
       [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD, 100, 64000],
-      [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2, 100, 64000],
+      [EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2, 100, 256000],
     ]) {
       const volumeType = testData[0] as EbsDeviceVolumeType;
       const min = testData[1] as number;

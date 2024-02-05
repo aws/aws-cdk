@@ -479,7 +479,7 @@ describe('container definition', () => {
           key: 'foo',
           value: 'bar',
         },
-        environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles/test-envfile.env'))],
+        environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles', 'test-envfile.env'))],
         essential: true,
         extraHosts: {
           name: 'dev-db.hostname.pvt',
@@ -1305,7 +1305,7 @@ describe('container definition', () => {
         taskDefinition.addContainer('cont', {
           image: ecs.ContainerImage.fromRegistry('test'),
           memoryLimitMiB: 1024,
-          environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles/test-envfile.env'))],
+          environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles', 'test-envfile.env'))],
         });
 
         // THEN
@@ -1417,7 +1417,7 @@ describe('container definition', () => {
         taskDefinition.addContainer('cont', {
           image: ecs.ContainerImage.fromRegistry('test'),
           memoryLimitMiB: 1024,
-          environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles/test-envfile.env'))],
+          environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles', 'test-envfile.env'))],
         });
 
         // THEN
