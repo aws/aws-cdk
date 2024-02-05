@@ -2,9 +2,9 @@ import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { CfnPipeline } from 'aws-cdk-lib/aws-sagemaker';
 import { SageMakerPipelineParameter, SageMakerStartPipelineExecution } from '../lib';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution');
