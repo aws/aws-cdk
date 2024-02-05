@@ -1,7 +1,7 @@
-import { App, Stack } from '../../..';
 import { Match, Template } from '../../../assertions';
 import { HttpApi, HttpRoute, HttpRouteKey, ParameterMapping } from '../../../aws-apigatewayv2';
 import * as sfn from '../../../aws-stepfunctions';
+import { App, Stack } from '../../../core';
 import { HttpStepFunctionsIntegration } from '../../lib/http/stepfunctions';
 
 describe('StepFunctionsIntegration', () => {
@@ -95,7 +95,6 @@ describe('StepFunctionsIntegration', () => {
           'Arn',
         ],
       },
-      IntegrationMethod: 'ANY',
       IntegrationType: 'AWS_PROXY',
       IntegrationSubtype: 'StepFunctions-StartExecution',
       PayloadFormatVersion: '1.0',
