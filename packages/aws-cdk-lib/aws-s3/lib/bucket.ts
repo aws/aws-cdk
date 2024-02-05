@@ -1177,7 +1177,7 @@ export enum InventoryFrequency {
   /**
    * A report is generated every Sunday (UTC timezone) after the initial report.
    */
-  WEEKLY = 'Weekly'
+  WEEKLY = 'Weekly',
 }
 
 /**

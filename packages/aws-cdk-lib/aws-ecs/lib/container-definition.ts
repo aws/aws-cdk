@@ -1019,7 +1019,7 @@ export enum UlimitName {
   RTPRIO = 'rtprio',
   RTTIME = 'rttime',
   SIGPENDING = 'sigpending',
-  STACK = 'stack'
+  STACK = 'stack',
 }
 
 function renderUlimit(ulimit: Ulimit): CfnTaskDefinition.UlimitProperty {

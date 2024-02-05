@@ -153,7 +153,7 @@ export enum VpnConnectionType {
    * Dummy member
    * TODO: remove once https://github.com/aws/jsii/issues/231 is fixed
    */
-  DUMMY = 'dummy'
+  DUMMY = 'dummy',
 }
 
 /**

@@ -281,7 +281,7 @@ function subnetTypeToVpcSubnetType(type: SubnetType): cxapi.VpcSubnetGroupType {
 enum SubnetType {
   Public = 'Public',
   Private = 'Private',
-  Isolated = 'Isolated'
+  Isolated = 'Isolated',
 }
 
 function isValidSubnetType(val: string): val is SubnetType {

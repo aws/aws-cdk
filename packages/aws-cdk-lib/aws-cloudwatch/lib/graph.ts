@@ -810,7 +810,7 @@ export enum Shading {
   /**
    * Add shading below the annotation
    */
-  BELOW = 'below'
+  BELOW = 'below',
 }
 
 /**
@@ -830,7 +830,7 @@ export enum VerticalShading {
   /**
    * Add shading after the annotation
    */
-  AFTER = 'after'
+  AFTER = 'after',
 }
 
 /**
@@ -881,7 +881,7 @@ export enum LegendPosition {
   /**
    * Add shading below the annotation
    */
-  HIDDEN = 'hidden'
+  HIDDEN = 'hidden',
 }
 
 function mapAnnotation(yAxis: string): ((x: HorizontalAnnotation) => any) {
