@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.126.0](https://github.com/aws/aws-cdk/compare/v2.125.0...v2.126.0) (2024-02-02)
+
+
+### Features
+
+* **migrate:** Add CDK Migrate `--from-scan` functionality ([#28962](https://github.com/aws/aws-cdk/issues/28962)) ([bbc14b3](https://github.com/aws/aws-cdk/commit/bbc14b32801f103bc465fd910d507ffa0d06b7fe))
+
+## [2.125.0](https://github.com/aws/aws-cdk/compare/v2.124.0...v2.125.0) (2024-01-31)
+
+
+### Features
+
+* **applicationautoscaling:** validate `evaluationPeriods` and `datapointsToAlarm` for step scaling policy ([#28880](https://github.com/aws/aws-cdk/issues/28880)) ([4034adb](https://github.com/aws/aws-cdk/commit/4034adb5e4453435b959fde5eea16a7824f21e73))
+* **batch:** add fargate Runtime Platform properties to ECS Fargate C… ([#28841](https://github.com/aws/aws-cdk/issues/28841)) ([ac8251f](https://github.com/aws/aws-cdk/commit/ac8251fcdb8b5cc26d917c6d4a95e5eb3ccb2316)), closes [#26484](https://github.com/aws/aws-cdk/issues/26484)
+* **CLI:** Diff Supports Import Change Sets ([#28787](https://github.com/aws/aws-cdk/issues/28787)) ([d973615](https://github.com/aws/aws-cdk/commit/d97361519bfb6a3ebb53939b1e7da4db0a507dee)), closes [#28336](https://github.com/aws/aws-cdk/issues/28336)
+* **cloudfront:** retrieve default distribution metrics ([#28894](https://github.com/aws/aws-cdk/issues/28894)) ([8e115db](https://github.com/aws/aws-cdk/commit/8e115dbca50479b619a3d8f79aad6bbf58f3a8fa)), closes [#28893](https://github.com/aws/aws-cdk/issues/28893)
+* **cognito:** validate oidc provider name ([#28802](https://github.com/aws/aws-cdk/issues/28802)) ([534794c](https://github.com/aws/aws-cdk/commit/534794c900025b174825f82feb00671305555c0a)), closes [#28667](https://github.com/aws/aws-cdk/issues/28667)
+* **sqs:** support for permission settings for dead letter source queues ([#28745](https://github.com/aws/aws-cdk/issues/28745)) ([9e21803](https://github.com/aws/aws-cdk/commit/9e21803b31e5df82f2abc7f6e7c7074a09ad7ed6)), closes [#19766](https://github.com/aws/aws-cdk/issues/19766)
+
+
+### Bug Fixes
+
+* **stepfunctions-tasks:** mediapackagevod service generates wrong action in role policy ([#28775](https://github.com/aws/aws-cdk/issues/28775)) ([305dae0](https://github.com/aws/aws-cdk/commit/305dae0743d7bf283df6a2c54c0f1ed784a56432)), closes [#28774](https://github.com/aws/aws-cdk/issues/28774)
+* revert deprecation of `logRetention` properties ([#28934](https://github.com/aws/aws-cdk/issues/28934)) ([f89a7d2](https://github.com/aws/aws-cdk/commit/f89a7d2256e16d8e508a050706041292c4457e3f)), closes [#28919](https://github.com/aws/aws-cdk/issues/28919)
+* **apigatewayv2:** WebSocketAwsIntegration ignores requestParameters and integrationPassThrough behaviors ([#28921](https://github.com/aws/aws-cdk/issues/28921)) ([990ead3](https://github.com/aws/aws-cdk/commit/990ead35abdb8f4860280a3c75d923b1e5f5b1ba))
+* **eks:** Could not use ec2 instance type and size that their names contains dashes ([#28040](https://github.com/aws/aws-cdk/issues/28040)) ([b32f47c](https://github.com/aws/aws-cdk/commit/b32f47cfd65a5288e7bc2cc5a8a1f8e5f59032f8)), closes [#27587](https://github.com/aws/aws-cdk/issues/27587)
+
 ## [2.124.0](https://github.com/aws/aws-cdk/compare/v2.123.0...v2.124.0) (2024-01-26)
 
 
