@@ -68,13 +68,13 @@ export interface S3Encryption {
   /**
    * Encryption mode.
    */
-  readonly mode: S3EncryptionMode,
+  readonly mode: S3EncryptionMode;
 
   /**
    * The KMS key to be used to encrypt the data.
    * @default no kms key if mode = S3_MANAGED. A key will be created if one is not provided and mode = KMS.
    */
-  readonly kmsKey?: kms.IKey,
+  readonly kmsKey?: kms.IKey;
 }
 
 /**
@@ -90,7 +90,7 @@ export interface CloudWatchEncryption {
    * The KMS key to be used to encrypt the data.
    * @default A key will be created if one is not provided.
    */
-  readonly kmsKey?: kms.IKey,
+  readonly kmsKey?: kms.IKey;
 }
 
 /**
@@ -106,7 +106,7 @@ export interface JobBookmarksEncryption {
    * The KMS key to be used to encrypt the data.
    * @default A key will be created if one is not provided.
    */
-  readonly kmsKey?: kms.IKey,
+  readonly kmsKey?: kms.IKey;
 }
 
 /**
@@ -124,19 +124,19 @@ export interface SecurityConfigurationProps {
    * The encryption configuration for Amazon CloudWatch Logs.
    * @default no cloudwatch logs encryption.
    */
-  readonly cloudWatchEncryption?: CloudWatchEncryption,
+  readonly cloudWatchEncryption?: CloudWatchEncryption;
 
   /**
    * The encryption configuration for Glue Job Bookmarks.
    * @default no job bookmarks encryption.
    */
-  readonly jobBookmarksEncryption?: JobBookmarksEncryption,
+  readonly jobBookmarksEncryption?: JobBookmarksEncryption;
 
   /**
    * The encryption configuration for Amazon Simple Storage Service (Amazon S3) data.
    * @default no s3 encryption.
    */
-  readonly s3Encryption?: S3Encryption,
+  readonly s3Encryption?: S3Encryption;
 }
 
 /**

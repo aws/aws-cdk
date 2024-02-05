@@ -33,7 +33,7 @@ export interface BasicScheduledActionProps {
    *
    * @default - The rule is activate immediately.
    */
-  readonly startTime?: Date
+  readonly startTime?: Date;
 
   /**
    * When this scheduled action expires.
