@@ -7,12 +7,6 @@ import * as sfn from '../../../aws-stepfunctions';
  */
 interface HttpStepFunctionsIntegrationProps {
   /**
-   * The HTTP method that must be used to invoke the underlying HTTP proxy.
-   * @default HttpMethod.ANY
-   */
-  readonly method?: apigwv2.HttpMethod;
-
-  /**
    * Specifies how to transform HTTP requests before sending them to the backend
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
    * @default undefined requests are sent to the backend unmodified
@@ -55,13 +49,14 @@ export class HttpStepFunctionsIntegration extends apigwv2.HttpRouteIntegration {
     );
 
     return {
-      method: this.props.method ?? apigwv2.HttpMethod.ANY,
       payloadFormatVersion: apigwv2.PayloadFormatVersion.VERSION_1_0,
       type: apigwv2.HttpIntegrationType.AWS_PROXY,
       subtype: apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_START_EXECUTION,
       credentials: apigwv2.IntegrationCredentials.fromRole(invokeRole),
       connectionType: apigwv2.HttpConnectionType.INTERNET,
-      parameterMapping: this.props.parameterMapping,
+      parameterMapping: this.props.parameterMapping ?? new apigwv2.ParameterMapping()
+        .custom('Input', '$request.body')
+        .custom('StateMachineArn', this.props.stateMachine.stateMachineArn),
     };
   }
 }
