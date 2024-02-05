@@ -126,7 +126,7 @@ export interface WebSocketIntegrationProps {
    *
    * @default - No passthrough behavior required.
    */
-  readonly passthroughBehavior?: PassthroughBehavior
+  readonly passthroughBehavior?: PassthroughBehavior;
 }
 
 /**

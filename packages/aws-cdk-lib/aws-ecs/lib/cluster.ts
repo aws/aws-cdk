@@ -930,7 +930,7 @@ export interface AddAutoScalingGroupCapacityOptions {
    *
    * @default false
    */
-  readonly spotInstanceDraining?: boolean
+  readonly spotInstanceDraining?: boolean;
 
   /**
    * If `AddAutoScalingGroupCapacityOptions.taskDrainTime` is non-zero, then the ECS cluster creates an
@@ -1076,21 +1076,21 @@ export interface ExecuteCommandConfiguration {
    *
    * @default - none
    */
-  readonly kmsKey?: kms.IKey,
+  readonly kmsKey?: kms.IKey;
 
   /**
    * The log configuration for the results of the execute command actions. The logs can be sent to CloudWatch Logs or an Amazon S3 bucket.
    *
    * @default - none
    */
-  readonly logConfiguration?: ExecuteCommandLogConfiguration,
+  readonly logConfiguration?: ExecuteCommandLogConfiguration;
 
   /**
    * The log settings to use for logging the execute command session.
    *
    * @default - none
    */
-  readonly logging?: ExecuteCommandLogging,
+  readonly logging?: ExecuteCommandLogging;
 }
 
 /**
@@ -1124,34 +1124,34 @@ export interface ExecuteCommandLogConfiguration {
    *
    * @default - encryption will be disabled.
    */
-  readonly cloudWatchEncryptionEnabled?: boolean,
+  readonly cloudWatchEncryptionEnabled?: boolean;
 
   /**
    * The name of the CloudWatch log group to send logs to. The CloudWatch log group must already be created.
    * @default - none
    */
-  readonly cloudWatchLogGroup?: logs.ILogGroup,
+  readonly cloudWatchLogGroup?: logs.ILogGroup;
 
   /**
    * The name of the S3 bucket to send logs to. The S3 bucket must already be created.
    *
    * @default - none
    */
-  readonly s3Bucket?: s3.IBucket,
+  readonly s3Bucket?: s3.IBucket;
 
   /**
    * Whether or not to enable encryption on the S3 bucket.
    *
    * @default - encryption will be disabled.
    */
-  readonly s3EncryptionEnabled?: boolean,
+  readonly s3EncryptionEnabled?: boolean;
 
   /**
    * An optional folder in the S3 bucket to place logs in.
    *
    * @default - none
    */
-  readonly s3KeyPrefix?: string
+  readonly s3KeyPrefix?: string;
 }
 
 /**

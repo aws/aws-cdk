@@ -163,14 +163,14 @@ export interface UserPoolTriggers {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-email-sender.html
    * @default - no trigger configured
    */
-  readonly customEmailSender?: lambda.IFunction
+  readonly customEmailSender?: lambda.IFunction;
 
   /**
    * Amazon Cognito invokes this trigger to send SMS notifications to users.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sms-sender.html
    * @default - no trigger configured
    */
-  readonly customSmsSender?: lambda.IFunction
+  readonly customSmsSender?: lambda.IFunction;
 
   /**
    * Index signature.

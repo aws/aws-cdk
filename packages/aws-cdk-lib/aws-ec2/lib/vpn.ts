@@ -41,7 +41,7 @@ export interface IVpnGateway extends IResource {
   /**
    * The virtual private gateway Id
    */
-  readonly gatewayId: string
+  readonly gatewayId: string;
 }
 
 export interface VpnTunnelOption {
@@ -130,7 +130,7 @@ export interface EnableVpnGatewayOptions extends VpnGatewayProps {
    * Provide an array of subnets where the route propagation should be added.
    * @default noPropagation
    */
-  readonly vpnRoutePropagation?: SubnetSelection[]
+  readonly vpnRoutePropagation?: SubnetSelection[];
 }
 
 export interface VpnConnectionProps extends VpnConnectionOptions {

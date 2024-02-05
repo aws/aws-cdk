@@ -14,7 +14,7 @@ export interface IJobQueue extends IResource {
    *
    * @attribute
    */
-  readonly jobQueueName: string
+  readonly jobQueueName: string;
 
   /**
    * The ARN of this job queue
@@ -34,7 +34,7 @@ export interface IJobQueue extends IResource {
    * *Note*: All compute environments that are associated with a job queue must share the same architecture.
    * AWS Batch doesn't support mixing compute environment architecture types in a single job queue.
    */
-  readonly computeEnvironments: OrderedComputeEnvironment[]
+  readonly computeEnvironments: OrderedComputeEnvironment[];
 
   /**
    * The priority of the job queue.
@@ -42,7 +42,7 @@ export interface IJobQueue extends IResource {
    * Priority is determined in descending order.
    * For example, a job queue with a priority value of 10 is given scheduling preference over a job queue with a priority value of 1.
    */
-  readonly priority: number
+  readonly priority: number;
 
   /**
    * If the job queue is enabled, it is able to accept jobs.
@@ -50,14 +50,14 @@ export interface IJobQueue extends IResource {
    *
    * @default true
    */
-  readonly enabled?: boolean
+  readonly enabled?: boolean;
 
   /**
    * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
    *
    * @default - no scheduling policy
    */
-  readonly schedulingPolicy?: ISchedulingPolicy
+  readonly schedulingPolicy?: ISchedulingPolicy;
 
   /**
    * Add a `ComputeEnvironment` to this Queue.
@@ -83,7 +83,7 @@ export interface JobQueueProps {
    *
    * @default none
    */
-  readonly computeEnvironments?: OrderedComputeEnvironment[]
+  readonly computeEnvironments?: OrderedComputeEnvironment[];
 
   /**
    * The priority of the job queue.
@@ -93,7 +93,7 @@ export interface JobQueueProps {
    *
    * @default 1
    */
-  readonly priority?: number
+  readonly priority?: number;
 
   /**
    * The name of the job queue. It can be up to 128 letters long.
@@ -101,7 +101,7 @@ export interface JobQueueProps {
    *
    * @default - no name
    */
-  readonly jobQueueName?: string
+  readonly jobQueueName?: string;
 
   /**
    * If the job queue is enabled, it is able to accept jobs.
@@ -109,14 +109,14 @@ export interface JobQueueProps {
    *
    * @default true
    */
-  readonly enabled?: boolean
+  readonly enabled?: boolean;
 
   /**
    * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
    *
    * @default - no scheduling policy
    */
-  readonly schedulingPolicy?: ISchedulingPolicy
+  readonly schedulingPolicy?: ISchedulingPolicy;
 }
 
 /**
