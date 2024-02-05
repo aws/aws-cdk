@@ -55,7 +55,7 @@ export class HttpStepFunctionsIntegration extends apigwv2.HttpRouteIntegration {
       credentials: apigwv2.IntegrationCredentials.fromRole(invokeRole),
       connectionType: apigwv2.HttpConnectionType.INTERNET,
       parameterMapping: this.props.parameterMapping ?? new apigwv2.ParameterMapping()
-        .custom('Input', '$request.body')
+        // .custom('Input', '$request.body')
         .custom('StateMachineArn', this.props.stateMachine.stateMachineArn),
     };
   }

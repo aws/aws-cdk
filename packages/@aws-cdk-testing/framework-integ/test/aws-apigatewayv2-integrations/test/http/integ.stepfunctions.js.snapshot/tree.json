@@ -16,17 +16,17 @@
               "version": "0.0.0"
             }
           },
-          "StateMachine": {
-            "id": "StateMachine",
-            "path": "stepfunctions-integration/StateMachine",
+          "RouteStateMachine": {
+            "id": "RouteStateMachine",
+            "path": "stepfunctions-integration/RouteStateMachine",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "stepfunctions-integration/StateMachine/Role",
+                "path": "stepfunctions-integration/RouteStateMachine/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "stepfunctions-integration/StateMachine/Role/ImportRole",
+                    "path": "stepfunctions-integration/RouteStateMachine/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -34,7 +34,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "stepfunctions-integration/StateMachine/Role/Resource",
+                    "path": "stepfunctions-integration/RouteStateMachine/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -65,14 +65,14 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "stepfunctions-integration/StateMachine/Resource",
+                "path": "stepfunctions-integration/RouteStateMachine/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
                     "definitionString": "{\"StartAt\":\"Pass\",\"States\":{\"Pass\":{\"Type\":\"Pass\",\"End\":true}}}",
                     "roleArn": {
                       "Fn::GetAtt": [
-                        "StateMachineRoleB840431D",
+                        "RouteStateMachineRoleF32EE107",
                         "Arn"
                       ]
                     }
@@ -108,172 +108,6 @@
                   "version": "0.0.0"
                 }
               },
-              "DefaultRoute": {
-                "id": "DefaultRoute",
-                "path": "stepfunctions-integration/Api/DefaultRoute",
-                "children": {
-                  "InvokeRole": {
-                    "id": "InvokeRole",
-                    "path": "stepfunctions-integration/Api/DefaultRoute/InvokeRole",
-                    "children": {
-                      "ImportInvokeRole": {
-                        "id": "ImportInvokeRole",
-                        "path": "stepfunctions-integration/Api/DefaultRoute/InvokeRole/ImportInvokeRole",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "stepfunctions-integration/Api/DefaultRoute/InvokeRole/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                          "aws:cdk:cloudformation:props": {
-                            "assumeRolePolicyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "Service": "apigateway.amazonaws.com"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "stepfunctions-integration/Api/DefaultRoute/InvokeRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "stepfunctions-integration/Api/DefaultRoute/InvokeRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "states:StartExecution",
-                                      "Effect": "Allow",
-                                      "Resource": {
-                                        "Ref": "StateMachine2E01A3A5"
-                                      },
-                                      "Sid": "AllowStepFunctionsExecution"
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "ApiDefaultRouteInvokeRoleDefaultPolicy6CB17373",
-                                "roles": [
-                                  {
-                                    "Ref": "ApiDefaultRouteInvokeRoleF44748FB"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DefaultIntegration": {
-                    "id": "DefaultIntegration",
-                    "path": "stepfunctions-integration/Api/DefaultRoute/DefaultIntegration",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "stepfunctions-integration/Api/DefaultRoute/DefaultIntegration/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
-                          "aws:cdk:cloudformation:props": {
-                            "apiId": {
-                              "Ref": "ApiF70053CD"
-                            },
-                            "connectionType": "INTERNET",
-                            "credentialsArn": {
-                              "Fn::GetAtt": [
-                                "ApiDefaultRouteInvokeRoleF44748FB",
-                                "Arn"
-                              ]
-                            },
-                            "integrationSubtype": "StepFunctions-StartExecution",
-                            "integrationType": "AWS_PROXY",
-                            "payloadFormatVersion": "1.0",
-                            "requestParameters": {
-                              "Input": "$request.body",
-                              "StateMachineArn": {
-                                "Ref": "StateMachine2E01A3A5"
-                              }
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "stepfunctions-integration/Api/DefaultRoute/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
-                      "aws:cdk:cloudformation:props": {
-                        "apiId": {
-                          "Ref": "ApiF70053CD"
-                        },
-                        "authorizationType": "NONE",
-                        "routeKey": "$default",
-                        "target": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "integrations/",
-                              {
-                                "Ref": "ApiDefaultRouteDefaultIntegrationDF849BE0"
-                              }
-                            ]
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
-                  "version": "0.0.0"
-                }
-              },
               "DefaultStage": {
                 "id": "DefaultStage",
                 "path": "stepfunctions-integration/Api/DefaultStage",
@@ -299,6 +133,171 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpStage",
+                  "version": "0.0.0"
+                }
+              },
+              "POST--test": {
+                "id": "POST--test",
+                "path": "stepfunctions-integration/Api/POST--test",
+                "children": {
+                  "InvokeRole": {
+                    "id": "InvokeRole",
+                    "path": "stepfunctions-integration/Api/POST--test/InvokeRole",
+                    "children": {
+                      "ImportInvokeRole": {
+                        "id": "ImportInvokeRole",
+                        "path": "stepfunctions-integration/Api/POST--test/InvokeRole/ImportInvokeRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stepfunctions-integration/Api/POST--test/InvokeRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "apigateway.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "stepfunctions-integration/Api/POST--test/InvokeRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "stepfunctions-integration/Api/POST--test/InvokeRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "states:StartExecution",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Ref": "RouteStateMachineC11CAF3B"
+                                      },
+                                      "Sid": "AllowStepFunctionsExecution"
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ApiPOSTtestInvokeRoleDefaultPolicy1F815224",
+                                "roles": [
+                                  {
+                                    "Ref": "ApiPOSTtestInvokeRole3550EFBA"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Integration": {
+                    "id": "Integration",
+                    "path": "stepfunctions-integration/Api/POST--test/Integration",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stepfunctions-integration/Api/POST--test/Integration/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "ApiF70053CD"
+                            },
+                            "connectionType": "INTERNET",
+                            "credentialsArn": {
+                              "Fn::GetAtt": [
+                                "ApiPOSTtestInvokeRole3550EFBA",
+                                "Arn"
+                              ]
+                            },
+                            "integrationSubtype": "StepFunctions-StartExecution",
+                            "integrationType": "AWS_PROXY",
+                            "payloadFormatVersion": "1.0",
+                            "requestParameters": {
+                              "StateMachineArn": {
+                                "Ref": "RouteStateMachineC11CAF3B"
+                              }
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "stepfunctions-integration/Api/POST--test/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "ApiF70053CD"
+                        },
+                        "authorizationType": "NONE",
+                        "routeKey": "POST /test",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "ApiPOSTtestIntegration9C6ACC5D"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.HttpRoute",
                   "version": "0.0.0"
                 }
               }

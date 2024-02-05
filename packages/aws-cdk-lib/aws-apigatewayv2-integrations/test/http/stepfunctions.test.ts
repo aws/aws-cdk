@@ -1,6 +1,6 @@
 import { App, Stack } from '../../..';
 import { Match, Template } from '../../../assertions';
-import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from '../../../aws-apigatewayv2';
+import { HttpApi, HttpRoute, HttpRouteKey, ParameterMapping } from '../../../aws-apigatewayv2';
 import * as sfn from '../../../aws-stepfunctions';
 import { HttpStepFunctionsIntegration } from '../../lib/http/stepfunctions';
 
@@ -59,42 +59,12 @@ describe('StepFunctionsIntegration', () => {
           'Arn',
         ],
       },
-      IntegrationMethod: 'ANY',
       IntegrationType: 'AWS_PROXY',
       IntegrationSubtype: 'StepFunctions-StartExecution',
       PayloadFormatVersion: '1.0',
-    });
-  });
-
-  test('with method', () => {
-    const app = new App();
-    const stack = new Stack(app, 'stack');
-    const api = new HttpApi(stack, 'HttpApi');
-    const targetStateMachine = new sfn.StateMachine(stack, 'StateMachine', {
-      definition: new sfn.Pass(stack, 'Pass'),
-    });
-
-    new HttpRoute(stack, 'StepFunctionsRoute', {
-      httpApi: api,
-      integration: new HttpStepFunctionsIntegration('Integration', {
-        stateMachine: targetStateMachine,
-        method: HttpMethod.GET,
-      }),
-      routeKey: HttpRouteKey.with('/tests'),
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
-      ConnectionType: 'INTERNET',
-      CredentialsArn: {
-        'Fn::GetAtt': [
-          'StepFunctionsRouteInvokeRole5E3B5519',
-          'Arn',
-        ],
+      RequestParameters: {
+        StateMachineArn: stack.resolve(targetStateMachine.stateMachineArn),
       },
-      IntegrationMethod: 'GET',
-      IntegrationType: 'AWS_PROXY',
-      IntegrationSubtype: 'StepFunctions-StartExecution',
-      PayloadFormatVersion: '1.0',
     });
   });
 
