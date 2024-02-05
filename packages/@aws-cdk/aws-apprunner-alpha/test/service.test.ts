@@ -574,7 +574,7 @@ test('create a service with local assets(image repository type: ECR)', () => {
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
   const dockerAsset = new ecr_assets.DockerImageAsset(stack, 'Assets', {
-    directory: path.join(__dirname, './docker.assets'),
+    directory: path.join(__dirname, 'docker.assets'),
   });
   new apprunner.Service(stack, 'DemoService', {
     source: apprunner.Source.fromAsset({
@@ -864,7 +864,7 @@ test('custom IAM access role and instance role are allowed', () => {
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
   const dockerAsset = new ecr_assets.DockerImageAsset(stack, 'Assets', {
-    directory: path.join(__dirname, './docker.assets'),
+    directory: path.join(__dirname, 'docker.assets'),
   });
   new apprunner.Service(stack, 'DemoService', {
     source: apprunner.Source.fromAsset({
@@ -1177,7 +1177,7 @@ test('autoDeploymentsEnabled flag is set true', () => {
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
   const dockerAsset = new ecr_assets.DockerImageAsset(stack, 'Assets', {
-    directory: path.join(__dirname, './docker.assets'),
+    directory: path.join(__dirname, 'docker.assets'),
   });
   new apprunner.Service(stack, 'DemoService', {
     source: apprunner.Source.fromAsset({

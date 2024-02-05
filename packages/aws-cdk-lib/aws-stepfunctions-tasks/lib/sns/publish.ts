@@ -35,7 +35,7 @@ export enum MessageAttributeDataType {
    *
    * @see https://docs.aws.amazon.com/sns/latest/dg/sns-message-attributes.html#SNSMessageAttributes.DataTypes
    */
-  BINARY = 'Binary'
+  BINARY = 'Binary',
 }
 
 /**

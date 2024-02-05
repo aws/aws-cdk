@@ -278,7 +278,7 @@ export enum SubnetType {
    *
    * Public subnets route outbound traffic via an Internet Gateway.
    */
-  PUBLIC = 'Public'
+  PUBLIC = 'Public',
 }
 
 /**
@@ -1151,7 +1151,7 @@ export enum DefaultInstanceTenancy {
   /**
    * Any instance launched into the VPC automatically has dedicated tenancy, unless you launch it with the default tenancy.
    */
-  DEDICATED = 'dedicated'
+  DEDICATED = 'dedicated',
 }
 
 /**
@@ -1799,6 +1799,11 @@ export class Vpc extends VpcBase {
       (this.privateSubnets as PrivateSubnet[]).forEach(privateSubnet => {
         if (this.ipv6CidrBlock !== undefined) {
           privateSubnet.node.addDependency(this.ipv6CidrBlock);
+        }
+      });
+      (this.isolatedSubnets as PrivateSubnet[]).forEach((isolatedSubnet) => {
+        if (this.ipv6CidrBlock !== undefined) {
+          isolatedSubnet.node.addDependency(this.ipv6CidrBlock);
         }
       });
     }

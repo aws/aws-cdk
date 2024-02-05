@@ -155,7 +155,7 @@ export enum EmailSendingEvent {
    * The email was successfully delivered, but the recipient updated their subscription
    * preferences by clicking on an unsubscribe link as part of your subscription management.
    */
-  SUBSCRIPTION = 'subscription'
+  SUBSCRIPTION = 'subscription',
 }
 
 /**

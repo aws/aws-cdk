@@ -410,7 +410,7 @@ export enum InstanceUpdateBehaviour {
    * This results in at most one instance being unavailable during the update.
    * If your cluster consists of more than 1 instance, the downtime periods are limited to the time a primary switch needs.
    */
-  ROLLING = 'ROLLING'
+  ROLLING = 'ROLLING',
 }
 
 /**

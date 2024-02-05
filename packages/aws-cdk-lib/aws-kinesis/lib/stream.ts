@@ -883,7 +883,7 @@ export enum StreamEncryption {
   /**
    * Server-side encryption with a master key managed by Amazon Kinesis
    */
-  MANAGED = 'MANAGED'
+  MANAGED = 'MANAGED',
 }
 
 /**
@@ -900,5 +900,5 @@ export enum StreamMode {
    * Specify the on-demand capacity mode. The stream will autoscale and be billed according to the
    * volume of data ingested and retrieved.
    */
-  ON_DEMAND = 'ON_DEMAND'
+  ON_DEMAND = 'ON_DEMAND',
 }

@@ -44,13 +44,14 @@ module.exports = {
     '@aws-cdk/no-core-construct': ['error'],
     '@aws-cdk/invalid-cfn-imports': ['error'],
     '@aws-cdk/no-literal-partition': ['error'],
+    '@aws-cdk/no-invalid-path': [ 'error' ],
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],
 
     // Style
     'quotes': ['error', 'single', { avoidEscape: true }],
-    'comma-dangle': ['error', 'always-multiline'], // ensures clean diffs, see https://medium.com/@nikgraf/why-you-should-enforce-dangling-commas-for-multiline-statements-d034c98e36f8
+    '@typescript-eslint/comma-dangle': ['error', 'always-multiline'], // ensures clean diffs, see https://medium.com/@nikgraf/why-you-should-enforce-dangling-commas-for-multiline-statements-d034c98e36f8
     'comma-spacing': ['error', { before: false, after: true }], // space after, no space before
     'no-multi-spaces': ['error', { ignoreEOLComments: false }], // no multi spaces
     'array-bracket-spacing': ['error', 'never'], // [1, 2, 3]
