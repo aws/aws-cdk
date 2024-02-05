@@ -94,7 +94,7 @@ export enum OidcAttributeRequestMethod {
   /** GET */
   GET = 'GET',
   /** POST */
-  POST = 'POST'
+  POST = 'POST',
 }
 
 /**

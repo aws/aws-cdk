@@ -233,7 +233,7 @@ export enum SubscriptionProtocol {
   /**
    * Notifications put records into a firehose delivery stream.
    */
-  FIREHOSE = 'firehose'
+  FIREHOSE = 'firehose',
 }
 
 function buildFilterPolicyWithMessageBody(
