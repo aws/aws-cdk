@@ -37,9 +37,9 @@ class ProducerStack extends Stack {
 }
 
 export interface consumerDeployProps extends StackProps {
-  stringListGetAtt: string[],
-  stringListRef: CfnParameter,
-  manualStringList: string[]
+  stringListGetAtt: string[];
+  stringListRef: CfnParameter;
+  manualStringList: string[];
 }
 
 class ConsumerStack extends Stack {

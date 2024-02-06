@@ -33,7 +33,7 @@ export enum KeyPairType {
    *
    * Note that ED25519 keys are not supported for Windows instances.
    */
-  ED25519 = 'ed25519'
+  ED25519 = 'ed25519',
 }
 
 /**

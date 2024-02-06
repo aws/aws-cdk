@@ -126,7 +126,7 @@ function keysByExpression(context: Context, expression: string) {
 }
 
 function getUnsetAndReadonly(context: Context, matches: string[]) {
-  return matches.reduce<{ unset: string[], readonly: string[] }>((acc, match) => {
+  return matches.reduce<{ unset: string[]; readonly: string[] }>((acc, match) => {
     if (context.has(match)) {
       acc.readonly.push(match);
     } else {

@@ -2,8 +2,8 @@ import { Octokit } from '@octokit/rest';
 import * as semver from 'semver';
 
 export async function fetchPreviousVersion(token: string, options?: {
-  priorTo?: string,
-  majorVersion?: string,
+  priorTo?: string;
+  majorVersion?: string;
 }) {
   const github = new Octokit({ auth: token });
   const releases = await github.repos.listReleases({

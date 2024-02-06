@@ -35,7 +35,7 @@ export enum PipeVariable {
   /**
    * The same as aws.pipes.event, but the variable only has a value if the original payload, either from the source or returned by the enrichment, is JSON. If the pipe has an encoded field, such as the Amazon SQS body field or the Kinesis data, those fields are decoded and turned into valid JSON. Because it isn't escaped, the variable can only be used as a value for a JSON field. For more information, see Implicit body data parsing.
    */
-  EVENT_JSON = '<aws.pipes.event.json>'
+  EVENT_JSON = '<aws.pipes.event.json>',
 
 }
 
