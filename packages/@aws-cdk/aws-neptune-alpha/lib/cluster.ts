@@ -276,7 +276,7 @@ export interface DatabaseClusterProps {
    *
    * @default - Retain cluster.
    */
-  readonly removalPolicy?: RemovalPolicy
+  readonly removalPolicy?: RemovalPolicy;
 
   /**
    * If set to true, Neptune will automatically update the engine of the entire
@@ -633,7 +633,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
     const retention = props.cloudwatchLogsRetention;
     if (retention) {
       props.cloudwatchLogsExports?.forEach(logType => {
-        new logs.LogRetention(this, `${logType}LogRetention`, {
+        new logs.LogRetention(this, `${logType.value}LogRetention`, {
           logGroupName: `/aws/neptune/${this.clusterIdentifier}/${logType.value}`,
           role: props.cloudwatchLogsRetentionRole,
           retention,

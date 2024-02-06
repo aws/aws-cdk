@@ -264,7 +264,7 @@ class ApplicationTargetGroupMetrics implements IApplicationTargetGroupMetrics {
   }
 
   private cannedMetric(
-    fn: (dims: { LoadBalancer: string, TargetGroup: string }) => cloudwatch.MetricProps,
+    fn: (dims: { LoadBalancer: string; TargetGroup: string }) => cloudwatch.MetricProps,
     props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({
       ...fn({

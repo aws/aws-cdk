@@ -10,8 +10,8 @@ import { ISDK, SdkProvider } from '../aws-auth';
 import { EnvironmentResources } from '../environment-resources';
 
 export type TemplateBodyParameter = {
-  TemplateBody?: string
-  TemplateURL?: string
+  TemplateBody?: string;
+  TemplateURL?: string;
 };
 
 const LARGE_TEMPLATE_SIZE_KB = 50;

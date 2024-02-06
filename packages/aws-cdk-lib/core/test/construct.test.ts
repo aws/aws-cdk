@@ -329,7 +329,7 @@ describe('construct', () => {
 
     const stack = new TestStack();
 
-    const errors = new Array<{ path: string, message: string }>();
+    const errors = new Array<{ path: string; message: string }>();
     for (const child of stack.node.findAll()) {
       for (const message of child.node.validate()) {
         errors.push({

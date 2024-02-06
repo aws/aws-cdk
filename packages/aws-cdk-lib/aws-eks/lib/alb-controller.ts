@@ -206,7 +206,7 @@ export enum AlbScheme {
    * An internet-facing load balancer has a publicly resolvable DNS name, so it can route requests from clients over the internet
    * to the EC2 instances that are registered with the load balancer.
    */
-  INTERNET_FACING = 'internet-facing'
+  INTERNET_FACING = 'internet-facing',
 }
 
 /**
