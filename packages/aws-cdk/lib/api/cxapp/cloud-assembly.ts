@@ -67,7 +67,7 @@ export enum ExtendedStackSelection {
   /**
    * Include stacks that depend on this stack
    */
-  Downstream
+  Downstream,
 }
 
 /**
@@ -78,12 +78,12 @@ export interface StackSelector {
    * Whether all stacks at the top level assembly should
    * be selected and nothing else
    */
-  allTopLevel?: boolean,
+  allTopLevel?: boolean;
 
   /**
    * A list of patterns to match the stack hierarchical ids
    */
-  patterns: string[],
+  patterns: string[];
 }
 
 /**

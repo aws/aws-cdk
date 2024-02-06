@@ -146,17 +146,17 @@ export interface IVpc extends IResource {
   /**
    * Adds a new gateway endpoint to this VPC
    */
-  addGatewayEndpoint(id: string, options: GatewayVpcEndpointOptions): GatewayVpcEndpoint
+  addGatewayEndpoint(id: string, options: GatewayVpcEndpointOptions): GatewayVpcEndpoint;
 
   /**
    * Adds a new interface endpoint to this VPC
    */
-  addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint
+  addInterfaceEndpoint(id: string, options: InterfaceVpcEndpointOptions): InterfaceVpcEndpoint;
 
   /**
    * Adds a new Flow Log to this VPC
    */
-  addFlowLog(id: string, options?: FlowLogOptions): FlowLog
+  addFlowLog(id: string, options?: FlowLogOptions): FlowLog;
 }
 
 /**
@@ -278,7 +278,7 @@ export enum SubnetType {
    *
    * Public subnets route outbound traffic via an Internet Gateway.
    */
-  PUBLIC = 'Public'
+  PUBLIC = 'Public',
 }
 
 /**
@@ -360,7 +360,7 @@ export interface SubnetSelection {
    *
    * @default - Use all subnets in a selected group (all private subnets by default)
    */
-  readonly subnets?: ISubnet[]
+  readonly subnets?: ISubnet[];
 }
 
 /**
@@ -1078,7 +1078,7 @@ export interface VpcProps {
    *
    * @default - No connections.
    */
-  readonly vpnConnections?: { [id: string]: VpnConnectionOptions }
+  readonly vpnConnections?: { [id: string]: VpnConnectionOptions };
 
   /**
    * Where to propagate VPN routes.
@@ -1087,21 +1087,21 @@ export interface VpcProps {
    * private subnets exists, isolated subnets are used. If no isolated subnets
    * exists, public subnets are used.
    */
-  readonly vpnRoutePropagation?: SubnetSelection[]
+  readonly vpnRoutePropagation?: SubnetSelection[];
 
   /**
    * Gateway endpoints to add to this VPC.
    *
    * @default - None.
    */
-  readonly gatewayEndpoints?: { [id: string]: GatewayVpcEndpointOptions }
+  readonly gatewayEndpoints?: { [id: string]: GatewayVpcEndpointOptions };
 
   /**
    * Flow logs to add to this VPC.
    *
    * @default - No flow logs.
    */
-  readonly flowLogs?: { [id: string]: FlowLogOptions }
+  readonly flowLogs?: { [id: string]: FlowLogOptions };
 
   /**
    * The VPC name.
@@ -1151,7 +1151,7 @@ export enum DefaultInstanceTenancy {
   /**
    * Any instance launched into the VPC automatically has dedicated tenancy, unless you launch it with the default tenancy.
    */
-  DEDICATED = 'dedicated'
+  DEDICATED = 'dedicated',
 }
 
 /**
@@ -1799,6 +1799,11 @@ export class Vpc extends VpcBase {
       (this.privateSubnets as PrivateSubnet[]).forEach(privateSubnet => {
         if (this.ipv6CidrBlock !== undefined) {
           privateSubnet.node.addDependency(this.ipv6CidrBlock);
+        }
+      });
+      (this.isolatedSubnets as PrivateSubnet[]).forEach((isolatedSubnet) => {
+        if (this.ipv6CidrBlock !== undefined) {
+          isolatedSubnet.node.addDependency(this.ipv6CidrBlock);
         }
       });
     }

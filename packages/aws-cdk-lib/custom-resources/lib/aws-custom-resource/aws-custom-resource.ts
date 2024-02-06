@@ -204,7 +204,7 @@ export interface SdkCallsPolicyOptions {
    *
    * Note that will apply to ALL SDK calls.
    */
-  readonly resources: string[]
+  readonly resources: string[];
 
 }
 
@@ -323,19 +323,24 @@ export interface AwsCustomResourceProps {
    *
    * @default Duration.minutes(2)
    */
-  readonly timeout?: cdk.Duration
+  readonly timeout?: cdk.Duration;
 
   /**
    * The number of days log events of the singleton Lambda function implementing
    * this custom resource are kept in CloudWatch Logs.
    *
+   * This is a legacy API and we strongly recommend you migrate to `logGroup` if you can.
+   * `logGroup` allows you to create a fully customizable log group and instruct the Lambda function to send logs to it.
+   *
    * @default logs.RetentionDays.INFINITE
-   * @deprecated Use logGroup for full control over the custom resource log group
    */
   readonly logRetention?: logs.RetentionDays;
 
   /**
    * The Log Group used for logging of events emitted by the custom resource's lambda function.
+   *
+   * Providing a user-controlled log group was rolled out to commercial regions on 2023-11-16.
+   * If you are deploying to another type of region, please check regional availability first.
    *
    * @default - a default log group created by AWS Lambda
    */
