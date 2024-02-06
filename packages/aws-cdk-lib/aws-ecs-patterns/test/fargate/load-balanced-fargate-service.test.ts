@@ -233,6 +233,40 @@ test('setting healthCheckGracePeriod works', () => {
   });
 });
 
+test('setting healthCheck works', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+    },
+    healthCheck: {
+      command: ['CMD-SHELL', 'curl -f http://localhost/ || exit 1'],
+      interval: cdk.Duration.minutes(1),
+      retries: 5,
+      startPeriod: cdk.Duration.minutes(1),
+      timeout: cdk.Duration.minutes(1),
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    ContainerDefinitions: Match.arrayWith([
+      Match.objectLike({
+        HealthCheck: {
+          Command: ['CMD-SHELL', 'curl -f http://localhost/ || exit 1'],
+          Interval: 60,
+          Retries: 5,
+          StartPeriod: 60,
+          Timeout: 60,
+        },
+      }),
+    ]),
+  });
+});
+
 test('selecting correct vpcSubnets', () => {
   // GIVEN
   const stack = new cdk.Stack();
