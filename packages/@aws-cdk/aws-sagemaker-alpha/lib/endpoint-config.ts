@@ -200,7 +200,7 @@ export class EndpointConfig extends cdk.Resource implements IEndpointConfig {
    */
   public readonly endpointConfigName: string;
 
-  private readonly instanceProductionVariantsByName: { [key: string]: InstanceProductionVariant; } = {};
+  private readonly instanceProductionVariantsByName: { [key: string]: InstanceProductionVariant } = {};
 
   constructor(scope: Construct, id: string, props: EndpointConfigProps = {}) {
     super(scope, id, {

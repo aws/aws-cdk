@@ -9,5 +9,5 @@ export enum StateType {
   SUCCEED = 'Succeed',
   FAIL = 'Fail',
   PARALLEL = 'Parallel',
-  MAP = 'Map'
+  MAP = 'Map',
 }

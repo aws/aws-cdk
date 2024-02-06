@@ -38,7 +38,7 @@ export interface FoundLogGroupsResult {
    * The names of the relevant CloudWatch Log Groups
    * in the given CloudFormation template
    */
-  readonly logGroupNames: string[]
+  readonly logGroupNames: string[];
 }
 
 export async function findCloudWatchLogGroups(

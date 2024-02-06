@@ -295,8 +295,8 @@ export enum TemplateSourceOptions {
  */
 type TemplateSource =
   | { source: TemplateSourceOptions.SCAN }
-  | { source: TemplateSourceOptions.PATH, templatePath: string }
-  | { source: TemplateSourceOptions.STACK, stackName: string }
+  | { source: TemplateSourceOptions.PATH; templatePath: string }
+  | { source: TemplateSourceOptions.STACK; stackName: string }
   ;
 
 /**

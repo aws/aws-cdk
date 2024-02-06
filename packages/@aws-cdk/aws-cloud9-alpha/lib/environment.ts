@@ -38,7 +38,7 @@ export enum ConnectionType {
    * When using SSM, service role and instance profile aren't automatically created.
    * See https://docs.aws.amazon.com/cloud9/latest/user-guide/ec2-ssm.html#service-role-ssm
    */
-  CONNECT_SSM = 'CONNECT_SSM'
+  CONNECT_SSM = 'CONNECT_SSM',
 }
 
 /**
@@ -127,13 +127,13 @@ export interface Ec2EnvironmentProps {
    *
    * @default - CONNECT_SSH
    */
-  readonly connectionType?: ConnectionType
+  readonly connectionType?: ConnectionType;
 
   /**
    * The image ID used for creating an Amazon EC2 environment.
    *
    */
-  readonly imageId: ImageId
+  readonly imageId: ImageId;
 
   /**
    * The number of minutes until the running instance is shut down after the
@@ -143,7 +143,7 @@ export interface Ec2EnvironmentProps {
    *
    * @default - The instance will not be shut down automatically.
    */
-  readonly automaticStop?: cdk.Duration
+  readonly automaticStop?: cdk.Duration;
 }
 
 /**

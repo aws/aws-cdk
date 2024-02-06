@@ -71,7 +71,7 @@ export enum OutOfInfrequentAccessPolicy {
   /**
    * After 1 access
    */
-  AFTER_1_ACCESS = 'AFTER_1_ACCESS'
+  AFTER_1_ACCESS = 'AFTER_1_ACCESS',
 }
 
 /**
@@ -94,7 +94,7 @@ export enum PerformanceMode {
    * Highly parallelized applications and workloads, such as big data analysis,
    * media processing, and genomics analysis, can benefit from this mode.
    */
-  MAX_IO = 'maxIO'
+  MAX_IO = 'maxIO',
 }
 
 /**
@@ -116,7 +116,7 @@ export enum ThroughputMode {
   /**
   * This mode scales the throughput automatically regardless of file system size.
   */
-  ELASTIC = 'elastic'
+  ELASTIC = 'elastic',
 }
 
 /**
@@ -353,7 +353,7 @@ export interface FileSystemAttributes {
 enum ClientAction {
   MOUNT = 'elasticfilesystem:ClientMount',
   WRITE = 'elasticfilesystem:ClientWrite',
-  ROOT_ACCESS = 'elasticfilesystem:ClientRootAccess'
+  ROOT_ACCESS = 'elasticfilesystem:ClientRootAccess',
 }
 
 abstract class FileSystemBase extends Resource implements IFileSystem {

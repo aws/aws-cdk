@@ -231,11 +231,11 @@ function event(nr: number): AWS.CloudFormation.StackEvent {
 function addErrorToStackEvent(
   eventToUpdate: AWS.CloudFormation.StackEvent,
   props: {
-    resourceStatus?: string,
-    resourceType?: string,
-    resourceStatusReason?: string,
-    logicalResourceId?: string,
-    physicalResourceId?: string,
+    resourceStatus?: string;
+    resourceType?: string;
+    resourceStatusReason?: string;
+    logicalResourceId?: string;
+    physicalResourceId?: string;
   } = {},
 ): AWS.CloudFormation.StackEvent {
   eventToUpdate.ResourceStatus = props.resourceStatus ?? 'UPDATE_FAILED';
