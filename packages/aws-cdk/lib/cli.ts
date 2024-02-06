@@ -9,6 +9,7 @@ import { HotswapMode } from './api/hotswap/common';
 import { ILock } from './api/util/rwlock';
 import { checkForPlatformWarnings } from './platform-warnings';
 import { enableTracing } from './util/tracing';
+import { initWithExistingToolkit, listWorkflow } from './workflows/list-stacks';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
 import { StackSelector } from '../lib/api/cxapp/cloud-assembly';
@@ -471,6 +472,9 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
       sdkProvider,
     });
 
+    // Initializing Workflows CdkToolkit
+    initWithExistingToolkit(cli);
+
     switch (command) {
       case 'context':
         return context(commandOptions);
@@ -483,7 +487,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'ls':
       case 'list':
-        return cli.list(args.STACKS, { long: args.long, json: argv.json });
+        return listStacks(args.STACKS, { long: args.long, json: argv.json });
 
       case 'diff':
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL_CONTEXT);
@@ -780,6 +784,35 @@ function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watc
   }
 
   return hotswapMode;
+}
+
+export async function listStacks(selectors: string[], options: { long?: boolean; json?: boolean } = { }): Promise<number> {
+  options;
+
+  await listWorkflow({
+    selectors: selectors,
+  });
+
+  // // if we are in "long" mode, emit the array as-is (JSON/YAML)
+  // if (options.long) {
+  //   const long = [];
+  //   for (const stack of stacks.stackArtifacts) {
+  //     long.push({
+  //       id: stack.hierarchicalId,
+  //       name: stack.stackName,
+  //       environment: stack.environment,
+  //     });
+  //   }
+  //   data(serializeStructure(long, options.json ?? false));
+  //   return 0;
+  // }
+
+  // // just print stack IDs
+  // for (const stack of stacks.stackArtifacts) {
+  //   data(stack.hierarchicalId);
+  // }
+
+  return 0; // exit-code
 }
 
 export function cli(args: string[] = process.argv.slice(2)) {

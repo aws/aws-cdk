@@ -597,7 +597,10 @@ export class CdkToolkit {
     }
   }
 
-  public async list(selectors: string[], options: { long?: boolean, json?: boolean } = { }): Promise<number> {
+  /**
+   * @deprecated Use cli.listStacks in cli.ts instead
+   */
+  public async list(selectors: string[], options: { long?: boolean; json?: boolean } = { }): Promise<number> {
     const stacks = await this.selectStacksForList(selectors);
 
     // if we are in "long" mode, emit the array as-is (JSON/YAML)
@@ -792,7 +795,7 @@ export class CdkToolkit {
   /**
    * Validate the stacks for errors and warnings according to the CLI's current settings
    */
-  private validateStacks(stacks: StackCollection) {
+  public validateStacks(stacks: StackCollection) {
     stacks.processMetadataMessages({
       ignoreErrors: this.props.ignoreErrors,
       strict: this.props.strict,
@@ -803,7 +806,7 @@ export class CdkToolkit {
   /**
    * Validate that if a user specified a stack name there exists at least 1 stack selected
    */
-  private validateStacksSelected(stacks: StackCollection, stackNames: string[]) {
+  public validateStacksSelected(stacks: StackCollection, stackNames: string[]) {
     if (stackNames.length != 0 && stacks.stackCount == 0) {
       throw new Error(`No stacks match the name(s) ${stackNames}`);
     }
@@ -828,7 +831,7 @@ export class CdkToolkit {
     return assembly.stackById(stacks.firstStack.id);
   }
 
-  private assembly(cacheCloudAssembly?: boolean): Promise<CloudAssembly> {
+  public assembly(cacheCloudAssembly?: boolean): Promise<CloudAssembly> {
     return this.props.cloudExecutable.synthesize(cacheCloudAssembly);
   }
 
