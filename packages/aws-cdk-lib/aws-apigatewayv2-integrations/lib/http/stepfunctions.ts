@@ -5,7 +5,7 @@ import * as sfn from '../../../aws-stepfunctions';
 /**
  * Properties to initialize `HttpStepFunctionsIntegration`.
  */
-interface HttpStepFunctionsIntegrationProps {
+export interface HttpStepFunctionsIntegrationProps {
   /**
    * Specifies how to transform HTTP requests before sending them to the backend.
    *
