@@ -77,7 +77,7 @@ The following code configures a Step Functions integrations:
 ```ts
 import { HttpStepFunctionsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
-declare const stateMachine: stepfunctions.StateMachine;
+declare const stateMachine: sfn.StateMachine;
 declare const httpApi: apigwv2.HttpApi;
 
 httpApi.addRoutes({
@@ -86,7 +86,7 @@ httpApi.addRoutes({
   integration: new HttpStepFunctionsIntegration('StartExecutionIntegration', {
     stateMachine,
     subtype: apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_START_EXECUTION,
-  });,
+  }),
 });
 
 httpApi.addRoutes({
@@ -95,7 +95,7 @@ httpApi.addRoutes({
   integration: new HttpStepFunctionsIntegration('StartSyncExecutionIntegration', {
     stateMachine,
     subtype: apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_START_SYNC_EXECUTION,
-  });,
+  }),
 });
 
 httpApi.addRoutes({
@@ -103,11 +103,11 @@ httpApi.addRoutes({
   methods: [ apigwv2.HttpMethod.POST ],
   integration: new HttpStepFunctionsIntegration('StopExecutionIntegration', {
     stateMachine,
-    actionType: apigwv2.HttpIntegrationSubtype.STOP_EXECUTION,
+    subType: apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_STOP_EXECUTION,
     // For the `STOP_EXECUTION` subtype, it is necessary to specify the `executionArn`.
     parameterMapping: new apigwv2.ParameterMapping()
       .custom('ExecutionArn', '$request.querystring.executionArn'),
-  });,
+  }),
 });
 ```
 
