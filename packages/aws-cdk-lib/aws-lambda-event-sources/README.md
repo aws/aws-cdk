@@ -101,7 +101,7 @@ and is not compliant with `S3EventSource`. If this is the case, please consider 
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { S3EventSourceV2 } from 'aws-cdk-lib/aws-lambda-event-sources';
 
-const bucket = new s3.Bucket.fromBucketName(this, 'Bucket', 'bucket-name');
+const bucket = s3.Bucket.fromBucketName(this, 'Bucket', 'bucket-name');
 declare const fn: lambda.Function;
 
 fn.addEventSource(new S3EventSourceV2(bucket, {
