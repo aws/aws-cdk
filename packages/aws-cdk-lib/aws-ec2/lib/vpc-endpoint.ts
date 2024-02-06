@@ -133,7 +133,7 @@ export interface GatewayVpcEndpointOptions {
    *
    *
    */
-  readonly subnets?: SubnetSelection[]
+  readonly subnets?: SubnetSelection[];
 }
 
 /**
@@ -143,7 +143,7 @@ export interface GatewayVpcEndpointProps extends GatewayVpcEndpointOptions {
   /**
    * The VPC network in which the gateway endpoint will be used.
    */
-  readonly vpc: IVpc
+  readonly vpc: IVpc;
 }
 
 /**
@@ -621,7 +621,7 @@ export interface InterfaceVpcEndpointProps extends InterfaceVpcEndpointOptions {
   /**
    * The VPC network in which the interface endpoint will be used.
    */
-  readonly vpc: IVpc
+  readonly vpc: IVpc;
 }
 
 /**

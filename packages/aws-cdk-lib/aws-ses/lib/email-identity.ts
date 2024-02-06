@@ -175,7 +175,7 @@ export interface DkimIdentityConfig {
     *
     * @default EasyDkimSigningKeyLength.RSA_2048_BIT
     */
-  readonly nextSigningKeyLength?: EasyDkimSigningKeyLength
+  readonly nextSigningKeyLength?: EasyDkimSigningKeyLength;
 }
 
 /**

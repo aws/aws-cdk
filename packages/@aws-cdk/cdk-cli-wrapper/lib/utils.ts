@@ -4,7 +4,7 @@ import { spawn, spawnSync } from 'child_process';
 /**
  * Our own execute function which doesn't use shells and strings.
  */
-export function exec(commandLine: string[], options: { cwd?: string, json?: boolean, verbose?: boolean, env?: any } = { }): any {
+export function exec(commandLine: string[], options: { cwd?: string; json?: boolean; verbose?: boolean; env?: any } = { }): any {
   const proc = spawnSync(commandLine[0], commandLine.slice(1), {
     stdio: ['ignore', 'pipe', options.verbose ? 'inherit' : 'pipe'], // inherit STDERR in verbose mode
     env: {
@@ -41,7 +41,7 @@ export function exec(commandLine: string[], options: { cwd?: string, json?: bool
 /**
  * For use with `cdk deploy --watch`
  */
-export function watch(commandLine: string[], options: { cwd?: string, verbose?: boolean, env?: any } = { }) {
+export function watch(commandLine: string[], options: { cwd?: string; verbose?: boolean; env?: any } = { }) {
   const proc = spawn(commandLine[0], commandLine.slice(1), {
     stdio: ['ignore', 'pipe', options.verbose ? 'inherit' : 'pipe'], // inherit STDERR in verbose mode
     env: {
