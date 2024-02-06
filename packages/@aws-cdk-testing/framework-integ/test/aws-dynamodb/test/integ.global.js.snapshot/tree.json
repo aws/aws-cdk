@@ -1652,7 +1652,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
                           },
-                          "/9c540b1a44a6cb4b42c3c40239f3a9ee6605bf50563a292e91dec5245c15ff04.json"
+                          "/7b984c0eec43e098164ad311576dbdfd35e6ca0cf8970bc89e3cde15e82e4e40.json"
                         ]
                       ]
                     }

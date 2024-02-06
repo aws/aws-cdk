@@ -151,13 +151,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
+                  "fqn": "@aws-cdk/aws-amplify-alpha.Branch",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-amplify-alpha.App",
               "version": "0.0.0"
             }
           },
@@ -1454,7 +1454,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/963f6a7bb688471949dbb1c80446a990f2def6f1bf3e170d28af7c460048e1b6.json"
+                          "/50bf4a8c13e009a81ce2f294db7ca33713901c535abec43850998ea0dda6cc85.json"
                         ]
                       ]
                     }
