@@ -3,7 +3,7 @@ import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 import { IRole } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
-import { ArnFormat, Lazy, Names, Stack } from '../../core';
+import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
 
 /**
  * Properties for a new SNS topic
@@ -56,6 +56,8 @@ export interface TopicProps {
    * @default None
    */
   readonly loggingConfigs?: LoggingConfig[];
+
+  readonly messageRetentionPeriodInDays?: number;
 }
 
 /**
@@ -185,7 +187,21 @@ export class Topic extends TopicBase {
       cfnTopicName = this.physicalName;
     }
 
+    if (props.messageRetentionPeriodInDays && !props.fifo) {
+      throw new Error('`messageRetentionPeriodInDays` is only valid for FIFO topic.');
+    }
+    if (
+      !Token.isUnresolved(props.messageRetentionPeriodInDays)
+      && props.messageRetentionPeriodInDays
+      && (props.messageRetentionPeriodInDays > 365 || props.messageRetentionPeriodInDays < 1)
+    ) {
+      throw new Error('Message retention period must be between 1 day and 365 days.');
+    }
+
     const resource = new CfnTopic(this, 'Resource', {
+      archivePolicy: props.messageRetentionPeriodInDays ? {
+        MessageRetentionPeriod: props.messageRetentionPeriodInDays,
+      } : undefined,
       displayName: props.displayName,
       topicName: cfnTopicName,
       kmsMasterKeyId: props.masterKey && props.masterKey.keyArn,
