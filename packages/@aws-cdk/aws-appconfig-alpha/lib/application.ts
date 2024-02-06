@@ -437,48 +437,127 @@ export class Application extends ApplicationBase {
 
 const lambdaLayerVersions: {[key: string]: {[key: string]: string}} = {
   [Platform.X86_64]: {
-    'us-east-1': 'arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:110',
-    'us-east-2': 'arn:aws:lambda:us-east-2:728743619870:layer:AWS-AppConfig-Extension:79',
-    'us-west-1': 'arn:aws:lambda:us-west-1:958113053741:layer:AWS-AppConfig-Extension:121',
-    'us-west-2': 'arn:aws:lambda:us-west-2:359756378197:layer:AWS-AppConfig-Extension:143',
-    'ca-central-1': 'arn:aws:lambda:ca-central-1:039592058896:layer:AWS-AppConfig-Extension:79',
-    'eu-central-1': 'arn:aws:lambda:eu-central-1:066940009817:layer:AWS-AppConfig-Extension:91',
-    'eu-central-2': 'arn:aws:lambda:eu-central-2:758369105281:layer:AWS-AppConfig-Extension:29',
-    'eu-west-1': 'arn:aws:lambda:eu-west-1:434848589818:layer:AWS-AppConfig-Extension:108',
-    'eu-west-2': 'arn:aws:lambda:eu-west-2:282860088358:layer:AWS-AppConfig-Extension:79',
-    'eu-west-3': 'arn:aws:lambda:eu-west-3:493207061005:layer:AWS-AppConfig-Extension:80',
-    'eu-north-1': 'arn:aws:lambda:eu-north-1:646970417810:layer:AWS-AppConfig-Extension:139',
-    'eu-south-1': 'arn:aws:lambda:eu-south-1:203683718741:layer:AWS-AppConfig-Extension:71',
-    'eu-south-2': 'arn:aws:lambda:eu-south-2:586093569114:layer:AWS-AppConfig-Extension:26',
-    'cn-north-1': 'arn:aws-cn:lambda:cn-north-1:615057806174:layer:AWS-AppConfig-Extension:66',
-    'cn-northwest-1': 'arn:aws-cn:lambda:cn-northwest-1:615084187847:layer:AWS-AppConfig-Extension:66',
-    'ap-east-1': 'arn:aws:lambda:ap-east-1:630222743974:layer:AWS-AppConfig-Extension:71',
-    'ap-northeast-1': 'arn:aws:lambda:ap-northeast-1:980059726660:layer:AWS-AppConfig-Extension:82',
-    'ap-northeast-2': 'arn:aws:lambda:ap-northeast-2:826293736237:layer:AWS-AppConfig-Extension:91',
-    'ap-northeast-3': 'arn:aws:lambda:ap-northeast-3:706869817123:layer:AWS-AppConfig-Extension:84',
-    'ap-southeast-1': 'arn:aws:lambda:ap-southeast-1:421114256042:layer:AWS-AppConfig-Extension:89',
-    'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:080788657173:layer:AWS-AppConfig-Extension:91',
-    'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:418787028745:layer:AWS-AppConfig-Extension:60',
-    'ap-southeast-4': 'arn:aws:lambda:ap-southeast-4:307021474294:layer:AWS-AppConfig-Extension:2',
-    'ap-south-1': 'arn:aws:lambda:ap-south-1:554480029851:layer:AWS-AppConfig-Extension:92',
-    'ap-south-2': 'arn:aws:lambda:ap-south-2:489524808438:layer:AWS-AppConfig-Extension:29',
-    'sa-east-1': 'arn:aws:lambda:sa-east-1:000010852771:layer:AWS-AppConfig-Extension:110',
-    'af-south-1': 'arn:aws:lambda:af-south-1:574348263942:layer:AWS-AppConfig-Extension:71',
-    'me-central-1': 'arn:aws:lambda:me-central-1:662846165436:layer:AWS-AppConfig-Extension:31',
-    'me-south-1': 'arn:aws:lambda:me-south-1:559955524753:layer:AWS-AppConfig-Extension:71',
-    'us-gov-east-1': 'arn:aws-us-gov:lambda:us-gov-east-1:946561847325:layer:AWS-AppConfig-Extension:44',
-    'us-gov-west-1': 'arn:aws-us-gov:lambda:us-gov-west-1:946746059096:layer:AWS-AppConfig-Extension:44',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'us-east-1': 'arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:128',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'us-east-2': 'arn:aws:lambda:us-east-2:728743619870:layer:AWS-AppConfig-Extension:93',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'us-west-1': 'arn:aws:lambda:us-west-1:958113053741:layer:AWS-AppConfig-Extension:141',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'us-west-2': 'arn:aws:lambda:us-west-2:359756378197:layer:AWS-AppConfig-Extension:161',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ca-central-1': 'arn:aws:lambda:ca-central-1:039592058896:layer:AWS-AppConfig-Extension:93',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-central-1': 'arn:aws:lambda:eu-central-1:066940009817:layer:AWS-AppConfig-Extension:106',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-central-2': 'arn:aws:lambda:eu-central-2:758369105281:layer:AWS-AppConfig-Extension:47',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-west-1': 'arn:aws:lambda:eu-west-1:434848589818:layer:AWS-AppConfig-Extension:125',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-west-2': 'arn:aws:lambda:eu-west-2:282860088358:layer:AWS-AppConfig-Extension:93',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-west-3': 'arn:aws:lambda:eu-west-3:493207061005:layer:AWS-AppConfig-Extension:98',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-north-1': 'arn:aws:lambda:eu-north-1:646970417810:layer:AWS-AppConfig-Extension:159',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-south-1': 'arn:aws:lambda:eu-south-1:203683718741:layer:AWS-AppConfig-Extension:83',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-south-2': 'arn:aws:lambda:eu-south-2:586093569114:layer:AWS-AppConfig-Extension:44',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'cn-north-1': 'arn:aws-cn:lambda:cn-north-1:615057806174:layer:AWS-AppConfig-Extension:76',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'cn-northwest-1': 'arn:aws-cn:lambda:cn-northwest-1:615084187847:layer:AWS-AppConfig-Extension:76',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-east-1': 'arn:aws:lambda:ap-east-1:630222743974:layer:AWS-AppConfig-Extension:83',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-northeast-1': 'arn:aws:lambda:ap-northeast-1:980059726660:layer:AWS-AppConfig-Extension:98',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-northeast-2': 'arn:aws:lambda:ap-northeast-2:826293736237:layer:AWS-AppConfig-Extension:108',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-northeast-3': 'arn:aws:lambda:ap-northeast-3:706869817123:layer:AWS-AppConfig-Extension:101',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-southeast-1': 'arn:aws:lambda:ap-southeast-1:421114256042:layer:AWS-AppConfig-Extension:106',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:080788657173:layer:AWS-AppConfig-Extension:106',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:418787028745:layer:AWS-AppConfig-Extension:79',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-southeast-4': 'arn:aws:lambda:ap-southeast-4:307021474294:layer:AWS-AppConfig-Extension:20',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-south-1': 'arn:aws:lambda:ap-south-1:554480029851:layer:AWS-AppConfig-Extension:107',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-south-2': 'arn:aws:lambda:ap-south-2:489524808438:layer:AWS-AppConfig-Extension:47',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'sa-east-1': 'arn:aws:lambda:sa-east-1:000010852771:layer:AWS-AppConfig-Extension:128',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'af-south-1': 'arn:aws:lambda:af-south-1:574348263942:layer:AWS-AppConfig-Extension:83',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'il-central-1': 'arn:aws:lambda:il-central-1:895787185223:layer:AWS-AppConfig-Extension:22',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'me-central-1': 'arn:aws:lambda:me-central-1:662846165436:layer:AWS-AppConfig-Extension:49',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'me-south-1': 'arn:aws:lambda:me-south-1:559955524753:layer:AWS-AppConfig-Extension:85',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'us-gov-east-1': 'arn:aws-us-gov:lambda:us-gov-east-1:946561847325:layer:AWS-AppConfig-Extension:54',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'us-gov-west-1': 'arn:aws-us-gov:lambda:us-gov-west-1:946746059096:layer:AWS-AppConfig-Extension:54',
   },
   [Platform.ARM_64]: {
-    'us-east-1': 'arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension-Arm64:43',
-    'us-east-2': 'arn:aws:lambda:us-east-2:728743619870:layer:AWS-AppConfig-Extension-Arm64:31',
-    'us-west-2': 'arn:aws:lambda:us-west-2:359756378197:layer:AWS-AppConfig-Extension-Arm64:45',
-    'eu-central-1': 'arn:aws:lambda:eu-central-1:066940009817:layer:AWS-AppConfig-Extension-Arm64:34',
-    'eu-west-1': 'arn:aws:lambda:eu-west-1:434848589818:layer:AWS-AppConfig-Extension-Arm64:46',
-    'eu-west-2': 'arn:aws:lambda:eu-west-2:282860088358:layer:AWS-AppConfig-Extension-Arm64:31',
-    'ap-northeast-1': 'arn:aws:lambda:ap-northeast-1:980059726660:layer:AWS-AppConfig-Extension-Arm64:35',
-    'ap-southeast-1': 'arn:aws:lambda:ap-southeast-1:421114256042:layer:AWS-AppConfig-Extension-Arm64:41',
-    'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:080788657173:layer:AWS-AppConfig-Extension-Arm64:34',
-    'ap-south-1': 'arn:aws:lambda:ap-south-1:554480029851:layer:AWS-AppConfig-Extension-Arm64:34',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'us-east-1': 'arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension-Arm64:61',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'us-east-2': 'arn:aws:lambda:us-east-2:728743619870:layer:AWS-AppConfig-Extension-Arm64:45',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'us-west-1': 'arn:aws:lambda:us-west-1:958113053741:layer:AWS-AppConfig-Extension-Arm64:18',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'us-west-2': 'arn:aws:lambda:us-west-2:359756378197:layer:AWS-AppConfig-Extension-Arm64:63',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ca-central-1': 'arn:aws:lambda:ca-central-1:039592058896:layer:AWS-AppConfig-Extension-Arm64:13',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-central-1': 'arn:aws:lambda:eu-central-1:066940009817:layer:AWS-AppConfig-Extension-Arm64:49',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-central-2': 'arn:aws:lambda:eu-central-2:758369105281:layer:AWS-AppConfig-Extension-Arm64:5',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-west-1': 'arn:aws:lambda:eu-west-1:434848589818:layer:AWS-AppConfig-Extension-Arm64:63',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-west-2': 'arn:aws:lambda:eu-west-2:282860088358:layer:AWS-AppConfig-Extension-Arm64:45',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-west-3': 'arn:aws:lambda:eu-west-3:493207061005:layer:AWS-AppConfig-Extension-Arm64:17',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-north-1': 'arn:aws:lambda:eu-north-1:646970417810:layer:AWS-AppConfig-Extension-Arm64:18',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-south-1': 'arn:aws:lambda:eu-south-1:203683718741:layer:AWS-AppConfig-Extension-Arm64:11',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'eu-south-2': 'arn:aws:lambda:eu-south-2:586093569114:layer:AWS-AppConfig-Extension-Arm64:5',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-east-1': 'arn:aws:lambda:ap-east-1:630222743974:layer:AWS-AppConfig-Extension-Arm64:11',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-northeast-1': 'arn:aws:lambda:ap-northeast-1:980059726660:layer:AWS-AppConfig-Extension-Arm64:51',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-northeast-2': 'arn:aws:lambda:ap-northeast-2:826293736237:layer:AWS-AppConfig-Extension-Arm64:16',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-northeast-3': 'arn:aws:lambda:ap-northeast-3:706869817123:layer:AWS-AppConfig-Extension-Arm64:16',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-southeast-1': 'arn:aws:lambda:ap-southeast-1:421114256042:layer:AWS-AppConfig-Extension-Arm64:58',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-southeast-2': 'arn:aws:lambda:ap-southeast-2:080788657173:layer:AWS-AppConfig-Extension-Arm64:49',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-southeast-3': 'arn:aws:lambda:ap-southeast-3:418787028745:layer:AWS-AppConfig-Extension-Arm64:16',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-southeast-4': 'arn:aws:lambda:ap-southeast-4:307021474294:layer:AWS-AppConfig-Extension-Arm64:5',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-south-1': 'arn:aws:lambda:ap-south-1:554480029851:layer:AWS-AppConfig-Extension-Arm64:49',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'ap-south-2': 'arn:aws:lambda:ap-south-2:489524808438:layer:AWS-AppConfig-Extension-Arm64:5',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'sa-east-1': 'arn:aws:lambda:sa-east-1:000010852771:layer:AWS-AppConfig-Extension-Arm64:16',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'af-south-1': 'arn:aws:lambda:af-south-1:574348263942:layer:AWS-AppConfig-Extension-Arm64:11',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'me-central-1': 'arn:aws:lambda:me-central-1:662846165436:layer:AWS-AppConfig-Extension-Arm64:5',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'me-south-1': 'arn:aws:lambda:me-south-1:559955524753:layer:AWS-AppConfig-Extension-Arm64:13',
+    // eslint-disable-next-line @aws-cdk/no-literal-partition
+    'il-central-1': 'arn:aws:lambda:il-central-1:895787185223:layer:AWS-AppConfig-Extension-Arm64:5',
   },
 };
