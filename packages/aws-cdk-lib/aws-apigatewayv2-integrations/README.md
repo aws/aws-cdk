@@ -76,6 +76,7 @@ The following code configures a Step Functions integrations:
 
 ```ts
 import { HttpStepFunctionsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 
 declare const stateMachine: sfn.StateMachine;
 declare const httpApi: apigwv2.HttpApi;
@@ -103,7 +104,7 @@ httpApi.addRoutes({
   methods: [ apigwv2.HttpMethod.POST ],
   integration: new HttpStepFunctionsIntegration('StopExecutionIntegration', {
     stateMachine,
-    subType: apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_STOP_EXECUTION,
+    subtype: apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_STOP_EXECUTION,
     // For the `STOP_EXECUTION` subtype, it is necessary to specify the `executionArn`.
     parameterMapping: new apigwv2.ParameterMapping()
       .custom('ExecutionArn', '$request.querystring.executionArn'),
