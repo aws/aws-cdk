@@ -46,7 +46,7 @@ export interface CdkAppDirectoryProps {
    *
    * @default - read from cdk.json
    */
-  readonly app?: string
+  readonly app?: string;
 
   /**
    * Emits the synthesized cloud assembly into a directory
@@ -87,7 +87,7 @@ export interface ICloudAssemblyDirectoryProducer {
    * }
    * ```
    */
-  produce(context: Record<string, any>): Promise<string>
+  produce(context: Record<string, any>): Promise<string>;
 }
 
 /**
