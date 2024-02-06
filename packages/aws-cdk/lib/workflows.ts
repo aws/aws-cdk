@@ -9,33 +9,69 @@ import { CloudExecutable } from '../lib/api/cxapp/cloud-executable';
 import { execProgram } from '../lib/api/cxapp/exec';
 import { Deployments } from '../lib/api/deployments';
 import { ToolkitInfo } from '../lib/api/toolkit-info';
-import { Command, Configuration } from '../lib/settings';
+import { Arguments, Configuration } from '../lib/settings';
 
+/**
+ * Options for initializing the CDK Toolkit
+ */
 export interface InitOptions {
-  trace?: boolean;
-  verbose?: number;
-  ignoreErrors?: boolean;
-  strict?: boolean;
-  ec2creds?: boolean;
-  proxy?: string;
-  caBundlePath?: string;
-  arguments: { [key: string]: any };
+  /**
+   * Print trace for stack warnings
+   */
+  readonly trace?: boolean;
+  /**
+   * Show debug logs (specify multiple times to increase verbosity)
+   *
+   * @default false
+   */
+  readonly verbose?: number;
+  /**
+   * Ignores synthesis errors, which will likely produce an invalid output
+   *
+   * @default false
+   */
+  readonly ignoreErrors?: boolean;
+  /**
+   * To not filter out AWS::CDK::Metadata resources or mangled non-ASCII characters
+   *
+   * @default false
+   */
+  readonly strict?: boolean;
+  /**
+   * Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status
+   */
+  readonly ec2creds?: boolean;
+  /**
+   * Use the indicated proxy. Will read from HTTPS_PROXY environment variable if not specified
+   */
+  readonly proxy?: string;
+  /**
+   * Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified
+   */
+  readonly caBundlePath?: string;
+  /**
+   * Key-Value pair for additional cli arguments for toolkit initialization
+   */
+  readonly cliArgs?: Arguments;
 }
 
+/**
+ * To initialize CDK Toolkit
+ *
+ * @param options cdk toolkit initialization options
+ * @returns cdk toolkit instance
+ */
 export async function init(options: InitOptions): Promise<CdkToolkit> {
   // Configuration
   const configuration = new Configuration({
-    commandLineArguments: {
-      ...options,
-      _: options.arguments._ as [Command, ...string[]],
-    },
+    commandLineArguments: options.cliArgs,
   });
   await configuration.load();
 
   // SDKProvider
   const sdkProvider = await SdkProvider.withAwsCliCompatibleDefaults({
     profile: configuration.settings.get(['profile']),
-    ec2creds: options.ec2creds ?? false,
+    ec2creds: options.ec2creds,
     httpOptions: {
       proxyAddress: options.proxy,
       caBundlePath: options.caBundlePath,
@@ -76,15 +112,29 @@ export async function init(options: InitOptions): Promise<CdkToolkit> {
   return toolkit;
 }
 
+/**
+ * Options for List Workflow
+ */
 export interface ListWorkflowOptions {
+  /**
+   * Stacks to list
+   *
+   * @default - All stacks are listed
+   */
   readonly selectors: string[];
 }
 
+/**
+ * Type to store stack dependencies recursively
+ */
 export type DependencyDetails = {
   id: string;
   dependencies: DependencyDetails[];
 };
 
+/**
+ * Type to store stack and their dependencies
+ */
 export type StackDetails = {
   id: string;
   name: string;
@@ -92,6 +142,13 @@ export type StackDetails = {
   dependencies: DependencyDetails[];
 };
 
+/**
+ * List workflow
+ *
+ * @param toolkit cdk toolkit
+ * @param options list workflow options
+ * @returns serialized output of StackDetails[]
+ */
 export async function listWorkflow(toolkit: CdkToolkit, options: ListWorkflowOptions): Promise<string> {
   const assembly = await toolkit.assembly();
 
@@ -103,6 +160,7 @@ export async function listWorkflow(toolkit: CdkToolkit, options: ListWorkflowOpt
   });
 
   toolkit.validateStacksSelected(stacks, options.selectors);
+
   toolkit.validateStacks(stacks);
 
   function calculateStackDependencies(collectionOfStacks: StackCollection): StackDetails[] {
@@ -122,10 +180,6 @@ export async function listWorkflow(toolkit: CdkToolkit, options: ListWorkflowOpt
         }
 
         const depStack = assembly.stackById(dependencyId);
-
-        if (depStack.stackCount > 1) {
-          throw new Error(`This command requires exactly one stack and we matched more than one: ${depStack.stackIds}`);
-        }
 
         if (depStack.stackArtifacts[0].dependencies.length > 0 &&
           depStack.stackArtifacts[0].dependencies.filter((dep) => !(dep.manifest.displayName ?? dep.id).includes('.assets')).length > 0) {
@@ -154,6 +208,5 @@ export async function listWorkflow(toolkit: CdkToolkit, options: ListWorkflowOpt
 
   const result = calculateStackDependencies(stacks);
 
-  // StackDetails[] as serialized output
   return JSON.stringify(result);
 }
