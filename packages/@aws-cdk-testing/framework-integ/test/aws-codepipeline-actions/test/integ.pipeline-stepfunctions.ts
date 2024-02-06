@@ -15,7 +15,9 @@ const simpleStateMachine = new stepfunctions.StateMachine(stack, 'SimpleStateMac
   definition: startState,
 });
 
-const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline');
+const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline', {
+  crossAccountKeys: true,
+});
 pipeline.addStage({
   stageName: 'Source',
   actions: [

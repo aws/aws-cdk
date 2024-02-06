@@ -126,14 +126,14 @@ export interface TrailProps {
    *
    * @default - false
    */
-  readonly isOrganizationTrail?: boolean
+  readonly isOrganizationTrail?: boolean;
 
   /**
    * A JSON string that contains the insight types you want to log on a trail.
    *
    * @default - No Value.
    */
-  readonly insightTypes?: InsightType[]
+  readonly insightTypes?: InsightType[];
 }
 
 /**
