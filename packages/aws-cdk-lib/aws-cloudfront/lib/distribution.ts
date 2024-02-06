@@ -393,6 +393,60 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   /**
+   * Metric for the total number of viewer requests received by CloudFront, for all HTTP methods and for both HTTP and HTTPS requests.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('Requests', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the total number of bytes that viewers uploaded to your origin with CloudFront, using POST and PUT requests.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricBytesUploaded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('BytesUploaded', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the total number of bytes downloaded by viewers for GET, HEAD, and OPTIONS requests.
+   *
+   * @default - sum over 5 minutes
+   */
+  public metricBytesDownloaded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('BytesDownloaded', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * Metric for the percentage of all viewer requests for which the response's HTTP status code is 4xx or 5xx.
+   *
+   * @default - average over 5 minutes
+   */
+  public metricTotalErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('TotalErrorRate', props);
+  }
+
+  /**
+   * Metric for the percentage of all viewer requests for which the response's HTTP status code is 4xx.
+   *
+   * @default - average over 5 minutes
+   */
+  public metric4xxErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('4xxErrorRate', props);
+  }
+
+  /**
+   * Metric for the percentage of all viewer requests for which the response's HTTP status code is 5xx.
+   *
+   * @default - average over 5 minutes
+   */
+  public metric5xxErrorRate(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return this.metric('5xxErrorRate', props);
+  }
+
+  /**
    * Metric for the total time spent from when CloudFront receives a request to when it starts providing a response to the network (not the viewer),
    * for requests that are served from the origin, not the CloudFront cache.
    *
@@ -696,7 +750,7 @@ export enum HttpVersion {
   /** HTTP 2 and HTTP 3 */
   HTTP2_AND_3 = 'http2and3',
   /** HTTP 3 */
-  HTTP3 = 'http3'
+  HTTP3 = 'http3',
 }
 
 /**
@@ -709,7 +763,7 @@ export enum PriceClass {
   /** PRICE_CLASS_100 + South Africa, Kenya, Middle East, Japan, Singapore, South Korea, Taiwan, Hong Kong, & Philippines */
   PRICE_CLASS_200 = 'PriceClass_200',
   /** All locations */
-  PRICE_CLASS_ALL = 'PriceClass_All'
+  PRICE_CLASS_ALL = 'PriceClass_All',
 }
 
 /**
@@ -721,7 +775,7 @@ export enum ViewerProtocolPolicy {
   /** Will redirect HTTP requests to HTTPS */
   REDIRECT_TO_HTTPS = 'redirect-to-https',
   /** Both HTTP and HTTPS supported */
-  ALLOW_ALL = 'allow-all'
+  ALLOW_ALL = 'allow-all',
 }
 
 /**
@@ -754,7 +808,7 @@ export enum OriginProtocolPolicy {
  */
 export enum SSLMethod {
   SNI = 'sni-only',
-  VIP = 'vip'
+  VIP = 'vip',
 }
 
 /**
@@ -768,7 +822,7 @@ export enum SecurityPolicyProtocol {
   TLS_V1_1_2016 = 'TLSv1.1_2016',
   TLS_V1_2_2018 = 'TLSv1.2_2018',
   TLS_V1_2_2019 = 'TLSv1.2_2019',
-  TLS_V1_2_2021 = 'TLSv1.2_2021'
+  TLS_V1_2_2021 = 'TLSv1.2_2021',
 }
 
 /**

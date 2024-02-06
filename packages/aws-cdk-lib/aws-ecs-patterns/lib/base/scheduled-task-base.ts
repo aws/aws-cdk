@@ -70,7 +70,7 @@ export interface ScheduledTaskBaseProps {
    *
    * @default - a new security group will be created.
    */
-  readonly securityGroups?: ISecurityGroup[]
+  readonly securityGroups?: ISecurityGroup[];
 
   /**
     * Specifies whether to propagate the tags from the task definition to the task. If no value is specified, the tags are not propagated.
@@ -84,7 +84,7 @@ export interface ScheduledTaskBaseProps {
    *
    * @default - No tags are applied to the task
    */
-  readonly tags?: Tag[]
+  readonly tags?: Tag[];
 }
 
 export interface ScheduledTaskImageProps {

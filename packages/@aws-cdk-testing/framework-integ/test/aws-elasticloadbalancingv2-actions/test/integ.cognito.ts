@@ -13,9 +13,9 @@ import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as route53targets from 'aws-cdk-lib/aws-route53-targets';
 
 interface CognitoUserProps {
-  userPool: cognito.UserPool
-  username: string
-  password: string
+  userPool: cognito.UserPool;
+  username: string;
+  password: string;
 }
 /**
  * Cognito User for testing
@@ -77,9 +77,9 @@ class CognitoUser extends Construct {
 }
 
 interface CognitoStackProps extends StackProps {
-  hostedZoneId: string
-  hostedZoneName: string
-  domainName: string
+  hostedZoneId: string;
+  hostedZoneName: string;
+  domainName: string;
 }
 
 // This test can only be run as a dry-run at this time due to requiring a certificate
