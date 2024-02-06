@@ -597,9 +597,6 @@ export class CdkToolkit {
     }
   }
 
-  /**
-   * @deprecated Use cli.listStacks in cli.ts instead
-   */
   public async list(selectors: string[], options: { long?: boolean; json?: boolean } = { }): Promise<number> {
     const stacks = await this.selectStacksForList(selectors);
 
