@@ -34,7 +34,7 @@ The following targets are supported:
 8. `targets.KinesisStreamPutRecord`: [Put a record to an Amazon Kinesis Data Streams](#put-a-record-to-an-amazon-kinesis-data-streams)
 9. `targets.KinesisDataFirehosePutRecord`: [Put a record to a Kinesis Data Firehose](#put-a-record-to-a-kinesis-data-firehose)
 10. `targets.CodePipelineStartPipelineExecution`: [Start a CodePipeline execution](#start-a-codepipeline-execution)
-11. `targets.SageMakerStartPipelineExecution`: [Start a Sagemaker pipeline execution](#start-a-sagemaker-pipeline-execution)
+11. `targets.SageMakerStartPipelineExecution`: [Start a SageMaker pipeline execution](#start-a-sagemaker-pipeline-execution)
 
 ## Invoke a Lambda function
 
@@ -291,11 +291,11 @@ new Schedule(this, 'Schedule', {
 });
 ```
 
-## Start a Sagemaker pipeline execution
+## Start a SageMaker pipeline execution
 
-Use the `SageMakerStartPipelineExecution` target to start a new execution for a Sagemaker pipeline.
+Use the `SageMakerStartPipelineExecution` target to start a new execution for a SageMaker pipeline.
 
-The code snippet below creates an event rule with a Sagemaker pipeline as target which is
+The code snippet below creates an event rule with a SageMaker pipeline as target which is
 called every hour by Event Bridge Scheduler.
 
 ```ts
