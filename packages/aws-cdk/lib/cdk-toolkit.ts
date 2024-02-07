@@ -733,7 +733,7 @@ export class CdkToolkit {
    * @param options Options for CDK app creation
    */
   public async migrate(options: MigrateOptions): Promise<void> {
-    warning('This is an experimental feature and development on it is still in progress. We make no guarantees about the outcome or stability of the functionality.');
+    warning('This command is an experimental feature.');
     const language = options.language?.toLowerCase() ?? 'typescript';
     const environment = setEnvironment(options.account, options.region);
     let generateTemplateOutput: GenerateTemplateOutput | undefined;
