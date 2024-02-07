@@ -35,39 +35,36 @@ def handle_managed(request_type, notification_configuration):
   return notification_configuration
 
 def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old):
+    
+  def get_id(n):
+    n['Id'] = ''
+    strToHash=json.dumps(n, sort_keys=True).replace("'Name:' 'prefix'", "'Name:' 'Prefix'").replace("'Name:' 'suffix'", "'Name:' 'Suffix'").
+    return f"{stack_id}-{hash(strToHash)}"
+  
   def with_id(n):
-    n['Id'] = f"{stack_id}-{hash(json.dumps(n, sort_keys=True))}"
+    n['Id'] =  get_id(n)
     return n
 
-  # find external notifications
   external_notifications = {}
   existing_notifications = s3.get_bucket_notification_configuration(Bucket=bucket)
   for t in CONFIGURATION_TYPES:
     if request_type == 'Update':
-        ids = [with_id(n) for n in old.get(t, [])]
-        old_incoming_ids = [n['Id'] for n in ids]
-        # if the notification was created by us, we know what id to expect so we can filter by it.
-        external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'] in old_incoming_ids]
+        old_incoming_ids = [get_id(n) for n in old.get(t, [])]
+        external_notifications[t] = [n for n in existing_notifications.get(t, []) if not get_id(n) in old_incoming_ids]
     elif request_type == 'Create':
-        # if this is a create event then all existing notifications are external
         external_notifications[t] = [n for n in existing_notifications.get(t, [])]
-  # always treat EventBridge configuration as an external config if it already exists
-  # as there is no way to determine whether it's managed by us or not
   if EVENTBRIDGE_CONFIGURATION in existing_notifications:
     external_notifications[EVENTBRIDGE_CONFIGURATION] = existing_notifications[EVENTBRIDGE_CONFIGURATION]
 
-  # if delete, that's all we need
   if request_type == 'Delete':
     return external_notifications
 
-  # otherwise, merge external with incoming config and augment with id
   notifications = {}
   for t in CONFIGURATION_TYPES:
     external = external_notifications.get(t, [])
     incoming = [with_id(n) for n in notification_configuration.get(t, [])]
     notifications[t] = external + incoming
 
-  # EventBridge configuration is a special case because it's just an empty object if it exists
   if EVENTBRIDGE_CONFIGURATION in notification_configuration:
     notifications[EVENTBRIDGE_CONFIGURATION] = notification_configuration[EVENTBRIDGE_CONFIGURATION]
   elif EVENTBRIDGE_CONFIGURATION in external_notifications:
