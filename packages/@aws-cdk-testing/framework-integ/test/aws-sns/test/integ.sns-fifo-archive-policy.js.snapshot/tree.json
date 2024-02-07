@@ -21,10 +21,8 @@
                     "archivePolicy": {
                       "MessageRetentionPeriod": 12
                     },
-                    "contentBasedDeduplication": true,
-                    "displayName": "fooDisplayName",
                     "fifoTopic": true,
-                    "topicName": "fooTopic.fifo"
+                    "topicName": "SNSFifoArchivePolicyStack-MyTopic-5C2C77AF.fifo"
                   }
                 },
                 "constructInfo": {

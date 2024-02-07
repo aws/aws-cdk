@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "17a259a40e6e6dbc4525b8965ef7244a4a22ce0bea121883714c788851a531bc": {
+    "53e28b8a9139dc66425377550ef9098cfa5a92484bfb13294ace9606a2f4ecc9": {
       "source": {
         "path": "SNSFifoArchivePolicyStack.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "17a259a40e6e6dbc4525b8965ef7244a4a22ce0bea121883714c788851a531bc.json",
+          "objectKey": "53e28b8a9139dc66425377550ef9098cfa5a92484bfb13294ace9606a2f4ecc9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
