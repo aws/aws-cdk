@@ -174,7 +174,7 @@ export async function listWorkflow(toolkit: CdkToolkit, options: ListWorkflowOpt
         dependencies: [],
       };
 
-      for (const dependencyId of stack.dependencies.map(x => x.manifest.displayName ?? x.id)) {
+      for (const dependencyId of stack.dependencies.map(x => x.id)) {
         if (dependencyId.includes('.assets')) {
           continue;
         }
@@ -182,7 +182,7 @@ export async function listWorkflow(toolkit: CdkToolkit, options: ListWorkflowOpt
         const depStack = assembly.stackById(dependencyId);
 
         if (depStack.stackArtifacts[0].dependencies.length > 0 &&
-          depStack.stackArtifacts[0].dependencies.filter((dep) => !(dep.manifest.displayName ?? dep.id).includes('.assets')).length > 0) {
+          depStack.stackArtifacts[0].dependencies.filter((dep) => !(dep.id).includes('.assets')).length > 0) {
 
           const stackWithDeps = calculateStackDependencies(depStack);
 
