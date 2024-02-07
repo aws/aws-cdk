@@ -19,7 +19,7 @@ export interface GlueStartCrawlerRunProps extends sfn.TaskStateBaseProps {
 export class GlueStartCrawlerRun extends sfn.TaskStateBase {
 
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
-  protected readonly taskPolicies: iam.PolicyStatement[];
+  protected readonly taskPolicies?: iam.PolicyStatement[];
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
