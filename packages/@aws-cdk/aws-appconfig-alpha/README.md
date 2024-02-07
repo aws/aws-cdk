@@ -25,7 +25,7 @@ For a high level overview of what AWS AppConfig is and how it works, please take
 ## Basic Hosted Configuration Use Case
 
 > The main way most AWS AppConfig users utilize the service is through hosted configuration, which involves storing 
-configuration data directly within AWS AppConfig.
+> configuration data directly within AWS AppConfig.
 
 An example use case:
 
@@ -40,7 +40,6 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfig', {
   deployTo: [env],
   content: appconfig.ConfigurationContent.fromInlineText('This is my configuration content.'),
 });
-
 ```
 
 This will create the application and environment for your configuration and then deploy your configuration to the 
@@ -91,8 +90,8 @@ new appconfig.Environment(this, 'MyEnvironment', {
 });
 ```
 
-Environment monitors also support L1 CfnEnvironment.MonitorsProperty constructs. However, this is not the recommended approach 
-for CloudWatch alarms because a role will not be auto-generated if not provided.
+Environment monitors also support L1 `CfnEnvironment.MonitorsProperty` constructs through the `fromCfnMonitorsProperty` method.
+However, this is not the recommended approach for CloudWatch alarms because a role will not be auto-generated if not provided.
 
 ## Deployment Strategy
 
@@ -291,7 +290,7 @@ A sourced configuration represents configuration stored in any of the following:
 * Amazon S3 bucket
 * AWS Secrets Manager secret
 * Systems Manager 
-(SSM) Parameter Store parameter
+* (SSM) Parameter Store parameter
 * SSM document
 * AWS CodePipeline.
 
