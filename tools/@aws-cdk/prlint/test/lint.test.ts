@@ -197,6 +197,34 @@ describe('commit message format', () => {
     const prLinter = configureMock(issue, undefined);
     expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
   });
+
+  test('invalid capitalized title', async () => {
+    const issue = {
+      number: 1,
+      title: 'fix(aws-cdk-lib): Some title',
+      body: '',
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-integ-test' }],
+      user: {
+        login: 'author',
+      },
+    };
+    const prLinter = configureMock(issue, undefined);
+    await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(/The first word of the pull request title should not be capitalized. If the title starts with a CDK construct, it should be in backticks "``"/);
+  });
+
+  test('valid capitalized title with backticks', async () => {
+    const issue = {
+      number: 1,
+      title: 'fix(aws-cdk-lib): `CfnConstruct`',
+      body: '',
+      labels: [{ name: 'pr-linter/exempt-test' }, { name: 'pr-linter/exempt-integ-test' }],
+      user: {
+        login: 'author',
+      },
+    };
+    const prLinter = configureMock(issue, undefined);
+    expect(await prLinter.validatePullRequestTarget(SHA)).resolves;
+  });
 });
 
 describe('ban breaking changes in stable modules', () => {
@@ -1018,11 +1046,11 @@ describe('integration tests required on features', () => {
 
     test('with aws-cdk-automation author', async () => {
       const pr = {
-        title: 'chore: Update regions',
+        title: 'chore: update regions',
         number: 1234,
         labels: [],
         user: {
-          login: 'aws-cdk-automation'
+          login: 'aws-cdk-automation',
         },
       };
 
@@ -1032,7 +1060,7 @@ describe('integration tests required on features', () => {
 
     test('with another author', async () => {
       const pr = {
-        title: 'chore: Update regions',
+        title: 'chore: update regions',
         number: 1234,
         labels: [],
         user: {
