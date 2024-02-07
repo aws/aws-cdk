@@ -86,5 +86,5 @@ export enum LifecycleLabel {
   /**
    * spot instances
    */
-  SPOT = 'Ec2Spot'
+  SPOT = 'Ec2Spot',
 }

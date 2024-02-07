@@ -125,7 +125,7 @@ export enum RecordType {
    *
    * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#TXTFormat
    */
-  TXT = 'TXT'
+  TXT = 'TXT',
 }
 
 /**

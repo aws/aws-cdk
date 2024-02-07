@@ -60,6 +60,8 @@ You can omit `cluster` and `vpc` to let CDK create a new VPC with two AZs and cr
 
 You can customize the health check for your target group; otherwise it defaults to `HTTP` over port `80` hitting path `/`.
 
+You can customize the health check configuration of the container via the [`healthCheck`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ecs.HealthCheck.html) property; otherwise it defaults to the health check configuration from the container.
+
 Fargate services will use the `LATEST` platform version by default, but you can override by providing a value for the `platformVersion` property in the constructor.
 
 Fargate services use the default VPC Security Group unless one or more are provided using the `securityGroups` property in the constructor.

@@ -100,6 +100,15 @@ describe('Metric Math', () => {
     expect(m.warningsV2).toBeUndefined();
   });
 
+  test('metrics INSIGHT_RULE_METRIC expression does not produce warning for unknown identifier', () => {
+    const m = new MathExpression({
+      expression: "INSIGHT_RULE_METRIC('RejectedConnectionsRule', 'Sum')",
+      usingMetrics: {},
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
   test('math expression referring to unknown expressions produces a warning, even when nested', () => {
     const m = new MathExpression({
       expression: 'e1 + 5',

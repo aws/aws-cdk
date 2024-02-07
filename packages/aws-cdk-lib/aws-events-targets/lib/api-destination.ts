@@ -40,7 +40,7 @@ export interface ApiDestinationProps extends TargetBaseProps {
    *
    * @default - none
    */
-  readonly pathParameterValues?: string[]
+  readonly pathParameterValues?: string[];
 
   /**
    * Additional query string parameters sent to the API Destination
