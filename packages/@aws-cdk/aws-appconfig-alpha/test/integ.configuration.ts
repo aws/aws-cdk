@@ -1,4 +1,13 @@
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Duration, Stack, RemovalPolicy, Fn, SecretValue } from 'aws-cdk-lib';
+import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
+import { S3DeployAction, S3SourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
+import { Key } from 'aws-cdk-lib/aws-kms';
+import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
+import * as s3Deployment from 'aws-cdk-lib/aws-s3-deployment';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { CfnDocument, StringParameter } from 'aws-cdk-lib/aws-ssm';
 import {
   Application,
   ConfigurationContent,
@@ -10,15 +19,6 @@ import {
   RolloutStrategy,
   SourcedConfiguration,
 } from '../lib';
-import { Key } from 'aws-cdk-lib/aws-kms';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
-import { CfnDocument, StringParameter } from 'aws-cdk-lib/aws-ssm';
-import * as s3Deployment from 'aws-cdk-lib/aws-s3-deployment';
-import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
-import { S3DeployAction, S3SourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const SCHEMA_STR =
 `{

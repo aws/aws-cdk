@@ -1,7 +1,7 @@
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Stack, App } from 'aws-cdk-lib';
 import { FargateTaskDefinition } from 'aws-cdk-lib/aws-ecs';
 import { Application } from '../lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
 

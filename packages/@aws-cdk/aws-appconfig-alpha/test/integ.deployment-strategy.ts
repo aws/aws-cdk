@@ -1,6 +1,6 @@
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { DeploymentStrategy, RolloutStrategy } from '../lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
 

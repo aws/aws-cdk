@@ -1,8 +1,8 @@
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Stack, App, Duration } from 'aws-cdk-lib';
 import { EventBus } from 'aws-cdk-lib/aws-events';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Topic } from 'aws-cdk-lib/aws-sns';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import {
   DeploymentStrategy,
