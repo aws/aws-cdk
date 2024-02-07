@@ -21,7 +21,7 @@ export class LambdaDestination implements s3.IBucketNotificationDestination {
 
     if (bucket.node.tryFindChild(permissionId) === undefined) {
       this.fn.addPermission(permissionId, {
-        sourceAccount: Stack.of(bucket).account,
+        sourceAccount: bucket.account || Stack.of(bucket).account,
         principal: new iam.ServicePrincipal('s3.amazonaws.com'),
         sourceArn: bucket.bucketArn,
         // Placing the permissions node in the same scope as the s3 bucket.

@@ -80,4 +80,32 @@ describe('S3EventSource', () => {
       },
     });
   });
+
+  test('Cross account buckect access', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    const fn = new TestFunction(stack, 'Fn');
+
+    let accountB = '1234567';
+    //WHEN
+    const foreignBucket =
+      s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
+        bucketArn: 'arn:aws:s3:::some-bucket-not-in-this-account',
+        // The account the bucket really lives in
+        account: accountB,
+      });
+
+    // This will generate the IAM bindings
+    fn.addEventSource(new sources.S3EventSource(foreignBucket as s3.Bucket,
+      { events: [s3.EventType.OBJECT_CREATED] }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      'Principal': 's3.amazonaws.com',
+      'SourceAccount': '1234567',
+      'SourceArn': 'arn:aws:s3:::some-bucket-not-in-this-account',
+    });
+  });
 });
+
