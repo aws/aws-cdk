@@ -18,7 +18,7 @@ export interface GlueStartCrawlerRunProps extends sfn.TaskStateBaseProps {
 
 export class GlueStartCrawlerRun extends sfn.TaskStateBase {
 
-  protected readonly taskMetrics: sfn.TaskMetricsConfig;
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies: iam.PolicyStatement[];
 
   private readonly integrationPattern: sfn.IntegrationPattern;
@@ -40,12 +40,6 @@ export class GlueStartCrawlerRun extends sfn.TaskStateBase {
         'glue:GetCrawler',
       ],
     })];
-
-    this.taskMetrics = {
-      metricPrefixSingular: 'GlueCrawler',
-      metricPrefixPlural: 'GlueCrawlers',
-      metricDimensions: { GlueCrawlerName: this.props.crawlerName },
-    };
   }
 
   /**
