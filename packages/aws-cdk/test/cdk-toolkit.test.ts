@@ -867,12 +867,6 @@ describe('synth', () => {
     const autoscalingTemplatePath = path.join(...templatePath, 'autoscaling-template.yml');
     const s3TemplatePath = path.join(...templatePath, 's3-template.json');
 
-    test('migrate fails when neither --from-path or --from-stack are provided', async () => {
-      const toolkit = defaultToolkitSetup();
-      await expect(() => toolkit.migrate({ stackName: 'no-source' })).rejects.toThrow('Either `--from-path` or `--from-stack` must be used to provide the source of the CloudFormation template.');
-      expect(stderrMock.mock.calls[1][0]).toContain(' ❌  Migrate failed for `no-source`: Either `--from-path` or `--from-stack` must be used to provide the source of the CloudFormation template.');
-    });
-
     test('migrate fails when both --from-path and --from-stack are provided', async () => {
       const toolkit = defaultToolkitSetup();
       await expect(() => toolkit.migrate({

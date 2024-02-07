@@ -305,7 +305,7 @@ declare const pipeline: sagemaker.CfnPipeline;
 
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.minutes(60)),
-  target: new targets.CodePipelineStartPipelineExecution(pipeline, {
+  target: new targets.SageMakerStartPipelineExecution(pipeline, {
     pipelineParameterList: [{
       name: 'parameter-name',
       value: 'parameter-value',

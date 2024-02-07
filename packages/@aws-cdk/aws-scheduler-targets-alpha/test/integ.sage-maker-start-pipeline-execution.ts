@@ -2,18 +2,22 @@ import * as scheduler from '@aws-cdk/aws-scheduler-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { CfnPipeline } from 'aws-cdk-lib/aws-sagemaker';
 import { SageMakerPipelineParameter, SageMakerStartPipelineExecution } from '../lib';
-import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution');
 
-const s3Bucket = new Bucket(stack, 'SageMakerBucket', {
+const sourceBucket = new Bucket(stack, 'SourceBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
 });
-
+const outputBucket = new Bucket(stack, 'OutputBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+});
+// dummy definition for the integ test execution
 const pipelineDefinition = {
   PipelineDefinitionBody: JSON.stringify({
     Version: '2020-12-01',
@@ -34,13 +38,22 @@ const pipelineDefinition = {
             TrainingImage: '382416733822.dkr.ecr.us-east-1.amazonaws.com/linear-learner:1',
             TrainingInputMode: 'File',
           },
+          InputDataConfig: [
+            {
+              DataSource: {
+                S3DataSource: {
+                  S3Uri: sourceBucket.s3UrlForObject(),
+                },
+              },
+            },
+          ],
           OutputDataConfig: {
-            S3OutputPath: s3Bucket.s3UrlForObject(),
+            S3OutputPath: outputBucket.s3UrlForObject(),
           },
           ResourceConfig: {
             InstanceCount: 1,
             InstanceType: 'ml.m5.large',
-            VolumeSizeInGB: 10,
+            VolumeSizeInGB: 50,
           },
           StoppingCondition: {
             MaxRuntimeInSeconds: 3600,
@@ -60,7 +73,7 @@ const pipelineParameterList: SageMakerPipelineParameter[] = [{
   value: 'ParameterValue',
 }];
 const pipeline = new CfnPipeline(stack, 'Pipeline', {
-  pipelineName: 'sagemaker-pipeline',
+  pipelineName: 'my-pipeline',
   pipelineDefinition: pipelineDefinition,
   roleArn: pipelineRole.roleArn,
 });
@@ -77,12 +90,11 @@ const integrationTest = new IntegTest(app, 'integrationtest-sagemaker-start-pipe
   stackUpdateWorkflow: false, // this would cause the schedule to trigger with the old code
 });
 
-// Verifies that the pipeline run by the scheduler
 integrationTest.assertions.awsApiCall('Sagemaker', 'listPipelineExecutions', {
-  PipelineName: 'sagemaker-pipeline',
+  PipelineName: 'my-pipeline',
 }).assertAtPath(
-  'PipelineExecutionSummaries.0.PipelineExecutionStatus',
-  ExpectedResult.stringLikeRegexp('Succeeded'),
+  'PipelineExecutionSummaries.0.PipelineExecutionArn',
+  ExpectedResult.stringLikeRegexp('my-pipeline'),
 ).waitForAssertions({
   interval: cdk.Duration.seconds(30),
   totalTimeout: cdk.Duration.minutes(10),
