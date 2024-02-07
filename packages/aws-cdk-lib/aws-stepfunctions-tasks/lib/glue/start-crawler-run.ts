@@ -16,6 +16,11 @@ export interface GlueStartCrawlerRunProps extends sfn.TaskStateBaseProps {
 
 }
 
+/**
+ * Starts an AWS Glue Crawler in a Task state
+ *
+ * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-crawling.html#aws-glue-api-crawler-crawling-StartCrawler
+ */
 export class GlueStartCrawlerRun extends sfn.TaskStateBase {
 
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
