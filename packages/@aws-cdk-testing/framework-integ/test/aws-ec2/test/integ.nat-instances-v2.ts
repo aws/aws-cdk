@@ -8,7 +8,6 @@ class NatInstanceStack extends cdk.Stack {
     super(scope, id, props);
     this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
-    /// !show
     // Configure the `natGatewayProvider` when defining a Vpc
     const natGatewayProvider = ec2.NatProvider.instanceV2({
       instanceType: new ec2.InstanceType('t3.small'),
@@ -20,7 +19,6 @@ class NatInstanceStack extends cdk.Stack {
       // The 'natGateways' parameter now controls the number of NAT instances
       natGateways: 2,
     });
-    /// !hide
 
     Array.isArray(vpc);
     Array.isArray(natGatewayProvider.configuredGateways);
@@ -28,13 +26,8 @@ class NatInstanceStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-const testCase = new NatInstanceStack(app, 'aws-cdk-vpc-nat-instances', {
-  env: {
-    account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
-  },
-});
+const stack = new NatInstanceStack(app, 'aws-cdk-vpc-nat-instances-v2');
 
-new IntegTest(app, 'integ-test', {
-  testCases: [testCase],
+new IntegTest(app, 'nat-instance-v2-integ-test', {
+  testCases: [stack],
 });
