@@ -1,16 +1,17 @@
 import * as sfn from '../../../aws-stepfunctions';
-import { Stack } from '../../../core';
+import { App, Stack } from '../../../core';
 import { GlueStartCrawlerRun } from '../../lib/glue/start-crawler-run';
 
-const glueCrawlerName = 'GlueCrawler';
+const crawlerName = 'GlueCrawler';
 let stack: Stack;
 beforeEach(() => {
-  stack = new Stack();
+  const app = new App();
+  stack = new Stack(app);
 });
 
 test('Invoke glue job with job ARN', () => {
   const task = new GlueStartCrawlerRun(stack, 'Task', {
-    glueCrawlerName,
+    crawlerName,
   });
   new sfn.StateMachine(stack, 'SM', {
     definition: task,
@@ -21,7 +22,7 @@ test('Invoke glue job with job ARN', () => {
     Resource: 'arn:aws:states:::aws-sdk:glue:startCrawler',
     End: true,
     Parameters: {
-      Name: glueCrawlerName,
+      Name: crawlerName,
     },
   });
 });

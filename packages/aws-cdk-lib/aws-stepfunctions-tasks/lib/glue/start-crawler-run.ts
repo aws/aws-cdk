@@ -12,7 +12,7 @@ export interface GlueStartCrawlerRunProps extends sfn.TaskStateBaseProps {
   /**
    * Glue crawler name
    */
-  readonly glueCrawlerName: string;
+  readonly crawlerName: string;
 
 }
 
@@ -32,7 +32,7 @@ export class GlueStartCrawlerRun extends sfn.TaskStateBase {
         Stack.of(this).formatArn({
           service: 'glue',
           resource: 'crawler',
-          resourceName: this.props.glueCrawlerName,
+          resourceName: this.props.crawlerName,
         }),
       ],
       actions: [
@@ -44,7 +44,7 @@ export class GlueStartCrawlerRun extends sfn.TaskStateBase {
     this.taskMetrics = {
       metricPrefixSingular: 'GlueCrawler',
       metricPrefixPlural: 'GlueCrawlers',
-      metricDimensions: { GlueCrawlerName: this.props.glueCrawlerName },
+      metricDimensions: { GlueCrawlerName: this.props.crawlerName },
     };
   }
 
@@ -53,9 +53,9 @@ export class GlueStartCrawlerRun extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn('glue', 'startCrawler', this.integrationPattern),
+      Resource: integrationResourceArn('aws-sdk:glue', 'startCrawler', this.integrationPattern),
       Parameters: {
-        Name: this.props.glueCrawlerName,
+        Name: this.props.crawlerName,
       },
     };
   }
