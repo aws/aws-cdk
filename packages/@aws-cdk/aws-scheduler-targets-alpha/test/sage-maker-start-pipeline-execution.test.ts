@@ -1,68 +1,25 @@
 import { ScheduleExpression, Schedule } from '@aws-cdk/aws-scheduler-alpha';
-import { App, Duration, Stack } from 'aws-cdk-lib';
+import { App, Duration, Resource, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { AccountRootPrincipal, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { CfnPipeline } from 'aws-cdk-lib/aws-sagemaker';
+import { AccountRootPrincipal, Grant, IGrantable, Role } from 'aws-cdk-lib/aws-iam';
+import { IPipeline } from 'aws-cdk-lib/aws-sagemaker';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { SageMakerPipelineParameter, SageMakerStartPipelineExecution } from '../lib';
 
 describe('schedule target', () => {
   let app: App;
   let stack: Stack;
-  let pipeline: CfnPipeline;
+  let pipeline: IPipeline;
   const expr = ScheduleExpression.at(new Date(Date.UTC(1969, 10, 20, 0, 0, 0)));
   const pipelineParameterList: SageMakerPipelineParameter[] = [{
     name: 'MyParameterName',
     value: 'MyParameterValue',
   }];
-  const pipelineDefinition = {
-    PipelineDefinitionBody: JSON.stringify({
-      Version: '2020-12-01',
-      Metadata: {},
-      PipelineName: 'my-sagemaker-pipeline',
-      Stages: [
-        {
-          Name: 'MyTrainingStage',
-          Steps: [
-            {
-              Name: 'MyTrainingJob',
-              Type: 'Training',
-              Arguments: {
-                AlgorithmSpecification: {
-                  TrainingImage: '123456789012.dkr.ecr.us-west-2.amazonaws.com/my-training-image:latest',
-                  TrainingInputMode: 'File',
-                },
-                OutputDataConfig: {
-                  S3OutputPath: 's3://my-bucket/my-training-output',
-                },
-                ResourceConfig: {
-                  InstanceCount: 1,
-                  InstanceType: 'ml.m5.large',
-                  VolumeSizeInGB: 10,
-                },
-                StoppingCondition: {
-                  MaxRuntimeInSeconds: 3600,
-                },
-              },
-            },
-          ],
-        },
-      ],
-    }),
-  };
 
   beforeEach(() => {
     app = new App();
     stack = new Stack(app, 'Stack', { env: { region: 'us-east-1', account: '123456789012' } });
-    const pipelineRole = new Role(stack, 'SageMakerPipelineRole', {
-      assumedBy: new ServicePrincipal('sagemaker.amazonaws.com'),
-    });
-    pipelineRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'));
-    pipeline = new CfnPipeline(stack, 'MyPipeline', {
-      pipelineName: 'my-sagemaker-pipeline',
-      pipelineDefinition: pipelineDefinition,
-      roleArn: pipelineRole.roleArn,
-    });
+    pipeline = new FakePipeline(stack, 'MyPipeline', { pipelineName: 'MyPipeline1' });
   });
 
   test('creates IAM role and IAM policy for pipeline in the same account', () => {
@@ -78,19 +35,8 @@ describe('schedule target', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Arn: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':sagemaker:us-east-1:123456789012:pipeline/my-sagemaker-pipeline',
-              ],
-            ],
-          },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          Arn: 'MyPipeline1',
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTargetd15d6b89C69AEC', 'Arn'] },
           RetryPolicy: {},
           SageMakerPipelineParameters: {
             PipelineParameterList: [{
@@ -108,22 +54,11 @@ describe('schedule target', () => {
           {
             Action: 'sagemaker:StartPipelineExecution',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':sagemaker:us-east-1:123456789012:pipeline/my-sagemaker-pipeline',
-                ],
-              ],
-            },
+            Resource: 'MyPipeline1',
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: 'SchedulerRoleForTargetd15d6b89C69AEC' }],
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -161,18 +96,7 @@ describe('schedule target', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Arn: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':sagemaker:us-east-1:123456789012:pipeline/my-sagemaker-pipeline',
-              ],
-            ],
-          },
+          Arn: 'MyPipeline1',
           RoleArn: { 'Fn::GetAtt': ['ProvidedTargetRole8CFDD54A', 'Arn'] },
           RetryPolicy: {},
           SageMakerPipelineParameters: {
@@ -191,18 +115,7 @@ describe('schedule target', () => {
           {
             Action: 'sagemaker:StartPipelineExecution',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':sagemaker:us-east-1:123456789012:pipeline/my-sagemaker-pipeline',
-                ],
-              ],
-            },
+            Resource: 'MyPipeline1',
           },
         ],
       },
@@ -247,22 +160,11 @@ describe('schedule target', () => {
           {
             Action: 'sagemaker:StartPipelineExecution',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':sagemaker:us-east-1:123456789012:pipeline/my-sagemaker-pipeline',
-                ],
-              ],
-            },
+            Resource: 'MyPipeline1',
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: 'SchedulerRoleForTargetd15d6b89C69AEC' }],
     }, 1);
   });
 
@@ -273,15 +175,7 @@ describe('schedule target', () => {
         account: '123456789012',
       },
     });
-    const pipelineRole = new Role(stack2, 'SageMakerPipelineRole2', {
-      assumedBy: new ServicePrincipal('sagemaker.amazonaws.com'),
-    });
-    pipelineRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'));
-    const anotherTemplate = new CfnPipeline(stack2, 'AnotherTemplate', {
-      pipelineName: 'my-sagemaker-pipeline2',
-      pipelineDefinition: pipelineDefinition,
-      roleArn: pipelineRole.roleArn,
-    });
+    const anotherTemplate = new FakePipeline(stack2, 'AnotherTemplate', { pipelineName: 'MyPipeline2' });
 
     const pipelineTarget = new SageMakerStartPipelineExecution(anotherTemplate, {
       pipelineParameterList,
@@ -295,17 +189,8 @@ describe('schedule target', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Arn: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                { Ref: 'AWS::Partition' },
-                ':sagemaker:us-east-1:123456789012:pipeline/my-sagemaker-pipeline2',
-              ],
-            ],
-          },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          Arn: 'MyPipeline2',
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget6a2eb1D8028120', 'Arn'] },
           RetryPolicy: {},
           SageMakerPipelineParameters: {
             PipelineParameterList: [{
@@ -323,22 +208,11 @@ describe('schedule target', () => {
           {
             Action: 'sagemaker:StartPipelineExecution',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':sagemaker:us-east-1:123456789012:pipeline/my-sagemaker-pipeline2',
-                ],
-              ],
-            },
+            Resource: 'MyPipeline2',
           },
         ],
       },
-      Roles: [{ Ref: 'SchedulerRoleForTarget1441a743A31888' }],
+      Roles: [{ Ref: 'SchedulerRoleForTarget6a2eb1D8028120' }],
     });
   });
 
@@ -358,18 +232,7 @@ describe('schedule target', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Arn: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':sagemaker:us-east-1:123456789012:pipeline/my-sagemaker-pipeline',
-              ],
-            ],
-          },
+          Arn: 'MyPipeline1',
           RoleArn: 'arn:aws:iam::123456789012:role/someRole',
           RetryPolicy: {},
           SageMakerPipelineParameters: {
@@ -388,18 +251,7 @@ describe('schedule target', () => {
           {
             Action: 'sagemaker:StartPipelineExecution',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':sagemaker:us-east-1:123456789012:pipeline/my-sagemaker-pipeline',
-                ],
-              ],
-            },
+            Resource: 'MyPipeline1',
           },
         ],
       },
@@ -414,15 +266,7 @@ describe('schedule target', () => {
         account: '123456789012',
       },
     });
-    const pipelineRole = new Role(stack2, 'SageMakerPipelineRole2', {
-      assumedBy: new ServicePrincipal('sagemaker.amazonaws.com'),
-    });
-    pipelineRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'));
-    const anotherTemplate = new CfnPipeline(stack2, 'AnotherTemplate', {
-      pipelineName: 'my-sagemaker-pipeline2',
-      pipelineDefinition: pipelineDefinition,
-      roleArn: pipelineRole.roleArn,
-    });
+    const anotherTemplate = new FakePipeline(stack2, 'AnotherTemplate', { pipelineName: 'MyPipeline2' });
     const importedRole = Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/someRole');
 
     const pipelineTarget = new SageMakerStartPipelineExecution(anotherTemplate, {
@@ -438,18 +282,7 @@ describe('schedule target', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Arn: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':sagemaker:us-east-1:123456789012:pipeline/my-sagemaker-pipeline2',
-              ],
-            ],
-          },
+          Arn: 'MyPipeline2',
           RoleArn: 'arn:aws:iam::123456789012:role/someRole',
           RetryPolicy: {},
           SageMakerPipelineParameters: {
@@ -468,18 +301,7 @@ describe('schedule target', () => {
           {
             Action: 'sagemaker:StartPipelineExecution',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':sagemaker:us-east-1:123456789012:pipeline/my-sagemaker-pipeline2',
-                ],
-              ],
-            },
+            Resource: 'MyPipeline2',
           },
         ],
       },
@@ -494,15 +316,7 @@ describe('schedule target', () => {
         account: '234567890123',
       },
     });
-    const pipelineRole = new Role(stack2, 'SageMakerPipelineRole2', {
-      assumedBy: new ServicePrincipal('sagemaker.amazonaws.com'),
-    });
-    pipelineRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'));
-    const anotherTemplate = new CfnPipeline(stack2, 'AnotherTemplate', {
-      pipelineName: 'my-sagemaker-pipeline2',
-      pipelineDefinition: pipelineDefinition,
-      roleArn: pipelineRole.roleArn,
-    });
+    const anotherTemplate = new FakePipeline(stack2, 'AnotherTemplate', { pipelineName: 'MyPipeline2' });
 
     const pipelineTarget = new SageMakerStartPipelineExecution(anotherTemplate, {
       pipelineParameterList,
@@ -522,15 +336,7 @@ describe('schedule target', () => {
         account: '123456789012',
       },
     });
-    const pipelineRole = new Role(stack2, 'SageMakerPipelineRole2', {
-      assumedBy: new ServicePrincipal('sagemaker.amazonaws.com'),
-    });
-    pipelineRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'));
-    const anotherTemplate = new CfnPipeline(stack2, 'AnotherTemplate', {
-      pipelineName: 'my-sagemaker-pipeline2',
-      pipelineDefinition: pipelineDefinition,
-      roleArn: pipelineRole.roleArn,
-    });
+    const anotherTemplate = new FakePipeline(stack2, 'AnotherTemplate', { pipelineName: 'MyPipeline2' });
 
     const pipelineTarget = new SageMakerStartPipelineExecution(anotherTemplate, {
       pipelineParameterList,
@@ -670,19 +476,8 @@ describe('schedule target', () => {
     Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
       Properties: {
         Target: {
-          Arn: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':sagemaker:us-east-1:123456789012:pipeline/my-sagemaker-pipeline',
-              ],
-            ],
-          },
-          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTarget1441a743A31888', 'Arn'] },
+          Arn: 'MyPipeline1',
+          RoleArn: { 'Fn::GetAtt': ['SchedulerRoleForTargetd15d6b89C69AEC', 'Arn'] },
           RetryPolicy: {
             MaximumEventAgeInSeconds: 10800,
             MaximumRetryAttempts: 5,
@@ -753,3 +548,26 @@ describe('schedule target', () => {
       })).toThrow(/pipelineParameterList length must be between 0 and 200, got 201/);
   });
 });
+
+interface FakePipelineProps {
+  readonly pipelineName: string;
+}
+
+class FakePipeline extends Resource implements IPipeline {
+  public readonly pipelineArn;
+
+  public readonly pipelineName;
+  constructor(scope: Stack, id: string, props: FakePipelineProps) {
+    super(scope, id);
+    this.pipelineArn = props.pipelineName;
+    this.pipelineName = props.pipelineName;
+  }
+
+  public grantStartPipelineExecution(grantee: IGrantable): Grant {
+    return Grant.addToPrincipal({
+      grantee,
+      actions: ['sagemaker:StartPipelineExecution'],
+      resourceArns: [this.pipelineArn],
+    });
+  }
+}

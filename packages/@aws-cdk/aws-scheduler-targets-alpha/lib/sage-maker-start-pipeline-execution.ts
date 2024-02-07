@@ -1,7 +1,7 @@
 import { ISchedule, IScheduleTarget, ScheduleTargetConfig } from '@aws-cdk/aws-scheduler-alpha';
-import { ArnFormat, Names, Stack } from 'aws-cdk-lib';
-import { IRole, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { CfnPipeline } from 'aws-cdk-lib/aws-sagemaker';
+import { Names } from 'aws-cdk-lib';
+import { IRole } from 'aws-cdk-lib/aws-iam';
+import { IPipeline } from 'aws-cdk-lib/aws-sagemaker';
 import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
 import { sameEnvDimension } from './util';
 
@@ -40,20 +40,11 @@ export interface SageMakerStartPipelineExecutionProps extends ScheduleTargetBase
  * Use a SageMaker pipeline as a target for AWS EventBridge Scheduler.
  */
 export class SageMakerStartPipelineExecution extends ScheduleTargetBase implements IScheduleTarget {
-  private readonly pipelineArn: string;
-
   constructor(
-    private readonly pipeline: CfnPipeline,
+    private readonly pipeline: IPipeline,
     private readonly props: SageMakerStartPipelineExecutionProps = {},
   ) {
-    const targetArn = Stack.of(pipeline).formatArn({
-      service: 'sagemaker',
-      resource: 'pipeline',
-      resourceName: pipeline.pipelineName,
-      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-    });
-    super(props, targetArn);
-    this.pipelineArn = targetArn;
+    super(props, pipeline.pipelineArn);
 
     if (props.pipelineParameterList !== undefined && props.pipelineParameterList.length > 200) {
       throw new Error(`pipelineParameterList length must be between 0 and 200, got ${props.pipelineParameterList.length}`);
@@ -73,13 +64,10 @@ export class SageMakerStartPipelineExecution extends ScheduleTargetBase implemen
       throw new Error(`Cannot grant permission to execution role in account ${this.props.role.env.account} to invoke target ${Names.nodeUniqueId(this.pipeline.node)} in account ${this.pipeline.stack.account}. Both the target and the execution role must be in the same account.`);
     }
 
-    role.addToPrincipalPolicy(new PolicyStatement({
-      actions: ['sagemaker:StartPipelineExecution'],
-      resources: [this.pipelineArn],
-    }));
+    this.pipeline.grantStartPipelineExecution(role);
   }
 
-  protected bindBaseTargetConfig(_schedule: ISchedule): ScheduleTargetConfig {
+  protected bindBaseTargetConfig(schedule: ISchedule): ScheduleTargetConfig {
     const sageMakerPipelineParameters = this.props.pipelineParameterList ? {
       pipelineParameterList: this.props.pipelineParameterList.map(param => {
         return {
@@ -89,7 +77,7 @@ export class SageMakerStartPipelineExecution extends ScheduleTargetBase implemen
       }),
     } : undefined;
     return {
-      ...super.bindBaseTargetConfig(_schedule),
+      ...super.bindBaseTargetConfig(schedule),
       sageMakerPipelineParameters,
     };
   }

@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "SourceBucketDDD2130A": {
+  "PipelineSourceBucket23FDFC28": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
     "Tags": [
@@ -13,11 +13,11 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "SourceBucketPolicy703DFBF9": {
+  "PipelineSourceBucketPolicy017B174D": {
    "Type": "AWS::S3::BucketPolicy",
    "Properties": {
     "Bucket": {
-     "Ref": "SourceBucketDDD2130A"
+     "Ref": "PipelineSourceBucket23FDFC28"
     },
     "PolicyDocument": {
      "Statement": [
@@ -40,7 +40,7 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "SourceBucketDDD2130A",
+          "PipelineSourceBucket23FDFC28",
           "Arn"
          ]
         },
@@ -50,7 +50,7 @@
           [
            {
             "Fn::GetAtt": [
-             "SourceBucketDDD2130A",
+             "PipelineSourceBucket23FDFC28",
              "Arn"
             ]
            },
@@ -65,7 +65,7 @@
     }
    }
   },
-  "SourceBucketAutoDeleteObjectsCustomResourceC68FC040": {
+  "PipelineSourceBucketAutoDeleteObjectsCustomResource041F2E1E": {
    "Type": "Custom::S3AutoDeleteObjects",
    "Properties": {
     "ServiceToken": {
@@ -75,14 +75,159 @@
      ]
     },
     "BucketName": {
-     "Ref": "SourceBucketDDD2130A"
+     "Ref": "PipelineSourceBucket23FDFC28"
     }
    },
    "DependsOn": [
-    "SourceBucketPolicy703DFBF9"
+    "PipelineSourceBucketPolicy017B174D"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "PipelineOutputBucket98EA5F71": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PipelineOutputBucketPolicy4566E5A8": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "PipelineOutputBucket98EA5F71"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "PipelineOutputBucket98EA5F71",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "PipelineOutputBucket98EA5F71",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PipelineOutputBucketAutoDeleteObjectsCustomResource0CB6E67C": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "PipelineOutputBucket98EA5F71"
+    }
+   },
+   "DependsOn": [
+    "PipelineOutputBucketPolicy4566E5A8"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PipelineSageMakerPipelineRole7D1FE5F8": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sagemaker.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonSageMakerFullAccess"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "PipelineC660917D": {
+   "Type": "AWS::SageMaker::Pipeline",
+   "Properties": {
+    "PipelineDefinition": {
+     "PipelineDefinitionBody": {
+      "Fn::Join": [
+       "",
+       [
+        "{\"Version\":\"2020-12-01\",\"Metadata\":{},\"Parameters\":[{\"Name\":\"ParameterName\",\"Type\":\"String\",\"DefaultValue\":\"Value\"}],\"Steps\":[{\"Name\":\"TrainingStep\",\"Type\":\"Training\",\"Arguments\":{\"AlgorithmSpecification\":{\"TrainingImage\":\"382416733822.dkr.ecr.us-east-1.amazonaws.com/linear-learner:1\",\"TrainingInputMode\":\"File\"},\"InputDataConfig\":[{\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"s3://",
+        {
+         "Ref": "PipelineSourceBucket23FDFC28"
+        },
+        "\"}}}],\"OutputDataConfig\":{\"S3OutputPath\":\"s3://",
+        {
+         "Ref": "PipelineOutputBucket98EA5F71"
+        },
+        "\"},\"ResourceConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.m5.large\",\"VolumeSizeInGB\":50},\"StoppingCondition\":{\"MaxRuntimeInSeconds\":3600}}}]}"
+       ]
+      ]
+     }
+    },
+    "PipelineName": "my-pipeline",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "PipelineSageMakerPipelineRole7D1FE5F8",
+      "Arn"
+     ]
+    }
+   }
   },
   "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
    "Type": "AWS::IAM::Role",
@@ -131,7 +276,7 @@
       [
        "Lambda function for auto-deleting objects in ",
        {
-        "Ref": "SourceBucketDDD2130A"
+        "Ref": "PipelineSourceBucket23FDFC28"
        },
        " S3 bucket."
       ]
@@ -141,151 +286,6 @@
    "DependsOn": [
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
-  },
-  "OutputBucket7114EB27": {
-   "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
-     }
-    ]
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "OutputBucketPolicyAE009DDC": {
-   "Type": "AWS::S3::BucketPolicy",
-   "Properties": {
-    "Bucket": {
-     "Ref": "OutputBucket7114EB27"
-    },
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": [
-        "s3:DeleteObject*",
-        "s3:GetBucket*",
-        "s3:List*",
-        "s3:PutBucketPolicy"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "OutputBucket7114EB27",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "OutputBucket7114EB27",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
-  "OutputBucketAutoDeleteObjectsCustomResource6C7A161F": {
-   "Type": "Custom::S3AutoDeleteObjects",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
-      "Arn"
-     ]
-    },
-    "BucketName": {
-     "Ref": "OutputBucket7114EB27"
-    }
-   },
-   "DependsOn": [
-    "OutputBucketPolicyAE009DDC"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "SageMakerPipelineRole4BE63DC1": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "sagemaker.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonSageMakerFullAccess"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "Pipeline": {
-   "Type": "AWS::SageMaker::Pipeline",
-   "Properties": {
-    "PipelineDefinition": {
-     "PipelineDefinitionBody": {
-      "Fn::Join": [
-       "",
-       [
-        "{\"Version\":\"2020-12-01\",\"Metadata\":{},\"Parameters\":[{\"Name\":\"ParameterName\",\"Type\":\"String\",\"DefaultValue\":\"Value\"}],\"Steps\":[{\"Name\":\"TrainingStep\",\"Type\":\"Training\",\"Arguments\":{\"AlgorithmSpecification\":{\"TrainingImage\":\"382416733822.dkr.ecr.us-east-1.amazonaws.com/linear-learner:1\",\"TrainingInputMode\":\"File\"},\"InputDataConfig\":[{\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"s3://",
-        {
-         "Ref": "SourceBucketDDD2130A"
-        },
-        "\"}}}],\"OutputDataConfig\":{\"S3OutputPath\":\"s3://",
-        {
-         "Ref": "OutputBucket7114EB27"
-        },
-        "\"},\"ResourceConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.m5.large\",\"VolumeSizeInGB\":50},\"StoppingCondition\":{\"MaxRuntimeInSeconds\":3600}}}]}"
-       ]
-      ]
-     }
-    },
-    "PipelineName": "my-pipeline",
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "SageMakerPipelineRole4BE63DC1",
-      "Arn"
-     ]
-    }
-   }
   },
   "Schedule83A77FD1": {
    "Type": "AWS::Scheduler::Schedule",

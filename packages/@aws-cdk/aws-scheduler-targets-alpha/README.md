@@ -301,7 +301,7 @@ called every hour by Event Bridge Scheduler.
 ```ts
 import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
 
-declare const pipeline: sagemaker.CfnPipeline;
+declare const pipeline: sagemaker.IPipeline;
 
 new Schedule(this, 'Schedule', {
   schedule: ScheduleExpression.rate(Duration.minutes(60)),

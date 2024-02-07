@@ -8,121 +8,343 @@
         "id": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution",
         "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution",
         "children": {
-          "SourceBucket": {
-            "id": "SourceBucket",
-            "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SourceBucket",
+          "Pipeline": {
+            "id": "Pipeline",
+            "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline",
             "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SourceBucket/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
-                  "aws:cdk:cloudformation:props": {
-                    "tags": [
-                      {
-                        "key": "aws-cdk:auto-delete-objects",
-                        "value": "true"
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                  "version": "0.0.0"
-                }
-              },
-              "Policy": {
-                "id": "Policy",
-                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SourceBucket/Policy",
+              "SourceBucket": {
+                "id": "SourceBucket",
+                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SourceBucket",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SourceBucket/Policy/Resource",
+                    "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SourceBucket/Resource",
                     "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                       "aws:cdk:cloudformation:props": {
-                        "bucket": {
-                          "Ref": "SourceBucketDDD2130A"
-                        },
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": [
-                                "s3:DeleteObject*",
-                                "s3:GetBucket*",
-                                "s3:List*",
-                                "s3:PutBucketPolicy"
-                              ],
-                              "Effect": "Allow",
-                              "Principal": {
-                                "AWS": {
-                                  "Fn::GetAtt": [
-                                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-                                    "Arn"
-                                  ]
-                                }
-                              },
-                              "Resource": [
+                        "tags": [
+                          {
+                            "key": "aws-cdk:auto-delete-objects",
+                            "value": "true"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SourceBucket/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SourceBucket/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "bucket": {
+                              "Ref": "PipelineSourceBucket23FDFC28"
+                            },
+                            "policyDocument": {
+                              "Statement": [
                                 {
-                                  "Fn::GetAtt": [
-                                    "SourceBucketDDD2130A",
-                                    "Arn"
-                                  ]
-                                },
-                                {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      {
-                                        "Fn::GetAtt": [
-                                          "SourceBucketDDD2130A",
-                                          "Arn"
+                                  "Action": [
+                                    "s3:DeleteObject*",
+                                    "s3:GetBucket*",
+                                    "s3:List*",
+                                    "s3:PutBucketPolicy"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "AWS": {
+                                      "Fn::GetAtt": [
+                                        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                                        "Arn"
+                                      ]
+                                    }
+                                  },
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "PipelineSourceBucket23FDFC28",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "PipelineSourceBucket23FDFC28",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
                                         ]
-                                      },
-                                      "/*"
-                                    ]
+                                      ]
+                                    }
                                   ]
                                 }
-                              ]
+                              ],
+                              "Version": "2012-10-17"
                             }
-                          ],
-                          "Version": "2012-10-17"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "AutoDeleteObjectsCustomResource": {
+                    "id": "AutoDeleteObjectsCustomResource",
+                    "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SourceBucket/AutoDeleteObjectsCustomResource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SourceBucket/AutoDeleteObjectsCustomResource/Default",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
-              "AutoDeleteObjectsCustomResource": {
-                "id": "AutoDeleteObjectsCustomResource",
-                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SourceBucket/AutoDeleteObjectsCustomResource",
+              "OutputBucket": {
+                "id": "OutputBucket",
+                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/OutputBucket",
                 "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SourceBucket/AutoDeleteObjectsCustomResource/Default",
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/OutputBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "aws-cdk:auto-delete-objects",
+                            "value": "true"
+                          }
+                        ]
+                      }
+                    },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Policy": {
+                    "id": "Policy",
+                    "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/OutputBucket/Policy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/OutputBucket/Policy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "bucket": {
+                              "Ref": "PipelineOutputBucket98EA5F71"
+                            },
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "s3:DeleteObject*",
+                                    "s3:GetBucket*",
+                                    "s3:List*",
+                                    "s3:PutBucketPolicy"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "AWS": {
+                                      "Fn::GetAtt": [
+                                        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                                        "Arn"
+                                      ]
+                                    }
+                                  },
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "PipelineOutputBucket98EA5F71",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "PipelineOutputBucket98EA5F71",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "AutoDeleteObjectsCustomResource": {
+                    "id": "AutoDeleteObjectsCustomResource",
+                    "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/OutputBucket/AutoDeleteObjectsCustomResource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/OutputBucket/AutoDeleteObjectsCustomResource/Default",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "SageMakerPipelineRole": {
+                "id": "SageMakerPipelineRole",
+                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SageMakerPipelineRole",
+                "children": {
+                  "ImportSageMakerPipelineRole": {
+                    "id": "ImportSageMakerPipelineRole",
+                    "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SageMakerPipelineRole/ImportSageMakerPipelineRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SageMakerPipelineRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "sagemaker.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/AmazonSageMakerFullAccess"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SageMaker::Pipeline",
+                  "aws:cdk:cloudformation:props": {
+                    "pipelineDefinition": {
+                      "PipelineDefinitionBody": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "{\"Version\":\"2020-12-01\",\"Metadata\":{},\"Parameters\":[{\"Name\":\"ParameterName\",\"Type\":\"String\",\"DefaultValue\":\"Value\"}],\"Steps\":[{\"Name\":\"TrainingStep\",\"Type\":\"Training\",\"Arguments\":{\"AlgorithmSpecification\":{\"TrainingImage\":\"382416733822.dkr.ecr.us-east-1.amazonaws.com/linear-learner:1\",\"TrainingInputMode\":\"File\"},\"InputDataConfig\":[{\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"s3://",
+                            {
+                              "Ref": "PipelineSourceBucket23FDFC28"
+                            },
+                            "\"}}}],\"OutputDataConfig\":{\"S3OutputPath\":\"s3://",
+                            {
+                              "Ref": "PipelineOutputBucket98EA5F71"
+                            },
+                            "\"},\"ResourceConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.m5.large\",\"VolumeSizeInGB\":50},\"StoppingCondition\":{\"MaxRuntimeInSeconds\":3600}}}]}"
+                          ]
+                        ]
+                      }
+                    },
+                    "pipelineName": "my-pipeline",
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "PipelineSageMakerPipelineRole7D1FE5F8",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
@@ -133,242 +355,30 @@
                 "id": "Staging",
                 "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Role": {
                 "id": "Role",
                 "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Handler": {
                 "id": "Handler",
                 "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
-              "version": "0.0.0"
-            }
-          },
-          "OutputBucket": {
-            "id": "OutputBucket",
-            "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/OutputBucket",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/OutputBucket/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
-                  "aws:cdk:cloudformation:props": {
-                    "tags": [
-                      {
-                        "key": "aws-cdk:auto-delete-objects",
-                        "value": "true"
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                  "version": "0.0.0"
-                }
-              },
-              "Policy": {
-                "id": "Policy",
-                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/OutputBucket/Policy",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/OutputBucket/Policy/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
-                      "aws:cdk:cloudformation:props": {
-                        "bucket": {
-                          "Ref": "OutputBucket7114EB27"
-                        },
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": [
-                                "s3:DeleteObject*",
-                                "s3:GetBucket*",
-                                "s3:List*",
-                                "s3:PutBucketPolicy"
-                              ],
-                              "Effect": "Allow",
-                              "Principal": {
-                                "AWS": {
-                                  "Fn::GetAtt": [
-                                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-                                    "Arn"
-                                  ]
-                                }
-                              },
-                              "Resource": [
-                                {
-                                  "Fn::GetAtt": [
-                                    "OutputBucket7114EB27",
-                                    "Arn"
-                                  ]
-                                },
-                                {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      {
-                                        "Fn::GetAtt": [
-                                          "OutputBucket7114EB27",
-                                          "Arn"
-                                        ]
-                                      },
-                                      "/*"
-                                    ]
-                                  ]
-                                }
-                              ]
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
-                }
-              },
-              "AutoDeleteObjectsCustomResource": {
-                "id": "AutoDeleteObjectsCustomResource",
-                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/OutputBucket/AutoDeleteObjectsCustomResource",
-                "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/OutputBucket/AutoDeleteObjectsCustomResource/Default",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
-            }
-          },
-          "SageMakerPipelineRole": {
-            "id": "SageMakerPipelineRole",
-            "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SageMakerPipelineRole",
-            "children": {
-              "ImportSageMakerPipelineRole": {
-                "id": "ImportSageMakerPipelineRole",
-                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SageMakerPipelineRole/ImportSageMakerPipelineRole",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SageMakerPipelineRole/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                  "aws:cdk:cloudformation:props": {
-                    "assumeRolePolicyDocument": {
-                      "Statement": [
-                        {
-                          "Action": "sts:AssumeRole",
-                          "Effect": "Allow",
-                          "Principal": {
-                            "Service": "sagemaker.amazonaws.com"
-                          }
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    },
-                    "managedPolicyArns": [
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":iam::aws:policy/AmazonSageMakerFullAccess"
-                          ]
-                        ]
-                      }
-                    ]
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
-            }
-          },
-          "Pipeline": {
-            "id": "Pipeline",
-            "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline",
-            "attributes": {
-              "aws:cdk:cloudformation:type": "AWS::SageMaker::Pipeline",
-              "aws:cdk:cloudformation:props": {
-                "pipelineDefinition": {
-                  "PipelineDefinitionBody": {
-                    "Fn::Join": [
-                      "",
-                      [
-                        "{\"Version\":\"2020-12-01\",\"Metadata\":{},\"Parameters\":[{\"Name\":\"ParameterName\",\"Type\":\"String\",\"DefaultValue\":\"Value\"}],\"Steps\":[{\"Name\":\"TrainingStep\",\"Type\":\"Training\",\"Arguments\":{\"AlgorithmSpecification\":{\"TrainingImage\":\"382416733822.dkr.ecr.us-east-1.amazonaws.com/linear-learner:1\",\"TrainingInputMode\":\"File\"},\"InputDataConfig\":[{\"DataSource\":{\"S3DataSource\":{\"S3Uri\":\"s3://",
-                        {
-                          "Ref": "SourceBucketDDD2130A"
-                        },
-                        "\"}}}],\"OutputDataConfig\":{\"S3OutputPath\":\"s3://",
-                        {
-                          "Ref": "OutputBucket7114EB27"
-                        },
-                        "\"},\"ResourceConfig\":{\"InstanceCount\":1,\"InstanceType\":\"ml.m5.large\",\"VolumeSizeInGB\":50},\"StoppingCondition\":{\"MaxRuntimeInSeconds\":3600}}}]}"
-                      ]
-                    ]
-                  }
-                },
-                "pipelineName": "my-pipeline",
-                "roleArn": {
-                  "Fn::GetAtt": [
-                    "SageMakerPipelineRole4BE63DC1",
-                    "Arn"
-                  ]
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_sagemaker.CfnPipeline",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "Schedule": {
@@ -430,8 +440,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_scheduler.CfnSchedule",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
@@ -448,8 +458,8 @@
                 "id": "ImportSchedulerRoleForTarget-1441a7",
                 "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-1441a7/ImportSchedulerRoleForTarget-1441a7",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Resource": {
@@ -480,8 +490,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "DefaultPolicy": {
@@ -532,42 +542,42 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
         }
       },
       "integrationtest-sagemaker-start-pipeline-execution": {
@@ -620,14 +630,14 @@
                             "id": "Default",
                             "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/Default/Default",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CustomResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "WaitFor": {
@@ -650,8 +660,8 @@
                                 "id": "Invoke",
                                 "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
                                 }
                               }
                             },
@@ -676,8 +686,8 @@
                                 "id": "Invoke",
                                 "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.CfnResource",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
                                 }
                               }
                             },
@@ -690,16 +700,16 @@
                             "id": "Role",
                             "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/WaitFor/Role",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           },
                           "Resource": {
                             "id": "Resource",
                             "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/WaitFor/Resource",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.CfnResource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -712,8 +722,8 @@
                         "id": "AssertionResults",
                         "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/AssertionResults",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnOutput",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
@@ -730,24 +740,24 @@
                         "id": "Staging",
                         "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Role": {
                         "id": "Role",
                         "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Handler": {
                         "id": "Handler",
                         "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
@@ -764,24 +774,24 @@
                         "id": "Staging",
                         "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Role": {
                         "id": "Role",
                         "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Handler": {
                         "id": "Handler",
                         "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
@@ -798,24 +808,24 @@
                         "id": "Staging",
                         "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Role": {
                         "id": "Role",
                         "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Handler": {
                         "id": "Handler",
                         "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
@@ -828,22 +838,22 @@
                     "id": "BootstrapVersion",
                     "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
@@ -868,8 +878,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
     }
   }
 }
