@@ -55,7 +55,7 @@ export enum IgnoreMode {
    * This is the default for Docker image assets if the '@aws-cdk/aws-ecr-assets:dockerIgnoreSupport'
    * context flag is set.
    */
-  DOCKER = 'docker'
+  DOCKER = 'docker',
 }
 
 interface FileOptions {
