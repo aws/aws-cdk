@@ -164,7 +164,7 @@ export interface DatabaseInstanceProps {
    *
    * @default RemovalPolicy.Retain
    */
-  readonly removalPolicy?: cdk.RemovalPolicy
+  readonly removalPolicy?: cdk.RemovalPolicy;
 
   /**
    * A value that indicates whether to enable Performance Insights for the DB Instance.

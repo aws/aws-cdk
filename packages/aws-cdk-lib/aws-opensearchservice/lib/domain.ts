@@ -668,6 +668,22 @@ export interface DomainProps {
    * @default - IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
+
+  /**
+   * Specify whether to create a CloudWatch Logs resource policy or not.
+   *
+   * When logging is enabled for the domain, a CloudWatch Logs resource policy is created by default.
+   * However, CloudWatch Logs supports only 10 resource policies per region.
+   * If you enable logging for several domains, it may hit the quota and cause an error.
+   * By setting this property to true, creating a resource policy is suppressed, allowing you to avoid this problem.
+   *
+   * If you set this option to true, you must create a resource policy before deployment.
+   *
+   * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createdomain-configure-slow-logs.html
+   *
+   * @default - false
+   */
+  readonly suppressLogsResourcePolicy?: boolean;
 }
 
 /**
@@ -1608,7 +1624,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         }
         // Enforce minimum & maximum IOPS:
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
-        const iopsRanges: { [key: string]: { Min: number, Max: number } } = {};
+        const iopsRanges: { [key: string]: { Min: number; Max: number } } = {};
         iopsRanges[ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 16000 };
         iopsRanges[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 100, Max: 64000 };
         iopsRanges[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 64000 };
@@ -1730,7 +1746,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     };
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
-    if (logGroups.length > 0) {
+    if (logGroups.length > 0 && !props.suppressLogsResourcePolicy) {
       const logPolicyStatement = new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
@@ -2085,7 +2101,7 @@ function extractNameFromEndpoint(domainEndpoint: string) {
  *
  * @param version The engine version object
  */
-function parseVersion(version: EngineVersion): { versionNum: number, isElasticsearchVersion: boolean } {
+function parseVersion(version: EngineVersion): { versionNum: number; isElasticsearchVersion: boolean } {
   const elasticsearchPrefix = 'Elasticsearch_';
   const openSearchPrefix = 'OpenSearch_';
   const isElasticsearchVersion = version.version.startsWith(elasticsearchPrefix);

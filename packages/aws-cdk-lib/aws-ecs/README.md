@@ -290,6 +290,20 @@ cluster.addCapacity('graviton-cluster', {
 });
 ```
 
+### Amazon Linux 2 (Neuron) Instances
+
+To launch Amazon EC2 Inf1, Trn1 or Inf2 instances, you can use the Amazon ECS optimized Amazon Linux 2 (Neuron) AMI. It comes pre-configured with AWS Inferentia and AWS Trainium drivers and the AWS Neuron runtime for Docker which makes running machine learning inference workloads easier on Amazon ECS.
+
+```ts
+declare const cluster: ecs.Cluster;
+
+cluster.addCapacity('neuron-cluster', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('inf1.xlarge'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.NEURON),
+});
+```
+
 ### Spot Instances
 
 To add spot instances into the cluster, you must specify the `spotPrice` in the `ecs.AddCapacityOptions` and optionally enable the `spotInstanceDraining` property.
@@ -706,9 +720,13 @@ new ecs.ExternalService(this, 'Service', {
 ### Deployment circuit breaker and rollback
 
 Amazon ECS [deployment circuit breaker](https://aws.amazon.com/tw/blogs/containers/announcing-amazon-ecs-deployment-circuit-breaker/)
-automatically rolls back unhealthy service deployments without the need for manual intervention. Use `circuitBreaker` to enable
-deployment circuit breaker and optionally enable `rollback` for automatic rollback. See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html)
-for more details.
+automatically rolls back unhealthy service deployments, eliminating the need for manual intervention.
+
+Use `circuitBreaker` to enable the deployment circuit breaker which determines whether a service deployment
+will fail if the service can't reach a steady state.
+You can optionally enable `rollback` for automatic rollback.
+
+See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html) for more details.
 
 ```ts
 declare const cluster: ecs.Cluster;
@@ -716,7 +734,10 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
-  circuitBreaker: { rollback: true },
+  circuitBreaker: {
+    enable: true,
+    rollback: true
+  },
 });
 ```
 
@@ -1643,6 +1664,32 @@ const customService = new ecs.FargateService(this, 'CustomizedService', {
   },
 });
 ```
+
+To set a timeout for service connect, use `idleTimeout` and `perRequestTimeout`.
+
+**Note**: If `idleTimeout` is set to a time that is less than `perRequestTimeout`, the connection will close when
+the `idleTimeout` is reached and not the `perRequestTimeout`.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    services: [
+      {
+        portMappingName: 'api',
+        idleTimeout: Duration.minutes(5),
+        perRequestTimeout: Duration.minutes(5),
+      },
+    ],
+  },
+});
+```
+
+> Visit [Amazon ECS support for configurable timeout for services running with Service Connect](https://aws.amazon.com/about-aws/whats-new/2024/01/amazon-ecs-configurable-timeout-service-connect/) for more details.
 
 ## ServiceManagedVolume
 

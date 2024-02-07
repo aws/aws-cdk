@@ -1967,7 +1967,7 @@ export class Cluster extends ClusterBase {
    */
   private addNeuronDevicePlugin() {
     if (!this._neuronDevicePlugin) {
-      const fileContents = fs.readFileSync(path.join(__dirname, 'addons/neuron-device-plugin.yaml'), 'utf8');
+      const fileContents = fs.readFileSync(path.join(__dirname, 'addons', 'neuron-device-plugin.yaml'), 'utf8');
       const sanitized = YAML.parse(fileContents);
       this._neuronDevicePlugin = this.addManifest('NeuronDevicePlugin', sanitized);
     }
@@ -2214,7 +2214,7 @@ class ImportedCluster extends ClusterBase {
   public readonly connections = new ec2.Connections();
   public readonly kubectlRole?: iam.IRole;
   public readonly kubectlLambdaRole?: iam.IRole;
-  public readonly kubectlEnvironment?: { [key: string]: string; } | undefined;
+  public readonly kubectlEnvironment?: { [key: string]: string } | undefined;
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;

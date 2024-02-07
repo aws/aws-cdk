@@ -843,7 +843,7 @@ interface SecurityGroupLookupOptions {
    *
    * @default Don't filter on VPC
    */
-  readonly vpc?: IVpc,
+  readonly vpc?: IVpc;
 
   /**
    * Adds an additional discriminator to the `cdk.context.json` cache key.

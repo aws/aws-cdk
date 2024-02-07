@@ -125,7 +125,7 @@ export enum RecordType {
    *
    * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#TXTFormat
    */
-  TXT = 'TXT'
+  TXT = 'TXT',
 }
 
 /**
@@ -201,6 +201,21 @@ export interface RecordSetOptions {
   readonly weight?: number;
 
   /**
+   * The Amazon EC2 Region where you created the resource that this resource record set refers to.
+   * The resource typically is an AWS resource, such as an EC2 instance or an ELB load balancer,
+   * and is referred to by an IP address or a DNS domain name, depending on the record type.
+   *
+   * When Amazon Route 53 receives a DNS query for a domain name and type for which you have created latency resource record sets,
+   * Route 53 selects the latency resource record set that has the lowest latency between the end user and the associated Amazon EC2 Region.
+   * Route 53 then returns the value that is associated with the selected resource record set.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-recordset.html#cfn-route53-recordset-region
+   *
+   * @default - Do not set latency based routing
+   */
+  readonly region?: string;
+
+  /**
    * A string used to distinguish between different records with the same combination of DNS name and type.
    * It can only be set when either weight or geoLocation is defined.
    *
@@ -268,6 +283,7 @@ export class RecordSet extends Resource implements IRecordSet {
   public readonly domainName: string;
   private readonly geoLocation?: GeoLocation;
   private readonly weight?: number;
+  private readonly region?: string;
 
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
@@ -278,15 +294,18 @@ export class RecordSet extends Resource implements IRecordSet {
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
       throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
     }
-    if (props.weight && props.geoLocation) {
-      throw new Error('Only one of weight or geoLocation can be specified, not both');
+    if (props.setIdentifier && !props.weight && !props.geoLocation && !props.region) {
+      throw new Error('setIdentifier can only be specified for non-simple routing policies');
     }
-    if (props.setIdentifier && !props.weight && !props.geoLocation) {
-      throw new Error('setIdentifier can only be specified when either weight or geoLocation is defined');
+
+    let nonSimpleRoutingPolicies = [props.geoLocation, props.region, props.weight].filter((variable) => variable !== undefined).length;
+    if (nonSimpleRoutingPolicies > 1) {
+      throw new Error('Only one of region, weight, or geoLocation can be defined');
     }
 
     this.geoLocation = props.geoLocation;
     this.weight = props.weight;
+    this.region = props.region;
 
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
 
@@ -307,6 +326,7 @@ export class RecordSet extends Resource implements IRecordSet {
       } : undefined,
       setIdentifier: props.setIdentifier ?? this.configureSetIdentifier(),
       weight: props.weight,
+      region: props.region,
     });
 
     this.domainName = recordSet.ref;
@@ -369,11 +389,19 @@ export class RecordSet extends Resource implements IRecordSet {
 
     if (this.weight) {
       const idPrefix = `WEIGHT_${this.weight}_ID_`;
-      const identifier = `${idPrefix}${Names.uniqueResourceName(this, { maxLength: 64 - idPrefix.length })}`;
-      return identifier;
+      return this.createIdentifier(idPrefix);
+    }
+
+    if (this.region) {
+      const idPrefix= `REGION_${this.region}_ID_`;
+      return this.createIdentifier(idPrefix);
     }
 
     return undefined;
+  }
+
+  private createIdentifier(prefix: string): string {
+    return `${prefix}${Names.uniqueResourceName(this, { maxLength: 64 - prefix.length })}`;
   }
 }
 

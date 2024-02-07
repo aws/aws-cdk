@@ -620,7 +620,7 @@ export enum HttpCodeTarget {
   /**
    * The number of 5xx response codes from targets
    */
-  TARGET_5XX_COUNT = 'HTTPCode_Target_5XX_Count'
+  TARGET_5XX_COUNT = 'HTTPCode_Target_5XX_Count',
 }
 
 /**

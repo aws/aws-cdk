@@ -58,7 +58,7 @@ export interface BucketDeploymentProps {
    * @default - No exclude filters are used
    * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
    */
-  readonly exclude?: string[]
+  readonly exclude?: string[];
 
   /**
    * If this is set, matching files or objects will be included with the deployment's sync
@@ -68,7 +68,7 @@ export interface BucketDeploymentProps {
    * @default - No include filters are used and all files are included with the sync command
    * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
    */
-  readonly include?: string[]
+  readonly include?: string[];
 
   /**
    * If this is set to false, files in the destination bucket that
@@ -78,7 +78,7 @@ export interface BucketDeploymentProps {
    *
    * @default true
    */
-  readonly prune?: boolean
+  readonly prune?: boolean;
 
   /**
    * If this is set to "false", the destination files will be deleted when the
@@ -111,9 +111,22 @@ export interface BucketDeploymentProps {
   /**
    * The number of days that the lambda function's log events are kept in CloudWatch Logs.
    *
+   * This is a legacy API and we strongly recommend you migrate to `logGroup` if you can.
+   * `logGroup` allows you to create a fully customizable log group and instruct the Lambda function to send logs to it.
+   *
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * The Log Group used for logging of events emitted by the custom resource's lambda function.
+   *
+   * Providing a user-controlled log group was rolled out to commercial regions on 2023-11-16.
+   * If you are deploying to another type of region, please check regional availability first.
+   *
+   * @default - a default log group created by AWS Lambda
+   */
+  readonly logGroup?: logs.ILogGroup;
 
   /**
    * The amount of memory (in MiB) to allocate to the AWS Lambda function which
@@ -139,7 +152,7 @@ export interface BucketDeploymentProps {
    *
    * @default - No EFS. Lambda has access only to 512MB of disk space.
    */
-  readonly useEfs?: boolean
+  readonly useEfs?: boolean;
 
   /**
    * Execution role associated with this function
@@ -336,7 +349,10 @@ export class BucketDeployment extends Construct {
         accessPoint,
         mountPath,
       ) : undefined,
-      logRetention: props.logRetention,
+      // props.logRetention is deprecated, make sure we only set it if it is actually provided
+      // otherwise jsii will print warnings even for users that don't use this directly
+      ...(props.logRetention ? { logRetention: props.logRetention } : {}),
+      logGroup: props.logGroup,
     });
 
     const handlerRole = handler.role;
@@ -776,7 +792,7 @@ export enum ServerSideEncryption {
   /**
    * 'aws:kms'
    */
-  AWS_KMS = 'aws:kms'
+  AWS_KMS = 'aws:kms',
 }
 
 /**
@@ -818,7 +834,7 @@ export enum StorageClass {
   /**
    * 'DEEP_ARCHIVE'
    */
-  DEEP_ARCHIVE = 'DEEP_ARCHIVE'
+  DEEP_ARCHIVE = 'DEEP_ARCHIVE',
 }
 
 /**
