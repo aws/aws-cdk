@@ -3,9 +3,10 @@ import { Instance } from './instance';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { CpuCredits } from './launch-template';
-import { IMachineImage, LookupMachineImage } from './machine-image';
+import { AmazonLinuxGeneration, AmazonLinuxImage, IMachineImage, LookupMachineImage } from './machine-image';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
+import { UserData } from './user-data';
 import { PrivateSubnet, PublicSubnet, RouterType, Vpc } from './vpc';
 import * as iam from '../../aws-iam';
 import { Fn, Token } from '../../core';
@@ -76,9 +77,26 @@ export abstract class NatProvider {
    * your own NatProvider based on AutoScaling groups if you need that.
    *
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html
+   *
+   * @deprecated use instanceV2
    */
   public static instance(props: NatInstanceProps): NatInstanceProvider {
     return new NatInstanceProvider(props);
+  }
+
+  /**
+   * Use NAT instances to provide NAT services for your VPC
+   *
+   * NAT instances are managed by you, but in return allow more configuration.
+   *
+   * Be aware that instances created using this provider will not be
+   * automatically replaced if they are stopped for any reason. You should implement
+   * your own NatProvider based on AutoScaling groups if you need that.
+   *
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html
+   */
+  public static instanceV2(props: NatInstanceProps): NatInstanceProviderAL2 {
+    return new NatInstanceProviderAL2(props);
   }
 
   /**
@@ -280,6 +298,8 @@ class NatGatewayProvider extends NatProvider {
 
 /**
  * NAT provider which uses NAT Instances
+ *
+ * @deprecated use NatInstanceProviderAL2
  */
 export class NatInstanceProvider extends NatProvider implements IConnectable {
   private gateways: PrefSet<Instance> = new PrefSet<Instance>();
@@ -406,6 +426,115 @@ class PrefSet<A> {
 
   public values(): Array<[string, A]> {
     return this.vals;
+  }
+}
+
+/**
+ * Modern NAT provider which uses NAT Instances.
+ * The instance uses Amazon Linux 2 as the operating system.
+ */
+export class NatInstanceProviderAL2 extends NatProvider implements IConnectable {
+  private gateways: PrefSet<Instance> = new PrefSet<Instance>();
+  private _securityGroup?: ISecurityGroup;
+  private _connections?: Connections;
+
+  constructor(private readonly props: NatInstanceProps) {
+    super();
+
+    if (props.defaultAllowedTraffic !== undefined && props.allowAllTraffic !== undefined) {
+      throw new Error('Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
+    }
+
+    if (props.keyName && props.keyPair) {
+      throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+    }
+  }
+
+  public configureNat(options: ConfigureNatOptions) {
+    const defaultDirection = this.props.defaultAllowedTraffic ??
+      (this.props.allowAllTraffic ?? true ? NatTrafficDirection.INBOUND_AND_OUTBOUND : NatTrafficDirection.OUTBOUND_ONLY);
+
+    // Create the NAT instances. They can share a security group and a Role.
+    const machineImage = this.props.machineImage || new AmazonLinuxImage({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 });
+    this._securityGroup = this.props.securityGroup ?? new SecurityGroup(options.vpc, 'NatSecurityGroup', {
+      vpc: options.vpc,
+      description: 'Security Group for NAT instances',
+      allowAllOutbound: isOutboundAllowed(defaultDirection),
+    });
+    this._connections = new Connections({ securityGroups: [this._securityGroup] });
+
+    if (isInboundAllowed(defaultDirection)) {
+      this.connections.allowFromAnyIpv4(Port.allTraffic());
+    }
+
+    // Enable iptables on the instance, enable persistent IP forwarding, configure NAT on instance
+    // https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#create-nat-ami
+    const userData = UserData.forLinux();
+    userData.addCommands(
+      'yum install iptables-services -y',
+      'systemctl enable iptables',
+      'systemctl start iptables',
+      'echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/custom-ip-forwarding.conf',
+      'sudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf',
+      'sudo /sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE',
+      'sudo /sbin/iptables -F FORWARD',
+      'sudo service iptables save',
+    );
+
+    for (const sub of options.natSubnets) {
+      const natInstance = new Instance(sub, 'NatInstance', {
+        instanceType: this.props.instanceType,
+        machineImage,
+        sourceDestCheck: false, // Required for NAT
+        vpc: options.vpc,
+        vpcSubnets: { subnets: [sub] },
+        securityGroup: this._securityGroup,
+        keyPair: this.props.keyPair,
+        keyName: this.props.keyName,
+        userData,
+      });
+      // NAT instance routes all traffic, both ways
+      this.gateways.add(sub.availabilityZone, natInstance);
+    }
+
+    // Add routes to them in the private subnets
+    for (const sub of options.privateSubnets) {
+      this.configureSubnet(sub);
+    }
+  }
+
+  /**
+   * The Security Group associated with the NAT instances
+   */
+  public get securityGroup(): ISecurityGroup {
+    if (!this._securityGroup) {
+      throw new Error('Pass the NatInstanceProvider to a Vpc before accessing \'securityGroup\'');
+    }
+    return this._securityGroup;
+  }
+
+  /**
+   * Manage the Security Groups associated with the NAT instances
+   */
+  public get connections(): Connections {
+    if (!this._connections) {
+      throw new Error('Pass the NatInstanceProvider to a Vpc before accessing \'connections\'');
+    }
+    return this._connections;
+  }
+
+  public get configuredGateways(): GatewayConfig[] {
+    return this.gateways.values().map(x => ({ az: x[0], gatewayId: x[1].instanceId }));
+  }
+
+  public configureSubnet(subnet: PrivateSubnet) {
+    const az = subnet.availabilityZone;
+    const gatewayId = this.gateways.pick(az).instanceId;
+    subnet.addRoute('DefaultRoute', {
+      routerType: RouterType.INSTANCE,
+      routerId: gatewayId,
+      enablesInternetConnectivity: true,
+    });
   }
 }
 

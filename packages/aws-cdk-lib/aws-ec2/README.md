@@ -189,9 +189,9 @@ are managed by AWS. If you would prefer to use your own managed NAT
 *instances* instead, specify a different value for the `natGatewayProvider`
 property, as follows:
 
-[using NAT instances](test/integ.nat-instances.lit.ts)
+[using NAT instances](test/integ.nat-instances-v2.ts)
 
-The construct will automatically search for the most recent NAT gateway AMI.
+The construct will automatically selects the latest version of Amazon Linux 2.
 If you prefer to use a custom AMI, use `machineImage:
 MachineImage.genericLinux({ ... })` and configure the right AMI ID for the
 regions you want to deploy to.
@@ -200,6 +200,25 @@ By default, the NAT instances will route all traffic. To control what traffic
 gets routed, pass a custom value for `defaultAllowedTraffic` and access the
 `NatInstanceProvider.connections` member after having passed the NAT provider to
 the VPC:
+
+```ts
+declare const instanceType: ec2.InstanceType;
+
+const provider = ec2.NatProvider.instanceV2({
+  instanceType,
+  defaultAllowedTraffic: ec2.NatTrafficDirection.OUTBOUND_ONLY,
+});
+new ec2.Vpc(this, 'TheVPC', {
+  natGatewayProvider: provider,
+});
+provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
+```
+
+[using NAT instances](test/integ.nat-instances.lit.ts) [Deprecated]
+
+The construct will use the AWS official NAT instance AMI, which has already 
+reached EOL on Dec 31, 2023. For more information, see the following blog post: 
+[Amazon Linux AMI end of life](https://aws.amazon.com/blogs/aws/update-on-amazon-linux-ami-end-of-life/).
 
 ```ts
 declare const instanceType: ec2.InstanceType;
