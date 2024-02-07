@@ -57,6 +57,15 @@ export interface TopicProps {
    */
   readonly loggingConfigs?: LoggingConfig[];
 
+  /**
+   * The number of days Amazon SNS retains messages.
+   *
+   * It can only be set for FIFO topics.
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/fifo-message-archiving-replay.html
+   *
+   * @default - do not archive messages
+   */
   readonly messageRetentionPeriodInDays?: number;
 }
 
@@ -168,6 +177,16 @@ export class Topic extends TopicBase {
     if (props.contentBasedDeduplication && !props.fifo) {
       throw new Error('Content based deduplication can only be enabled for FIFO SNS topics.');
     }
+    if (props.messageRetentionPeriodInDays && !props.fifo) {
+      throw new Error('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics.');
+    }
+    if (
+      props.messageRetentionPeriodInDays !== undefined
+      && !Token.isUnresolved(props.messageRetentionPeriodInDays)
+      && (!Number.isInteger(props.messageRetentionPeriodInDays) || props.messageRetentionPeriodInDays > 365 || props.messageRetentionPeriodInDays < 1)
+    ) {
+      throw new Error('`messageRetentionPeriodInDays` must be an integer between 1 and 365');
+    }
 
     if (props.loggingConfigs) {
       props.loggingConfigs.forEach(c => this.addLoggingConfig(c));
@@ -185,17 +204,6 @@ export class Topic extends TopicBase {
       cfnTopicName = `${prefixName}.fifo`;
     } else {
       cfnTopicName = this.physicalName;
-    }
-
-    if (props.messageRetentionPeriodInDays && !props.fifo) {
-      throw new Error('`messageRetentionPeriodInDays` is only valid for FIFO topic.');
-    }
-    if (
-      !Token.isUnresolved(props.messageRetentionPeriodInDays)
-      && props.messageRetentionPeriodInDays
-      && (props.messageRetentionPeriodInDays > 365 || props.messageRetentionPeriodInDays < 1)
-    ) {
-      throw new Error('Message retention period must be between 1 day and 365 days.');
     }
 
     const resource = new CfnTopic(this, 'Resource', {
