@@ -37,7 +37,7 @@ def handle_managed(request_type, notification_configuration):
 def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old):
   def get_id(n):
     n['Id'] = ''
-    strToHash=json.dumps(n, sort_keys=True).replace("'Name:' 'prefix'", "'Name:' 'Prefix'").replace("'Name:' 'suffix'", "'Name:' 'Suffix'").
+    strToHash=json.dumps(n, sort_keys=True).replace("'Name:' 'prefix'", "'Name:' 'Prefix'").replace("'Name:' 'suffix'", "'Name:' 'Suffix'")
     return f"{stack_id}-{hash(strToHash)}"
     
   def with_id(n):
