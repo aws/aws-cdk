@@ -13,7 +13,6 @@ interface FakePipelineProps {
 
 class FakePipeline extends cdk.Resource implements sagemaker.IPipeline {
   public readonly pipelineArn;
-
   public readonly pipelineName;
   constructor(scope: Construct, id: string, props: FakePipelineProps) {
     super(scope, id, {
