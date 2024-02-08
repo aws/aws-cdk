@@ -3,8 +3,7 @@ import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Grant, IGrantable, ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { CfnPipeline } from 'aws-cdk-lib/aws-sagemaker';
-import { IPipeline } from 'aws-cdk-lib/aws-sagemaker';
+import * as sagemaker from 'aws-cdk-lib/aws-sagemaker';
 import { Construct } from 'constructs';
 import { SageMakerPipelineParameter, SageMakerStartPipelineExecution } from '../lib';
 
@@ -12,7 +11,7 @@ interface FakePipelineProps {
   readonly pipelineName: string;
 }
 
-class FakePipeline extends cdk.Resource implements IPipeline {
+class FakePipeline extends cdk.Resource implements sagemaker.IPipeline {
   public readonly pipelineArn;
 
   public readonly pipelineName;
@@ -82,7 +81,7 @@ class FakePipeline extends cdk.Resource implements IPipeline {
     });
     pipelineRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'));
 
-    const pipeline = new CfnPipeline(this, 'Resource', {
+    const pipeline = new sagemaker.CfnPipeline(this, 'Resource', {
       pipelineName: this.pipelineName,
       pipelineDefinition: pipelineDefinition,
       roleArn: pipelineRole.roleArn,
