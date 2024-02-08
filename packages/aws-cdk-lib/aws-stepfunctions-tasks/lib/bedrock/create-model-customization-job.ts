@@ -44,7 +44,7 @@ export interface Tag {
 /**
  * VPC configuration
  */
-export interface VpcConfig {
+export interface BedrockCreateModelCustomizationJobVpcConfig {
   /**
    * VPC configuration security groups
    */
@@ -68,10 +68,14 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    * If this token matches a previous request, Amazon Bedrock ignores the request, but does not return an error.
    *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/APIReference/Run_Instance_Idempotency.html
+   * 
+   * @default - no client request token
    */
   readonly clientRequestToken?: string;
   /**
    * The customization type.
+   *
+   * @default FINE_TUNING
    */
   readonly customizationType?: CustomizationType;
   /**
@@ -89,9 +93,11 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
   /**
    * Parameters related to tuning the model.
    *
-   * @see https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html
+   * @see https://docs.aws.amazon.com/bedrock/latest/userguide/custom-models-hp.html
+   *
+   * @default - use default hyperparameters
    */
-  readonly hyperParameters: { [key: string]: string };
+  readonly hyperParameters?: { [key: string]: string };
   /**
    * A name for the fine-tuning job.
    */
@@ -129,7 +135,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
   /**
    * Configuration parameters for the private Virtual Private Cloud (VPC) that contains the resources you are using for this job.
    */
-  readonly vpcConfig?: VpcConfig;
+  readonly vpcConfig?: BedrockCreateModelCustomizationJobVpcConfig;
 }
 
 /**
