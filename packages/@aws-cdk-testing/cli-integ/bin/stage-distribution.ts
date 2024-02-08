@@ -154,7 +154,7 @@ async function main() {
 }
 
 async function validateDirectory(args: {
-  DIRECTORY: string,
+  DIRECTORY: string;
 }) {
   if (!await fs.pathExists(path.join(args.DIRECTORY, 'build.json'))) {
     throw new Error(`${args.DIRECTORY} does not look like a CDK dist directory (build.json missing)`);
@@ -191,7 +191,7 @@ async function doLogin(repo: TestRepository, usageDir: UsageDir, args: {
 }
 
 async function publish(repo: TestRepository, usageDir: UsageDir, args: {
-  DIRECTORY: string,
+  DIRECTORY: string;
   npm?: boolean;
   python?: boolean;
   java?: boolean;
