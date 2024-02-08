@@ -180,4 +180,26 @@ describe('ResponseHeadersPolicy', () => {
       },
     });
   });
+
+  test('it respects CSP `reportOnly` flag by mapping to custom header', () => {
+    new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
+      securityHeadersBehavior: {
+        contentSecurityPolicy: { contentSecurityPolicy: 'default-src https:;', override: true, reportOnly: true },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::ResponseHeadersPolicy', {
+      ResponseHeadersPolicyConfig: {
+        CustomHeadersConfig: {
+          Items: [
+            {
+              Header: 'Content-Security-Policy-Report-Only',
+              Value: 'default-src https:;',
+              Override: true,
+            },
+          ]
+        },
+      },
+    });
+  })
 });

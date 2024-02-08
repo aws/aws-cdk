@@ -114,13 +114,36 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
       maxLength: 128,
     });
 
+    let securityHeadersBehavior = props.securityHeadersBehavior;
+    let customHeadersBehavior = props.customHeadersBehavior;
+
+    if (securityHeadersBehavior?.contentSecurityPolicy?.reportOnly) {
+      const reportOnlyCSPHeader = {
+        header: 'Content-Security-Policy-Report-Only',
+        value: securityHeadersBehavior.contentSecurityPolicy.contentSecurityPolicy,
+        override: true,
+      };
+      securityHeadersBehavior = {
+        ...securityHeadersBehavior,
+        contentSecurityPolicy: undefined,
+      };
+
+      if (!customHeadersBehavior) {
+        customHeadersBehavior = {
+          customHeaders: [],
+        }
+      }
+      // TODO: log a warning if custom headers already contains CSP-Report-Only header?
+      customHeadersBehavior.customHeaders.push(reportOnlyCSPHeader);
+    }
+
     const resource = new CfnResponseHeadersPolicy(this, 'Resource', {
       responseHeadersPolicyConfig: {
         name: responseHeadersPolicyName,
         comment: props.comment,
         corsConfig: props.corsBehavior ? this._renderCorsConfig(props.corsBehavior) : undefined,
-        customHeadersConfig: props.customHeadersBehavior ? this._renderCustomHeadersConfig(props.customHeadersBehavior) : undefined,
-        securityHeadersConfig: props.securityHeadersBehavior ? this._renderSecurityHeadersConfig(props.securityHeadersBehavior) : undefined,
+        customHeadersConfig: customHeadersBehavior ? this._renderCustomHeadersConfig(customHeadersBehavior) : undefined,
+        securityHeadersConfig: securityHeadersBehavior ? this._renderSecurityHeadersConfig(securityHeadersBehavior) : undefined,
         removeHeadersConfig: props.removeHeaders ? this._renderRemoveHeadersConfig(props.removeHeaders) : undefined,
         serverTimingHeadersConfig: props.serverTimingSamplingRate ? this._renderServerTimingHeadersConfig(props.serverTimingSamplingRate) : undefined,
       },
@@ -337,6 +360,11 @@ export interface ResponseHeadersContentSecurityPolicy {
    * received from the origin with the one specified in this response headers policy.
    */
   readonly override: boolean;
+
+  /**
+   * A Boolean that determines whether CloudFront includes the -Report-Only suffix in the Content-Security-Policy HTTP response header.
+   */
+  readonly reportOnly?: boolean;
 }
 
 /**
