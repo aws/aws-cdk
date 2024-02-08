@@ -68,7 +68,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    * If this token matches a previous request, Amazon Bedrock ignores the request, but does not return an error.
    *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/APIReference/Run_Instance_Idempotency.html
-   * 
+   *
    * @default - no client request token
    */
   readonly clientRequestToken?: string;
@@ -231,7 +231,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         BaseModelIdentifier: this.props.baseModel.modelArn,
         ClientRequestToken: this.props.clientRequestToken,
         CustomizationType: this.props.customizationType,
-        CustomModelKmsId: this.props.kmsKey?.keyArn,
+        CustomModelKmsKeyId: this.props.kmsKey?.keyArn,
         CustomModelName: this.props.customModelName,
         CustomModelTags: this.props.customModelTags?.map((tag) => ({ Key: tag.key, Value: tag.value })),
         HyperParameters: this.props.hyperParameters,
