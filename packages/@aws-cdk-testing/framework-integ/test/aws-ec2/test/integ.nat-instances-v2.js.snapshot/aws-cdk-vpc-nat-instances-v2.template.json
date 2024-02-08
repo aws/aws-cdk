@@ -135,7 +135,7 @@
      "Ref": "MyVpcPublicSubnet1NatInstanceInstanceProfile2FD934CB"
     },
     "ImageId": {
-     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
     "InstanceType": "t3.small",
     "SecurityGroupIds": [
@@ -284,7 +284,7 @@
      "Ref": "MyVpcPublicSubnet2NatInstanceInstanceProfile5AB09EF6"
     },
     "ImageId": {
-     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
     "InstanceType": "t3.small",
     "SecurityGroupIds": [
@@ -504,9 +504,9 @@
   }
  },
  "Parameters": {
-  "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-   "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+   "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

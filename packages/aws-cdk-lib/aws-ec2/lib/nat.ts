@@ -95,8 +95,8 @@ export abstract class NatProvider {
    *
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html
    */
-  public static instanceV2(props: NatInstanceProps): NatInstanceProviderAL2 {
-    return new NatInstanceProviderAL2(props);
+  public static instanceV2(props: NatInstanceProps): NatInstanceProviderV2 {
+    return new NatInstanceProviderV2(props);
   }
 
   /**
@@ -299,7 +299,7 @@ class NatGatewayProvider extends NatProvider {
 /**
  * NAT provider which uses NAT Instances
  *
- * @deprecated use NatInstanceProviderAL2
+ * @deprecated use NatInstanceProviderV2
  */
 export class NatInstanceProvider extends NatProvider implements IConnectable {
   private gateways: PrefSet<Instance> = new PrefSet<Instance>();
@@ -431,9 +431,9 @@ class PrefSet<A> {
 
 /**
  * Modern NAT provider which uses NAT Instances.
- * The instance uses Amazon Linux 2 as the operating system.
+ * The instance uses Amazon Linux 2023 as the operating system.
  */
-export class NatInstanceProviderAL2 extends NatProvider implements IConnectable {
+export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
   private gateways: PrefSet<Instance> = new PrefSet<Instance>();
   private _securityGroup?: ISecurityGroup;
   private _connections?: Connections;
@@ -455,7 +455,7 @@ export class NatInstanceProviderAL2 extends NatProvider implements IConnectable 
       (this.props.allowAllTraffic ?? true ? NatTrafficDirection.INBOUND_AND_OUTBOUND : NatTrafficDirection.OUTBOUND_ONLY);
 
     // Create the NAT instances. They can share a security group and a Role.
-    const machineImage = this.props.machineImage || new AmazonLinuxImage({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2 });
+    const machineImage = this.props.machineImage || new AmazonLinuxImage({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2023 });
     this._securityGroup = this.props.securityGroup ?? new SecurityGroup(options.vpc, 'NatSecurityGroup', {
       vpc: options.vpc,
       description: 'Security Group for NAT instances',
