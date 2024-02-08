@@ -329,21 +329,14 @@ new IdentityPool(this, 'myidentitypool', {
 });
 ```
 
-For identity providers that don't have static Urls, a custom Url or User Pool Client Url can be supplied:
+For identity providers that don't have static Urls, a custom Url can be supplied:
 
 ```ts
 import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool-alpha';
 
-declare const userPool: UserPool;
-declare const userPoolClient: UserPoolClient;
-
 new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   roleMappings: [
-    {
-      providerUrl: IdentityPoolProviderUrl.userPool(userPool, userPoolClient),
-      useToken: true,
-    },
     {
       providerUrl: IdentityPoolProviderUrl.custom('my-custom-provider.com'),
       useToken: true,
@@ -357,15 +350,16 @@ This is because by default, the key in the Cloudformation role mapping hash is t
 cannot be references. For example:
 
 ```ts
-import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool-alpha';
 
-declare const userPool : UserPool;
+declare const userPool: UserPool;
+declare const userPoolClient: UserPoolClient;
 new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   roleMappings: [{
     mappingKey: 'cognito',
-    providerUrl: IdentityPoolProviderUrl.userPool(userPool.userPoolProviderUrl),
+    providerUrl: IdentityPoolProviderUrl.userPool(userPool, userPoolClient),
     useToken: true,
   }],
 });
