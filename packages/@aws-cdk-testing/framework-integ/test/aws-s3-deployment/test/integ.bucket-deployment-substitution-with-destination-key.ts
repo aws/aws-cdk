@@ -39,8 +39,8 @@ class Test extends cdk.Stack {
 
 const app = new cdk.App();
 
-const testCase = new Test(app, 'test-s3-deploy-substitution');
-const integ = new IntegTest(app, 'deploy-time-substitution-integ-test', {
+const testCase = new Test(app, 'test-s3-deploy-substitution-with-destination-key');
+const integ = new IntegTest(app, 'deploy-time-substitution-with-destination-key-integ-test', {
   testCases: [testCase],
 });
 
