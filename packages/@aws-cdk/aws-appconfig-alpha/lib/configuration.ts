@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as mimeTypes from 'mime-types';
 import * as path from 'path';
 import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy } from 'aws-cdk-lib';
 import { CfnConfigurationProfile, CfnDeployment, CfnHostedConfigurationVersion } from 'aws-cdk-lib/aws-appconfig';
@@ -11,6 +10,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sm from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Construct, IConstruct } from 'constructs';
+import * as mimeTypes from 'mime-types';
 import { IApplication } from './application';
 import { DeploymentStrategy, IDeploymentStrategy, RolloutStrategy } from './deployment-strategy';
 import { IEnvironment } from './environment';

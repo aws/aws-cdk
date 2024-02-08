@@ -131,5 +131,5 @@ export enum HttpMethods {
   /**
    * Retrieve data from a server at the specified resource without the response body
    */
-  HEAD = 'HEAD'
+  HEAD = 'HEAD',
 }

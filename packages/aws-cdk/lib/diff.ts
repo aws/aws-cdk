@@ -69,7 +69,7 @@ export enum RequireApproval {
 
   AnyChange = 'any-change',
 
-  Broadening = 'broadening'
+  Broadening = 'broadening',
 }
 
 /**

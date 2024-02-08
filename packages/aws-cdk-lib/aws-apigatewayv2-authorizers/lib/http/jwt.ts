@@ -22,13 +22,13 @@ export interface HttpJwtAuthorizerProps {
    *
    * @default ['$request.header.Authorization']
    */
-  readonly identitySource?: string[],
+  readonly identitySource?: string[];
 
   /**
    * A list of the intended recipients of the JWT.
    * A valid JWT must provide an aud that matches at least one entry in this list.
    */
-  readonly jwtAudience: string[]
+  readonly jwtAudience: string[];
 }
 
 /**
