@@ -375,10 +375,12 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 declare const myLambdaFunction: lambda.Function;
 declare const destinationBucket: s3.Bucket;
+declare const destinationKey: string;
 declare const role: iam.Role;
 
 new s3deploy.DeployTimeSubstitutedFile(this, 'MyFile', {
   source: 'my-file.yaml',
+  destinationKey: destinationKey,
   destinationBucket: destinationBucket,
   substitutions: {
     variableName: myLambdaFunction.functionName,
