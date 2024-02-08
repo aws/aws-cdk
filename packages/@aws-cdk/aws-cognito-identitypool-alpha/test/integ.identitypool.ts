@@ -62,7 +62,7 @@ const idPool = new IdentityPool(stack, 'identitypool', {
   roleMappings: [
     {
       mappingKey: 'theKey',
-      providerUrl: IdentityPoolProviderUrl.userPool(`${userPool.userPoolProviderName}:${client.userPoolClientId}`),
+      providerUrl: IdentityPoolProviderUrl.userPool(userPool, client),
       useToken: true,
     },
   ],

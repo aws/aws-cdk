@@ -334,11 +334,14 @@ For identity providers that don't have static Urls, a custom Url or User Pool Cl
 ```ts
 import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool-alpha';
 
+declare const userPool: UserPool;
+declare const userPoolClient: UserPoolClient;
+
 new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   roleMappings: [
     {
-      providerUrl: IdentityPoolProviderUrl.userPool('cognito-idp.my-idp-region.amazonaws.com/my-idp-region_abcdefghi:app_client_id'),
+      providerUrl: IdentityPoolProviderUrl.userPool(userPool, userPoolClient),
       useToken: true,
     },
     {
@@ -399,4 +402,3 @@ IdentityPool.fromIdentityPoolId(this, 'my-imported-identity-pool',
 IdentityPool.fromIdentityPoolArn(this, 'my-imported-identity-pool',
   'arn:aws:cognito-identity:us-east-1:123456789012:identitypool/us-east-1:dj2823ryiwuhef937');
 ```
-
