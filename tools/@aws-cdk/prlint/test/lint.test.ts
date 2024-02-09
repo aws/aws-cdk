@@ -1029,7 +1029,7 @@ describe('integration tests required on features', () => {
         '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
         'If you would like to request an exemption from the status checks or clarification on feedback,' +
         ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.' +
-        '\n\nA exemption request has been requested. Please wait for a maintainer\'s review.',
+        '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.',
       );
     });
 
@@ -1050,7 +1050,7 @@ describe('integration tests required on features', () => {
         '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
         'If you would like to request an exemption from the status checks or clarification on feedback,' +
         ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.' +
-        '\n\nA exemption request has been requested. Please wait for a maintainer\'s review.',
+        '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.',
       );
     });
 
@@ -1071,7 +1071,7 @@ describe('integration tests required on features', () => {
         '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
         'If you would like to request an exemption from the status checks or clarification on feedback,' +
         ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.' +
-        '\n\nA exemption request has been requested. Please wait for a maintainer\'s review.',
+        '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.',
       );
     });
   });
