@@ -195,20 +195,18 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
       inlinePolicies: {
         BedrockCreateModelCustomizationJob: new iam.PolicyDocument({
           statements: [
-            new iam.PolicyStatement({
-              actions: [
-                ...(this.props.vpcConfig
-                  ? [
-                    'ec2:DescribeNetworkInterfaces',
-                    'ec2:DescribeVpcs',
-                    'ec2:DescribeDhcpOptions',
-                    'ec2:DescribeSubnets',
-                    'ec2:DescribeSecurityGroups',
-                  ]
-                  : []),
-              ],
-              resources: ['*'],
-            }),
+            ...(this.props.vpcConfig ? [
+              new iam.PolicyStatement({
+                actions: [
+                  'ec2:DescribeNetworkInterfaces',
+                  'ec2:DescribeVpcs',
+                  'ec2:DescribeDhcpOptions',
+                  'ec2:DescribeSubnets',
+                  'ec2:DescribeSecurityGroups',
+                ],
+                resources: ['*'],
+              }),
+            ] : []),
             new iam.PolicyStatement({
               actions: ['ec2:CreateNetworkInterface'],
               resources: [
@@ -313,22 +311,6 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         ]
         : []),
     ];
-
-    // if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-    //   policyStatements.push(
-    //     new iam.PolicyStatement({
-    //       actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
-    //       resources: [
-    //         Stack.of(this).formatArn({
-    //           service: 'events',
-    //           resource: 'rule',
-    //           resourceName: 'StepFunctionsGetEventsForSageMakerTrainingJobsRule',
-    //         }),
-    //       ],
-    //     }),
-    //   );
-    // }
-
     return policyStatements;
   }
 

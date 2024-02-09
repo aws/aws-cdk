@@ -442,17 +442,17 @@
               "version": "0.0.0"
             }
           },
-          "CreateModelCustomizationJob": {
-            "id": "CreateModelCustomizationJob",
-            "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob",
+          "CreateModelCustomizationJob1": {
+            "id": "CreateModelCustomizationJob1",
+            "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1",
             "children": {
               "BedrockRole": {
                 "id": "BedrockRole",
-                "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob/BedrockRole",
+                "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1/BedrockRole",
                 "children": {
                   "ImportBedrockRole": {
                     "id": "ImportBedrockRole",
-                    "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob/BedrockRole/ImportBedrockRole",
+                    "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1/BedrockRole/ImportBedrockRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -460,7 +460,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob/BedrockRole/Resource",
+                    "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1/BedrockRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -687,6 +687,233 @@
               "version": "0.0.0"
             }
           },
+          "CreateModelCustomizationJob2": {
+            "id": "CreateModelCustomizationJob2",
+            "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob2",
+            "children": {
+              "BedrockRole": {
+                "id": "BedrockRole",
+                "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob2/BedrockRole",
+                "children": {
+                  "ImportBedrockRole": {
+                    "id": "ImportBedrockRole",
+                    "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob2/BedrockRole/ImportBedrockRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob2/BedrockRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "bedrock.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "BedrockCreateModelCustomizationJob",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "ec2:CreateNetworkInterface",
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":ec2:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":network-interface/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":ec2:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":security-group/*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":ec2:",
+                                          {
+                                            "Ref": "AWS::Region"
+                                          },
+                                          ":",
+                                          {
+                                            "Ref": "AWS::AccountId"
+                                          },
+                                          ":subnet/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": "ec2:CreateTags",
+                                  "Condition": {
+                                    "StringEquals": {
+                                      "ec2:CreateAction": "CreateNetworkInterface"
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":ec2:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":network-interface/*"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "ec2:CreateNetworkInterfacePermission",
+                                    "ec2:DeleteNetworkInterface",
+                                    "ec2:DeleteNetworkInterfacePermission"
+                                  ],
+                                  "Condition": {
+                                    "StringEquals": {
+                                      "ec2:Subnet": []
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": "s3:GetObject",
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Ref": "TrainingBucketEB7BB5C9"
+                                          }
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          "arn:",
+                                          {
+                                            "Ref": "AWS::Partition"
+                                          },
+                                          ":s3:::",
+                                          {
+                                            "Ref": "ValidationBucket984F58C6"
+                                          }
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": "s3:PutObject",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":s3:::",
+                                        {
+                                          "Ref": "OutputBucket7114EB27"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.BedrockCreateModelCustomizationJob",
+              "version": "0.0.0"
+            }
+          },
           "Start": {
             "id": "Start",
             "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/Start",
@@ -824,12 +1051,20 @@
                                 {
                                   "Action": "iam:PassRole",
                                   "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "CreateModelCustomizationJobBedrockRoleBB15E855",
-                                      "Arn"
-                                    ]
-                                  }
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "CreateModelCustomizationJob1BedrockRole25A3ECD3",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "CreateModelCustomizationJob2BedrockRole06A5EE64",
+                                        "Arn"
+                                      ]
+                                    }
+                                  ]
                                 },
                                 {
                                   "Action": "kms:*",
@@ -879,7 +1114,7 @@
                       "Fn::Join": [
                         "",
                         [
-                          "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Next\":\"CreateModelCustomizationJob\"},\"CreateModelCustomizationJob\":{\"Next\":\"Done\",\"Type\":\"Task\",\"Resource\":\"arn:",
+                          "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Next\":\"CreateModelCustomizationJob1\"},\"CreateModelCustomizationJob1\":{\"Next\":\"CreateModelCustomizationJob2\",\"Type\":\"Task\",\"Resource\":\"arn:",
                           {
                             "Ref": "AWS::Partition"
                           },
@@ -905,7 +1140,7 @@
                           "\"},\"RoleArn\":\"",
                           {
                             "Fn::GetAtt": [
-                              "CreateModelCustomizationJobBedrockRoleBB15E855",
+                              "CreateModelCustomizationJob1BedrockRole25A3ECD3",
                               "Arn"
                             ]
                           },
@@ -932,7 +1167,45 @@
                           {
                             "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
                           },
-                          "\"]}}},\"Done\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
+                          "\"]}}},\"CreateModelCustomizationJob2\":{\"Next\":\"Done\",\"Type\":\"Task\",\"Resource\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":states:::bedrock:createModelCustomizationJob\",\"Parameters\":{\"BaseModelIdentifier\":\"arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":bedrock:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "::foundation-model/amazon.titan-text-express-v1\",\"ClientRequestToken\":\"MyToken2\",\"CustomizationType\":\"FINE_TUNING\",\"CustomModelKmsKeyId\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "KmsKey46693ADD",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"CustomModelName\":\"MyCustomModel2\",\"CustomModelTags\":[{\"Key\":\"key1\",\"Value\":\"value1\"}],\"HyperParameters\":{\"batchSize\":\"10\"},\"JobName\":\"MyCustomizationJob2\",\"JobTags\":[{\"Key\":\"key2\",\"Value\":\"value2\"}],\"OutputDataConfig\":{\"S3Uri\":\"s3://",
+                          {
+                            "Ref": "OutputBucket7114EB27"
+                          },
+                          "\"},\"RoleArn\":\"",
+                          {
+                            "Fn::GetAtt": [
+                              "CreateModelCustomizationJob2BedrockRole06A5EE64",
+                              "Arn"
+                            ]
+                          },
+                          "\",\"TrainingDataConfig\":{\"S3Uri\":\"s3://",
+                          {
+                            "Ref": "TrainingBucketEB7BB5C9"
+                          },
+                          "\"},\"ValidationDataConfig\":{\"Validators\":[{\"S3Uri\":\"s3://",
+                          {
+                            "Ref": "ValidationBucket984F58C6"
+                          },
+                          "\"}]}}},\"Done\":{\"Type\":\"Pass\",\"End\":true}},\"TimeoutSeconds\":30}"
                         ]
                       ]
                     },
