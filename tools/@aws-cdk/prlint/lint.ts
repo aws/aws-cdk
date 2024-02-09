@@ -589,6 +589,8 @@ export class PullRequestLinter {
     }
   }
 
+
+  
   private formatErrors(errors: string[]) {
     return `\n\n\t❌ ${errors.join('\n\t❌ ')}\n\n`;
   };
