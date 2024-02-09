@@ -133,7 +133,7 @@
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.0.45",
+    "@aws-cdk/aws-service-spec": "^0.0.46",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -452,6 +452,7 @@
     "./aws-sqs": "./aws-sqs/index.js",
     "./aws-ssm": "./aws-ssm/index.js",
     "./aws-ssmcontacts": "./aws-ssmcontacts/index.js",
+    "./aws-ssmguiconnect": "./aws-ssmguiconnect/index.js",
     "./aws-ssmincidents": "./aws-ssmincidents/index.js",
     "./aws-sso": "./aws-sso/index.js",
     "./aws-stepfunctions": "./aws-stepfunctions/index.js",
