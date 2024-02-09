@@ -452,7 +452,6 @@
     "./aws-sqs": "./aws-sqs/index.js",
     "./aws-ssm": "./aws-ssm/index.js",
     "./aws-ssmcontacts": "./aws-ssmcontacts/index.js",
-    "./aws-ssmguiconnect": "./aws-ssmguiconnect/index.js",
     "./aws-ssmincidents": "./aws-ssmincidents/index.js",
     "./aws-sso": "./aws-sso/index.js",
     "./aws-stepfunctions": "./aws-stepfunctions/index.js",
