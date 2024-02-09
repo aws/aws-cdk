@@ -246,7 +246,7 @@ describe('DatabaseCluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new DatabaseCluster(stack, 'Cluster', {
+    new DatabaseCluster(stack, 'Database', {
       masterUser: { username: 'admin' },
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       vpc,
