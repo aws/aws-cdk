@@ -254,7 +254,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBSubnetGroup', {
+    Template.fromStack(stack).hasResource('AWS::DocDB::DBSubnetGroup', {
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
     });
