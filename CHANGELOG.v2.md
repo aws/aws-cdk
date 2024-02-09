@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.127.0](https://github.com/aws/aws-cdk/compare/v2.126.0...v2.127.0) (2024-02-09)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **lambda:** changing the default type of `lambda.loggingFormat`. Previously it was a string `"Text format"`, not it is an enum `LoggingFormat.TEXT`.
+
+
+
+*By submitting this pull request, I confirm that my contribution is made under the terms of the Apache-2.0 license*
+
+### Features
+
+* **eks:** support for Kubernetes version 1.29 ([#29040](https://github.com/aws/aws-cdk/issues/29040)) ([9dfabb1](https://github.com/aws/aws-cdk/commit/9dfabb1faf82c090957413315f9ddd2f83bcad29)), closes [#27930](https://github.com/aws/aws-cdk/issues/27930) [#28983](https://github.com/aws/aws-cdk/issues/28983)
+* update L1 CloudFormation resource definitions ([#29053](https://github.com/aws/aws-cdk/issues/29053)) ([7fcd5be](https://github.com/aws/aws-cdk/commit/7fcd5be7d6df3770095bc540bd1249d3337d551c))
+* **codebuild:** new CodeBuild lambda compute images ([#28630](https://github.com/aws/aws-cdk/issues/28630)) ([610fce1](https://github.com/aws/aws-cdk/commit/610fce1eed8b0554ef77941e6ff0760fd3d758db))
+* **codepipeline:** change default value for crossAccountKeys to false (under feature flag) ([#28556](https://github.com/aws/aws-cdk/issues/28556)) ([144b1b9](https://github.com/aws/aws-cdk/commit/144b1b9794cd36453913cf2d0297de4f4ddf342b)), closes [/github.com/aws/aws-cdk/blob/f4c1d1253ee34c2837a57a93faa47c9da97ef6d8/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.ts#L380-L381](https://github.com/aws//github.com/aws/aws-cdk/blob/f4c1d1253ee34c2837a57a93faa47c9da97ef6d8/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.ts/issues/L380-L381) [#28247](https://github.com/aws/aws-cdk/issues/28247)
+* **cognito:** specifying the trigger event version in UserPool.addTrigger() ([#28899](https://github.com/aws/aws-cdk/issues/28899)) ([7f2d4f1](https://github.com/aws/aws-cdk/commit/7f2d4f144c6a74557b7729b770408082052d9391)), closes [#28683](https://github.com/aws/aws-cdk/issues/28683) [#28683](https://github.com/aws/aws-cdk/issues/28683)
+* **ecs:** `idleTimeout` and `perRequestTimeout` for service connect ([#28877](https://github.com/aws/aws-cdk/issues/28877)) ([ffcae2f](https://github.com/aws/aws-cdk/commit/ffcae2f7f115fb298313dea7ac1b631173735bc0))
+* **ecs-patterns:** `healthCheck` property for `ApplicationLoadBalancedFargateService` ([#28797](https://github.com/aws/aws-cdk/issues/28797)) ([5996856](https://github.com/aws/aws-cdk/commit/599685651014e81fd4b61007d237a4b8998b546c)), closes [#28796](https://github.com/aws/aws-cdk/issues/28796)
+* **efs:** create read-only file system for use as a destination of replication ([#28913](https://github.com/aws/aws-cdk/issues/28913)) ([832f70c](https://github.com/aws/aws-cdk/commit/832f70c20fd8e91fa45029bfbaa668d5b152b870)), closes [#28912](https://github.com/aws/aws-cdk/issues/28912)
+* **lambda:** support enums in loggingFormat  ([#28942](https://github.com/aws/aws-cdk/issues/28942)) ([fb2329f](https://github.com/aws/aws-cdk/commit/fb2329f98d1de7c62a24044241aa6805a58e64f3))
+* **migrate:** Add CDK Migrate `--from-scan` functionality ([#28962](https://github.com/aws/aws-cdk/issues/28962)) ([bf95934](https://github.com/aws/aws-cdk/commit/bf9593499793441872a67dc661910ca8d3cc1e82))
+* **route53:** multivalue answer routing ([#28938](https://github.com/aws/aws-cdk/issues/28938)) ([0e6e37e](https://github.com/aws/aws-cdk/commit/0e6e37e2bb7c4e014e0ae8e0b61f523477af5dcf)), closes [#28939](https://github.com/aws/aws-cdk/issues/28939)
+* **sns:** message archive policy ([#29008](https://github.com/aws/aws-cdk/issues/29008)) ([9782f6b](https://github.com/aws/aws-cdk/commit/9782f6b6a6371504f118cde1254afc983f280a2a)), closes [#29007](https://github.com/aws/aws-cdk/issues/29007)
+* **stepfunctions:** distributed map construct ([#28821](https://github.com/aws/aws-cdk/issues/28821)) ([97e3827](https://github.com/aws/aws-cdk/commit/97e38271be3b42d2e6a266b58687596da08cc2e7)), closes [#23216](https://github.com/aws/aws-cdk/issues/23216)
+
+
+### Bug Fixes
+
+* **cloudwatch:** Math:UnknownIdentifier warning for INSIGHT_RULE_METRIC ([#28870](https://github.com/aws/aws-cdk/issues/28870)) ([7eedb54](https://github.com/aws/aws-cdk/commit/7eedb545edc860415c681a7f0565bcb9b152d594))
+* **ec2:** deploying an isolated subnet fails when `ipv6AssignAddressOnCreation` is set to true ([#28902](https://github.com/aws/aws-cdk/issues/28902)) ([9de77bb](https://github.com/aws/aws-cdk/commit/9de77bb5e43971d615abb34b77b997f5143f775d)), closes [/github.com/aws/aws-cdk/issues/28843#issuecomment-1909006632](https://github.com/aws//github.com/aws/aws-cdk/issues/28843/issues/issuecomment-1909006632) [#28843](https://github.com/aws/aws-cdk/issues/28843)
+* **lambda:** LoggingConfig default error ([#28973](https://github.com/aws/aws-cdk/issues/28973)) ([8c79bdc](https://github.com/aws/aws-cdk/commit/8c79bdce8212f0488acba756c8b8717a39bd6ce8))
+* **lambda-event-sources:** update s3-event-source to accept IBucket ([#28943](https://github.com/aws/aws-cdk/issues/28943)) ([431df3b](https://github.com/aws/aws-cdk/commit/431df3b67bc2dd2d0e833642a67cff890fc6be29)), closes [#4323](https://github.com/aws/aws-cdk/issues/4323) [#25782](https://github.com/aws/aws-cdk/issues/25782)
+* **migrate:** `--from-stack` does not retrieved processed template ([#29035](https://github.com/aws/aws-cdk/issues/29035)) ([74c4c6f](https://github.com/aws/aws-cdk/commit/74c4c6f7cfe3271993c61683c03c7d2bcc392c03))
+* **stepfunctions:** the Retry field in the statesJson in CustomState is always overwrited ([#28793](https://github.com/aws/aws-cdk/issues/28793)) ([3c33e2c](https://github.com/aws/aws-cdk/commit/3c33e2cdacd8fbec36eb1bb3ec0c8dbdec5ee736)), closes [/github.com/aws/aws-cdk/blob/45b8398bec9ba9c03f195c14f3b92188c9058a7b/packages/aws-cdk-lib/aws-stepfunctions/lib/states/custom-state.ts#L74](https://github.com/aws//github.com/aws/aws-cdk/blob/45b8398bec9ba9c03f195c14f3b92188c9058a7b/packages/aws-cdk-lib/aws-stepfunctions/lib/states/custom-state.ts/issues/L74) [#28769](https://github.com/aws/aws-cdk/issues/28769) [#28586](https://github.com/aws/aws-cdk/issues/28586)
+
 ## [2.126.0](https://github.com/aws/aws-cdk/compare/v2.125.0...v2.126.0) (2024-02-02)
 
 

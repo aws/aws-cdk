@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.127.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.126.0-alpha.0...v2.127.0-alpha.0) (2024-02-09)
+
+
+### Features
+
+* **pipes-sources:** new EventBridge Pipes sources alpha module ([#29048](https://github.com/aws/aws-cdk/issues/29048)) ([2e53568](https://github.com/aws/aws-cdk/commit/2e53568af8b3939413e2fe7b6d668a006b4a02d8))
+
+
+### Bug Fixes
+
+* **appconfig:** deprecate deploy method ([#29021](https://github.com/aws/aws-cdk/issues/29021)) ([9675bcd](https://github.com/aws/aws-cdk/commit/9675bcdd22dda93258b2e2bfcd24b9ef5990e704))
+* **integ-tests:** cannot use v3 package name in an awsApiCall ([#28895](https://github.com/aws/aws-cdk/issues/28895)) ([5035080](https://github.com/aws/aws-cdk/commit/5035080ecc7e9e6029478496169344d5eb4b3300)), closes [/github.com/aws/aws-cdk/pull/27313/files#diff-3ab65cbf843775673ff370c9c90deceba5f0ead8a3e016e0c2f243d27bf84609](https://github.com/aws//github.com/aws/aws-cdk/pull/27313/files/issues/diff-3ab65cbf843775673ff370c9c90deceba5f0ead8a3e016e0c2f243d27bf84609) [#28844](https://github.com/aws/aws-cdk/issues/28844)
+
 ## [2.126.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.125.0-alpha.0...v2.126.0-alpha.0) (2024-02-02)
 
 ## [2.125.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.124.0-alpha.0...v2.125.0-alpha.0) (2024-01-31)
