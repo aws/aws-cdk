@@ -212,6 +212,9 @@ Resources:
             Status: Enabled
             NoncurrentVersionExpiration:
               NoncurrentDays: 365
+          - Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
     UpdateReplacePolicy: Retain
     DeletionPolicy: Retain
   StagingBucketPolicy:
