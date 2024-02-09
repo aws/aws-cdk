@@ -15,3 +15,4 @@ export class TestTarget implements ITarget {
     targetParameters: this.targetParameters,
   });
 }
+

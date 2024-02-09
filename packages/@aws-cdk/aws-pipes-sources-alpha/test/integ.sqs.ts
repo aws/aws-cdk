@@ -65,3 +65,4 @@ putMessageOnQueue.next(test.assertions.awsApiCall('SQS', 'receiveMessage',
 });
 
 app.synth();
+

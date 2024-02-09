@@ -88,3 +88,4 @@ describe('sqs', () => {
     expect(template.findResources('AWS::IAM::Policy')).toMatchSnapshot();
   });
 });
+

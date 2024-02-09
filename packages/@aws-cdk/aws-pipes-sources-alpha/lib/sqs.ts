@@ -60,3 +60,4 @@ export class SqsSource implements ISource {
   }
 
 }
+

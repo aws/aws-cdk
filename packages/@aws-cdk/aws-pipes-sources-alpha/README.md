@@ -1,4 +1,4 @@
-# Amazon EventBridge Pipes Construct Library
+# Amazon EventBridge Pipes Sources Construct Library
 
 <!--BEGIN STABILITY BANNER-->
 
@@ -60,3 +60,4 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
   target: new SomeTarget(targetQueue)
 });
 ```
+
