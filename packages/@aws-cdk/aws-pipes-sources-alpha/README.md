@@ -17,17 +17,46 @@
 <!--END STABILITY BANNER-->
 
 
-EventBridge Pipes let you create source to target connections between several
-aws services. While transporting messages from a source to a target the messages
-can be filtered, transformed and enriched.
+EventBridge Pipes Sources let you create a source for a EventBridge Pipe.
 
-![diagram of pipes](https://d1.awsstatic.com/product-marketing/EventBridge/Product-Page-Diagram_Amazon-EventBridge-Pipes.cd7961854be4432d63f6158ffd18271d6c9fa3ec.png)
 
 For more details see the service documentation:
 
-[Documentation](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes.html)
+[Documentation](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-event-source.html)
 
 ## Pipe sources
 
-// TODO
+Pipe sources are the starting point of a EventBridge Pipe. They are the source of the events that are sent to the pipe.
 
+### Amazon SQS
+
+A SQS message queue can be used as a source for a pipe. The queue will be polled for new messages and the messages will be sent to the pipe.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetQueue: sqs.Queue;
+
+const pipeSource = new sources.SqsSource(sourceQueue);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: pipeSource,
+  target: new SomeTarget(targetQueue)
+});
+```
+
+The polling configuration can be customized:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetQueue: sqs.Queue;
+
+const pipeSource = new sources.SqsSource(sourceQueue, {
+  batchSize: 10,
+  maximumBatchingWindow: cdk.Duration.seconds(10)
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: pipeSource,
+  target: new SomeTarget(targetQueue)
+});
+```
