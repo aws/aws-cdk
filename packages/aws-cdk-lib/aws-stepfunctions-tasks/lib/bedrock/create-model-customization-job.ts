@@ -177,7 +177,10 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
   private renderPolicyStatements(): iam.PolicyStatement[] {
     const policyStatements = [
       new iam.PolicyStatement({
-        actions: ['bedrock:CreateModelCustomizationJob'],
+        actions: [
+          'bedrock:CreateModelCustomizationJob',
+          'bedrock:TagResource',
+        ],
         resources: [
           this.props.baseModel.modelArn,
           Stack.of(this).formatArn({
@@ -196,6 +199,13 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         actions: ['iam:PassRole'],
         resources: [this.props.role.roleArn],
       }),
+      ...(this.props.kmsKey ? [
+        new iam.PolicyStatement({
+          // TODO restrict policy
+          actions: ['kms:*'],
+          resources: [this.props.kmsKey.keyArn],
+        }),
+      ] : []),
     ];
 
     return policyStatements;

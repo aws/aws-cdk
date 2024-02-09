@@ -21,11 +21,19 @@ const model = bedrock.FoundationModel.fromFoundationModelId(
   bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
 );
 
-const outputBucket = new s3.Bucket(stack, 'OutputBucket');
-const trainingBucket = new s3.Bucket(stack, 'TrainingBucket');
-const validationBucket = new s3.Bucket(stack, 'ValidationBucket');
+const outputBucket = new s3.Bucket(stack, 'OutputBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+const trainingBucket = new s3.Bucket(stack, 'TrainingBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+const validationBucket = new s3.Bucket(stack, 'ValidationBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
 
-const kmsKey = new kms.Key(stack, 'KmsKey');
+const kmsKey = new kms.Key(stack, 'KmsKey', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
 
 const task = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomizationJob', {
   baseModel: model,
@@ -35,7 +43,7 @@ const task = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomiza
   customModelName: 'MyCustomModel',
   customModelTags: [{ key: 'key1', value: 'value1' }],
   hyperParameters: {
-    epochs: '10',
+    batchSize: '10',
   },
   jobName: 'MyJob',
   jobTags: [{ key: 'key2', value: 'value2' }],
