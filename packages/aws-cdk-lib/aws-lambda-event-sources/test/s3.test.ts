@@ -226,6 +226,8 @@ describe('S3EventSource', () => {
           },
         ],
       },
+    });
+  });
   test('Cross account buckect access', () => {
     // GIVEN
     const app = new cdk.App();
