@@ -189,9 +189,7 @@ are managed by AWS. If you would prefer to use your own managed NAT
 *instances* instead, specify a different value for the `natGatewayProvider`
 property, as follows:
 
-[using NAT instances](test/integ.nat-instances-v2.ts)
-
-The construct will automatically selects the latest version of Amazon Linux 2.
+The construct will automatically selects the latest version of Amazon Linux 2023.
 If you prefer to use a custom AMI, use `machineImage:
 MachineImage.genericLinux({ ... })` and configure the right AMI ID for the
 regions you want to deploy to.
