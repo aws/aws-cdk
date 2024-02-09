@@ -378,6 +378,10 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
 });
 ```
 
+### createModelCustomizationJob
+
+WIP
+
 ## CodeBuild
 
 Step Functions supports [CodeBuild](https://docs.aws.amazon.com/step-functions/latest/dg/connect-codebuild.html) through the service integration pattern.
