@@ -547,20 +547,6 @@ export class PullRequestLinter {
     });
 
     validationCollector.validateRuleSet({
-      testRuleSet: [{ test: validateBreakingChangeFormat }],
-    });
-
-    validationCollector.validateRuleSet({
-      testRuleSet: [{ test: validateTitlePrefix }],
-    });
-    validationCollector.validateRuleSet({
-      testRuleSet: [{ test: validateTitleScope }],
-    });
-    validationCollector.validateRuleSet({
-      testRuleSet: [{ test: validateBranch }],
-    })
-
-    validationCollector.validateRuleSet({
       exemption: shouldExemptBreakingChange,
       exemptionMessage: `Not validating breaking changes since the PR is labeled with '${Exemption.BREAKING_CHANGE}'`,
       testRuleSet: [{ test: assertStability }],
@@ -574,7 +560,17 @@ export class PullRequestLinter {
     validationCollector.validateRuleSet({
       exemption: (pr) => pr.user?.login === 'aws-cdk-automation',
       testRuleSet: [{ test: noMetadataChanges }],
-    })
+    });
+
+    validationCollector.validateRuleSet({
+      testRuleSet: [
+        { test: validateBreakingChangeFormat },
+        { test: validateTitlePrefix },
+        { test: validateTitleScope },
+        { test: validateTitleLowercase },
+        { test: validateBranch },
+      ],
+    });
 
     await this.deletePRLinterComment();
     try {
@@ -736,6 +732,18 @@ function validateTitleScope(pr: GitHubPr): TestResult {
       `The title of the pull request should omit 'aws-' from the name of modified packages. Use '${m[3]}' instead of '${m[2]}'.`,
     );
   }
+  return result;
+}
+
+function validateTitleLowercase(pr: GitHubPr): TestResult {
+  const result = new TestResult();
+  const start = pr.title.indexOf(':');
+  const firstLetter = pr.title.charAt(start + 2);
+  console.log(firstLetter, firstLetter.toLocaleLowerCase());
+  result.assessFailure(
+    firstLetter !== firstLetter.toLocaleLowerCase(),
+    'The first word of the pull request title should not be capitalized. If the title starts with a CDK construct, it should be in backticks "``".',
+  );
   return result;
 }
 
