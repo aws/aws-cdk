@@ -197,9 +197,9 @@ describe('ResponseHeadersPolicy', () => {
               Value: 'default-src https:;',
               Override: true,
             },
-          ]
+          ],
         },
       },
     });
-  })
+  });
 });

@@ -131,7 +131,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
       if (!customHeadersBehavior) {
         customHeadersBehavior = {
           customHeaders: [],
-        }
+        };
       }
       // TODO: log a warning if custom headers already contains CSP-Report-Only header?
       customHeadersBehavior.customHeaders.push(reportOnlyCSPHeader);
