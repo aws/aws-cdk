@@ -1,4 +1,4 @@
-# Amazon EventBridge Pipes Construct Library
+# Amazon EventBridge Pipes Targets Construct Library
 
 <!--BEGIN STABILITY BANNER-->
 
@@ -28,4 +28,38 @@ For more details see the service documentation:
 Pipe targets are the end point of a EventBridge Pipe.
 
 ### Amazon SQS
-TODO
+
+A SQS message queue can be used as a target for a pipe. Messages will be pushed to the queue.
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetQueue: sqs.Queue;
+
+const pipeTarget = new targets.SqsTarget(targetQueue);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: pipeTarget
+});
+```
+
+The target configuration can be transformed:
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetQueue: sqs.Queue;
+
+const pipeTarget = new targets.SqsTarget(targetQueue,
+    {
+      inputTransformation: pipes.InputTransformation.fromObject( 
+        { 
+            "SomeKey": pipes.DynamicInput.fromEventPath('$.body')
+        })
+    }
+);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+    source: new SomeSource(sourceQueue),
+    target: pipeTarget
+});
+```
