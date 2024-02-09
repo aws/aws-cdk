@@ -4,7 +4,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
-import { Stack, Token } from '../../../core';
+import { Aws, Stack, Token } from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -130,8 +130,10 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    * For example, during model training, Amazon Bedrock needs your permission to read input data from an S3 bucket,
    * write model artifacts to an S3 bucket.
    * To pass this role to Amazon Bedrock, the caller of this API must have the iam:PassRole permission.
+   *
+   * @default - auto generated role
    */
-  readonly role: iam.IRole;
+  readonly role?: iam.IRole;
   /**
    * Configuration parameters for the private Virtual Private Cloud (VPC) that contains the resources you are using for this job.
    */
@@ -152,6 +154,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
   protected readonly taskPolicies: iam.PolicyStatement[] | undefined;
 
   private readonly integrationPattern: sfn.IntegrationPattern;
+  private _role: iam.IRole;
 
   constructor(scope: Construct, id: string, private readonly props: BedrockCreateModelCustomizationJobProps) {
     super(scope, id, props);
@@ -171,7 +174,108 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
 
     validatePatternSupported(this.integrationPattern, BedrockCreateModelCustomizationJob.SUPPORTED_INTEGRATION_PATTERNS);
 
+    this._role = this.renderBedrockCreateModelCustomizationJobRole();
     this.taskPolicies = this.renderPolicyStatements();
+  }
+
+  /**
+   * The IAM role for the bedrock create model customization job
+   */
+  public get role(): iam.IRole {
+    return this._role;
+  }
+
+  private renderBedrockCreateModelCustomizationJobRole(): iam.IRole {
+    if (this.props.role) {
+      return this.props.role;
+    }
+    const stack = Stack.of(this);
+    const role = new iam.Role(this, 'BedrockRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
+      inlinePolicies: {
+        BedrockCreateModelCustomizationJob: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              actions: [
+                ...(this.props.vpcConfig
+                  ? [
+                    'ec2:DescribeNetworkInterfaces',
+                    'ec2:DescribeVpcs',
+                    'ec2:DescribeDhcpOptions',
+                    'ec2:DescribeSubnets',
+                    'ec2:DescribeSecurityGroups',
+                  ]
+                  : []),
+              ],
+              resources: ['*'],
+            }),
+            new iam.PolicyStatement({
+              actions: ['ec2:CreateNetworkInterface'],
+              resources: [
+                stack.formatArn({
+                  service: 'ec2',
+                  resource: 'network-interface',
+                  resourceName: '*',
+                }),
+                stack.formatArn({
+                  service: 'ec2',
+                  resource: 'security-group',
+                  resourceName: '*',
+                }),
+                stack.formatArn({
+                  service: 'ec2',
+                  resource: 'subnet',
+                  resourceName: '*',
+                }),
+              ],
+            }),
+            new iam.PolicyStatement({
+              actions: ['ec2:CreateTags'],
+              resources: [stack.formatArn({
+                service: 'ec2',
+                resource: 'network-interface',
+                resourceName: '*',
+              })],
+              conditions: {
+                StringEquals: {
+                  'ec2:CreateAction': 'CreateNetworkInterface',
+                },
+              },
+            }),
+            new iam.PolicyStatement({
+              actions: [
+                'ec2:CreateNetworkInterfacePermission',
+                'ec2:DeleteNetworkInterface',
+                'ec2:DeleteNetworkInterfacePermission',
+              ],
+              resources: ['*'],
+              conditions: {
+                StringEquals: {
+                  'ec2:Subnet': [
+                    ...(this.props.vpcConfig
+                      ? this.props.vpcConfig.subnets.map((subnet) => subnet.subnetId)
+                      : []),
+                  ],
+                },
+              },
+            }),
+            new iam.PolicyStatement({
+              actions: ['s3:GetObject'],
+              resources: [
+                this.s3UriToArn(this.props.trainingDataS3Uri),
+                ...(this.props.validationDataS3Uri.map((s3Uri) => this.s3UriToArn(s3Uri))),
+              ],
+            }),
+            new iam.PolicyStatement({
+              actions: ['s3:PutObject'],
+              resources: [this.s3UriToArn(this.props.outputDataS3Uri)],
+            }),
+          ],
+        }),
+      },
+    });
+
+    return role;
   }
 
   private renderPolicyStatements(): iam.PolicyStatement[] {
@@ -197,16 +301,33 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
       }),
       new iam.PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: [this.props.role.roleArn],
+        resources: [this._role.roleArn],
       }),
-      ...(this.props.kmsKey ? [
-        new iam.PolicyStatement({
-          // TODO restrict policy
-          actions: ['kms:*'],
-          resources: [this.props.kmsKey.keyArn],
-        }),
-      ] : []),
+      ...(this.props.kmsKey
+        ? [
+          new iam.PolicyStatement({
+            // TODO - this should be more specific
+            actions: ['kms:*'],
+            resources: [this.props.kmsKey.keyArn],
+          }),
+        ]
+        : []),
     ];
+
+    // if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
+    //   policyStatements.push(
+    //     new iam.PolicyStatement({
+    //       actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+    //       resources: [
+    //         Stack.of(this).formatArn({
+    //           service: 'events',
+    //           resource: 'rule',
+    //           resourceName: 'StepFunctionsGetEventsForSageMakerTrainingJobsRule',
+    //         }),
+    //       ],
+    //     }),
+    //   );
+    // }
 
     return policyStatements;
   }
@@ -226,6 +347,24 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
   private validateArrayLength(name: string, min: number, max: number, value?: any[]): void {
     if (value !== undefined && (value.length < min || value.length > max)) {
       throw new Error(`${name} must be between ${min} and ${max} items long`);
+    }
+  }
+
+  private s3UriToArn(s3Uri: string): string {
+    const bucketOnlyPattern = /^s3:\/\/([^\/]+)$/;
+    const bucketAndKeyPattern = /^s3:\/\/([^\/]+)\/(.+)$/;
+    if (bucketOnlyPattern.test(s3Uri)) {
+      const match = s3Uri.match(bucketOnlyPattern);
+      if (!match) throw new Error(`Invalid S3 URI: ${s3Uri}`);
+      const [, bucket] = match;
+      return `arn:${Aws.PARTITION}:s3:::${bucket}`;
+    } else if (bucketAndKeyPattern.test(s3Uri)) {
+      const match = s3Uri.match(bucketAndKeyPattern);
+      if (!match) throw new Error(`Invalid S3 URI: ${s3Uri}`);
+      const [, bucket, objectKey] = match;
+      return `arn:${Aws.PARTITION}:s3:::${bucket}/${objectKey}`;
+    } else {
+      throw new Error(`Unsupported S3 URI format: ${s3Uri}`);
     }
   }
 
@@ -250,7 +389,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         OutputDataConfig: {
           S3Uri: this.props.outputDataS3Uri,
         },
-        RoleArn: this.props.role.roleArn,
+        RoleArn: this._role.roleArn,
         TrainingDataConfig: {
           S3Uri: this.props.trainingDataS3Uri,
         },

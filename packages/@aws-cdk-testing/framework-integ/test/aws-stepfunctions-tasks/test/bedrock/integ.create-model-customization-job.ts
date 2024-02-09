@@ -1,6 +1,5 @@
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
-// import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -11,9 +10,16 @@ import { BedrockCreateModelCustomizationJob, CustomizationType } from 'aws-cdk-l
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-bedrock-invoke-model-integ');
 
-// const vpc = new ec2.Vpc(stack, 'Vpc', {
-//   natGateways: 0,
-// });
+const vpc = new ec2.Vpc(stack, 'Vpc', {
+  natGateways: 0,
+  subnetConfiguration: [
+    {
+      cidrMask: 24,
+      name: 'Private',
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+    },
+  ],
+});
 
 const model = bedrock.FoundationModel.fromFoundationModelId(
   stack,
@@ -35,7 +41,7 @@ const kmsKey = new kms.Key(stack, 'KmsKey', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-const task = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomizationJob', {
+const taskConfig = {
   baseModel: model,
   clientRequestToken: 'MyToken',
   customizationType: CustomizationType.FINE_TUNING,
@@ -45,21 +51,33 @@ const task = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomiza
   hyperParameters: {
     batchSize: '10',
   },
-  jobName: 'MyJob',
+  jobName: 'MyCustomizationJob',
   jobTags: [{ key: 'key2', value: 'value2' }],
   outputDataS3Uri: outputBucket.s3UrlForObject(),
   trainingDataS3Uri: trainingBucket.s3UrlForObject(),
   validationDataS3Uri: [validationBucket.s3UrlForObject()],
-  role: new iam.Role(stack, 'Role', {
-    assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
-  }),
-  // vpcConfig: {
-  //   securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
-  //   subnets: vpc.privateSubnets,
-  // },
+  vpcConfig: {
+    securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
+    subnets: vpc.isolatedSubnets,
+  },
+};
+
+const task1 = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomizationJob', taskConfig);
+
+const task2 = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomizationJob', {
+  ...taskConfig,
+  clientRequestToken: 'MyToken2',
+  customModelName: 'MyCustomModel2',
+  jobName: 'MyCustomizationJob2',
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  vpcConfig: undefined,
 });
 
-const chain = sfn.Chain.start(new sfn.Pass(stack, 'Start')).next(task).next(new sfn.Pass(stack, 'Done'));
+const chain = sfn.Chain
+  .start(new sfn.Pass(stack, 'Start'))
+  .next(task1)
+  .next(task2)
+  .next(new sfn.Pass(stack, 'Done'));
 
 new sfn.StateMachine(stack, 'StateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable(chain),
