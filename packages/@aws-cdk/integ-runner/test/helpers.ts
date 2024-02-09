@@ -72,8 +72,8 @@ export class MockCdkProvider {
    * @returns Diagnostics as they would be returned by testSnapshot
    */
   public snapshotTest(integTestFile: string, actualSnapshot?: string): {
-    diagnostics: Diagnostic[],
-    destructiveChanges: DestructiveChange[]
+    diagnostics: Diagnostic[];
+    destructiveChanges: DestructiveChange[];
   } {
     // WHEN
     const integTest = new IntegSnapshotRunner({

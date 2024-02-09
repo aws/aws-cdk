@@ -1,8 +1,8 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
-import { Application, Environment, Monitor } from '../lib';
 import { Alarm, CompositeAlarm, Metric } from 'aws-cdk-lib/aws-cloudwatch';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Application, Environment, Monitor } from '../lib';
 
 const app = new App();
 
@@ -40,6 +40,10 @@ new Environment(stack, 'MyEnvironment', {
     Monitor.fromCloudWatchAlarm(compositeAlarm),
   ],
 });
+
+/* resource deployment alone is sufficient because we already have the
+   corresponding resource handler tests to assert that resources can be
+   used after created */
 
 new IntegTest(app, 'appconfig-environment', {
   testCases: [stack],

@@ -9,7 +9,7 @@ export type PropertyMap = {[key: string]: any };
 export type ResourceReplacements = { [logicalId: string]: ResourceReplacement };
 
 export interface ResourceReplacement {
-  resourceReplaced: boolean,
+  resourceReplaced: boolean;
   propertiesReplaced: { [propertyName: string]: ChangeSetReplacement };
 }
 
@@ -398,10 +398,10 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
    * @param cb
    */
   public forEachDifference(cb: (logicalId: string, change: T) => any): void {
-    const removed = new Array<{ logicalId: string, change: T }>();
-    const added = new Array<{ logicalId: string, change: T }>();
-    const updated = new Array<{ logicalId: string, change: T }>();
-    const others = new Array<{ logicalId: string, change: T }>();
+    const removed = new Array<{ logicalId: string; change: T }>();
+    const added = new Array<{ logicalId: string; change: T }>();
+    const updated = new Array<{ logicalId: string; change: T }>();
+    const others = new Array<{ logicalId: string; change: T }>();
 
     for (const logicalId of this.logicalIds) {
       const change: T = this.changes[logicalId]!;
@@ -543,15 +543,15 @@ export class ResourceDifference implements IDifference<Resource> {
   private readonly otherDiffs: { [key: string]: Difference<any> };
 
   /** The resource type (or old and new type if it has changed) */
-  private readonly resourceTypes: { readonly oldType?: string, readonly newType?: string };
+  private readonly resourceTypes: { readonly oldType?: string; readonly newType?: string };
 
   constructor(
     public readonly oldValue: Resource | undefined,
     public readonly newValue: Resource | undefined,
     args: {
-      resourceType: { oldType?: string, newType?: string },
-      propertyDiffs: { [key: string]: PropertyDifference<any> },
-      otherDiffs: { [key: string]: Difference<any> }
+      resourceType: { oldType?: string; newType?: string };
+      propertyDiffs: { [key: string]: PropertyDifference<any> };
+      otherDiffs: { [key: string]: Difference<any> };
     },
   ) {
     this.resourceTypes = args.resourceType;

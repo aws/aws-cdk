@@ -65,7 +65,7 @@ export interface BackupVaultProps {
    *
    * @default - no notifications
    */
-  readonly notificationTopic?: sns.ITopic
+  readonly notificationTopic?: sns.ITopic;
 
   /**
    * The vault events to send.

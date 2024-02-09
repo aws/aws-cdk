@@ -103,7 +103,7 @@ export interface IGraphqlApi extends IResource {
    * @param eventBus The EventBridge EventBus on which to put events
    * @param options The optional configuration for this data source
    */
-  addEventBridgeDataSource(id: string, eventBus: IEventBus, options?: DataSourceOptions): EventBridgeDataSource
+  addEventBridgeDataSource(id: string, eventBus: IEventBus, options?: DataSourceOptions): EventBridgeDataSource;
 
   /**
    * add a new Lambda data source to this API

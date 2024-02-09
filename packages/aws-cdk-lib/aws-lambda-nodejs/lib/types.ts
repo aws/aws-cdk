@@ -97,7 +97,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - automatically discovered by `esbuild`
    */
-  readonly tsconfig? : string
+  readonly tsconfig? : string;
 
   /**
    * This option tells esbuild to write out a JSON file relative to output directory with metadata about the build.
@@ -124,7 +124,7 @@ export interface BundlingOptions extends DockerRunOptions {
    * @see https://esbuild.github.io/api/#metafile
    * @default false
    */
-  readonly metafile?: boolean
+  readonly metafile?: boolean;
 
   /**
    * Use this to insert an arbitrary string at the beginning of generated JavaScript files.
@@ -135,7 +135,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - no comments are passed
    */
-  readonly banner? : string
+  readonly banner? : string;
 
   /**
    * Use this to insert an arbitrary string at the end of generated JavaScript files.
@@ -146,7 +146,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - no comments are passed
    */
-  readonly footer? : string
+  readonly footer? : string;
 
   /**
    * The charset to use for esbuild's output.
@@ -242,7 +242,7 @@ export interface BundlingOptions extends DockerRunOptions {
   *
   * @default false
   */
-  readonly preCompilation?: boolean
+  readonly preCompilation?: boolean;
 
   /**
    * A custom bundling Docker image.
@@ -301,7 +301,7 @@ export interface BundlingOptions extends DockerRunOptions {
    * @see https://esbuild.github.io/api/#inject
    * @default - no code is injected
    */
-  readonly inject?: string[]
+  readonly inject?: string[];
 
   /**
    * Which option to use to copy the source files to the docker container and output files back
@@ -324,7 +324,7 @@ export enum OutputFormat {
    *
    * Requires a running environment that supports `import` and `export` syntax.
    */
-  ESM = 'esm'
+  ESM = 'esm',
 }
 
 /**
@@ -409,7 +409,7 @@ export enum SourceMapMode {
   /**
    * Both sourceMap mode - If you want to have the effect of both inline and external simultaneously
    */
-  BOTH = 'both'
+  BOTH = 'both',
 }
 
 /**
@@ -428,5 +428,5 @@ export enum Charset {
    *
    * Keep original characters without using escape sequences
    */
-  UTF8 = 'utf8'
+  UTF8 = 'utf8',
 }

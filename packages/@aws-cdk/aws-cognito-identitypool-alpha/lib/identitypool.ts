@@ -46,14 +46,13 @@ export interface IIdentityPool extends IResource {
    * Name of the Identity Pool
    * @attribute
    */
-  readonly identityPoolName: string
+  readonly identityPoolName: string;
 }
 
 /**
  * Props for the IdentityPool construct
  */
 export interface IdentityPoolProps {
-
   /**
    * The name of the Identity Pool
    * @default - automatically generated name by CloudFormation at deploy time
@@ -76,7 +75,7 @@ export interface IdentityPoolProps {
    * Wwhether the identity pool supports unauthenticated logins
    * @default - false
    */
-  readonly allowUnauthenticatedIdentities?: boolean
+  readonly allowUnauthenticatedIdentities?: boolean;
 
   /**
    * Rules for mapping roles to users
@@ -94,7 +93,7 @@ export interface IdentityPoolProps {
    * Authentication providers for using in identity pool.
    * @default - No Authentication Providers passed directly to Identity Pool
    */
-  readonly authenticationProviders?: IdentityPoolAuthenticationProviders
+  readonly authenticationProviders?: IdentityPoolAuthenticationProviders;
 }
 
 /**
@@ -180,7 +179,7 @@ export interface IdentityPoolAmazonLoginProvider {
   /**
    * App Id for Amazon Identity Federation
    */
-  readonly appId: string
+  readonly appId: string;
 }
 
 /**
@@ -190,7 +189,7 @@ export interface IdentityPoolFacebookLoginProvider {
   /**
    * App Id for Facebook Identity Federation
    */
-  readonly appId: string
+  readonly appId: string;
 }
 
 /**
@@ -200,7 +199,7 @@ export interface IdentityPoolAppleLoginProvider {
   /**
    * App Id for Apple Identity Federation
   */
-  readonly servicesId: string
+  readonly servicesId: string;
 }
 
 /**
@@ -210,7 +209,7 @@ export interface IdentityPoolGoogleLoginProvider {
   /**
    * App Id for Google Identity Federation
    */
-  readonly clientId: string
+  readonly clientId: string;
 }
 
 /**
@@ -220,12 +219,12 @@ export interface IdentityPoolTwitterLoginProvider {
   /**
    * App Id for Twitter Identity Federation
    */
-  readonly consumerKey: string
+  readonly consumerKey: string;
 
   /**
    * App Secret for Twitter Identity Federation
    */
-  readonly consumerSecret: string
+  readonly consumerSecret: string;
 }
 
 /**
@@ -237,36 +236,35 @@ export interface IdentityPoolDigitsLoginProvider extends IdentityPoolTwitterLogi
  * External Identity Providers To Connect to User Pools and Identity Pools
  */
 export interface IdentityPoolProviders {
-
   /** App Id for Facebook Identity Federation
    * @default - No Facebook Authentication Provider used without OpenIdConnect or a User Pool
    */
-  readonly facebook?: IdentityPoolFacebookLoginProvider
+  readonly facebook?: IdentityPoolFacebookLoginProvider;
 
   /** Client Id for Google Identity Federation
    * @default - No Google Authentication Provider used without OpenIdConnect or a User Pool
    */
-  readonly google?: IdentityPoolGoogleLoginProvider
+  readonly google?: IdentityPoolGoogleLoginProvider;
 
   /** App Id for Amazon Identity Federation
    * @default -  No Amazon Authentication Provider used without OpenIdConnect or a User Pool
    */
-  readonly amazon?: IdentityPoolAmazonLoginProvider
+  readonly amazon?: IdentityPoolAmazonLoginProvider;
 
   /** Services Id for Apple Identity Federation
    * @default - No Apple Authentication Provider used without OpenIdConnect or a User Pool
    */
-  readonly apple?: IdentityPoolAppleLoginProvider
+  readonly apple?: IdentityPoolAppleLoginProvider;
 
   /** Consumer Key and Secret for Twitter Identity Federation
    * @default - No Twitter Authentication Provider used without OpenIdConnect or a User Pool
    */
-  readonly twitter?: IdentityPoolTwitterLoginProvider
+  readonly twitter?: IdentityPoolTwitterLoginProvider;
 
   /** Consumer Key and Secret for Digits Identity Federation
    * @default - No Digits Authentication Provider used without OpenIdConnect or a User Pool
    */
-  readonly digits?: IdentityPoolDigitsLoginProvider
+  readonly digits?: IdentityPoolDigitsLoginProvider;
 }
 
 /**
@@ -274,7 +272,6 @@ export interface IdentityPoolProviders {
 * @see https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html
 */
 export interface IdentityPoolAuthenticationProviders extends IdentityPoolProviders {
-
   /**
    * The User Pool Authentication Providers associated with this Identity Pool
    * @default - no User Pools Associated
@@ -306,7 +303,6 @@ export interface IdentityPoolAuthenticationProviders extends IdentityPoolProvide
  *  @resource AWS::Cognito::IdentityPool
  */
 export class IdentityPool extends Resource implements IIdentityPool {
-
   /**
    * Import an existing Identity Pool from its id
    */

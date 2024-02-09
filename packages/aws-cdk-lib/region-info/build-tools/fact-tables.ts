@@ -80,7 +80,7 @@ enum Partition {
   UsIsoB = 'aws-iso-b',
 }
 
-interface Region { partition: Partition, domainSuffix: string }
+interface Region { partition: Partition; domainSuffix: string }
 
 export const PARTITION_MAP: { [region: string]: Region } = {
   'default': { partition: Partition.Default, domainSuffix: 'amazonaws.com' },

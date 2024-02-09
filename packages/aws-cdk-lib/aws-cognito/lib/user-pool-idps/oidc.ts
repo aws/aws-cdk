@@ -45,14 +45,14 @@ export interface UserPoolIdentityProviderOidcProps extends UserPoolIdentityProvi
    *
    * @default - no identifiers used
    */
-  readonly identifiers?: string[]
+  readonly identifiers?: string[];
 
   /**
    * The method to use to request attributes
    *
    * @default OidcAttributeRequestMethod.GET
    */
-  readonly attributeRequestMethod?: OidcAttributeRequestMethod
+  readonly attributeRequestMethod?: OidcAttributeRequestMethod;
 
   /**
    * OpenID connect endpoints
@@ -94,7 +94,7 @@ export enum OidcAttributeRequestMethod {
   /** GET */
   GET = 'GET',
   /** POST */
-  POST = 'POST'
+  POST = 'POST',
 }
 
 /**

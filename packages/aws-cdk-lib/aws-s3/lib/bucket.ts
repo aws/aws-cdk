@@ -357,7 +357,7 @@ export interface IBucket extends IResource {
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
    */
-  addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void
+  addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
 
   /**
    * Subscribes a destination to receive notifications when an object is
@@ -1177,7 +1177,7 @@ export enum InventoryFrequency {
   /**
    * A report is generated every Sunday (UTC timezone) after the initial report.
    */
-  WEEKLY = 'Weekly'
+  WEEKLY = 'Weekly',
 }
 
 /**
@@ -2107,8 +2107,8 @@ export class Bucket extends BucketBase {
    * | S3_MANAGED       | k                   | e                      | ERROR!                          | ERROR!                       |
    */
   private parseEncryption(props: BucketProps): {
-    bucketEncryption?: CfnBucket.BucketEncryptionProperty,
-    encryptionKey?: kms.IKey
+    bucketEncryption?: CfnBucket.BucketEncryptionProperty;
+    encryptionKey?: kms.IKey;
   } {
 
     // default based on whether encryptionKey is specified

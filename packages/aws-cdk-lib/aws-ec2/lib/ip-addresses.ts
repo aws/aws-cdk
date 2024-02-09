@@ -115,12 +115,12 @@ interface IRequestedSubnetInstance {
   /**
    * Index location of Subnet requested for allocation
    */
-  readonly index: number,
+  readonly index: number;
 
   /**
    * Subnet requested for allocation
    */
-  readonly requestedSubnet: RequestedSubnet
+  readonly requestedSubnet: RequestedSubnet;
 }
 
 /**
@@ -160,18 +160,18 @@ export interface CreateIpv6CidrBlocksRequest {
   /**
    * The IPv6 CIDR block string representation.
    */
-  readonly ipv6SelectedCidr: string,
+  readonly ipv6SelectedCidr: string;
 
   /**
    * The number of subnets to assign CIDRs to.
    */
-  readonly subnetCount: number,
+  readonly subnetCount: number;
 
   /**
    * Size of the covered bits in the CIDR.
    * @default - 128 - 64 = /64 CIDR.
    */
-  readonly sizeMask?: string,
+  readonly sizeMask?: string;
 }
 
 /**
@@ -450,7 +450,7 @@ export interface IIpv6Addresses {
    *
    * Note this is specific to the IPv6 CIDR.
    */
-  amazonProvided: boolean,
+  amazonProvided: boolean;
 
   /**
    * Called by VPC to allocate IPv6 CIDR.

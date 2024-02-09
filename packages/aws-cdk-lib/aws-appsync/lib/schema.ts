@@ -51,7 +51,7 @@ export interface SchemaProps {
    * configured, then the schema will be generated from an
    * existing file from disk.
    */
-  readonly filePath: string,
+  readonly filePath: string;
 };
 
 /**

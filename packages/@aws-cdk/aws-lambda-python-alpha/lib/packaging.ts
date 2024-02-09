@@ -5,7 +5,7 @@ export enum DependenciesFile {
   PIP = 'requirements.txt',
   POETRY = 'poetry.lock',
   PIPENV = 'Pipfile.lock',
-  NONE = ''
+  NONE = '',
 }
 
 export interface PackagingProps {

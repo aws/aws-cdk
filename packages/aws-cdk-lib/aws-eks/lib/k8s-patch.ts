@@ -59,7 +59,7 @@ export enum PatchType {
   /**
    * Strategic merge patch
    */
-  STRATEGIC = 'strategic'
+  STRATEGIC = 'strategic',
 }
 
 /**

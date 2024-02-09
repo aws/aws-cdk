@@ -85,7 +85,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
-                    "definitionString": "{\"StartAt\":\"my custom task\",\"States\":{\"my custom task\":{\"Next\":\"final step\",\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::dynamodb:putItem\",\"Parameters\":{\"TableName\":\"my-cool-table\",\"Item\":{\"id\":{\"S\":\"my-entry\"}}},\"ResultPath\":null,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":10,\"MaxAttempts\":5}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"failed\"}]},\"final step\":{\"Type\":\"Pass\",\"End\":true},\"failed\":{\"Type\":\"Fail\",\"Error\":\"DidNotWork\",\"Cause\":\"We got stuck\"}},\"TimeoutSeconds\":30}",
+                    "definitionString": "{\"StartAt\":\"my custom task\",\"States\":{\"my custom task\":{\"Next\":\"final step\",\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::dynamodb:putItem\",\"Parameters\":{\"TableName\":\"my-cool-table\",\"Item\":{\"id\":{\"S\":\"my-entry\"}}},\"ResultPath\":null,\"Retry\":[{\"ErrorEquals\":[\"States.Timeout\"],\"IntervalSeconds\":10,\"MaxAttempts\":5},{\"ErrorEquals\":[\"States.Permissions\"],\"IntervalSeconds\":20,\"MaxAttempts\":2}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"failed\"}]},\"final step\":{\"Type\":\"Pass\",\"End\":true},\"failed\":{\"Type\":\"Fail\",\"Error\":\"DidNotWork\",\"Cause\":\"We got stuck\"}},\"TimeoutSeconds\":30}",
                     "roleArn": {
                       "Fn::GetAtt": [
                         "StateMachineRoleB840431D",

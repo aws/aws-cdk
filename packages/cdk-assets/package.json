@@ -32,7 +32,7 @@
   "devDependencies": {
     "@types/archiver": "^5.3.4",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.12",
     "@types/mime": "^2.0.3",
     "@types/mock-fs": "^4.13.4",
     "@types/yargs": "^15.0.19",

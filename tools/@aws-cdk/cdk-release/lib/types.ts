@@ -28,7 +28,7 @@ export enum ExperimentalChangesTreatment {
   /** Remove all experimental changes from the changelog */
   STRIP = 'strip',
   /** Write experimental changes to a separate changelog */
-  SEPARATE = 'separate'
+  SEPARATE = 'separate',
 };
 
 export interface ReleaseOptions {

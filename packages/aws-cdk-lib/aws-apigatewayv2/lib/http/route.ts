@@ -164,7 +164,7 @@ enum HttpRouteAuthorizationType {
   CUSTOM = 'CUSTOM',
 
   /** No authorizer */
-  NONE = 'NONE'
+  NONE = 'NONE',
 }
 
 /**

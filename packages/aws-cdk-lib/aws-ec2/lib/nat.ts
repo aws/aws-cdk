@@ -37,12 +37,12 @@ export interface GatewayConfig {
   /**
    * Availability Zone
    */
-  readonly az: string
+  readonly az: string;
 
   /**
    * Identity of gateway spawned by the provider
    */
-  readonly gatewayId: string
+  readonly gatewayId: string;
 }
 
 /**

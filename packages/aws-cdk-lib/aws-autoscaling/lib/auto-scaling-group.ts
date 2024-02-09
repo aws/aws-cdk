@@ -491,7 +491,7 @@ export interface InstancesDistribution {
    *
    * @default OnDemandAllocationStrategy.PRIORITIZED
    */
-  readonly onDemandAllocationStrategy?: OnDemandAllocationStrategy,
+  readonly onDemandAllocationStrategy?: OnDemandAllocationStrategy;
 
   /**
    * The minimum amount of the Auto Scaling group's capacity that must be fulfilled by On-Demand Instances. This
@@ -501,7 +501,7 @@ export interface InstancesDistribution {
    *
    * @default 0
    */
-  readonly onDemandBaseCapacity?: number,
+  readonly onDemandBaseCapacity?: number;
 
   /**
    * Controls the percentages of On-Demand Instances and Spot Instances for your additional capacity beyond
@@ -510,7 +510,7 @@ export interface InstancesDistribution {
    *
    * @default 100
    */
-  readonly onDemandPercentageAboveBaseCapacity?: number,
+  readonly onDemandPercentageAboveBaseCapacity?: number;
 
   /**
    * If the allocation strategy is lowest-price, the Auto Scaling group launches instances using the Spot pools with the
@@ -525,7 +525,7 @@ export interface InstancesDistribution {
    *
    * @default SpotAllocationStrategy.LOWEST_PRICE
    */
-  readonly spotAllocationStrategy?: SpotAllocationStrategy,
+  readonly spotAllocationStrategy?: SpotAllocationStrategy;
 
   /**
    * The number of Spot Instance pools to use to allocate your Spot capacity. The Spot pools are determined from the different instance
@@ -534,7 +534,7 @@ export interface InstancesDistribution {
    *
    * @default 2
    */
-  readonly spotInstancePools?: number,
+  readonly spotInstancePools?: number;
 
   /**
    * The maximum price per unit hour that you are willing to pay for a Spot Instance. If you leave the value at its default (empty),
@@ -543,7 +543,7 @@ export interface InstancesDistribution {
    *
    * @default "" - On-Demand price
    */
-  readonly spotMaxPrice?: string
+  readonly spotMaxPrice?: string;
 }
 
 /**
@@ -563,7 +563,7 @@ export interface LaunchTemplateOverrides {
    *
    * @default - Do not override instance type
    */
-  readonly instanceRequirements?: CfnAutoScalingGroup.InstanceRequirementsProperty
+  readonly instanceRequirements?: CfnAutoScalingGroup.InstanceRequirementsProperty;
 
   /**
    * The instance type, such as m3.xlarge. You must use an instance type that is supported in your requested Region
@@ -573,7 +573,7 @@ export interface LaunchTemplateOverrides {
    *
    * @default - Do not override instance type
    */
-  readonly instanceType?: ec2.InstanceType,
+  readonly instanceType?: ec2.InstanceType;
 
   /**
    * Provides the launch template to be used when launching the instance type. For example, some instance types might
@@ -582,7 +582,7 @@ export interface LaunchTemplateOverrides {
    *
    * @default - Do not override launch template
    */
-  readonly launchTemplate?: ec2.ILaunchTemplate,
+  readonly launchTemplate?: ec2.ILaunchTemplate;
 
   /**
    * The number of capacity units provided by the specified instance type in terms of virtual CPUs, memory, storage,
@@ -598,7 +598,7 @@ export interface LaunchTemplateOverrides {
    *
    * @default - Do not provide weight
    */
-  readonly weightedCapacity?: number
+  readonly weightedCapacity?: number;
 }
 
 /**
@@ -2009,7 +2009,7 @@ export enum ScalingEvent {
   /**
    * Send a test notification to the topic
    */
-  TEST_NOTIFICATION = 'autoscaling:TEST_NOTIFICATION'
+  TEST_NOTIFICATION = 'autoscaling:TEST_NOTIFICATION',
 }
 
 /**
@@ -2134,7 +2134,7 @@ export enum ScalingProcess {
   AZ_REBALANCE = 'AZRebalance',
   ALARM_NOTIFICATION = 'AlarmNotification',
   SCHEDULED_ACTIONS = 'ScheduledActions',
-  ADD_TO_LOAD_BALANCER = 'AddToLoadBalancer'
+  ADD_TO_LOAD_BALANCER = 'AddToLoadBalancer',
 }
 
 // Recommended list of processes to suspend from here:

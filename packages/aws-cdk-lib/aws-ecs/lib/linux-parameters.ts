@@ -183,12 +183,12 @@ export interface Device {
    *
    * @default Same path as the host
    */
-  readonly containerPath?: string,
+  readonly containerPath?: string;
 
   /**
    * The path for the device on the host container instance.
    */
-  readonly hostPath: string,
+  readonly hostPath: string;
 
   /**
    * The explicit permissions to provide to the container for the device.
@@ -196,7 +196,7 @@ export interface Device {
    *
    * @default Readonly
    */
-  readonly permissions?: DevicePermission[]
+  readonly permissions?: DevicePermission[];
 }
 
 function renderDevice(device: Device): CfnTaskDefinition.DeviceProperty {
@@ -214,18 +214,18 @@ export interface Tmpfs {
   /**
    * The absolute file path where the tmpfs volume is to be mounted.
    */
-  readonly containerPath: string,
+  readonly containerPath: string;
 
   /**
    * The size (in MiB) of the tmpfs volume.
    */
-  readonly size: number,
+  readonly size: number;
 
   /**
    * The list of tmpfs volume mount options. For more information, see
    * [TmpfsMountOptions](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_Tmpfs.html).
    */
-  readonly mountOptions?: TmpfsMountOption[],
+  readonly mountOptions?: TmpfsMountOption[];
 }
 
 function renderTmpfs(tmpfs: Tmpfs): CfnTaskDefinition.TmpfsProperty {
@@ -277,7 +277,7 @@ export enum Capability {
   SYS_TIME = 'SYS_TIME',
   SYS_TTY_CONFIG = 'SYS_TTY_CONFIG',
   SYSLOG = 'SYSLOG',
-  WAKE_ALARM = 'WAKE_ALARM'
+  WAKE_ALARM = 'WAKE_ALARM',
 }
 
 /**
@@ -342,5 +342,5 @@ export enum TmpfsMountOption {
   GID = 'gid',
   NR_INODES = 'nr_inodes',
   NR_BLOCKS = 'nr_blocks',
-  MPOL = 'mpol'
+  MPOL = 'mpol',
 }

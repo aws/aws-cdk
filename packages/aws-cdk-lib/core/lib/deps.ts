@@ -51,7 +51,7 @@ export function removeDependency(source: Element, target: Element) {
 
 enum DependencyOperation {
   ADD,
-  REMOVE
+  REMOVE,
 }
 
 /**

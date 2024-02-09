@@ -10,7 +10,7 @@ export interface StepFunctionsInvokeActivityProps extends sfn.TaskStateBaseProps
   /**
    * Step Functions Activity to invoke
    */
-  readonly activity: sfn.IActivity
+  readonly activity: sfn.IActivity;
 
   /**
    * Parameters pass a collection of key-value pairs, either static values or JSONPath expressions that select from the input.

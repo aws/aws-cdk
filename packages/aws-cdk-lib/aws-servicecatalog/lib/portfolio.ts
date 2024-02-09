@@ -298,7 +298,7 @@ export interface PortfolioProps {
    *
    * @default - No tagOptions provided
    */
-  readonly tagOptions?: TagOptions
+  readonly tagOptions?: TagOptions;
 }
 
 /**

@@ -495,6 +495,49 @@ describe('', () => {
           'EnableKeyRotation': true,
         });
       });
+
+      test('crossAccountKeys as default value is set to false when feature flag is enabled', () => {
+        const app = new cdk.App();
+        app.node.setContext(cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE, true);
+
+        const stack = new cdk.Stack(app, 'PipelineStack');
+        const sourceOutput = new codepipeline.Artifact();
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new FakeSourceAction({ actionName: 'Source', output: sourceOutput })],
+            },
+            {
+              stageName: 'Build',
+              actions: [new FakeBuildAction({ actionName: 'Build', input: sourceOutput })],
+            },
+          ],
+        });
+
+        Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 0);
+      });
+
+      test('crossAccountKeys as default value is set to true when feature flag is not set', () => {
+        const app = new cdk.App();
+
+        const stack = new cdk.Stack(app, 'PipelineStack');
+        const sourceOutput = new codepipeline.Artifact();
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new FakeSourceAction({ actionName: 'Source', output: sourceOutput })],
+            },
+            {
+              stageName: 'Build',
+              actions: [new FakeBuildAction({ actionName: 'Build', input: sourceOutput })],
+            },
+          ],
+        });
+
+        Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
+      });
     });
   });
 
@@ -895,12 +938,12 @@ function createPipelineWithSourceAndBuildStages(scope: Construct, pipelineName?:
 };
 
 interface CreatePipelineStackOptions {
-  readonly withFeatureFlag?: boolean,
-  readonly suffix: string,
-  readonly stackId?: string,
-  readonly pipelineId?: string,
-  readonly undefinedStackName?: boolean,
-  readonly nestedStackId?: string,
+  readonly withFeatureFlag?: boolean;
+  readonly suffix: string;
+  readonly stackId?: string;
+  readonly pipelineId?: string;
+  readonly undefinedStackName?: boolean;
+  readonly nestedStackId?: string;
 }
 
 function createPipelineStack(options: CreatePipelineStackOptions): PipelineStack {

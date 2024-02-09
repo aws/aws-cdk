@@ -58,6 +58,7 @@ const deployment = new BucketDeployment(stack, 'BucketDeployment', {
   ],
 });
 const pipeline = new Pipeline(stack, 'Pipeline', {
+  crossAccountKeys: true,
   stages: [
     {
       stageName: 'source',

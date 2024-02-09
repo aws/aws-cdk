@@ -122,7 +122,7 @@ export interface PipeProps {
     * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-logs.html
     * @default - LogLevel.ERROR
     */
-  readonly logLevel?: LogLevel
+  readonly logLevel?: LogLevel;
 
   /**
     * Whether the execution data (specifically, the `payload` , `awsRequest` , and `awsResponse` fields) is included in the log messages for this pipe.
@@ -134,7 +134,7 @@ export interface PipeProps {
     * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipelogconfiguration.html#cfn-pipes-pipe-pipelogconfiguration-includeexecutiondata
     * @default - none
     */
-  readonly logIncludeExecutionData?: IncludeExecutionData[]
+  readonly logIncludeExecutionData?: IncludeExecutionData[];
 
   /**
    * A description of the pipe displayed in the AWS console

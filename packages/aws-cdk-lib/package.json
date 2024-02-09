@@ -124,7 +124,7 @@
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.2.0",
-    "ignore": "^5.3.0",
+    "ignore": "^5.3.1",
     "jsonschema": "^1.4.1",
     "minimatch": "^3.1.2",
     "punycode": "^2.3.1",
@@ -133,7 +133,7 @@
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.0.45",
+    "@aws-cdk/aws-service-spec": "^0.0.47",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -159,7 +159,7 @@
     "@aws-sdk/types": "^3.433.0",
     "@smithy/util-stream": "^2.1.1",
     "@types/aws-lambda": "^8.10.133",
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.12",
     "@types/lodash": "^4.14.202",
     "@types/punycode": "^2.1.3",
     "@aws-cdk/lazify": "0.0.0",
@@ -167,7 +167,7 @@
     "aws-sdk-client-mock": "^3.0.1",
     "aws-sdk-client-mock-jest": "^3.0.1",
     "aws-sdk-mock": "5.8.0",
-    "cdk8s": "2.68.32",
+    "cdk8s": "2.68.33",
     "constructs": "^10.0.0",
     "delay": "5.0.0",
     "esbuild": "^0.20.0",
@@ -452,7 +452,6 @@
     "./aws-sqs": "./aws-sqs/index.js",
     "./aws-ssm": "./aws-ssm/index.js",
     "./aws-ssmcontacts": "./aws-ssmcontacts/index.js",
-    "./aws-ssmguiconnect": "./aws-ssmguiconnect/index.js",
     "./aws-ssmincidents": "./aws-ssmincidents/index.js",
     "./aws-sso": "./aws-sso/index.js",
     "./aws-stepfunctions": "./aws-stepfunctions/index.js",
@@ -499,7 +498,7 @@
   },
   "jsiiRosetta": {
     "exampleDependencies": {
-      "@aws-cdk/lambda-layer-kubectl-v28": "^2.0.0",
+      "@aws-cdk/lambda-layer-kubectl-v29": "^2.0.0",
       "cdk8s-plus-25": "^2.7.0",
       "@aws-cdk/aws-kinesisfirehose-alpha": "*",
       "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "*"

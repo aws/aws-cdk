@@ -622,9 +622,9 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
   }
 
   private validateConditionCombinations(principal: iam.IPrincipal): {
-    sourceArn: string | undefined,
-    sourceAccount: string | undefined,
-    principalOrgID: string | undefined,
+    sourceArn: string | undefined;
+    sourceAccount: string | undefined;
+    principalOrgID: string | undefined;
   } | undefined {
     const conditions = this.validateConditions(principal);
 

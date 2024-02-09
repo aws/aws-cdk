@@ -272,7 +272,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+     "S3Key": "f6b251c5210167bd7ded2b4d904eed879427f3c53b8bdda0eb09eaa49c6d1db9.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider)",
     "Environment": {
@@ -409,7 +409,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+     "S3Key": "f6b251c5210167bd7ded2b4d904eed879427f3c53b8bdda0eb09eaa49c6d1db9.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider)",
     "Environment": {
@@ -543,7 +543,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+     "S3Key": "f6b251c5210167bd7ded2b4d904eed879427f3c53b8bdda0eb09eaa49c6d1db9.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider)",
     "Environment": {

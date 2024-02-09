@@ -21,7 +21,7 @@ export enum OpsItemSeverity {
   /**
    * Set the severity to low
    */
-  LOW = '4'
+  LOW = '4',
 }
 
 /**
@@ -47,7 +47,7 @@ export enum OpsItemCategory {
   /**
    * Set the category to security
    */
-  SECURITY = 'Security'
+  SECURITY = 'Security',
 }
 
 /**

@@ -109,7 +109,7 @@ test('fails if lookups are disabled and missing context is synthesized', async (
   await expect(cloudExecutable.synthesize()).rejects.toThrow(/Context lookups have been disabled/);
 });
 
-async function testCloudExecutable({ env, versionReporting = true }: { env?: string, versionReporting?: boolean } = {}) {
+async function testCloudExecutable({ env, versionReporting = true }: { env?: string; versionReporting?: boolean } = {}) {
   const cloudExec = new MockCloudExecutable({
     stacks: [{
       stackName: 'withouterrors',

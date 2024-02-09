@@ -156,7 +156,7 @@ export interface TableBaseProps {
    *
    * @default - The parameter is not defined
    */
-  readonly parameters?: { [key: string]: string }
+  readonly parameters?: { [key: string]: string };
 }
 
 /**

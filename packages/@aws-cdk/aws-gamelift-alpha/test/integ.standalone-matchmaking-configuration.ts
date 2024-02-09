@@ -11,7 +11,7 @@ class TestStack extends cdk.Stack {
 
     const ruleSet = new gamelift.MatchmakingRuleSet(this, 'StandaloneMatchmakingConfiguration', {
       matchmakingRuleSetName: 'my-test-ruleset',
-      content: gamelift.RuleSetContent.fromJsonFile(path.join(__dirname, 'my-ruleset/ruleset.json')),
+      content: gamelift.RuleSetContent.fromJsonFile(path.join(__dirname, 'my-ruleset', 'ruleset.json')),
     });
 
     const matchmakingConfiguration = new gamelift.StandaloneMatchmakingConfiguration(this, 'MyStandaloneMatchmakingConfiguration', {

@@ -70,7 +70,7 @@ export enum LogLevel {
   /** Pretty verbose */
   DEBUG = 1,
   /** Extremely verbose */
-  TRACE = 2
+  TRACE = 2,
 }
 
 export let logLevel = LogLevel.DEFAULT;

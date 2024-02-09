@@ -17,14 +17,6 @@ Closes #<issue number here>.
 ### Checklist
 - [ ] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
 
-<!--Does this PR includes breaking changes? If it does, list them here in the following format (notice how multiple breaking changes should be formatted):
-
-  ```
-  BREAKING CHANGE: Description of the breaking change, the previous behaviour, and the new behaviour. 
-  * **module-name:** Another breaking change
-  * **module-name:** Yet another breaking change
-  ```
--->
 ----
 
 *By submitting this pull request, I confirm that my contribution is made under the terms of the Apache-2.0 license*

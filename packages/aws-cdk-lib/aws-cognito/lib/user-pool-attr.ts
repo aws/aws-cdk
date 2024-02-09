@@ -206,7 +206,7 @@ export interface CustomAttributeProps {
    *
    * @default false
    */
-  readonly mutable?: boolean
+  readonly mutable?: boolean;
 }
 
 /**

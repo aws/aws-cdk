@@ -389,8 +389,8 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
   private loadBalancersInfo(loadBalancers?: LoadBalancer[]):
   CfnDeploymentGroup.LoadBalancerInfoProperty | undefined {
     return loadBalancers?.reduce((accumulator : {
-      elbInfoList?: {name: string}[],
-      targetGroupInfoList?: {name: string}[]
+      elbInfoList?: {name: string}[];
+      targetGroupInfoList?: {name: string}[];
     }, loadBalancer: LoadBalancer) => {
       switch (loadBalancer.generation) {
         case LoadBalancerGeneration.FIRST:

@@ -25,7 +25,7 @@ export enum NetworkLoadBalancedServiceRecordType {
   /**
    * Do not create any DNS records
    */
-  NONE
+  NONE,
 }
 
 /**

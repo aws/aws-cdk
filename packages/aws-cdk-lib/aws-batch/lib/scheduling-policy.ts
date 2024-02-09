@@ -12,7 +12,7 @@ export interface ISchedulingPolicy extends IResource {
    *
    * @attribute
    */
-  readonly schedulingPolicyName: string
+  readonly schedulingPolicyName: string;
 
   /**
    * The arn of this scheduling policy

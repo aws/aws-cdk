@@ -47,7 +47,7 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
    *
    * @param grantee The principal to grant access to
    */
-  grantDataApiAccess(grantee: iam.IGrantable): iam.Grant
+  grantDataApiAccess(grantee: iam.IGrantable): iam.Grant;
 }
 /**
  *  Common Properties to configure new Aurora Serverless Cluster or Aurora Serverless Cluster from snapshot
@@ -236,7 +236,7 @@ export enum AuroraCapacityUnit {
   /** 256 Aurora Capacity Units */
   ACU_256 = 256,
   /** 384 Aurora Capacity Units */
-  ACU_384 = 384
+  ACU_384 = 384,
 }
 
 /**

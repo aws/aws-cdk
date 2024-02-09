@@ -18,7 +18,7 @@ import {
 const app = new cdk.App();
 
 interface StackUnderTestProps extends StackProps {
-  architecture: Architecture,
+  architecture: Architecture;
 }
 
 class StackUnderTest extends Stack {

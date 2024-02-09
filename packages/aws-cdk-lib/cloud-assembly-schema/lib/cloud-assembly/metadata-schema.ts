@@ -67,7 +67,7 @@ export interface Tag {
    * patched to match this structure upon loading:
    * https://github.com/aws/aws-cdk/blob/4aadaa779b48f35838cccd4e25107b2338f05547/packages/%40aws-cdk/cloud-assembly-schema/lib/manifest.ts#L137)
    */
-  readonly key: string
+  readonly key: string;
 
   /**
    * Tag value.
@@ -76,7 +76,7 @@ export interface Tag {
    * patched to match this structure upon loading:
    * https://github.com/aws/aws-cdk/blob/4aadaa779b48f35838cccd4e25107b2338f05547/packages/%40aws-cdk/cloud-assembly-schema/lib/manifest.ts#L137)
    */
-  readonly value: string
+  readonly value: string;
 }
 
 /**
@@ -297,7 +297,7 @@ export enum ArtifactMetadataEntryType {
   /**
    * Represents tags of a stack.
    */
-  STACK_TAGS = 'aws:cdk:stack-tags'
+  STACK_TAGS = 'aws:cdk:stack-tags',
 }
 
 /**

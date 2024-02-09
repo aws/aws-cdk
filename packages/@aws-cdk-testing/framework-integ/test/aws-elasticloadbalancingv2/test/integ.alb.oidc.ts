@@ -12,9 +12,9 @@ import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '
 import { Construct } from 'constructs';
 
 interface CognitoUserProps {
-  userPool: cognito.UserPool
-  username: string
-  password: string
+  userPool: cognito.UserPool;
+  username: string;
+  password: string;
 }
 /**
  * Cognito User for testing
@@ -76,9 +76,9 @@ class CognitoUser extends Construct {
 }
 
 interface AlbOidcStackProps extends StackProps {
-  hostedZoneId: string
-  hostedZoneName: string
-  domainName: string
+  hostedZoneId: string;
+  hostedZoneName: string;
+  domainName: string;
 }
 
 class AlbOidcStack extends Stack {

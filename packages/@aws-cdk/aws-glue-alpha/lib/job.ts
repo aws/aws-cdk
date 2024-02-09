@@ -379,7 +379,7 @@ export interface SparkUIProps {
   /**
    * Enable Spark UI.
    */
-  readonly enabled: boolean
+  readonly enabled: boolean;
 
   /**
    * The bucket where the Glue job stores the logs.
@@ -613,7 +613,7 @@ export interface JobProps {
    * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  readonly sparkUI?: SparkUIProps,
+  readonly sparkUI?: SparkUIProps;
 
   /**
    * Enables continuous logging with the specified props.
@@ -623,7 +623,7 @@ export interface JobProps {
    * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-continuous-logging-enable.html
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  readonly continuousLogging?: ContinuousLoggingProps,
+  readonly continuousLogging?: ContinuousLoggingProps;
 
   /**
    * The ExecutionClass whether the job is run with a standard or flexible execution class.
@@ -633,7 +633,7 @@ export interface JobProps {
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-job.html#aws-glue-api-jobs-job-Job
    * @see https://docs.aws.amazon.com/glue/latest/dg/add-job.html
    */
-  readonly executionClass?: ExecutionClass,
+  readonly executionClass?: ExecutionClass;
 }
 
 /**

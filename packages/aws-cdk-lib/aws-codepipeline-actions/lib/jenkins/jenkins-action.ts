@@ -18,7 +18,7 @@ export enum JenkinsActionType {
   /**
    * The Action will have the Test Category.
    */
-  TEST
+  TEST,
 }
 
 /**

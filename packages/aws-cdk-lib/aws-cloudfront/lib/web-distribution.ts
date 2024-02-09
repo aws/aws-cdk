@@ -99,21 +99,21 @@ export interface LoggingConfiguration {
    *
    * @default - A logging bucket is automatically created.
    */
-  readonly bucket?: s3.IBucket,
+  readonly bucket?: s3.IBucket;
 
   /**
    * Whether to include the cookies in the logs
    *
    * @default false
    */
-  readonly includeCookies?: boolean,
+  readonly includeCookies?: boolean;
 
   /**
    * Where in the bucket to store logs
    *
    * @default - No prefix.
    */
-  readonly prefix?: string
+  readonly prefix?: string;
 }
 
 // Subset of SourceConfiguration for rendering properties internally
@@ -124,7 +124,7 @@ interface SourceConfigurationRender {
   readonly customOriginSource?: CustomOriginConfig;
   readonly originPath?: string;
   readonly originHeaders?: { [key: string]: string };
-  readonly originShieldRegion?: string
+  readonly originShieldRegion?: string;
 }
 
 /**
@@ -222,42 +222,42 @@ export interface CustomOriginConfig {
   /**
    * The domain name of the custom origin. Should not include the path - that should be in the parent SourceConfiguration
    */
-  readonly domainName: string,
+  readonly domainName: string;
 
   /**
    * The origin HTTP port
    *
    * @default 80
    */
-  readonly httpPort?: number,
+  readonly httpPort?: number;
 
   /**
    * The origin HTTPS port
    *
    * @default 443
    */
-  readonly httpsPort?: number,
+  readonly httpsPort?: number;
 
   /**
    * The keep alive timeout when making calls in seconds.
    *
    * @default Duration.seconds(5)
    */
-  readonly originKeepaliveTimeout?: cdk.Duration,
+  readonly originKeepaliveTimeout?: cdk.Duration;
 
   /**
    * The protocol (http or https) policy to use when interacting with the origin.
    *
    * @default OriginProtocolPolicy.HttpsOnly
    */
-  readonly originProtocolPolicy?: OriginProtocolPolicy,
+  readonly originProtocolPolicy?: OriginProtocolPolicy;
 
   /**
    * The read timeout when calling the origin in seconds
    *
    * @default Duration.seconds(30)
    */
-  readonly originReadTimeout?: cdk.Duration
+  readonly originReadTimeout?: cdk.Duration;
 
   /**
    * The SSL versions to use when interacting with the origin.
@@ -339,7 +339,7 @@ export interface S3OriginConfig {
 export enum CloudFrontAllowedMethods {
   GET_HEAD = 'GH',
   GET_HEAD_OPTIONS = 'GHO',
-  ALL = 'ALL'
+  ALL = 'ALL',
 }
 
 /**

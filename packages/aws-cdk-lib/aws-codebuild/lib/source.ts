@@ -661,7 +661,7 @@ interface CommonGithubSourceProps extends ThirdPartyGitSourceProps {
    * @example "My build #$CODEBUILD_BUILD_NUMBER"
    * @default "AWS CodeBuild $AWS_REGION ($PROJECT_NAME)"
    */
-  readonly buildStatusContext?: string
+  readonly buildStatusContext?: string;
 }
 
 abstract class CommonGithubSource extends ThirdPartyGitSource {

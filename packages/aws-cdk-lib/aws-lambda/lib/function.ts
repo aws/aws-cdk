@@ -123,6 +123,24 @@ export enum LogFormat {
 }
 
 /**
+ * This field takes in 2 values either Text or JSON. By setting this value to Text,
+ * will result in the current structure of logs format, whereas, by setting this value to JSON,
+ * Lambda will print the logs as Structured JSON Logs, with the corresponding timestamp and log level
+ * of each event. Selecting ‘JSON’ format will only allow customer’s to have different log level
+ * Application log level and the System log level.
+ */
+export enum LoggingFormat {
+  /**
+   * Lambda Logs text format.
+   */
+  TEXT = 'Text',
+  /**
+   * Lambda structured logging in Json format.
+   */
+  JSON = 'JSON',
+}
+
+/**
  * Non runtime options
  */
 export interface FunctionOptions extends EventInvokeConfigOptions {
@@ -500,6 +518,12 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default "Text"
    */
   readonly logFormat?: string;
+
+  /**
+   * Sets the loggingFormat for the function.
+   * @default LoggingFormat.TEXT
+   */
+  readonly loggingFormat?: LoggingFormat;
 
   /**
    * Sets the application log level for the function.
@@ -1118,14 +1142,23 @@ export class Function extends FunctionBase {
    * function and undefined if not.
    */
   private getLoggingConfig(props: FunctionProps): CfnFunction.LoggingConfigProperty | undefined {
-    if ((props.applicationLogLevel || props.systemLogLevel) && props.logFormat !== LogFormat.JSON) {
+    if ((props.applicationLogLevel || props.systemLogLevel) && props.logFormat !== LogFormat.JSON
+    && props.loggingFormat === undefined) {
       throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`);
     }
 
+    if ((props.applicationLogLevel || props.systemLogLevel) && props.loggingFormat !== LoggingFormat.JSON && props.logFormat === undefined) {
+      throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LoggingFormat to '${LoggingFormat.JSON}', got '${props.loggingFormat}'.`);
+    }
+
+    if (props.logFormat && props.loggingFormat) {
+      throw new Error('Only define LogFormat or LoggingFormat, not both.');
+    }
+
     let loggingConfig: CfnFunction.LoggingConfigProperty;
-    if (props.logFormat || props.logGroup) {
+    if (props.logFormat || props.logGroup || props.loggingFormat) {
       loggingConfig = {
-        logFormat: props.logFormat,
+        logFormat: props.logFormat || props.loggingFormat,
         systemLogLevel: props.systemLogLevel,
         applicationLogLevel: props.applicationLogLevel,
         logGroup: props.logGroup?.logGroupName,
@@ -1587,7 +1620,7 @@ export interface EnvironmentOptions {
    *
    * @default false - using the function in Lambda@Edge will throw
    */
-  readonly removeInEdge?: boolean
+  readonly removeInEdge?: boolean;
 }
 
 /**

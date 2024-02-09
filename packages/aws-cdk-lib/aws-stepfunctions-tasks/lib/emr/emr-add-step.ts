@@ -27,7 +27,7 @@ export enum ActionOnFailure {
   /**
    * Continue to the next Step
    */
-  CONTINUE = 'CONTINUE'
+  CONTINUE = 'CONTINUE',
 }
 
 /**

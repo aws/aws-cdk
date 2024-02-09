@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9cf736d94c144b8d5f7f4f10e6e71d1570c9cc7d72af3e67359f7deebfe92978.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0c895b38a4fd07809d97b4746ec26ace4b12f9f76278fc23d79c2b5437c9480b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,10 +37,7 @@
         "/lambda-layer-awscli-integ-stack/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsCliLayerF44AAF94",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "AwsCliLayerF44AAF94"
           }
         ],
         "/lambda-layer-awscli-integ-stack/Lambda$python3.7/ServiceRole/Resource": [

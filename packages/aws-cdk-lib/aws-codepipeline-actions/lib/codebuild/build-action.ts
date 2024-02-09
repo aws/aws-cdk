@@ -22,7 +22,7 @@ export enum CodeBuildActionType {
   /**
    * The action will have the Test Category.
    */
-  TEST
+  TEST,
 }
 
 /**

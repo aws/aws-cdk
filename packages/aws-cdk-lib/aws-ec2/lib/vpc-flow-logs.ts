@@ -41,7 +41,7 @@ export enum FlowLogTrafficType {
   /**
    * Only log rejects
    */
-  REJECT = 'REJECT'
+  REJECT = 'REJECT',
 }
 
 /**

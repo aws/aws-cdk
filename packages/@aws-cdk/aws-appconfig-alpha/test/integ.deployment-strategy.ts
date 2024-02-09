@@ -1,6 +1,6 @@
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { DeploymentStrategy, RolloutStrategy } from '../lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
 
@@ -13,6 +13,10 @@ new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
     deploymentDuration: Duration.minutes(5),
   }),
 });
+
+/* resource deployment alone is sufficient because we already have the
+   corresponding resource handler tests to assert that resources can be
+   used after created */
 
 new IntegTest(app, 'appconfig-deployment-strategy', {
   testCases: [stack],

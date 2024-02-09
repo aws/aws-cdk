@@ -153,7 +153,8 @@ export interface PipelineProps {
    * encrypted with an AWS-managed key). However, cross-account deployments will
    * no longer be possible.
    *
-   * @default true
+   * @default false - false if the feature flag `CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE`
+   * is true, true otherwise
    */
   readonly crossAccountKeys?: boolean;
 
@@ -386,8 +387,9 @@ export class Pipeline extends PipelineBase {
       throw new Error('Only one of artifactBucket and crossRegionReplicationBuckets can be specified!');
     }
 
-    // @deprecated(v2): switch to default false
-    this.crossAccountKeys = props.crossAccountKeys ?? true;
+    // The feature flag is set to true by default for new projects, otherwise false.
+    this.crossAccountKeys = props.crossAccountKeys
+      ?? (FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE) ? false : true);
     this.enableKeyRotation = props.enableKeyRotation;
 
     // Cross account keys must be set for key rotation to be enabled

@@ -191,6 +191,57 @@ describe('DeployAssert', () => {
       template.resourceCountIs('AWS::Lambda::Function', 1);
       template.resourceCountIs(truncatedType, 1);
     });
+
+    test('can use v3 package name and command class name', () => {
+      // GIVEN
+      const app = new App();
+
+      // WHEN
+      const deplossert = new DeployAssert(app);
+      deplossert.awsApiCall('@aws-sdk/client-ssm', 'GetParameterCommand');
+
+      // THEN
+      const template = Template.fromStack(deplossert.scope);
+
+      template.resourceCountIs('AWS::Lambda::Function', 1);
+      template.resourcePropertiesCountIs(
+        'Custom::DeployAssert@SdkCall@aws-sdkclient-ssmGetParameterC',
+        {
+          service: '@aws-sdk/client-ssm',
+          api: 'GetParameterCommand',
+        },
+        1,
+      );
+    });
+
+    test('can use v3 package name and command class name with assertions', () => {
+      // GIVEN
+      const app = new App();
+
+      // WHEN
+      const deplossert = new DeployAssert(app);
+      deplossert.awsApiCall('@aws-sdk/client-ssm', 'GetParameterCommand').expect(
+        ExpectedResult.objectLike({}),
+      );;
+
+      // THEN
+      const template = Template.fromStack(deplossert.scope);
+
+      template.resourceCountIs('AWS::Lambda::Function', 1);
+      template.resourcePropertiesCountIs(
+        'Custom::DeployAssert@SdkCall@aws-sdkclient-ssmGetParameterC',
+        {
+          service: '@aws-sdk/client-ssm',
+          api: 'GetParameterCommand',
+        },
+        1,
+      );
+      template.hasOutput('AssertionResultsAwsApiCallawssdkclientssmGetParameterCommand', {
+        Value: {
+          'Fn::GetAtt': ['AwsApiCallawssdkclientssmGetParameterCommand', 'assertion'],
+        },
+      });
+    });
   });
 
   describe('httpApiCall', () => {

@@ -16,7 +16,7 @@
   "devDependencies": {
     "@types/eslint": "^7.29.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.12",
     "@types/estree": "*",
     "jest": "^29.7.0",
     "typescript": "~5.1.6"

@@ -22,7 +22,7 @@ export interface IStage extends IResource {
    *
    * @default - average over 5 minutes
    */
-  metric(metricName: string, props?: MetricOptions): Metric
+  metric(metricName: string, props?: MetricOptions): Metric;
 }
 
 /**

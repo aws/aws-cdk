@@ -13,7 +13,7 @@
     "watch": "tsc --build -w tsconfig.dev.json"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.12",
     "@types/license-checker": "^25.0.6",
     "@types/madge": "^5.0.3",
     "@types/node": "^16",

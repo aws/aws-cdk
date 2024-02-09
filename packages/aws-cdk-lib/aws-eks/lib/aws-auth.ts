@@ -24,8 +24,8 @@ export interface AwsAuthProps {
  */
 export class AwsAuth extends Construct {
   private readonly stack: Stack;
-  private readonly roleMappings = new Array<{ role: iam.IRole, mapping: AwsAuthMapping }>();
-  private readonly userMappings = new Array<{ user: iam.IUser, mapping: AwsAuthMapping }>();
+  private readonly roleMappings = new Array<{ role: iam.IRole; mapping: AwsAuthMapping }>();
+  private readonly userMappings = new Array<{ user: iam.IUser; mapping: AwsAuthMapping }>();
   private readonly accounts = new Array<string>();
 
   constructor(scope: Construct, id: string, props: AwsAuthProps) {
