@@ -28,6 +28,7 @@ import { validateSnsTopicArn } from './util/validate-notification-arn';
 import { Concurrency, WorkGraph } from './util/work-graph';
 import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
+import { listStacks } from './workflows';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 
 export interface CdkToolkitProps {
@@ -613,16 +614,37 @@ export class CdkToolkit {
     }
   }
 
-  public async list(selectors: string[], options: { long?: boolean; json?: boolean } = { }): Promise<number> {
-    const stacks = await this.selectStacksForList(selectors);
+  public async list(selectors: string[], options: { long?: boolean; json?: boolean; showDeps?: boolean } = { }): Promise<number> {
+    const stacks = await listStacks(this, {
+      selectors: selectors,
+    });
 
-    // if we are in "long" mode, emit the array as-is (JSON/YAML)
+    if (options.long && options.showDeps) {
+      data(serializeStructure(stacks, options.json ?? false));
+      return 0;
+    }
+
+    if (options.showDeps) {
+      const stackDeps = [];
+
+      for (const stack of stacks) {
+        stackDeps.push({
+          id: stack.id,
+          dependencies: stack.dependencies,
+        });
+      }
+
+      data(serializeStructure(stackDeps, options.json ?? false));
+      return 0;
+    }
+
     if (options.long) {
       const long = [];
-      for (const stack of stacks.stackArtifacts) {
+
+      for (const stack of stacks) {
         long.push({
-          id: stack.hierarchicalId,
-          name: stack.stackName,
+          id: stack.id,
+          name: stack.name,
           environment: stack.environment,
         });
       }
@@ -631,8 +653,8 @@ export class CdkToolkit {
     }
 
     // just print stack IDs
-    for (const stack of stacks.stackArtifacts) {
-      data(stack.hierarchicalId);
+    for (const stack of stacks) {
+      data(stack.id);
     }
 
     return 0; // exit-code
