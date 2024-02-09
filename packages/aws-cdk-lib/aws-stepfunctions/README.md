@@ -761,6 +761,22 @@ const submitJob = new tasks.LambdaInvoke(this, 'Submit Job', {
 See [the AWS documentation](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-access-cross-acct-resources.html)
 to learn more about AWS Step Functions support for accessing resources in other AWS accounts.
 
+## Service Integration Patterns
+
+AWS Step functions integrate directly with other services, either through an optimised integration pattern, or through the AWS SDK.
+Therefore, it is possible to change the `integrationPattern` of services, to enable additional functionality of the said AWS Service:
+
+```ts
+import * as glue from "@aws-cdk/aws-glue-alpha";
+
+declare const submitGlue: glue.Job;
+
+const submitJob = new tasks.GlueStartJobRun(this, "Submit Job", {
+  glueJobName: submitGlue.jobName,
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+});
+```
+
 ## State Machine Fragments
 
 It is possible to define reusable (or abstracted) mini-state machines by

@@ -120,7 +120,7 @@ export function readFromPath(inputPath: string): string {
 export async function readFromStack(stackName: string, sdkProvider: SdkProvider, environment: Environment): Promise<string | undefined> {
   const cloudFormation = (await sdkProvider.forEnvironment(environment, Mode.ForReading)).sdk.cloudFormation();
 
-  const stack = await CloudFormationStack.lookup(cloudFormation, stackName);
+  const stack = await CloudFormationStack.lookup(cloudFormation, stackName, true);
   if (stack.stackStatus.isDeploySuccess || stack.stackStatus.isRollbackSuccess) {
     return JSON.stringify(await stack.template());
   } else {
