@@ -4,7 +4,7 @@
    "Type": "AWS::AppConfig::Application",
    "Properties": {
     "Description": "This is my application for testing",
-    "Name": "awsappconfigapplication-MyAppConfig-5BFACBE9"
+    "Name": "MySampleApplication"
    }
   },
   "MyTaskDefTaskRole727F9D3B": {

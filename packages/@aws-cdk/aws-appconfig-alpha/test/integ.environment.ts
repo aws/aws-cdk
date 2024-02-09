@@ -41,6 +41,10 @@ new Environment(stack, 'MyEnvironment', {
   ],
 });
 
+/* resource deployment alone is sufficient because we already have the
+   corresponding resource handler tests to assert that resources can be
+   used after created */
+
 new IntegTest(app, 'appconfig-environment', {
   testCases: [stack],
 });
