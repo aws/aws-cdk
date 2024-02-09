@@ -184,7 +184,7 @@ describe('ResponseHeadersPolicy', () => {
   test('it respects CSP `reportOnly` flag by mapping to custom header', () => {
     new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
       securityHeadersBehavior: {
-        contentSecurityPolicy: { contentSecurityPolicy: 'default-src https:;', override: true, reportOnly: true },
+        contentSecurityPolicy: { contentSecurityPolicy: 'default-src https:;', reportOnly: true, override: true },
       },
     });
 
