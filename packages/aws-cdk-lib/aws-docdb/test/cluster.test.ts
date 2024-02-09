@@ -240,6 +240,26 @@ describe('DatabaseCluster', () => {
     });
   });
 
+  test('cluster with retain policy applies retain policy to DBSubnetGroup', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Cluster', {
+      masterUser: { username: 'admin' },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBSubnetGroup', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    });
+  });
+
   test('creates a secret when master credentials are not specified', () => {
     // GIVEN
     const stack = testStack();

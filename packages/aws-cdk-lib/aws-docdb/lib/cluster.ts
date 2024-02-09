@@ -410,6 +410,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbSubnetGroupDescription: `Subnets for ${id} database`,
       subnetIds,
     });
+    if (props.removalPolicy === RemovalPolicy.RETAIN) {
+      subnetGroup.applyRemovalPolicy(RemovalPolicy.RETAIN);
+    }
 
     // Create the security group for the DB cluster
     let securityGroup: ec2.ISecurityGroup;
