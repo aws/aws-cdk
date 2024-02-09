@@ -348,7 +348,7 @@ export abstract class Monitor {
    * @param monitorsProperty The monitors property.
    */
   public static fromCfnMonitorsProperty(monitorsProperty: CfnEnvironment.MonitorsProperty): Monitor {
-    if (monitorsProperty.alarmArn === undefined) { throw new Error('need this prop'); }
+    if (monitorsProperty.alarmArn === undefined) { throw new Error('need to specify an alarmArn property'); }
     return {
       alarmArn: monitorsProperty.alarmArn,
       alarmRoleArn: monitorsProperty.alarmRoleArn,
