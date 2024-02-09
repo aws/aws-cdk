@@ -307,6 +307,9 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    * Deploys the configuration to the specified environment.
    *
    * @param environment The environment to deploy the configuration to
+   * @deprecated Use `deployTo` as a property instead. We do not recommend
+   * creating resources in multiple stacks. If you want to do this still,
+   * please take a look into https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_appconfig.CfnDeployment.html.
    */
   public deploy(environment: IEnvironment) {
     const logicalId = `Deployment${this.getDeploymentHash(environment)}`;
