@@ -265,7 +265,7 @@ export class PullRequestLinter {
       });
     }
 
-    const comments = await this.client.issues.listComments();
+    const comments = await this.client.issues.listComments(this.issueParams);
     if (comments.data.find(comment => comment.body?.includes("Exemption Request"))) {
       body += '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.';
     }
