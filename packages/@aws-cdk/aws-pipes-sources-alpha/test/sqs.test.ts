@@ -6,7 +6,7 @@ import { TestTarget } from './test-classes';
 import { SqsSource } from '../lib';
 
 describe('sqs', () => {
-  it('should have source arn', () => {
+  it('should have only source arn', () => {
     // ARRANGE
     const app = new App();
     const stack = new Stack(app, 'TestStack');
@@ -31,8 +31,8 @@ describe('sqs', () => {
           'Arn',
         ],
       },
+      SourceParameters: {},
     });
-
   });
 
   it('should have source parameters', () => {
@@ -64,7 +64,6 @@ describe('sqs', () => {
         },
       },
     });
-
   });
 
   it('should grant pipe role read access', () => {
@@ -87,6 +86,5 @@ describe('sqs', () => {
     // ASSERT
     expect(template.findResources('AWS::IAM::Role')).toMatchSnapshot();
     expect(template.findResources('AWS::IAM::Policy')).toMatchSnapshot();
-
   });
 });

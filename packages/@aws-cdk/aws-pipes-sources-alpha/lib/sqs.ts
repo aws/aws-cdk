@@ -31,6 +31,7 @@ export class SqsSource implements ISource {
   private readonly queue: IQueue;
   readonly sourceArn;
   private sourceParameters;
+
   constructor(queue: IQueue, parameters?: SqsSourceParameters) {
     this.queue = queue;
     this.sourceArn = queue.queueArn;
@@ -38,16 +39,22 @@ export class SqsSource implements ISource {
       this.sourceParameters = parameters;
     }
   }
+
   bind(_pipe: IPipe): SourceConfig {
+    if (!this.sourceParameters) {
+      return {};
+    }
+
     return {
       sourceParameters: {
-        sqsQueueParameters: this.sourceParameters && {
+        sqsQueueParameters: {
           batchSize: this.sourceParameters?.batchSize,
           maximumBatchingWindowInSeconds: this.sourceParameters?.maximumBatchingWindow?.toSeconds(),
         },
       },
     };
   }
+
   grantRead(grantee: IRole): void {
     this.queue.grantConsumeMessages(grantee);
   }
