@@ -1128,7 +1128,7 @@ interface IncludeTestTemplateProps {
   readonly preserveLogicalIds?: boolean;
 
   /** @default {} */
-  readonly parameters?: { [parameterName: string]: any }
+  readonly parameters?: { [parameterName: string]: any };
 }
 
 function includeTestTemplate(scope: constructs.Construct, testTemplate: string, props: IncludeTestTemplateProps = {}): inc.CfnInclude {

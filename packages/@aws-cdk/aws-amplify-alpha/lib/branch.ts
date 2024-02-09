@@ -113,7 +113,7 @@ export interface BranchOptions {
    *
    * @default - no asset
    */
-  readonly asset?: Asset
+  readonly asset?: Asset;
 
   /**
    * Enables performance mode for the branch.

@@ -434,7 +434,7 @@ describe('Certificate Name setting', () => {
   });
 });
 
-function hasTags(expectedTags: Array<{Key: string, Value: string}>) {
+function hasTags(expectedTags: Array<{Key: string; Value: string}>) {
   return {
     Properties: {
       Tags: Match.arrayWith(expectedTags),
