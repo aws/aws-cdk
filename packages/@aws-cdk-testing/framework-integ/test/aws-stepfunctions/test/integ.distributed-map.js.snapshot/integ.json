@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "DistributedMap/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-map-integ"
+      ],
+      "assertionStack": "DistributedMap/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributedMapDefaultTestDeployAssertFD6CBCC4"
+    }
+  }
+}
