@@ -62,9 +62,9 @@ const taskConfig = {
   },
 };
 
-const task1 = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomizationJob', taskConfig);
+const task1 = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomizationJob1', taskConfig);
 
-const task2 = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomizationJob', {
+const task2 = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomizationJob2', {
   ...taskConfig,
   clientRequestToken: 'MyToken2',
   customModelName: 'MyCustomModel2',
