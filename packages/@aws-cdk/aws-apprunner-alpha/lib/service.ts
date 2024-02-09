@@ -538,7 +538,7 @@ export interface ImageConfiguration {
    * @default - no environment variables
    * @deprecated use environmentVariables.
    */
-  readonly environment?: { [key: string]: string }
+  readonly environment?: { [key: string]: string };
 
   /**
    * Environment variables that are available to your running App Runner service.
@@ -552,7 +552,7 @@ export interface ImageConfiguration {
    *
    * @default - no environment secrets
    */
-  readonly environmentSecrets?: { [key: string]: Secret; };
+  readonly environmentSecrets?: { [key: string]: Secret };
 
   /**
    * An optional command that App Runner runs to start the application in the source image.

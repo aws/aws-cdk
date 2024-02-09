@@ -18,7 +18,7 @@ import { TagOptions } from '../tag-options';
 export class AssociationManager {
   public static associateProductWithPortfolio(
     portfolio: IPortfolio, product: IProduct, options: CommonConstraintOptions | undefined,
-  ): { associationKey: string, cfnPortfolioProductAssociation: CfnPortfolioProductAssociation } {
+  ): { associationKey: string; cfnPortfolioProductAssociation: CfnPortfolioProductAssociation } {
     InputValidator.validateLength(this.prettyPrintAssociation(portfolio, product), 'description', 0, 2000, options?.description);
     const associationKey = hashValues(portfolio.node.addr, product.node.addr, product.stack.node.addr);
     const constructId = `PortfolioProductAssociation${associationKey}`;
@@ -202,25 +202,25 @@ export class AssociationManager {
 
   private static formatAssertions(
     stack: cdk.Stack, assertions : TemplateRuleAssertion[],
-  ): { Assert: string, AssertDescription: string | undefined }[] {
+  ): { Assert: string; AssertDescription: string | undefined }[] {
     return assertions.reduce((formattedAssertions, assertion) => {
       formattedAssertions.push( {
         Assert: stack.resolve(assertion.assert),
         AssertDescription: assertion.description,
       });
       return formattedAssertions;
-    }, new Array<{ Assert: string, AssertDescription: string | undefined }>());
+    }, new Array<{ Assert: string; AssertDescription: string | undefined }>());
   };
 }
 
 interface LaunchRoleArnOption {
-  readonly roleArn: string,
-  readonly localRoleName?: never,
+  readonly roleArn: string;
+  readonly localRoleName?: never;
 }
 
 interface LaunchRoleNameOption {
-  readonly localRoleName: string,
-  readonly roleArn?: never,
+  readonly localRoleName: string;
+  readonly roleArn?: never;
 }
 
 type LaunchRoleConstraintRoleOptions = LaunchRoleArnOption | LaunchRoleNameOption;
