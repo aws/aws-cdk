@@ -205,6 +205,7 @@ export interface PipelineProps {
    * A list that defines the pipeline variables for a pipeline resource.
    *
    * `variables` can only be used when `pipelineType` is set to `PipelineType.V2`.
+   * You can always add more variables later by calling `Pipeline#addVariable`.
    *
    * @default - No variables
    */
@@ -218,6 +219,7 @@ export interface PipelineProps {
    * and branch commits is disabled.
    *
    * `triggers` can only be used when `pipelineType` is set to `PipelineType.V2`.
+   * You can always add more triggers later by calling `Pipeline#addTrigger`.
    *
    * @default - No triggers
    */
@@ -424,6 +426,7 @@ export class Pipeline extends PipelineBase {
   private readonly codePipeline: CfnPipeline;
   private readonly pipelineType: PipelineType;
   private readonly variables = new Array<Variable>();
+  private readonly triggers = new Array<Trigger>();
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -492,6 +495,7 @@ export class Pipeline extends PipelineBase {
     }
     this.pipelineType = props.pipelineType ?? PipelineType.V1;
     this.variables = props.variables ?? [];
+    this.triggers = props.triggers ?? [];
 
     this.codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
@@ -502,7 +506,7 @@ export class Pipeline extends PipelineBase {
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       pipelineType: props.pipelineType,
       variables: Lazy.any({ produce: () => this.renderVariables() }, { omitEmptyArray: true }),
-      triggers: this.renderTriggers(props.triggers),
+      triggers: Lazy.any({ produce: () => this.renderTriggers() }, { omitEmptyArray: true }),
       name: this.physicalName,
     });
 
@@ -571,6 +575,15 @@ export class Pipeline extends PipelineBase {
    */
   public addVariable(variable: Variable) {
     this.variables.push(variable);
+  }
+
+  /**
+   * Adds a new Trigger to this Pipeline.
+   *
+   * @param trigger Trigger property to add to this Pipeline
+   */
+  public addTrigger(trigger: Trigger) {
+    this.triggers.push(trigger);
   }
 
   /**
@@ -662,6 +675,7 @@ export class Pipeline extends PipelineBase {
       ...this.validateStages(),
       ...this.validateArtifacts(),
       ...this.validateVariables(),
+      ...this.validateTriggers(),
     ];
   }
 
@@ -1090,10 +1104,43 @@ export class Pipeline extends PipelineBase {
   }
 
   private validateVariables(): string[] {
+    const errors: string[] = [];
     if (this.variables.length && this.pipelineType !== PipelineType.V2) {
-      return ['Pipeline variables can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`'];
+      errors.push('Pipeline variables can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`');
     }
-    return [];
+    return errors;
+  }
+
+  private validateTriggers(): string[] {
+    const errors: string[] = [];
+    if (this.triggers.length && this.pipelineType !== PipelineType.V2) {
+      errors.push('Triggers can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`');
+    }
+
+    this.triggers.forEach((trigger, triggerIdx) => {
+      if (trigger.gitConfiguration) {
+        const sourceAction = trigger.gitConfiguration.sourceAction;
+        if (sourceAction.actionProperties.provider !== 'CodeStarSourceConnection') {
+          errors.push(`provider for actionProperties in sourceAction must be 'CodeStarSourceConnection', got '${sourceAction.actionProperties.provider}' at triggers[${triggerIdx}]`);
+        }
+
+        const pushFilter = trigger.gitConfiguration.pushFilter;
+        if (pushFilter !== undefined && (pushFilter.length < 1 || pushFilter.length > 3)) {
+          errors.push(`pushFilter length must be between 1 and 3, got ${pushFilter.length} at triggers[${triggerIdx}].gitConfiguration`);
+        }
+
+        pushFilter?.forEach((filter, filterIdx) => {
+          if (filter.excludedTags && filter.excludedTags.length > 8) {
+            errors.push(`maximum length of excludedTags is 8, got ${filter.excludedTags.length} at triggers[${triggerIdx}].gitConfiguration.pushFilter[${filterIdx}]`);
+          }
+          if (filter.includedTags && filter.includedTags.length > 8) {
+            errors.push(`maximum length of includedTags is 8, got ${filter.includedTags.length} at triggers[${triggerIdx}].gitConfiguration.pushFilter[${filterIdx}]`);
+          }
+        });
+      }
+    });
+
+    return errors;
   }
 
   private renderArtifactStoresProperty(): CfnPipeline.ArtifactStoreMapProperty[] | undefined {
@@ -1160,36 +1207,14 @@ export class Pipeline extends PipelineBase {
     return this.variables.map(variable => variable._render());
   }
 
-  private renderTriggers(triggers?: Trigger[]): CfnPipeline.PipelineTriggerDeclarationProperty[] | undefined {
-    if (triggers === undefined || triggers.length === 0) {
-      return;
-    }
-
-    if (this.pipelineType !== PipelineType.V2) {
-      throw new Error('triggers can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`');
-    }
-
-    return triggers.map((trigger, triggerIdx) => {
+  private renderTriggers(): CfnPipeline.PipelineTriggerDeclarationProperty[] {
+    return this.triggers.map(trigger => {
       let gitConfiguration: CfnPipeline.GitConfigurationProperty | undefined;
       if (trigger.gitConfiguration) {
         const sourceAction = trigger.gitConfiguration.sourceAction;
-        if (sourceAction.actionProperties.provider !== 'CodeStarSourceConnection') {
-          throw new Error(`provider for actionProperties in sourceAction must be 'CodeStarSourceConnection', got '${sourceAction.actionProperties.provider}' at triggers[${triggerIdx}]`);
-        }
-
         const pushFilter = trigger.gitConfiguration.pushFilter;
-        if (pushFilter !== undefined && (pushFilter.length < 1 || pushFilter.length > 3)) {
-          throw new Error(`pushFilter length must be between 1 and 3, got ${pushFilter.length} at triggers[${triggerIdx}].gitConfiguration`);
-        }
 
-        const push: CfnPipeline.GitPushFilterProperty[] | undefined = pushFilter?.map((filter, filterIdx) => {
-          if (filter.excludedTags && filter.excludedTags.length > 8) {
-            throw new Error(`maximum length of excludedTags is 8, got ${filter.excludedTags.length} at triggers[${triggerIdx}].gitConfiguration.pushFilter[${filterIdx}]`);
-          }
-          if (filter.includedTags && filter.includedTags.length > 8) {
-            throw new Error(`maximum length of includedTags is 8, got ${filter.includedTags.length} at triggers[${triggerIdx}].gitConfiguration.pushFilter[${filterIdx}]`);
-          }
-
+        const push: CfnPipeline.GitPushFilterProperty[] | undefined = pushFilter?.map(filter => {
           const tags: CfnPipeline.GitTagFilterCriteriaProperty | undefined = {
             // set to undefined if empty array
             excludes: filter.excludedTags?.length ? filter.excludedTags : undefined,

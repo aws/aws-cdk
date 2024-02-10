@@ -503,6 +503,19 @@ new codepipeline.Pipeline(this, 'Pipeline', {
 });
 ```
 
+Or append a variable to an existing pipeline:
+
+```ts
+declare const pipeline: codepipeline.Pipeline;
+
+const variable = new codepipeline.Variable({
+  variableName: 'bucket-var',
+  description: 'description',
+  defaultValue: 'sample',
+});
+pipeline.addVariable(variable);
+```
+
 ## Events
 
 ### Using a pipeline as an event target
@@ -598,6 +611,24 @@ new codepipeline.Pipeline(this, 'Pipeline', {
       }],
     },
   }],
+});
+```
+
+Or append a trigger to an existing pipeline:
+
+```ts
+declare const pipeline: codepipeline.Pipeline;
+declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
+
+pipeline.addTrigger({
+  providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+  gitConfiguration: {
+    sourceAction,
+    pushFilter: [{
+      excludedTags: ['exclude1', 'exclude2'],
+      includedTags: ['include*'],
+    }],
+  },
 });
 ```
 
