@@ -35,6 +35,7 @@ To get started, update your CDK App with a new `defaultStackSynthesizer`:
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id', // put a unique id here
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
   }),
 });
 ```
@@ -97,6 +98,7 @@ its staging resources. To use this kind of synthesizer, use `AppStagingSynthesiz
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
 
     // The following line is optional. By default it is assumed you have bootstrapped in the same
     // region(s) as the stack(s) you are deploying.
@@ -118,7 +120,10 @@ used to upload the asset to S3.
 
 ```ts
 const app = new App({
-  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({ appId: 'my-app-id' }),
+  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+    appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED
+  }),
 });
 
 const stack = new Stack(app, 'my-stack');
@@ -141,6 +146,7 @@ if all you need is to supply custom roles (and not change anything else in the `
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
     deploymentIdentities: DeploymentIdentities.specifyRoles({
       cloudFormationExecutionRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Execute'),
       deploymentRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Deploy'),
@@ -161,6 +167,7 @@ and `CloudFormationExecutionRole` in the
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
     deploymentIdentities: DeploymentIdentities.cliCredentials(),
   }),
 });
@@ -174,6 +181,7 @@ assumable by the deployment role. You can also specify an existing IAM role for 
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
     fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/S3Access'),
     imageAssetPublishingRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/ECRAccess'),
   }),
@@ -226,6 +234,7 @@ template, without rebuilding and republishing assets.
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
     deployTimeFileAssetLifetime: Duration.days(100),
   }),
 });
@@ -244,6 +253,7 @@ To change the number of revisions stored, use `imageAssetVersionCount`:
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
     imageAssetVersionCount: 10,
   }),
 });
@@ -260,6 +270,7 @@ cleanup. To turn this off, specify `autoDeleteStagingAssets: false`.
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
     autoDeleteStagingAssets: false,
   }),
 });
