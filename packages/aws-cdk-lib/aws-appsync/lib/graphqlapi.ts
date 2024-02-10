@@ -8,7 +8,7 @@ import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { ArnFormat, CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Stack } from '../../core';
+import { ArnFormat, CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -442,6 +442,20 @@ export interface GraphqlApiProps {
    * @default IntrospectionConfig.ENABLED
    */
   readonly introspectionConfig?: IntrospectionConfig;
+
+  /**
+   * A map containing the list of resources with their properties and environment variables.
+   *
+   * There are a few rules you must follow when creating keys and values:
+   *   - Keys must begin with a letter.
+   *   - Keys must be at least two characters long.
+   *   - Keys can only contain letters, numbers, and the underscore character (_).
+   *   - Values can be up to 512 characters long.
+   *   - You can configure up to 50 key-value pairs in a GraphQL API.
+   *
+   * @default - No environment variables.
+   */
+  readonly environmentVariables?: { [key: string]: string };
 }
 
 /**
@@ -619,6 +633,7 @@ export class GraphqlApi extends GraphqlApiBase {
   private apiKeyResource?: CfnApiKey;
   private domainNameResource?: CfnDomainName;
   private mergedApiExecutionRole?: IRole;
+  private environmentVariables: { [key: string]: string } = {};
 
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
     super(scope, id);
@@ -643,6 +658,10 @@ export class GraphqlApi extends GraphqlApiBase {
     if (this.definition.sourceApiOptions) {
       this.setupMergedApiExecutionRole(this.definition.sourceApiOptions);
     }
+    if (props.environmentVariables) {
+      this.environmentVariables = { ...props.environmentVariables };
+    }
+    this.validateEnvironmentVariables();
 
     this.api = new CfnGraphQLApi(this, 'Resource', {
       name: props.name,
@@ -657,6 +676,7 @@ export class GraphqlApi extends GraphqlApiBase {
       mergedApiExecutionRoleArn: this.mergedApiExecutionRole?.roleArn,
       apiType: this.definition.sourceApiOptions ? 'MERGED' : undefined,
       introspectionConfig: props.introspectionConfig,
+      environmentVariables: Lazy.any({ produce: () => this.environmentVariables }, { omitEmptyArray: true }),
     });
 
     this.apiId = this.api.attrApiId;
@@ -845,6 +865,39 @@ export class GraphqlApi extends GraphqlApiBase {
       construct.addDependency(this.schemaResource);
     };
     return true;
+  }
+
+  /**
+   * This method adds an environment variable.
+   */
+  public addEnvironmentVariable(name: string, value: string) {
+    this.environmentVariables[name] = value;
+  }
+
+  private validateEnvironmentVariables() {
+    this.node.addValidation( {
+      validate: () => {
+        const errors: string[] = [];
+        const entries = Object.entries(this.environmentVariables);
+
+        if (entries.length > 50) {
+          errors.push(`Only 50 environment variables can be set, got ${entries.length}`);
+        }
+        entries.forEach(([key, value]) => {
+          if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(key)) {
+            errors.push(`Invalid key '${key}'. Keys must begin with a letter and can only contain letters, numbers, and underscores`);
+          }
+          if (key.length < 2) {
+            errors.push(`Invalid key '${key}'. Keys must be at least two characters long, got ${key.length}`);
+          }
+          if (value.length > 512) {
+            errors.push(`Value for '${key}' is too long. Values can be up to 512 characters long, got ${value.length}`);
+          }
+        });
+
+        return errors;
+      },
+    });
   }
 
   private setupLogConfig(config?: LogConfig) {
