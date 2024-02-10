@@ -57,7 +57,7 @@ describe('environment variables', () => {
           '1EnvKey': 'non-empty-1',
         },
       });
-    }).toThrow(/Invalid key '1EnvKey'. Keys must begin with a letter and can only contain letters, numbers, and underscores/);
+    }).toThrow(/Key '1EnvKey' must begin with a letter and can only contain letters, numbers, and underscores/);
   });
 
   test('throws if environment variables key by method does not begin with a letter', () => {
@@ -70,7 +70,7 @@ describe('environment variables', () => {
     // THEN
     expect(() => {
       api.addEnvironmentVariable('1EnvKey', 'non-empty-1');
-    }).toThrow(/Invalid key '1EnvKey'. Keys must begin with a letter and can only contain letters, numbers, and underscores/);
+    }).toThrow(/Key '1EnvKey' must begin with a letter and can only contain letters, numbers, and underscores/);
   });
 
   test('throws if environment variables key is less than 2 characters long', () => {
@@ -82,7 +82,7 @@ describe('environment variables', () => {
           a: 'non-empty-1',
         },
       });
-    }).toThrow(/Invalid key 'a'. Keys must be at least two characters long, got 1/);
+    }).toThrow(/Key 'a' must be between 2 and 64 characters long, got 1/);
   });
 
   test('throws if environment variables key by method is less than 2 characters long', () => {
@@ -95,7 +95,32 @@ describe('environment variables', () => {
     // THEN
     expect(() => {
       api.addEnvironmentVariable('a', 'non-empty-1');
-    }).toThrow(/Invalid key 'a'. Keys must be at least two characters long, got 1/);
+    }).toThrow(/Key 'a' must be between 2 and 64 characters long, got 1/);
+  });
+
+  test('throws if environment variables key is greater than 64 characters long', () => {
+    expect(() => {
+      new appsync.GraphqlApi(stack, 'api', {
+        name: 'api',
+        definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+        environmentVariables: {
+          aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: 'non-empty-1',
+        },
+      });
+    }).toThrow(/Key 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' must be between 2 and 64 characters long, got 65/);
+  });
+
+  test('throws if environment variables key by method is greater than 64 characters long', () => {
+    // WHEN
+    const api = new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    });
+
+    // THEN
+    expect(() => {
+      api.addEnvironmentVariable('a'.repeat(65), 'non-empty-1');
+    }).toThrow(/Key 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' must be between 2 and 64 characters long, got 65/);
   });
 
   test('throws if environment variables key contains invalid characters', () => {
@@ -107,7 +132,7 @@ describe('environment variables', () => {
           '1|2|3': 'non-empty-1',
         },
       });
-    }).toThrow(/Invalid key '1\|2\|3'. Keys must begin with a letter and can only contain letters, numbers, and underscores/);
+    }).toThrow(/Key '1\|2\|3' must begin with a letter and can only contain letters, numbers, and underscores/);
   });
 
   test('throws if environment variables key by method contains invalid characters', () => {
@@ -120,7 +145,7 @@ describe('environment variables', () => {
     // THEN
     expect(() => {
       api.addEnvironmentVariable('1|2|3', 'non-empty-1');
-    }).toThrow(/Invalid key '1\|2\|3'. Keys must begin with a letter and can only contain letters, numbers, and underscores/);
+    }).toThrow(/Key '1\|2\|3' must begin with a letter and can only contain letters, numbers, and underscores/);
   });
 
   test('throws if length of environment variables value is greater than 512', () => {

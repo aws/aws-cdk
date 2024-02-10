@@ -448,7 +448,7 @@ export interface GraphqlApiProps {
    *
    * There are a few rules you must follow when creating keys and values:
    *   - Keys must begin with a letter.
-   *   - Keys must be at least two characters long.
+   *   - Keys must be between 2 and 64 characters long.
    *   - Keys can only contain letters, numbers, and the underscore character (_).
    *   - Values can be up to 512 characters long.
    *   - You can configure up to 50 key-value pairs in a GraphQL API.
@@ -874,11 +874,11 @@ export class GraphqlApi extends GraphqlApiBase {
    * This method adds an environment variable.
    */
   public addEnvironmentVariable(key: string, value: string) {
-    if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(key)) {
-      throw new Error(`Invalid key '${key}'. Keys must begin with a letter and can only contain letters, numbers, and underscores`);
+    if (!/^[A-Za-z]+\w*$/.test(key)) {
+      throw new Error(`Key '${key}' must begin with a letter and can only contain letters, numbers, and underscores`);
     }
-    if (key.length < 2) {
-      throw new Error(`Invalid key '${key}'. Keys must be at least two characters long, got ${key.length}`);
+    if (key.length < 2 || key.length > 64) {
+      throw new Error(`Key '${key}' must be between 2 and 64 characters long, got ${key.length}`);
     }
     if (value.length > 512) {
       throw new Error(`Value for '${key}' is too long. Values can be up to 512 characters long, got ${value.length}`);
