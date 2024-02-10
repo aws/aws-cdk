@@ -870,8 +870,8 @@ export class GraphqlApi extends GraphqlApiBase {
   /**
    * This method adds an environment variable.
    */
-  public addEnvironmentVariable(name: string, value: string) {
-    this.environmentVariables[name] = value;
+  public addEnvironmentVariable(key: string, value: string) {
+    this.environmentVariables[key] = value;
   }
 
   private validateEnvironmentVariables() {
