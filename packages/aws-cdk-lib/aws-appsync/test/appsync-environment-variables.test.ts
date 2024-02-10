@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { IConstruct } from 'constructs';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
 
@@ -45,6 +45,19 @@ describe('environment variables', () => {
         EnvKey1: 'non-empty-1',
         EnvKey2: 'non-empty-2',
       },
+    });
+  });
+
+  test('can set to undefined if environment variables is not specified', () => {
+    // WHEN
+    new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+      EnvironmentVariables: Match.absent(),
     });
   });
 

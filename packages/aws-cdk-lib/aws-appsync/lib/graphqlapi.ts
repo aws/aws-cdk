@@ -679,7 +679,7 @@ export class GraphqlApi extends GraphqlApiBase {
       mergedApiExecutionRoleArn: this.mergedApiExecutionRole?.roleArn,
       apiType: this.definition.sourceApiOptions ? 'MERGED' : undefined,
       introspectionConfig: props.introspectionConfig,
-      environmentVariables: Lazy.any({ produce: () => this.environmentVariables }, { omitEmptyArray: true }),
+      environmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables() }),
     });
 
     this.apiId = this.api.attrApiId;
@@ -898,6 +898,14 @@ export class GraphqlApi extends GraphqlApiBase {
         return errors;
       },
     });
+  }
+
+  private renderEnvironmentVariables() {
+    const entries = Object.entries(this.environmentVariables);
+    if (entries.length === 0) {
+      return undefined;
+    }
+    return this.environmentVariables;
   }
 
   private setupLogConfig(config?: LogConfig) {
