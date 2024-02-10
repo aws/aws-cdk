@@ -1,10 +1,10 @@
+import { IConstruct } from 'constructs';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 import { Match, Template } from '../../assertions';
 import { CodeStarConnectionsSourceAction } from '../../aws-codepipeline-actions';
 import * as cdk from '../../core';
 import * as codepipeline from '../lib';
-import { IConstruct } from 'constructs';
 
 describe('triggers', () => {
   let stack: cdk.Stack;
@@ -233,110 +233,86 @@ describe('triggers', () => {
   });
 
   test('throw if length of excludes is greater than 8', () => {
-    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
-      pipelineType: codepipeline.PipelineType.V2,
-      triggers: [{
-        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-        gitConfiguration: {
-          sourceAction,
-          pushFilter: [{
-            excludedTags: ['exclude1', 'exclude2', 'exclude3', 'exclude4', 'exclude5', 'exclude6', 'exclude7', 'exclude8', 'exclude9'],
-            includedTags: ['include1', 'include2'],
-          }],
-        },
-      }],
-    });
-
-    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
-
-    const errors = validate(stack);
-
-    expect(errors.length).toEqual(1);
-    const error = errors[0];
-    expect(error).toMatch(/maximum length of excludedTags is 8, got 9 at triggers\[0\].gitConfiguration.pushFilter\[0\]/);
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              excludedTags: ['exclude1', 'exclude2', 'exclude3', 'exclude4', 'exclude5', 'exclude6', 'exclude7', 'exclude8', 'exclude9'],
+              includedTags: ['include1', 'include2'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/maximum length of excludedTags for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
   test('throw if length of excludes is greater than 8', () => {
-    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
-      pipelineType: codepipeline.PipelineType.V2,
-      triggers: [{
-        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-        gitConfiguration: {
-          sourceAction,
-          pushFilter: [{
-            excludedTags: ['exclude1', 'exclude2'],
-            includedTags: ['include1', 'include2', 'include3', 'include4', 'include5', 'include6', 'include7', 'include8', 'include9'],
-          }],
-        },
-      }],
-    });
-
-    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
-
-    const errors = validate(stack);
-
-    expect(errors.length).toEqual(1);
-    const error = errors[0];
-    expect(error).toMatch(/maximum length of includedTags is 8, got 9 at triggers\[0\].gitConfiguration.pushFilter\[0\]/);
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              excludedTags: ['exclude1', 'exclude2'],
+              includedTags: ['include1', 'include2', 'include3', 'include4', 'include5', 'include6', 'include7', 'include8', 'include9'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/maximum length of includedTags for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
   test('throw if length of pushFilter is less than 1', () => {
-    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
-      pipelineType: codepipeline.PipelineType.V2,
-      triggers: [{
-        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-        gitConfiguration: {
-          sourceAction,
-          pushFilter: [],
-        },
-      }],
-    });
-
-    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
-
-    const errors = validate(stack);
-
-    expect(errors.length).toEqual(1);
-    const error = errors[0];
-    expect(error).toMatch(/pushFilter length must be between 1 and 3, got 0 at triggers\[0\].gitConfiguration/);
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [],
+          },
+        }],
+      });
+    }).toThrow(/length of pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be between 1 and 3, got 0/);
   });
 
   test('throw if length of pushFilter is greater than 3', () => {
-    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
-      pipelineType: codepipeline.PipelineType.V2,
-      triggers: [{
-        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-        gitConfiguration: {
-          sourceAction,
-          pushFilter: [
-            {
-              excludedTags: ['exclude1'],
-              includedTags: ['include1'],
-            },
-            {
-              excludedTags: ['exclude2'],
-              includedTags: ['include2'],
-            },
-            {
-              excludedTags: ['exclude3'],
-              includedTags: ['include3'],
-            },
-            {
-              excludedTags: ['exclude4'],
-              includedTags: ['include4'],
-            },
-          ],
-        },
-      }],
-    });
-
-    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
-
-    const errors = validate(stack);
-
-    expect(errors.length).toEqual(1);
-    const error = errors[0];
-    expect(error).toMatch(/pushFilter length must be between 1 and 3, got 4 at triggers\[0\].gitConfiguration/);
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [
+              {
+                excludedTags: ['exclude1'],
+                includedTags: ['include1'],
+              },
+              {
+                excludedTags: ['exclude2'],
+                includedTags: ['include2'],
+              },
+              {
+                excludedTags: ['exclude3'],
+                includedTags: ['include3'],
+              },
+              {
+                excludedTags: ['exclude4'],
+                includedTags: ['include4'],
+              },
+            ],
+          },
+        }],
+      });
+    }).toThrow(/length of pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be between 1 and 3, got 4/);;
   });
 
   test('throw if provider of sourceAction is not \'CodeStarSourceConnection\'', () => {
@@ -344,27 +320,21 @@ describe('triggers', () => {
       actionName: 'FakeSource',
       output: sourceArtifact,
     });
-    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
-      pipelineType: codepipeline.PipelineType.V2,
-      triggers: [{
-        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-        gitConfiguration: {
-          sourceAction: fakeAction,
-          pushFilter: [{
-            excludedTags: ['exclude1', 'exclude2'],
-            includedTags: ['include1', 'include2'],
-          }],
-        },
-      }],
-    });
-
-    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
-
-    const errors = validate(stack);
-
-    expect(errors.length).toEqual(1);
-    const error = errors[0];
-    expect(error).toMatch(/provider for actionProperties in sourceAction must be 'CodeStarSourceConnection', got 'Fake' at triggers\[0\]/);
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction: fakeAction,
+            pushFilter: [{
+              excludedTags: ['exclude1', 'exclude2'],
+              includedTags: ['include1', 'include2'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/provider for actionProperties in sourceAction with name 'FakeSource' must be 'CodeStarSourceConnection', got 'Fake'/);
   });
 
   test('throw if triggers are specified when pipelineType is not set to V2', () => {
