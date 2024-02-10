@@ -1003,7 +1003,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, and the \`crossAccountKeys\` property is not provided in a \`Pipeline\`
       construct, the construct automatically defaults the value of this property to false.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.127.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `crossAccountKeys: true` to `Pipeline` construct to restore the previous behavior.',
   },
