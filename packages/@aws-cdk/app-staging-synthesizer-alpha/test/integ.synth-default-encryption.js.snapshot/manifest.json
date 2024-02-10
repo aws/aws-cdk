@@ -57,18 +57,6 @@
             "data": "CdkFileRoleDefaultPolicy621C7E5B"
           }
         ],
-        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketKey7092080A"
-          }
-        ],
-        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Alias/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketKeyAlias69A0886F"
-          }
-        ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/Resource": [
           {
             "type": "aws:cdk:logicalId",

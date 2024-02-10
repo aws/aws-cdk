@@ -493,6 +493,22 @@
                                   ]
                                 }
                               ]
+                            },
+                            {
+                              "Action": [
+                                "kms:Decrypt",
+                                "kms:DescribeKey",
+                                "kms:Encrypt",
+                                "kms:GenerateDataKey*",
+                                "kms:ReEncrypt*"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "BucketKey7092080A",
+                                  "Arn"
+                                ]
+                              }
                             }
                           ],
                           "Version": "2012-10-17"
@@ -522,6 +538,125 @@
               "version": "0.0.0"
             }
           },
+          "BucketKey": {
+            "id": "BucketKey",
+            "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
+                  "aws:cdk:cloudformation:props": {
+                    "keyPolicy": {
+                      "Statement": [
+                        {
+                          "Action": "kms:*",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        },
+                        {
+                          "Action": [
+                            "kms:CancelKeyDeletion",
+                            "kms:Create*",
+                            "kms:Delete*",
+                            "kms:Describe*",
+                            "kms:Disable*",
+                            "kms:Enable*",
+                            "kms:Get*",
+                            "kms:List*",
+                            "kms:Put*",
+                            "kms:Revoke*",
+                            "kms:ScheduleKeyDeletion",
+                            "kms:TagResource",
+                            "kms:UntagResource",
+                            "kms:Update*"
+                          ],
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
+                  "version": "0.0.0"
+                }
+              },
+              "Alias": {
+                "id": "Alias",
+                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Alias",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Alias/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
+                      "aws:cdk:cloudformation:props": {
+                        "aliasName": "alias/cdk-default-resourcesmax-staging",
+                        "targetKeyId": {
+                          "Fn::GetAtt": [
+                            "BucketKey7092080A",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_kms.CfnAlias",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_kms.Alias",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_kms.Key",
+              "version": "0.0.0"
+            }
+          },
           "CdkStagingBucket": {
             "id": "CdkStagingBucket",
             "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket",
@@ -536,7 +671,13 @@
                       "serverSideEncryptionConfiguration": [
                         {
                           "serverSideEncryptionByDefault": {
-                            "sseAlgorithm": "AES256"
+                            "sseAlgorithm": "aws:kms",
+                            "kmsMasterKeyId": {
+                              "Fn::GetAtt": [
+                                "BucketKey7092080A",
+                                "Arn"
+                              ]
+                            }
                           }
                         }
                       ]
@@ -792,7 +933,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
+              "fqn": "aws-cdk-lib.CustomResourceProvider",
               "version": "0.0.0"
             }
           },

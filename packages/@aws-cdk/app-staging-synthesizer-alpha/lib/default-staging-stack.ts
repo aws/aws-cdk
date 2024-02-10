@@ -64,7 +64,7 @@ export interface DefaultStagingStackOptions {
   /**
    * Encryption type for staging bucket
    *
-   * @default - s3.BucketEncryption.S3_MANAGED
+   * @default - s3.BucketEncryption.KMS
    */
   readonly stagingBucketEncryption?: s3.BucketEncryption;
 
@@ -226,7 +226,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
 
   private readonly appId: string;
   private readonly stagingBucketName?: string;
-  private stagingBucketEncryption: s3.BucketEncryption;
+  private stagingBucketEncryption?: s3.BucketEncryption;
 
   /**
    * File publish role ARN in asset manifest format
@@ -267,7 +267,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
 
     this.deployRoleArn = props.deployRoleArn;
     this.stagingBucketName = props.stagingBucketName;
-    this.stagingBucketEncryption = props.stagingBucketEncryption ?? s3.BucketEncryption.S3_MANAGED;
+    this.stagingBucketEncryption = props.stagingBucketEncryption;
     const specializer = new StringSpecializer(this, props.qualifier);
 
     this.providedFileRole = props.fileAssetPublishingRole?._specialize(specializer);
@@ -368,6 +368,15 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
 
     this.ensureFileRole();
 
+    let key = undefined;
+    if (this.stagingBucketEncryption === s3.BucketEncryption.KMS || this.stagingBucketEncryption === undefined) {
+      if (this.stagingBucketEncryption === undefined) {
+        // default is KMS as an AWS best practice, and for backwards compatibility
+        this.stagingBucketEncryption = s3.BucketEncryption.KMS;
+      }
+      key = this.createBucketKey();
+    }
+
     // Create the bucket once the dependencies have been created
     const bucket = new s3.Bucket(this, bucketId, {
       bucketName: stagingBucketName,
@@ -378,7 +387,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
         removalPolicy: RemovalPolicy.RETAIN,
       }),
       encryption: this.stagingBucketEncryption,
-      encryptionKey: this.stagingBucketEncryption === s3.BucketEncryption.KMS ? this.createBucketKey() : undefined,
+      encryptionKey: key,
 
       // Many AWS account safety checkers will complain when buckets aren't versioned
       versioned: true,

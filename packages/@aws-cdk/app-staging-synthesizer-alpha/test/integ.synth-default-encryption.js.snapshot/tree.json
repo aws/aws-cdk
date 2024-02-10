@@ -12,14 +12,14 @@
             "id": "UsingAppStagingSynthesizer--synthesize-default-encryption",
             "path": "synthesize-default-encryption/UsingAppStagingSynthesizer--synthesize-default-encryption",
             "constructInfo": {
-              "fqn": "@aws-cdk/app-staging-synthesizer-alpha.UsingAppStagingSynthesizer",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
         }
       },
       "StagingStack-default-resourcesmax-ACCOUNT-REGION": {
@@ -34,8 +34,8 @@
                 "id": "ImportCdkFileRole",
                 "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkFileRole/ImportCdkFileRole",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Resource": {
@@ -85,8 +85,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "DefaultPolicy": {
@@ -137,22 +137,6 @@
                                   ]
                                 }
                               ]
-                            },
-                            {
-                              "Action": [
-                                "kms:Decrypt",
-                                "kms:DescribeKey",
-                                "kms:Encrypt",
-                                "kms:GenerateDataKey*",
-                                "kms:ReEncrypt*"
-                              ],
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::GetAtt": [
-                                  "BucketKey7092080A",
-                                  "Arn"
-                                ]
-                              }
                             }
                           ],
                           "Version": "2012-10-17"
@@ -166,139 +150,20 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
-            }
-          },
-          "BucketKey": {
-            "id": "BucketKey",
-            "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::KMS::Key",
-                  "aws:cdk:cloudformation:props": {
-                    "keyPolicy": {
-                      "Statement": [
-                        {
-                          "Action": "kms:*",
-                          "Effect": "Allow",
-                          "Principal": {
-                            "AWS": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "arn:",
-                                  {
-                                    "Ref": "AWS::Partition"
-                                  },
-                                  ":iam::",
-                                  {
-                                    "Ref": "AWS::AccountId"
-                                  },
-                                  ":root"
-                                ]
-                              ]
-                            }
-                          },
-                          "Resource": "*"
-                        },
-                        {
-                          "Action": [
-                            "kms:CancelKeyDeletion",
-                            "kms:Create*",
-                            "kms:Delete*",
-                            "kms:Describe*",
-                            "kms:Disable*",
-                            "kms:Enable*",
-                            "kms:Get*",
-                            "kms:List*",
-                            "kms:Put*",
-                            "kms:Revoke*",
-                            "kms:ScheduleKeyDeletion",
-                            "kms:TagResource",
-                            "kms:UntagResource",
-                            "kms:Update*"
-                          ],
-                          "Effect": "Allow",
-                          "Principal": {
-                            "AWS": {
-                              "Fn::Join": [
-                                "",
-                                [
-                                  "arn:",
-                                  {
-                                    "Ref": "AWS::Partition"
-                                  },
-                                  ":iam::",
-                                  {
-                                    "Ref": "AWS::AccountId"
-                                  },
-                                  ":root"
-                                ]
-                              ]
-                            }
-                          },
-                          "Resource": "*"
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_kms.CfnKey",
-                  "version": "0.0.0"
-                }
-              },
-              "Alias": {
-                "id": "Alias",
-                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Alias",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/BucketKey/Alias/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
-                      "aws:cdk:cloudformation:props": {
-                        "aliasName": "alias/cdk-default-resourcesmax-staging",
-                        "targetKeyId": {
-                          "Fn::GetAtt": [
-                            "BucketKey7092080A",
-                            "Arn"
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_kms.CfnAlias",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_kms.Alias",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_kms.Key",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "CdkStagingBucket": {
@@ -315,13 +180,7 @@
                       "serverSideEncryptionConfiguration": [
                         {
                           "serverSideEncryptionByDefault": {
-                            "sseAlgorithm": "aws:kms",
-                            "kmsMasterKeyId": {
-                              "Fn::GetAtt": [
-                                "BucketKey7092080A",
-                                "Arn"
-                              ]
-                            }
+                            "sseAlgorithm": "AES256"
                           }
                         }
                       ]
@@ -362,8 +221,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Policy": {
@@ -515,14 +374,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "AutoDeleteObjectsCustomResource": {
@@ -533,20 +392,20 @@
                     "id": "Default",
                     "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/CdkStagingBucket/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
@@ -557,28 +416,28 @@
                 "id": "Role",
                 "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Handler": {
                 "id": "Handler",
                 "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/app-staging-synthesizer-alpha.DefaultStagingStack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
         }
       },
       "integ-tests": {
@@ -605,22 +464,22 @@
                     "id": "BootstrapVersion",
                     "path": "integ-tests/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "integ-tests/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
@@ -645,8 +504,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
     }
   }
 }
