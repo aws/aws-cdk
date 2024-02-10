@@ -268,19 +268,30 @@ describe('triggers', () => {
     }).toThrow(/maximum length of tagsIncludes for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
-  test('throw if length of pushFilter is less than 1', () => {
-    expect(() => {
-      new codepipeline.Pipeline(stack, 'Pipeline', {
-        pipelineType: codepipeline.PipelineType.V2,
-        triggers: [{
-          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-          gitConfiguration: {
-            sourceAction,
-            pushFilter: [],
-          },
-        }],
-      });
-    }).toThrow(/length of pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be between 1 and 3, got 0/);
+  test('empty pushFilter for trigger is set to undefined', () => {
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      pipelineType: codepipeline.PipelineType.V2,
+      triggers: [{
+        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+        gitConfiguration: {
+          sourceAction,
+          pushFilter: [],
+        },
+      }],
+    });
+
+    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      PipelineType: 'V2',
+      Triggers: [{
+        GitConfiguration: {
+          SourceActionName: 'CodeStarConnectionsSourceAction',
+          Push: Match.absent(),
+        },
+        ProviderType: 'CodeStarSourceConnection',
+      }],
+    });
   });
 
   test('throw if length of pushFilter is greater than 3', () => {
@@ -312,7 +323,7 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/length of pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be between 1 and 3, got 4/);;
+    }).toThrow(/length of pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be less than or equal to 3, got 4/);;
   });
 
   test('throw if provider of sourceAction is not \'CodeStarSourceConnection\'', () => {

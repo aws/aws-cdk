@@ -53,7 +53,7 @@ export interface GitConfiguration {
    *
    * Git tags is the only supported event type.
    *
-   * The length must be between 1 and 3.
+   * The length must be less than or equal to 3.
    *
    * @default - no filter.
    */
@@ -111,8 +111,8 @@ export class Trigger {
       }
 
       const pushFilter = this.props.gitConfiguration.pushFilter;
-      if (pushFilter !== undefined && (pushFilter.length < 1 || pushFilter.length > 3)) {
-        throw new Error(`length of pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' must be between 1 and 3, got ${pushFilter.length}`);
+      if (pushFilter !== undefined && pushFilter.length > 3) {
+        throw new Error(`length of pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' must be less than or equal to 3, got ${pushFilter.length}`);
       }
 
       pushFilter?.forEach(filter => {
@@ -139,7 +139,7 @@ export class Trigger {
 
       const push: CfnPipeline.GitPushFilterProperty[] | undefined = pushFilter?.map(filter => {
         const tags: CfnPipeline.GitTagFilterCriteriaProperty | undefined = {
-          // set to undefined if empty array
+          // set to undefined if empty array because CloudFormation does not accept empty array
           excludes: filter.tagsExcludes?.length ? filter.tagsExcludes : undefined,
           includes: filter.tagsIncludes?.length ? filter.tagsIncludes : undefined,
         };
@@ -147,7 +147,8 @@ export class Trigger {
       });
 
       gitConfiguration = {
-        push,
+        // set to undefined if empty array because CloudFormation does not accept empty array
+        push: push?.length ? push : undefined,
         sourceActionName: sourceAction.actionProperties.actionName,
       };
     }
