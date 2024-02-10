@@ -30,29 +30,29 @@ export enum CustomizationType {
 /**
  * The key/value pair for a tag.
  */
-export interface Tag {
+export interface ITag {
   /**
    * Key for the tag.
    */
-  key: string;
+  readonly key: string;
   /**
    * Value for the tag.
    */
-  value: string;
+  readonly value: string;
 }
 
 /**
  * VPC configuration
  */
-export interface BedrockCreateModelCustomizationJobVpcConfig {
+export interface IBedrockCreateModelCustomizationJobVpcConfig {
   /**
    * VPC configuration security groups
    */
-  securityGroups: ec2.ISecurityGroup[];
+  readonly securityGroups: ec2.ISecurityGroup[];
   /**
    * VPC configuration subnets
    */
-  subnets: ec2.ISubnet[];
+  readonly subnets: ec2.ISubnet[];
 }
 
 /**
@@ -89,7 +89,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
   /**
    * Tags to attach to the resulting custom model.
    */
-  readonly customModelTags?: Tag[];
+  readonly customModelTags?: ITag[];
   /**
    * Parameters related to tuning the model.
    *
@@ -105,7 +105,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
   /**
    * Tags to attach to the job.
    */
-  readonly jobTags?: Tag[];
+  readonly jobTags?: ITag[];
   /**
    * The S3 URI where the output data is stored.
    *
@@ -137,7 +137,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
   /**
    * Configuration parameters for the private Virtual Private Cloud (VPC) that contains the resources you are using for this job.
    */
-  readonly vpcConfig?: BedrockCreateModelCustomizationJobVpcConfig;
+  readonly vpcConfig?: IBedrockCreateModelCustomizationJobVpcConfig;
 }
 
 /**
