@@ -37,3 +37,4 @@ export class LambdaEnrichment implements IEnrichment {
     this.lambda.grantInvoke(pipeRole);
   }
 }
+
