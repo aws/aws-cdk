@@ -1,9 +1,10 @@
 // Fixture with packages imported, but nothing else
 import * as cdk from 'aws-cdk-lib';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import * as pipes from '@aws-cdk/aws-pipes-alpha';
-import * as sources from '@aws-cdk/aws-pipes-sources-alpha';
+import * as enrichments from '@aws-cdk/aws-pipes-enrichments-alpha';
 
 class SomeSource implements pipes.ISource {
   sourceArn: string;
