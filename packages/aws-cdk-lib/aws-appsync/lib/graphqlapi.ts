@@ -658,8 +658,11 @@ export class GraphqlApi extends GraphqlApiBase {
     if (this.definition.sourceApiOptions) {
       this.setupMergedApiExecutionRole(this.definition.sourceApiOptions);
     }
-    if (props.environmentVariables) {
-      this.environmentVariables = { ...props.environmentVariables };
+
+    if (props.environmentVariables !== undefined) {
+      Object.entries(props.environmentVariables).forEach(([key, value]) => {
+        this.addEnvironmentVariable(key, value);
+      });
     }
     this.validateEnvironmentVariables();
 
@@ -871,6 +874,16 @@ export class GraphqlApi extends GraphqlApiBase {
    * This method adds an environment variable.
    */
   public addEnvironmentVariable(key: string, value: string) {
+    if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(key)) {
+      throw new Error(`Invalid key '${key}'. Keys must begin with a letter and can only contain letters, numbers, and underscores`);
+    }
+    if (key.length < 2) {
+      throw new Error(`Invalid key '${key}'. Keys must be at least two characters long, got ${key.length}`);
+    }
+    if (value.length > 512) {
+      throw new Error(`Value for '${key}' is too long. Values can be up to 512 characters long, got ${value.length}`);
+    }
+
     this.environmentVariables[key] = value;
   }
 
@@ -879,22 +892,9 @@ export class GraphqlApi extends GraphqlApiBase {
       validate: () => {
         const errors: string[] = [];
         const entries = Object.entries(this.environmentVariables);
-
         if (entries.length > 50) {
           errors.push(`Only 50 environment variables can be set, got ${entries.length}`);
         }
-        entries.forEach(([key, value]) => {
-          if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(key)) {
-            errors.push(`Invalid key '${key}'. Keys must begin with a letter and can only contain letters, numbers, and underscores`);
-          }
-          if (key.length < 2) {
-            errors.push(`Invalid key '${key}'. Keys must be at least two characters long, got ${key.length}`);
-          }
-          if (value.length > 512) {
-            errors.push(`Value for '${key}' is too long. Values can be up to 512 characters long, got ${value.length}`);
-          }
-        });
-
         return errors;
       },
     });

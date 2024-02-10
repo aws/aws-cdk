@@ -49,67 +49,103 @@ describe('environment variables', () => {
   });
 
   test('throws if environment variables key does not begin with a letter', () => {
+    expect(() => {
+      new appsync.GraphqlApi(stack, 'api', {
+        name: 'api',
+        definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+        environmentVariables: {
+          '1EnvKey': 'non-empty-1',
+        },
+      });
+    }).toThrow(/Invalid key '1EnvKey'. Keys must begin with a letter and can only contain letters, numbers, and underscores/);
+  });
+
+  test('throws if environment variables key by method does not begin with a letter', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
       definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
     });
-    api.addEnvironmentVariable('1EnvKey', 'non-empty-1');
-
-    const errors = validate(stack);
-    expect(errors.length).toEqual(1);
-    const error = errors[0];
 
     // THEN
-    expect(error).toMatch(/Invalid key '1EnvKey'. Keys must begin with a letter and can only contain letters, numbers, and underscores/);
+    expect(() => {
+      api.addEnvironmentVariable('1EnvKey', 'non-empty-1');
+    }).toThrow(/Invalid key '1EnvKey'. Keys must begin with a letter and can only contain letters, numbers, and underscores/);
   });
 
   test('throws if environment variables key is less than 2 characters long', () => {
+    expect(() => {
+      new appsync.GraphqlApi(stack, 'api', {
+        name: 'api',
+        definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+        environmentVariables: {
+          a: 'non-empty-1',
+        },
+      });
+    }).toThrow(/Invalid key 'a'. Keys must be at least two characters long, got 1/);
+  });
+
+  test('throws if environment variables key by method is less than 2 characters long', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
       definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
     });
-    api.addEnvironmentVariable('a', 'non-empty-1');
-
-    const errors = validate(stack);
-    expect(errors.length).toEqual(1);
-    const error = errors[0];
 
     // THEN
-    expect(error).toMatch(/Invalid key 'a'. Keys must be at least two characters long, got 1/);
+    expect(() => {
+      api.addEnvironmentVariable('a', 'non-empty-1');
+    }).toThrow(/Invalid key 'a'. Keys must be at least two characters long, got 1/);
   });
 
   test('throws if environment variables key contains invalid characters', () => {
+    expect(() => {
+      new appsync.GraphqlApi(stack, 'api', {
+        name: 'api',
+        definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+        environmentVariables: {
+          '1|2|3': 'non-empty-1',
+        },
+      });
+    }).toThrow(/Invalid key '1\|2\|3'. Keys must begin with a letter and can only contain letters, numbers, and underscores/);
+  });
+
+  test('throws if environment variables key by method contains invalid characters', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
       definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
     });
-    api.addEnvironmentVariable('1|2|3', 'non-empty-1');
-
-    const errors = validate(stack);
-    expect(errors.length).toEqual(1);
-    const error = errors[0];
 
     // THEN
-    expect(error).toMatch(/Invalid key '1|2|3'. Keys must begin with a letter and can only contain letters, numbers, and underscores/);
+    expect(() => {
+      api.addEnvironmentVariable('1|2|3', 'non-empty-1');
+    }).toThrow(/Invalid key '1\|2\|3'. Keys must begin with a letter and can only contain letters, numbers, and underscores/);
   });
 
   test('throws if length of environment variables value is greater than 512', () => {
+    expect(() => {
+      new appsync.GraphqlApi(stack, 'api', {
+        name: 'api',
+        definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+        environmentVariables: {
+          EnvKey1: 'a'.repeat(513),
+        },
+      });
+    }).toThrow(/Value for 'EnvKey1' is too long. Values can be up to 512 characters long, got 513/);
+  });
+
+  test('throws if length of environment variables value by method is greater than 512', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
       definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
     });
-    api.addEnvironmentVariable('EnvKey1', 'a'.repeat(513));
-
-    const errors = validate(stack);
-    expect(errors.length).toEqual(1);
-    const error = errors[0];
 
     // THEN
-    expect(error).toMatch(/Value for 'EnvKey1' is too long. Values can be up to 512 characters long, got 513/);
+    expect(() => {
+      api.addEnvironmentVariable('EnvKey1', 'a'.repeat(513));
+    }).toThrow(/Value for 'EnvKey1' is too long. Values can be up to 512 characters long, got 513/);
   });
 
   test('throws if length of key-value pairs for environment variables is greater than 50', () => {
@@ -123,6 +159,25 @@ describe('environment variables', () => {
       definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
       environmentVariables: vars,
     });
+
+    const errors = validate(stack);
+    expect(errors.length).toEqual(1);
+    const error = errors[0];
+
+    // THEN
+    expect(error).toMatch(/Only 50 environment variables can be set, got 51/);
+  });
+
+  test('throws if length of key-value pairs for environment variables by method is greater than 50', () => {
+    // WHEN
+    const api = new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    });
+
+    for (let i = 0; i < 51; i++) {
+      api.addEnvironmentVariable(`EnvKey${i}`, `non-empty-${i}`);
+    }
 
     const errors = validate(stack);
     expect(errors.length).toEqual(1);
