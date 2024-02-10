@@ -32,6 +32,8 @@ are as follows:
 To get started, update your CDK App with a new `defaultStackSynthesizer`:
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id', // put a unique id here
@@ -95,6 +97,8 @@ synthesizer will create a new Staging Stack in each environment the CDK App is d
 its staging resources. To use this kind of synthesizer, use `AppStagingSynthesizer.defaultResources()`.
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
@@ -119,6 +123,8 @@ source code. As part of the `DefaultStagingStack`, an S3 bucket and IAM role wil
 used to upload the asset to S3.
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
@@ -143,6 +149,8 @@ You can customize some or all of the roles you'd like to use in the synthesizer 
 if all you need is to supply custom roles (and not change anything else in the `DefaultStagingStack`):
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
@@ -164,6 +172,8 @@ and `CloudFormationExecutionRole` in the
 [bootstrap template](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml).
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
@@ -178,6 +188,8 @@ assumable by the deployment role. You can also specify an existing IAM role for 
 `fileAssetPublishingRole` or `imageAssetPublishingRole`:
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
@@ -231,6 +243,8 @@ to a previous version of an application just by doing a CloudFormation deploymen
 template, without rebuilding and republishing assets.
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
@@ -250,6 +264,8 @@ purged.
 To change the number of revisions stored, use `imageAssetVersionCount`:
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
@@ -267,6 +283,8 @@ or `emptyOnDelete` turned on. This creates custom resources under the hood to fa
 cleanup. To turn this off, specify `autoDeleteStagingAssets: false`.
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',

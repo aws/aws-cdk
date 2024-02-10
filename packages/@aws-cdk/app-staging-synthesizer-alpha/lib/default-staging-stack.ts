@@ -164,7 +164,8 @@ export interface DefaultStagingStackProps extends DefaultStagingStackOptions, St
  * A default Staging Stack that implements IStagingResources.
  *
  * @example
- * const defaultStagingStack = DefaultStagingStack.factory({ appId: 'my-app-id' });
+ * import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+ * const defaultStagingStack = DefaultStagingStack.factory({ appId: 'my-app-id', stagingBucketEncryption: BucketEncryption.S3_MANAGED });
  */
 export class DefaultStagingStack extends Stack implements IStagingResources {
   /**
