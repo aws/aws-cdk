@@ -52,8 +52,8 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
     gitConfiguration: {
       sourceAction,
       pushFilter: [{
-        excludedTags: ['exclude1', 'exclude2'],
-        includedTags: ['include1', 'include2'],
+        tagsExcludes: ['exclude1', 'exclude2'],
+        tagsIncludes: ['include1', 'include2'],
       }],
     },
   }],

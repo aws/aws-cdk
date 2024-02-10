@@ -580,8 +580,8 @@ const rule = pipeline.notifyOnExecutionStateChange('NotifyOnExecutionStateChange
 ## Trigger
 
 To trigger a pipeline with Git tags, specify the `triggers` property. When a Git tag is pushed,
-your pipeline starts. You can filter with glob patterns. The `excludedTags` takes priority over
-the `includedTags`.
+your pipeline starts. You can filter with glob patterns. The `tagsExcludes` takes priority over
+the `tagsIncludes`.
 
 The triggers can only be used with pipeline type V2.
 
@@ -606,8 +606,8 @@ new codepipeline.Pipeline(this, 'Pipeline', {
     gitConfiguration: {
       sourceAction,
       pushFilter: [{
-        excludedTags: ['exclude1', 'exclude2'],
-        includedTags: ['include*'],
+        tagsExcludes: ['exclude1', 'exclude2'],
+        tagsIncludes: ['include*'],
       }],
     },
   }],
@@ -625,8 +625,8 @@ pipeline.addTrigger({
   gitConfiguration: {
     sourceAction,
     pushFilter: [{
-      excludedTags: ['exclude1', 'exclude2'],
-      includedTags: ['include*'],
+      tagsExcludes: ['exclude1', 'exclude2'],
+      tagsIncludes: ['include*'],
     }],
   },
 });

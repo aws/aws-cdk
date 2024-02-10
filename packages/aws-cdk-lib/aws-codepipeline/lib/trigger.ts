@@ -9,27 +9,27 @@ export interface GitPushFilter {
    * The list of patterns of Git tags that, when pushed, are to be excluded from
    * starting the pipeline.
    *
-   * You can filter with glob patterns. The `excludedTags` takes priority
-   * over the `includedTags`.
+   * You can filter with glob patterns. The `tagsExcludes` takes priority
+   * over the `tagsIncludes`.
    *
    * Maximum length of this array is 8.
    *
    * @default - no tags.
    */
-  readonly excludedTags?: string[];
+  readonly tagsExcludes?: string[];
 
   /**
    * The list of patterns of Git tags that, when pushed, are to be included as
    * criteria that starts the pipeline.
    *
-   * You can filter with glob patterns. The `excludedTags` takes priority
-   * over the `includedTags`.
+   * You can filter with glob patterns. The `tagsExcludes` takes priority
+   * over the `tagsIncludes`.
    *
    * Maximum length of this array is 8.
    *
    * @default - no tags.
    */
-  readonly includedTags?: string[];
+  readonly tagsIncludes?: string[];
 }
 
 /**
@@ -116,11 +116,11 @@ export class Trigger {
       }
 
       pushFilter?.forEach(filter => {
-        if (filter.excludedTags && filter.excludedTags.length > 8) {
-          throw new Error(`maximum length of excludedTags for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.excludedTags.length}`);
+        if (filter.tagsExcludes && filter.tagsExcludes.length > 8) {
+          throw new Error(`maximum length of tagsExcludes for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.tagsExcludes.length}`);
         }
-        if (filter.includedTags && filter.includedTags.length > 8) {
-          throw new Error(`maximum length of includedTags for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.includedTags.length}`);
+        if (filter.tagsIncludes && filter.tagsIncludes.length > 8) {
+          throw new Error(`maximum length of tagsIncludes for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.tagsIncludes.length}`);
         }
       });
     }
@@ -140,8 +140,8 @@ export class Trigger {
       const push: CfnPipeline.GitPushFilterProperty[] | undefined = pushFilter?.map(filter => {
         const tags: CfnPipeline.GitTagFilterCriteriaProperty | undefined = {
           // set to undefined if empty array
-          excludes: filter.excludedTags?.length ? filter.excludedTags : undefined,
-          includes: filter.includedTags?.length ? filter.includedTags : undefined,
+          excludes: filter.tagsExcludes?.length ? filter.tagsExcludes : undefined,
+          includes: filter.tagsIncludes?.length ? filter.tagsIncludes : undefined,
         };
         return { tags };
       });

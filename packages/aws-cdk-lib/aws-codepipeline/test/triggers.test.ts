@@ -36,8 +36,8 @@ describe('triggers', () => {
         gitConfiguration: {
           sourceAction,
           pushFilter: [{
-            excludedTags: ['exclude1', 'exclude2'],
-            includedTags: ['include1', 'include2'],
+            tagsExcludes: ['exclude1', 'exclude2'],
+            tagsIncludes: ['include1', 'include2'],
           }],
         },
       }],
@@ -80,8 +80,8 @@ describe('triggers', () => {
           gitConfiguration: {
             sourceAction,
             pushFilter: [{
-              excludedTags: ['exclude1', 'exclude2'],
-              includedTags: ['include1', 'include2'],
+              tagsExcludes: ['exclude1', 'exclude2'],
+              tagsIncludes: ['include1', 'include2'],
             }],
           },
         },
@@ -90,8 +90,8 @@ describe('triggers', () => {
           gitConfiguration: {
             sourceAction: sourceAction2,
             pushFilter: [{
-              excludedTags: ['exclude1', 'exclude2'],
-              includedTags: ['include1', 'include2'],
+              tagsExcludes: ['exclude1', 'exclude2'],
+              tagsIncludes: ['include1', 'include2'],
             }],
           },
         },
@@ -140,8 +140,8 @@ describe('triggers', () => {
       gitConfiguration: {
         sourceAction,
         pushFilter: [{
-          excludedTags: ['exclude1', 'exclude2'],
-          includedTags: ['include1', 'include2'],
+          tagsExcludes: ['exclude1', 'exclude2'],
+          tagsIncludes: ['include1', 'include2'],
         }],
       },
     });
@@ -164,7 +164,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty excludedTags for trigger is set to undefined', () => {
+  test('empty tagsExcludes for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -172,8 +172,8 @@ describe('triggers', () => {
         gitConfiguration: {
           sourceAction,
           pushFilter: [{
-            excludedTags: [],
-            includedTags: ['include1', 'include2'],
+            tagsExcludes: [],
+            tagsIncludes: ['include1', 'include2'],
           }],
         },
       }],
@@ -198,7 +198,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty includedTags for trigger is set to undefined', () => {
+  test('empty tagsIncludes for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -206,8 +206,8 @@ describe('triggers', () => {
         gitConfiguration: {
           sourceAction,
           pushFilter: [{
-            excludedTags: ['excluded1', 'excluded2'],
-            includedTags: [],
+            tagsExcludes: ['excluded1', 'excluded2'],
+            tagsIncludes: [],
           }],
         },
       }],
@@ -241,13 +241,13 @@ describe('triggers', () => {
           gitConfiguration: {
             sourceAction,
             pushFilter: [{
-              excludedTags: ['exclude1', 'exclude2', 'exclude3', 'exclude4', 'exclude5', 'exclude6', 'exclude7', 'exclude8', 'exclude9'],
-              includedTags: ['include1', 'include2'],
+              tagsExcludes: ['exclude1', 'exclude2', 'exclude3', 'exclude4', 'exclude5', 'exclude6', 'exclude7', 'exclude8', 'exclude9'],
+              tagsIncludes: ['include1', 'include2'],
             }],
           },
         }],
       });
-    }).toThrow(/maximum length of excludedTags for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+    }).toThrow(/maximum length of tagsExcludes for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
   test('throw if length of excludes is greater than 8', () => {
@@ -259,13 +259,13 @@ describe('triggers', () => {
           gitConfiguration: {
             sourceAction,
             pushFilter: [{
-              excludedTags: ['exclude1', 'exclude2'],
-              includedTags: ['include1', 'include2', 'include3', 'include4', 'include5', 'include6', 'include7', 'include8', 'include9'],
+              tagsExcludes: ['exclude1', 'exclude2'],
+              tagsIncludes: ['include1', 'include2', 'include3', 'include4', 'include5', 'include6', 'include7', 'include8', 'include9'],
             }],
           },
         }],
       });
-    }).toThrow(/maximum length of includedTags for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+    }).toThrow(/maximum length of tagsIncludes for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
   test('throw if length of pushFilter is less than 1', () => {
@@ -293,20 +293,20 @@ describe('triggers', () => {
             sourceAction,
             pushFilter: [
               {
-                excludedTags: ['exclude1'],
-                includedTags: ['include1'],
+                tagsExcludes: ['exclude1'],
+                tagsIncludes: ['include1'],
               },
               {
-                excludedTags: ['exclude2'],
-                includedTags: ['include2'],
+                tagsExcludes: ['exclude2'],
+                tagsIncludes: ['include2'],
               },
               {
-                excludedTags: ['exclude3'],
-                includedTags: ['include3'],
+                tagsExcludes: ['exclude3'],
+                tagsIncludes: ['include3'],
               },
               {
-                excludedTags: ['exclude4'],
-                includedTags: ['include4'],
+                tagsExcludes: ['exclude4'],
+                tagsIncludes: ['include4'],
               },
             ],
           },
@@ -328,8 +328,8 @@ describe('triggers', () => {
           gitConfiguration: {
             sourceAction: fakeAction,
             pushFilter: [{
-              excludedTags: ['exclude1', 'exclude2'],
-              includedTags: ['include1', 'include2'],
+              tagsExcludes: ['exclude1', 'exclude2'],
+              tagsIncludes: ['include1', 'include2'],
             }],
           },
         }],
@@ -345,8 +345,8 @@ describe('triggers', () => {
         gitConfiguration: {
           sourceAction,
           pushFilter: [{
-            excludedTags: ['exclude1', 'exclude2'],
-            includedTags: ['include1', 'include2'],
+            tagsExcludes: ['exclude1', 'exclude2'],
+            tagsIncludes: ['include1', 'include2'],
           }],
         },
       }],
@@ -369,8 +369,8 @@ describe('triggers', () => {
         gitConfiguration: {
           sourceAction,
           pushFilter: [{
-            excludedTags: ['exclude1', 'exclude2'],
-            includedTags: ['include1', 'include2'],
+            tagsExcludes: ['exclude1', 'exclude2'],
+            tagsIncludes: ['include1', 'include2'],
           }],
         },
       }],
@@ -394,8 +394,8 @@ describe('triggers', () => {
       gitConfiguration: {
         sourceAction,
         pushFilter: [{
-          excludedTags: ['exclude1', 'exclude2'],
-          includedTags: ['include1', 'include2'],
+          tagsExcludes: ['exclude1', 'exclude2'],
+          tagsIncludes: ['include1', 'include2'],
         }],
       },
     });
