@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integtest-pipe-enrichments-lambda/DefaultTest": {
+      "stacks": [
+        "aws-cdk-pipes-sources-sqs"
+      ],
+      "assertionStack": "integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipeenrichmentslambdaDefaultTestDeployAssert88DF3044"
+    }
+  }
+}
