@@ -1073,13 +1073,15 @@ Step Functions supports [calling third-party APIs](https://docs.aws.amazon.com/s
 The following snippet creates a new API destination Connection, and uses it to make a POST request to the specified URL. The endpoint response is available at the `$.ResponseBody` path.
 
 ```ts
+import * as events from 'aws-cdk-lib/aws-events';
+
 const connection = new events.Connection(this, 'Connection', {
-  authorization: events.Authorization.basic('username', cdk.SecretValue.unsafePlainText('password')),
+  authorization: events.Authorization.basic('username', SecretValue.unsafePlainText('password')),
 });
 
-new HttpInvoke(this, 'Invoke HTTP API', {
+new tasks.HttpInvoke(this, 'Invoke HTTP API', {
   apiEndpoint: 'https://api.example.com',
-  arrayEncodingFormat: ArrayEncodingFormat.BRACKETS,
+  arrayEncodingFormat: tasks.ArrayEncodingFormat.BRACKETS,
   body: JSON.stringify({ foo: 'bar' }),
   connection,
   headers: { 'Content-Type': 'application/json' },
