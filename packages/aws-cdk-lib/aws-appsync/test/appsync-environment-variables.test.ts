@@ -1,5 +1,5 @@
-import { IConstruct } from 'constructs';
 import * as path from 'path';
+import { IConstruct } from 'constructs';
 import { Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
