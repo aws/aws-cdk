@@ -73,7 +73,7 @@ describe('environment variables', () => {
     }).toThrow(/Key '1EnvKey' must begin with a letter and can only contain letters, numbers, and underscores/);
   });
 
-  test('throws if environment variables key by method does not begin with a letter', () => {
+  test('throws if environment variables key by addEnvironmentVariable method does not begin with a letter', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
@@ -98,7 +98,7 @@ describe('environment variables', () => {
     }).toThrow(/Key 'a' must be between 2 and 64 characters long, got 1/);
   });
 
-  test('throws if environment variables key by method is less than 2 characters long', () => {
+  test('throws if environment variables key by addEnvironmentVariable method is less than 2 characters long', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
@@ -123,7 +123,7 @@ describe('environment variables', () => {
     }).toThrow(/Key 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' must be between 2 and 64 characters long, got 65/);
   });
 
-  test('throws if environment variables key by method is greater than 64 characters long', () => {
+  test('throws if environment variables key by addEnvironmentVariable method is greater than 64 characters long', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
@@ -148,7 +148,7 @@ describe('environment variables', () => {
     }).toThrow(/Key '1\|2\|3' must begin with a letter and can only contain letters, numbers, and underscores/);
   });
 
-  test('throws if environment variables key by method contains invalid characters', () => {
+  test('throws if environment variables key by addEnvironmentVariable method contains invalid characters', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
@@ -173,7 +173,7 @@ describe('environment variables', () => {
     }).toThrow(/Value for 'EnvKey1' is too long. Values can be up to 512 characters long, got 513/);
   });
 
-  test('throws if length of environment variables value by method is greater than 512', () => {
+  test('throws if length of environment variables value by addEnvironmentVariable method is greater than 512', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
@@ -206,7 +206,7 @@ describe('environment variables', () => {
     expect(error).toMatch(/Only 50 environment variables can be set, got 51/);
   });
 
-  test('throws if length of key-value pairs for environment variables by method is greater than 50', () => {
+  test('throws if length of key-value pairs for environment variables by addEnvironmentVariable method is greater than 50', () => {
     // WHEN
     const api = new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
