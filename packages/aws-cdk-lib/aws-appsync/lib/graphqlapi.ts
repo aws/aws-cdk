@@ -901,11 +901,7 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   private renderEnvironmentVariables() {
-    const entries = Object.entries(this.environmentVariables);
-    if (entries.length === 0) {
-      return undefined;
-    }
-    return this.environmentVariables;
+    return Object.entries(this.environmentVariables).length > 0 ? this.environmentVariables : undefined;
   }
 
   private setupLogConfig(config?: LogConfig) {
