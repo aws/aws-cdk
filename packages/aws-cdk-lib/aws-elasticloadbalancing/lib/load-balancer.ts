@@ -226,7 +226,7 @@ export enum LoadBalancingProtocol {
   TCP = 'tcp',
   SSL = 'ssl',
   HTTP = 'http',
-  HTTPS = 'https'
+  HTTPS = 'https',
 }
 
 /**

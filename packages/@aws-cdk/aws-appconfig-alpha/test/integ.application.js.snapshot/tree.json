@@ -19,7 +19,7 @@
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Application",
                   "aws:cdk:cloudformation:props": {
                     "description": "This is my application for testing",
-                    "name": "awsappconfigapplication-MyAppConfig-5BFACBE9"
+                    "name": "MySampleApplication"
                   }
                 },
                 "constructInfo": {
@@ -29,7 +29,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-appconfig-alpha.Application",
               "version": "0.0.0"
             }
           },
@@ -162,7 +162,7 @@
                 "path": "appconfig-application/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -208,7 +208,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.3.0"
         }
       }
     },

@@ -100,7 +100,7 @@ export interface CertificateProps {
    *
    * @default the full, absolute path of this construct
    */
-  readonly certificateName?: string
+  readonly certificateName?: string;
 
   /**
    * Specifies the algorithm of the public and private key pair that your certificate uses to encrypt data.

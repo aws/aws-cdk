@@ -131,7 +131,7 @@ export interface StageProps extends StageOptions {
 export enum MethodLoggingLevel {
   OFF = 'OFF',
   ERROR = 'ERROR',
-  INFO = 'INFO'
+  INFO = 'INFO',
 }
 
 export interface MethodDeploymentOptions {
