@@ -190,7 +190,7 @@
     "Ref": "SourceQueue6E809DF0"
    },
    "Export": {
-    "Name": "aws-cdk-pipes-sources-sqs:ExportsOutputRefSourceQueue6E809DF09604904F"
+    "Name": "aws-cdk-pipes-enrichments-lambda:ExportsOutputRefSourceQueue6E809DF09604904F"
    }
   },
   "ExportsOutputRefTargetQueue08AD2B3C0C69AE0E": {
@@ -198,7 +198,7 @@
     "Ref": "TargetQueue08AD2B3C"
    },
    "Export": {
-    "Name": "aws-cdk-pipes-sources-sqs:ExportsOutputRefTargetQueue08AD2B3C0C69AE0E"
+    "Name": "aws-cdk-pipes-enrichments-lambda:ExportsOutputRefTargetQueue08AD2B3C0C69AE0E"
    }
   }
  },

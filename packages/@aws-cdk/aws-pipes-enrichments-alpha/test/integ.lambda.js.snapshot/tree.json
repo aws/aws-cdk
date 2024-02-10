@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-cdk-pipes-sources-sqs": {
-        "id": "aws-cdk-pipes-sources-sqs",
-        "path": "aws-cdk-pipes-sources-sqs",
+      "aws-cdk-pipes-enrichments-lambda": {
+        "id": "aws-cdk-pipes-enrichments-lambda",
+        "path": "aws-cdk-pipes-enrichments-lambda",
         "children": {
           "SourceQueue": {
             "id": "SourceQueue",
-            "path": "aws-cdk-pipes-sources-sqs/SourceQueue",
+            "path": "aws-cdk-pipes-enrichments-lambda/SourceQueue",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-pipes-sources-sqs/SourceQueue/Resource",
+                "path": "aws-cdk-pipes-enrichments-lambda/SourceQueue/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
                   "aws:cdk:cloudformation:props": {}
@@ -32,11 +32,11 @@
           },
           "TargetQueue": {
             "id": "TargetQueue",
-            "path": "aws-cdk-pipes-sources-sqs/TargetQueue",
+            "path": "aws-cdk-pipes-enrichments-lambda/TargetQueue",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-pipes-sources-sqs/TargetQueue/Resource",
+                "path": "aws-cdk-pipes-enrichments-lambda/TargetQueue/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
                   "aws:cdk:cloudformation:props": {}
@@ -54,15 +54,15 @@
           },
           "EnrichmentLambda": {
             "id": "EnrichmentLambda",
-            "path": "aws-cdk-pipes-sources-sqs/EnrichmentLambda",
+            "path": "aws-cdk-pipes-enrichments-lambda/EnrichmentLambda",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "aws-cdk-pipes-sources-sqs/EnrichmentLambda/ServiceRole",
+                "path": "aws-cdk-pipes-enrichments-lambda/EnrichmentLambda/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "aws-cdk-pipes-sources-sqs/EnrichmentLambda/ServiceRole/ImportServiceRole",
+                    "path": "aws-cdk-pipes-enrichments-lambda/EnrichmentLambda/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -70,7 +70,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-pipes-sources-sqs/EnrichmentLambda/ServiceRole/Resource",
+                    "path": "aws-cdk-pipes-enrichments-lambda/EnrichmentLambda/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -115,7 +115,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-pipes-sources-sqs/EnrichmentLambda/Resource",
+                "path": "aws-cdk-pipes-enrichments-lambda/EnrichmentLambda/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -145,15 +145,15 @@
           },
           "Pipe": {
             "id": "Pipe",
-            "path": "aws-cdk-pipes-sources-sqs/Pipe",
+            "path": "aws-cdk-pipes-enrichments-lambda/Pipe",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "aws-cdk-pipes-sources-sqs/Pipe/Role",
+                "path": "aws-cdk-pipes-enrichments-lambda/Pipe/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "aws-cdk-pipes-sources-sqs/Pipe/Role/ImportRole",
+                    "path": "aws-cdk-pipes-enrichments-lambda/Pipe/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -161,7 +161,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-pipes-sources-sqs/Pipe/Role/Resource",
+                    "path": "aws-cdk-pipes-enrichments-lambda/Pipe/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -186,11 +186,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-pipes-sources-sqs/Pipe/Role/DefaultPolicy",
+                    "path": "aws-cdk-pipes-enrichments-lambda/Pipe/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-pipes-sources-sqs/Pipe/Role/DefaultPolicy/Resource",
+                        "path": "aws-cdk-pipes-enrichments-lambda/Pipe/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -282,7 +282,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-pipes-sources-sqs/Pipe/Resource",
+                "path": "aws-cdk-pipes-enrichments-lambda/Pipe/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Pipes::Pipe",
                   "aws:cdk:cloudformation:props": {
@@ -330,11 +330,11 @@
           },
           "Exports": {
             "id": "Exports",
-            "path": "aws-cdk-pipes-sources-sqs/Exports",
+            "path": "aws-cdk-pipes-enrichments-lambda/Exports",
             "children": {
               "Output{\"Ref\":\"SourceQueue6E809DF0\"}": {
                 "id": "Output{\"Ref\":\"SourceQueue6E809DF0\"}",
-                "path": "aws-cdk-pipes-sources-sqs/Exports/Output{\"Ref\":\"SourceQueue6E809DF0\"}",
+                "path": "aws-cdk-pipes-enrichments-lambda/Exports/Output{\"Ref\":\"SourceQueue6E809DF0\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -342,7 +342,7 @@
               },
               "Output{\"Ref\":\"TargetQueue08AD2B3C\"}": {
                 "id": "Output{\"Ref\":\"TargetQueue08AD2B3C\"}",
-                "path": "aws-cdk-pipes-sources-sqs/Exports/Output{\"Ref\":\"TargetQueue08AD2B3C\"}",
+                "path": "aws-cdk-pipes-enrichments-lambda/Exports/Output{\"Ref\":\"TargetQueue08AD2B3C\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -356,7 +356,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-cdk-pipes-sources-sqs/BootstrapVersion",
+            "path": "aws-cdk-pipes-enrichments-lambda/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -364,7 +364,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-pipes-sources-sqs/CheckBootstrapVersion",
+            "path": "aws-cdk-pipes-enrichments-lambda/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -396,17 +396,17 @@
                 "id": "DeployAssert",
                 "path": "integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallSQSsendMessagee42ef168947780b2233d010a8e17f5cf": {
-                    "id": "AwsApiCallSQSsendMessagee42ef168947780b2233d010a8e17f5cf",
-                    "path": "integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagee42ef168947780b2233d010a8e17f5cf",
+                  "AwsApiCallSQSsendMessage549c7a782911a3d9e70b8fb088b97254": {
+                    "id": "AwsApiCallSQSsendMessage549c7a782911a3d9e70b8fb088b97254",
+                    "path": "integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage549c7a782911a3d9e70b8fb088b97254",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagee42ef168947780b2233d010a8e17f5cf/SdkProvider",
+                        "path": "integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage549c7a782911a3d9e70b8fb088b97254/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagee42ef168947780b2233d010a8e17f5cf/SdkProvider/AssertionsProvider",
+                            "path": "integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage549c7a782911a3d9e70b8fb088b97254/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -420,11 +420,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagee42ef168947780b2233d010a8e17f5cf/Default",
+                        "path": "integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage549c7a782911a3d9e70b8fb088b97254/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagee42ef168947780b2233d010a8e17f5cf/Default/Default",
+                            "path": "integtest-pipe-enrichments-lambda/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage549c7a782911a3d9e70b8fb088b97254/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
