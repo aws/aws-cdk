@@ -267,19 +267,20 @@ const app = new App({
 
 ### Staging Bucket Encryption
 
-By default, the staging resources will be stored in an S3 Bucket with KMS encryption. To use
-SSE-S3, set `stagingBucketEncryption` to `BucketEncryption.S3_MANAGED`.
+You must explicitly specify the encryption type for the staging bucket via the `stagingBucketEncryption` property. In
+future versions of this package, the default will be `BucketEncryption.S3_MANAGED`.
 
-```ts
-import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+In previous versions of this package, the default was to use KMS encryption for the staging bucket. KMS keys cost
+$1/month, which could result in unexpected costs for users who are not aware of this. As we stabilize this module
+we intend to make the default S3-managed encryption, which is free. However, the migration path from KMS to S3
+managed encryption for existing buckets is not straightforward. Therefore, for now, this property is required.
 
-const app = new App({
-  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
-    appId: 'my-app-id',
-    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
-  }),
-});
-```
+If you have an existing staging bucket encrypted with a KMS key, you will likely want to set this property to
+`BucketEncryption.KMS`. If you are creating a new staging bucket, you can set this property to
+`BucketEncryption.S3_MANAGED` to avoid the cost of a KMS key.
+
+You can learn more about choosing a bucket encryption type in the
+[S3 documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
 
 ## Using a Custom Staging Stack per Environment
 

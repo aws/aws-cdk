@@ -64,9 +64,18 @@ export interface DefaultStagingStackOptions {
   /**
    * Encryption type for staging bucket
    *
-   * @default - s3.BucketEncryption.KMS
+   * In future versions of this package, the default will be BucketEncryption.S3_MANAGED.
+   *
+   * In previous versions of this package, the default was to use KMS encryption for the staging bucket. KMS keys cost
+   * $1/month, which could result in unexpected costs for users who are not aware of this. As we stabilize this module
+   * we intend to make the default S3-managed encryption, which is free. However, the migration path from KMS to S3
+   * managed encryption for existing buckets is not straightforward. Therefore, for now, this property is required.
+   *
+   * If you have an existing staging bucket encrypted with a KMS key, you will likely want to set this property to
+   * BucketEncryption.KMS. If you are creating a new staging bucket, you can set this property to
+   * BucketEncryption.S3_MANAGED to avoid the cost of a KMS key.
    */
-  readonly stagingBucketEncryption?: s3.BucketEncryption;
+  readonly stagingBucketEncryption: s3.BucketEncryption;
 
   /**
    * Pass in an existing role to be used as the file publishing role.
@@ -226,7 +235,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
 
   private readonly appId: string;
   private readonly stagingBucketName?: string;
-  private stagingBucketEncryption?: s3.BucketEncryption;
+  private stagingBucketEncryption: s3.BucketEncryption;
 
   /**
    * File publish role ARN in asset manifest format
@@ -267,7 +276,11 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
 
     this.deployRoleArn = props.deployRoleArn;
     this.stagingBucketName = props.stagingBucketName;
+
+    // FIXME: when stabilizing this module, we should make `stagingBucketEncryption` optional, defaulting to S3_MANAGED.
+    // See https://github.com/aws/aws-cdk/pull/28978#issuecomment-1930007176 for details on this decision.
     this.stagingBucketEncryption = props.stagingBucketEncryption;
+
     const specializer = new StringSpecializer(this, props.qualifier);
 
     this.providedFileRole = props.fileAssetPublishingRole?._specialize(specializer);
@@ -369,11 +382,7 @@ export class DefaultStagingStack extends Stack implements IStagingResources {
     this.ensureFileRole();
 
     let key = undefined;
-    if (this.stagingBucketEncryption === s3.BucketEncryption.KMS || this.stagingBucketEncryption === undefined) {
-      if (this.stagingBucketEncryption === undefined) {
-        // default is KMS as an AWS best practice, and for backwards compatibility
-        this.stagingBucketEncryption = s3.BucketEncryption.KMS;
-      }
+    if (this.stagingBucketEncryption === s3.BucketEncryption.KMS) {
       key = this.createBucketKey();
     }
 
