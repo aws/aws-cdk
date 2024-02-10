@@ -218,7 +218,7 @@ export class ResourceDecider {
           new CDK_CORE.TagManager(
             this.tagManagerVariant(variant),
             expr.lit(this.resource.cloudFormationType),
-            HAS_25610 ? expr.UNDEFINED : $E(props)[originalName],
+            $E(props)[originalName],
             expr.object({ tagPropertyName: expr.lit(originalName) }),
           ),
         cfnValueToRender: {
