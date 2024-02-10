@@ -80,6 +80,8 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
   readonly customizationType?: CustomizationType;
   /**
    * The custom model is encrypted at rest using this key.
+   *
+   * @default - no encryption
    */
   readonly kmsKey?: kms.IKey;
   /**
@@ -88,6 +90,8 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
   readonly customModelName: string;
   /**
    * Tags to attach to the resulting custom model.
+   *
+   * @default - no tags
    */
   readonly customModelTags?: ITag[];
   /**
@@ -104,6 +108,8 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
   readonly jobName: string;
   /**
    * Tags to attach to the job.
+   *
+   * @default - no tags
    */
   readonly jobTags?: ITag[];
   /**
@@ -131,11 +137,13 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    * write model artifacts to an S3 bucket.
    * To pass this role to Amazon Bedrock, the caller of this API must have the iam:PassRole permission.
    *
-   * @default - auto generated role
+   * @default - use auto generated role
    */
   readonly role?: iam.IRole;
   /**
    * Configuration parameters for the private Virtual Private Cloud (VPC) that contains the resources you are using for this job.
+   *
+   * @default - no VPC configuration
    */
   readonly vpcConfig?: IBedrockCreateModelCustomizationJobVpcConfig;
 }
