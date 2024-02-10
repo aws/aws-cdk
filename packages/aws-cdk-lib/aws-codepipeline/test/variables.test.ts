@@ -338,6 +338,20 @@ describe('variables', () => {
         });
       }).toThrow(/Description for variable 'var-name-1' must not be greater than 200 characters long, got 201/);
     });
+
+    test('throw if variable with duplicate name added to the Pipeline', () => {
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        variables: [variable1],
+      });
+      const duplicated = new codepipeline.Variable({
+        variableName: 'var-name-1',
+        description: 'description-dummy',
+        defaultValue: 'default-dummy',
+      });
+      expect(() => {
+        pipeline.addVariable(duplicated);
+      }).toThrow(/Variable with duplicate name 'var-name-1' added to the Pipeline/);
+    });
   });
 });
 

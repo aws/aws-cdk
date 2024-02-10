@@ -494,8 +494,6 @@ export class Pipeline extends PipelineBase {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-codepipeline:unspecifiedPipelineType', 'V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`.');
     }
     this.pipelineType = props.pipelineType ?? PipelineType.V1;
-    this.variables = props.variables ?? [];
-    this.triggers = props.triggers?.map(trigger => this.addTrigger(trigger)) ?? [];
 
     this.codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
@@ -533,6 +531,12 @@ export class Pipeline extends PipelineBase {
 
     for (const stage of props.stages || []) {
       this.addStage(stage);
+    }
+    for (const variable of props.variables || []) {
+      this.addVariable(variable);
+    }
+    for (const trigger of props.triggers || []) {
+      this.addTrigger(trigger);
     }
 
     this.node.addValidation({ validate: () => this.validatePipeline() });
@@ -572,9 +576,16 @@ export class Pipeline extends PipelineBase {
    * Adds a new Variable to this Pipeline.
    *
    * @param variable Variable instance to add to this Pipeline
+   * @returns the newly created variable
    */
-  public addVariable(variable: Variable) {
+  public addVariable(variable: Variable): Variable {
+    // check for duplicate variables and names
+    if (this.variables.find(v => v.variableName === variable.variableName)) {
+      throw new Error(`Variable with duplicate name '${variable.variableName}' added to the Pipeline`);
+    }
+
     this.variables.push(variable);
+    return variable;
   }
 
   /**
@@ -585,6 +596,13 @@ export class Pipeline extends PipelineBase {
    */
   public addTrigger(props: TriggerProps): Trigger {
     const trigger = new Trigger(props);
+    const actionName = props.gitConfiguration?.sourceAction.actionProperties.actionName;
+
+    // check for duplicate source actions for triggers
+    if (actionName !== undefined && this.triggers.find(t => t.sourceAction?.actionProperties.actionName === actionName)) {
+      throw new Error(`Trigger with duplicate source action '${actionName}' added to the Pipeline`);
+    }
+
     this.triggers.push(trigger);
     return trigger;
   }

@@ -93,7 +93,13 @@ export interface TriggerProps {
  * Trigger.
  */
 export class Trigger {
+  /**
+   * The pipeline source action where the trigger configuration.
+   */
+  public readonly sourceAction: IAction | undefined;
+
   constructor(private readonly props: TriggerProps) {
+    this.sourceAction = props.gitConfiguration?.sourceAction;
     this.validate();
   }
 
@@ -147,7 +153,7 @@ export class Trigger {
     }
 
     return {
-      gitConfiguration: gitConfiguration,
+      gitConfiguration,
       providerType: this.props.providerType,
     };
   }

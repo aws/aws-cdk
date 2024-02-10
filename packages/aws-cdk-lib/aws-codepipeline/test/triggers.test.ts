@@ -337,6 +337,30 @@ describe('triggers', () => {
     }).toThrow(/provider for actionProperties in sourceAction with name 'FakeSource' must be 'CodeStarSourceConnection', got 'Fake'/);
   });
 
+  test('throw if source action with duplicate action name added to the Pipeline', () => {
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      pipelineType: codepipeline.PipelineType.V2,
+      triggers: [{
+        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+        gitConfiguration: {
+          sourceAction,
+          pushFilter: [{
+            excludedTags: ['exclude1', 'exclude2'],
+            includedTags: ['include1', 'include2'],
+          }],
+        },
+      }],
+    });
+    expect(() => {
+      pipeline.addTrigger({
+        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+        gitConfiguration: {
+          sourceAction,
+        },
+      });
+    }).toThrow(/Trigger with duplicate source action 'CodeStarConnectionsSourceAction' added to the Pipeline/);
+  });
+
   test('throw if triggers are specified when pipelineType is not set to V2', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V1,

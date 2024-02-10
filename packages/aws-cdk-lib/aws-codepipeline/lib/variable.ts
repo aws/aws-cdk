@@ -31,7 +31,11 @@ export interface VariableProps {
  * Pipeline-Level variable.
  */
 export class Variable {
-  private readonly variableName: string;
+  /**
+   * The name of a pipeline-level variable.
+   */
+  public readonly variableName: string;
+
   private readonly description?: string;
   private readonly defaultValue?: string;
 
