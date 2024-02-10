@@ -52,6 +52,8 @@ export interface GitConfiguration {
    *
    * Git tags is the only supported event type.
    *
+   * The length must be between 1 and 3.
+   *
    * @default - no filter.
    */
   readonly pushFilter?: GitPushFilter[];

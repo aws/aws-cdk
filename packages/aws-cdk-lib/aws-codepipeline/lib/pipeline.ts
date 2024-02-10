@@ -1177,7 +1177,12 @@ export class Pipeline extends PipelineBase {
           throw new Error(`provider for actionProperties in sourceAction must be 'CodeStarSourceConnection', got '${sourceAction.actionProperties.provider}' at triggers[${triggerIdx}]`);
         }
 
-        const push: CfnPipeline.GitPushFilterProperty[] | undefined = trigger.gitConfiguration.pushFilter?.map((filter, filterIdx) => {
+        const pushFilter = trigger.gitConfiguration.pushFilter;
+        if (pushFilter !== undefined && (pushFilter.length < 1 || pushFilter.length > 3)) {
+          throw new Error(`pushFilter length must be between 1 and 3, got ${pushFilter.length} at triggers[${triggerIdx}].gitConfiguration`);
+        }
+
+        const push: CfnPipeline.GitPushFilterProperty[] | undefined = pushFilter?.map((filter, filterIdx) => {
           if (filter.excludedTags && filter.excludedTags.length > 8) {
             throw new Error(`maximum length of excludedTags is 8, got ${filter.excludedTags.length} at triggers[${triggerIdx}].gitConfiguration.pushFilter[${filterIdx}]`);
           }

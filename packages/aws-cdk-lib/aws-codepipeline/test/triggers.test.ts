@@ -165,6 +165,53 @@ describe('triggers', () => {
     }).toThrow(/maximum length of includedTags is 8, got 9 at triggers\[0\].gitConfiguration.pushFilter\[0\]/);
   });
 
+  test('throw if length of pushFilter is less than 1', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [],
+          },
+        }],
+      });
+    }).toThrow(/pushFilter length must be between 1 and 3, got 0 at triggers\[0\].gitConfiguration/);
+  });
+
+  test('throw if length of pushFilter is greater than 3', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [
+              {
+                excludedTags: ['exclude1'],
+                includedTags: ['include1'],
+              },
+              {
+                excludedTags: ['exclude2'],
+                includedTags: ['include2'],
+              },
+              {
+                excludedTags: ['exclude3'],
+                includedTags: ['include3'],
+              },
+              {
+                excludedTags: ['exclude4'],
+                includedTags: ['include4'],
+              },
+            ],
+          },
+        }],
+      });
+    }).toThrow(/pushFilter length must be between 1 and 3, got 4 at triggers\[0\].gitConfiguration/);
+  });
+
   test('throw if provider of sourceAction is not \'CodeStarSourceConnection\'', () => {
     const fakeAction = new FakeSourceAction({
       actionName: 'FakeSource',
