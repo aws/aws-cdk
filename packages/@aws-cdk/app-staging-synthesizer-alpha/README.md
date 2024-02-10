@@ -213,7 +213,7 @@ import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 declare const stack: Stack;
 const asset = new Asset(stack, 'deploy-time-asset', {
   deployTime: true,
-  path: path.join(__dirname, './deploy-time-asset'),
+  path: path.join(__dirname, 'deploy-time-asset'),
 });
 ```
 

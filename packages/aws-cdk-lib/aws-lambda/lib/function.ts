@@ -123,6 +123,24 @@ export enum LogFormat {
 }
 
 /**
+ * This field takes in 2 values either Text or JSON. By setting this value to Text,
+ * will result in the current structure of logs format, whereas, by setting this value to JSON,
+ * Lambda will print the logs as Structured JSON Logs, with the corresponding timestamp and log level
+ * of each event. Selecting ‘JSON’ format will only allow customer’s to have different log level
+ * Application log level and the System log level.
+ */
+export enum LoggingFormat {
+  /**
+   * Lambda Logs text format.
+   */
+  TEXT = 'Text',
+  /**
+   * Lambda structured logging in Json format.
+   */
+  JSON = 'JSON',
+}
+
+/**
  * Non runtime options
  */
 export interface FunctionOptions extends EventInvokeConfigOptions {
@@ -384,17 +402,21 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * this property, unsetting it doesn't remove the log retention policy. To
    * remove the retention policy, set the value to `INFINITE`.
    *
-   * @default logs.RetentionDays.INFINITE
-   *
-   * @deprecated instead create a fully customizable log group with `logs.LogGroup` and use the `logGroup` property to instruct the Lambda function to send logs to it.
+   * This is a legacy API and we strongly recommend you move away from it if you can.
+   * Instead create a fully customizable log group with `logs.LogGroup` and use the `logGroup` property
+   * to instruct the Lambda function to send logs to it.
    * Migrating from `logRetention` to `logGroup` will cause the name of the log group to change.
    * Users and code and referencing the name verbatim will have to adjust.
    *
    * In AWS CDK code, you can access the log group name directly from the LogGroup construct:
    * ```ts
+   * import * as logs from 'aws-cdk-lib/aws-logs';
+   *
    * declare const myLogGroup: logs.LogGroup;
    * myLogGroup.logGroupName;
    * ```
+   *
+   * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
 
@@ -402,9 +424,10 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * The IAM role for the Lambda function associated with the custom resource
    * that sets the retention policy.
    *
-   * @default - A new role is created.
+   * This is a legacy API and we strongly recommend you migrate to `logGroup` if you can.
+   * `logGroup` allows you to create a fully customizable log group and instruct the Lambda function to send logs to it.
    *
-   * @deprecated instead use `logGroup` to create a fully customizable log group and instruct the Lambda function to send logs to it.
+   * @default - A new role is created.
    */
   readonly logRetentionRole?: iam.IRole;
 
@@ -412,9 +435,10 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * When log retention is specified, a custom resource attempts to create the CloudWatch log group.
    * These options control the retry policy when interacting with CloudWatch APIs.
    *
-   * @default - Default AWS SDK retry options.
+   * This is a legacy API and we strongly recommend you migrate to `logGroup` if you can.
+   * `logGroup` allows you to create a fully customizable log group and instruct the Lambda function to send logs to it.
    *
-   * @deprecated instead use `logGroup` to create a fully customizable log group and instruct the Lambda function to send logs to it.
+   * @default - Default AWS SDK retry options.
    */
   readonly logRetentionRetryOptions?: LogRetentionRetryOptions;
 
@@ -482,6 +506,9 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    *
    * Use the `logGroup` property to create a fully customizable LogGroup ahead of time, and instruct the Lambda function to send logs to it.
    *
+   * Providing a user-controlled log group was rolled out to commercial regions on 2023-11-16.
+   * If you are deploying to another type of region, please check regional availability first.
+   *
    * @default `/aws/lambda/${this.functionName}` - default log group created by Lambda
    */
   readonly logGroup?: logs.ILogGroup;
@@ -491,6 +518,12 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default "Text"
    */
   readonly logFormat?: string;
+
+  /**
+   * Sets the loggingFormat for the function.
+   * @default LoggingFormat.TEXT
+   */
+  readonly loggingFormat?: LoggingFormat;
 
   /**
    * Sets the application log level for the function.
@@ -1109,14 +1142,23 @@ export class Function extends FunctionBase {
    * function and undefined if not.
    */
   private getLoggingConfig(props: FunctionProps): CfnFunction.LoggingConfigProperty | undefined {
-    if ((props.applicationLogLevel || props.systemLogLevel) && props.logFormat !== LogFormat.JSON) {
+    if ((props.applicationLogLevel || props.systemLogLevel) && props.logFormat !== LogFormat.JSON
+    && props.loggingFormat === undefined) {
       throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`);
     }
 
+    if ((props.applicationLogLevel || props.systemLogLevel) && props.loggingFormat !== LoggingFormat.JSON && props.logFormat === undefined) {
+      throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LoggingFormat to '${LoggingFormat.JSON}', got '${props.loggingFormat}'.`);
+    }
+
+    if (props.logFormat && props.loggingFormat) {
+      throw new Error('Only define LogFormat or LoggingFormat, not both.');
+    }
+
     let loggingConfig: CfnFunction.LoggingConfigProperty;
-    if (props.logFormat || props.logGroup) {
+    if (props.logFormat || props.logGroup || props.loggingFormat) {
       loggingConfig = {
-        logFormat: props.logFormat,
+        logFormat: props.logFormat || props.loggingFormat,
         systemLogLevel: props.systemLogLevel,
         applicationLogLevel: props.applicationLogLevel,
         logGroup: props.logGroup?.logGroupName,
@@ -1578,7 +1620,7 @@ export interface EnvironmentOptions {
    *
    * @default false - using the function in Lambda@Edge will throw
    */
-  readonly removeInEdge?: boolean
+  readonly removeInEdge?: boolean;
 }
 
 /**

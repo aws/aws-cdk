@@ -77,12 +77,12 @@ export interface IKey extends IResource {
   /**
    * Grant permissions to generating MACs to the given principal
    */
-  grantGenerateMac(grantee: iam.IGrantable): iam.Grant
+  grantGenerateMac(grantee: iam.IGrantable): iam.Grant;
 
   /**
    * Grant permissions to verifying MACs to the given principal
    */
-  grantVerifyMac(grantee: iam.IGrantable): iam.Grant
+  grantVerifyMac(grantee: iam.IGrantable): iam.Grant;
 }
 
 abstract class KeyBase extends Resource implements IKey {
