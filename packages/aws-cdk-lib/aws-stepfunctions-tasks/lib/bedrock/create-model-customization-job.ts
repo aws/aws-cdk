@@ -160,17 +160,17 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
-    this.validateStringLength('ClientRequestToken', 1, 256, props.clientRequestToken);
-    this.validatePattern('ClientRequestToken', /^[a-zA-Z0-9](-*[a-zA-Z0-9])*$/, props.clientRequestToken);
-    this.validateStringLength('CustomModelName', 1, 63, props.customModelName);
-    this.validatePattern('CustomModelName', /^([0-9a-zA-Z][_-]?)+$/, props.customModelName);
-    this.validateArrayLength('CustomModelTags', 0, 200, props.customModelTags);
-    this.validateStringLength('JobName', 1, 63, props.jobName);
-    this.validatePattern('JobName', /^[a-zA-Z0-9](-*[a-zA-Z0-9\+\-\.])*$/, props.jobName);
-    this.validateArrayLength('JobTags', 0, 200, props.jobTags);
-    this.validateArrayLength('ValidationDataS3Uri', 1, 10, props.validationDataS3Uri);
-    this.validateArrayLength('SecurityGroups', 1, 5, props.vpcConfig?.securityGroups);
-    this.validateArrayLength('Subnets', 1, 16, props.vpcConfig?.subnets);
+    this.validateStringLength('clientRequestToken', 1, 256, props.clientRequestToken);
+    this.validatePattern('clientRequestToken', /^[a-zA-Z0-9](-*[a-zA-Z0-9])*$/, props.clientRequestToken);
+    this.validateStringLength('customModelName', 1, 63, props.customModelName);
+    this.validatePattern('customModelName', /^([0-9a-zA-Z][_-]?)+$/, props.customModelName);
+    this.validateArrayLength('customModelTags', 0, 200, props.customModelTags);
+    this.validateStringLength('jobName', 1, 63, props.jobName);
+    this.validatePattern('jobName', /^[a-zA-Z0-9](-*[a-zA-Z0-9\+\-\.])*$/, props.jobName);
+    this.validateArrayLength('jobTags', 0, 200, props.jobTags);
+    this.validateArrayLength('validationDataS3Uri', 1, 10, props.validationDataS3Uri);
+    this.validateArrayLength('securityGroups', 1, 5, props.vpcConfig?.securityGroups);
+    this.validateArrayLength('subnets', 1, 16, props.vpcConfig?.subnets);
 
     validatePatternSupported(this.integrationPattern, BedrockCreateModelCustomizationJob.SUPPORTED_INTEGRATION_PATTERNS);
 
@@ -322,7 +322,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
 
   private validatePattern(name: string, pattern: RegExp, value?: string): void {
     if (value !== undefined && !Token.isUnresolved(value) && !pattern.test(value)) {
-      throw new Error(`${name} must match the pattern ${pattern}`);
+      throw new Error(`${name} must match the pattern ${pattern.toString()}`);
     }
   }
 
