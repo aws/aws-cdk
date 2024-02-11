@@ -380,6 +380,7 @@ declare const role: iam.Role;
 
 new s3deploy.DeployTimeSubstitutedFile(this, 'MyFile', {
   source: 'my-file.yaml',
+  //(Optional) if provided, the resulting processed file would be uploaded to the destinationBucket under the destinationKey name.
   destinationKey: destinationKey,
   destinationBucket: destinationBucket,
   substitutions: {
