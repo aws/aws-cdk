@@ -375,12 +375,12 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 declare const myLambdaFunction: lambda.Function;
 declare const destinationBucket: s3.Bucket;
+//(Optional) if provided, the resulting processed file would be uploaded to the destinationBucket under the destinationKey name.
 declare const destinationKey: string;
 declare const role: iam.Role;
 
 new s3deploy.DeployTimeSubstitutedFile(this, 'MyFile', {
   source: 'my-file.yaml',
-  //(Optional) if provided, the resulting processed file would be uploaded to the destinationBucket under the destinationKey name.
   destinationKey: destinationKey,
   destinationBucket: destinationBucket,
   substitutions: {
