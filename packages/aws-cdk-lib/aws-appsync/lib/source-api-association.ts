@@ -179,9 +179,7 @@ export class SourceApiAssociation extends Resource implements ISourceApiAssociat
       description: props.description,
     });
 
-    if (this.sourceApi instanceof GraphqlApi) {
-      this.sourceApi.addSchemaDependency(this.association);
-    }
+    this.sourceApi.addSchemaDependency(this.association);
 
     this.associationId = this.association.attrAssociationId;
     this.associationArn = this.association.attrAssociationArn;
