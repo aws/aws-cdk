@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-ecs-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecs-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2137214b2de0d9d04157ab2368c4092ca0702af5ebf8a6baeadddb73e300f629.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/619b4cc023a42a57207323be8670525dd4b0901fcec645081595124c3d965f1d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -108,7 +109,7 @@
         "/aws-ecs-integ/FargateCluster/capacity": [
           {
             "type": "aws:cdk:warning",
-            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215"
+            "data": "desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215 [ack: @aws-cdk/aws-autoscaling:desiredCapacitySet]"
           }
         ],
         "/aws-ecs-integ/FargateCluster/capacity/InstanceSecurityGroup/Resource": [
@@ -165,22 +166,22 @@
             "data": "FargateClustercapacityDrainECSHookFunction3E60E6D0"
           }
         ],
-        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/AllowInvoke:awsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F": [
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/AllowInvoke:awsecsintegFargateClustercapacityLifecycleHookDrainHookTopicLifecycleHookDrainHook7BA31FB2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateClustercapacityDrainECSHookFunctionAllowInvokeawsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F3B6FF246"
+            "data": "FargateClustercapacityDrainECSHookFunctionAllowInvokeawsecsintegFargateClustercapacityLifecycleHookDrainHookTopicLifecycleHookDrainHook7BA31FB27B4A9179"
           }
         ],
-        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/Topic/Resource": [
+        "/aws-ecs-integ/FargateCluster/capacity/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateClustercapacityDrainECSHookFunctionTopic7D6C4884"
+            "data": "FargateClustercapacityDrainECSHookFunctionTopicLifecycleHookDrainHook6A2BD348"
           }
         ],
-        "/aws-ecs-integ/FargateCluster/capacity/LifecycleHookDrainHook/Topic/Resource": [
+        "/aws-ecs-integ/FargateCluster/capacity/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateClustercapacityLifecycleHookDrainHookTopic390A0E34"
+            "data": "FargateClustercapacityLifecycleHookDrainHookTopicLifecycleHookDrainHookC59604DA"
           }
         ],
         "/aws-ecs-integ/FargateCluster/capacity/LifecycleHookDrainHook/Role/Resource": [
@@ -249,10 +250,28 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "FargateClustercapacityLaunchTemplateProfile4BF7EF9F": [
+        "FargateClustercapacityDrainECSHookFunctionAllowInvokeawsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F3B6FF246": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FargateClustercapacityLaunchTemplateProfile4BF7EF9F",
+            "data": "FargateClustercapacityDrainECSHookFunctionAllowInvokeawsecsintegFargateClustercapacityLifecycleHookDrainHookTopic07C1229F3B6FF246",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "FargateClustercapacityDrainECSHookFunctionTopic7D6C4884": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityDrainECSHookFunctionTopic7D6C4884",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "FargateClustercapacityLifecycleHookDrainHookTopic390A0E34": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateClustercapacityLifecycleHookDrainHookTopic390A0E34",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

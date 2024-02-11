@@ -415,7 +415,7 @@ describe('cluster', () => {
         LifecycleTransition: 'autoscaling:EC2_INSTANCE_TERMINATING',
         DefaultResult: 'CONTINUE',
         HeartbeatTimeout: 300,
-        NotificationTargetARN: { Ref: 'EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4' },
+        NotificationTargetARN: { Ref: 'EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHook239463CF' },
         RoleARN: { 'Fn::GetAtt': ['EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B', 'Arn'] },
       });
 

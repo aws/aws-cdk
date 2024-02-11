@@ -820,7 +820,7 @@
     "ASGDrainECSHookFunctionServiceRoleC12963BB"
    ]
   },
-  "ASGDrainECSHookFunctionAllowInvokeintegdefaultcapacityproviderASGLifecycleHookDrainHookTopicB8CF8925702E570F": {
+  "ASGDrainECSHookFunctionAllowInvokeintegdefaultcapacityproviderASGLifecycleHookDrainHookTopicLifecycleHookDrainHook697D0E800A85DAD0": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -832,11 +832,11 @@
     },
     "Principal": "sns.amazonaws.com",
     "SourceArn": {
-     "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+     "Ref": "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569"
     }
    }
   },
-  "ASGDrainECSHookFunctionTopicD6FC59F7": {
+  "ASGDrainECSHookFunctionTopicLifecycleHookDrainHook8B240409": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Endpoint": {
@@ -847,11 +847,11 @@
     },
     "Protocol": "lambda",
     "TopicArn": {
-     "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+     "Ref": "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569"
     }
    }
   },
-  "ASGLifecycleHookDrainHookTopicA8AD4ACB": {
+  "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569": {
    "Type": "AWS::SNS::Topic",
    "Properties": {
     "Tags": [
@@ -894,7 +894,7 @@
        "Action": "sns:Publish",
        "Effect": "Allow",
        "Resource": {
-        "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+        "Ref": "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569"
        }
       }
      ],
@@ -918,7 +918,7 @@
     "HeartbeatTimeout": 300,
     "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
     "NotificationTargetARN": {
-     "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+     "Ref": "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569"
     },
     "RoleARN": {
      "Fn::GetAtt": [

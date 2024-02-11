@@ -1238,9 +1238,9 @@
                           "version": "0.0.0"
                         }
                       },
-                      "AllowInvoke:integecsneuronamiASGLifecycleHookDrainHookTopic1002D767": {
-                        "id": "AllowInvoke:integecsneuronamiASGLifecycleHookDrainHookTopic1002D767",
-                        "path": "integ-ecs-neuron-ami/ASG/DrainECSHook/Function/AllowInvoke:integecsneuronamiASGLifecycleHookDrainHookTopic1002D767",
+                      "AllowInvoke:integecsneuronamiASGLifecycleHookDrainHookTopicLifecycleHookDrainHook637694D7": {
+                        "id": "AllowInvoke:integecsneuronamiASGLifecycleHookDrainHookTopicLifecycleHookDrainHook637694D7",
+                        "path": "integ-ecs-neuron-ami/ASG/DrainECSHook/Function/AllowInvoke:integecsneuronamiASGLifecycleHookDrainHookTopicLifecycleHookDrainHook637694D7",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                           "aws:cdk:cloudformation:props": {
@@ -1253,7 +1253,7 @@
                             },
                             "principal": "sns.amazonaws.com",
                             "sourceArn": {
-                              "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+                              "Ref": "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569"
                             }
                           }
                         },
@@ -1262,13 +1262,13 @@
                           "version": "0.0.0"
                         }
                       },
-                      "Topic": {
-                        "id": "Topic",
-                        "path": "integ-ecs-neuron-ami/ASG/DrainECSHook/Function/Topic",
+                      "TopicLifecycleHookDrainHook": {
+                        "id": "TopicLifecycleHookDrainHook",
+                        "path": "integ-ecs-neuron-ami/ASG/DrainECSHook/Function/TopicLifecycleHookDrainHook",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "integ-ecs-neuron-ami/ASG/DrainECSHook/Function/Topic/Resource",
+                            "path": "integ-ecs-neuron-ami/ASG/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                               "aws:cdk:cloudformation:props": {
@@ -1280,7 +1280,7 @@
                                 },
                                 "protocol": "lambda",
                                 "topicArn": {
-                                  "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+                                  "Ref": "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569"
                                 }
                               }
                             },
@@ -1311,13 +1311,13 @@
                 "id": "LifecycleHookDrainHook",
                 "path": "integ-ecs-neuron-ami/ASG/LifecycleHookDrainHook",
                 "children": {
-                  "Topic": {
-                    "id": "Topic",
-                    "path": "integ-ecs-neuron-ami/ASG/LifecycleHookDrainHook/Topic",
+                  "TopicLifecycleHookDrainHook": {
+                    "id": "TopicLifecycleHookDrainHook",
+                    "path": "integ-ecs-neuron-ami/ASG/LifecycleHookDrainHook/TopicLifecycleHookDrainHook",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-ecs-neuron-ami/ASG/LifecycleHookDrainHook/Topic/Resource",
+                        "path": "integ-ecs-neuron-ami/ASG/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
                           "aws:cdk:cloudformation:props": {
@@ -1399,7 +1399,7 @@
                                       "Action": "sns:Publish",
                                       "Effect": "Allow",
                                       "Resource": {
-                                        "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+                                        "Ref": "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569"
                                       }
                                     }
                                   ],
@@ -1443,7 +1443,7 @@
                         "heartbeatTimeout": 300,
                         "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
                         "notificationTargetArn": {
-                          "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+                          "Ref": "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569"
                         },
                         "roleArn": {
                           "Fn::GetAtt": [

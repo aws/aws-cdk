@@ -1236,9 +1236,9 @@
                               "version": "0.0.0"
                             }
                           },
-                          "AllowInvoke:awsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopic46897984": {
-                            "id": "AllowInvoke:awsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopic46897984",
-                            "path": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/AllowInvoke:awsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopic46897984",
+                          "AllowInvoke:awsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHookAD5FA703": {
+                            "id": "AllowInvoke:awsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHookAD5FA703",
+                            "path": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/AllowInvoke:awsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHookAD5FA703",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                               "aws:cdk:cloudformation:props": {
@@ -1251,7 +1251,7 @@
                                 },
                                 "principal": "sns.amazonaws.com",
                                 "sourceArn": {
-                                  "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopic34DF3A02"
+                                  "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHook23DCBF85"
                                 }
                               }
                             },
@@ -1260,13 +1260,13 @@
                               "version": "0.0.0"
                             }
                           },
-                          "Topic": {
-                            "id": "Topic",
-                            "path": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/Topic",
+                          "TopicLifecycleHookDrainHook": {
+                            "id": "TopicLifecycleHookDrainHook",
+                            "path": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/TopicLifecycleHookDrainHook",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/Topic/Resource",
+                                "path": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                                   "aws:cdk:cloudformation:props": {
@@ -1278,7 +1278,7 @@
                                     },
                                     "protocol": "lambda",
                                     "topicArn": {
-                                      "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopic34DF3A02"
+                                      "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHook23DCBF85"
                                     }
                                   }
                                 },
@@ -1309,13 +1309,13 @@
                     "id": "LifecycleHookDrainHook",
                     "path": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook",
                     "children": {
-                      "Topic": {
-                        "id": "Topic",
-                        "path": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/Topic",
+                      "TopicLifecycleHookDrainHook": {
+                        "id": "TopicLifecycleHookDrainHook",
+                        "path": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/TopicLifecycleHookDrainHook",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/Topic/Resource",
+                            "path": "aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
                               "aws:cdk:cloudformation:props": {
@@ -1397,7 +1397,7 @@
                                           "Action": "sns:Publish",
                                           "Effect": "Allow",
                                           "Resource": {
-                                            "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopic34DF3A02"
+                                            "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHook23DCBF85"
                                           }
                                         }
                                       ],
@@ -1441,7 +1441,7 @@
                             "heartbeatTimeout": 300,
                             "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
                             "notificationTargetArn": {
-                              "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopic34DF3A02"
+                              "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHook23DCBF85"
                             },
                             "roleArn": {
                               "Fn::GetAtt": [

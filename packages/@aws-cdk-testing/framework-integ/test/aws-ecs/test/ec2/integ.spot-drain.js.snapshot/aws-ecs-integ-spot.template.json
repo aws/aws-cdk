@@ -792,7 +792,7 @@
     "EcsClusterasgSpotDrainECSHookFunctionServiceRole8EEDDFE0"
    ]
   },
-  "EcsClusterasgSpotDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845E8BD3FE4E": {
+  "EcsClusterasgSpotDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHook91FAF0AE1A000B73": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -804,11 +804,11 @@
     },
     "Principal": "sns.amazonaws.com",
     "SourceArn": {
-     "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
+     "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHookF0C9E866"
     }
    }
   },
-  "EcsClusterasgSpotDrainECSHookFunctionTopic9648CAD4": {
+  "EcsClusterasgSpotDrainECSHookFunctionTopicLifecycleHookDrainHook7836B691": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Endpoint": {
@@ -819,11 +819,11 @@
     },
     "Protocol": "lambda",
     "TopicArn": {
-     "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
+     "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHookF0C9E866"
     }
    }
   },
-  "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83": {
+  "EcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHookF0C9E866": {
    "Type": "AWS::SNS::Topic",
    "Properties": {
     "Tags": [
@@ -866,7 +866,7 @@
        "Action": "sns:Publish",
        "Effect": "Allow",
        "Resource": {
-        "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
+        "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHookF0C9E866"
        }
       }
      ],
@@ -890,7 +890,7 @@
     "HeartbeatTimeout": 300,
     "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
     "NotificationTargetARN": {
-     "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
+     "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHookF0C9E866"
     },
     "RoleARN": {
      "Fn::GetAtt": [
@@ -1296,7 +1296,7 @@
     "EcsClusterasgOdDrainECSHookFunctionServiceRoleFC088D55"
    ]
   },
-  "EcsClusterasgOdDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8B41B2D12": {
+  "EcsClusterasgOdDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHook8D5CD9E5659E5F0E": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -1308,11 +1308,11 @@
     },
     "Principal": "sns.amazonaws.com",
     "SourceArn": {
-     "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
+     "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHookAB085AA1"
     }
    }
   },
-  "EcsClusterasgOdDrainECSHookFunctionTopicE6BE4000": {
+  "EcsClusterasgOdDrainECSHookFunctionTopicLifecycleHookDrainHook1F95CAE2": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Endpoint": {
@@ -1323,11 +1323,11 @@
     },
     "Protocol": "lambda",
     "TopicArn": {
-     "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
+     "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHookAB085AA1"
     }
    }
   },
-  "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202": {
+  "EcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHookAB085AA1": {
    "Type": "AWS::SNS::Topic",
    "Properties": {
     "Tags": [
@@ -1370,7 +1370,7 @@
        "Action": "sns:Publish",
        "Effect": "Allow",
        "Resource": {
-        "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
+        "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHookAB085AA1"
        }
       }
      ],
@@ -1394,7 +1394,7 @@
     "HeartbeatTimeout": 300,
     "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
     "NotificationTargetARN": {
-     "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
+     "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHookAB085AA1"
     },
     "RoleARN": {
      "Fn::GetAtt": [

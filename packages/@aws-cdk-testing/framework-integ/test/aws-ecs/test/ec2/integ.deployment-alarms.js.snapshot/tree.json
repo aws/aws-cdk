@@ -699,7 +699,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
               "version": "0.0.0"
             }
           },
@@ -1346,9 +1346,9 @@
                           "version": "0.0.0"
                         }
                       },
-                      "AllowInvoke:integdeploymentalarmsASGLifecycleHookDrainHookTopic48A952B0": {
-                        "id": "AllowInvoke:integdeploymentalarmsASGLifecycleHookDrainHookTopic48A952B0",
-                        "path": "integ-deployment-alarms/ASG/DrainECSHook/Function/AllowInvoke:integdeploymentalarmsASGLifecycleHookDrainHookTopic48A952B0",
+                      "AllowInvoke:integdeploymentalarmsASGLifecycleHookDrainHookTopicLifecycleHookDrainHook25B363C2": {
+                        "id": "AllowInvoke:integdeploymentalarmsASGLifecycleHookDrainHookTopicLifecycleHookDrainHook25B363C2",
+                        "path": "integ-deployment-alarms/ASG/DrainECSHook/Function/AllowInvoke:integdeploymentalarmsASGLifecycleHookDrainHookTopicLifecycleHookDrainHook25B363C2",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                           "aws:cdk:cloudformation:props": {
@@ -1361,7 +1361,7 @@
                             },
                             "principal": "sns.amazonaws.com",
                             "sourceArn": {
-                              "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+                              "Ref": "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569"
                             }
                           }
                         },
@@ -1370,13 +1370,13 @@
                           "version": "0.0.0"
                         }
                       },
-                      "Topic": {
-                        "id": "Topic",
-                        "path": "integ-deployment-alarms/ASG/DrainECSHook/Function/Topic",
+                      "TopicLifecycleHookDrainHook": {
+                        "id": "TopicLifecycleHookDrainHook",
+                        "path": "integ-deployment-alarms/ASG/DrainECSHook/Function/TopicLifecycleHookDrainHook",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "integ-deployment-alarms/ASG/DrainECSHook/Function/Topic/Resource",
+                            "path": "integ-deployment-alarms/ASG/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                               "aws:cdk:cloudformation:props": {
@@ -1388,7 +1388,7 @@
                                 },
                                 "protocol": "lambda",
                                 "topicArn": {
-                                  "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+                                  "Ref": "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569"
                                 }
                               }
                             },
@@ -1412,20 +1412,20 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.3.0"
                 }
               },
               "LifecycleHookDrainHook": {
                 "id": "LifecycleHookDrainHook",
                 "path": "integ-deployment-alarms/ASG/LifecycleHookDrainHook",
                 "children": {
-                  "Topic": {
-                    "id": "Topic",
-                    "path": "integ-deployment-alarms/ASG/LifecycleHookDrainHook/Topic",
+                  "TopicLifecycleHookDrainHook": {
+                    "id": "TopicLifecycleHookDrainHook",
+                    "path": "integ-deployment-alarms/ASG/LifecycleHookDrainHook/TopicLifecycleHookDrainHook",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-deployment-alarms/ASG/LifecycleHookDrainHook/Topic/Resource",
+                        "path": "integ-deployment-alarms/ASG/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
                           "aws:cdk:cloudformation:props": {
@@ -1507,7 +1507,7 @@
                                       "Action": "sns:Publish",
                                       "Effect": "Allow",
                                       "Resource": {
-                                        "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+                                        "Ref": "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569"
                                       }
                                     }
                                   ],
@@ -1551,7 +1551,7 @@
                         "heartbeatTimeout": 300,
                         "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
                         "notificationTargetArn": {
-                          "Ref": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+                          "Ref": "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569"
                         },
                         "roleArn": {
                           "Fn::GetAtt": [
@@ -1798,7 +1798,7 @@
                 "path": "DeploymentAlarms/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1844,7 +1844,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.3.0"
         }
       }
     },

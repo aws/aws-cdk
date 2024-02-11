@@ -43,5 +43,5 @@ export interface ILifecycleHookTarget {
    * Called when this object is used as the target of a lifecycle hook
    * @param options [disable-awslint:ref-via-interface] The lifecycle hook to attach to and a role to use
    */
-  bind(scope: constructs.Construct, options: BindHookTargetOptions): LifecycleHookTargetConfig;
+  bind(scope: constructs.Construct, _id: string, options: BindHookTargetOptions): LifecycleHookTargetConfig;
 }

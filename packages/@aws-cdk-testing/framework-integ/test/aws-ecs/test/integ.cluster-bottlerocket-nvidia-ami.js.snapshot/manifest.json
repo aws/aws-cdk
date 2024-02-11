@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/25ecc9ee1f79cd8a912202279ab524c1d49216ee0be93a5179ef19f50cd1b1ba.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9a1281f5675a001c8abfae3b7bf47b04b848588d5f82e85ae58da71660eb4492.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -232,22 +232,22 @@
             "data": "ClusterbottlerocketasgDrainECSHookFunctionFEA27227"
           }
         ],
-        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/AllowInvoke:awsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopic46897984": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/AllowInvoke:awsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHookAD5FA703": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopic46897984C264A0A5"
+            "data": "ClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHookAD5FA703FE15622C"
           }
         ],
-        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/Topic/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterbottlerocketasgDrainECSHookFunctionTopicC875173C"
+            "data": "ClusterbottlerocketasgDrainECSHookFunctionTopicLifecycleHookDrainHook205EA218"
           }
         ],
-        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/Topic/Resource": [
+        "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterbottlerocketasgLifecycleHookDrainHookTopic34DF3A02"
+            "data": "ClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHook23DCBF85"
           }
         ],
         "/aws-ecs-integ-bottlerocket-nvidia-ami/Cluster/bottlerocket-asg/LifecycleHookDrainHook/Role/Resource": [
@@ -284,6 +284,33 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopic46897984C264A0A5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopic46897984C264A0A5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterbottlerocketasgDrainECSHookFunctionTopicC875173C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterbottlerocketasgDrainECSHookFunctionTopicC875173C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ClusterbottlerocketasgLifecycleHookDrainHookTopic34DF3A02": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterbottlerocketasgLifecycleHookDrainHookTopic34DF3A02",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

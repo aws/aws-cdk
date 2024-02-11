@@ -16,7 +16,7 @@ export class QueueHook implements autoscaling.ILifecycleHookTarget {
    *
    * @returns the `IRole` with access to send messages and the ARN of the queue it has access to send messages to.
    */
-  public bind(_scope: Construct, options: autoscaling.BindHookTargetOptions): autoscaling.LifecycleHookTargetConfig {
+  public bind(_scope: Construct, _id: string, options: autoscaling.BindHookTargetOptions): autoscaling.LifecycleHookTargetConfig {
     const role = createRole(_scope, options.role);
     this.queue.grantSendMessages(role);
 

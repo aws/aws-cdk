@@ -1,5 +1,5 @@
 {
-  "version": "33.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "integ-deployment-alarms.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-deployment-alarms.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e62aa756e86e9b47c7f2741081bcf8bad768b60bf287eb2b43c5e3fbd07eb181.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/46a7619aba43b373438c768b8cc4d633a608077210d907bfac8ed3080b0451ee.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -255,22 +256,22 @@
             "data": "ASGDrainECSHookFunction5F24CF4D"
           }
         ],
-        "/integ-deployment-alarms/ASG/DrainECSHook/Function/AllowInvoke:integdeploymentalarmsASGLifecycleHookDrainHookTopic48A952B0": [
+        "/integ-deployment-alarms/ASG/DrainECSHook/Function/AllowInvoke:integdeploymentalarmsASGLifecycleHookDrainHookTopicLifecycleHookDrainHook25B363C2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctionAllowInvokeintegdeploymentalarmsASGLifecycleHookDrainHookTopic48A952B0CEFB05B2"
+            "data": "ASGDrainECSHookFunctionAllowInvokeintegdeploymentalarmsASGLifecycleHookDrainHookTopicLifecycleHookDrainHook25B363C231FF9955"
           }
         ],
-        "/integ-deployment-alarms/ASG/DrainECSHook/Function/Topic/Resource": [
+        "/integ-deployment-alarms/ASG/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctionTopicD6FC59F7"
+            "data": "ASGDrainECSHookFunctionTopicLifecycleHookDrainHook8B240409"
           }
         ],
-        "/integ-deployment-alarms/ASG/LifecycleHookDrainHook/Topic/Resource": [
+        "/integ-deployment-alarms/ASG/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+            "data": "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569"
           }
         ],
         "/integ-deployment-alarms/ASG/LifecycleHookDrainHook/Role/Resource": [
@@ -338,6 +339,33 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "ASGDrainECSHookFunctionAllowInvokeintegdeploymentalarmsASGLifecycleHookDrainHookTopic48A952B0CEFB05B2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctionAllowInvokeintegdeploymentalarmsASGLifecycleHookDrainHookTopic48A952B0CEFB05B2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASGDrainECSHookFunctionTopicD6FC59F7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctionTopicD6FC59F7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASGLifecycleHookDrainHookTopicA8AD4ACB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGLifecycleHookDrainHookTopicA8AD4ACB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "integ-deployment-alarms"
@@ -355,6 +383,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "DeploymentAlarmsDefaultTestDeployAssertAFB973D1.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

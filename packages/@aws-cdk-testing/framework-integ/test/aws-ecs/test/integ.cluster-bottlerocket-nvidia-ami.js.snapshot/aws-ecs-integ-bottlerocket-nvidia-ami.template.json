@@ -811,7 +811,7 @@
     "ClusterbottlerocketasgDrainECSHookFunctionServiceRole91B0C3B3"
    ]
   },
-  "ClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopic46897984C264A0A5": {
+  "ClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegbottlerocketnvidiaamiClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHookAD5FA703FE15622C": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -823,11 +823,11 @@
     },
     "Principal": "sns.amazonaws.com",
     "SourceArn": {
-     "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopic34DF3A02"
+     "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHook23DCBF85"
     }
    }
   },
-  "ClusterbottlerocketasgDrainECSHookFunctionTopicC875173C": {
+  "ClusterbottlerocketasgDrainECSHookFunctionTopicLifecycleHookDrainHook205EA218": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Endpoint": {
@@ -838,11 +838,11 @@
     },
     "Protocol": "lambda",
     "TopicArn": {
-     "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopic34DF3A02"
+     "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHook23DCBF85"
     }
    }
   },
-  "ClusterbottlerocketasgLifecycleHookDrainHookTopic34DF3A02": {
+  "ClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHook23DCBF85": {
    "Type": "AWS::SNS::Topic",
    "Properties": {
     "Tags": [
@@ -885,7 +885,7 @@
        "Action": "sns:Publish",
        "Effect": "Allow",
        "Resource": {
-        "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopic34DF3A02"
+        "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHook23DCBF85"
        }
       }
      ],
@@ -909,7 +909,7 @@
     "HeartbeatTimeout": 300,
     "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
     "NotificationTargetARN": {
-     "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopic34DF3A02"
+     "Ref": "ClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHook23DCBF85"
     },
     "RoleARN": {
      "Fn::GetAtt": [

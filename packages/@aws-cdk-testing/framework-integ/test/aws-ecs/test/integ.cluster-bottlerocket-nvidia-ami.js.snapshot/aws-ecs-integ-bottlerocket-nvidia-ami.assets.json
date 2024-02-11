@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "25ecc9ee1f79cd8a912202279ab524c1d49216ee0be93a5179ef19f50cd1b1ba": {
+    "9a1281f5675a001c8abfae3b7bf47b04b848588d5f82e85ae58da71660eb4492": {
       "source": {
         "path": "aws-ecs-integ-bottlerocket-nvidia-ami.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "25ecc9ee1f79cd8a912202279ab524c1d49216ee0be93a5179ef19f50cd1b1ba.json",
+          "objectKey": "9a1281f5675a001c8abfae3b7bf47b04b848588d5f82e85ae58da71660eb4492.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

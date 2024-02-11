@@ -1217,9 +1217,9 @@
                               "version": "0.0.0"
                             }
                           },
-                          "AllowInvoke:awsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845E": {
-                            "id": "AllowInvoke:awsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845E",
-                            "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/AllowInvoke:awsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845E",
+                          "AllowInvoke:awsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHook91FAF0AE": {
+                            "id": "AllowInvoke:awsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHook91FAF0AE",
+                            "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/AllowInvoke:awsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHook91FAF0AE",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                               "aws:cdk:cloudformation:props": {
@@ -1232,7 +1232,7 @@
                                 },
                                 "principal": "sns.amazonaws.com",
                                 "sourceArn": {
-                                  "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
+                                  "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHookF0C9E866"
                                 }
                               }
                             },
@@ -1241,13 +1241,13 @@
                               "version": "0.0.0"
                             }
                           },
-                          "Topic": {
-                            "id": "Topic",
-                            "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/Topic",
+                          "TopicLifecycleHookDrainHook": {
+                            "id": "TopicLifecycleHookDrainHook",
+                            "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/TopicLifecycleHookDrainHook",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/Topic/Resource",
+                                "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                                   "aws:cdk:cloudformation:props": {
@@ -1259,7 +1259,7 @@
                                     },
                                     "protocol": "lambda",
                                     "topicArn": {
-                                      "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
+                                      "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHookF0C9E866"
                                     }
                                   }
                                 },
@@ -1283,20 +1283,20 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "LifecycleHookDrainHook": {
                     "id": "LifecycleHookDrainHook",
                     "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/LifecycleHookDrainHook",
                     "children": {
-                      "Topic": {
-                        "id": "Topic",
-                        "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/LifecycleHookDrainHook/Topic",
+                      "TopicLifecycleHookDrainHook": {
+                        "id": "TopicLifecycleHookDrainHook",
+                        "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/LifecycleHookDrainHook/TopicLifecycleHookDrainHook",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/LifecycleHookDrainHook/Topic/Resource",
+                            "path": "aws-ecs-integ-spot/EcsCluster/asgSpot/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
                               "aws:cdk:cloudformation:props": {
@@ -1378,7 +1378,7 @@
                                           "Action": "sns:Publish",
                                           "Effect": "Allow",
                                           "Resource": {
-                                            "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
+                                            "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHookF0C9E866"
                                           }
                                         }
                                       ],
@@ -1422,7 +1422,7 @@
                             "heartbeatTimeout": 300,
                             "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
                             "notificationTargetArn": {
-                              "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
+                              "Ref": "EcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHookF0C9E866"
                             },
                             "roleArn": {
                               "Fn::GetAtt": [
@@ -1993,9 +1993,9 @@
                               "version": "0.0.0"
                             }
                           },
-                          "AllowInvoke:awsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8": {
-                            "id": "AllowInvoke:awsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8",
-                            "path": "aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/AllowInvoke:awsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8",
+                          "AllowInvoke:awsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHook8D5CD9E5": {
+                            "id": "AllowInvoke:awsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHook8D5CD9E5",
+                            "path": "aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/AllowInvoke:awsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHook8D5CD9E5",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                               "aws:cdk:cloudformation:props": {
@@ -2008,7 +2008,7 @@
                                 },
                                 "principal": "sns.amazonaws.com",
                                 "sourceArn": {
-                                  "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
+                                  "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHookAB085AA1"
                                 }
                               }
                             },
@@ -2017,13 +2017,13 @@
                               "version": "0.0.0"
                             }
                           },
-                          "Topic": {
-                            "id": "Topic",
-                            "path": "aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/Topic",
+                          "TopicLifecycleHookDrainHook": {
+                            "id": "TopicLifecycleHookDrainHook",
+                            "path": "aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/TopicLifecycleHookDrainHook",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/Topic/Resource",
+                                "path": "aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                                   "aws:cdk:cloudformation:props": {
@@ -2035,7 +2035,7 @@
                                     },
                                     "protocol": "lambda",
                                     "topicArn": {
-                                      "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
+                                      "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHookAB085AA1"
                                     }
                                   }
                                 },
@@ -2059,20 +2059,20 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "LifecycleHookDrainHook": {
                     "id": "LifecycleHookDrainHook",
                     "path": "aws-ecs-integ-spot/EcsCluster/asgOd/LifecycleHookDrainHook",
                     "children": {
-                      "Topic": {
-                        "id": "Topic",
-                        "path": "aws-ecs-integ-spot/EcsCluster/asgOd/LifecycleHookDrainHook/Topic",
+                      "TopicLifecycleHookDrainHook": {
+                        "id": "TopicLifecycleHookDrainHook",
+                        "path": "aws-ecs-integ-spot/EcsCluster/asgOd/LifecycleHookDrainHook/TopicLifecycleHookDrainHook",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-ecs-integ-spot/EcsCluster/asgOd/LifecycleHookDrainHook/Topic/Resource",
+                            "path": "aws-ecs-integ-spot/EcsCluster/asgOd/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
                               "aws:cdk:cloudformation:props": {
@@ -2154,7 +2154,7 @@
                                           "Action": "sns:Publish",
                                           "Effect": "Allow",
                                           "Resource": {
-                                            "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
+                                            "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHookAB085AA1"
                                           }
                                         }
                                       ],
@@ -2198,7 +2198,7 @@
                             "heartbeatTimeout": 300,
                             "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
                             "notificationTargetArn": {
-                              "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
+                              "Ref": "EcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHookAB085AA1"
                             },
                             "roleArn": {
                               "Fn::GetAtt": [
@@ -2415,7 +2415,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

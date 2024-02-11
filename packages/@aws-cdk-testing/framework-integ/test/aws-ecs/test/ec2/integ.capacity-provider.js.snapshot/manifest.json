@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "integ-ec2-capacity-provider.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "integ-ec2-capacity-provider.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8198483ca83787e1c21f34f0845258f2c1b0f92131f256d5dfefdbddbe142197.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd99a47f08bc5e7ca594c9d70167a03be53477ff0694012dc954edbd1a6c0eb8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -249,22 +250,22 @@
             "data": "ASGDrainECSHookFunction5F24CF4D"
           }
         ],
-        "/integ-ec2-capacity-provider/ASG/DrainECSHook/Function/AllowInvoke:integec2capacityproviderASGLifecycleHookDrainHookTopic4714B3C1": [
+        "/integ-ec2-capacity-provider/ASG/DrainECSHook/Function/AllowInvoke:integec2capacityproviderASGLifecycleHookDrainHookTopicLifecycleHookDrainHook4DC4C606": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctionAllowInvokeintegec2capacityproviderASGLifecycleHookDrainHookTopic4714B3C1EB63E78F"
+            "data": "ASGDrainECSHookFunctionAllowInvokeintegec2capacityproviderASGLifecycleHookDrainHookTopicLifecycleHookDrainHook4DC4C606AC968A68"
           }
         ],
-        "/integ-ec2-capacity-provider/ASG/DrainECSHook/Function/Topic/Resource": [
+        "/integ-ec2-capacity-provider/ASG/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctionTopicD6FC59F7"
+            "data": "ASGDrainECSHookFunctionTopicLifecycleHookDrainHook8B240409"
           }
         ],
-        "/integ-ec2-capacity-provider/ASG/LifecycleHookDrainHook/Topic/Resource": [
+        "/integ-ec2-capacity-provider/ASG/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+            "data": "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569"
           }
         ],
         "/integ-ec2-capacity-provider/ASG/LifecycleHookDrainHook/Role/Resource": [
@@ -315,10 +316,28 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "ASGLaunchTemplateProfileB99C522F": [
+        "ASGDrainECSHookFunctionAllowInvokeintegec2capacityproviderASGLifecycleHookDrainHookTopic4714B3C1EB63E78F": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLaunchTemplateProfileB99C522F",
+            "data": "ASGDrainECSHookFunctionAllowInvokeintegec2capacityproviderASGLifecycleHookDrainHookTopic4714B3C1EB63E78F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASGDrainECSHookFunctionTopicD6FC59F7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctionTopicD6FC59F7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASGLifecycleHookDrainHookTopicA8AD4ACB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGLifecycleHookDrainHookTopicA8AD4ACB",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

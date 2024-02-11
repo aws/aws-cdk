@@ -131,10 +131,10 @@ describe('given an AutoScalingGroup and no role', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' } });
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopicLifecycleHookTrans97629BD2' } });
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'lambda',
-      TopicArn: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
+      TopicArn: { Ref: 'ASGLifecycleHookTransTopicLifecycleHookTrans97629BD2' },
       Endpoint: { 'Fn::GetAtt': ['Fn9270CBC0', 'Arn'] },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -144,7 +144,7 @@ describe('given an AutoScalingGroup and no role', () => {
             Action: 'sns:Publish',
             Effect: 'Allow',
             Resource: {
-              Ref: 'ASGLifecycleHookTransTopic9B0D4842',
+              Ref: 'ASGLifecycleHookTransTopicLifecycleHookTrans97629BD2',
             },
           },
         ],
@@ -311,10 +311,10 @@ describe('given an AutoScalingGroup and a role', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' } });
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopicLifecycleHookTrans97629BD2' } });
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'lambda',
-      TopicArn: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
+      TopicArn: { Ref: 'ASGLifecycleHookTransTopicLifecycleHookTrans97629BD2' },
       Endpoint: { 'Fn::GetAtt': ['Fn9270CBC0', 'Arn'] },
     });
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -324,7 +324,7 @@ describe('given an AutoScalingGroup and a role', () => {
             Action: 'sns:Publish',
             Effect: 'Allow',
             Resource: {
-              Ref: 'ASGLifecycleHookTransTopic9B0D4842',
+              Ref: 'ASGLifecycleHookTransTopicLifecycleHookTrans97629BD2',
             },
           },
         ],

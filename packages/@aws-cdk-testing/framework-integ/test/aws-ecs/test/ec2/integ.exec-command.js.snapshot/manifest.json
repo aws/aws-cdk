@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-ecs-integ-exec-command.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecs-integ-exec-command.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/394a69951bd3f856d078c416187f54e4212598a095bc3ae6b3420ed481988218.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ef2801557ae4ce22df4e22a5c2b053768d9396ecb79a890753280fe53566a8a3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -249,22 +250,22 @@
             "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionE0DEFB31"
           }
         ],
-        "/aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/AllowInvoke:awsecsintegexeccommandEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic05F8C929": [
+        "/aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/AllowInvoke:awsecsintegexeccommandEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHook36745FE6": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegexeccommandEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic05F8C92983E1AD32"
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegexeccommandEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHook36745FE6EAA71EDA"
           }
         ],
-        "/aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource": [
+        "/aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic4795E0F6"
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicLifecycleHookDrainHook235709FD"
           }
         ],
-        "/aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource": [
+        "/aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30"
+            "data": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHook1AE597EF"
           }
         ],
         "/aws-ecs-integ-exec-command/Ec2Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/Resource": [
@@ -327,10 +328,28 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "Ec2ClusterDefaultAutoScalingGroupLaunchTemplateProfileA74899D4": [
+        "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegexeccommandEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic05F8C92983E1AD32": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Ec2ClusterDefaultAutoScalingGroupLaunchTemplateProfileA74899D4",
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegexeccommandEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic05F8C92983E1AD32",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic4795E0F6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic4795E0F6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

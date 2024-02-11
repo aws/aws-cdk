@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-ecs-integ-bottlerocket.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecs-integ-bottlerocket.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23efb012af109a2b701accba88ab31415b5012b2ff3ce7c0de38ee461130c4a3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d111f0c8ab8421a032b9017c604935559995cd7763564f4b2735bd6f12227726.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -219,22 +220,22 @@
             "data": "EcsClusterbottlerocketasgDrainECSHookFunction7A8CD0E4"
           }
         ],
-        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/AllowInvoke:awsecsintegbottlerocketEcsClusterbottlerocketasgLifecycleHookDrainHookTopicD05837A8": [
+        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/AllowInvoke:awsecsintegbottlerocketEcsClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHookE497A986": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegbottlerocketEcsClusterbottlerocketasgLifecycleHookDrainHookTopicD05837A873EBB93D"
+            "data": "EcsClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegbottlerocketEcsClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHookE497A98617281619"
           }
         ],
-        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/Topic/Resource": [
+        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterbottlerocketasgDrainECSHookFunctionTopic1953D6F0"
+            "data": "EcsClusterbottlerocketasgDrainECSHookFunctionTopicLifecycleHookDrainHook4CDDCFC2"
           }
         ],
-        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/LifecycleHookDrainHook/Topic/Resource": [
+        "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterbottlerocketasgLifecycleHookDrainHookTopic64509A74"
+            "data": "EcsClusterbottlerocketasgLifecycleHookDrainHookTopicLifecycleHookDrainHookD97CAD03"
           }
         ],
         "/aws-ecs-integ-bottlerocket/EcsCluster/bottlerocket-asg/LifecycleHookDrainHook/Role/Resource": [
@@ -273,10 +274,28 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "EcsClusterbottlerocketasgLaunchTemplateProfileF6362A11": [
+        "EcsClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegbottlerocketEcsClusterbottlerocketasgLifecycleHookDrainHookTopicD05837A873EBB93D": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterbottlerocketasgLaunchTemplateProfileF6362A11",
+            "data": "EcsClusterbottlerocketasgDrainECSHookFunctionAllowInvokeawsecsintegbottlerocketEcsClusterbottlerocketasgLifecycleHookDrainHookTopicD05837A873EBB93D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EcsClusterbottlerocketasgDrainECSHookFunctionTopic1953D6F0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterbottlerocketasgDrainECSHookFunctionTopic1953D6F0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EcsClusterbottlerocketasgLifecycleHookDrainHookTopic64509A74": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterbottlerocketasgLifecycleHookDrainHookTopic64509A74",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

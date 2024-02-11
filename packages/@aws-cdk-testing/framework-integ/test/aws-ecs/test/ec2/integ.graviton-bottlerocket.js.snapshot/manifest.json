@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-ecs-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecs-integ.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/97a9d0120f4d0bcb2ae91e291dd39328d03094fdf919b9e7c397167ee480167c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a121020af7357035cfe6c00f8af4cb288b1f60dbfc0ee28340a4e67fcc71fb58.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -231,22 +232,22 @@
             "data": "EcsClustergravitonclusterDrainECSHookFunctionB606E681"
           }
         ],
-        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/AllowInvoke:awsecsintegEcsClustergravitonclusterLifecycleHookDrainHookTopicF44E68AA": [
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/AllowInvoke:awsecsintegEcsClustergravitonclusterLifecycleHookDrainHookTopicLifecycleHookDrainHookBA9785D8": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClustergravitonclusterDrainECSHookFunctionAllowInvokeawsecsintegEcsClustergravitonclusterLifecycleHookDrainHookTopicF44E68AA50D91BA3"
+            "data": "EcsClustergravitonclusterDrainECSHookFunctionAllowInvokeawsecsintegEcsClustergravitonclusterLifecycleHookDrainHookTopicLifecycleHookDrainHookBA9785D84710EEC5"
           }
         ],
-        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/Topic/Resource": [
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClustergravitonclusterDrainECSHookFunctionTopic65B3FD43"
+            "data": "EcsClustergravitonclusterDrainECSHookFunctionTopicLifecycleHookDrainHook4A479900"
           }
         ],
-        "/aws-ecs-integ/EcsCluster/graviton-cluster/LifecycleHookDrainHook/Topic/Resource": [
+        "/aws-ecs-integ/EcsCluster/graviton-cluster/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClustergravitonclusterLifecycleHookDrainHookTopic0A778AAC"
+            "data": "EcsClustergravitonclusterLifecycleHookDrainHookTopicLifecycleHookDrainHook3AA40EA0"
           }
         ],
         "/aws-ecs-integ/EcsCluster/graviton-cluster/LifecycleHookDrainHook/Role/Resource": [
@@ -285,10 +286,28 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "EcsClustergravitonclusterLaunchTemplateProfile185F7FB0": [
+        "EcsClustergravitonclusterDrainECSHookFunctionAllowInvokeawsecsintegEcsClustergravitonclusterLifecycleHookDrainHookTopicF44E68AA50D91BA3": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClustergravitonclusterLaunchTemplateProfile185F7FB0",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctionAllowInvokeawsecsintegEcsClustergravitonclusterLifecycleHookDrainHookTopicF44E68AA50D91BA3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EcsClustergravitonclusterDrainECSHookFunctionTopic65B3FD43": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterDrainECSHookFunctionTopic65B3FD43",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EcsClustergravitonclusterLifecycleHookDrainHookTopic0A778AAC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClustergravitonclusterLifecycleHookDrainHookTopic0A778AAC",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

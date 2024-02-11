@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "36.0.0",
   "testCases": {
     "integ.clb-host-nw": {
       "stacks": [

@@ -937,7 +937,7 @@
     "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA"
    ]
   },
-  "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic7A89925AFDCBEE50": {
+  "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsintegEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHook5102437B19CCF2DB": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -949,11 +949,11 @@
     },
     "Principal": "sns.amazonaws.com",
     "SourceArn": {
-     "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
+     "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHook239463CF"
     }
    }
   },
-  "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic8F34E394": {
+  "EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionTopicLifecycleHookDrainHook5B683808": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
     "Endpoint": {
@@ -964,11 +964,11 @@
     },
     "Protocol": "lambda",
     "TopicArn": {
-     "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
+     "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHook239463CF"
     }
    }
   },
-  "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4": {
+  "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHook239463CF": {
    "Type": "AWS::SNS::Topic",
    "Properties": {
     "Tags": [
@@ -1011,7 +1011,7 @@
        "Action": "sns:Publish",
        "Effect": "Allow",
        "Resource": {
-        "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
+        "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHook239463CF"
        }
       }
      ],
@@ -1035,7 +1035,7 @@
     "HeartbeatTimeout": 300,
     "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
     "NotificationTargetARN": {
-     "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
+     "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHook239463CF"
     },
     "RoleARN": {
      "Fn::GetAtt": [

@@ -699,7 +699,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
               "version": "0.0.0"
             }
           },
@@ -1262,9 +1262,9 @@
                               "version": "0.0.0"
                             }
                           },
-                          "AllowInvoke:awscdkecsintegrationteststackEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicD01B2572": {
-                            "id": "AllowInvoke:awscdkecsintegrationteststackEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicD01B2572",
-                            "path": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/AllowInvoke:awscdkecsintegrationteststackEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicD01B2572",
+                          "AllowInvoke:awscdkecsintegrationteststackEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHookEADFDB25": {
+                            "id": "AllowInvoke:awscdkecsintegrationteststackEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHookEADFDB25",
+                            "path": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/AllowInvoke:awscdkecsintegrationteststackEcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHookEADFDB25",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                               "aws:cdk:cloudformation:props": {
@@ -1277,7 +1277,7 @@
                                 },
                                 "principal": "sns.amazonaws.com",
                                 "sourceArn": {
-                                  "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
+                                  "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHook239463CF"
                                 }
                               }
                             },
@@ -1286,13 +1286,13 @@
                               "version": "0.0.0"
                             }
                           },
-                          "Topic": {
-                            "id": "Topic",
-                            "path": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic",
+                          "TopicLifecycleHookDrainHook": {
+                            "id": "TopicLifecycleHookDrainHook",
+                            "path": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/TopicLifecycleHookDrainHook",
                             "children": {
                               "Resource": {
                                 "id": "Resource",
-                                "path": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource",
+                                "path": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource",
                                 "attributes": {
                                   "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
                                   "aws:cdk:cloudformation:props": {
@@ -1304,7 +1304,7 @@
                                     },
                                     "protocol": "lambda",
                                     "topicArn": {
-                                      "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
+                                      "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHook239463CF"
                                     }
                                   }
                                 },
@@ -1328,20 +1328,20 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "version": "10.3.0"
                     }
                   },
                   "LifecycleHookDrainHook": {
                     "id": "LifecycleHookDrainHook",
                     "path": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook",
                     "children": {
-                      "Topic": {
-                        "id": "Topic",
-                        "path": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic",
+                      "TopicLifecycleHookDrainHook": {
+                        "id": "TopicLifecycleHookDrainHook",
+                        "path": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/TopicLifecycleHookDrainHook",
                         "children": {
                           "Resource": {
                             "id": "Resource",
-                            "path": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource",
+                            "path": "aws-cdk-ecs-integration-test-stack/EcsCluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
                               "aws:cdk:cloudformation:props": {
@@ -1423,7 +1423,7 @@
                                           "Action": "sns:Publish",
                                           "Effect": "Allow",
                                           "Resource": {
-                                            "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
+                                            "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHook239463CF"
                                           }
                                         }
                                       ],
@@ -1467,7 +1467,7 @@
                             "heartbeatTimeout": 300,
                             "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
                             "notificationTargetArn": {
-                              "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4"
+                              "Ref": "EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicLifecycleHookDrainHook239463CF"
                             },
                             "roleArn": {
                               "Fn::GetAtt": [
@@ -1669,7 +1669,7 @@
                     "path": "aws-cdk-ecs-integration-test-stack/TaskDefinitionPlacementConstraints/DefaultTest/Default",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.69"
+                      "version": "10.3.0"
                     }
                   },
                   "DeployAssert": {
@@ -1737,7 +1737,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.3.0"
         }
       }
     },

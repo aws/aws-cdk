@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/758add4abf782a712eea18984d2d3f66778882c56d0e19e18a2eb0a1c296430a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5f58ce39886a9e5d7d7e48076324ac85b509b7fc5ab8157278631d92425d94c5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -238,22 +238,22 @@
             "data": "ASGDrainECSHookFunction5F24CF4D"
           }
         ],
-        "/integ-ecs-neuron-ami/ASG/DrainECSHook/Function/AllowInvoke:integecsneuronamiASGLifecycleHookDrainHookTopic1002D767": [
+        "/integ-ecs-neuron-ami/ASG/DrainECSHook/Function/AllowInvoke:integecsneuronamiASGLifecycleHookDrainHookTopicLifecycleHookDrainHook637694D7": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctionAllowInvokeintegecsneuronamiASGLifecycleHookDrainHookTopic1002D76741A20C61"
+            "data": "ASGDrainECSHookFunctionAllowInvokeintegecsneuronamiASGLifecycleHookDrainHookTopicLifecycleHookDrainHook637694D75CF55332"
           }
         ],
-        "/integ-ecs-neuron-ami/ASG/DrainECSHook/Function/Topic/Resource": [
+        "/integ-ecs-neuron-ami/ASG/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGDrainECSHookFunctionTopicD6FC59F7"
+            "data": "ASGDrainECSHookFunctionTopicLifecycleHookDrainHook8B240409"
           }
         ],
-        "/integ-ecs-neuron-ami/ASG/LifecycleHookDrainHook/Topic/Resource": [
+        "/integ-ecs-neuron-ami/ASG/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ASGLifecycleHookDrainHookTopicA8AD4ACB"
+            "data": "ASGLifecycleHookDrainHookTopicLifecycleHookDrainHook12DCC569"
           }
         ],
         "/integ-ecs-neuron-ami/ASG/LifecycleHookDrainHook/Role/Resource": [
@@ -296,6 +296,33 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ASGDrainECSHookFunctionAllowInvokeintegecsneuronamiASGLifecycleHookDrainHookTopic1002D76741A20C61": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctionAllowInvokeintegecsneuronamiASGLifecycleHookDrainHookTopic1002D76741A20C61",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASGDrainECSHookFunctionTopicD6FC59F7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGDrainECSHookFunctionTopicD6FC59F7",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASGLifecycleHookDrainHookTopicA8AD4ACB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGLifecycleHookDrainHookTopicA8AD4ACB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

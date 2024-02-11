@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-ecs-integ-spot.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/44926d05cbee0f90f190349229e489e2618e153e620668d9fe68f22416d3c64f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f445b17f6e979ca9d6ec4f9134d101477bdc66063c2d37ace5d075009f1567b6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -238,22 +238,22 @@
             "data": "EcsClusterasgSpotDrainECSHookFunction969F1553"
           }
         ],
-        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/AllowInvoke:awsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845E": [
+        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/AllowInvoke:awsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHook91FAF0AE": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgSpotDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845E8BD3FE4E"
+            "data": "EcsClusterasgSpotDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHook91FAF0AE1A000B73"
           }
         ],
-        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/Topic/Resource": [
+        "/aws-ecs-integ-spot/EcsCluster/asgSpot/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgSpotDrainECSHookFunctionTopic9648CAD4"
+            "data": "EcsClusterasgSpotDrainECSHookFunctionTopicLifecycleHookDrainHook7836B691"
           }
         ],
-        "/aws-ecs-integ-spot/EcsCluster/asgSpot/LifecycleHookDrainHook/Topic/Resource": [
+        "/aws-ecs-integ-spot/EcsCluster/asgSpot/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83"
+            "data": "EcsClusterasgSpotLifecycleHookDrainHookTopicLifecycleHookDrainHookF0C9E866"
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgSpot/LifecycleHookDrainHook/Role/Resource": [
@@ -334,22 +334,22 @@
             "data": "EcsClusterasgOdDrainECSHookFunction962490E0"
           }
         ],
-        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/AllowInvoke:awsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8": [
+        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/AllowInvoke:awsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHook8D5CD9E5": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgOdDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8B41B2D12"
+            "data": "EcsClusterasgOdDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHook8D5CD9E5659E5F0E"
           }
         ],
-        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/Topic/Resource": [
+        "/aws-ecs-integ-spot/EcsCluster/asgOd/DrainECSHook/Function/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgOdDrainECSHookFunctionTopicE6BE4000"
+            "data": "EcsClusterasgOdDrainECSHookFunctionTopicLifecycleHookDrainHook1F95CAE2"
           }
         ],
-        "/aws-ecs-integ-spot/EcsCluster/asgOd/LifecycleHookDrainHook/Topic/Resource": [
+        "/aws-ecs-integ-spot/EcsCluster/asgOd/LifecycleHookDrainHook/TopicLifecycleHookDrainHook/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202"
+            "data": "EcsClusterasgOdLifecycleHookDrainHookTopicLifecycleHookDrainHookAB085AA1"
           }
         ],
         "/aws-ecs-integ-spot/EcsCluster/asgOd/LifecycleHookDrainHook/Role/Resource": [
@@ -404,6 +404,60 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "EcsClusterasgSpotDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845E8BD3FE4E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgSpotDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgSpotLifecycleHookDrainHookTopic92E2845E8BD3FE4E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EcsClusterasgSpotDrainECSHookFunctionTopic9648CAD4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgSpotDrainECSHookFunctionTopic9648CAD4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgSpotLifecycleHookDrainHookTopic6212EC83",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EcsClusterasgOdDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8B41B2D12": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgOdDrainECSHookFunctionAllowInvokeawsecsintegspotEcsClusterasgOdLifecycleHookDrainHookTopicB293D7D8B41B2D12",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EcsClusterasgOdDrainECSHookFunctionTopicE6BE4000": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgOdDrainECSHookFunctionTopicE6BE4000",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsClusterasgOdLifecycleHookDrainHookTopic673CE202",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
