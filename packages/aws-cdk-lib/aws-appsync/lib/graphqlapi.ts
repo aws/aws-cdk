@@ -8,7 +8,7 @@ import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { ArnFormat, CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack } from '../../core';
+import { ArnFormat, CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -871,16 +871,16 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   /**
-   * This method adds an environment variable.
+   * Add an environment variable to the construct.
    */
   public addEnvironmentVariable(key: string, value: string) {
-    if (!/^[A-Za-z]+\w*$/.test(key)) {
+    if (!Token.isUnresolved(key) && !/^[A-Za-z]+\w*$/.test(key)) {
       throw new Error(`Key '${key}' must begin with a letter and can only contain letters, numbers, and underscores`);
     }
-    if (key.length < 2 || key.length > 64) {
+    if (!Token.isUnresolved(key) && (key.length < 2 || key.length > 64)) {
       throw new Error(`Key '${key}' must be between 2 and 64 characters long, got ${key.length}`);
     }
-    if (value.length > 512) {
+    if (!Token.isUnresolved(value) && value.length > 512) {
       throw new Error(`Value for '${key}' is too long. Values can be up to 512 characters long, got ${value.length}`);
     }
 
