@@ -289,4 +289,9 @@ export enum PredefinedMetric {
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
    */
   ELASTICACHE_DATABASE_MEMORY_USAGE_COUNTED_FOR_EVICT_PERCENTAGE = 'ElastiCacheDatabaseMemoryUsageCountedForEvictPercentage',
+  /**
+   * SAGEMAKER_VARIANT_PROVISIONED_CONCURRENCY_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  SAGEMAKER_VARIANT_PROVISIONED_CONCURRENCY_UTILIZATION = 'SageMakerVariantProvisionedConcurrencyUtilization',
 }
