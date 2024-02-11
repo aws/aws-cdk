@@ -332,7 +332,8 @@ export class DefaultStackSynthesizer extends StackSynthesizer implements IReusab
    */
   public reusableBind(stack: Stack): IBoundStackSynthesizer {
     // Create a copy of the current object and bind that
-    const copy = Object.create(this);
+    const copy = Object.create(this) as DefaultStackSynthesizer;
+    copy.assetManifest = new AssetManifestBuilder();
     copy.bind(stack);
     return copy;
   }
