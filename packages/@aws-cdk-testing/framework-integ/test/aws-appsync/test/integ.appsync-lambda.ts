@@ -28,7 +28,7 @@ const api = new appsync.GraphqlApi(stack, 'LambdaAPI', {
 });
 
 const func = new lambda.Function(stack, 'func', {
-  code: lambda.Code.fromAsset(path.join(__dirname, 'verify/lambda-tutorial')),
+  code: lambda.Code.fromAsset(path.join(__dirname, 'verify', 'lambda-tutorial')),
   handler: 'lambda-tutorial.handler',
   runtime: STANDARD_NODEJS_RUNTIME,
 });

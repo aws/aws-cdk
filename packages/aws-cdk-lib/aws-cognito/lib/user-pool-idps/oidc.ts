@@ -45,14 +45,14 @@ export interface UserPoolIdentityProviderOidcProps extends UserPoolIdentityProvi
    *
    * @default - no identifiers used
    */
-  readonly identifiers?: string[]
+  readonly identifiers?: string[];
 
   /**
    * The method to use to request attributes
    *
    * @default OidcAttributeRequestMethod.GET
    */
-  readonly attributeRequestMethod?: OidcAttributeRequestMethod
+  readonly attributeRequestMethod?: OidcAttributeRequestMethod;
 
   /**
    * OpenID connect endpoints
@@ -94,7 +94,7 @@ export enum OidcAttributeRequestMethod {
   /** GET */
   GET = 'GET',
   /** POST */
-  POST = 'POST'
+  POST = 'POST',
 }
 
 /**
@@ -106,10 +106,6 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
 
   constructor(scope: Construct, id: string, props: UserPoolIdentityProviderOidcProps) {
     super(scope, id, props);
-
-    if (props.name && !Token.isUnresolved(props.name) && (props.name.length < 3 || props.name.length > 32)) {
-      throw new Error(`Expected provider name to be between 3 and 32 characters, received ${props.name} (${props.name.length} characters)`);
-    }
 
     const scopes = props.scopes ?? ['openid'];
 
@@ -139,6 +135,11 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
     if (name) {
       if (!Token.isUnresolved(name) && (name.length < 3 || name.length > 32)) {
         throw new Error(`Expected provider name to be between 3 and 32 characters, received ${name} (${name.length} characters)`);
+      }
+      // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolidentityprovider.html#cfn-cognito-userpoolidentityprovider-providername
+      // u is for unicode
+      if (!name.match(/^[^_\p{Z}][\p{L}\p{M}\p{S}\p{N}\p{P}][^_\p{Z}]+$/u)) {
+        throw new Error(`Expected provider name must match [^_\p{Z}][\p{L}\p{M}\p{S}\p{N}\p{P}][^_\p{Z}]+, received ${name}`);
       }
       return name;
     }

@@ -80,7 +80,7 @@ enum Partition {
   UsIsoB = 'aws-iso-b',
 }
 
-interface Region { partition: Partition, domainSuffix: string }
+interface Region { partition: Partition; domainSuffix: string }
 
 export const PARTITION_MAP: { [region: string]: Region } = {
   'default': { partition: Partition.Default, domainSuffix: 'amazonaws.com' },
@@ -3360,4 +3360,12 @@ export const ADOT_LAMBDA_LAYER_ARNS: { [key: string]: any } = {
   JAVASCRIPT_SDK: ADOT_LAMBDA_LAYER_JAVASCRIPT_SDK_ARNS,
   PYTHON_SDK: ADOT_LAMBDA_LAYER_PYTHON_SDK_ARNS,
   GENERIC: ADOT_LAMBDA_LAYER_GENERIC_ARNS,
+};
+
+export const PARTITION_SAML_SIGN_ON_URL: Record<Partition, string> = {
+  [Partition.Default]: 'https://signin.aws.amazon.com/saml',
+  [Partition.Cn]: 'https://signin.amazonaws.cn/saml',
+  [Partition.UsGov]: 'https://signin.amazonaws-us-gov.com/saml',
+  [Partition.UsIso]: 'https://signin.c2shome.ic.gov/saml',
+  [Partition.UsIsoB]: 'https://signin.sc2shome.sgov.gov/saml',
 };

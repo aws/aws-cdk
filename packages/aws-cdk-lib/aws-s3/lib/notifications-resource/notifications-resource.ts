@@ -189,7 +189,7 @@ interface NotificationConfiguration {
 interface CommonConfiguration {
   Id?: string;
   Events: EventType[];
-  Filter?: Filter
+  Filter?: Filter;
 }
 
 interface EventBridgeConfiguration { }
@@ -212,5 +212,5 @@ interface FilterRule {
 }
 
 interface Filter {
-  Key: { FilterRules: FilterRule[] }
+  Key: { FilterRules: FilterRule[] };
 }
