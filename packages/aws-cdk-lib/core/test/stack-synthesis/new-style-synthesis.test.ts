@@ -457,6 +457,39 @@ describe('new style synthesis', () => {
     }
   });
 
+  test('app level synthesizer does not leak assets between stacks', () => {
+    // GIVEN
+    const myapp = new App({
+      defaultStackSynthesizer: new DefaultStackSynthesizer(),
+    });
+
+    // WHEN
+    const stack1 = new Stack(myapp, 'Stack1');
+    const stack2 = new Stack(myapp, 'Stack2');
+
+    stack1.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'hash1',
+    });
+    stack2.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'hash2',
+    });
+
+    // THEN
+    const asm = myapp.synth();
+
+    const manifest1 = readAssetManifest(getAssetManifest(asm, 0));
+    expect(manifest1.files).toHaveProperty('hash1');
+    expect(manifest1.files).not.toHaveProperty('hash2');
+
+    const manifest2 = readAssetManifest(getAssetManifest(asm, 1));
+    expect(manifest2.files).toHaveProperty('hash2');
+    expect(manifest2.files).not.toHaveProperty('hash1');
+  });
+
   /**
    * Evaluate a possibly string-containing value the same way CFN would do
    *
@@ -506,8 +539,8 @@ function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifa
   return x instanceof cxapi.AssetManifestArtifact;
 }
 
-function getAssetManifest(asm: cxapi.CloudAssembly): cxapi.AssetManifestArtifact {
-  const manifestArtifact = asm.artifacts.filter(isAssetManifest)[0];
+function getAssetManifest(asm: cxapi.CloudAssembly, stackIndex: number = 0): cxapi.AssetManifestArtifact {
+  const manifestArtifact = asm.artifacts.filter(isAssetManifest)[stackIndex];
   if (!manifestArtifact) { throw new Error('no asset manifest in assembly'); }
   return manifestArtifact;
 }
