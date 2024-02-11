@@ -14,7 +14,7 @@ export enum ReceiptFilterPolicy {
   /**
    * Block the ip address or range.
    */
-  BLOCK = 'Block'
+  BLOCK = 'Block',
 }
 
 /**

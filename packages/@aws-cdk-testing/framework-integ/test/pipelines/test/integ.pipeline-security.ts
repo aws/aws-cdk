@@ -44,6 +44,7 @@ export class TestCdkStack extends Stack {
     });
 
     const pipeline = new cdkp.CdkPipeline(this, 'TestPipeline', {
+      crossAccountKeys: true,
       selfMutating: false,
       pipelineName: 'TestPipeline',
       cloudAssemblyArtifact,

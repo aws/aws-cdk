@@ -608,4 +608,49 @@ describe('Topic', () => {
     // THEN
     expect(() => app.synth()).toThrow(/Success feedback sample rate must be an integer between 0 and 100/);
   });
+
+  describe('message retention period', () => {
+    test('specify message retention period in days', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+
+      // WHEN
+      new sns.Topic(stack, 'MyTopic', {
+        fifo: true,
+        messageRetentionPeriodInDays: 10,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
+        ArchivePolicy: {
+          MessageRetentionPeriod: 10,
+        },
+        FifoTopic: true,
+      });
+    });
+
+    test.each([0, 366, 12.3, NaN])('throw error if message retention period is invalid value "%s"', (days) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+
+      // THEN
+      expect(() => new sns.Topic(stack, 'MyTopic', {
+        fifo: true,
+        messageRetentionPeriodInDays: days,
+      })).toThrow(/`messageRetentionPeriodInDays` must be an integer between 1 and 365/);
+    });
+
+    test('throw error when specify messageRetentionPeriodInDays to standard topic', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+
+      expect(
+        () => new sns.Topic(stack, 'MyTopic', {
+          messageRetentionPeriodInDays: 12,
+        }),
+      ).toThrow('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics');
+    });
+  });
 });
