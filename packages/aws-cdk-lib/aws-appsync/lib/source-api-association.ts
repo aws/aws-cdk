@@ -3,6 +3,7 @@ import { CfnSourceApiAssociation } from './appsync.generated';
 import { IGraphqlApi } from './graphqlapi-base';
 import { Effect, IRole, PolicyStatement } from '../../aws-iam';
 import { Fn, IResource, Lazy, Resource } from '../../core';
+import { GraphqlApi } from './graphqlapi';
 
 /**
  * Merge type used to associate the source API
@@ -177,6 +178,10 @@ export class SourceApiAssociation extends Resource implements ISourceApiAssociat
       },
       description: props.description,
     });
+
+    if (this.sourceApi instanceof GraphqlApi) {
+      this.sourceApi.addSchemaDependency(this.association);
+    }
 
     this.associationId = this.association.attrAssociationId;
     this.associationArn = this.association.attrAssociationArn;

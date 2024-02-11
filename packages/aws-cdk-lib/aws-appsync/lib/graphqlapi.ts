@@ -742,6 +742,10 @@ export class GraphqlApi extends GraphqlApiBase {
         description: sourceApiConfig.description,
       });
 
+      if (sourceApiConfig.sourceApi instanceof GraphqlApi) {
+        sourceApiConfig.sourceApi.addSchemaDependency(association);
+      }
+
       // Add permissions to merged api execution role
       const executionRole = this.mergedApiExecutionRole as IRole;
       addSourceGraphQLPermission(association, executionRole);

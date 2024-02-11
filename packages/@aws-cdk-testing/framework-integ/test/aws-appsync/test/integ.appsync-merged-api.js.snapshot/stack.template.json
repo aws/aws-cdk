@@ -213,7 +213,10 @@
       "ApiId"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "FirstSourceAPISchemaF2FDB692"
+   ]
   },
   "MergedAPISecondSourceAPIAssociationBD1A08F4": {
    "Type": "AWS::AppSync::SourceApiAssociation",
@@ -233,7 +236,10 @@
       "ApiId"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "SecondSourceAPISchema65B7401E"
+   ]
   },
   "MergedAPIDefaultApiKeyAF5EA13C": {
    "Type": "AWS::AppSync::ApiKey",
