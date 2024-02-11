@@ -1,6 +1,5 @@
 import { Construct } from 'constructs';
 import { CfnSourceApiAssociation } from './appsync.generated';
-import { GraphqlApi } from './graphqlapi';
 import { IGraphqlApi } from './graphqlapi-base';
 import { Effect, IRole, PolicyStatement } from '../../aws-iam';
 import { Fn, IResource, Lazy, Resource } from '../../core';
