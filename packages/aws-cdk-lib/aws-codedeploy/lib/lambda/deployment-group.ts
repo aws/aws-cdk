@@ -117,6 +117,13 @@ export interface LambdaDeploymentGroupProps {
    * @default - default AutoRollbackConfig.
    */
   readonly autoRollback?: AutoRollbackConfig;
+
+  /**
+   * Whether to skip the step of checking CloudWatch alarms during the deployment process
+   *
+   * @default - false
+   */
+  readonly ignoreAlarmConfiguration?: boolean;
 }
 
 /**
@@ -177,7 +184,12 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
         deploymentOption: 'WITH_TRAFFIC_CONTROL',
       },
       alarmConfiguration: cdk.Lazy.any({
-        produce: () => renderAlarmConfiguration(this.alarms, props.ignorePollAlarmsFailure, removeAlarmsFromDeploymentGroup),
+        produce: () => renderAlarmConfiguration({
+          alarms: this.alarms,
+          ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
+          removeAlarms: removeAlarmsFromDeploymentGroup,
+          ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
+        }),
       }),
       autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this.alarms, props.autoRollback) }),
     });
