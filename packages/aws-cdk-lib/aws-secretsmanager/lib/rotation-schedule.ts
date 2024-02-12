@@ -207,7 +207,7 @@ export interface SingleUserHostedRotationOptions {
    * @default the same exclude characters as the ones used for the
    * secret or " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
    */
-  readonly excludeCharacters?: string,
+  readonly excludeCharacters?: string;
 }
 
 /**

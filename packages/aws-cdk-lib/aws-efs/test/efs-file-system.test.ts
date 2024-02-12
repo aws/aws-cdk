@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { App, RemovalPolicy, Size, Stack, Tags } from '../../core';
 import * as cxapi from '../../cx-api';
-import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy } from '../lib';
+import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy, ReplicationOverwriteProtection } from '../lib';
 
 let stack = new Stack();
 let vpc = new ec2.Vpc(stack, 'VPC');
@@ -940,4 +940,21 @@ test('one zone file system with vpcSubnets is not supported', () => {
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
   }).toThrow(/vpcSubnets cannot be specified when oneZone is enabled./);
+});
+
+test.each([
+  ReplicationOverwriteProtection.ENABLED, ReplicationOverwriteProtection.DISABLED,
+])('create read-only file system for replication destination', ( replicationOverwriteProtection ) => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    replicationOverwriteProtection,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    FileSystemProtection: {
+      ReplicationOverwriteProtection: replicationOverwriteProtection,
+    },
+  });
 });

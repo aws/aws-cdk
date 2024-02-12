@@ -154,7 +154,7 @@ export enum MetricAggregationType {
   /**
    * Maximum
    */
-  MAXIMUM = 'Maximum'
+  MAXIMUM = 'Maximum',
 }
 
 /**
