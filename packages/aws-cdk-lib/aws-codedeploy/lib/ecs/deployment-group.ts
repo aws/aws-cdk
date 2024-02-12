@@ -9,7 +9,7 @@ import * as cdk from '../../../core';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
 import { CfnDeploymentGroup } from '../codedeploy.generated';
 import { ImportedDeploymentGroupBase, DeploymentGroupBase } from '../private/base-deployment-group';
-import { renderAlarmConfigurationV2, renderAutoRollbackConfiguration } from '../private/utils';
+import { renderAlarmConfiguration, renderAutoRollbackConfiguration } from '../private/utils';
 import { AutoRollbackConfig } from '../rollback-config';
 
 /**
@@ -268,7 +268,7 @@ export class EcsDeploymentGroup extends DeploymentGroupBase implements IEcsDeplo
       }),
       loadBalancerInfo: cdk.Lazy.any({ produce: () => this.renderLoadBalancerInfo(props.blueGreenDeploymentConfig) }),
       alarmConfiguration: cdk.Lazy.any({
-        produce: () => renderAlarmConfigurationV2({
+        produce: () => renderAlarmConfiguration({
           alarms: this.alarms,
           ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
           removeAlarms: removeAlarmsFromDeploymentGroup,

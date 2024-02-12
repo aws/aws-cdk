@@ -35,27 +35,30 @@ export interface renderAlarmConfigProps {
   /**
    * Array of Cloudwatch alarms
    */
-  readonly alarms: cloudwatch.IAlarm[],
+  readonly alarms: cloudwatch.IAlarm[];
+
   /**
    * Whether to ignore failure to fetch the status of alarms from CloudWatch
    */
-  readonly ignorePollAlarmFailure?: boolean,
+  readonly ignorePollAlarmFailure?: boolean;
+
   /**
    * When no alarms are provided on an update, removes previously existing alarms from the construct.
    * @see {@link https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/cx-api/FEATURE_FLAGS.md#aws-cdkaws-codedeployremovealarmsfromdeploymentgroup}
    *
    * @default true
    */
-  readonly removeAlarms?: boolean,
+  readonly removeAlarms?: boolean;
+
   /**
    * Whether to skip the step of checking CloudWatch alarms during the deployment process
    *
    * @default false
    */
-  ignoreAlarmConfiguration?: boolean
+  ignoreAlarmConfiguration?: boolean;
 }
 
-export function renderAlarmConfigurationV2(props: renderAlarmConfigProps): CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
+export function renderAlarmConfiguration(props: renderAlarmConfigProps): CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
   const ignoreAlarmConfiguration = props.ignoreAlarmConfiguration ?? false;
   const removeAlarms = props.removeAlarms ?? true;
   if (removeAlarms) {
@@ -73,12 +76,6 @@ export function renderAlarmConfigurationV2(props: renderAlarmConfigProps): CfnDe
       enabled: !ignoreAlarmConfiguration,
       ignorePollAlarmFailure: props.ignorePollAlarmFailure,
     };
-}
-
-/** @deprecated Use renderAlarmConfigurationV2 instead */
-export function renderAlarmConfiguration(alarms: cloudwatch.IAlarm[], ignorePollAlarmFailure: boolean | undefined, removeAlarms = true):
-CfnDeploymentGroup.AlarmConfigurationProperty | undefined {
-  return renderAlarmConfigurationV2({ alarms, ignorePollAlarmFailure, removeAlarms });
 }
 
 export function deploymentConfig(name: string): IBaseDeploymentConfig & IPredefinedDeploymentConfig {
