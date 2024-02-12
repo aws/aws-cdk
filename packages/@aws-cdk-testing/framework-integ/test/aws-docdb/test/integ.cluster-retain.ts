@@ -12,7 +12,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-docdb-integ-cluster-retain');
 
-const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 new DatabaseCluster(stack, 'Database', {
   masterUser: { username: 'clusteradmin' },
   instanceType: ec2.InstanceType.of(
