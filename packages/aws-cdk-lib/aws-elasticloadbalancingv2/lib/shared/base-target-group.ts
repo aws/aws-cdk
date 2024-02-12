@@ -280,6 +280,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     this.targetGroupName = this.resource.attrTargetGroupName;
     this.defaultPort = additionalProps.port;
 
+    this.node.addValidation({ validate: () => this.validateHealthCheck() });
     this.node.addValidation({ validate: () => this.validateTargetGroup() });
   }
 
@@ -349,6 +350,18 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       }
     }
 
+    return ret;
+  }
+
+  protected validateHealthCheck(): string[] {
+    const ret = new Array<string>();
+
+    if (this.healthCheck.interval?.toSeconds() && this.healthCheck.timeout?.toSeconds()) {
+      if (this.healthCheck.interval.toSeconds() < this.healthCheck.timeout.toSeconds()) {
+        ret.push('Health check interval must be greater than the timeout; received interval ' +
+        `${this.healthCheck.interval.toSeconds()}, timeout ${this.healthCheck.timeout.toSeconds()}.`);
+      }
+    }
     return ret;
   }
 }
