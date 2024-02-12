@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "DocdbTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-docdb-integ-cluster-retain"
+      ],
+      "assertionStack": "DocdbTest/DefaultTest/DeployAssert",
+      "assertionStackName": "DocdbTestDefaultTestDeployAssertA0429289"
+    }
+  }
+}
