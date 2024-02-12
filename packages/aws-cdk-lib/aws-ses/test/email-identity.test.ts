@@ -280,4 +280,47 @@ describe('grants', () => {
       ],
     });
   });
+
+  test('grantSendEmail', () => {
+    // GIVEN
+    stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
+    const user = new User(stack, 'User');
+    const emailIdentity = EmailIdentity.fromEmailIdentityName(
+      stack,
+      'Identity',
+      'cdk.dev',
+    );
+
+    // WHEN
+    emailIdentity.grantSendEmail(user);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'ses:SendEmail',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':ses:us-west-2:123456789012:identity/cdk.dev',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    });
+  });
 });

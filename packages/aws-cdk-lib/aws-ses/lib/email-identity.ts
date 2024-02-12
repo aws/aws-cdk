@@ -25,6 +25,15 @@ export interface IEmailIdentity extends IResource {
    * @param actions the set of actions to allow
    */
   grant(grantee: IGrantable, ...actions: string[]): Grant;
+
+  /**
+   * Permits an IAM principal the send email action.
+   *
+   * Actions: SendEmail.
+   *
+   * @param grantee the principal to grant access to
+   */
+  grantSendEmail(grantee: IGrantable): Grant;
 }
 
 /**
@@ -343,6 +352,17 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
       resourceArns,
       scope: this,
     });
+  }
+
+  /**
+   * Permits an IAM principal the send email action.
+   *
+   * Actions: SendEmail.
+   *
+   * @param grantee the principal to grant access to
+   */
+  public grantSendEmail(grantee: IGrantable): Grant {
+    return this.grant(grantee, 'ses:SendEmail');
   }
 }
 
