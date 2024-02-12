@@ -193,7 +193,7 @@ test('with mail from and hosted zone', () => {
 });
 
 describe('grants', () => {
-  test('grant with arbitrary actions', () => {
+  test('grant on a domain identity', () => {
     // GIVEN
     stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
     const user = new User(stack, 'User');
@@ -219,6 +219,52 @@ describe('grants', () => {
                   { Ref: 'AWS::Partition' },
                   ':ses:us-west-2:123456789012:identity/',
                   { Ref: 'Identity2D60E2CC' },
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    });
+  });
+
+  test('grant on an email identity from name', () => {
+    // GIVEN
+    stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
+    const user = new User(stack, 'User');
+    const emailIdentity = EmailIdentity.fromEmailIdentityName(
+      stack,
+      'Identity',
+      'cdk.dev',
+    );
+
+    // WHEN
+    emailIdentity.grant(user, 'ses:action1', 'ses:action2');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'ses:action1',
+              'ses:action2',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':ses:us-west-2:123456789012:identity/cdk.dev',
                 ],
               ],
             },
