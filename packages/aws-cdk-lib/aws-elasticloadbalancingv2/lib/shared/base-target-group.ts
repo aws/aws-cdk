@@ -356,10 +356,13 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   protected validateHealthCheck(): string[] {
     const ret = new Array<string>();
 
-    if (this.healthCheck.interval?.toSeconds() && this.healthCheck.timeout?.toSeconds()) {
-      if (this.healthCheck.interval.toSeconds() < this.healthCheck.timeout.toSeconds()) {
+    const intervalSeconds = this.healthCheck.interval?.toSeconds();
+    const timeoutSeconds = this.healthCheck.timeout?.toSeconds();
+
+    if (intervalSeconds && timeoutSeconds) {
+      if (intervalSeconds < timeoutSeconds) {
         ret.push('Health check interval must be greater than the timeout; received interval ' +
-        `${this.healthCheck.interval.toSeconds()}, timeout ${this.healthCheck.timeout.toSeconds()}.`);
+        `${intervalSeconds}, timeout ${timeoutSeconds}.`);
       }
     }
     return ret;
