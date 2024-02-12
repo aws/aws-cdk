@@ -1,9 +1,9 @@
 {
  "Resources": {
-  "FargateCluster7CCD5F93": {
+  "Ec2ClusterEE43E89D": {
    "Type": "AWS::ECS::Cluster"
   },
-  "FargateClusterVpc377E8024": {
+  "Ec2ClusterVpc568127F1": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
     "CidrBlock": "10.0.0.0/16",
@@ -13,17 +13,14 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/Vpc"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc"
      }
     ]
    }
   },
-  "FargateClusterVpcPublicSubnet1SubnetB9C24BC7": {
+  "Ec2ClusterVpcPublicSubnet1SubnetD46FD92B": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -45,93 +42,93 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Ec2ClusterVpc568127F1"
+    }
    }
   },
-  "FargateClusterVpcPublicSubnet1RouteTable1D7FA747": {
+  "Ec2ClusterVpcPublicSubnet1RouteTableE30610F5": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Ec2ClusterVpc568127F1"
+    }
    }
   },
-  "FargateClusterVpcPublicSubnet1RouteTableAssociation80F1442F": {
+  "Ec2ClusterVpcPublicSubnet1RouteTableAssociation9C78F646": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "FargateClusterVpcPublicSubnet1RouteTable1D7FA747"
+     "Ref": "Ec2ClusterVpcPublicSubnet1RouteTableE30610F5"
     },
     "SubnetId": {
-     "Ref": "FargateClusterVpcPublicSubnet1SubnetB9C24BC7"
+     "Ref": "Ec2ClusterVpcPublicSubnet1SubnetD46FD92B"
     }
    }
   },
-  "FargateClusterVpcPublicSubnet1DefaultRoute80086690": {
+  "Ec2ClusterVpcPublicSubnet1DefaultRouteC7FBE273": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "FargateClusterVpcPublicSubnet1RouteTable1D7FA747"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
-     "Ref": "FargateClusterVpcIGW827638CB"
+     "Ref": "Ec2ClusterVpcIGW605638EB"
+    },
+    "RouteTableId": {
+     "Ref": "Ec2ClusterVpcPublicSubnet1RouteTableE30610F5"
     }
    },
    "DependsOn": [
-    "FargateClusterVpcVPCGW38717255"
+    "Ec2ClusterVpcVPCGW24F3B413"
    ]
   },
-  "FargateClusterVpcPublicSubnet1EIPF91909D0": {
+  "Ec2ClusterVpcPublicSubnet1EIPD4B5D142": {
    "Type": "AWS::EC2::EIP",
    "Properties": {
     "Domain": "vpc",
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1"
      }
     ]
    }
   },
-  "FargateClusterVpcPublicSubnet1NATGateway5202D86A": {
+  "Ec2ClusterVpcPublicSubnet1NATGateway79A8A839": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "FargateClusterVpcPublicSubnet1SubnetB9C24BC7"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
-      "FargateClusterVpcPublicSubnet1EIPF91909D0",
+      "Ec2ClusterVpcPublicSubnet1EIPD4B5D142",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "Ec2ClusterVpcPublicSubnet1SubnetD46FD92B"
     },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet1"
      }
     ]
    },
    "DependsOn": [
-    "FargateClusterVpcPublicSubnet1DefaultRoute80086690",
-    "FargateClusterVpcPublicSubnet1RouteTableAssociation80F1442F"
+    "Ec2ClusterVpcPublicSubnet1DefaultRouteC7FBE273",
+    "Ec2ClusterVpcPublicSubnet1RouteTableAssociation9C78F646"
    ]
   },
-  "FargateClusterVpcPublicSubnet2Subnet24C0F9D8": {
+  "Ec2ClusterVpcPublicSubnet2Subnet207D9E5E": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -153,93 +150,93 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Ec2ClusterVpc568127F1"
+    }
    }
   },
-  "FargateClusterVpcPublicSubnet2RouteTable1493C5D6": {
+  "Ec2ClusterVpcPublicSubnet2RouteTable44A09188": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Ec2ClusterVpc568127F1"
+    }
    }
   },
-  "FargateClusterVpcPublicSubnet2RouteTableAssociation3EFA74DC": {
+  "Ec2ClusterVpcPublicSubnet2RouteTableAssociation7615C6B2": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "FargateClusterVpcPublicSubnet2RouteTable1493C5D6"
+     "Ref": "Ec2ClusterVpcPublicSubnet2RouteTable44A09188"
     },
     "SubnetId": {
-     "Ref": "FargateClusterVpcPublicSubnet2Subnet24C0F9D8"
+     "Ref": "Ec2ClusterVpcPublicSubnet2Subnet207D9E5E"
     }
    }
   },
-  "FargateClusterVpcPublicSubnet2DefaultRoute8E847CD2": {
+  "Ec2ClusterVpcPublicSubnet2DefaultRouteEBA52256": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "FargateClusterVpcPublicSubnet2RouteTable1493C5D6"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
-     "Ref": "FargateClusterVpcIGW827638CB"
+     "Ref": "Ec2ClusterVpcIGW605638EB"
+    },
+    "RouteTableId": {
+     "Ref": "Ec2ClusterVpcPublicSubnet2RouteTable44A09188"
     }
    },
    "DependsOn": [
-    "FargateClusterVpcVPCGW38717255"
+    "Ec2ClusterVpcVPCGW24F3B413"
    ]
   },
-  "FargateClusterVpcPublicSubnet2EIPBBB24774": {
+  "Ec2ClusterVpcPublicSubnet2EIP921925E6": {
    "Type": "AWS::EC2::EIP",
    "Properties": {
     "Domain": "vpc",
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2"
      }
     ]
    }
   },
-  "FargateClusterVpcPublicSubnet2NATGatewayFFEC8ED2": {
+  "Ec2ClusterVpcPublicSubnet2NATGateway302F96C0": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "FargateClusterVpcPublicSubnet2Subnet24C0F9D8"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
-      "FargateClusterVpcPublicSubnet2EIPBBB24774",
+      "Ec2ClusterVpcPublicSubnet2EIP921925E6",
       "AllocationId"
      ]
+    },
+    "SubnetId": {
+     "Ref": "Ec2ClusterVpcPublicSubnet2Subnet207D9E5E"
     },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PublicSubnet2"
      }
     ]
    },
    "DependsOn": [
-    "FargateClusterVpcPublicSubnet2DefaultRoute8E847CD2",
-    "FargateClusterVpcPublicSubnet2RouteTableAssociation3EFA74DC"
+    "Ec2ClusterVpcPublicSubnet2DefaultRouteEBA52256",
+    "Ec2ClusterVpcPublicSubnet2RouteTableAssociation7615C6B2"
    ]
   },
-  "FargateClusterVpcPrivateSubnet1Subnet9127625F": {
+  "Ec2ClusterVpcPrivateSubnet1Subnet0AE9B91E": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -261,54 +258,54 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet1"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Ec2ClusterVpc568127F1"
+    }
    }
   },
-  "FargateClusterVpcPrivateSubnet1RouteTable21B3CEAE": {
+  "Ec2ClusterVpcPrivateSubnet1RouteTable50D391D1": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet1"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Ec2ClusterVpc568127F1"
+    }
    }
   },
-  "FargateClusterVpcPrivateSubnet1RouteTableAssociation78F6E213": {
+  "Ec2ClusterVpcPrivateSubnet1RouteTableAssociation1043DBDA": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "FargateClusterVpcPrivateSubnet1RouteTable21B3CEAE"
+     "Ref": "Ec2ClusterVpcPrivateSubnet1RouteTable50D391D1"
     },
     "SubnetId": {
-     "Ref": "FargateClusterVpcPrivateSubnet1Subnet9127625F"
+     "Ref": "Ec2ClusterVpcPrivateSubnet1Subnet0AE9B91E"
     }
    }
   },
-  "FargateClusterVpcPrivateSubnet1DefaultRoute0438DCBA": {
+  "Ec2ClusterVpcPrivateSubnet1DefaultRouteD31A76F0": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "FargateClusterVpcPrivateSubnet1RouteTable21B3CEAE"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
-     "Ref": "FargateClusterVpcPublicSubnet1NATGateway5202D86A"
+     "Ref": "Ec2ClusterVpcPublicSubnet1NATGateway79A8A839"
+    },
+    "RouteTableId": {
+     "Ref": "Ec2ClusterVpcPrivateSubnet1RouteTable50D391D1"
     }
    }
   },
-  "FargateClusterVpcPrivateSubnet2Subnet307CEE57": {
+  "Ec2ClusterVpcPrivateSubnet2Subnet16B68C19": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -330,74 +327,77 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet2"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Ec2ClusterVpc568127F1"
+    }
    }
   },
-  "FargateClusterVpcPrivateSubnet2RouteTable7B7F9678": {
+  "Ec2ClusterVpcPrivateSubnet2RouteTable22B9DAE6": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet2"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "Ec2ClusterVpc568127F1"
+    }
    }
   },
-  "FargateClusterVpcPrivateSubnet2RouteTableAssociation3A46964C": {
+  "Ec2ClusterVpcPrivateSubnet2RouteTableAssociation3AFD70F4": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
-     "Ref": "FargateClusterVpcPrivateSubnet2RouteTable7B7F9678"
+     "Ref": "Ec2ClusterVpcPrivateSubnet2RouteTable22B9DAE6"
     },
     "SubnetId": {
-     "Ref": "FargateClusterVpcPrivateSubnet2Subnet307CEE57"
+     "Ref": "Ec2ClusterVpcPrivateSubnet2Subnet16B68C19"
     }
    }
   },
-  "FargateClusterVpcPrivateSubnet2DefaultRoute35FDD29D": {
+  "Ec2ClusterVpcPrivateSubnet2DefaultRoute22B3073E": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "FargateClusterVpcPrivateSubnet2RouteTable7B7F9678"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
-     "Ref": "FargateClusterVpcPublicSubnet2NATGatewayFFEC8ED2"
+     "Ref": "Ec2ClusterVpcPublicSubnet2NATGateway302F96C0"
+    },
+    "RouteTableId": {
+     "Ref": "Ec2ClusterVpcPrivateSubnet2RouteTable22B9DAE6"
     }
    }
   },
-  "FargateClusterVpcIGW827638CB": {
+  "Ec2ClusterVpcIGW605638EB": {
    "Type": "AWS::EC2::InternetGateway",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/Vpc"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/Vpc"
      }
     ]
    }
   },
-  "FargateClusterVpcVPCGW38717255": {
+  "Ec2ClusterVpcVPCGW24F3B413": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "InternetGatewayId": {
-     "Ref": "FargateClusterVpcIGW827638CB"
+     "Ref": "Ec2ClusterVpcIGW605638EB"
+    },
+    "VpcId": {
+     "Ref": "Ec2ClusterVpc568127F1"
     }
    }
   },
-  "FargateClusterDefaultAutoScalingGroupInstanceSecurityGroup42AF8A40": {
+  "Ec2ClusterDefaultAutoScalingGroupInstanceSecurityGroup149B0A9E": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
+    "GroupDescription": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -408,15 +408,15 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
      }
     ],
     "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
+     "Ref": "Ec2ClusterVpc568127F1"
     }
    }
   },
-  "FargateClusterDefaultAutoScalingGroupInstanceRole0C1F7FF7": {
+  "Ec2ClusterDefaultAutoScalingGroupInstanceRole73D80898": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -434,12 +434,12 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
      }
     ]
    }
   },
-  "FargateClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy3BD78F3E": {
+  "Ec2ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy6D2DC2FD": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -453,7 +453,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "FargateCluster7CCD5F93",
+         "Ec2ClusterEE43E89D",
          "Arn"
         ]
        }
@@ -467,7 +467,7 @@
         "ArnEquals": {
          "ecs:cluster": {
           "Fn::GetAtt": [
-           "FargateCluster7CCD5F93",
+           "Ec2ClusterEE43E89D",
            "Arn"
           ]
          }
@@ -489,32 +489,32 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "FargateClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy3BD78F3E",
+    "PolicyName": "Ec2ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy6D2DC2FD",
     "Roles": [
      {
-      "Ref": "FargateClusterDefaultAutoScalingGroupInstanceRole0C1F7FF7"
+      "Ref": "Ec2ClusterDefaultAutoScalingGroupInstanceRole73D80898"
      }
     ]
    }
   },
-  "FargateClusterDefaultAutoScalingGroupInstanceProfile2C0FEF3B": {
+  "Ec2ClusterDefaultAutoScalingGroupInstanceProfileDB232471": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
      {
-      "Ref": "FargateClusterDefaultAutoScalingGroupInstanceRole0C1F7FF7"
+      "Ref": "Ec2ClusterDefaultAutoScalingGroupInstanceRole73D80898"
      }
     ]
    }
   },
-  "FargateClusterDefaultAutoScalingGroupLaunchTemplate7BE88B5A": {
+  "Ec2ClusterDefaultAutoScalingGroupLaunchTemplate346F58BE": {
    "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
     "LaunchTemplateData": {
      "IamInstanceProfile": {
       "Arn": {
        "Fn::GetAtt": [
-        "FargateClusterDefaultAutoScalingGroupInstanceProfile2C0FEF3B",
+        "Ec2ClusterDefaultAutoScalingGroupInstanceProfileDB232471",
         "Arn"
        ]
       }
@@ -529,7 +529,7 @@
      "SecurityGroupIds": [
       {
        "Fn::GetAtt": [
-        "FargateClusterDefaultAutoScalingGroupInstanceSecurityGroup42AF8A40",
+        "Ec2ClusterDefaultAutoScalingGroupInstanceSecurityGroup149B0A9E",
         "GroupId"
        ]
       }
@@ -540,7 +540,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LaunchTemplate"
+         "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate"
         }
        ]
       },
@@ -549,7 +549,7 @@
        "Tags": [
         {
          "Key": "Name",
-         "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LaunchTemplate"
+         "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate"
         }
        ]
       }
@@ -561,7 +561,7 @@
         [
          "#!/bin/bash\necho ECS_CLUSTER=",
          {
-          "Ref": "FargateCluster7CCD5F93"
+          "Ref": "Ec2ClusterEE43E89D"
          },
          " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
         ]
@@ -575,46 +575,46 @@
       "Tags": [
        {
         "Key": "Name",
-        "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup/LaunchTemplate"
+        "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup/LaunchTemplate"
        }
       ]
      }
     ]
    },
    "DependsOn": [
-    "FargateClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy3BD78F3E",
-    "FargateClusterDefaultAutoScalingGroupInstanceRole0C1F7FF7"
+    "Ec2ClusterDefaultAutoScalingGroupInstanceRoleDefaultPolicy6D2DC2FD",
+    "Ec2ClusterDefaultAutoScalingGroupInstanceRole73D80898"
    ]
   },
-  "FargateClusterDefaultAutoScalingGroupASG36A4948F": {
+  "Ec2ClusterDefaultAutoScalingGroupASGC5A6D4C0": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
    "Properties": {
-    "MaxSize": "1",
-    "MinSize": "1",
     "LaunchTemplate": {
      "LaunchTemplateId": {
-      "Ref": "FargateClusterDefaultAutoScalingGroupLaunchTemplate7BE88B5A"
+      "Ref": "Ec2ClusterDefaultAutoScalingGroupLaunchTemplate346F58BE"
      },
      "Version": {
       "Fn::GetAtt": [
-       "FargateClusterDefaultAutoScalingGroupLaunchTemplate7BE88B5A",
+       "Ec2ClusterDefaultAutoScalingGroupLaunchTemplate346F58BE",
        "LatestVersionNumber"
       ]
      }
     },
+    "MaxSize": "1",
+    "MinSize": "1",
     "Tags": [
      {
       "Key": "Name",
       "PropagateAtLaunch": true,
-      "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
      }
     ],
     "VPCZoneIdentifier": [
      {
-      "Ref": "FargateClusterVpcPublicSubnet1SubnetB9C24BC7"
+      "Ref": "Ec2ClusterVpcPublicSubnet1SubnetD46FD92B"
      },
      {
-      "Ref": "FargateClusterVpcPublicSubnet2Subnet24C0F9D8"
+      "Ref": "Ec2ClusterVpcPublicSubnet2Subnet207D9E5E"
      }
     ]
    },
@@ -627,7 +627,7 @@
     }
    }
   },
-  "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole7FEDCD32": {
+  "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole23116FA3": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -659,12 +659,12 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
      }
     ]
    }
   },
-  "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyB91C5343": {
+  "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy638C9E33": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -700,7 +700,7 @@
           },
           ":autoScalingGroup:*:autoScalingGroupName/",
           {
-           "Ref": "FargateClusterDefaultAutoScalingGroupASG36A4948F"
+           "Ref": "Ec2ClusterDefaultAutoScalingGroupASGC5A6D4C0"
           }
          ]
         ]
@@ -717,7 +717,7 @@
         "ArnEquals": {
          "ecs:cluster": {
           "Fn::GetAtt": [
-           "FargateCluster7CCD5F93",
+           "Ec2ClusterEE43E89D",
            "Arn"
           ]
          }
@@ -735,7 +735,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "FargateCluster7CCD5F93",
+         "Ec2ClusterEE43E89D",
          "Arn"
         ]
        }
@@ -743,91 +743,91 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyB91C5343",
+    "PolicyName": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy638C9E33",
     "Roles": [
      {
-      "Ref": "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole7FEDCD32"
+      "Ref": "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole23116FA3"
      }
     ]
    }
   },
-  "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionE3D5BEE8": {
+  "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionE0DEFB31": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
      "ZipFile": "import boto3, json, os, time\n\necs = boto3.client('ecs')\nautoscaling = boto3.client('autoscaling')\n\n\ndef lambda_handler(event, context):\n  print(json.dumps(dict(event, ResponseURL='...')))\n  cluster = os.environ['CLUSTER']\n  snsTopicArn = event['Records'][0]['Sns']['TopicArn']\n  lifecycle_event = json.loads(event['Records'][0]['Sns']['Message'])\n  instance_id = lifecycle_event.get('EC2InstanceId')\n  if not instance_id:\n    print('Got event without EC2InstanceId: %s', json.dumps(dict(event, ResponseURL='...')))\n    return\n\n  instance_arn = container_instance_arn(cluster, instance_id)\n  print('Instance %s has container instance ARN %s' % (lifecycle_event['EC2InstanceId'], instance_arn))\n\n  if not instance_arn:\n    return\n\n  task_arns = container_instance_task_arns(cluster, instance_arn)\n\n  if task_arns:\n    print('Instance ARN %s has task ARNs %s' % (instance_arn, ', '.join(task_arns)))\n\n  while has_tasks(cluster, instance_arn, task_arns):\n    time.sleep(10)\n\n  try:\n    print('Terminating instance %s' % instance_id)\n    autoscaling.complete_lifecycle_action(\n        LifecycleActionResult='CONTINUE',\n        **pick(lifecycle_event, 'LifecycleHookName', 'LifecycleActionToken', 'AutoScalingGroupName'))\n  except Exception as e:\n    # Lifecycle action may have already completed.\n    print(str(e))\n\n\ndef container_instance_arn(cluster, instance_id):\n  \"\"\"Turn an instance ID into a container instance ARN.\"\"\"\n  arns = ecs.list_container_instances(cluster=cluster, filter='ec2InstanceId==' + instance_id)['containerInstanceArns']\n  if not arns:\n    return None\n  return arns[0]\n\ndef container_instance_task_arns(cluster, instance_arn):\n  \"\"\"Fetch tasks for a container instance ARN.\"\"\"\n  arns = ecs.list_tasks(cluster=cluster, containerInstance=instance_arn)['taskArns']\n  return arns\n\ndef has_tasks(cluster, instance_arn, task_arns):\n  \"\"\"Return True if the instance is running tasks for the given cluster.\"\"\"\n  instances = ecs.describe_container_instances(cluster=cluster, containerInstances=[instance_arn])['containerInstances']\n  if not instances:\n    return False\n  instance = instances[0]\n\n  if instance['status'] == 'ACTIVE':\n    # Start draining, then try again later\n    set_container_instance_to_draining(cluster, instance_arn)\n    return True\n\n  task_count = None\n\n  if task_arns:\n    # Fetch details for tasks running on the container instance\n    tasks = ecs.describe_tasks(cluster=cluster, tasks=task_arns)['tasks']\n    if tasks:\n      # Consider any non-stopped tasks as running\n      task_count = sum(task['lastStatus'] != 'STOPPED' for task in tasks) + instance['pendingTasksCount']\n\n  if not task_count:\n    # Fallback to instance task counts if detailed task information is unavailable\n    task_count = instance['runningTasksCount'] + instance['pendingTasksCount']\n\n  print('Instance %s has %s tasks' % (instance_arn, task_count))\n\n  return task_count > 0\n\ndef set_container_instance_to_draining(cluster, instance_arn):\n  ecs.update_container_instances_state(\n      cluster=cluster,\n      containerInstances=[instance_arn], status='DRAINING')\n\n\ndef pick(dct, *keys):\n  \"\"\"Pick a subset of a dict.\"\"\"\n  return {k: v for k, v in dct.items() if k in keys}\n"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole7FEDCD32",
-      "Arn"
-     ]
-    },
     "Environment": {
      "Variables": {
       "CLUSTER": {
-       "Ref": "FargateCluster7CCD5F93"
+       "Ref": "Ec2ClusterEE43E89D"
       }
      }
     },
     "Handler": "index.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole23116FA3",
+      "Arn"
+     ]
+    },
     "Runtime": "python3.9",
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
      }
     ],
     "Timeout": 310
    },
    "DependsOn": [
-    "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicyB91C5343",
-    "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole7FEDCD32"
+    "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy638C9E33",
+    "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole23116FA3"
    ]
   },
-  "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawsecsinteg2FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9C6EC468C75B1F21": {
+  "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionAllowInvokeawssfntasksecsruntaskEc2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7B5DFDEB44D2982": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
     "FunctionName": {
      "Fn::GetAtt": [
-      "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionE3D5BEE8",
+      "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionE0DEFB31",
       "Arn"
      ]
     },
     "Principal": "sns.amazonaws.com",
     "SourceArn": {
-     "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
+     "Ref": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30"
     }
    }
   },
-  "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic37856E82": {
+  "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionTopic4795E0F6": {
    "Type": "AWS::SNS::Subscription",
    "Properties": {
-    "Protocol": "lambda",
-    "TopicArn": {
-     "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
-    },
     "Endpoint": {
      "Fn::GetAtt": [
-      "FargateClusterDefaultAutoScalingGroupDrainECSHookFunctionE3D5BEE8",
+      "Ec2ClusterDefaultAutoScalingGroupDrainECSHookFunctionE0DEFB31",
       "Arn"
      ]
+    },
+    "Protocol": "lambda",
+    "TopicArn": {
+     "Ref": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30"
     }
    }
   },
-  "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10": {
+  "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30": {
    "Type": "AWS::SNS::Topic",
    "Properties": {
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
      }
     ]
    }
   },
-  "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole410D556D": {
+  "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole71045ED7": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -845,12 +845,12 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ2/FargateCluster/DefaultAutoScalingGroup"
+      "Value": "aws-sfn-tasks-ecs-run-task/Ec2Cluster/DefaultAutoScalingGroup"
      }
     ]
    }
   },
-  "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy4958D19D": {
+  "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyE499974B": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -859,42 +859,42 @@
        "Action": "sns:Publish",
        "Effect": "Allow",
        "Resource": {
-        "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
+        "Ref": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30"
        }
       }
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy4958D19D",
+    "PolicyName": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyE499974B",
     "Roles": [
      {
-      "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole410D556D"
+      "Ref": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole71045ED7"
      }
     ]
    }
   },
-  "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHook2AE13680": {
+  "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHook5CB1467E": {
    "Type": "AWS::AutoScaling::LifecycleHook",
    "Properties": {
     "AutoScalingGroupName": {
-     "Ref": "FargateClusterDefaultAutoScalingGroupASG36A4948F"
+     "Ref": "Ec2ClusterDefaultAutoScalingGroupASGC5A6D4C0"
     },
-    "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
     "DefaultResult": "CONTINUE",
     "HeartbeatTimeout": 300,
+    "LifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
     "NotificationTargetARN": {
-     "Ref": "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic49146C10"
+     "Ref": "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicF7263B30"
     },
     "RoleARN": {
      "Fn::GetAtt": [
-      "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole410D556D",
+      "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole71045ED7",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicy4958D19D",
-    "FargateClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole410D556D"
+    "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyE499974B",
+    "Ec2ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole71045ED7"
    ]
   },
   "TaskDefTaskRole1EDB4A67": {
@@ -921,13 +921,13 @@
      {
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:d87af9b5acc567118fa529d3d3b763098200a6446a5ca64aea987729efd52534"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
        "Options": {
         "awslogs-group": {
-         "Ref": "TaskDefTheContainerLogGroupD94C8EF5"
+         "Ref": "TaskDefContainerLogGroupB60E6F44"
         },
         "awslogs-stream-prefix": "EventDemo",
         "awslogs-region": {
@@ -936,7 +936,7 @@
        }
       },
       "Memory": 256,
-      "Name": "TheContainer"
+      "Name": "Container"
      }
     ],
     "ExecutionRoleArn": {
@@ -945,7 +945,7 @@
       "Arn"
      ]
     },
-    "Family": "awsecsinteg2TaskDef1F38909D",
+    "Family": "awssfntasksecsruntaskTaskDef75140181",
     "NetworkMode": "bridge",
     "RequiresCompatibilities": [
      "EC2"
@@ -958,7 +958,7 @@
     }
    }
   },
-  "TaskDefTheContainerLogGroupD94C8EF5": {
+  "TaskDefContainerLogGroupB60E6F44": {
    "Type": "AWS::Logs::LogGroup",
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
@@ -1029,7 +1029,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "TaskDefTheContainerLogGroupD94C8EF5",
+         "TaskDefContainerLogGroupB60E6F44",
          "Arn"
         ]
        }
@@ -1070,9 +1070,231 @@
       {
        "Action": "ecs:RunTask",
        "Effect": "Allow",
-       "Resource": {
-        "Ref": "TaskDef54694570"
-       }
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             2,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             3,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             4,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             0,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "TaskDef54694570"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           "/",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "TaskDef54694570"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             2,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             3,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             4,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             0,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "TaskDef54694570"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           "/",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "TaskDef54694570"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -1142,33 +1364,29 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "StateMachineRoleB840431D",
-      "Arn"
-     ]
-    },
     "DefinitionString": {
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"Run\"},\"Run\":{\"End\":true,\"Parameters\":{\"Cluster\":\"",
-       {
-        "Fn::GetAtt": [
-         "FargateCluster7CCD5F93",
-         "Arn"
-        ]
-       },
-       "\",\"TaskDefinition\":\"",
-       {
-        "Ref": "TaskDef54694570"
-       },
-       "\",\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"EC2\"},\"Type\":\"Task\",\"Resource\":\"arn:",
+       "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\"},\"Next\":\"Run\"},\"Run\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::ecs:runTask.sync\"}}}"
+       ":states:::ecs:runTask.sync\",\"Parameters\":{\"Cluster\":\"",
+       {
+        "Fn::GetAtt": [
+         "Ec2ClusterEE43E89D",
+         "Arn"
+        ]
+       },
+       "\",\"TaskDefinition\":\"awssfntasksecsruntaskTaskDef75140181\",\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"Container\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"EC2\"}}}}"
       ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
      ]
     }
    },
@@ -1189,6 +1407,13 @@
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "/cdk-bootstrap/hnb659fds/version",
    "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Outputs": {
+  "stateMachineArn": {
+   "Value": {
+    "Ref": "StateMachine2E01A3A5"
+   }
   }
  },
  "Rules": {

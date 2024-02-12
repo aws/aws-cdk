@@ -13,7 +13,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task/FargateCluster/Vpc"
      }
     ]
    }
@@ -21,9 +21,6 @@
   "FargateClusterVpcPublicSubnet1SubnetB9C24BC7": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -45,23 +42,26 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task/FargateCluster/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterVpc377E8024"
+    }
    }
   },
   "FargateClusterVpcPublicSubnet1RouteTable1D7FA747": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task/FargateCluster/Vpc/PublicSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterVpc377E8024"
+    }
    }
   },
   "FargateClusterVpcPublicSubnet1RouteTableAssociation80F1442F": {
@@ -78,12 +78,12 @@
   "FargateClusterVpcPublicSubnet1DefaultRoute80086690": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "FargateClusterVpcPublicSubnet1RouteTable1D7FA747"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "FargateClusterVpcIGW827638CB"
+    },
+    "RouteTableId": {
+     "Ref": "FargateClusterVpcPublicSubnet1RouteTable1D7FA747"
     }
    },
    "DependsOn": [
@@ -97,7 +97,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task/FargateCluster/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -105,19 +105,19 @@
   "FargateClusterVpcPublicSubnet1NATGateway5202D86A": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "FargateClusterVpcPublicSubnet1SubnetB9C24BC7"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "FargateClusterVpcPublicSubnet1EIPF91909D0",
       "AllocationId"
      ]
     },
+    "SubnetId": {
+     "Ref": "FargateClusterVpcPublicSubnet1SubnetB9C24BC7"
+    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task/FargateCluster/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -129,9 +129,6 @@
   "FargateClusterVpcPublicSubnet2Subnet24C0F9D8": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -153,23 +150,26 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task/FargateCluster/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterVpc377E8024"
+    }
    }
   },
   "FargateClusterVpcPublicSubnet2RouteTable1493C5D6": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task/FargateCluster/Vpc/PublicSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterVpc377E8024"
+    }
    }
   },
   "FargateClusterVpcPublicSubnet2RouteTableAssociation3EFA74DC": {
@@ -186,12 +186,12 @@
   "FargateClusterVpcPublicSubnet2DefaultRoute8E847CD2": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "FargateClusterVpcPublicSubnet2RouteTable1493C5D6"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Ref": "FargateClusterVpcIGW827638CB"
+    },
+    "RouteTableId": {
+     "Ref": "FargateClusterVpcPublicSubnet2RouteTable1493C5D6"
     }
    },
    "DependsOn": [
@@ -205,7 +205,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task/FargateCluster/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -213,19 +213,19 @@
   "FargateClusterVpcPublicSubnet2NATGatewayFFEC8ED2": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
-    "SubnetId": {
-     "Ref": "FargateClusterVpcPublicSubnet2Subnet24C0F9D8"
-    },
     "AllocationId": {
      "Fn::GetAtt": [
       "FargateClusterVpcPublicSubnet2EIPBBB24774",
       "AllocationId"
      ]
     },
+    "SubnetId": {
+     "Ref": "FargateClusterVpcPublicSubnet2Subnet24C0F9D8"
+    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PublicSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task/FargateCluster/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -237,9 +237,6 @@
   "FargateClusterVpcPrivateSubnet1Subnet9127625F": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       0,
@@ -261,23 +258,26 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task/FargateCluster/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterVpc377E8024"
+    }
    }
   },
   "FargateClusterVpcPrivateSubnet1RouteTable21B3CEAE": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet1"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task/FargateCluster/Vpc/PrivateSubnet1"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterVpc377E8024"
+    }
    }
   },
   "FargateClusterVpcPrivateSubnet1RouteTableAssociation78F6E213": {
@@ -294,21 +294,18 @@
   "FargateClusterVpcPrivateSubnet1DefaultRoute0438DCBA": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "FargateClusterVpcPrivateSubnet1RouteTable21B3CEAE"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "FargateClusterVpcPublicSubnet1NATGateway5202D86A"
+    },
+    "RouteTableId": {
+     "Ref": "FargateClusterVpcPrivateSubnet1RouteTable21B3CEAE"
     }
    }
   },
   "FargateClusterVpcPrivateSubnet2Subnet307CEE57": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "AvailabilityZone": {
      "Fn::Select": [
       1,
@@ -330,23 +327,26 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task/FargateCluster/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterVpc377E8024"
+    }
    }
   },
   "FargateClusterVpcPrivateSubnet2RouteTable7B7F9678": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc/PrivateSubnet2"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task/FargateCluster/Vpc/PrivateSubnet2"
      }
-    ]
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterVpc377E8024"
+    }
    }
   },
   "FargateClusterVpcPrivateSubnet2RouteTableAssociation3A46964C": {
@@ -363,12 +363,12 @@
   "FargateClusterVpcPrivateSubnet2DefaultRoute35FDD29D": {
    "Type": "AWS::EC2::Route",
    "Properties": {
-    "RouteTableId": {
-     "Ref": "FargateClusterVpcPrivateSubnet2RouteTable7B7F9678"
-    },
     "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "FargateClusterVpcPublicSubnet2NATGatewayFFEC8ED2"
+    },
+    "RouteTableId": {
+     "Ref": "FargateClusterVpcPrivateSubnet2RouteTable7B7F9678"
     }
    }
   },
@@ -378,7 +378,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-sfn-tasks-ecs-fargate-integ/FargateCluster/Vpc"
+      "Value": "aws-sfn-tasks-ecs-fargate-run-task/FargateCluster/Vpc"
      }
     ]
    }
@@ -386,11 +386,11 @@
   "FargateClusterVpcVPCGW38717255": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
-    "VpcId": {
-     "Ref": "FargateClusterVpc377E8024"
-    },
     "InternetGatewayId": {
      "Ref": "FargateClusterVpcIGW827638CB"
+    },
+    "VpcId": {
+     "Ref": "FargateClusterVpc377E8024"
     }
    }
   },
@@ -418,7 +418,7 @@
      {
       "Essential": true,
       "Image": {
-       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
+       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:d87af9b5acc567118fa529d3d3b763098200a6446a5ca64aea987729efd52534"
       },
       "LogConfiguration": {
        "LogDriver": "awslogs",
@@ -443,7 +443,7 @@
       "Arn"
      ]
     },
-    "Family": "awssfntasksecsfargateintegTaskDefD0F4AD10",
+    "Family": "awssfntasksecsfargateruntaskTaskDef0E89D5AE",
     "Memory": "512",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
@@ -547,7 +547,7 @@
   "FargateTaskSecurityGroup0BBB27CB": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-sfn-tasks-ecs-fargate-integ/FargateTask/SecurityGroup",
+    "GroupDescription": "aws-sfn-tasks-ecs-fargate-run-task/FargateTask/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -560,10 +560,10 @@
     }
    }
   },
-  "FargeateTaskSetRevisionNumberSecurityGroup916C9B0B": {
+  "FargateTaskSetRevisionNumberSecurityGroupDF805F2C": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-sfn-tasks-ecs-fargate-integ/FargeateTaskSetRevisionNumber/SecurityGroup",
+    "GroupDescription": "aws-sfn-tasks-ecs-fargate-run-task/FargateTaskSetRevisionNumber/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -576,10 +576,10 @@
     }
    }
   },
-  "FargeateTaskWithPropagatedTagSecurityGroup94A6AE70": {
+  "FargateTaskWithPropagatedTagSecurityGroupE2B5DD29": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-sfn-tasks-ecs-fargate-integ/FargeateTaskWithPropagatedTag/SecurityGroup",
+    "GroupDescription": "aws-sfn-tasks-ecs-fargate-run-task/FargateTaskWithPropagatedTag/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -617,117 +617,231 @@
       {
        "Action": "ecs:RunTask",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::Join": [
-         "",
-         [
-          "arn:",
-          {
-           "Fn::Select": [
-            1,
-            {
-             "Fn::Split": [
-              ":",
-              {
-               "Ref": "TaskDef54694570"
-              }
-             ]
-            }
-           ]
-          },
-          ":",
-          {
-           "Fn::Select": [
-            2,
-            {
-             "Fn::Split": [
-              ":",
-              {
-               "Ref": "TaskDef54694570"
-              }
-             ]
-            }
-           ]
-          },
-          ":",
-          {
-           "Fn::Select": [
-            3,
-            {
-             "Fn::Split": [
-              ":",
-              {
-               "Ref": "TaskDef54694570"
-              }
-             ]
-            }
-           ]
-          },
-          ":",
-          {
-           "Fn::Select": [
-            4,
-            {
-             "Fn::Split": [
-              ":",
-              {
-               "Ref": "TaskDef54694570"
-              }
-             ]
-            }
-           ]
-          },
-          ":",
-          {
-           "Fn::Select": [
-            0,
-            {
-             "Fn::Split": [
-              "/",
-              {
-               "Fn::Select": [
-                5,
-                {
-                 "Fn::Split": [
-                  ":",
-                  {
-                   "Ref": "TaskDef54694570"
-                  }
-                 ]
-                }
-               ]
-              }
-             ]
-            }
-           ]
-          },
-          "/",
-          {
-           "Fn::Select": [
-            1,
-            {
-             "Fn::Split": [
-              "/",
-              {
-               "Fn::Select": [
-                5,
-                {
-                 "Fn::Split": [
-                  ":",
-                  {
-                   "Ref": "TaskDef54694570"
-                  }
-                 ]
-                }
-               ]
-              }
-             ]
-            }
-           ]
-          }
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             2,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             3,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             4,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             0,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "TaskDef54694570"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           "/",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "TaskDef54694570"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           ":*"
+          ]
          ]
-        ]
-       }
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             2,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             3,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             4,
+             {
+              "Fn::Split": [
+               ":",
+               {
+                "Ref": "TaskDef54694570"
+               }
+              ]
+             }
+            ]
+           },
+           ":",
+           {
+            "Fn::Select": [
+             0,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "TaskDef54694570"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           },
+           "/",
+           {
+            "Fn::Select": [
+             1,
+             {
+              "Fn::Split": [
+               "/",
+               {
+                "Fn::Select": [
+                 5,
+                 {
+                  "Fn::Split": [
+                   ":",
+                   {
+                    "Ref": "TaskDef54694570"
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -797,17 +911,11 @@
   "StateMachine2E01A3A5": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "StateMachineRoleB840431D",
-      "Arn"
-     ]
-    },
     "DefinitionString": {
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\",\"Timeout\":900},\"Next\":\"FargateTask\"},\"FargateTask\":{\"Next\":\"FargeateTaskSetRevisionNumber\",\"Type\":\"Task\",\"TimeoutSecondsPath\":\"$.Timeout\",\"Resource\":\"arn:",
+       "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"SomeKey\":\"SomeValue\",\"Timeout\":900},\"Next\":\"FargateTask\"},\"FargateTask\":{\"Next\":\"FargateTaskSetRevisionNumber\",\"Type\":\"Task\",\"TimeoutSecondsPath\":\"$.Timeout\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -818,7 +926,7 @@
          "Arn"
         ]
        },
-       "\",\"TaskDefinition\":\"awssfntasksecsfargateintegTaskDefD0F4AD10\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"AssignPublicIp\":\"ENABLED\",\"Subnets\":[\"",
+       "\",\"TaskDefinition\":\"awssfntasksecsfargateruntaskTaskDef0E89D5AE\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"AssignPublicIp\":\"ENABLED\",\"Subnets\":[\"",
        {
         "Ref": "FargateClusterVpcPublicSubnet1SubnetB9C24BC7"
        },
@@ -833,7 +941,7 @@
          "GroupId"
         ]
        },
-       "\"]}},\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargeateTaskSetRevisionNumber\":{\"Next\":\"FargeateTaskWithPropagatedTag\",\"Type\":\"Task\",\"Resource\":\"arn:",
+       "\"]}},\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargateTaskSetRevisionNumber\":{\"Next\":\"FargateTaskWithPropagatedTag\",\"Type\":\"Task\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -844,7 +952,7 @@
          "Arn"
         ]
        },
-       "\",\"TaskDefinition\":\"awssfntasksecsfargateintegTaskDefD0F4AD10:1\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"Subnets\":[\"",
+       "\",\"TaskDefinition\":\"awssfntasksecsfargateruntaskTaskDef0E89D5AE:1\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"Subnets\":[\"",
        {
         "Ref": "FargateClusterVpcPrivateSubnet1Subnet9127625F"
        },
@@ -855,11 +963,11 @@
        "\"],\"SecurityGroups\":[\"",
        {
         "Fn::GetAtt": [
-         "FargeateTaskSetRevisionNumberSecurityGroup916C9B0B",
+         "FargateTaskSetRevisionNumberSecurityGroupDF805F2C",
          "GroupId"
         ]
        },
-       "\"]}},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargeateTaskWithPropagatedTag\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       "\"]}},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargateTaskWithPropagatedTag\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -870,7 +978,7 @@
          "Arn"
         ]
        },
-       "\",\"TaskDefinition\":\"awssfntasksecsfargateintegTaskDefD0F4AD10\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"Subnets\":[\"",
+       "\",\"TaskDefinition\":\"awssfntasksecsfargateruntaskTaskDef0E89D5AE\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"Subnets\":[\"",
        {
         "Ref": "FargateClusterVpcPrivateSubnet1Subnet9127625F"
        },
@@ -881,12 +989,18 @@
        "\"],\"SecurityGroups\":[\"",
        {
         "Fn::GetAtt": [
-         "FargeateTaskWithPropagatedTagSecurityGroup94A6AE70",
+         "FargateTaskWithPropagatedTagSecurityGroupE2B5DD29",
          "GroupId"
         ]
        },
        "\"]}},\"PropagateTags\":\"TASK_DEFINITION\",\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}}}}"
       ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
      ]
     }
    },
