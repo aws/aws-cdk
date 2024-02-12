@@ -135,6 +135,7 @@ export class Runtime {
 
   /**
    * The Python 3.7 runtime (python3.7)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
   public static readonly PYTHON_3_7 = new Runtime('python3.7', RuntimeFamily.PYTHON, {
     supportsInlineCode: true,
@@ -183,6 +184,7 @@ export class Runtime {
 
   /**
    * The Java 8 runtime (java8)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Java runtime.
    */
   public static readonly JAVA_8 = new Runtime('java8', RuntimeFamily.JAVA, {
     supportsCodeGuruProfiling: true,
@@ -262,6 +264,7 @@ export class Runtime {
 
   /**
    * The Ruby 2.7 runtime (ruby2.7)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Ruby runtime.
    */
   public static readonly RUBY_2_7 = new Runtime('ruby2.7', RuntimeFamily.RUBY);
 
